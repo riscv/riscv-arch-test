@@ -67,7 +67,7 @@ def _setup_identity_map(test_data: TestData) -> list[str]:
         f"and x{r0}, x{r0}, x{r1}",  # r0 = superpage-aligned base PA
         f"srli x{r0}, x{r0}, 12",  # r0 = PPN
         f"slli x{r0}, x{r0}, 10",  # r0 = PPN in PTE field position
-        f"li x{r1}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        f"LI(x{r1}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V))",
         f"or x{r0}, x{r0}, x{r1}",  # r0 = leaf PTE value
         f"LA(x{r2}, rvtest_Sroot_pg_tbl)",  # r2 = root page table base
         f"LA(x{r1}, rvtest_code_begin)",  # r1 = code base address

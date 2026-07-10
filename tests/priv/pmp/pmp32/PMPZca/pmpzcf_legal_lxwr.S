@@ -44,7 +44,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    li    x15, 0x3f800000    // bit pattern for 1.0f (IEEE-754 single)
+    LI(x15, 0x3f800000    // bit pattern for 1.0f (IEEE-754 single))
     fmv.w.x f8, x15          // move 32-bit integer bits into float reg f8
     // Store Access Check
     LA(x8, \ADDRESS)                                         // Address to be verified
@@ -93,7 +93,7 @@ main:
 
     // Enable the FPU: set mstatus.FS = 01 (Initial)
     // mstatus bits 14:13 = FS. Value 0x00006000 sets FS=11 (Dirty), safe for all F ops.
-    li   x4, 0x00006000
+    LI(x4, 0x00006000)
     csrs mstatus, x4        // set FS bits without disturbing anything else
 
     // zero out fcsr so fflags start clean

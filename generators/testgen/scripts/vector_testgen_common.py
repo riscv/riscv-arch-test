@@ -2658,7 +2658,7 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"vmsltu.vx v0, v{mask_vreg}, x{tempReg}",     "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
   else: # random mask
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
-    writeLine(f"la x{tempReg}, {maskval}")
+    writeLine(f"LA(x{tempReg}, {maskval})")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
 def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
@@ -2669,7 +2669,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   # pointer mid-test and triggering a chain of store-fault traps.
   vstart_reg = scratch
   if   (vstartval == "one"):
-    writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
+    writeLine(f"LI(x{vstart_reg}, 1)",                                   f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
@@ -2679,7 +2679,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
-    writeLine(f"li x{scratch2}, {randvstart}")
+    writeLine(f"LI(x{scratch2}, {randvstart})")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
   writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")

@@ -73,9 +73,9 @@ main:
 //                                                    Setup pmp registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                                        // Set PMP permission for all memory in pmp2cfg0 (TOR)
+  LI(t2, 0                                        // Set PMP permission for all memory in pmp2cfg0 (TOR))
   csrw pmpaddr1, t2
-  li t2, -1
+  LI(t2, -1)
   csrw pmpaddr2, t2
 
   LA (t2, rvtest_data_1)                          // Configure test region as NAPOT

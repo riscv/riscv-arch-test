@@ -109,7 +109,7 @@ RVTEST_BEGIN
     add x1, x1, a0      // VA of an Spage that points to 1f
 
     mv  t0, x3          // Temporarily store x3
-    li  x3, 0
+    LI(x3, 0)
     GOTO_S_OP           // Go to Smode
     nop                 // GOTO_S_OP returns here. This will raise a fetch-page-fault (S-mode accessing Upage).
   1:
@@ -229,7 +229,7 @@ main:
   sfence.vma
 
   // Test case 9-10: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 3 faults
-  li a1, 1
+  LI(a1, 1)
   CSRW(medeleg, a1)
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test9
   sfence.vma

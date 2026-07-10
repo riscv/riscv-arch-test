@@ -99,7 +99,7 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    li t0, MENVCFG
+    LI(t0, MENVCFG)
     csrrs zero, menvcfg, t0
 
 //                                                Verification Section

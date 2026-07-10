@@ -73,7 +73,7 @@ def csrtests(pathname, skipCsrs):
 
         print("\n// Testing CSR " + ih)
         print("\tcsrr x" + str(reg1) + ", " + ih + "\t// Read CSR")
-        print("\tli x" + reg2 + ", -1")
+        print("\tLI(x" + reg2 + ", -1)")
         print("\tcsrrw x" + reg3 + ", " + ih + ", x" + reg2 + "\t// Write all 1s to CSR")
         print("\tcsrrw x" + reg3 + ", " + ih + ", x0\t// Write all 0s to CSR")
         print("\tcsrrs x" + reg3 + ", " + ih + ", x" + reg2 + "\t// Set all CSR bits")
@@ -86,7 +86,7 @@ def readandswitchmode(regs, mode):
     # helper function to switch modes when reading csr
     if mode in ("U", "S"):
         mode_num = 0 if mode == "U" else 1  # convert 'U' to 0, 'S' to 1
-        print(f"\tli a0, {mode_num}     # switch to {mode}-mode")
+        print(f"\tLI(a0, {mode_num})     # switch to {mode}-mode")
         print(f"\tecall             # switch to {mode}-mode")
         for reg in regs:
             if reg == "satp":  # Skip satp to avoid enabling virtual memory

@@ -1666,7 +1666,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     f.write("\n")
     f.write("// Initial set vl = 1\n")
-    f.write("li x31, 1\n")
+    f.write("LI(x31, 1)\n")
     f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n\n\n")
 
     if (test in vd_widen_ins) or (test in vs2_widen_ins):

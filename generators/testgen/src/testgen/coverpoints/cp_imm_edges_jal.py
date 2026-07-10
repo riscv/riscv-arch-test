@@ -40,13 +40,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         max_fwd_align = 13  # 2^13 = 8192
         max_bwd_align = 13  # 2^13 = 8192
         min_align = 2
-        li_instr = "li"
+        li_call = lambda reg, val: f"LI(x{reg}, {val})"
     elif coverpoint == "cp_imm_edges_c_jal":
         instr_size = 2
         max_fwd_align = 10  # 2^10 = 1024
         max_bwd_align = 11  # 2^11 = 2048
         min_align = 1
-        li_instr = "c.li"
+        li_call = lambda reg, val: f"c.li x{reg}, {val}"
     else:
         raise ValueError(f"Unsupported coverpoint variant for cp_imm_edges_jal/cp_imm_edges_c_jal: {coverpoint}")
 
@@ -59,13 +59,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         tc.code.extend(
             [
                 f"# {coverpoint}: forward jump by {1 << align}",
-                f"{li_instr} x{params.temp_reg}, 1 # success code"
+                f"{li_call(params.temp_reg, 1)} # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align}",
                 test_data.add_testcase(f"b_{align}", coverpoint),
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_fwd_{bin_name}",
-                f"{li_instr} x{params.temp_reg}, 7 # failure code"
+                f"{li_call(params.temp_reg, 7)} # failure code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align}",
@@ -89,7 +89,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         tc.code.extend(
             [
                 f"# {coverpoint}: backward jump by {1 << align}",
-                f"{li_instr} x{params.temp_reg}, 1 # success code"
+                f"{li_call(params.temp_reg, 1)} # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f".p2align {align + 1}",
@@ -132,7 +132,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # Fall-through failure case and done label
         tc.code.extend(
             [
-                f"{li_instr} x{params.temp_reg}, 7 # failure code"
+                f"{li_call(params.temp_reg, 7)} # failure code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
                 f"{coverpoint}_done_{bin_name}:",

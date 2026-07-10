@@ -173,7 +173,7 @@ main:
   sfence.vma
 
   // Test case 9-10: Test in S-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 1 Store/AMO page fault
-  li a1, 1
+  LI(a1, 1)
   CSRW(medeleg, a1)
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test9
   sfence.vma

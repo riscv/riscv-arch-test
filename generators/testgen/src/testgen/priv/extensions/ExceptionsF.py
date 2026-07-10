@@ -631,7 +631,7 @@ def make_exceptionsf(test_data: TestData) -> list[TestChunk]:
     for i in range(32):
         tc.code.extend(
             [
-                f"li t0, {i + 1}",
+                f"LI(t0, {i + 1})",
                 f"fcvt.s.w f{i}, t0",
             ]
         )

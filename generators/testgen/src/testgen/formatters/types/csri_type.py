@@ -22,7 +22,7 @@ def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
 
     # instret requires special treatment because it is not writable, and the value is not initialized
     if instr_name in ["csrrw", "csrrwi"] or rs2 == 0 or rd == 0:
-        instret_access = f"li x{rd}, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0"
+        instret_access = f"LI(x{rd}, 0) # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0"
     else:
         instret_access = (
             f"{instr_name} x{rs2}, instret, 0\n"

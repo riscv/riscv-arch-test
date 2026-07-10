@@ -75,7 +75,7 @@ def make(test: str, sew: int) -> None:
             f"vsetvli x{{s0}}, x0, e{sew}, m{lmulflag}, tu, mu",
         ]
         pre_inst_lines = [
-            f"li x{rs1}, {FAULT_ADDRESS}",
+            f"LI(x{rs1}, {FAULT_ADDRESS})",
         ]
         writeTest(
             description, test, data,

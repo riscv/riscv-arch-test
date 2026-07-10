@@ -87,6 +87,15 @@ repos:
     hooks:
       - id: renovate-config-validator
 
+  # Forbid li/la pseudoinstructions in favor of LI/LA macros
+  - repo: local
+    hooks:
+      - id: forbid-li-la-pseudoinstructions
+        name: forbid li/la pseudoinstructions (use LI/LA macros)
+        language: script
+        entry: .github/scripts/check-li-la-pseudoinstructions.sh
+        files: ^tests/.*\.(S|s)$
+
   # clang-format for assembly files
   # - repo: https://github.com/pre-commit/mirrors-clang-format
   #   rev: "v19.1.7"

@@ -45,7 +45,7 @@ RVTEST_BEGIN
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -59,7 +59,7 @@ Zicsr_csrrci_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrci x0, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -74,7 +74,7 @@ Zicsr_csrrci_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x26, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -93,7 +93,7 @@ Zicsr_csrrci_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -125,7 +125,7 @@ Zicsr_csrrci_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x14, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -145,7 +145,7 @@ Zicsr_csrrci_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -177,7 +177,7 @@ Zicsr_csrrci_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x30, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -197,7 +197,7 @@ Zicsr_csrrci_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -229,7 +229,7 @@ Zicsr_csrrci_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x17, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x17, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -250,7 +250,7 @@ Zicsr_csrrci_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -282,7 +282,7 @@ Zicsr_csrrci_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x14, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -301,7 +301,7 @@ Zicsr_csrrci_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -333,7 +333,7 @@ Zicsr_csrrci_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x14, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -352,7 +352,7 @@ Zicsr_csrrci_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -384,7 +384,7 @@ Zicsr_csrrci_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x2, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -403,7 +403,7 @@ Zicsr_csrrci_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -435,7 +435,7 @@ Zicsr_csrrci_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x11, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -454,7 +454,7 @@ Zicsr_csrrci_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -486,7 +486,7 @@ Zicsr_csrrci_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x16, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x16, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -505,7 +505,7 @@ Zicsr_csrrci_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -537,7 +537,7 @@ Zicsr_csrrci_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x18, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -556,7 +556,7 @@ Zicsr_csrrci_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -588,7 +588,7 @@ Zicsr_csrrci_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x9, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x9, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -607,7 +607,7 @@ Zicsr_csrrci_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -639,7 +639,7 @@ Zicsr_csrrci_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x18, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -660,7 +660,7 @@ Zicsr_csrrci_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -692,7 +692,7 @@ Zicsr_csrrci_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x13, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -711,7 +711,7 @@ Zicsr_csrrci_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -743,7 +743,7 @@ Zicsr_csrrci_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x27, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x27, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -762,7 +762,7 @@ Zicsr_csrrci_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -794,7 +794,7 @@ Zicsr_csrrci_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x13, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -813,7 +813,7 @@ Zicsr_csrrci_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -845,7 +845,7 @@ Zicsr_csrrci_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x8, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -864,7 +864,7 @@ Zicsr_csrrci_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -896,7 +896,7 @@ Zicsr_csrrci_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x21, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -915,7 +915,7 @@ Zicsr_csrrci_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -947,7 +947,7 @@ Zicsr_csrrci_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x10, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -966,7 +966,7 @@ Zicsr_csrrci_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -998,7 +998,7 @@ Zicsr_csrrci_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x8, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1017,7 +1017,7 @@ Zicsr_csrrci_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1049,7 +1049,7 @@ Zicsr_csrrci_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x6, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1068,7 +1068,7 @@ Zicsr_csrrci_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1100,7 +1100,7 @@ Zicsr_csrrci_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x22, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1119,7 +1119,7 @@ Zicsr_csrrci_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1151,7 +1151,7 @@ Zicsr_csrrci_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x10, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1170,7 +1170,7 @@ Zicsr_csrrci_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1202,7 +1202,7 @@ Zicsr_csrrci_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x25, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1222,7 +1222,7 @@ Zicsr_csrrci_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1254,7 +1254,7 @@ Zicsr_csrrci_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x24, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1273,7 +1273,7 @@ Zicsr_csrrci_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1305,7 +1305,7 @@ Zicsr_csrrci_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x7, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x7, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1324,7 +1324,7 @@ Zicsr_csrrci_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1356,7 +1356,7 @@ Zicsr_csrrci_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x6, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1375,7 +1375,7 @@ Zicsr_csrrci_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1407,7 +1407,7 @@ Zicsr_csrrci_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x12, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1426,7 +1426,7 @@ Zicsr_csrrci_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1458,7 +1458,7 @@ Zicsr_csrrci_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x3, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1478,7 +1478,7 @@ Zicsr_csrrci_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1510,7 +1510,7 @@ Zicsr_csrrci_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x29, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x29, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1529,7 +1529,7 @@ Zicsr_csrrci_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1561,7 +1561,7 @@ Zicsr_csrrci_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x8, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1580,7 +1580,7 @@ Zicsr_csrrci_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1594,7 +1594,7 @@ Zicsr_csrrci_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrci x30, mepc, 8
 #elif defined(ZICNTR_SUPPORTED)
-  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
+  LI(x30, 0) # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1609,7 +1609,7 @@ Zicsr_csrrci_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1628,7 +1628,7 @@ Zicsr_csrrci_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1660,7 +1660,7 @@ Zicsr_csrrci_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x26, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1683,7 +1683,7 @@ Zicsr_csrrci_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1715,7 +1715,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm0:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x27, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x27, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1734,7 +1734,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1766,7 +1766,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm1:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x1, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x1, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1785,7 +1785,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1817,7 +1817,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm2:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x24, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1836,7 +1836,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1868,7 +1868,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm3:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x24, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1887,7 +1887,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1919,7 +1919,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm4:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x23, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x23, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1938,7 +1938,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1970,7 +1970,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm5:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x31, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -1989,7 +1989,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2021,7 +2021,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm6:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x23, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x23, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2040,7 +2040,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2072,7 +2072,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm7:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x30, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2091,7 +2091,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2123,7 +2123,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm8:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x19, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x19, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2142,7 +2142,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2174,7 +2174,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm9:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x20, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x20, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2193,7 +2193,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2225,7 +2225,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm10:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x26, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2244,7 +2244,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2276,7 +2276,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm11:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x10, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2295,7 +2295,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2327,7 +2327,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm12:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x8, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2346,7 +2346,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2378,7 +2378,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm13:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x21, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2397,7 +2397,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2429,7 +2429,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm14:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x2, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2448,7 +2448,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2480,7 +2480,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm15:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x30, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2499,7 +2499,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2531,7 +2531,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm16:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x28, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x28, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2550,7 +2550,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2582,7 +2582,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm17:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x13, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2601,7 +2601,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2615,7 +2615,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrci x0, mepc, 18
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2630,7 +2630,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x19, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x19, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2649,7 +2649,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2681,7 +2681,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm19:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x10, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2700,7 +2700,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2732,7 +2732,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm20:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x26, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2751,7 +2751,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2783,7 +2783,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm21:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x31, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2802,7 +2802,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2834,7 +2834,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm22:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x11, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2853,7 +2853,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2885,7 +2885,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm23:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x19, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x19, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2904,7 +2904,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2936,7 +2936,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm24:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x14, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2955,7 +2955,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -2987,7 +2987,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm25:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x13, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3006,7 +3006,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3038,7 +3038,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm26:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x3, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3057,7 +3057,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3089,7 +3089,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm27:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x3, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3108,7 +3108,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3122,7 +3122,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrci x0, mepc, 28
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3137,7 +3137,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x12, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3156,7 +3156,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3188,7 +3188,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm29:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x21, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3207,7 +3207,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3239,7 +3239,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm30:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x2, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3258,7 +3258,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x0, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif
@@ -3290,7 +3290,7 @@ Zicsr_csrrci_cg_cp_uimm_5_uimm31:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  li x28, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
+  LI(x28, 0) # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
   #error no CSR known for testing
 #endif

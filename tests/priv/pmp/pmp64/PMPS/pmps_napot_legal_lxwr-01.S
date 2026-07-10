@@ -87,7 +87,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
-    li   t0, (g - 8)
+    LI(t0, (g - 8))
     add  a4, a4, t0                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_20:
@@ -148,7 +148,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    li t0, (g-8)
+    LI(t0, (g-8))
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_6:
@@ -213,7 +213,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
-    li t0, (g-8)
+    LI(t0, (g-8))
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_15:

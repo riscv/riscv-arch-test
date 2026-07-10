@@ -81,7 +81,7 @@ main:
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 11
 
     LA(x6, REGIONSTART)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr11, x6
@@ -98,7 +98,7 @@ main:
 // Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 9
 
     LA(x6, REGIONSTART)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr9, x6
@@ -115,7 +115,7 @@ main:
 // Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 7
 
     LA(x6, REGIONSTART)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr7, x6

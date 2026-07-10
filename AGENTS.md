@@ -9,17 +9,6 @@ pointers to this file so every agent reads the same guidance.
 **When you update guidance, edit `AGENTS.md` only.** The others are symlinks and
 update automatically.
 
-@RTK.md
-
-# OpenWolf
-
-@.wolf/OPENWOLF.md
-
-This project uses OpenWolf for context management. Read and follow .wolf/OPENWOLF.md every session. Check .wolf/cerebrum.md before generating code. Check .wolf/anatomy.md before reading files.
-
-# Caveman final summary
-
-When caveman mode active: keep caveman style during working turns (analysis, intermediate replies, tool narration), but write the final wrap-up summary — the "here's what I did" message — in normal, full English. Resume caveman next working turn.
 
 ## Overview
 

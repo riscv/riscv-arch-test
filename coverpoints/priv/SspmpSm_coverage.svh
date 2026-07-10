@@ -28,7 +28,9 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         bins spmp_entry[4] = {[12'h100:12'h13F]};
     }
 
-    cp_spmp_indirect_access: coverpoint ins.current.insn {
+    cp_spmp_indirect_access: coverpoint ins.current.insn iff
+        ((ins.current.insn[31:20] inside {12'h150, 12'h151, 12'h152}) &&
+         (ins.current.csr[12'h150] inside {[12'h100:12'h13F]})) {
         wildcard bins csrrw_sireg  = {CSRRW};
         wildcard bins csrrs_sireg  = {CSRRS};
         wildcard bins csrrc_sireg  = {CSRRC};
@@ -600,11 +602,19 @@ covergroup SspmpSm_spmpen_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_spmpen_readwrite: coverpoint ins.current.csr[12'h183] {
         bins all_zeros = {0};
-        bins all_ones  = {{64{1'b1}}};
-        bins bit0      = {64'h1};
-        bins bit1      = {64'h2};
-        bins bit2      = {64'h4};
-        bins bit3      = {64'h8};
+        `ifdef XLEN64
+            bins all_ones = {64'hFFFF_FFFF_FFFF_FFFF};
+            bins bit0     = {64'h1};
+            bins bit1     = {64'h2};
+            bins bit2     = {64'h4};
+            bins bit3     = {64'h8};
+        `else
+            bins all_ones = {32'hFFFF_FFFF};
+            bins bit0     = {32'h1};
+            bins bit1     = {32'h2};
+            bins bit2     = {32'h4};
+            bins bit3     = {32'h8};
+        `endif
         bins other[4]  = default;
     }
 

@@ -27,11 +27,12 @@ covergroup = "ZawrsU_cg"
 def _generate_wrs_sto_timeout_tests(
     test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_temp2: int
 ) -> list[str]:
-    """Generate wrs.sto timeout tests.
+    """Generate U mode wrs.sto timeout tests.
 
     cross lr instruction to set up reservation.
     mstatus.TW = {0/1}
     mstatus.MIE = 0
+    mstatus.SIE = 0 (if S supported)
     mie=all zeros 0 to disable interrupts
     Execute WRS.STO in U mode
     2 bins
@@ -57,10 +58,10 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
 
     mstatus.TW =0
     mstatus.MIE = 0
-    mstatus.SIE = 0
+    mstatus.SIE = 0 (if S supported)
     mie= all 0s to disable interrupts
     Clear all reservation with sc.w, then execute {WRS.STO, WRS.NTO} with no reservation created in U mode
-    2 x 2 x 2 bins
+    2 bins
     """
 
     ######################################
@@ -86,21 +87,26 @@ def _generate_wrs_resume_tests(
     """Generate WRS instruction resume when interrupt pending tests
 
     For DUTs that supports S mode but do not have Sstc, the WRS resume behavior
-    can not be tested with stimer interrupt
+    is tested with MTIP
 
     cross lr instruction to set up reservation.
     mstatus.TW = 0
     cross with mie.MTIE=1
+    (if SSTC supporrted use STIP, cross menvcfg.STCE = 1)
     mstatus.MIE = {0/1}
     (if S supported: mstatus.SIE = {0/1})
     Set up timer to interrupt soon
-    execute WRS.NTO in {S/U} mode
+    execute {WRS.NTO/WRS.STO} in U mode
     2 x 2 x 2 bins
     """
 
+    ######################################
+    coverpoint = "cp_wrs_resume"
+    ######################################
+
     lines = [
         comment_banner(
-            "cp_wrs_resume",
+            coverpoint,
             _generate_wrs_resume_tests.__doc__,
         ),
         "",
@@ -147,7 +153,7 @@ def _generate_wrs_nto_timeout_tests(
     cross lr instruction to set up reservation.
     mstatus.TW = 1
     mstatus.MIE = 0
-    mstatus.SIE = 0
+    mstatus.SIE = 0 (if S supported)
     mie=all 0s to disable interrupts
     execute WRS.NTO in U mode"
     2 bins
@@ -178,8 +184,10 @@ def make_zawrsu(test_data: TestData) -> list[TestChunk]:
 
     r_cause, r_scratch, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(5)
     tc.code.extend(_zawrs_define_helper("U"))
+    # Interrupt trap handler
     tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, True, r_temp, r_timecmp, r_temp2))
-    tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, False, r_temp, r_timecmp, r_temp2))
+    # Exception trap handler
+    tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, False, r_temp))
 
     tc.code.extend(_generate_wrs_sto_timeout_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))
     tc.code.extend(_generate_wrs_nto_timeout_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))

@@ -81,10 +81,16 @@ covergroup ZawrsU_cg with function sample(ins_t ins);
     }
 
     `ifdef S_SUPPORTED
-    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-        bins zero = {0};
-        bins one  = {1};
-    }
+        mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+            bins zero = {0};
+            bins one  = {1};
+        }
+        mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+            bins zero = {0};
+        }
+        mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+            bins one = {1};
+        }
     `endif
     `ifdef SSTC_SUPPORTED
         sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
@@ -107,19 +113,38 @@ covergroup ZawrsU_cg with function sample(ins_t ins);
     `endif
 
     // main coverpoints
-    cp_wrs_sto_timeout:     cross wrs_sto, mstatus_tw, mstatus_mie_zero, priv_mode_u, mie_zeros, lr_w;
-    cp_wrs_no_res:          cross mstatus_tw_zero, mstatus_mie_zero, priv_mode_u, mie_zeros, sc_w, wrs_ops;
+    cp_wrs_sto_timeout:     cross wrs_sto, mstatus_tw, mstatus_mie_zero, priv_mode_u, mie_zeros,
+        `ifdef S_SUPPORTED
+            mstatus_sie_zero,
+        `endif
+        lr_w;
+    cp_wrs_no_res:          cross mstatus_tw_zero, mstatus_mie_zero, priv_mode_u, mie_zeros, sc_w,
+        `ifdef S_SUPPORTED
+            mstatus_sie_zero,
+        `endif
+        wrs_ops;
     cp_wrs_resume:          cross mstatus_tw_zero,
         `ifdef SSTC_SUPPORTED
-            sie_stie_one, mstatus_sie, menvcfg_STCE_one,
+            sie_stie_one, menvcfg_STCE_one,
         `else
             mie_mtie_one,
         `endif
+        `ifdef S_SUPPORTED
+            mstatus_sie,
+        `endif
     mstatus_mie, priv_mode_u, wrs_ops, lr_w;
 
-    cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero, priv_mode_u, mie_zeros, wrs_nto, lr_w;
+    cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero, priv_mode_u, mie_zeros, wrs_nto,
+        `ifdef S_SUPPORTED
+            mstatus_sie_zero,
+        `endif
+        lr_w;
 
-    cp_wrs_no_mie:     cross mstatus_tw_one, mstatus_mie_one, mip_any_ones, priv_mode_u, mie_zeros, wrs_ops, lr_w;
+    cp_wrs_no_mie:     cross mstatus_tw_one, mstatus_mie_one, mip_any_ones, priv_mode_u, mie_zeros, wrs_ops,
+        `ifdef S_SUPPORTED
+            mstatus_sie_one,
+        `endif
+        lr_w;
 
 
 endgroup

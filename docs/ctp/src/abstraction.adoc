@@ -199,10 +199,10 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
 |CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
 |LW|00005a503|LW a0, 0(a1) - Load word from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
-|LW+4|00045a503|LW a0, 0(a1) - Load word from physical address in `a1`+4 with machine-mode privileges.  Returns result in `a0`.  Used to read upper half of `mtime` or access other memory-mapped I/O.
+|LW+4|00045a503|LW a0, 4(a1) - Load word from physical address in `a1`+4 with machine-mode privileges.  Returns result in `a0`.  Used to read upper half of `mtime` or access other memory-mapped I/O.
 |LD|00005b503|LD a0, 0(a1) - Load doubleword from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.  RV64 only
 |SW|00a5a023|SW a0, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
-|SW+4|00a5a223|SW a0, 0(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
+|SW+4|00a5a223|SW a0, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
 |SD|00a5b023|SD a0, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
 |===
 

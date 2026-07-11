@@ -1,175 +1,75 @@
 # AGENTS.md
 
-Canonical instructions for **any** AI coding agent working in this repository
-(Codex, Cursor, GitHub Copilot, Gemini, Claude, etc.).
+`CLAUDE.md` and `GEMINI.md` are symlinks to this file. Edit `AGENTS.md` only.
 
-This is the single source of truth. Agent-specific entry points are thin
-pointers to this file so every agent reads the same guidance.
+## Repo Shape
 
-**When you update guidance, edit `AGENTS.md` only.** The others are symlinks and
-update automatically.
+- This repo implements the ACT4 framework: generated RISC-V architectural certification tests are compiled into self-checking ELFs whose expected signatures come from Sail.
+- Python is a `uv` workspace with three packages: `framework/` exposes `act`, `generators/testgen/` exposes `testgen`, and `generators/coverage/` exposes `covergroupgen`.
+- `tests/rv32i`, `tests/rv32e`, `tests/rv64i`, `tests/rv64e`, `coverpoints/unpriv`, and `coverpoints/coverage` are generated but checked in. Do not hand-edit them; edit `testplans/`, `generators/`, or templates, then run `make clean-tests tests` and commit the regenerated output.
+- `work/` is build output. `make clean` removes most artifacts but preserves `extensions.txt` and `.validated`; `make clean-tests` removes generated rv32/rv64 test source dirs, generated unpriv coverpoints, generated coverage helpers, and stamps.
+- Configs live under `config/`. Any config directory with `run_cmd.txt` gets Make run targets for every ancestor directory name, such as `make spike-rv64-max`, `make spike`, or `make cores`.
 
+## Tooling
 
-## Overview
+- Prefer `mise`; `.mise.toml` pins `uv`, Ruby, Bundler, and `prek`. Without `mise`, `make` requires `uv` plus Ruby/Bundler for UDB.
+- Use `uv run` or Make targets for Python commands, not bare `python` or `pip`.
+- Keep Python 3.10-compatible. CI explicitly rewrites `.python-version` to `3.10` for the oldest-supported-version job, even if local `.python-version` is newer.
+- UDB Ruby deps are under `framework/src/act/data/Gemfile*`; first ACT/UDB use may run `bundle install`.
+- Python quality gates are `ruff check` and `pyright` from `pyproject.toml`; Ruff line length is 120, Pyright mode is `standard`.
+- `.editorconfig` uses 2 spaces generally, 4 spaces for Python, and tabs only for `Makefile` recipes.
+- Use `prek`, not a guessed hook runner: `mise run prek-install` installs hooks and `mise run prek` runs all hooks. The hooks also forbid ambiguous `.align`; use `.p2align` or `.balign`.
+- New source files need an SPDX license header.
 
-This is the RISC-V Architectural Certification Tests (ACTs) repository implementing the **ACT4 Framework** — a Python tool for generating, compiling, and running self-checking ELF tests that certify RISC-V implementations against the ISA specification. Tests are generated from CSV testplans and compiled using the RISC-V Sail reference model to compute expected results.
+## Commands
 
-## Common Commands
+- `make help`: list current targets and knobs.
+- `make tests`: generate assembly tests and generated coverpoints only; no compiler or Sail run.
+- `make clean-tests tests`: force regeneration when generator/template/testplan changes would otherwise be hidden by stamps.
+- `make`: generate tests and build ELFs for default `CONFIG_FILES` (`config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml`).
+- `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build one DUT config.
+- `EXTENSIONS=I,M,Zifencei make tests` or `EXTENSIONS=I make`: restrict generation/build to suites. `EXCLUDE_EXTENSIONS=Sm make tests` applies a negative filter after `EXTENSIONS`.
+- `make spike-rv64-max`, `make spike`, `make qemu-rv32-max`: build ELFs and run configs discovered from `run_cmd.txt`.
+- `./run_tests.py "$(cat config/spike/spike-rv64-max/run_cmd.txt)" work/spike-rv64-max/elfs`: rerun already-built ELFs for one config.
+- `FAST=True make`: skip objdump for faster ELF builds. `DEBUG=True make EXTENSIONS=<suite>` emits signature objdump, Sail traces, and trap reports. `VERBOSE=True` implies debug and serializes jobs.
+- `JOBS=1 make ...` is useful for hangs; `make -jN` is also honored.
+- `make coverage EXTENSIONS=<suite>`: focused coverage build. Full `make coverage` is expensive and uses `COVERAGE_CONFIG_FILES` (`config/sail/sail-rv64-max` and `sail-rv32-max`).
+- `make vector-tests`: run the standalone vector generators. `EXTENSIONS`/`EXCLUDE_EXTENSIONS` only filter unpriv vector generation; priv vector tests are always generated.
+- `make lint`, `make lint-fix`, `make format`: Ruff/Pyright checks and formatting.
+- Docs builds run from subdirs: `cd docs/ctp && make docker-pull-latest && make -j6` or `cd docs/crd && make docker-pull-latest && make -j6`. They use the `docs/docs-resources` submodule and Docker unless `SKIP_DOCKER=true`.
 
-All commands run from the repo root. The framework uses `mise` to manage tool dependencies (Ruby/UDB and Python/uv).
+## Test Generation
 
-```bash
-# Generate assembly tests (no compiler/Sail needed)
-make tests
+- Unprivileged tests are CSV-driven: `testplans/<suite>.csv` plus coverpoint templates under `generators/coverage/src/covergroupgen/templates/` and Python generators under `generators/testgen/src/testgen/coverpoints/`.
+- Privileged tests have no CSV input; generators live in `generators/testgen/src/testgen/priv/extensions/`, generated `.S` outputs live under `tests/priv/`, and hand-written coverage lives under `coverpoints/priv/`.
+- Test YAML headers are strict. Recognized keys are only `REQUIRED_EXTENSIONS`, `MARCH`, and optional `params`; unknown keys fail validation. Headers use `START_TEST_CONFIG`/`END_TEST_CONFIG` markers before assembly.
+- Test terminology matters: a testcase is one coverpoint bin check, a `TestChunk` is an unsplittable group of testcases, a test file is one generated `.S`, and a test suite is the directory/extension group.
+- CSV columns: `Instruction`, `Type`, `RV32`, `RV64`, then coverpoints. `Type` must match a registered formatter; coverpoint columns must match registered generators. Use `testplans/I.csv` as the reference shape.
+- Registry files are auto-discovered by decorators; do not add manual registration. Files whose names start with `_` are skipped by discovery.
 
-# Generate and compile self-checking ELFs for default configs (spike rv32/rv64)
-make
+| Subsystem | Decorator | Directory |
+| --- | --- | --- |
+| Coverpoint generators | `@add_coverpoint_generator("cp_name")` | `generators/testgen/src/testgen/coverpoints/` |
+| Instruction formatters | `@add_instruction_formatter("TYPE", config)` | `generators/testgen/src/testgen/formatters/types/` |
+| Priv test generators | `@add_priv_test_generator("Suite", ...)` | `generators/testgen/src/testgen/priv/extensions/` |
 
-# Run with a specific DUT config
-CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make
+- Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
+- Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.
+- In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique. Instructions that may trap need a skipped instruction after them; use CSR macros (`CSRRW`, `CSRRS`, `CSRR`, etc.) instead of raw CSR instructions because implementations can trap on different CSRs.
 
-# Run tests on Spike simulator
-make spike            # all spike configs
-make spike-rv32-max   # single config (targets auto-generated from config/<sim>/<name>/)
-make spike-rv64-max   # available: spike-{rv32-max,rv64-max,RVI20U32,RVI20U64}, qemu-*
+## Configs And CI
 
-# Per-config results: work/<config>/summary.log (grep for PASSED/FAILED)
+- A runnable config directory needs `test_config.yaml`, UDB YAML, `rvmodel_macros.h`, `link.ld`, `sail.json`, `rvtest_config.h`, and `rvtest_config.svh`. Paths in `test_config.yaml` are relative to that file.
+- Linker scripts must keep `.text.rvmodel` after `.data`; otherwise DUT and reference-model ELFs can disagree on data addresses. If the ELF base address changes, update the Sail memory map in `sail.json`.
+- `run_cmd.txt` contains one shell command; `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only simulator flags, `__TRACEFILE__` for separate trace logs, and `__SUMMARYFILE__` when console summaries must be redirected away from trace output.
+- CI matrix discovery uses `config/*/ci.yaml` plus each `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py`; generated tests are used to weight shards.
+- CI checks generated files with `make clean-tests tests` and diffs `tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage`.
+- PRs branch from and target `act4`; docs release workflow also triggers from `act4`.
 
-# Force regeneration after touching generators (stamps otherwise short-circuit)
-make clean-tests && make tests
+## Debugging
 
-# Lint and type-check Python
-make lint          # ruff check + pyright
-make lint-fix      # ruff check --fix
-make format        # ruff format
-
-# Clean build artifacts (preserves extensions.txt)
-make clean
-
-# Clean generated test sources
-make clean-tests
-
-# Limit test generation to specific extensions
-EXTENSIONS=I,M,Zifencei make tests
-
-# Exclude specific extensions
-EXCLUDE_EXTENSIONS=ExceptionsSm make tests
-
-# Coverage generation (generates SystemVerilog fcov reports)
-make coverage
-```
-
-## Git Workflow
-
-PRs target the `act4` branch (not `dev` or `main`). Use a separate feature branch per change. PRs are squash-merged.
-
-## Tool Management
-
-- **Tool manager**: `mise` — manages both Ruby (for UDB) and uv/Python. Config in `.mise.toml`.
-- **Ruby**: 3.2+ (for the `udb` gem). Dependencies locked in `Gemfile` / `Gemfile.lock`. Auto-installed by the `act` package when first needed via `bundle install`.
-- **Python**: `uv` (fast Python package manager); venv at `.venv/` (auto-managed). Always use `uv run` to execute Python scripts or tools — never invoke `python` directly.
-- **Python version**: 3.10+
-- **Key Python packages**: pydantic, pyjson5, ruamel-yaml, typer
-
-## Python Project Structure
-
-A `uv` workspace with three packages (defined in the top-level `pyproject.toml`):
-
-- **`framework/`** (`act` package) — The ACT4 framework CLI. Entry point: `act`.
-- **`generators/testgen/`** (`testgen` package) — CLI (`testgen`) that reads CSV testplans and generates RISC-V assembly test files.
-- **`generators/coverage/`** (`covergroupgen` package) — Generates `.svh` covergroup files from SystemVerilog templates.
-
-Additionally, **`generators/ctp/`** contains standalone scripts for CTP documentation generation (PEP 723 inline metadata, run with `uv run`).
-
-## Architecture and Data Flow
-
-### Privileged vs. Unprivileged Tests
-
-- **Unprivileged**: CSV-driven. `testplans/<EXT>.csv` → `testgen` → `.S` files in `tests/rv{32,64}{i,e}/`. Vector extensions use EFFEW expansion (e.g., `Vx.csv` → `Vx8`, `Vx16`, `Vx32`, `Vx64`).
-- **Privileged**: No CSV. Python generators in `generators/testgen/src/testgen/priv/extensions/` → `tests/priv/`.
-- **No-signature tests**: a test header may set `NEEDS_SIGNATURE: false` (optional key, defaults to true) to skip the signature/reference-model pipeline and compile directly to the final ELF. Coverage traces still work (the final ELF runs on Sail like any other test). Intended for fully self-checking tests: all handwritten C tests (required — validation errors otherwise) and, in the future, self-checking `.S` tests.
-- **Handwritten C tests** (e.g. Breker TREK in `tests/trek/Trek/`): self-checking `.c` files with the standard YAML test-config header (including `NEEDS_SIGNATURE: false`) inside a `/* ... */` block comment. Discovered like `.S` tests (any `tests/**/<Suite>/*.c`); compiled once directly to an ELF with the shared runtime in `tests/env/` (`c_test_start.S`, `c_test_support.c`). `main()` returning 0 reports PASS; nonzero or `trek_error()` reports FAIL. All DUT interfacing goes through the config's `RVMODEL_*` macros; per-hart stacks and `.bss` come from the config `link.ld`. Prototypes for tests: `tests/env/c_test.h`.
-
-### Terminology Hierarchy
-
-Do not confuse these terms:
-
-- **testcase**: Smallest unit — individual test checking a single bin of a coverpoint.
-- **test chunk** (`TestChunk`): Unsplittable group of testcases — building block of test files.
-- **test file**: A complete `.S` file compiled into an ELF, made of one or more test chunks.
-- **test suite**: All test files in a given directory (one extension/feature).
-
-### Generated vs. Hand-Written Files
-
-Never manually edit generated files — they are overwritten by `make tests`. See `.claude/rules/generated-files.md` for the full list and where to edit instead.
-
-### Registry/Decorator Pattern
-
-The codebase uses a consistent auto-discovery registry pattern across three subsystems:
-
-| Subsystem              | Decorator                                    | Auto-discovered Directory                        |
-| ---------------------- | -------------------------------------------- | ------------------------------------------------ |
-| Coverpoint generators  | `@add_coverpoint_generator("cp_name")`       | `testgen/coverpoints/` (+ `special/`, `vector/`) |
-| Instruction formatters | `@add_instruction_formatter("TYPE", config)` | `testgen/formatters/types/`                      |
-| Priv test generators   | `@add_priv_test_generator("Suite", ...)`     | `testgen/priv/extensions/`                       |
-
-Files are auto-imported via `discover_and_import_modules()`. Files starting with `_` are skipped. No manual registration needed. Use the agents in `.claude/agents/` for step-by-step workflows.
-
-### Testplan CSV Format
-
-```csv
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cp_rd,...
-add,R,x,x,x,x,x,x,...
-addi,I,x,x,x,x,,x,...
-```
-
-- Mark XLEN support with `x`. Mark applicable coverpoints with `x` (or variant suffix like `20bit`).
-- `cp_*` — single-variable coverpoints. `cr_*` — cross-coverage. `cmp_*` — register comparisons. `cp_custom*` — special/custom.
-- `Type` must match a registered instruction formatter. Coverpoint columns must match a registered generator.
-- See `testplans/I.csv` for a complete reference.
-
-## Test Output and Debugging
-
-- **PASSED**: `RVCP-SUMMARY: Test File "<test_name.S>": PASSED`
-- **FAILED**: `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`
-
-**Triage order**: config mismatch → Sail config → objdump → DUT bug.
-
-## Common Pitfalls
-
-- **Editing generated files**: Edit generators instead.
-- **Terminology confusion**: "testcase" is a single bin check, not a file.
-- **Missing SPDX header**: Every new source file needs `# SPDX-License-Identifier: Apache-2.0`.
-- **Forgetting `make lint`**: Always run before committing. ruff + pyright must both pass.
-- **Wrong PR target**: PRs go to `act4`, not `dev` or `main`.
-- **Using `python` directly**: Always use `uv run` instead.
-- **Large generated `.S` files exceed the editor read limit**: read in ranges (offset/limit) or use `grep` (e.g. `F-feq.s-00.S` is ~1 MB).
-- **PMP encoding across config files** (UDB yaml vs `sail.json` vs `whisper.json`). The three files use _different_ encodings of the PMP granularity and they must all agree:
-  - UDB yaml `PMP_GRANULARITY` = `log2(granularity_in_bytes)` (i.e. **spec G + 2**). E.g. 4KB minimum → `PMP_GRANULARITY: 12`. This is what test sources see as `UDB_PMP_GRANULARITY`.
-  - `sail.json` `pmp.grain` = spec G (granularity = `2^(G+2)` bytes). Same 4KB → `"grain": 10`.
-  - `whisper.json` `physical_memory_protection_grain` = granularity in bytes. Same 4KB → `"0x1000"`.
-  - Also keep `NUM_PMP_ENTRIES` (yaml) ↔ `pmp.count` (sail.json) in sync. If UDB `NUM_PMP_ENTRIES: 0` but `sail.json` `pmp.count > 0`, `tests/env/rvtest_setup.h` skips the PMP-allow-all setup and S/U fetches trap-loop.
-  - When the simulator config files disagree on the canonical granularity, treat the actual simulator config (e.g. `whisper.json`) as the source of truth and adjust the UDB yaml + `sail.json` to match — _not_ the reverse.
-
-## Maintaining These Instructions
-
-Keep instructions up to date. Whenever you learn something new about this
-codebase, make a mistake better instructions would have prevented, or discover a
-pattern worth documenting, update the right place:
-
-- **`AGENTS.md`** (this file) — project overview, architecture, commands, pitfalls. Shared by all agents.
-- **`.claude/rules/`** — path-scoped conventions and package references (Claude Code; Cursor analog: `.cursor/rules/`, Copilot: `.github/instructions/`).
-- **`.claude/agents/`** — step-by-step workflows for common development tasks.
-- **`.claude/skills/`** — repeatable commands (`/lint-fix`, `/gen-tests`, `/verify-ext`).
-- **`.claude/hooks/`** — automated guards and formatters.
-
-If you hit a pitfall, add it to **Common Pitfalls**. If a convention prevented a
-mistake, it is working — if it did not, improve it.
-
-## Contributing
-
-See `CONTRIBUTING.md` for full details. Key points:
-
-- `make lint` must pass
-- Add `# SPDX-License-Identifier: Apache-2.0` to new files
-- Pre-commit hooks are configured: `pre-commit run --all-files`
+- Per-config run summaries are in `work/<config>/summary.log`; per-test simulator logs are in `work/<config>/logs/`.
+- Passing tests print lines matching `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`; failures use `TEST FAILED`. `SIGRUN` means the ELF was not built self-checking.
+- With `DEBUG=True`, ACT build artifacts in `work/<config>/build/` include `.sig.log` Sail traces and `.sig.trap_report` files.
+- Triage failures in this order: config/UDB mismatch, Sail config mismatch, generated objdump/trace, then DUT behavior.
+- PMP settings use different encodings and must agree: UDB `PMP_GRANULARITY` is `log2(bytes)` (`G + 2`), `sail.json` `pmp.grain` is spec `G`, and `whisper.json` `physical_memory_protection_grain` is bytes. Also keep UDB `NUM_PMP_ENTRIES` in sync with `sail.json` `pmp.count`.

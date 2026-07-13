@@ -73,18 +73,19 @@
   .global cleanup_epilogs       // ****ALERT: tests must populate x1 with a point to the end of regular sig area TODO: Is this still true?
   /**** MPRV must be clear here !!! ****/
 
-  // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
   // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
   rvtest_code_end:
-    #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_GOTO_MMODE
-    #endif
 
-  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
+  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
+  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
+  // because cleanup_epilogs is also reached from abort_test and from the default
+  // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
+  // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
+      RVTEST_GOTO_MMODE
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code

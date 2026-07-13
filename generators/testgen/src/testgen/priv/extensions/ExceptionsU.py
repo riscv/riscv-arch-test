@@ -65,7 +65,6 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsU",
     required_extensions=["U"],
-    extra_defines=["#define SKIP_MEPC"],  # hangs otherwise
 )
 def make_exceptionsu(test_data: TestData) -> list[TestChunk]:
     """Main entry point for U exception test generation."""

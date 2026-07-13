@@ -9,8 +9,13 @@
 # InterruptsSm excluded due to Whisper bug
 # 1. setting mtimecmp equal to mtime using sd does not trigger machine timer interrupt: https://github.com/tenstorrent/whisper/issues/26
 # Smstateen will be added back once issue related srmcfg in whisper is resolved
+# S excluded due to Whisper bug (to be reported upstream): SRET that drops below M-mode must
+# clear mstatus.MPRV (priv spec 3.1.6.3), but whisper's execSret applies the clear through the
+# SSTATUS shadow view whose write mask excludes MPRV, so the clear is silently dropped
+# The MRET path writes MSTATUS directly and is unaffected. The S suite's
+# cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
+exclude_extensions: "S,Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

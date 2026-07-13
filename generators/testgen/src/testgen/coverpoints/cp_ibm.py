@@ -28,9 +28,9 @@ IBM_DATA_DIR = Path(__file__).resolve().parent.parent / "cover-float" / "tests" 
 # Valid rounding mode names accepted in the frm column of IBM CSV files.
 VALID_FRM_NAMES = frozenset({"rne", "rtz", "rdn", "rup", "rmm"})
 
-# Input operand value columns that may appear in an IBM CSV. The subset actually
-# required for a given instruction is determined from its formatter config.
-INPUT_VALUE_KEYS = frozenset({"fs1val", "fs2val", "fs3val", "rs1val", "rs2val", "rs3val", "fdval", "rdval", "fflags"})
+# Value columns that may appear in an IBM CSV. The subset actually required for a
+# given instruction is determined from its formatter config.
+CSV_VALUE_KEYS = frozenset({"fs1val", "fs2val", "fs3val", "rs1val", "rs2val", "rs3val", "fdval", "rdval", "fflags"})
 
 # Operations that do not need a rounding mode covered in this coverpoint
 NO_ROUNDING_MODE_OPS = frozenset({"fclass", "feq", "fle", "flt", "fmax", "fmin", "fsgnj", "fsgnjn", "fsgnjx"})
@@ -52,15 +52,11 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         raise ValueError(f"cp_ibm coverpoint must be of the form 'cp_ibm_b<N>', got {coverpoint!r}")
     group = coverpoint[len("cp_ibm_") :]  # extract IBM group (b1, b2, etc.)
 
-    # TODO: Remove this when the b14 covergroup fix gets merged
-    if group == "b14":
-        return []
-
     common_name = instr_name[: instr_name.find(".")]
     rounding_op = frozenset({"frm"}) if common_name not in NO_ROUNDING_MODE_OPS else frozenset({})
 
     required_params = get_instr_type_config(instr_type).required_params or set()
-    required_input_cols = INPUT_VALUE_KEYS & required_params | rounding_op
+    required_cols = CSV_VALUE_KEYS & required_params | rounding_op
 
     data_file = IBM_DATA_DIR / instr_name / f"{group.upper()}.csv"
     if not data_file.is_file():
@@ -74,16 +70,16 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         header = [col.strip() for col in reader.fieldnames]
         reader.fieldnames = header
 
-        missing = required_input_cols - set(header)
+        missing = required_cols - set(header)
         if missing:
             raise ValueError(
                 f"{data_file}: missing required operand columns for {instr_name} ({instr_type}): {sorted(missing)}"
             )
-        unknown = set(header) - INPUT_VALUE_KEYS - {"frm"}
+        unknown = set(header) - CSV_VALUE_KEYS - {"frm"}
         if unknown:
             raise ValueError(f"{data_file}: unrecognized columns in header: {sorted(unknown)}")
 
-        input_cols_in_header = [col for col in header if col in INPUT_VALUE_KEYS]
+        input_cols_in_header = [col for col in header if col in CSV_VALUE_KEYS]
 
         for row in reader:
             lineno = reader.line_num
@@ -93,24 +89,26 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 raise ValueError(
                     f"{data_file}:{lineno}: invalid frm value {frm_mode!r} (must be one of {sorted(VALID_FRM_NAMES)})"
                 )
+            if frm_mode == "":
+                frm_mode = None
 
             values: dict[str, int] = {}
             for col in input_cols_in_header:
                 cell = (row.get(col) or "").strip()
                 if not cell:
-                    if col in required_input_cols:
+                    if col in required_cols:
                         raise ValueError(f"{data_file}:{lineno}: empty cell for required column '{col}'")
                     continue
                 values[col] = int(cell, 0)
 
-            params = generate_random_params(test_data, instr_type, exclude_regs=[0], **values)
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode, **values)
 
             operand_desc = " ".join(
                 f"{key} = {(test_data.xlen_format_str if key.startswith('rs') else test_data.flen_format_str).format(v)}"
                 for key, v in values.items()
             )
-            desc = f"{coverpoint}_b{group} ({data_file.name}:{lineno} Test source {operand_desc}, frm = {frm_mode})"
-            bin_name = f"{coverpoint}_b{group}_{lineno}"
+            desc = f"{coverpoint} ({data_file.name}:{lineno} Test source {operand_desc}, frm = {frm_mode})"
+            bin_name = f"{lineno}"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             test_chunks.append(tc)
             return_test_regs(test_data, params)

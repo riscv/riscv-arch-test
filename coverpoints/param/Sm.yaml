@@ -8,12 +8,8 @@ parameter_definitions:
     coverpoint: ["cp_mcsr_access"]
     effect: ["misa bin results depend on parameter"]
   - name: TIME_CSR_IMPLEMENTED
-    coverpoint:
-      ["cp_mtime_write", "cp_mtime_wraparound", "cp_mtimeh_wraparound"]
-    effect:
-      [
-        "coverpoint only applies if parameter is True. cp_mtimeh_wraparound additionally requires XLEN=32",
-      ]
+    coverpoint: ["cp_mtime_write"]
+    effect: ["coverpoint only applies if parameter is True"]
   - name: COUNTINHIBIT_EN
     coverpoint: ["cp_inhibit"]
     effect:
@@ -38,10 +34,3 @@ parameter_definitions:
   - name: VENDOR_ID_OFFSET
     coverpoint: ["cp_mcsr_access"]
     effect: ["`mvendorid` value"]
-  - name: RVMODEL_MTIME_ADDRESS
-    coverpoint:
-      ["cp_mtime_write", "cp_mtime_wraparound", "cp_mtimeh_wraparound"]
-    effect:
-      [
-        "if not implemented, `mtime` and `mtimeh` are read-only zero. cp_mtimeh_wraparound additionally requires XLEN=32",
-      ]

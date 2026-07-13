@@ -12,6 +12,7 @@ Reservation sets are contiguous, naturally aligned, and at most 64 bytes.
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -23,7 +24,7 @@ def _generate_za64rs_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Za64rs: Reservation set size test",
         ),
         "",
@@ -54,8 +55,10 @@ def _generate_za64rs_tests(test_data: TestData) -> list[str]:
     "Za64rs",
     required_extensions=["Zalrsc", "Za64rs"],
 )
-def make_za64rs(test_data: TestData) -> list[str]:
+def make_za64rs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Za64rs reservation-set size extension."""
-    lines: list[str] = []
-    lines.extend(_generate_za64rs_tests(test_data))
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_za64rs_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

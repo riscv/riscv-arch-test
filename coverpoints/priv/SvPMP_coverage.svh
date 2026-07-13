@@ -22,7 +22,7 @@ covergroup SvPMP_cg with function sample(ins_t ins);
         wildcard bins leaflvl_s = {8'b11?01111};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
@@ -43,7 +43,7 @@ covergroup SvPMP_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
@@ -65,7 +65,7 @@ covergroup SvPMP_cg with function sample(ins_t ins);
     `endif
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
         mode: coverpoint  ins.current.csr[CSR_SATP][63:60] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};

@@ -10,4 +10,5 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+    Zvfbfmin_vfncvtbf16_f_f_w_cg = new(); Zvfbfmin_vfncvtbf16_f_f_w_cg.set_inst_name("obj_Zvfbfmin_vfncvtbf16_f_f_w");
     Zvfbfmin_vfwcvtbf16_f_f_v_cg = new(); Zvfbfmin_vfwcvtbf16_f_f_v_cg.set_inst_name("obj_Zvfbfmin_vfwcvtbf16_f_f_v");

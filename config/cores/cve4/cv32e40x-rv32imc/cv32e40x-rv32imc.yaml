@@ -1,0 +1,206 @@
+# Copyright (c) 2026, Marin Radic, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40X v0.10.0, a configuration of the CORE-V project.
+# Manual: https://github.com/openhwgroup/cv32e40x/tree/main/docs/user_manual
+# Default parameters: RV32=RV32I, M_EXT=M, A_EXT=A_NONE, B_EXT=B_NONE, X_EXT=0,
+#                     NUM_MHPMCOUNTERS=1, PMA_NUM_REGIONS=0 (no explicit PMA regions),
+#                     PMP is not implemented (no PMP CSRs).
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40x_rv32imc
+description: CV32E40X v0.10.0 (CORE-V security) - RV32IMC default configuration (A_EXT=NONE, B_EXT=NONE, X_EXT=0)
+implemented_extensions: # VERIFIED against User Manual (Introduction)
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
+  - { name: Zcmp, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
+  - { name: Zcmt, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction
+  - { name: Zkt, version: "= 1.0.0" } # VERIFIED -- always enabled per User Manual, Introduction; data-independent execution latency
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.12.0" } # VERIFIED -- references Priv spec v20211203 (v1.12)
+
+params:
+  # XLEN parameters (VERIFIED -- User Manual, Introduction; RV32I base ISA)
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32 # VERIFIED -- 32-bit addressing, no virtual memory
+
+  # MISA (VERIFIED -- User Manual, Control and Status Registers)
+  MUTABLE_MISA_M: false # VERIFIED -- M bit hardwired based on M_EXT parameter; not writable at runtime
+  MUTABLE_MISA_C: false # VERIFIED -- C bit always hardwired to 1
+  MISA_CSR_IMPLEMENTED: true # VERIFIED -- MISA CSR (0x301) in CSR map
+
+  # endianness (VERIFIED -- User Manual, Introduction: little-endian architecture)
+  M_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (VERIFIED -- User Manual, Exceptions and Interrupts)
+  TRAP_ON_ECALL_FROM_M: true # VERIFIED -- ecall always generates Environment call from M-Mode exception
+  TRAP_ON_EBREAK: true # VERIFIED -- ebreak generates Breakpoint exception
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED -- User Manual, Exceptions and Interrupts: illegal instruction raised for unimplemented instructions
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED -- undefined encodings raise illegal instruction exception
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED -- reads/writes to unimplemented CSRs raise illegal instruction exception
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED -- WARL fields silently mask writes; no illegal-value trap
+
+  # MTVAL reporting (VERIFIED -- User Manual, Control and Status Registers, mtval: WARL(0x0) hardwired to 0)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0
+
+  # Misaligned load/store support (VERIFIED -- User Manual, Load Store Unit)
+  MISALIGNED_LDST: true # VERIFIED -- misaligned accesses supported in hardware for Main memory regions (two bus transactions)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED -- no misaligned exception in main memory; I/O raises access fault (code 5/7)
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED -- two separate bus transactions, no atomicity guarantee
+  MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED -- lowest address transaction performed first (User Manual, Load Store Unit)
+
+  # CSR / implementation IDs (VERIFIED -- User Manual, Control and Status Registers)
+  ARCH_ID_VALUE: 0x00000014 # VERIFIED -- marchid = 0x14 (decimal 20) per CSR doc reset value 0x0000_0014
+  IMP_ID_VALUE: 0x0 # VERIFIED -- mimpid = 0x0 with mimpid_patch_i=0 (default); MAJOR=0, MINOR=0, PATCH=0
+  VENDOR_ID_BANK: 0xC # VERIFIED -- mvendorid[31:7] = 0xC (OpenHW JEDEC bank 13); CSR reset value 0x0000_0602
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED -- mvendorid[6:0] = 0x2; CSR reset value 0x0000_0602
+  CONFIG_PTR_ADDRESS: 0 # VERIFIED -- mconfigptr hardwired to 0x0 (CSR doc reset value 0x0000_0000)
+
+  # MTVEC (VERIFIED -- User Manual, Control and Status Registers, mtvec CLIC==0 section)
+  MTVEC_MODES: [0, 1] # VERIFIED -- MODE[1:0] WARL(0x0, 0x1); 0=non-vectored CLINT, 1=vectored CLINT
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED -- MODE[1] hardwired 0, MODE[0] writable; only values 0/1 retained
+  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED -- User Manual csr-mtvec: BASE[31:7] WARL (writable), BASE[6:2] WARL(0x0); RTL CSR_BASIC_MTVEC_MASK=0xFFFFFF81 (bit 7 writable); 2^7 = 128-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 128 # same 128-byte alignment constraint applies in direct mode
+
+  # Sm params
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"
+  MARCHID_IMPLEMENTED: true # VERIFIED -- marchid CSR (0xF12) in CSR map
+  MIMPID_IMPLEMENTED: true # VERIFIED -- mimpid CSR (0xF13) in CSR map
+  PMA_GRANULARITY: 2 # VERIFIED -- pma.rst: word_addr_low/high hold address bits[33:2]; PMA region boundaries are 4-byte (word) aligned; 2^2 = 4 bytes
+  NUM_PMP_ENTRIES: 0 # VERIFIED -- no pmpcfg/pmpaddr CSRs in CSR map; PMP not implemented in CV32E40X
+
+  # Zcmt params (VERIFIED -- User Manual, Control and Status Registers, jvt section)
+  JVT_BASE_TYPE: mask # VERIFIED -- bits[31:6] writable via WARL mask; 64-byte aligned
+  JVT_READ_ONLY: false # VERIFIED -- jvt is writable (URW per CSR map)
+  JVT_BASE_MASK: 0x7FFFFFC0 # VERIFIED -- jvt BASE[31:6] writable (bit 31 excluded per UDB RV32 schema constraint)
+
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: true # VERIFIED -- time/timeh CSRs (0xC01/0xC81) listed in CSR map; shadow of time_i input
+
+  # HPM Counters (VERIFIED -- User Manual, Performance Counters)
+  # NUM_MHPMCOUNTERS=1 (default) -- only mhpmcounter3 active; counters 4-31 hardwired to 0
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # VERIFIED -- events 0-15 per User Manual, Performance Counters event table
+  HPM_COUNTER_EN: # VERIFIED -- NUM_MHPMCOUNTERS=1; only mhpmcounter3 active; others read-only zero
+    [
+      false, # index 0 (CY -- must be false per UDB schema)
+      false, # index 1 (TM -- must be false per UDB schema)
+      false, # index 2 (IR -- must be false per UDB schema)
+      true, # index 3 (MHPMCOUNTER3 -- only active counter with NUM_MHPMCOUNTERS=1)
+      false, # 4
+      false,
+      false,
+      false, # 7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31 (unimplemented)
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: true # VERIFIED -- mcountinhibit CSR (0x320) in CSR map; inhibit bits for mcycle/minstret/mhpmcounterX
+
+  COUNTINHIBIT_EN: # VERIFIED -- User Manual, Performance Counters: bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX
+    [
+      true, # index 0 (MCYCLE inhibit -- supported)
+      false, # index 1 (TM -- always false per UDB)
+      true, # index 2 (MINSTRET inhibit -- supported)
+      true, # index 3 (MHPMCOUNTER3 inhibit -- supported)
+      false, # 4
+      false,
+      false,
+      false, # 7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31 (unimplemented)
+    ]
+  MCOUNTENABLE_EN: # VERIFIED -- CV32E40X has no U/S mode; mcounteren is WARL(0x0) hardwired; no counter is delegatable
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+# end

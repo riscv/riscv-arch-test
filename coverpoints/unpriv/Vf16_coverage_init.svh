@@ -39,27 +39,13 @@
     Vf16_vfmv_f_s_cg = new(); Vf16_vfmv_f_s_cg.set_inst_name("obj_Vf16_vfmv_f_s");
     Vf16_vfmv_s_f_cg = new(); Vf16_vfmv_s_f_cg.set_inst_name("obj_Vf16_vfmv_s_f");
     Vf16_vfmv_v_f_cg = new(); Vf16_vfmv_v_f_cg.set_inst_name("obj_Vf16_vfmv_v_f");
-`ifndef ELEN16
     Vf16_vfncvt_f_x_w_cg = new(); Vf16_vfncvt_f_x_w_cg.set_inst_name("obj_Vf16_vfncvt_f_x_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_f_xu_w_cg = new(); Vf16_vfncvt_f_xu_w_cg.set_inst_name("obj_Vf16_vfncvt_f_xu_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_rod_f_f_w_cg = new(); Vf16_vfncvt_rod_f_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rod_f_f_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_rtz_x_f_w_cg = new(); Vf16_vfncvt_rtz_x_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rtz_x_f_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_rtz_xu_f_w_cg = new(); Vf16_vfncvt_rtz_xu_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rtz_xu_f_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_x_f_w_cg = new(); Vf16_vfncvt_x_f_w_cg.set_inst_name("obj_Vf16_vfncvt_x_f_w");
-`endif
-`ifndef ELEN16
     Vf16_vfncvt_xu_f_w_cg = new(); Vf16_vfncvt_xu_f_w_cg.set_inst_name("obj_Vf16_vfncvt_xu_f_w");
-`endif
     Vf16_vfnmacc_vf_cg = new(); Vf16_vfnmacc_vf_cg.set_inst_name("obj_Vf16_vfnmacc_vf");
     Vf16_vfnmacc_vv_cg = new(); Vf16_vfnmacc_vv_cg.set_inst_name("obj_Vf16_vfnmacc_vv");
     Vf16_vfnmadd_vf_cg = new(); Vf16_vfnmadd_vf_cg.set_inst_name("obj_Vf16_vfnmadd_vf");
@@ -87,87 +73,33 @@
     Vf16_vfsqrt_v_cg = new(); Vf16_vfsqrt_v_cg.set_inst_name("obj_Vf16_vfsqrt_v");
     Vf16_vfsub_vf_cg = new(); Vf16_vfsub_vf_cg.set_inst_name("obj_Vf16_vfsub_vf");
     Vf16_vfsub_vv_cg = new(); Vf16_vfsub_vv_cg.set_inst_name("obj_Vf16_vfsub_vv");
-`ifndef ELEN16
     Vf16_vfwadd_vf_cg = new(); Vf16_vfwadd_vf_cg.set_inst_name("obj_Vf16_vfwadd_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwadd_vv_cg = new(); Vf16_vfwadd_vv_cg.set_inst_name("obj_Vf16_vfwadd_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwadd_wf_cg = new(); Vf16_vfwadd_wf_cg.set_inst_name("obj_Vf16_vfwadd_wf");
-`endif
-`ifndef ELEN16
     Vf16_vfwadd_wv_cg = new(); Vf16_vfwadd_wv_cg.set_inst_name("obj_Vf16_vfwadd_wv");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_f_f_v_cg = new(); Vf16_vfwcvt_f_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_f_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_f_x_v_cg = new(); Vf16_vfwcvt_f_x_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_x_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_f_xu_v_cg = new(); Vf16_vfwcvt_f_xu_v_cg.set_inst_name("obj_Vf16_vfwcvt_f_xu_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_rtz_x_f_v_cg = new(); Vf16_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_rtz_x_f_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_rtz_xu_f_v_cg = new(); Vf16_vfwcvt_rtz_xu_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_rtz_xu_f_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_x_f_v_cg = new(); Vf16_vfwcvt_x_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_x_f_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwcvt_xu_f_v_cg = new(); Vf16_vfwcvt_xu_f_v_cg.set_inst_name("obj_Vf16_vfwcvt_xu_f_v");
-`endif
-`ifndef ELEN16
     Vf16_vfwmacc_vf_cg = new(); Vf16_vfwmacc_vf_cg.set_inst_name("obj_Vf16_vfwmacc_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwmacc_vv_cg = new(); Vf16_vfwmacc_vv_cg.set_inst_name("obj_Vf16_vfwmacc_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwmsac_vf_cg = new(); Vf16_vfwmsac_vf_cg.set_inst_name("obj_Vf16_vfwmsac_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwmsac_vv_cg = new(); Vf16_vfwmsac_vv_cg.set_inst_name("obj_Vf16_vfwmsac_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwmul_vf_cg = new(); Vf16_vfwmul_vf_cg.set_inst_name("obj_Vf16_vfwmul_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwmul_vv_cg = new(); Vf16_vfwmul_vv_cg.set_inst_name("obj_Vf16_vfwmul_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwnmacc_vf_cg = new(); Vf16_vfwnmacc_vf_cg.set_inst_name("obj_Vf16_vfwnmacc_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwnmacc_vv_cg = new(); Vf16_vfwnmacc_vv_cg.set_inst_name("obj_Vf16_vfwnmacc_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwnmsac_vf_cg = new(); Vf16_vfwnmsac_vf_cg.set_inst_name("obj_Vf16_vfwnmsac_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwnmsac_vv_cg = new(); Vf16_vfwnmsac_vv_cg.set_inst_name("obj_Vf16_vfwnmsac_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwredosum_vs_cg = new(); Vf16_vfwredosum_vs_cg.set_inst_name("obj_Vf16_vfwredosum_vs");
-`endif
-`ifndef ELEN16
     Vf16_vfwredusum_vs_cg = new(); Vf16_vfwredusum_vs_cg.set_inst_name("obj_Vf16_vfwredusum_vs");
-`endif
-`ifndef ELEN16
     Vf16_vfwsub_vf_cg = new(); Vf16_vfwsub_vf_cg.set_inst_name("obj_Vf16_vfwsub_vf");
-`endif
-`ifndef ELEN16
     Vf16_vfwsub_vv_cg = new(); Vf16_vfwsub_vv_cg.set_inst_name("obj_Vf16_vfwsub_vv");
-`endif
-`ifndef ELEN16
     Vf16_vfwsub_wf_cg = new(); Vf16_vfwsub_wf_cg.set_inst_name("obj_Vf16_vfwsub_wf");
-`endif
-`ifndef ELEN16
     Vf16_vfwsub_wv_cg = new(); Vf16_vfwsub_wv_cg.set_inst_name("obj_Vf16_vfwsub_wv");
-`endif
     Vf16_vmfeq_vf_cg = new(); Vf16_vmfeq_vf_cg.set_inst_name("obj_Vf16_vmfeq_vf");
     Vf16_vmfeq_vv_cg = new(); Vf16_vmfeq_vv_cg.set_inst_name("obj_Vf16_vmfeq_vv");
     Vf16_vmfge_vf_cg = new(); Vf16_vmfge_vf_cg.set_inst_name("obj_Vf16_vmfge_vf");

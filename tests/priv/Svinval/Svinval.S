@@ -13,7 +13,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [S, Svinval]
-# MARCH: rv${XLEN}i_zicsr_svinval
+# MARCH: rv${XLEN}i_zicsr_zifencei_svinval
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "Svinval.S"

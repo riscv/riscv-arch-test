@@ -14,7 +14,7 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 1.0.0" }
+  #  - { name: Q, version: "= 1.0.0" } # sail does not yet support this
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
@@ -35,7 +35,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smrnmi, version: "= 1.0.0" }
+  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -57,9 +57,9 @@ implemented_extensions:
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Ssube, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.13.0" }
-  - { name: Sv48, version: "= 1.13.0" }
-  - { name: Sv57, version: "= 1.13.0" }
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Sv48, version: "= 1.0.0" }
+  - { name: Sv57, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
@@ -78,7 +78,7 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
@@ -173,7 +173,7 @@ params:
   # D params
   MUTABLE_MISA_D: false
   # Q params
-  MUTABLE_MISA_Q: false
+  #  MUTABLE_MISA_Q: false # depends on Q extension which sail does not yet support
   # C params
   MUTABLE_MISA_C: false
   # B params
@@ -328,6 +328,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

@@ -20,7 +20,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     """Generate tests for backward branch negative offsets."""
     tc = test_data.begin_test_chunk()
 
-    test_lines: list[str] = ["# Testcase cp_offset negative bin (positive bin is covered by other coverpoints)"]
+    tc.code.append("# Testcase cp_offset negative bin (positive bin is covered by other coverpoints)")
     if instr_name == "c.jalr":
         params = generate_random_params(test_data, instr_type, rd=1)
     elif instr_name == "c.jr":
@@ -31,7 +31,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     if instr_type in ["B", "CB"]:
         assert params.rs1 is not None and params.temp_reg is not None and params.temp_val is not None
         if instr_type == "B":
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"LI(x{params.rs1}, 1)",
                     f"LI(x{params.rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
@@ -39,9 +39,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             )
         else:  # CB
             branch_val = 0 if instr_name == "c.beqz" else 1  # set value to ensure branch is taken
-            test_lines.append(f"LI(x{params.rs1}, {branch_val}) # initialize rs1 to {branch_val} for taken branch")
+            tc.code.append(f"LI(x{params.rs1}, {branch_val}) # initialize rs1 to {branch_val} for taken branch")
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 load_int_reg("branch check value", params.temp_reg, params.temp_val, test_data),
                 "j 2f # jump past backward branch target",
@@ -61,7 +61,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             and params.temp_reg is not None
             and params.temp_val is not None
         )
-        test_lines.extend(
+        tc.code.extend(
             [
                 load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                 "j 2f # jump past backward jump target",
@@ -83,7 +83,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         )
     elif instr_type in ["CJ", "CJAL"]:
         assert params.temp_reg is not None and params.temp_val is not None
-        test_lines.extend(
+        tc.code.extend(
             [
                 load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                 "j 2f # jump past backward jump target",
@@ -97,19 +97,18 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             ]
         )
     elif instr_type == "J":
-        test_lines.append(
+        tc.code.append(
             "# cp_offset is covered by other tests for jal."
         )  # TODO: Maybe revisit this and implement it anyway for completeness.
     else:
         raise ValueError(f"cp_offset coverpoint not supported for instruction {instr_name} with type {instr_type}.")
 
     if coverpoint in {"cp_offset_c_jr", "cp_offset_jalr"}:
-        test_lines.extend(make_offset_lsbs(instr_name, instr_type, test_data))
+        tc.code.extend(make_offset_lsbs(instr_name, instr_type, test_data))
     elif coverpoint != "cp_offset":
         raise ValueError(f"Unknown variant {coverpoint} for cp_offset coverpoint.")
 
     return_test_regs(test_data, params)
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]
 
 
@@ -171,7 +170,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     test_data.add_testcase(f"{rs1_lsbs:02b}", "cp_offset_lsbs"),
                     f"{instr_name} x{params.rs1} # jump",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
-                    ".align 2",
+                    ".p2align 2",
                     f"{label}:{' c.nop' if rs1_lsbs >= 2 else ''}",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",

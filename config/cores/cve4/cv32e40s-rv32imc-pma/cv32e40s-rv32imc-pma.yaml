@@ -1,0 +1,199 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College, Eclipse Foundation and Marin Radic
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40S, a configuration of the CORE-V project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40s_rv32imc_pma
+description: CV32E40S (CORE-V secure) - RV32IMC PMA-enabled configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=1)
+implemented_extensions: # VERIFIED against User Manual (Introduction)
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0" } # VERIFIED — multiplication subset of M; enabled when M_EXT=M (User Manual, Introduction)
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" } # Always present when C enabled
+  - { name: Zcb, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
+  - { name: Zcmp, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
+  - { name: Zcmt, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction; data-independent execution latency
+  - { name: Sm, version: "= 1.12.0" }
+  # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
+
+params:
+  # XLEN parameters (VERIFIED — User Manual, Introduction; RV32I base ISA)
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32 # VERIFIED — 32-bit addressing, no Sv32
+
+  # MISA (VERIFIED — User Manual, Control and Status Registers)
+  MUTABLE_MISA_M: false # VERIFIED — M bit hardwired based on M_EXT parameter
+  MUTABLE_MISA_C: false # VERIFIED — C bit always hardwired to 1
+  MISA_CSR_IMPLEMENTED: true # VERIFIED — MISA CSR (0x301) documented
+
+  # endianness (VERIFIED — User Manual, Introduction: little-endian architecture)
+  M_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (VERIFIED — User Manual, Exceptions and Interrupts)
+  TRAP_ON_ECALL_FROM_M: true # VERIFIED — ecall always traps
+  TRAP_ON_EBREAK: true # VERIFIED — ebreak generates breakpoint exception
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — User Manual, Exceptions and Interrupts: illegal instruction for unimplemented
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — undefined encodings trap as illegal instruction
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — User Manual, Exceptions and Interrupts: illegal instruction for undefined CSRs
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — WARL masking only, no illegal-write trap (User Manual, Control and Status Registers)
+
+  # MTVAL reporting (VERIFIED — User Manual, Control and Status Registers: mtval hardwired to 0)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
+
+  # Misaligned load/store support (VERIFIED — User Manual, Pipeline Details: split transactions for misaligned)
+  MISALIGNED_LDST: true # VERIFIED — misaligned accesses supported via split bus transactions (main memory only)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — never raises misaligned exception in main memory
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — two bus transactions, no atomicity guarantee
+  MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED — lowest address first (same as cv32e40p)
+
+  # CSR / implementation IDs (VERIFIED — User Manual, Control and Status Registers)
+  ARCH_ID_VALUE: 0x00000015 # VERIFIED — marchid = 0x15 (decimal 21) per User Manual, Control and Status Registers
+  IMP_ID_VALUE: 0x0 # mimpid is an input port; 0 for baseline config
+  VENDOR_ID_BANK: 0xC # VERIFIED — mvendorid bank bits = 0xC (OpenHW, JEDEC bank 13) per User Manual, Control and Status Registers
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — mvendorid offset bits = 0x2 per User Manual, Control and Status Registers
+
+  # MTVEC (VERIFIED — User Manual, Control and Status Registers)
+  MTVEC_MODES: [0, 1] # VERIFIED — MODE bit[0] writable; 0x0=non-vectored, 0x1=vectored (User Manual, Control and Status Registers)
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — MODE bit[1] hardwired 0, bit[0] writable; writes always valid (User Manual, Control and Status Registers)
+  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED — CSR_BASIC_MTVEC_MASK=0xFFFFFF81; BASE[31:7] writable, bits[6:2] hardwired 0 -> 2^7 = 128-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 128 # VERIFIED — same mask applies in direct mode
+
+  # Sm params
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
+  NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
+  CONFIG_PTR_ADDRESS: 0 # VERIFIED — mconfigptr hardwired to 0x0 (User Manual, Control and Status Registers)
+
+  # Zcmt params (VERIFIED — User Manual, Control and Status Registers)
+  JVT_BASE_TYPE: mask # VERIFIED — upper 26 bits writable via mask
+  JVT_READ_ONLY: false # VERIFIED — jvt is writable
+  JVT_BASE_MASK: 0x7FFFFFC0 # jvt BASE[31:6] writable (User Manual, Control and Status Registers); UDB requires < 0xFFFFFFC0 for RV32, bit 31 excluded
+
+  # HPM Counters (VERIFIED — User Manual, Performance Counters: mhpmcounter3..31 hardwired to 0)
+  HPM_COUNTER_EN: # VERIFIED — mhpmcounter3..31 hardwired to 0; no HPM counters implemented (User Manual, Performance Counters)
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  MCOUNTENABLE_EN: # VERIFIED — mcounteren hardwired to 0x0; Zicntr/Zihpm not supported (User Manual, Control and Status Registers)
+    [
+      false, # index 0 (CY)
+      false, # index 1 (TM)
+      false, # index 2 (IR)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: true # VERIFIED — mcountinhibit CSR exists; bits 0 (mcycle) and 2 (minstret) writable
+  COUNTINHIBIT_EN: # VERIFIED — bit 0 (mcycle) and bit 2 (minstret) writable; others hardwired 0 (User Manual, Control and Status Registers)
+    [
+      true, # index 0 (MCYCLE inhibit)
+      false, # index 1 (TM — always false per UDB)
+      true, # index 2 (MINSTRET inhibit)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+# end

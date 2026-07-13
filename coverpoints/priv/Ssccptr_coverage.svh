@@ -34,7 +34,7 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     //   RV32: satp[31]    — 1 means Sv32 is active
     // -----------------------------------------------------------------------
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         satp_active: coverpoint ins.current.csr[CSR_SATP][63:60] {
                 bins vm_on = {[1:$]};
     }

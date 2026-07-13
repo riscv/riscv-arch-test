@@ -8,7 +8,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-spike.sh <install-dir>}"
-SPIKE_COMMIT="0bc3241fe146abb2bf5112f702cd23a5b24a8234"
+SPIKE_COMMIT="b2d6fbf0fdce4fe36de763a03ffb1798469507a2"
 
 git clone https://github.com/riscv/riscv-isa-sim.git
 cd riscv-isa-sim

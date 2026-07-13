@@ -93,9 +93,9 @@ def set_mtimer_int_soon(
         "#if __riscv_xlen == 64",
         "# Read current time and add delay",
         f"LI(x{r_temp2}, {delay_val})",
-        f"LREG x{r_temp1}, 0(x{r_mtime})",  # Use LREG macro
+        f"LREG x{r_temp1}, 0(x{r_mtime}) # Use LREG macro",
         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
-        f"SREG x{r_temp1}, 0(x{r_mtimecmp})",  # Use SREG macro
+        f"SREG x{r_temp1}, 0(x{r_mtimecmp}) # Use SREG macro",
         "#elif __riscv_xlen == 32",
         f"LI(x{r_temp4}, {delay_val})",
         "# Read current time (64-bit on RV32)",
@@ -136,9 +136,9 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
                 f"{INDENT}# Check if Sstc is enabled",
                 f"CSRR x{r_scratch}, menvcfg",
                 "#if __riscv_xlen == 64",
-                f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+                f"SRLI x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
                 "#else",
-                f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+                f"SRLI x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
                 "#endif",
                 f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
             ]
@@ -154,17 +154,13 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             f"{INDENT}# Sstc method: Write stimecmp (works in S-mode)",
             f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
             f"LREG x{r_temp}, 0(x{r_mtime})",
-            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay
             f"csrw stimecmp, x{r_temp}",
             "nop",
             "#if __riscv_xlen == 32",
             f"LI(x{r_temp}, -1)",
-            f"csrw stimecmp, x{r_temp}",
-            f"lw x{r_temp2}, 4(x{r_mtime})",
+            f"csrw stimecmp, x{r_temp} # set stimecmp to max value",
+            f"lw x{r_temp2}, 4(x{r_mtime}) # read from mtime",
             f"lw x{r_temp}, 0(x{r_mtime})",
-            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay to low word
-            f"sltu x{r_scratch}, x{r_temp}, x{r_temp}",  # Check for overflow
-            f"add x{r_temp2}, x{r_temp2}, x{r_scratch}",  # Add carry to high word
             f"csrw stimecmph, x{r_temp2}",
             f"csrw stimecmp, x{r_temp}",
             "nop",
@@ -173,12 +169,11 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             "",
             "1: # Legacy method: Set mip.STIP (requires M-mode)",
             "RVTEST_GOTO_MMODE",
-            f"LI(x{r_temp}, 0x20)",  # STIP bit
+            f"LI(x{r_temp}, 0x20) # STIP bit",
             f"csrrs x{r_temp}, mip, x{r_temp}",
             "# Clear MPIE to prevent MIE=1 after mret back to S-mode",
-            f"LI(x{r_temp}, 0x80)",  # MPIE bit (bit 7)
+            f"LI(x{r_temp}, 0x80) # MPIE bit (bit 7)",
             f"csrc mstatus, x{r_temp}",
-            "RVTEST_GOTO_LOWER_MODE Smode",
             "",
             "2: # Continue",
         ]
@@ -208,9 +203,9 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) ->
                 f"{INDENT}# Check if Sstc is enabled",
                 f"CSRR x{r_scratch}, menvcfg",
                 "#if __riscv_xlen == 64",
-                f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+                f"SRLI x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
                 "#else",
-                f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+                f"SRLI x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
                 "#endif",
                 f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
             ]
@@ -227,12 +222,12 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) ->
             f"LI(x{r_temp}, -1)",
             f"csrw stimecmp, x{r_temp}",
             "#if __riscv_xlen == 32",
-            f"csrw stimecmph, x{r_temp}",  # Also clear high word
+            f"csrw stimecmph, x{r_temp} # Also clear high word",
             "#endif",
             "j 2f",
             "",
             "1: # Legacy method: Clear mip.STIP (must be in M-mode)",
-            f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
+            f"LI(x{r_temp}, 0x20) # STIP = bit 5",
             f"csrrc x{r_temp}, mip, x{r_temp}",
             "",
             "2: # Continue",
@@ -290,7 +285,7 @@ def set_stimer_mmode(r_scratch: int) -> list[str]:
     """
     return [
         f"{INDENT}# Set supervisor timer interrupt (M-mode direct)",
-        f"LI(x{r_scratch}, 0x20)",  # STIP bit (bit 5)
+        f"LI(x{r_scratch}, 0x20) # STIP bit (bit 5)",
         f"CSRS(mip, x{r_scratch})",
         "nop",
     ]
@@ -310,7 +305,7 @@ def clr_stimer_mmode(r_scratch: int) -> list[str]:
     """
     return [
         f"{INDENT}# Clear supervisor timer interrupt (M-mode direct)",
-        f"LI(x{r_scratch}, 0x20)",  # STIP bit (bit 5)
+        f"LI(x{r_scratch}, 0x20) # STIP bit (bit 5)",
         f"CSRC(mip, x{r_scratch})",
         "nop",
     ]
@@ -396,12 +391,12 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, delay: int | None 
         f"        CSRW(stimecmp, x{r_scratch})",
         "    #else",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
-        f"        lw x{r_scratch}, 0(x{r_time})",  # old_lo
-        f"        lw x{r_hi}, 4(x{r_time})",  # old_hi; r_time address no longer needed after this
-        f"        LI(x{r_time}, {time_val})",  # reuse r_time for delay
-        f"        add x{r_time}, x{r_scratch}, x{r_time}",  # new_lo; r_scratch still = old_lo for carry
-        f"        sltu x{r_scratch}, x{r_time}, x{r_scratch}",  # carry = (new_lo < old_lo)
-        f"        add x{r_hi}, x{r_hi}, x{r_scratch}",  # new_hi
+        f"        lw x{r_scratch}, 0(x{r_time}) # old_lo",
+        f"        lw x{r_hi}, 4(x{r_time}) # old_hi; r_time address no longer needed after this",
+        f"        LI(x{r_time}, {time_val}) # reuse r_time for delay",
+        f"        add x{r_time}, x{r_scratch}, x{r_time} # new_lo; r_scratch still = old_lo for carry",
+        f"        sltu x{r_scratch}, x{r_time}, x{r_scratch} # carry = (new_lo < old_lo)",
+        f"        add x{r_hi}, x{r_hi}, x{r_scratch} # new_hi",
         f"        CSRW(stimecmph, x{r_hi})",
         f"        CSRW(stimecmp, x{r_time})",
         "    #endif",
@@ -445,12 +440,13 @@ def mmode_sti_setup(r_scratch: int, r_stce: int, mideleg_sti: int, mie_stie: int
     lines = [
         "RVTEST_GOTO_MMODE",
         "CSRW(mie, zero)",
-        "csrci mstatus, 8",  # MIE=0
-        "csrci mstatus, 2",  # SIE=0
+        "csrci mstatus, 8 # MIE=0",
+        "csrci mstatus, 2 # SIE=0",
         f"LI(x{r_scratch}, 0x20)",
-        f"CSRC(mip, x{r_scratch})",  # clear any pending STIP
+        f"CSRC(mip, x{r_scratch}) # clear any pending STIP",
         *set_stimecmp_max(r_scratch),
-        *set_menvcfg_stce(r_stce, True),  # STCE=1
+        "# STCE=1",
+        *set_menvcfg_stce(r_stce, True),
     ]
     # mideleg
     if mideleg_sti:
@@ -478,5 +474,6 @@ def mmode_sti_cleanup(r_scratch: int, r_stce: int) -> list[str]:
         *set_stimecmp_max(r_scratch),
         f"LI(x{r_scratch}, 0x20)",
         f"CSRC(mip, x{r_scratch})",
-        *set_menvcfg_stce(r_stce, False),  # STCE=0
+        "# STCE=0",
+        *set_menvcfg_stce(r_stce, False),
     ]

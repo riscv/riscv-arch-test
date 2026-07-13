@@ -34,6 +34,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     with inputLogFile.open() as f, outputTraceFile.open("w") as outfile:
         lines = f.readlines()
         output_line = ""
+        prev_mode_num: str | None = None
         for i in range(len(lines)):
             line = lines[i]
 
@@ -71,3 +72,10 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 output_line = output_line.format(mode_num=prev_mode_num)
                 outfile.write(output_line)
                 output_line = next_output
+
+        # Flush the final instruction. Sail logs mode at the start of an
+        # instruction, so the trailing instruction has no "next" mode to
+        # inherit from; fall back to its own start mode as the closest
+        # approximation rather than dropping it from the trace.
+        if output_line and prev_mode_num is not None:
+            outfile.write(output_line.format(mode_num=prev_mode_num))

@@ -25,9 +25,9 @@
     ZfaD_fround_s_cg = new(); ZfaD_fround_s_cg.set_inst_name("obj_ZfaD_fround_s");
     ZfaD_froundnx_d_cg = new(); ZfaD_froundnx_d_cg.set_inst_name("obj_ZfaD_froundnx_d");
     ZfaD_froundnx_s_cg = new(); ZfaD_froundnx_s_cg.set_inst_name("obj_ZfaD_froundnx_s");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     ZfaD_fmvh_x_d_cg = new(); ZfaD_fmvh_x_d_cg.set_inst_name("obj_ZfaD_fmvh_x_d");
     ZfaD_fmvp_d_x_cg = new(); ZfaD_fmvp_d_x_cg.set_inst_name("obj_ZfaD_fmvp_d_x");
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 `endif

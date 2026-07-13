@@ -38,7 +38,7 @@
     Zfh_fsh_cg = new(); Zfh_fsh_cg.set_inst_name("obj_Zfh_fsh");
     Zfh_fsqrt_h_cg = new(); Zfh_fsqrt_h_cg.set_inst_name("obj_Zfh_fsqrt_h");
     Zfh_fsub_h_cg = new(); Zfh_fsub_h_cg.set_inst_name("obj_Zfh_fsub_h");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zfh_fcvt_h_l_cg = new(); Zfh_fcvt_h_l_cg.set_inst_name("obj_Zfh_fcvt_h_l");
     Zfh_fcvt_h_lu_cg = new(); Zfh_fcvt_h_lu_cg.set_inst_name("obj_Zfh_fcvt_h_lu");
     Zfh_fcvt_l_h_cg = new(); Zfh_fcvt_l_h_cg.set_inst_name("obj_Zfh_fcvt_l_h");

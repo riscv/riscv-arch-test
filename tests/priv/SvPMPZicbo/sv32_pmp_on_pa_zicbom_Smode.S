@@ -16,7 +16,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv32, Zicbom, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr_zicbom
+# MARCH: rv32i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_pmp_on_pa_zicbom_Smode.S"
@@ -84,10 +84,10 @@ main:
   LA (t2, rvtest_data_1)                          // Configure test region as NAPOT
   srl t2, t2, PMP_SHIFT
 
-  .if (RVMODEL_PMP_GRAIN <= 3)                    // G=3 -> 32 Bytes (Minimum size of test region)
+  .if (UDB_PMP_GRANULARITY <= 5)                    // G=3 -> 32 Bytes (Minimum size of test region)
       LI (t1, 0x3)                                // Range = 2^(2+3) = 32 Bytes
   .else
-      LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)      // Range = 2^(G+3) Bytes
+      LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)      // Range = 2^(G+3) Bytes
   .endif
 
   or t2, t2, t1
@@ -114,7 +114,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here
@@ -163,8 +163,8 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -175,11 +175,11 @@ rvtest_data_1:
   nop
   jr ra
 
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align (UDB_PMP_GRANULARITY)
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

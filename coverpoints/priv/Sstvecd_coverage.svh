@@ -22,7 +22,7 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
         wildcard bins stvec = {CSR_STVEC};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         stvec_walk: coverpoint ins.current.rs1_val {
             // Walking 1s — single bit set at each position (bits 2..63), bits 1:0 = 0
             wildcard bins walking1_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};

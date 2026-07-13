@@ -1,0 +1,8 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the ext:zic64b[] extension is implemented, then cache blocks must be 64 bytes
+  # in size, naturally aligned in the address space.
+  - name: zic64b_cache_block_size
+    coverpoint: ["Zic64bZicboz_cg/cp_zi64cb"]

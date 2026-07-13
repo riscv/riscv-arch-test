@@ -33,7 +33,7 @@
 
     cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, vfp_flags_fp_flags_clear;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     mask_enabled: coverpoint ins.current.insn[25] {
         bins unmasked = {1'b0};
     }

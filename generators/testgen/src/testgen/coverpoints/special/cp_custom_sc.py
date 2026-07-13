@@ -25,7 +25,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     tc = test_data.begin_test_chunk()
     lr_insn = "lr.w" if instr_name.endswith(".w") else "lr.d"
-    test_lines: list[str] = []
 
     # cp_custom_aqrl
     for suffix in ["", ".rl", ".aqrl"]:
@@ -37,14 +36,24 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             and params.rs2val is not None
             and params.temp_reg is not None
         )
-        test_lines.extend(
+        label_line = test_data.add_testcase(suffix, "cp_custom_aqrl")
+        label = test_data.current_testcase_label
+        retry_label = f"{label}_retry"
+        success_label = f"{label}_success"
+        tc.code.extend(
             [
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
+                f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
+                f"{retry_label}:",
                 f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-                test_data.add_testcase(suffix, "cp_custom_aqrl"),
+                label_line,
                 f"{instr_name}{suffix} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+                f"beqz x{params.rd}, {success_label} # SC succeeded, skip retry",
+                f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
+                f"bnez x{params.temp_reg}, {retry_label} # retry LR/SC if not exhausted",
+                f"{success_label}:",
                 write_sigupd(params.rd, test_data),
                 f"LA(x{params.rs1}, scratch) # reload base address",
                 f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
@@ -66,14 +75,24 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         and params.rs2val is not None
         and params.temp_reg is not None
     )
-    test_lines.extend(
+    sc_lr_label_line = test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lr")
+    sc_lr_label = test_data.current_testcase_label
+    sc_lr_retry_label = f"{sc_lr_label}_retry"
+    sc_lr_success_label = f"{sc_lr_label}_success"
+    tc.code.extend(
         [
             f"# Testcase: cp_custom_sc_lr with prev {lr_insn}",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
             f"LA(x{params.rs1}, scratch) # rs1 = base address",
+            f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
+            f"{sc_lr_retry_label}:",
             f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-            test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lr"),
+            sc_lr_label_line,
             f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+            f"beqz x{params.rd}, {sc_lr_success_label} # SC succeeded, skip retry",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
+            f"bnez x{params.temp_reg}, {sc_lr_retry_label} # retry LR/SC if not exhausted",
+            f"{sc_lr_success_label}:",
             write_sigupd(params.rd, test_data),
             f"LA(x{params.rs1}, scratch) # reload base address",
             f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
@@ -81,7 +100,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             "",
         ]
     )
-    test_lines.extend(
+    tc.code.extend(
         [
             f"# Testcase: cp_custom_sc_lr with prev {lr_insn} first to matching address and then to a different address",
             "# This test is not described with a coverpoint because it involves three consecutive instructions",
@@ -114,7 +133,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         and params.temp_reg is not None
         and params.temp_val is not None
     )
-    test_lines.extend(
+    tc.code.extend(
         [
             "# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -148,7 +167,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             and params.rs2val is not None
             and params.temp_reg is not None
         )
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -166,5 +185,4 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         return_test_regs(test_data, params)
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

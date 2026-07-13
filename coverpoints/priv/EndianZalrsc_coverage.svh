@@ -17,18 +17,18 @@ covergroup EndianZalrsc_cg with function sample(ins_t ins);
     // building blocks for the main coverpoints
     cp_lr: coverpoint ins.current.insn {
         wildcard bins lrw = {LR_W};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins lrd = {LR_D};
         `endif
     }
     cp_sc: coverpoint ins.current.insn {
         wildcard bins scw = {SC_W};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins scd = {SC_D};
         `endif
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
         }
     `else

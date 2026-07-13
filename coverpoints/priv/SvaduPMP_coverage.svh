@@ -32,7 +32,7 @@ covergroup SvaduPMP_cg with function sample(ins_t ins);
         wildcard bins leaflvl_u = {8'b01?1?111};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         PageType_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
@@ -89,7 +89,7 @@ covergroup SvaduPMP_cg with function sample(ins_t ins);
         bins ins_acc_fault  = {64'd1} iff (ins.current.trap);
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         Svadu_enabled: coverpoint  ins.current.csr[CSR_MENVCFG][61] {
             bins ADUE_set = {1'b1};
         }

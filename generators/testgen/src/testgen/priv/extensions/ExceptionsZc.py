@@ -11,6 +11,7 @@
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -421,7 +422,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(coverpoint, "Illegal Instruction"),
         # Align to ensure proper instruction fetch and trap handling"
-        ".align 2",  # Add alignment
+        ".p2align 2",  # Add alignment
         test_data.add_testcase("illegal0", coverpoint, covergroup),
         ".insn 0x00",  # use two byte for instruction alignment when trapping
         f"{INDENT}# Illegal instruction will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",
@@ -437,13 +438,14 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     required_extensions=["Sm", "Zca"],
     march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "C", "F", "D"],
 )
-def make_exceptionszc(test_data: TestData) -> list[str]:
+def make_exceptionszc(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Zc exception test generation."""
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     addr_reg = test_data.int_regs.get_register()
 
-    lines.extend(
+    tc.code.extend(
         [
             "# Load FP test data from scratch if FP is supported",
             f"LA(x{addr_reg}, scratch)",
@@ -456,11 +458,12 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([addr_reg])
 
-    lines.extend(_generate_load_address_misaligned_tests(test_data))
-    lines.extend(_generate_store_address_misaligned_tests(test_data))
-    lines.extend(_generate_load_access_fault_tests(test_data))
-    lines.extend(_generate_store_access_fault_tests(test_data))
-    lines.extend(_generate_breakpoint_tests(test_data))
-    lines.extend(_generate_illegal_instruction_tests(test_data))
+    tc.code.extend(_generate_load_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_store_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_load_access_fault_tests(test_data))
+    tc.code.extend(_generate_store_access_fault_tests(test_data))
+    tc.code.extend(_generate_breakpoint_tests(test_data))
+    tc.code.extend(_generate_illegal_instruction_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

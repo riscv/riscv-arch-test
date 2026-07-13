@@ -88,7 +88,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     }
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mode: coverpoint ins.current.csr[CSR_SATP][63:60] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
@@ -106,7 +106,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
@@ -131,7 +131,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         bins kilo_page = {2'b00};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1001));
@@ -268,12 +268,12 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     cp_PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
         `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
         `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 bins non_existent_pa = {1};
             }
@@ -295,7 +295,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-            `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+            `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
         }
     `endif
 

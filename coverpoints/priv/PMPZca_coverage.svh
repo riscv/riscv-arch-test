@@ -10,7 +10,7 @@
 
 `define COVER_PMPZCA
 
-covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [XLEN-1:0] pmpaddr [62:0]);
+covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -33,7 +33,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   read_c_instr: coverpoint ins.current.insn[15:0] {
     wildcard bins c_lw   = {16'b010_???????????_00};
     wildcard bins c_lwsp = {16'b010_???????????_10};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins c_ld   = {16'b011_???????????_00};
       wildcard bins c_ldsp = {16'b011_???????????_10};
     `endif
@@ -55,7 +55,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   write_c_instr: coverpoint ins.current.insn[15:0]{
     wildcard bins c_sw   = {16'b110_???????????_00};
     wildcard bins c_swsp = {16'b110_???????????_10};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins c_sd   = {16'b111_???????????_00};
       wildcard bins c_sdsp = {16'b111_???????????_10};
     `endif
@@ -96,7 +96,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins straddle_second_third = {`PMP_REGION_START + 2*`g_napot - 2 };
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     addr_in_consecutive_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
       bins straddle_first_second = {`PMP_REGION_START + 2};
       bins straddle_second_third = {`PMP_REGION_START + 6};
@@ -117,7 +117,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins just_above_pmp = {`PMP_REGION_START + `g_napot};     // just outside region
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     addr_adjacent_to_na4_boundary: coverpoint (ins.current.rs1_val + ins.current.imm) {
       // NA4 region (4 bytes): (PMP_REGION_START, PMP_REGION_START + 4)
       bins just_before_start     = {`PMP_REGION_START - 2};
@@ -173,7 +173,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     cfg_consecutive_na4: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
@@ -201,7 +201,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
 
   cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_region, read_c_instr {
     ignore_bins ig1 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_lwsp);
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       ignore_bins ig2 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_ldsp);
     `endif
   }
@@ -213,7 +213,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;
   cp_cret_tor: cross priv_mode_m, tor_setup, tor_region, exec_c_instr, addr_adjacent_to_pmp_boundary_tor;
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     cp_misaligned_na4: cross priv_mode_m, cfg_consecutive_na4, pmpaddr_consecutive_na4, addr_in_consecutive_na4, exec_c_instr;
     cp_cret_na4: cross priv_mode_m, na4_setup, na4_region, exec_c_instr, addr_adjacent_to_na4_boundary;
   `endif
@@ -225,10 +225,10 @@ endgroup
 function void pmpzca_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;   // for first 15 Regions
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
       logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
@@ -237,7 +237,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
       pmpcfg[i*4 + 2] = cfg_word[23:16];
       pmpcfg[i*4 + 3] = cfg_word[31:24];
     end
-  `elsif XLEN64
+  `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
       logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];

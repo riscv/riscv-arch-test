@@ -31,7 +31,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -45,190 +45,24 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#if RVMODEL_PMP_GRAIN != 0
-  #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#if UDB_PMP_GRANULARITY != 2
+  #define g   (1 << (UDB_PMP_GRANULARITY))
 #else
-  #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
+  #define g   (1 << (UDB_PMP_GRANULARITY + 1))
 #endif
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LA(x1, 1f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-
-    addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-2:
-    nop
-
-    addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-3:
-    nop
-
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
-    LA(x1, 4f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-4:
-    nop
-
-    addi a4, a4, 4                      // REGIONSTART + g
-    LA(x1, 5f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-5:
-    nop
-
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-
-    \TEST_CASE\()_1:
-    sb a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    \TEST_CASE\()_2:
-    sh a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    \TEST_CASE\()_4:
-    sd a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-
-    addi a5, a5, -4                                          // REGIONSTART - 4
-
-    \TEST_CASE\()_5:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
-
-
-    addi a5, a5, 8                                           // REGIONSTART + 4
-
-    \TEST_CASE\()_6:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
-
-
-    addi a5, a5, (g-8)                                       // REGIONSTART + g - 4
-
-    \TEST_CASE\()_7:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
-
-
-    addi a5, a5, 4                                           // REGIONSTART + g
-
-    \TEST_CASE\()_8:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
-
-    LA(a5, \ADDRESS)
-
-    \TEST_CASE\()_9:
-    lb a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
-
-    \TEST_CASE\()_10:
-    lbu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)
-
-    \TEST_CASE\()_11:
-    lh a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
-
-    \TEST_CASE\()_12:
-    lhu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
-
-    \TEST_CASE\()_13:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
-
-    \TEST_CASE\()_14:
-    lwu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
-
-    \TEST_CASE\()_15:
-    ld a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)
-
-
-    addi a5, a5, -4
-
-    \TEST_CASE\()_16:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_16, test_16_str)
-
-
-    addi a5, a5, 8
-
-    \TEST_CASE\()_17:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
-
-
-    addi a5, a5, (g-8)
-
-    \TEST_CASE\()_18:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
-
-
-    addi a5, a5, 4
-
-    \TEST_CASE\()_19:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -243,9 +77,9 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
-#if RVMODEL_PMP_GRAIN != 0
-    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#if UDB_PMP_GRANULARITY != 2
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
@@ -263,40 +97,46 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_3
 
     j exit                                                        // Verification Complete, exit the test
 
@@ -305,7 +145,7 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_napot_sb_address\""
@@ -331,13 +171,21 @@ test_17_str: .string "\"test: 17; cp: cp_cfg_A_napot_lw_address+4\""
 test_18_str: .string "\"test: 18; cp: cp_cfg_A_napot_lw_address+g-4\""
 test_19_str: .string "\"test: 19; cp: cp_cfg_A_napot_lw_address+g\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+test_20_str: .string "\"test: 20; cp: cp_cfg_A_napot_x_address\""
+test_21_str: .string "\"test: 21; cp: cp_cfg_A_napot_x_address-4\""
+test_22_str: .string "\"test: 22; cp: cp_cfg_A_napot_x_address+4\""
+test_23_str: .string "\"test: 23; cp: cp_cfg_A_napot_x_address+g-4\""
+test_24_str: .string "\"test: 24; cp: cp_cfg_A_napot_x_address+g\""
+
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (g>>2)                                         // NAPOT region must be 8-byte aligned at grain 2 -> region at 0x80005008 (pmpaddr=STANDARD_REGION). A 4-byte pad (0x80005004) yields a 16-byte NAPOT covering the pad -> hang.
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

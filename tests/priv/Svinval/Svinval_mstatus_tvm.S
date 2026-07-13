@@ -17,7 +17,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [Sm, S, Svinval]
-# MARCH: rv${XLEN}i_zicsr_svinval
+# MARCH: rv${XLEN}i_zicsr_zifencei_svinval
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "Svinval_mstatus_tvm.S"

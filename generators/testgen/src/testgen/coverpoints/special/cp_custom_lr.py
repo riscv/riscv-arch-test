@@ -27,7 +27,6 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     # cp_custom_aqrl — inline assembly, wrap as single TestChunk
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
 
     for suffix in ["", ".aq", ".aqrl"]:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
@@ -41,7 +40,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
         # Add value to load data region
         tc.data_values.append(params.temp_val)
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, 0 # copy data_ptr to rs1",
@@ -55,7 +54,6 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
         return_test_regs(test_data, params)
 
-    tc.code = "\n".join(test_lines)
     test_chunks.append(test_data.end_test_chunk())
 
     # cp_custom_rd_edges — uses format_single_testcase, each produces its own TestChunk

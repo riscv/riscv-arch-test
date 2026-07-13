@@ -20,7 +20,7 @@
     Zbkb_ror_cg = new(); Zbkb_ror_cg.set_inst_name("obj_Zbkb_ror");
     Zbkb_rori_cg = new(); Zbkb_rori_cg.set_inst_name("obj_Zbkb_rori");
     Zbkb_xnor_cg = new(); Zbkb_xnor_cg.set_inst_name("obj_Zbkb_xnor");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zbkb_unzip_cg = new(); Zbkb_unzip_cg.set_inst_name("obj_Zbkb_unzip");
     Zbkb_zip_cg = new(); Zbkb_zip_cg.set_inst_name("obj_Zbkb_zip");
 `endif

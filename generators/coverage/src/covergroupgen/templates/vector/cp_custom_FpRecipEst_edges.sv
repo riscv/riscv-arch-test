@@ -15,7 +15,7 @@
     cp_custom_FpRecipEst_edges: cross std_vec, FpRecEst_sig_in;
     `endif
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     FpRecEst_sig_in : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[51:45] {
         // all bins
     }

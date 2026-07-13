@@ -1,0 +1,26 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Sstvala extension is implemented, then stval must be written with the
+  # faulting virtual address for load, store, and instruction page-fault,
+  # access-fault, and misaligned exceptions, and for breakpoint exceptions that are
+  # defined to write an address to stval, other than those caused by execution of
+  # the EBREAK or C.EBREAK instructions.
+  - name: sstvala_stval_faulting_vaddr
+    coverpoint: [
+        "Sstvala_cg/cp_load_access_fault,
+        Sstvala_cg/cp_store_access_fault,
+        Sstvala_cg/cp_instr_access_fault,
+        Sstvala_cg/cp_load_address_misaligned,
+        Sstvala_cg/cp_store_address_misaligned,
+        Sstvala_cg/cp_instr_adr_misaligned_jalr,
+        Sstvala_cg/cp_stval_load_page_fault,
+        Sstvala_cg/cp_stval_store_page_fault,
+        Sstvala_cg/cp_stval_instr_page_fault",
+      ]
+
+  # For virtual-instruction and illegal-instruction exceptions, stval must be
+  # written with the faulting instruction.
+  - name: sstvala_stval_faulting_instruction
+    coverpoint: ["Sstvala_cg/cp_illegal_instruction"]

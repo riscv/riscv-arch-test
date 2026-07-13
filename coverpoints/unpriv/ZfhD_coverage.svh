@@ -1087,7 +1087,7 @@ covergroup ZfhD_fsub_h_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup ZfhD_fcvt_h_l_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_NaNBox_D_H : coverpoint unsigned'(ins.current.fd_val[63:16])  iff (ins.trap == 0 )  {
@@ -1240,7 +1240,7 @@ function void zfhd_sample(int hart, int issue, ins_t ins);
         "fsub.h"     : begin
             ZfhD_fsub_h_cg.sample(ins);
         end
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "fcvt.h.l"     : begin
             ZfhD_fcvt_h_l_cg.sample(ins);
         end

@@ -1,4 +1,4 @@
-# rvmodel_macros.h
+ # rvmodel_macros.h
 # DUT-specific macro definitions for Imperas ISS
 # Jordan Carlin jcarlin@hmc.edu Jan 2026 and David_Harris@hmc.edu March 2026
 # SPDX-License-Identifier: BSD-3-Clause
@@ -10,9 +10,11 @@
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
-        .align 8; .global tohost; tohost: .dword 0;         \
-        .align 8; .global fromhost; fromhost: .dword 0;     \
+        .balign 8; .global tohost; tohost: .dword 0;         \
+        .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
+
+#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 
@@ -89,6 +91,7 @@
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 ##### Machine Interrupts #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10

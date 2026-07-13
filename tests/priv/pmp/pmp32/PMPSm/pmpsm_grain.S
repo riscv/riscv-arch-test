@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -45,14 +45,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -82,7 +82,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -97,7 +97,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -111,7 +111,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in  TOR
@@ -127,7 +127,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -141,7 +141,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -155,7 +155,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -171,7 +171,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -185,7 +185,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -199,7 +199,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -216,7 +216,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -230,7 +230,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -244,7 +244,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -260,7 +260,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -274,7 +274,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -288,7 +288,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -305,7 +305,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -319,7 +319,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -333,7 +333,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -347,7 +347,7 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: cp_pmp_grain\""
@@ -369,12 +369,14 @@ test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

@@ -340,7 +340,7 @@ covergroup D_fcvt_d_w_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -391,7 +391,7 @@ covergroup D_fcvt_d_wu_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -3405,9 +3405,9 @@ covergroup D_fsw_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup D_fcvt_d_l_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
@@ -3444,7 +3444,7 @@ covergroup D_fcvt_d_l_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -3515,7 +3515,7 @@ covergroup D_fcvt_d_lu_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -3770,7 +3770,7 @@ covergroup D_fmv_d_x_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -4012,9 +4012,9 @@ function void d_sample(int hart, int issue, ins_t ins);
         "fsw"     : begin
             D_fsw_cg.sample(ins);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "fcvt.d.l"     : begin
             D_fcvt_d_l_cg.sample(ins);
         end

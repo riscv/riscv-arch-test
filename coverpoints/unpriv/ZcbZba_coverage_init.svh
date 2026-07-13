@@ -10,6 +10,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     ZcbZba_c_zext_w_cg = new(); ZcbZba_c_zext_w_cg.set_inst_name("obj_ZcbZba_c_zext_w");
 `endif

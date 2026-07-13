@@ -324,8 +324,6 @@ function string get_csr_name(int key);
     CSR_VTYPE: return "vtype";
     CSR_VLENB: return "vlenb";
     CSR_SSTATUS: return "sstatus";
-    CSR_SEDELEG: return "sedeleg";
-    CSR_SIDELEG: return "sideleg";
     CSR_SIE: return "sie";
     CSR_STVEC: return "stvec";
     CSR_SCOUNTEREN: return "scounteren";

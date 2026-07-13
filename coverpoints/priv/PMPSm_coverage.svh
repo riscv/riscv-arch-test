@@ -13,8 +13,8 @@
 covergroup PMPSM_cg with function sample(
                     ins_t ins,
                     logic [7:0] pmpcfg [63:0],        // Per region config registers
-                    logic [XLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
-                    logic [16*XLEN-1:0] pack_pmpaddr, // 16 packed pmpaddress registers
+                    logic [`UDB_MXLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
+                    logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, // 16 packed pmpaddress registers
                     logic [29:0] pmpcfg_wr,           // first 15 regions RW fields
                     logic [95:0] pmpcfg_WR,           // next 48 regions RW fields
                     logic [29:0] pmpcfg_a,            // first 15 regions A fields
@@ -55,7 +55,7 @@ covergroup PMPSM_cg with function sample(
     bins highest_word  = {`PMP_REGION_START +`g_napot-4};
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     addr_offset_cp_cfg_A_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
       bins at_base     = {`PMP_REGION_START};
       bins just_beyond = {`PMP_REGION_START+4};
@@ -82,7 +82,7 @@ covergroup PMPSM_cg with function sample(
     wildcard bins lh  = {LH};
     wildcard bins lhu = {LHU};
     wildcard bins lw  = {LW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins lwu = {LWU};
       wildcard bins ld  = {LD};
     `endif
@@ -92,7 +92,7 @@ covergroup PMPSM_cg with function sample(
     wildcard bins lh  = {LH};
     wildcard bins lhu = {LHU};
     wildcard bins lw  = {LW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins lwu = {LWU};
       wildcard bins ld  = {LD};
     `endif
@@ -106,7 +106,7 @@ covergroup PMPSM_cg with function sample(
     wildcard bins sb = {SB};
     wildcard bins sh = {SH};
     wildcard bins sw = {SW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins sd = {SD};
     `endif
   }
@@ -114,7 +114,7 @@ covergroup PMPSM_cg with function sample(
   write_instr_for_misaligned: coverpoint ins.current.insn {
     wildcard bins sh = {SH};
     wildcard bins sw = {SW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins sd = {SD};
     `endif
   }
@@ -309,7 +309,7 @@ covergroup PMPSM_cg with function sample(
     wildcard bins OFF14 = {105'b00????????????????????????????_1??????????????_0??????????????_00????????????????????????????_100000000000000};
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     pmpcfgA_NA4: coverpoint {pmpcfg_a,pmpcfg_l,pmpcfg_x,pmpcfg_wr,pmp_hit} {
       wildcard bins NA40  = {105'b????????????????????????????10_??????????????1_??????????????0_????????????????????????????00_??????????????1};
       wildcard bins NA41  = {105'b??????????????????????????10??_?????????????1?_?????????????0?_??????????????????????????00??_?????????????10};
@@ -347,7 +347,7 @@ covergroup PMPSM_cg with function sample(
     wildcard bins NAPOT14 = {105'b11????????????????????????????_1??????????????_0??????????????_00????????????????????????????_100000000000000};
   }
 //-------------------------------------------------------
-  `ifndef G_IS_0
+  `ifndef UDB_PMP_GRANULARITY_2
     pmpcfg0_A_mode_was_OFF: coverpoint {ins.prev.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00000???};
     }
@@ -374,7 +374,7 @@ covergroup PMPSM_cg with function sample(
   }
 
   value_to_write: coverpoint ins.current.rs1_val {
-    bins one = {{(`XLEN){1'b1}}};
+    bins one = {{(`UDB_MXLEN){1'b1}}};
   }
 
   csrw_to_pmpaddr0: coverpoint ins.current.insn {
@@ -453,7 +453,7 @@ covergroup PMPSM_cg with function sample(
     bins pmp_cfg_napot_unlocked = {8'b00011111}; //L=0,A=NAPOT,XWR=111
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     pmpaddr_for_na4_misaligned: coverpoint (pmpaddr[0]==`NON_STANDARD_REGION) {
       bins pmpaddr = {1};
     }
@@ -528,7 +528,7 @@ covergroup PMPSM_cg with function sample(
 
   //-------------------------------------------------------
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     legal_RWX_L_NA4: coverpoint {pmpcfg_l[5:0], pmpcfg_a[11:0], pmpcfg_x[5:0], pmpcfg_wr[11:0], pmp_hit[5:0]} { // pmpcfg.RWX = legal combinations, pmpcfg.L = 1 and pmpcfg.A = 2'b10
       wildcard bins pmp1cfg_lxwr_1000  = {42'b1?????_10??????????_0?????_00??????????_100000};
       wildcard bins pmp1cfg_lxwr_1001  = {42'b?1????_??10????????_?0????_??01????????_?10000};
@@ -686,7 +686,7 @@ covergroup PMPSM_cg with function sample(
 //-------------------------------------------------------
 
   cp_walk_pmpaddr_rs1: coverpoint ins.current.rs1_val {
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
       wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
@@ -720,7 +720,7 @@ covergroup PMPSM_cg with function sample(
       wildcard bins walking_ones_30 = {32'b01000000000000000000000000000000};
       wildcard bins walking_ones_31 = {32'b10000000000000000000000000000000};
     `endif
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
       wildcard bins walking_ones_1  = {64'b0000000000000000000000000000000000000000000000000000000000000010};
       wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
@@ -789,7 +789,7 @@ covergroup PMPSM_cg with function sample(
   }
 
   cp_walk_pmpcfg_rs1: coverpoint ins.current.rs1_val {
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
       wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
@@ -819,7 +819,7 @@ covergroup PMPSM_cg with function sample(
       wildcard bins walking_ones_26 = {32'b01000000000000000000000000000000};
       wildcard bins walking_ones_27 = {32'b10000000000000000000000000000000};
     `endif
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
       wildcard bins walking_ones_1  = {64'b0000000000000000000000000000000000000000000000000000000000000010};
       wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
@@ -904,7 +904,7 @@ covergroup PMPSM_cg with function sample(
     bins pmpaddr13  = {CSR_PMPADDR13};
     bins pmpaddr14  = {CSR_PMPADDR14};
     bins pmpaddr15  = {CSR_PMPADDR15};
-    `ifdef PMP_64
+    `ifdef UDB_NUM_PMP_ENTRIES_64
       bins pmpaddr16  = {CSR_PMPADDR16};
       bins pmpaddr17  = {CSR_PMPADDR17};
       bins pmpaddr18  = {CSR_PMPADDR18};
@@ -959,7 +959,7 @@ covergroup PMPSM_cg with function sample(
   legal_pmpcfg_entries_even: coverpoint ins.current.insn[31:20] {   // For writing walking ones in even PMPCFGs
     bins pmpcfg0   = {CSR_PMPCFG0};
     bins pmpcfg2   = {CSR_PMPCFG2};
-    `ifdef PMP_64
+    `ifdef UDB_NUM_PMP_ENTRIES_64
       bins pmpcfg4   = {CSR_PMPCFG4};
       bins pmpcfg6   = {CSR_PMPCFG6};
       bins pmpcfg8   = {CSR_PMPCFG8};
@@ -972,7 +972,7 @@ covergroup PMPSM_cg with function sample(
   legal_pmpcfg_entries_odd: coverpoint ins.current.insn[31:20] {   // For writing zero in odd PMPCFGs
     bins pmpcfg1   = {CSR_PMPCFG1};
     bins pmpcfg3   = {CSR_PMPCFG3};
-    `ifdef PMP_64
+    `ifdef UDB_NUM_PMP_ENTRIES_64
       bins pmpcfg5   = {CSR_PMPCFG5};
       bins pmpcfg7   = {CSR_PMPCFG7};
       bins pmpcfg9   = {CSR_PMPCFG9};
@@ -983,7 +983,7 @@ covergroup PMPSM_cg with function sample(
   }
 //-------------------------------------------------------
 
-  `ifdef PMP_64
+  `ifdef UDB_NUM_PMP_ENTRIES_64
     pmp64: coverpoint {pmpcfg_L, pmpcfg_X, pmpcfg_WR, pmp_HIT} {
       wildcard bins pmp15cfg = {240'b???????????????????????????????????????????????1_???????????????????????????????????????????????1_??????????????????????????????????????????????????????????????????????????????????????????????01_???????????????????????????????????????????????1};
       wildcard bins pmp16cfg = {240'b??????????????????????????????????????????????1?_??????????????????????????????????????????????1?_????????????????????????????????????????????????????????????????????????????????????????????01??_??????????????????????????????????????????????10};
@@ -1037,12 +1037,12 @@ covergroup PMPSM_cg with function sample(
 
   rs1_val_for_pmpcfg_A: coverpoint ins.current.rs1_val {
     bins OFF = {0};
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
       bins TOR   = {32'b00001000000010000000100000001000};
       bins NA4   = {32'b00010000000100000001000000010000};
       bins NAPOT = {32'b00011000000110000001100000011000};
     `endif
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       bins TOR   = {64'b0000100000001000000010000000100000001000000010000000100000001000};
       bins NA4   = {64'b0001000000010000000100000001000000010000000100000001000000010000};
       bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
@@ -1135,7 +1135,7 @@ covergroup PMPSM_cg with function sample(
   cp_cfg_L_modify: cross priv_mode_m, lock_checking, pmp_region, pmp_csr_to_write ;
 
   cp_cfg_A_all_even: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_even ;
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     cp_cfg_A_all_odd: cross priv_mode_m, rs1_val_for_pmpcfg_A, csrrw, legal_pmpcfg_entries_odd ;
   `endif
 
@@ -1149,7 +1149,7 @@ covergroup PMPSM_cg with function sample(
   cp_cfg_A_napot_r : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, read_instr_lw;
   cp_cfg_A_napot_w : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, write_instr_sw;
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     cp_cfg_A_NA4_all: cross priv_mode_m, pmpcfgA_NA4, read_instr_lw, addr_offset_cp_cfg_A_na4 ;
 
     cp_cfg_A_na4_x : cross priv_mode_m, legal_RWX_L_NA4, addr_offset_cp_cfg_A_na4, exec_instr ;
@@ -1203,12 +1203,12 @@ covergroup PMPSM_cg with function sample(
 
   cp_pmpaddr_walk: cross priv_mode_m, cp_walk_pmpaddr_rs1, csrrw, legal_pmpaddr_entries ;
   cp_pmpcfg_walk: cross priv_mode_m, cp_walk_pmpcfg_rs1, csrrw, legal_pmpcfg_entries_even ;
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;
   `endif
 
-  `ifdef PMP_64
+  `ifdef UDB_NUM_PMP_ENTRIES_64
     cp_pmp64_write: cross priv_mode_m, write_instr_sw, pmp64;
     cp_pmp64_read: cross priv_mode_m, read_instr_lw, pmp64;
   `endif
@@ -1238,7 +1238,7 @@ covergroup PMPSM_cg with function sample(
   csrw pmpcfg0, t1 # pmpcfg0.A = OFF
   csrr t2, pmpaddr0
   SIGUPD(t2) # read back pmpaddr0, which should have G trailing 0s*/
-  `ifndef G_IS_0
+  `ifndef UDB_PMP_GRANULARITY_2
     cp_grain_OFF_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_OFF ;
     cp_grain_OFF_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_NAPOT ;
     cp_grain_OFF_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_TOR ;
@@ -1270,7 +1270,7 @@ covergroup PMPSM_cg with function sample(
   cp_misaligned_off_end_r: cross priv_mode_m, pmpaddr_for_off_misaligned, pmpcfg_for_off_misaligned, addr_non_standard_region_straddling_end, read_instr_for_misaligned;
   cp_misaligned_off_end_w: cross priv_mode_m, pmpaddr_for_off_misaligned, pmpcfg_for_off_misaligned, addr_non_standard_region_straddling_end, write_instr_for_misaligned;
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     cp_misaligned_na4_start_r: cross priv_mode_m, pmpaddr_for_na4_misaligned, pmpcfg_for_na4_misaligned, addr_for_na4_misaligned_straddling_start, read_instr_for_misaligned;
     cp_misaligned_na4_start_w: cross priv_mode_m, pmpaddr_for_na4_misaligned, pmpcfg_for_na4_misaligned, addr_for_na4_misaligned_straddling_start, write_instr_for_misaligned;
 
@@ -1278,8 +1278,8 @@ covergroup PMPSM_cg with function sample(
     cp_misaligned_na4_end_w: cross priv_mode_m, pmpaddr_for_na4_misaligned, pmpcfg_for_na4_misaligned, addr_for_na4_misaligned_straddling_end, write_instr_for_misaligned;
   `endif
 
-  `ifdef XLEN64
-    `ifdef G_IS_0
+  `ifdef UDB_MXLEN_64
+    `ifdef UDB_PMP_GRANULARITY_2
       pmpaddr_for_na4_even: coverpoint pmpaddr[0] {
         bins address_even = {`NON_STANDARD_REGION};
       }
@@ -1387,14 +1387,14 @@ endgroup
 function void pmpsm_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
-  logic [16*XLEN-1:0] pack_pmpaddr;
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
+  logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [29:0] pmpcfg_wr, pmpcfg_a;      // for first 15 Regions
   logic [95:0] pmpcfg_WR, pmpcfg_A;      // for next 48 Regions
   logic [14:0] pmpcfg_x, pmpcfg_l, pmp_hit;   // for first 15 Regions
   logic [47:0] pmpcfg_X, pmpcfg_L, pmp_HIT;   // for next 48 Regions
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
         logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
@@ -1403,7 +1403,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
         pmpcfg[i*4 + 2] = cfg_word[23:16];
         pmpcfg[i*4 + 3] = cfg_word[31:24];
       end
-  `elsif XLEN64
+  `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
       logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
@@ -1448,7 +1448,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
                   ,ins.current.csr[CSR_PMPADDR0]
                 };
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_wr = {
           ins.current.csr[CSR_PMPCFG3][17:16],
           ins.current.csr[CSR_PMPCFG3][9:8],
@@ -1467,7 +1467,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][1:0]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_wr = {
           ins.current.csr[CSR_PMPCFG2][49:48],
           ins.current.csr[CSR_PMPCFG2][41:40],
@@ -1487,7 +1487,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_WR = {
           ins.current.csr[CSR_PMPCFG15][17:16],
           ins.current.csr[CSR_PMPCFG15][9:8],
@@ -1539,7 +1539,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG3][25:24]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_WR = {
           ins.current.csr[CSR_PMPCFG14][49:48],
           ins.current.csr[CSR_PMPCFG14][41:40],
@@ -1592,7 +1592,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_X =  {
           ins.current.csr[CSR_PMPCFG15][18],
           ins.current.csr[CSR_PMPCFG15][10],
@@ -1644,7 +1644,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG3][18]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_X =  {
           ins.current.csr[CSR_PMPCFG14][50],
           ins.current.csr[CSR_PMPCFG14][42],
@@ -1697,7 +1697,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_x =  {
           ins.current.csr[CSR_PMPCFG3][18],
           ins.current.csr[CSR_PMPCFG3][10],
@@ -1716,7 +1716,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][2]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_x =  {
           ins.current.csr[CSR_PMPCFG2][50],
           ins.current.csr[CSR_PMPCFG2][42],
@@ -1736,7 +1736,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
           ins.current.csr[CSR_PMPCFG3][20:19],
           ins.current.csr[CSR_PMPCFG3][12:11],
@@ -1755,7 +1755,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][4:3]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
           ins.current.csr[CSR_PMPCFG2][52:51],
           ins.current.csr[CSR_PMPCFG2][44:43],
@@ -1775,7 +1775,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_A =  {
           ins.current.csr[CSR_PMPCFG15][20:19],
           ins.current.csr[CSR_PMPCFG15][12:11],
@@ -1827,7 +1827,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG3][28:27]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_A =  {
           ins.current.csr[CSR_PMPCFG14][52:51],
           ins.current.csr[CSR_PMPCFG14][44:43],
@@ -1880,7 +1880,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_L =  {
           ins.current.csr[CSR_PMPCFG15][23],
           ins.current.csr[CSR_PMPCFG15][15],
@@ -1932,7 +1932,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG3][31]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_L =  {
           ins.current.csr[CSR_PMPCFG14][55],
           ins.current.csr[CSR_PMPCFG14][47],
@@ -1985,7 +1985,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           };
   `endif
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_l =  {
           ins.current.csr[CSR_PMPCFG3][23],
           ins.current.csr[CSR_PMPCFG3][15],
@@ -2004,7 +2004,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][7]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_l =  {
           ins.current.csr[CSR_PMPCFG2][55],
           ins.current.csr[CSR_PMPCFG2][47],

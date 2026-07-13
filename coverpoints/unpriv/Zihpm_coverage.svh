@@ -44,7 +44,7 @@ covergroup Zihpm_csrrc_cg with function sample(ins_t ins);
         bins hpmcounter29 = {12'hC1D};
         bins hpmcounter30 = {12'hC1E};
         bins hpmcounter31 = {12'hC1F};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins hpmcounter3h  = {12'hC83};
             bins hpmcounter4h  = {12'hC84};
             bins hpmcounter5h  = {12'hC85};
@@ -111,7 +111,7 @@ covergroup Zihpm_csrrs_cg with function sample(ins_t ins);
         bins hpmcounter29 = {12'hC1D};
         bins hpmcounter30 = {12'hC1E};
         bins hpmcounter31 = {12'hC1F};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins hpmcounter3h  = {12'hC83};
             bins hpmcounter4h  = {12'hC84};
             bins hpmcounter5h  = {12'hC85};

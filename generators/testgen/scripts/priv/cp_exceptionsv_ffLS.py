@@ -1,6 +1,6 @@
 """Priv coverpoint handler for cp_exceptionsv_ffLS.
 
-Generates tests for fault-first load instructions with rs1=0 (address RVMODEL_ACCESS_FAULT_ADDRESS)
+Generates tests for fault-first load instructions with rs1=0 (address 0)
 and masking disabled (vm=1), triggering a fault on the first element.
 """
 
@@ -38,10 +38,10 @@ def make_exceptionsv_ffLS(instruction: str) -> None:
     from .cp_exceptionsv_LS import _emit_setup
     _emit_setup(instruction, instruction_data, sew)
 
-    # rs1 = 0 (address 0 → access fault on first element). Use the randomly
-    # chosen rs1 register, not a hardcoded one.
+    # rs1 = RVMODEL_ACCESS_FAULT_ADDRESS (access fault on first element). Use the
+    # randomly chosen rs1 register, not a hardcoded one.
     rs1_reg = instruction_data[1]["rs1"]["reg"]
-    common.writeLine(f"li x{rs1_reg}, RVMODEL_ACCESS_FAULT_ADDRESS", f"# rs1 (x{rs1_reg}) = RVMODEL_ACCESS_FAULT_ADDRESS (address fault trigger)")
+    common.writeLine(f"li x{rs1_reg}, RVMODEL_ACCESS_FAULT_ADDRESS", f"# rs1 (x{rs1_reg}) = RVMODEL_ACCESS_FAULT_ADDRESS (access fault trigger)")
 
     # Build testline: unmasked (no v0.t) so insn[25]=1 → mask_disabled
     vec_data, scalar_data, fp_data, imm_val = instruction_data

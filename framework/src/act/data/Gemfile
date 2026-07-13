@@ -4,4 +4,26 @@
 
 source "https://rubygems.org"
 
-gem "udb", "~> 0.1.9"
+# By default we pull the UDB Ruby gems from rubygems.org. To develop against
+# a local riscv-unified-db checkout (e.g. to pick up unpublished changes such
+# as augmented udb-gen subcommands), set UDB_LOCAL_PATH to the checkout root
+# and the gems will be sourced from <UDB_LOCAL_PATH>/tools/ruby-gems instead.
+udb_local_path = ENV["UDB_LOCAL_PATH"]
+
+if udb_local_path && !udb_local_path.empty?
+  gems_root = "#{udb_local_path}/tools/ruby-gems"
+  gem "udb",         path: "#{gems_root}/udb"
+  gem "udb-gen",     path: "#{gems_root}/udb-gen"
+  gem "udb_helpers", path: "#{gems_root}/udb_helpers"
+  gem "idlc",        path: "#{gems_root}/idlc"
+else
+  # Pin to the latest published versions so every contributor pulls the same
+  # gem versions. Bump these in lockstep with Gemfile.lock when upgrading.
+  gem "udb",         "0.1.13"
+  gem "udb-gen",     "0.1.12"
+  gem "udb_helpers", "0.1.3"
+  gem "idlc",        "0.1.5"
+end
+
+# Mirrors udb's own required_ruby_version (~> 3.2).
+ruby "~> 3.2"

@@ -61,7 +61,7 @@ covergroup EndianU_cg with function sample(ins_t ins);
         bins U_Mode = {2'b00};
         bins M_Mode = {2'b11};
     }
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
     }
     `else
@@ -87,7 +87,7 @@ covergroup EndianU_cg with function sample(ins_t ins);
     cp_mstatus_mprv_ube_endianness_lhu: cross priv_mode_m, mstatus_ube, cp_lhu, cp_halfoffset, mstatus_mprv, mstatus_mbe, mstatus_mpp;
     cp_mstatus_mprv_ube_endianness_lbu: cross priv_mode_m, mstatus_ube, cp_lbu, cp_byteoffset, mstatus_mprv, mstatus_mbe, mstatus_mpp;
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_sd: coverpoint ins.current.insn {
             wildcard bins sd = {SD};
         }

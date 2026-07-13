@@ -103,7 +103,7 @@ done:
     j self_loop         # wait forever (not taken)
 
 
-.align 8                # trap handlers aligned to multiple of 2^8
+.p2align 8                # trap handlers aligned to multiple of 2^8
 trap_handler:
     nop
     nop
@@ -237,7 +237,7 @@ self_loop:
 // isntructions.  It handles other traps by calling the regular trap handler.
 /////////////////////////////////
 
-.align 4                # trap handlers must be aligned to multiple of 4
+.p2align 4                # trap handlers must be aligned to multiple of 4
 trap_handler_fastuncompressedillegalinstr:
     # Load trap handler stack pointer tp
     csrrw tp, mscratch, tp  # swap MSCRATCH and tp
@@ -275,7 +275,7 @@ uncompressedillegalinstructionreturn:            # return from trap handler.  Fa
 // so point to a regular trap handler before needing others.
 /////////////////////////////////
 
-.align 4                # trap handlers must be aligned to multiple of 4
+.p2align 4                # trap handlers must be aligned to multiple of 4
 trap_handler_returnplus4:
     csrr t0, mepc
     addi t0, t0, 4
@@ -289,7 +289,7 @@ trap_handler_returnplus4:
 // so point to a regular trap handler before needing others.
 /////////////////////////////////
 
-.align 4                # trap handlers must be aligned to multiple of 4
+.p2align 4                # trap handlers must be aligned to multiple of 4
 trap_handler_returnplus2:
     csrr t0, mepc
     addi t0, t0, 2
@@ -612,5 +612,5 @@ topofstack:
     .space 512
 topoftrapstack:
 
-.align 4
+.p2align 4
 .section .text.main

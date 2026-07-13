@@ -13,7 +13,7 @@
     Zba_sh1add_cg = new(); Zba_sh1add_cg.set_inst_name("obj_Zba_sh1add");
     Zba_sh2add_cg = new(); Zba_sh2add_cg.set_inst_name("obj_Zba_sh2add");
     Zba_sh3add_cg = new(); Zba_sh3add_cg.set_inst_name("obj_Zba_sh3add");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zba_add_uw_cg = new(); Zba_add_uw_cg.set_inst_name("obj_Zba_add_uw");
     Zba_sh1add_uw_cg = new(); Zba_sh1add_uw_cg.set_inst_name("obj_Zba_sh1add_uw");
     Zba_sh2add_uw_cg = new(); Zba_sh2add_uw_cg.set_inst_name("obj_Zba_sh2add_uw");

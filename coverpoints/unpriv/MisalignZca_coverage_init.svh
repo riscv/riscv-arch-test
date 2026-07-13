@@ -14,7 +14,7 @@
     MisalignZca_c_lwsp_cg = new(); MisalignZca_c_lwsp_cg.set_inst_name("obj_MisalignZca_c_lwsp");
     MisalignZca_c_sw_cg = new(); MisalignZca_c_sw_cg.set_inst_name("obj_MisalignZca_c_sw");
     MisalignZca_c_swsp_cg = new(); MisalignZca_c_swsp_cg.set_inst_name("obj_MisalignZca_c_swsp");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignZca_c_ld_cg = new(); MisalignZca_c_ld_cg.set_inst_name("obj_MisalignZca_c_ld");
     MisalignZca_c_ldsp_cg = new(); MisalignZca_c_ldsp_cg.set_inst_name("obj_MisalignZca_c_ldsp");
     MisalignZca_c_sd_cg = new(); MisalignZca_c_sd_cg.set_inst_name("obj_MisalignZca_c_sd");

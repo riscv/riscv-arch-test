@@ -2,7 +2,6 @@
 // cp_ssstrictv_vcompress_vd_v0_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // vcompress: destination register group cannot overlap source mask register (v0)
     cp_ssstrictv_vcompress_vd_v0_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_v0;

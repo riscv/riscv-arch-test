@@ -2,7 +2,6 @@
 // cp_ssstrictv_vslideup_vd_vs2_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // vslideup: destination register group cannot overlap source register group
     cp_ssstrictv_vslideup_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;

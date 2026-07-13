@@ -6,7 +6,7 @@
         wildcard bins sew8      = {[8'b11111111:8'b00000001]};
     }
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
 
     rs1_target_value : coverpoint ins.current.rs1_val == 32'h80000001 {
         bins target = {1};
@@ -18,7 +18,7 @@
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
 
     rs1_target_value : coverpoint ins.current.rs1_val == 16'h8000000000000001 {
         bins target = {1};

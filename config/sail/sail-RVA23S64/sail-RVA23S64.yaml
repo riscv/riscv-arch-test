@@ -37,7 +37,7 @@ implemented_extensions:
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zfa, version: "= 1.0.0" }
   - { name: Zfhmin, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
@@ -69,7 +69,7 @@ implemented_extensions:
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.13.0" }
+  - { name: Sv39, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
@@ -255,6 +255,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,
@@ -386,10 +387,10 @@ params:
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
   SV39_VSMODE_TRANSLATION: true
   SV39X4_TRANSLATION: true
-  SV48_VSMODE_TRANSLATION: true
-  SV48X4_TRANSLATION: true
-  SV57_VSMODE_TRANSLATION: true
-  SV57X4_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: false
+  SV48X4_TRANSLATION: false
+  SV57_VSMODE_TRANSLATION: false
+  SV57X4_TRANSLATION: false
   TINST_VALUE_ON_BREAKPOINT: "always zero"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
   TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"

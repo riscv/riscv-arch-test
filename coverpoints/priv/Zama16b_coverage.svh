@@ -59,7 +59,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     cp_lw_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LW) {
         bins offsets[] = {[0:12]};
     }
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_lwu_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LWU) {
             bins offsets[] = {[0:12]};
         }
@@ -71,7 +71,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     `endif
 
     // ---- 8-byte loads: offsets [0:8] ----
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_ld_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LD) {
             bins offsets[] = {[0:8]};
         }
@@ -119,7 +119,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     `endif
 
     // ---- 8-byte stores: offsets [0:8] ----
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_sd_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SD) {
             bins offsets[] = {[0:8]};
         }
@@ -236,7 +236,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
         `endif // ZACAS_SUPPORTED
 
         // ---- 8-byte AMOs (RV64): offsets [0:8] ----
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             cp_amoswap_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_D) {
                 bins offsets[] = {[0:8]};
             }
@@ -274,7 +274,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
                     bins offsets[] = {[0:0]};
                 }
             `endif // ZACAS_SUPPORTED
-        `endif // XLEN64
+        `endif // UDB_MXLEN_64
     `endif // ZAAMO_SUPPORTED
 
 

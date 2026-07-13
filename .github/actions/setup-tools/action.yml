@@ -1,0 +1,45 @@
+# jcarlin@hmc.edu 2 July 2026
+# SPDX-License-Identifier: Apache-2.0
+#
+# Shared job setup: mise (Ruby + uv), uv package cache, and optionally the
+# UDB gem cache for jobs that run act/UDB (elfs builds, CI discovery).
+
+name: Set up tools
+description: Set up mise and cache uv packages, optionally caching UDB gems
+
+inputs:
+  udb-gems:
+    description: Cache UDB gems and set BUNDLE_PATH (for jobs that run UDB via act)
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up mise
+      uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+
+    - name: Cache uv packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: ~/.cache/uv
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+
+    # Install UDB gems into a dedicated directory so they can be cached
+    # independently of the mise-managed Ruby installation.
+    - name: Set BUNDLE_PATH
+      if: inputs.udb-gems == 'true'
+      shell: bash
+      run: echo "BUNDLE_PATH=$GITHUB_WORKSPACE/.bundle-gems" >> "$GITHUB_ENV"
+
+    # ~/.cache/udb holds the z3/espresso binaries that the udb gem downloads
+    # at install time; a restored gem cache skips `bundle install`, so the
+    # binaries must be cached along with the gems.
+    - name: Cache UDB gems
+      if: inputs.udb-gems == 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: |
+          .bundle-gems
+          ~/.cache/udb
+        key: udb-gems-${{ runner.os }}-${{ hashFiles('.mise.toml', 'framework/src/act/data/Gemfile.lock') }}

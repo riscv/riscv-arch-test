@@ -1,1 +1,0 @@
-../../sail/sail-RVI20U64/rvtest_config.svh

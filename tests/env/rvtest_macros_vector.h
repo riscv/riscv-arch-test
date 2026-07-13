@@ -6,57 +6,57 @@
 #ifndef RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 #define RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 
-// Define which LMUL fractions are supported based on SEW_MIN and ELEN
-#if SEW_MIN == 8
-    #if ELEN == 64
+// Define which LMUL fractions are supported based on UDB_SEW_MIN and UDB_ELEN
+#if UDB_SEW_MIN == 8
+    #if UDB_ELEN == 64
         #define LMULf8_SUPPORTED
         #define LMULf4_SUPPORTED
         #define LMULf2_SUPPORTED
-    #elif ELEN == 32
+    #elif UDB_ELEN == 32
         #define LMULf4_SUPPORTED
         #define LMULf2_SUPPORTED
-    #elif ELEN == 16
+    #elif UDB_ELEN == 16
         #define LMULf2_SUPPORTED
-    #elif ELEN == 8
+    #elif UDB_ELEN == 8
     #else
-        #error "ELEN unsupported, check SEW_MIN"
+        #error "UDB_ELEN unsupported, check UDB_SEW_MIN"
     #endif
-#elif SEW_MIN == 16
-    #if ELEN == 64
+#elif UDB_SEW_MIN == 16
+    #if UDB_ELEN == 64
         #define LMULf4_SUPPORTED
         #define LMULf2_SUPPORTED
-    #elif ELEN == 32
+    #elif UDB_ELEN == 32
         #define LMULf2_SUPPORTED
-    #elif ELEN == 16
+    #elif UDB_ELEN == 16
     #else
-        #error "ELEN unsupported, check SEW_MIN"
+        #error "UDB_ELEN unsupported, check UDB_SEW_MIN"
     #endif
-#elif SEW_MIN == 32
-    #if ELEN == 64
+#elif UDB_SEW_MIN == 32
+    #if UDB_ELEN == 64
         #define LMULf2_SUPPORTED
-    #elif ELEN == 32
+    #elif UDB_ELEN == 32
     #else
-        #error "ELEN unsupported, check SEW_MIN"
+        #error "UDB_ELEN unsupported, check UDB_SEW_MIN"
     #endif
 #endif
 
-// Per-test fractional LMUL support based on RVTEST_SEW (set in each test) and ELEN.
+// Per-test fractional LMUL support based on RVTEST_SEW (set in each test) and UDB_ELEN.
 // The testgen-emitted #if guards in the test source run BEFORE this header is included,
-// at which point ELEN is still undefined, so the test-source defines never fire.
-// Defining them here (after ELEN is in scope) ensures #ifdef TEST_LMULfN_SUPPORTED
+// at which point UDB_ELEN is still undefined, so the test-source defines never fire.
+// Defining them here (after UDB_ELEN is in scope) ensures #ifdef TEST_LMULfN_SUPPORTED
 // in the test body works correctly.
-#if defined(RVTEST_SEW) && defined(ELEN)
-    #if (RVTEST_SEW <= ELEN / 2)
+#if defined(RVTEST_SEW) && defined(UDB_ELEN)
+    #if (RVTEST_SEW <= UDB_ELEN / 2)
         #ifndef TEST_LMULf2_SUPPORTED
             #define TEST_LMULf2_SUPPORTED
         #endif
     #endif
-    #if (RVTEST_SEW <= ELEN / 4)
+    #if (RVTEST_SEW <= UDB_ELEN / 4)
         #ifndef TEST_LMULf4_SUPPORTED
             #define TEST_LMULf4_SUPPORTED
         #endif
     #endif
-    #if (RVTEST_SEW <= ELEN / 8)
+    #if (RVTEST_SEW <= UDB_ELEN / 8)
         #ifndef TEST_LMULf8_SUPPORTED
             #define TEST_LMULf8_SUPPORTED
         #endif

@@ -109,46 +109,22 @@
     Vx8_vmv8r_v_cg = new(); Vx8_vmv8r_v_cg.set_inst_name("obj_Vx8_vmv8r_v");
     Vx8_vmxnor_mm_cg = new(); Vx8_vmxnor_mm_cg.set_inst_name("obj_Vx8_vmxnor_mm");
     Vx8_vmxor_mm_cg = new(); Vx8_vmxor_mm_cg.set_inst_name("obj_Vx8_vmxor_mm");
-`ifndef ELEN8
     Vx8_vnclip_wi_cg = new(); Vx8_vnclip_wi_cg.set_inst_name("obj_Vx8_vnclip_wi");
-`endif
-`ifndef ELEN8
     Vx8_vnclip_wv_cg = new(); Vx8_vnclip_wv_cg.set_inst_name("obj_Vx8_vnclip_wv");
-`endif
-`ifndef ELEN8
     Vx8_vnclip_wx_cg = new(); Vx8_vnclip_wx_cg.set_inst_name("obj_Vx8_vnclip_wx");
-`endif
-`ifndef ELEN8
     Vx8_vnclipu_wi_cg = new(); Vx8_vnclipu_wi_cg.set_inst_name("obj_Vx8_vnclipu_wi");
-`endif
-`ifndef ELEN8
     Vx8_vnclipu_wv_cg = new(); Vx8_vnclipu_wv_cg.set_inst_name("obj_Vx8_vnclipu_wv");
-`endif
-`ifndef ELEN8
     Vx8_vnclipu_wx_cg = new(); Vx8_vnclipu_wx_cg.set_inst_name("obj_Vx8_vnclipu_wx");
-`endif
     Vx8_vnmsac_vv_cg = new(); Vx8_vnmsac_vv_cg.set_inst_name("obj_Vx8_vnmsac_vv");
     Vx8_vnmsac_vx_cg = new(); Vx8_vnmsac_vx_cg.set_inst_name("obj_Vx8_vnmsac_vx");
     Vx8_vnmsub_vv_cg = new(); Vx8_vnmsub_vv_cg.set_inst_name("obj_Vx8_vnmsub_vv");
     Vx8_vnmsub_vx_cg = new(); Vx8_vnmsub_vx_cg.set_inst_name("obj_Vx8_vnmsub_vx");
-`ifndef ELEN8
     Vx8_vnsra_wi_cg = new(); Vx8_vnsra_wi_cg.set_inst_name("obj_Vx8_vnsra_wi");
-`endif
-`ifndef ELEN8
     Vx8_vnsra_wv_cg = new(); Vx8_vnsra_wv_cg.set_inst_name("obj_Vx8_vnsra_wv");
-`endif
-`ifndef ELEN8
     Vx8_vnsra_wx_cg = new(); Vx8_vnsra_wx_cg.set_inst_name("obj_Vx8_vnsra_wx");
-`endif
-`ifndef ELEN8
     Vx8_vnsrl_wi_cg = new(); Vx8_vnsrl_wi_cg.set_inst_name("obj_Vx8_vnsrl_wi");
-`endif
-`ifndef ELEN8
     Vx8_vnsrl_wv_cg = new(); Vx8_vnsrl_wv_cg.set_inst_name("obj_Vx8_vnsrl_wv");
-`endif
-`ifndef ELEN8
     Vx8_vnsrl_wx_cg = new(); Vx8_vnsrl_wx_cg.set_inst_name("obj_Vx8_vnsrl_wx");
-`endif
     Vx8_vor_vi_cg = new(); Vx8_vor_vi_cg.set_inst_name("obj_Vx8_vor_vi");
     Vx8_vor_vv_cg = new(); Vx8_vor_vv_cg.set_inst_name("obj_Vx8_vor_vv");
     Vx8_vor_vx_cg = new(); Vx8_vor_vx_cg.set_inst_name("obj_Vx8_vor_vx");
@@ -206,99 +182,37 @@
     Vx8_vssubu_vx_cg = new(); Vx8_vssubu_vx_cg.set_inst_name("obj_Vx8_vssubu_vx");
     Vx8_vsub_vv_cg = new(); Vx8_vsub_vv_cg.set_inst_name("obj_Vx8_vsub_vv");
     Vx8_vsub_vx_cg = new(); Vx8_vsub_vx_cg.set_inst_name("obj_Vx8_vsub_vx");
-`ifndef ELEN8
     Vx8_vwadd_vv_cg = new(); Vx8_vwadd_vv_cg.set_inst_name("obj_Vx8_vwadd_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwadd_vx_cg = new(); Vx8_vwadd_vx_cg.set_inst_name("obj_Vx8_vwadd_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwadd_wv_cg = new(); Vx8_vwadd_wv_cg.set_inst_name("obj_Vx8_vwadd_wv");
-`endif
-`ifndef ELEN8
     Vx8_vwadd_wx_cg = new(); Vx8_vwadd_wx_cg.set_inst_name("obj_Vx8_vwadd_wx");
-`endif
-`ifndef ELEN8
     Vx8_vwaddu_vv_cg = new(); Vx8_vwaddu_vv_cg.set_inst_name("obj_Vx8_vwaddu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwaddu_vx_cg = new(); Vx8_vwaddu_vx_cg.set_inst_name("obj_Vx8_vwaddu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwaddu_wv_cg = new(); Vx8_vwaddu_wv_cg.set_inst_name("obj_Vx8_vwaddu_wv");
-`endif
-`ifndef ELEN8
     Vx8_vwaddu_wx_cg = new(); Vx8_vwaddu_wx_cg.set_inst_name("obj_Vx8_vwaddu_wx");
-`endif
-`ifndef ELEN8
     Vx8_vwmacc_vv_cg = new(); Vx8_vwmacc_vv_cg.set_inst_name("obj_Vx8_vwmacc_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmacc_vx_cg = new(); Vx8_vwmacc_vx_cg.set_inst_name("obj_Vx8_vwmacc_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmaccsu_vv_cg = new(); Vx8_vwmaccsu_vv_cg.set_inst_name("obj_Vx8_vwmaccsu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmaccsu_vx_cg = new(); Vx8_vwmaccsu_vx_cg.set_inst_name("obj_Vx8_vwmaccsu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmaccu_vv_cg = new(); Vx8_vwmaccu_vv_cg.set_inst_name("obj_Vx8_vwmaccu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmaccu_vx_cg = new(); Vx8_vwmaccu_vx_cg.set_inst_name("obj_Vx8_vwmaccu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmaccus_vx_cg = new(); Vx8_vwmaccus_vx_cg.set_inst_name("obj_Vx8_vwmaccus_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmul_vv_cg = new(); Vx8_vwmul_vv_cg.set_inst_name("obj_Vx8_vwmul_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmul_vx_cg = new(); Vx8_vwmul_vx_cg.set_inst_name("obj_Vx8_vwmul_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmulsu_vv_cg = new(); Vx8_vwmulsu_vv_cg.set_inst_name("obj_Vx8_vwmulsu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmulsu_vx_cg = new(); Vx8_vwmulsu_vx_cg.set_inst_name("obj_Vx8_vwmulsu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwmulu_vv_cg = new(); Vx8_vwmulu_vv_cg.set_inst_name("obj_Vx8_vwmulu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwmulu_vx_cg = new(); Vx8_vwmulu_vx_cg.set_inst_name("obj_Vx8_vwmulu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwredsum_vs_cg = new(); Vx8_vwredsum_vs_cg.set_inst_name("obj_Vx8_vwredsum_vs");
-`endif
-`ifndef ELEN8
     Vx8_vwredsumu_vs_cg = new(); Vx8_vwredsumu_vs_cg.set_inst_name("obj_Vx8_vwredsumu_vs");
-`endif
-`ifndef ELEN8
     Vx8_vwsub_vv_cg = new(); Vx8_vwsub_vv_cg.set_inst_name("obj_Vx8_vwsub_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwsub_vx_cg = new(); Vx8_vwsub_vx_cg.set_inst_name("obj_Vx8_vwsub_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwsub_wv_cg = new(); Vx8_vwsub_wv_cg.set_inst_name("obj_Vx8_vwsub_wv");
-`endif
-`ifndef ELEN8
     Vx8_vwsub_wx_cg = new(); Vx8_vwsub_wx_cg.set_inst_name("obj_Vx8_vwsub_wx");
-`endif
-`ifndef ELEN8
     Vx8_vwsubu_vv_cg = new(); Vx8_vwsubu_vv_cg.set_inst_name("obj_Vx8_vwsubu_vv");
-`endif
-`ifndef ELEN8
     Vx8_vwsubu_vx_cg = new(); Vx8_vwsubu_vx_cg.set_inst_name("obj_Vx8_vwsubu_vx");
-`endif
-`ifndef ELEN8
     Vx8_vwsubu_wv_cg = new(); Vx8_vwsubu_wv_cg.set_inst_name("obj_Vx8_vwsubu_wv");
-`endif
-`ifndef ELEN8
     Vx8_vwsubu_wx_cg = new(); Vx8_vwsubu_wx_cg.set_inst_name("obj_Vx8_vwsubu_wx");
-`endif
     Vx8_vxor_vi_cg = new(); Vx8_vxor_vi_cg.set_inst_name("obj_Vx8_vxor_vi");
     Vx8_vxor_vv_cg = new(); Vx8_vxor_vv_cg.set_inst_name("obj_Vx8_vxor_vv");
     Vx8_vxor_vx_cg = new(); Vx8_vxor_vx_cg.set_inst_name("obj_Vx8_vxor_vx");

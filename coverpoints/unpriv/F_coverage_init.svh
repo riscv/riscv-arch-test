@@ -36,7 +36,7 @@
     F_fsqrt_s_cg = new(); F_fsqrt_s_cg.set_inst_name("obj_F_fsqrt_s");
     F_fsub_s_cg = new(); F_fsub_s_cg.set_inst_name("obj_F_fsub_s");
     F_fsw_cg = new(); F_fsw_cg.set_inst_name("obj_F_fsw");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     F_fcvt_l_s_cg = new(); F_fcvt_l_s_cg.set_inst_name("obj_F_fcvt_l_s");
     F_fcvt_lu_s_cg = new(); F_fcvt_lu_s_cg.set_inst_name("obj_F_fcvt_lu_s");
     F_fcvt_s_l_cg = new(); F_fcvt_s_l_cg.set_inst_name("obj_F_fcvt_s_l");

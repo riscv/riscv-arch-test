@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zca_zicsr
+# MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -44,27 +44,20 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE    (1<<(RVMODEL_PMP_GRAIN+2))
+#define REGION_SIZE    (1<<(UDB_PMP_GRANULARITY))
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -99,16 +92,16 @@ main:
     csrw pmpcfg0, x4
 
       //Test case1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_0, test1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test3
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -123,14 +116,14 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
-.align 10
+.p2align 10
 .skip (0x802)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 
 TEST_FOR_EXECUTION_1:
     ret                                                         // Compressed return inside the region
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) -4 ) /2)                 // (size of region - size of 2 returns) / size of nop
+    .rept (((1<<(UDB_PMP_GRANULARITY)) -4 ) /2)                 // (size of region - size of 2 returns) / size of nop
     nop
     .endr
 

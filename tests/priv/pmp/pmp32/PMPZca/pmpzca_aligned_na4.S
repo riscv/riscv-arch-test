@@ -26,7 +26,7 @@
 #   MXLEN: 32
 #   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zca_zicsr
+# MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -44,25 +44,18 @@ RVTEST_BEGIN
 
 #define REGION_SIZE     4
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -81,7 +74,6 @@ main:
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
-
     // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
     LA(x5, REGIONSTART)
@@ -110,13 +102,12 @@ main:
     csrw pmpcfg0, x4
 
     // Test Case 1: Execute in first region (should succeed)
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
 
     // Test Case 2: Execute in second region (should succeed)
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
 
     j exit
-
 
 exit:
 
@@ -127,13 +118,16 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
-.align 12
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
     jalr x0, x1, 0
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                  // Uncompressed return inside the second region
 

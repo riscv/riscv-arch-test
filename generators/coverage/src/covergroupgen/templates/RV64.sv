@@ -1,1 +1,1 @@
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64

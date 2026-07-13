@@ -18,7 +18,7 @@
     M_mulhu_cg = new(); M_mulhu_cg.set_inst_name("obj_M_mulhu");
     M_rem_cg = new(); M_rem_cg.set_inst_name("obj_M_rem");
     M_remu_cg = new(); M_remu_cg.set_inst_name("obj_M_remu");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     M_divuw_cg = new(); M_divuw_cg.set_inst_name("obj_M_divuw");
     M_divw_cg = new(); M_divw_cg.set_inst_name("obj_M_divw");
     M_mulw_cg = new(); M_mulw_cg.set_inst_name("obj_M_mulw");

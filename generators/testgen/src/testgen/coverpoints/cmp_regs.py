@@ -47,7 +47,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test rd = rs1 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
-            tc.code = asm_setup + "\n" + tc.code
+            tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
         return_test_regs(test_data, params)
 
@@ -86,7 +86,7 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test rd = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
-            tc.code = asm_setup + "\n" + tc.code
+            tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
         return_test_regs(test_data, params)
 
@@ -125,7 +125,7 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         desc = f"{coverpoint} (Test rs1 = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
-            tc.code = asm_setup + "\n" + tc.code
+            tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
         return_test_regs(test_data, params)
 
@@ -162,7 +162,7 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
         desc = f"{coverpoint} (Test rd = rs1 = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
-            tc.code = asm_setup + "\n" + tc.code
+            tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
         return_test_regs(test_data, params)
 

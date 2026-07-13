@@ -15,7 +15,7 @@
     Misalign_lw_cg = new(); Misalign_lw_cg.set_inst_name("obj_Misalign_lw");
     Misalign_sh_cg = new(); Misalign_sh_cg.set_inst_name("obj_Misalign_sh");
     Misalign_sw_cg = new(); Misalign_sw_cg.set_inst_name("obj_Misalign_sw");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Misalign_ld_cg = new(); Misalign_ld_cg.set_inst_name("obj_Misalign_ld");
     Misalign_lwu_cg = new(); Misalign_lwu_cg.set_inst_name("obj_Misalign_lwu");
     Misalign_sd_cg = new(); Misalign_sd_cg.set_inst_name("obj_Misalign_sd");

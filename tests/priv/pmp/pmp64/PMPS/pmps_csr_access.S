@@ -24,7 +24,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmps_csr_access.S"
@@ -79,8 +79,8 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 10
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 10
+.p2align (UDB_PMP_GRANULARITY)
 RETURN_INSTRUCTION:
     nop
     nop
@@ -90,7 +90,7 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_pmpaddr_access_s\""

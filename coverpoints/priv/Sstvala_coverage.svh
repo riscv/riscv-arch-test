@@ -110,7 +110,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     `endif
 
     pf_stval: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sv39_page = {64'h0000000140300000};
         `else
             bins sv32_page = {32'hC0300000};

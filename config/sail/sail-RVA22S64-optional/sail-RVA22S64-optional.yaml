@@ -44,7 +44,7 @@ implemented_extensions:
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.12.0" }
+  - { name: Sv39, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
@@ -74,8 +74,8 @@ implemented_extensions:
   - { name: Sscofpmf, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
-  - { name: Sv48, version: "= 1.12.0" }
-  - { name: Sv57, version: "= 1.12.0" }
+  - { name: Sv48, version: "= 1.0.0" }
+  - { name: Sv57, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Sha, version: "= 1.0.0" }
   - { name: H, version: "= 1.0.0" }
@@ -257,6 +257,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

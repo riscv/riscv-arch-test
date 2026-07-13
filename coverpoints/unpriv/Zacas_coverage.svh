@@ -24,8 +24,26 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+        // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+        // Compare the lowest 16 bits of current rd value to
+        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+        // Compare the least significant byte of current rd value to the
+        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
+    }
+
+    cmp_rd_sign_ext : coverpoint ins.current.rd_val[31] iff (ins.trap == 0) {
+
     }
 
     cmp_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
@@ -55,7 +73,7 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -90,7 +108,7 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_rd_rs1_nx0_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
@@ -99,10 +117,41 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
     }
 
+    cmp_rd_rs1_pair_partial_val : coverpoint (
+            (ins.current.rd_val == ins.prev.rd_val) ^
+            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
+        ) iff (ins.trap == 0)
+        {
+        // Cases where rd and rs1 have matching high or low halves but not both
+            bins rd_pair_partial_equal_val_rs1 = {1};
+            bins rd_pair_partial_not_equal_val_rs1 = {0};
+        }
+
     cmp_rd_rs1_rs2_nx0_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all even registers excluding x0
         ignore_bins x0 = {x0};
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
+    }
+
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+        // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+        // Compare the lowest 16 bits of current rd value to
+        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+        // Compare the least significant byte of current rd value to the
+        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
+        // Compare the lowest 32 bits of current rd value to the
+        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
+        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
 
     cmp_rd_rs2_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -132,7 +181,7 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -173,7 +222,7 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
@@ -184,6 +233,27 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     cmp_rd_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers excluding x0
         ignore_bins x0 = {x0};
+    }
+
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+        // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+        // Compare the lowest 16 bits of current rd value to
+        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+        // Compare the least significant byte of current rd value to the
+        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
+        // Compare the lowest 32 bits of current rd value to the
+        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
+        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
 
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -214,7 +284,7 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -257,10 +327,41 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
     }
 
+    cmp_rd_rs1_pair_partial_val : coverpoint (
+            (ins.current.rd_val == ins.prev.rd_val) ^
+            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
+        ) iff (ins.trap == 0)
+        {
+        // Cases where rd and rs1 have matching high or low halves but not both
+            bins rd_pair_partial_equal_val_rs1 = {1};
+            bins rd_pair_partial_not_equal_val_rs1 = {0};
+        }
+
     cmp_rd_rs1_rs2_nx0_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all even registers excluding x0
         ignore_bins x0 = {x0};
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
+    }
+
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+        // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+        // Compare the lowest 16 bits of current rd value to
+        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+        // Compare the least significant byte of current rd value to the
+        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+    }
+
+    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
+        // Compare the lowest 32 bits of current rd value to the
+        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
+        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
 
     cmp_rd_rs2_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -290,7 +391,7 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -337,12 +438,12 @@ function void zacas_sample(int hart, int issue, ins_t ins);
         "amocas.w"     : begin
             Zacas_amocas_w_cg.sample(ins);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "amocas.d"     : begin
             Zacas_amocas_d_cg.sample(ins);
         end
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "amocas.d"     : begin
             Zacas_amocas_d_cg.sample(ins);
         end

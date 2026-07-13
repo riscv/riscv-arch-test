@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -307,15 +308,17 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     required_extensions=["U"],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
-def make_exceptionszicbou(test_data: TestData) -> list[str]:
+def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboU coverpoints"""
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(["#ifdef S_SUPPORTED", "    LI(x11, -1)", "    csrw senvcfg, x11", "#endif"])
-    lines.extend(_generate_cbie_tests(test_data))
-    lines.extend(_generate_cbcfe_tests(test_data))
-    lines.extend(_generate_cbze_tests(test_data))
-    lines.extend(_generate_cbo_access_fault_tests(test_data))
-    lines.extend(_generate_cbo_misaligned_tests(test_data))
+    tc.code.extend(["#ifdef S_SUPPORTED", "    LI(x11, -1)", "    csrw senvcfg, x11", "#endif"])
+    tc.code.extend(_generate_cbie_tests(test_data))
+    tc.code.extend(_generate_cbcfe_tests(test_data))
+    tc.code.extend(_generate_cbze_tests(test_data))
+    tc.code.extend(_generate_cbo_access_fault_tests(test_data))
+    tc.code.extend(_generate_cbo_misaligned_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

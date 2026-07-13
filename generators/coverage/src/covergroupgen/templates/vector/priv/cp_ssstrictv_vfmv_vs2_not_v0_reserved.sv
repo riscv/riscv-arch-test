@@ -2,7 +2,6 @@
 // cp_ssstrictv_vfmv_vs2_not_v0_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // vfmv.v.f: vs2 must be v0, any other register is reserved
     vs2_not_v0: coverpoint ins.current.insn[24:20] {

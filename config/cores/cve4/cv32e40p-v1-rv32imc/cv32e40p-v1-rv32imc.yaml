@@ -36,20 +36,20 @@ params:
   # trap/exception behavior
   TRAP_ON_ECALL_FROM_M: true # VERIFIED — exceptions_interrupts.rst: ECALL listed in exceptions table (code 11), "cannot be disabled"
   TRAP_ON_EBREAK: true # VERIFIED — exceptions_interrupts.rst: EBREAK listed in exceptions table (code 3)
-  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst: illegal instruction (code 2) "cannot be disabled"; cv32e40p_decoder.sv: default case raises illegal
-  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst: any undefined encoding raises illegal instruction exception; cv32e40p_decoder.sv: default case
-  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — exceptions_interrupts.rst: FPU=0 causes illegal trap on F CSR access; cv32e40p_decoder.sv default case covers undefined CSRs
-  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — cv32e40p_cs_registers.sv: CSR write path applies masking only (e.g. mtvec_mode_n = {1'b0, wdata[0]}); no illegal-value trap
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": illegal instruction (code 2) "cannot be disabled"; FPU=0 causes illegal trap on F instructions
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": any undefined encoding raises illegal instruction exception
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": FPU=0 causes illegal trap on F CSR access; undefined CSRs raise illegal instruction exception
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": WARL masking ensures only valid modes stored; no illegal-value trap
 
   # MTVAL reporting
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: CSR_MIMPID and CSR_MTVAL grouped as "unimplemented, read 0"; mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
-  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — cv32e40p_cs_registers.sv:378-380: mtval hardwired 0
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
   MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
 
   # Misaligned load/store support
@@ -59,29 +59,29 @@ params:
   MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED — load_store_unit.rst:64: "transfer corresponding to the lowest address is performed first"; not simple sequential bytes
 
   # CSR / implementation IDs
-  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst:1122: marchid Reset Value 0x0000_0004; cv32e40p_pkg.sv:528: parameter MARCHID = 32'h4
-  IMP_ID_VALUE: 0x0 # VERIFIED — control_status_registers.rst:1137: mimpid Reset Value 0x0000_0000; cv32e40p_cs_registers.sv:378-380: CSR_MIMPID grouped with CSR_MTVAL "unimplemented, read 0" regardless of FPU; core_versions.rst: mimpid=0 for v1.0.0 certified config
-  VENDOR_ID_BANK: 0xC # VERIFIED — control_status_registers.rst:1110: bits[31:7] = 0xC (number of continuation codes); cv32e40p_pkg.sv:525: MVENDORID_BANK = 25'hC
-  VENDOR_ID_OFFSET: 0x2 # VERIFIED — control_status_registers.rst:1112: bits[6:0] = 0x2 (final byte of JEDEC ID); cv32e40p_pkg.sv:524: MVENDORID_OFFSET = 7'h2
+  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": Reset Value 0x0000_0004
+  IMP_ID_VALUE: 0x0 # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": bit[0]=0 when FPU=0, COREV_PULP=0, COREV_CLUSTER=0; core_versions.rst § "cv32e40p_v1.0.0": mimpid=0 for this certified parameter set
+  VENDOR_ID_BANK: 0xC # VERIFIED — control_status_registers.rst § "Machine Vendor ID (mvendorid)": bits[31:7]=0xC (JEDEC continuation codes)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — control_status_registers.rst § "Machine Vendor ID (mvendorid)": bits[6:0]=0x2 (final byte of JEDEC manufacturer ID)
 
   # MTVEC
-  MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst:551: "MODE[0]: 0 = direct mode, 1 = vectored mode"; cv32e40p_cs_registers.sv:722: mtvec_mode_n = {1'b0, csr_wdata_int[0]}
-  MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst:545: BASE[31:8] is RW; MODE[0] is RW
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — cv32e40p_cs_registers.sv:722: mtvec_mode_n = {1'b0, csr_wdata_int[0]}; masking always produces valid mode (0 or 1), illegal state unreachable
-  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst:545-547: BASE[7:2] RO=0 ("always aligned to 256 bytes"); cv32e40p_cs_registers.sv:356: read = {mtvec_q, 6'h0, mtvec_mode_q}
-  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst:545-547: same alignment for both modes; bits[7:2] hardwired 0
+  MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": MODE 0=direct, 1=vectored; both modes supported
+  MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": BASE[31:8] is RW; MODE[0] is RW
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": WARL masking constrains MODE to 0 or 1; illegal state unreachable
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": "always aligned to 256 bytes"; bits[7:2] hardwired 0
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": same alignment for both modes; bits[7:2] hardwired 0
 
   # Sm params
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst: "core sets mepc to the current program counter" implies synchronous precision
-  MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst:1117-1130: marchid (0xF12) implemented with value 0x4
-  MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst:1132-1145: mimpid (0xF13) implemented; cv32e40p_cs_registers.sv:378-380: CSR exists, returns 0x0 (deliberate version encoding per core_versions.rst)
-  PMA_GRANULARITY: 2 # QUESTIONABLE — no PMA hardware in RTL (cv32e40p_pmp.sv excluded from synthesis per intro.rst); schema minimum is 2 (=4 bytes); OBI bus 32-bit with byte-enables is natural 4-byte minimum
+  MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented with value 0x4
+  MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented; core_versions.rst § "cv32e40p_v1.0.0": returns 0x0, deliberate version encoding for this certified parameter set
+  PMA_GRANULARITY: 2 # QUESTIONABLE — load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte-enable granularity => 4-byte (2^2) natural minimum; no PMA hardware or explicit granularity documented in manual
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false # VERIFIED — perf_counters.rst:121-127: "user mode time(h) registers are not implemented, any access to these registers will cause an illegal instruction trap"
 
   # HPM Counters
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cv32e40p_cs_registers.sv:1364-1379: events[0..10] always active; events[11]=0 (PULP_CLUSTER=0); events[12..15]=0 (APU=0 when FPU=0, localparam APU=(FPU==1)?1:0 at cv32e40p_core.sv:125)
-  HPM_COUNTER_EN: # VERIFIED — cv32e40p_cs_registers.sv: NUM_MHPMCOUNTERS=1 default (integration.rst:112); only counter index 3 active; UDB requires indices 0-2 false
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — perf_counters.rst § "Event Selector": events 0-10 (CYCLES..COMP_INSTR) always active; events 11-15 (APU/FPU) inactive when FPU=0 (integration.rst § "Parameters": APU follows FPU parameter)
+  HPM_COUNTER_EN: # VERIFIED — integration.rst § "Parameters": NUM_MHPMCOUNTERS default=1; perf_counters.rst § "Performance Counters": only mhpmcounter3 active; UDB requires indices 0-2 false
     [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
@@ -116,7 +116,8 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
-  COUNTINHIBIT_EN: # VERIFIED — cv32e40p_cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q register; index 1 always false per UDB; unimplemented counters hardwired 0
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN: # VERIFIED — perf_counters.rst § "Controlling the counters from software": bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX; control_status_registers.rst § "Machine Counter-Inhibit register (mcountinhibit)": non-implemented counters read 0
     [
       true, # index 0 (MCYCLE inhibit — mcountinhibit_q[0] gates cycle counter)
       false, # index 1 (TM — always false, mcountinhibit.TM is read-only-0 per UDB)

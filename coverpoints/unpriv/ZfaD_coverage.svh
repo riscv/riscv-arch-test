@@ -821,7 +821,7 @@ covergroup ZfaD_froundnx_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 covergroup ZfaD_fmvh_x_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "fmvh.x.d"  iff (ins.trap == 0 )  {
@@ -885,7 +885,7 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -923,7 +923,7 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -959,7 +959,7 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 `endif
 function void zfad_sample(int hart, int issue, ins_t ins);
 
@@ -1009,7 +1009,7 @@ function void zfad_sample(int hart, int issue, ins_t ins);
         "froundnx.s"     : begin
             ZfaD_froundnx_s_cg.sample(ins);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "fmvh.x.d"     : begin
             ZfaD_fmvh_x_d_cg.sample(ins);
         end
@@ -1017,7 +1017,7 @@ function void zfad_sample(int hart, int issue, ins_t ins);
             ZfaD_fmvp_d_x_cg.sample(ins);
         end
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 `endif
     endcase
 endfunction

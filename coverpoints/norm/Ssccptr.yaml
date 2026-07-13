@@ -1,0 +1,8 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Ssccptr extension is implemented, then main memory regions with both the
+  # cacheability and coherence PMAs must support hardware page-table reads.
+  - name: ssccptr_memory_pte_reads
+    coverpoint: ["Ssccptr_cg/cp_ssccptr"]

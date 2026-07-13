@@ -10,7 +10,7 @@
 
 `define COVER_PMPU
 
-covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -50,7 +50,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     wildcard bins lh  = {LH};
     wildcard bins lhu = {LHU};
     wildcard bins lw  = {LW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins lwu = {LWU};
       wildcard bins ld  = {LD};
     `endif
@@ -63,7 +63,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     wildcard bins sb = {SB};
     wildcard bins sh = {SH};
     wildcard bins sw = {SW};
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
       wildcard bins sd = {SD};
     `endif
   }
@@ -218,7 +218,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
     cfg_A_na4: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
       wildcard bins na4_lwxr_0000 = {54'b????????????????????????????????????????00010000_100000};
@@ -255,7 +255,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
   cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
   cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
-  `ifdef G_IS_0
+  `ifdef UDB_PMP_GRANULARITY_2
     // Access at start of address, that address - 4, just beyond top of the region.
     cp_cfg_A_na4_jalr: cross priv_mode_u, cfg_A_na4, exec_instr, addr_offset_na4 ;
     cp_cfg_A_na4_lw: cross priv_mode_u, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
@@ -278,13 +278,13 @@ endgroup
 
 function void pmpu_sample(int hart, int issue, ins_t ins);
 
-  logic [16*XLEN-1:0] pack_pmpaddr;
+  logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [29:0] pmpcfg_a;      // for first 15 Regions
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
           logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
@@ -293,7 +293,7 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
           pmpcfg[i*4 + 2] = cfg_word[23:16];
           pmpcfg[i*4 + 3] = cfg_word[31:24];
       end
-  `elsif XLEN64
+  `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
         logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
@@ -335,7 +335,7 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
            ,ins.current.csr[CSR_PMPADDR0]
           };
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
           ins.current.csr[CSR_PMPCFG3][28:27],
           ins.current.csr[CSR_PMPCFG3][20:19],
@@ -355,7 +355,7 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][4:3]
           };
   `endif
-  `ifdef XLEN64
+  `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
           ins.current.csr[CSR_PMPCFG2][60:59],
           ins.current.csr[CSR_PMPCFG2][52:51],

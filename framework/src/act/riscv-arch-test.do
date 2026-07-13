@@ -17,8 +17,9 @@ set UCDB ${2}
 set WKDIR ${3}
 set FCOVDIR ${4}
 set COVERPOINTDIR ${5}
-set CONFIGDIR ${6}
-set COVERAGELIST ${7}
+set UDBHEADERDIR ${6}
+set ENVHEADERDIR ${7}
+set COVERAGELIST ${8}
 
 onerror {puts stderr "\033\[1;31mERROR collecting coverage. Check ${UCDB}.log for details.\033\[0m"; quit -f -code 1}
 
@@ -30,7 +31,7 @@ vlib ${WKDIR}
 
 # Include directories and files to compile
 set COVERPOINTS "+incdir+${COVERPOINTDIR} +incdir+${COVERPOINTDIR}/unpriv +incdir+${COVERPOINTDIR}/priv"
-set INC_DIRS "+incdir+${CONFIGDIR} ${COVERPOINTS} +incdir+${FCOVDIR}"
+set INC_DIRS "+incdir+${UDBHEADERDIR} +incdir+${ENVHEADERDIR} ${COVERPOINTS} +incdir+${FCOVDIR}"
 set COMPILE_FILES "${FCOVDIR}/rvviTrace.sv ${FCOVDIR}/riscv_arch_test.sv ${FCOVDIR}/testbench.sv"
 
 # Build +define+ list from COVERAGELIST (space-separated)

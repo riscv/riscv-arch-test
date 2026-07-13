@@ -33,16 +33,24 @@ def format_sc_type(
 
     lr_insr = "lr.w" if instr_name.endswith(".w") else "lr.d"
 
-    # load test value
+    label = test_data.current_testcase_label
+    retry_label = f"{label}_retry"
+    success_label = f"{label}_success"
+
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
         f"LA(x{params.rs1}, scratch) # rs1 = base address",
-        "nop",  # Test fails on spike without this nop; nop is a temp fix; TODO: Link to issue after opening it
+        f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
+        f"{retry_label}:",
         f"{lr_insr} x0, (x{params.rs1}) # establish reservation",
     ]
 
     test = [f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation"]
     check = [
+        f"beqz x{params.rd}, {success_label} # SC succeeded, skip retry",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
+        f"bnez x{params.temp_reg}, {retry_label} # retry LR/SC if not exhausted",
+        f"{success_label}:",
         write_sigupd(params.rd, test_data),
         f"LA(x{params.rs1}, scratch) # reload base address",
         f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",

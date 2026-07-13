@@ -62,9 +62,9 @@
     D_fsub_d_cg = new(); D_fsub_d_cg.set_inst_name("obj_D_fsub_d");
     D_fsub_s_cg = new(); D_fsub_s_cg.set_inst_name("obj_D_fsub_s");
     D_fsw_cg = new(); D_fsw_cg.set_inst_name("obj_D_fsw");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     D_fcvt_d_l_cg = new(); D_fcvt_d_l_cg.set_inst_name("obj_D_fcvt_d_l");
     D_fcvt_d_lu_cg = new(); D_fcvt_d_lu_cg.set_inst_name("obj_D_fcvt_d_lu");
     D_fcvt_l_d_cg = new(); D_fcvt_l_d_cg.set_inst_name("obj_D_fcvt_l_d");

@@ -144,7 +144,7 @@ class TestData:
         """Increment the test count by 1."""
         self._test_count += 1
 
-    def begin_test_chunk(self) -> TestChunk:
+    def begin_test_chunk(self, split_name: str | None = None) -> TestChunk:
         """Create and set a new active TestChunk.
 
         Snapshots the current signature/data pointer register assignments so
@@ -152,10 +152,14 @@ class TestData:
         file, the generator can emit code to re-establish those pointers (which
         would otherwise only live in the default registers set by
         RVTEST_BEGIN).
+
+        Args:
+            split_name: Optional named-split marker (see TestChunk.split_name).
         """
         self.test_chunk = TestChunk(
             start_sig_reg=self._int_regs.sig_reg,
             start_data_reg=self._int_regs.data_reg,
+            split_name=split_name,
         )
         return self.test_chunk
 

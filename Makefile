@@ -33,6 +33,9 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
 
+# Use this flag to enable the generation of floating-point tests from the cover-float test suite
+COVER_FLOAT ?= True
+
 # VERBOSE implies DEBUG and serializes the build
 ifneq ($(VERBOSE),)
   DEBUG := True
@@ -50,9 +53,6 @@ override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 # 0 (default) = auto-detect CPU count.
 # Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
-
-# Use this flag to enable the generation of floating-point tests from the cover-float test suite
-COVER_FLOAT ?=
 
 # Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
 MAKEFLAGS += --no-print-directory
@@ -148,6 +148,7 @@ help:
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'COVER_FLOAT' 		'Enable generation of floating point tests from the cover-float test suite' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \

@@ -13,7 +13,6 @@
 from __future__ import annotations
 
 import os
-import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,7 +31,7 @@ from rich.progress import (
 )
 
 from testgen.constants import E_EXTENSION_TESTS
-from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
+from testgen.generate import generate_coverfloat, generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_extensions
 
@@ -133,16 +132,11 @@ def generate_all_tests(
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
-    # If we need the cover-float tests, build them now, we cannot do them in the individual cp_ibm
-    # calls because we lose all benefits of parallelization, and we run into dangers with multiple
-    # calls to cover-float attempting to generate tests at the same time due to ACT4 parallelization
+    # If we need the cover-float test vectors, build them now, we cannot do them in the individual cp_ibm
+    # calls because we lose all benefits of parallelization, and we run into dangers with multiple calls
+    # to cover-float attempting to generate tests at the same time due to ACT4 parallelization
     if with_cover_float:
-        cover_float_dir = Path(__file__).parent / "cover-float"
-        subprocess.run(
-            ["make", "-s", "-C", str(cover_float_dir), "AGGRESSIVENESS=0", "PROCESSED_ONLY=1", "processed-tests-only"],
-            stderr=subprocess.DEVNULL,
-            check=False,
-        )
+        generate_coverfloat()
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:

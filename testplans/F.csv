@@ -3,11 +3,11 @@ fadd.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,3,von,x,frm,,,x
 fclass.s,FIX,x,x,x,,x,,,x,,,,x,,,,,,,,,,,x,x
 fcvt.l.s,F2X,,x,x,,x,,,x,,,,frm,,,,,,2,vn,x,,,,x
 fcvt.lu.s,F2X,,x,x,,x,,,x,,,,frm,,,,,,2,vn,x,,,,x
-fcvt.s.l,X2F,,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,
-fcvt.s.lu,X2F,,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,
-fcvt.s.w,X2F,x,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,
-fcvt.s.wu,X2F,x,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,
-fcvt.w.s,F2X,x,x,x,,x,,,x,,,,frm,,,,,,2,vn,x,,,,
+fcvt.s.l,X2F,,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,x
+fcvt.s.lu,X2F,,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,x
+fcvt.s.w,X2F,x,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,x
+fcvt.s.wu,X2F,x,x,x,x,,x,,,,,x,,,,,,,2,n,x,,,,x
+fcvt.w.s,F2X,x,x,x,,x,,,x,,,,frm,,,,,,2,vn,x,,,,x
 fcvt.wu.s,F2X,x,x,x,,x,,,x,,,,frm,,,,,,2,vn,x,,,,x
 fdiv.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,3,vdoun,x,frm,,,x
 feq.s,FC,x,x,x,,x,,,x,x,,,x,x,,,,,,v,,x,,,x

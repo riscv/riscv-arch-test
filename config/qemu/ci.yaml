@@ -13,14 +13,22 @@
 # 6. RISC-V: Reserved opcode 1111111 (op31) causes infinite trap loop instead of illegal instruction trap, Link: https://gitlab.com/qemu-project/qemu/-/work_items/3479
 # 7. QEMU is not Ssstrict compliant, and does not raise illegal exceptions on M-mode read only CSRs, which causes some tests to fail.
 ci_enabled: true
-# TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
-# TODO: Remove Zama16b when Qemu starts supporting it.
-# TODO: Remove UV when Qemu VXRM register issue is fixed
+# Status as of QEMU v11.0.2:
+# Sm: medeleg WARL parameter mismatch (config issue, not a QEMU bug)
+# S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
+# Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
+# PMPSm: pmpcfg bits [6:5] writable (https://gitlab.com/qemu-project/qemu/-/work_items/3531);
+# ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
+#        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, closed upstream but not in v11.0.2)
+# ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501);
+# SvaduPMP: hardware A/D update ignores PMP write permission on PTE (https://gitlab.com/qemu-project/qemu/-/work_items/3495)
+# Svinval: sfence.w.inval/sfence.inval.ir don't raise illegal instruction in U-mode
+#        (https://gitlab.com/qemu-project/qemu/-/work_items/3493); also hangs Svinval.elf
+# ExceptionsZaamo/ExceptionsSvZaamo/Zama16b: QEMU max CPU implements zama16b (misaligned AMOs within 16B execute);
+#        Sail/UDB config expects traps (MISALIGNED_AMO: false) — config/model mismatch to resolve.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-# ExceptionsZicboU/S fail because of https://gitlab.com/qemu-project/qemu/-/work_items/3380
-# Zicntr fails on QEMU11.0.0 due to https://gitlab.com/qemu-project/qemu/-/work_items/3498, https://gitlab.com/qemu-project/qemu/-/work_items/3504
 # Smstateen will be added back once sail starts supporting SM1P13 too
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zicntr,Zacas,ZacasZabha,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV,SsstrictV,Smstateen"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

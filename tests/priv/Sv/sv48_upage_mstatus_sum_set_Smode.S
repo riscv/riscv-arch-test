@@ -55,7 +55,7 @@
 #define TEST_FILE "sv48_upage_mstatus_sum_set_Smode.S"
 #define SIGUPD_COUNT 65
 #define TRAP_SIGUPD_COUNT 160
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

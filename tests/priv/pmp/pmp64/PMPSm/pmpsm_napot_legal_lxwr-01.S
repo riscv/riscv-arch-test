@@ -25,7 +25,7 @@
 //                 should succeed because the bckground region is set to RWX.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:

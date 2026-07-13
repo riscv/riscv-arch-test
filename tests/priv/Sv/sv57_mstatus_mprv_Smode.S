@@ -26,7 +26,7 @@
 #define TEST_FILE "sv57_mstatus_mprv_Smode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

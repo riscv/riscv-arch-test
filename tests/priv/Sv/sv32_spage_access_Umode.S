@@ -56,7 +56,7 @@
 #define TEST_FILE "sv32_spage_access_Umode.S"
 #define SIGUPD_COUNT 35
 #define TRAP_SIGUPD_COUNT 130
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

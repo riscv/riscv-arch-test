@@ -28,7 +28,7 @@
     cp_custom_fmv_sf_vd_all_lmul_regs: cross std_vec, vd_all_regs;
     cp_custom_fmv_sf_vd_all_lmul_lmuls: cross std_vec, vtype_all_lmul;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};

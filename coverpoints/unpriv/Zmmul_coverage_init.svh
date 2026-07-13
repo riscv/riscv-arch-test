@@ -14,6 +14,6 @@
     Zmmul_mulh_cg = new(); Zmmul_mulh_cg.set_inst_name("obj_Zmmul_mulh");
     Zmmul_mulhsu_cg = new(); Zmmul_mulhsu_cg.set_inst_name("obj_Zmmul_mulhsu");
     Zmmul_mulhu_cg = new(); Zmmul_mulhu_cg.set_inst_name("obj_Zmmul_mulhu");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zmmul_mulw_cg = new(); Zmmul_mulw_cg.set_inst_name("obj_Zmmul_mulw");
 `endif

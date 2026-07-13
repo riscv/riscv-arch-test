@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 //#define RVMODEL_BOOT \
 
@@ -62,32 +64,36 @@
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_MTVEC_ALIGN 8
 
 ##### Machine Timer #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
-/*
- * NOTE: The following parameters are intentionally left empty.
- *
- * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
- * will FAIL because these platform-level memory-mapped registers are
- * not defined. This is a temporary state.
- *
- * To properly run the suite by excluding these specific tests (the recommended
- * workaround), refer to the instructions here:
- * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
- */
-// MTIME is not implemented on this DUT. Comment out to prevent testing them.
-//#define RVMODEL_MTIME_ADDRESS
-//#define RVMODEL_MTIMECMP_ADDRESS
+
+#define RVMODEL_MTIME_ADDRESS     0x0200BFF8
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x15000024           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_SET_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x80000008           ; /* set | MSI (bit 3) */              \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x00000008           ; /* clear | MSI (bit 3) */            \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
 
 ##### Supervisor Interrupts #####
 

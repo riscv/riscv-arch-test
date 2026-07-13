@@ -31,7 +31,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -47,11 +47,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g         (1<<(RVMODEL_PMP_GRAIN+2))
+#define g         (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
-    LI(a4, DOUBLE_NOP)                                             // Value to write (DOUBLE_NOP)
+    LI(a4, DOUBLE_NOP)                                      // Value to write (DOUBLE_NOP)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
     \TEST_CASE\()_1:
@@ -89,7 +89,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
-    LA(a5, ((\ADDRESS+g)-4))                                    // Address to be verified
+    LA(a5, ((\ADDRESS+g)-4))                                // Address to be verified
     \TEST_CASE\()_7:
     lw a4, 0(a5)                                            // Word load test
     nop
@@ -100,6 +100,8 @@ RVTEST_BEGIN
     lw a4, 0(a5)                                            // Word load test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
+
+   RVTEST_FENCEI
 
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
@@ -135,22 +137,22 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
 
 #define PMP_REGION_GLOBAL            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_UPPER_BOUND          ((((PMP_L|PMP_R         |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LOWER_BOUND       ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_UPPER_BOUND        ((((PMP_L|PMP_R      |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LOWER_BOUND        ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
 
 
     LA(x4, -1)                       // All memory region
@@ -160,10 +162,14 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
+    // x4 = base address of TEST_FOR_EXECUTION (must be g-byte aligned)
+    // x5 = x4 + g (upper bound, also g-byte aligned)
+    // After >> PMP_SHIFT (>>2): bit[0] of pmpaddr will be 0
     LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
-    srl x4, x4, PMP_SHIFT
-    srl x5, x5, PMP_SHIFT
+    LI(t0, g)
+    add      x5, x4, t0
+    srl      x4, x4, PMP_SHIFT
+    srl      x5, x5, PMP_SHIFT
 
     csrw     pmpaddr0, x4
     csrw     pmpaddr1, x5
@@ -191,7 +197,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_tor_bot_store_access_at_pmpaddr0-4\""
@@ -203,14 +209,17 @@ test_6_str: .string "\"test: 6; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr0+4
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1-4\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1+4\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

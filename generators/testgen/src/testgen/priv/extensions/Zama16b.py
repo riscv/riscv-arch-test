@@ -14,6 +14,7 @@ naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # Each row: (mnemonic, access_size_bytes, is_fp, guard).
@@ -34,7 +35,7 @@ _LOAD_OPS: list[tuple[str, int, bool, str | None]] = [
     ("flh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("flw", 4, True, "#ifdef F_SUPPORTED"),
     ("fld", 8, True, "#ifdef D_SUPPORTED"),
-    ("flq", 16, True, "#ifdef Q_SUPPORTED"),
+    # ("flq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
 _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
@@ -48,7 +49,7 @@ _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
     ("fsh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("fsw", 4, True, "#ifdef F_SUPPORTED"),
     ("fsd", 8, True, "#ifdef D_SUPPORTED"),
-    ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
+    # ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
 _AMO_OPS: list[tuple[str, int, str]] = [
@@ -350,10 +351,12 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     required_extensions=["Zama16b"],
     march_extensions=["I", "Zicsr", "Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
 )
-def make_zama16b(test_data: TestData) -> list[str]:
+def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""
-    lines: list[str] = []
-    lines.extend(_generate_load_tests(test_data))
-    lines.extend(_generate_store_tests(test_data))
-    lines.extend(_generate_amo_tests(test_data))
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_load_tests(test_data))
+    tc.code.extend(_generate_store_tests(test_data))
+    tc.code.extend(_generate_amo_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

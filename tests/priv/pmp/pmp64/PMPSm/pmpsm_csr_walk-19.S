@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -58,15 +58,15 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
     // --- pmpcfg even walking ones, bit 62 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 62)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 62)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_119_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -74,8 +74,8 @@ main:
     // --- pmpcfg even walking ones, bit 63 (MSB for RV64) ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 63)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 63)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_120_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -89,13 +89,15 @@ RVTEST_DATA_BEGIN
 test_119_str: .string "\"test: 119; cp: cp_csr_walk_119\""
 test_120_str: .string "\"test: 120; cp: cp_csr_walk_120\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

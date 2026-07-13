@@ -18,9 +18,6 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
     mstatus_FS_zero: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
         bins disabled = {2'b00};
     }
-    mstatus_FS_nonzero: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
-        bins enabled = {2'b01, 2'b10, 2'b11};
-    }
     mstatus_FS_status: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
         bins fs_initial = {2'b01};
         bins fs_clean   = {2'b10};
@@ -52,7 +49,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         `ifdef ZFA_SUPPORTED
             wildcard bins fli          = {FLI_S};
             wildcard bins fround       = {FROUND_S};
-            `ifdef XLEN32
+            `ifdef UDB_MXLEN_32
                 `ifdef D_SUPPORTED
                     wildcard bins fmvh         = {FMVH_X_D};
                     wildcard bins fmvp         = {FMVP_D_X};
@@ -60,7 +57,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    csr_instrs: coverpoint ins.current.insn {
+    csr_accesses: coverpoint ins.current.insn {
         wildcard bins csrrw_fcsr   = {32'b000000000011_?????_001_?????_1110011};
         wildcard bins csrrw_frm    = {32'b000000000010_?????_001_?????_1110011};
         wildcard bins csrrw_fflags = {32'b000000000001_?????_001_?????_1110011};
@@ -102,7 +99,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    cp_mstatus_fs_csr_write:     cross csr_instrs, mstatus_FS_zero;
+    cp_mstatus_fs_csr_access:    cross csr_accesses, mstatus_FS_zero;
     cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
     cp_load_address_misaligned:  cross loadops, adr_LSBs;
     cp_store_address_misaligned: cross storeops, adr_LSBs;

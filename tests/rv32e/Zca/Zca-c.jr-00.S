@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E', 'Zca']
 # params:
 #   MXLEN: 32
-# MARCH: rv32e_zicsr_zca
+# MARCH: rv32e_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -221,7 +221,7 @@ Zca_c_jr_cg_cp_offset_c_jr_neg:
 Zca_c_jr_cg_cp_offset_lsbs_00:
   c.jr x12 # jump
   addi x10, x10, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_0:
   addi x10, x10, 2 # should execute; branch taken
   # check jump taken
@@ -240,7 +240,7 @@ jalrlsb_0:
 Zca_c_jr_cg_cp_offset_lsbs_01:
   c.jr x8 # jump
   addi x11, x11, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_1:
   addi x11, x11, 2 # should execute; branch taken
   # check jump taken
@@ -259,7 +259,7 @@ jalrlsb_1:
 Zca_c_jr_cg_cp_offset_lsbs_10:
   c.jr x15 # jump
   addi x14, x14, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_2: c.nop
   addi x14, x14, 2 # should execute; branch taken
   # check jump taken
@@ -278,7 +278,7 @@ jalrlsb_2: c.nop
 Zca_c_jr_cg_cp_offset_lsbs_11:
   c.jr x9 # jump
   addi x6, x6, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_3: c.nop
   addi x6, x6, 2 # should execute; branch taken
   # check jump taken

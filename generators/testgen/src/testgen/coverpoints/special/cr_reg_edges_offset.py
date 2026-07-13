@@ -24,14 +24,12 @@ def make_cr_rs1_rs2_edges_offset(
     edges1 = get_general_edges(test_data.xlen)
     edges2 = get_general_edges(test_data.xlen)
 
-    test_lines: list[str] = []
-
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
             assert params.rs1val is not None and params.rs2val is not None
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
@@ -55,5 +53,4 @@ def make_cr_rs1_rs2_edges_offset(
             )
             return_test_regs(test_data, params)
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

@@ -44,7 +44,7 @@ implemented_extensions:
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.12.0" }
+  - { name: Sv39, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
@@ -219,6 +219,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

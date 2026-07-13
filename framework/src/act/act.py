@@ -17,13 +17,13 @@ from typing import Annotated
 import typer
 from rich import print as rprint
 
-from act.build import BuildTask, build
+from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
-from act.config import CoverageSimulator, load_config
+from act.build_types import BuildTask
+from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
-from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
-from act.select_tests import select_tests
+from act.select_tests import prepare_configs_and_select_tests
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -60,6 +60,7 @@ def run_act(
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
     verbose: Annotated[
         bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
     ] = False,
@@ -81,6 +82,9 @@ def run_act(
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
 
+    if debug and clean_intermediates:
+        raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
+
     if workdir is None:
         workdir = Path.cwd() / "work"
 
@@ -101,21 +105,13 @@ def run_act(
 
     config_names: list[str] = []
     tasks: list[BuildTask] = []
-    for config_file in config_files:
-        # Load configuration
-        config = load_config(config_file)
-        config_dir = workdir / config.udb_config.stem
-        config_dir.mkdir(parents=True, exist_ok=True)
 
-        # UDB integration
-        generate_udb_files(config.udb_config, config_dir)
-        implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
-        config_params = get_config_params(config.udb_config)
-
-        # Select tests for config
-        selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
-        )
+    # Load all configs and prepare every DUT's generated files
+    # (extensions.txt, rvtest_config.{h,svh}, and rvmodel_macros.svh) in
+    # one parallel UDB pass, then select tests per config.
+    for config, config_params, selected_tests in prepare_configs_and_select_tests(
+        config_files, full_test_dict, workdir, jobs=jobs, verbose=verbose
+    ):
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
@@ -133,11 +129,20 @@ def run_act(
                 coverage_simulator,
                 debug,
                 fast,
+                verbose,
             )
         )
 
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
+    result = build(
+        tasks,
+        jobs=jobs,
+        cache_root=workdir,
+        keep_going=keep_going,
+        dry_run=dry_run,
+        verbose=verbose,
+        clean_intermediates=clean_intermediates,
+    )
 
     # Print summary
     parts = []
@@ -157,6 +162,11 @@ def run_act(
                 rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
+
+    # Prune empty build directories if requested
+    if clean_intermediates and not dry_run:
+        for name in config_names:
+            prune_empty_dirs(workdir / name / "build")
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

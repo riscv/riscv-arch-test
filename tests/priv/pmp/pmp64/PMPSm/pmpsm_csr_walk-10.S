@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -58,15 +58,15 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
     // --- pmpaddr walking ones, bit 63 (MSB for RV64) ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-1:  li t2, (1 << 63)
+    .rept UDB_NUM_PMP_ENTRIES
+1:  LI(t2, 1 << 63)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_64_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -82,7 +82,7 @@ main:
     // Count of even pmpcfg registers:
     //   16 PMPs → 2  (pmpcfg0, pmpcfg2)
     //   64 PMPs → 8  (pmpcfg0 .. pmpcfg14, step 2)
-    // = RVMODEL_NUM_PMPS / 8
+    // = UDB_NUM_PMP_ENTRIES / 8
     //
     // The original walking-ones loop ran for all 64 bits (bnez t2 terminates
     // when the shifted-out bit reaches zero).  We replace it with 64 explicit
@@ -92,26 +92,20 @@ main:
     // --- pmpcfg even walking ones, bit 0 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 0)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 0)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 1 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 1)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_66_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+    // Skipped, R=0,W=1 is reserved
 
     // --- pmpcfg even walking ones, bit 2 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 2)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 2)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_67_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -119,8 +113,8 @@ main:
     // --- pmpcfg even walking ones, bit 3 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 3)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 3)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_68_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -128,8 +122,8 @@ main:
     // --- pmpcfg even walking ones, bit 5 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 5)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 5)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_69_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -147,13 +141,15 @@ test_67_str: .string "\"test: 67; cp: cp_csr_walk_test_67\""
 test_68_str: .string "\"test: 68; cp: cp_csr_walk_test_68\""
 test_69_str: .string "\"test: 69; cp: cp_csr_walk_test_69\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

@@ -50,7 +50,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv57, Svadu, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_Svadu_no_pmp_perm_Smode.S"
@@ -157,7 +157,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here
@@ -177,7 +177,7 @@ main:
 
   LA (t2, rvtest_Sroot_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -227,7 +227,7 @@ main:
 
   LA (t2, rvtest_slvl3_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -276,7 +276,7 @@ main:
 
   LA (t2, rvtest_slvl2_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -328,7 +328,7 @@ main:
 
   LA (t2, rvtest_slvl1_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -383,7 +383,7 @@ main:
 
   LA (t2, rvtest_slvl0_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -441,7 +441,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2, 3 and 4
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -455,20 +455,20 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl2_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl3_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""

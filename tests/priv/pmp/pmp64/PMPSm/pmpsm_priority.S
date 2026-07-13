@@ -33,7 +33,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -47,7 +47,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#define g   (1 << (UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -55,6 +55,7 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_3:
     jalr ra, 0(a4)
     nop
@@ -87,14 +88,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -116,7 +117,8 @@ main:
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
-    addi x5, x0, g
+    LI(t0, g)
+    add x5, x0, t0
 
     // REGIONSTART in even PMPADDR
     .set pmpaddri, CSR_PMPADDR0
@@ -129,7 +131,8 @@ main:
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    addi x5, x5, g
+    LI(t0, g)
+    add x5, x5, t0
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2
@@ -149,7 +152,11 @@ main:
 // Test Case: 2 : Accessing at end of region with XR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*g - 4), test_2
-
+// For larger UDB_PMP_GRANULARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
 // Test Case: 3 : Accessing at end of region with WR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 3*g - 4), test_3
@@ -169,24 +176,34 @@ main:
 // Test Case: 6 : Accessing at end of region with No Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4), test_7
-
+#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_priority_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_lw\""
 test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (8*(1<<(RVMODEL_PMP_GRAIN+2)))
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
+    .rept (8*(1<<(UDB_PMP_GRANULARITY)))
+#else
+    .rept (2*(1<<(UDB_PMP_GRANULARITY)))
+#endif
     nop
     .endr
 

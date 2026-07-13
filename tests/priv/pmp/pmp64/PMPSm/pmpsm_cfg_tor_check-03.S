@@ -2,23 +2,23 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
-// Description : This test verifies the functionality and enforcement of
-//               Physical Memory Protection (PMP) configurations in RISC-V
-//               systems. It specifically tests the Read, Write, and Execute
-//               permissions for a designated memory region, ensuring that
-//               the PMP settings are correctly applied and that the system
-//               behaves as expected when accessing this region.
+// Description  : This test verifies the functionality and enforcement of
+//                Physical Memory Protection (PMP) configurations in RISC-V
+//                systems. It specifically tests the Read, Write, and Execute
+//                permissions for a designated memory region, ensuring that
+//                the PMP settings are correctly applied and that the system
+//                behaves as expected when accessing this region.
 //
 // Coverpoints  : 3rd test case of cp_cfg_A_tor_non-overlap for PMPM is covered
-//                  in this test file.
+//                in this test file.
 //
 // Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with
-//                  the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
-//                  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
+//                the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
+//                pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
 //                test case 3 that is when pmpaddr0 =  all 1s
 // --------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -43,11 +43,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g         (1<<(RVMODEL_PMP_GRAIN+2))
+#define g         (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, DOUBLE_NOP)                                             // Value to write (DOUBLE_NOP)
+    LI(a4, DOUBLE_NOP)                                      // Value to write (DOUBLE_NOP)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
     \TEST_CASE\()_1:
@@ -75,7 +75,7 @@ RVTEST_BEGIN
     lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                                   // Signature update
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
     \TEST_CASE\()_5:
@@ -94,6 +94,7 @@ RVTEST_BEGIN
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
     LA(x1, 1f)                                                // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -124,20 +125,20 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zeros
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
 #define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_UPPER_BOUND      ((((PMP_L                  |PMP_TOR)     &0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_UPPER_BOUND       ((((PMP_L                  |PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 
@@ -151,14 +152,15 @@ main:
 
     //addresses for a default TOR region
     LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
+    LI(t0, g)
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 
 //                                            Verification Section
 // Test Case:  pmpaddr0 = all1s
 
-    li x5, -1
+    LI(x5, -1)
     csrw     pmpaddr0, x5
     csrw     pmpaddr1, x4
 
@@ -172,7 +174,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_check3_store_access_at_pmpaddr-4\""
@@ -182,13 +184,15 @@ test_4_str: .string "\"test: 4; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr-4
 test_5_str: .string "\"test: 5; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr+4\""
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

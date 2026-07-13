@@ -21,6 +21,10 @@
   "pre-commit": {
     "enabled": true
   },
+  "pep723": {
+    "enabled": true,
+    "managerFilePatterns": ["/^\\.github/scripts/ci_config\\.py$/"]
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 6am on monday"]

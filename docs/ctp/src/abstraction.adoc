@@ -184,7 +184,7 @@ The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) prov
 
 The ratified SBI compiles into a ~1MB OpenSBI firmware binary, which is unnecessarily large to load with every test.  Moreover, the SBI calling convention uses `a7` and `a6`, which are not available on RV32E.  Therefore,  T-SBI is a lighter-weight implementation with a custom calling convention that is incompatible with the ratified SBI.
 
-The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` (and possibly `a2`)and a result could be returned in `a0` if needed. Other values of `a0` are reserved.
+The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` (and possibly `a2`) and a result could be returned in `a0` if needed. Other values of `a0` are reserved.
 
 [[t-tsbi]]
 .T-SBI Calls

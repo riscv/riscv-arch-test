@@ -11,6 +11,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
     add_load_misaligned_test,
     add_store_misaligned_test,
@@ -140,7 +141,7 @@ def _generate_hedeleg_tests(test_data: TestData) -> list[str]:
                         "nop",
                         "",
                         "# perform illegal instruction exception",
-                        ".align 2",
+                        ".p2align 2",
                         test_data.add_testcase(f"{bin_name}_illegal", coverpoint, covergroup),
                         ".word 0x00000000",
                         "nop",
@@ -875,8 +876,40 @@ def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-# skipped all the identity page table stuff because I am not sure about how to set it up
-# set virtual address to map to the same place as physical address
+def _identity_table_helper(x_perm: bool = False, w_perm: bool = False) -> list[str]:
+    """Setting up identity page tables - runs in M mode"""
+    lines = []
+
+    bits = ["PTE_V", "PTE_R", "PTE_A", "PTE_D"]
+    if x_perm:
+        bits.append("PTE_X")
+    if w_perm:
+        bits.append("PTE_W")
+    vs_perm = " | ".join(bits)
+    g_perm = f"{vs_perm} | PTE_U"  # need to double check on test plan whether this should be set or not
+
+    lines.extend(
+        [
+            "# setup the identity page table based on XLEN",
+            "# rely on the test starting at 0x80000000 for the identity mapping",
+            "# mapping rvtest_data_begin to 0x80000000",
+            "#if __riscv_xlen == 64",
+            f"SUPERPAGE_G_PTE_SETUP(sv39x4, rvtest_data_begin, {g_perm}, 0x80000000, 2)",
+            f"SUPERPAGE_VS_PTE_SETUP(sv39, rvtest_data_begin, {vs_perm}, 0x80000000, 2)",
+            "HGATP_SETUP(sv39x4)",
+            "VSATP_SETUP(sv39, PA)",
+            "#else",
+            f"SUPERPAGE_G_PTE_SETUP(sv32x4, rvtest_data_begin, {g_perm}, 0x80000000, 1)",
+            f"SUPERPAGE_VS_PTE_SETUP(sv32, rvtest_data_begin, {vs_perm}, 0x80000000, 1)",
+            "HGATP_SETUP(sv32x4)",
+            "VSATP_SETUP(sv32, PA)",
+            "#endif",
+            "hfence.gvma",
+            "hfence.vvma",
+            # does hstatus.SPVP need to be specified
+        ]
+    )
+    return lines
 
 
 def _generate_hlv_address_misaligned_tests(test_data: TestData) -> list[str]:
@@ -898,7 +931,7 @@ def _generate_hlv_address_misaligned_tests(test_data: TestData) -> list[str]:
     ]
 
     ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
-    # TODO
+    lines.extend(_identity_table_helper(True, False))
 
     ################# NOW TEST THE INSTRUCTIONS #####################
     load_ops = ["hlv.b", "hlv.bu", "hlv.h", "hlv.hu", "hlv.w", "hlvx.hu", "hlvx.wu"]
@@ -937,7 +970,7 @@ def _generate_hlv_access_fault_tests(test_data: TestData) -> list[str]:
     ]
 
     ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
-    # TODO
+    lines.extend(_identity_table_helper(True, False))
 
     ################# NOW TEST THE INSTRUCTIONS #####################
     load_ops = ["hlv.b", "hlv.bu", "hlv.h", "hlv.hu", "hlv.w", "hlvx.hu", "hlvx.wu"]
@@ -985,7 +1018,7 @@ def _generate_hsv_address_misaligned_tests(test_data: TestData) -> list[str]:
     ]
 
     ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
-    # TODO
+    lines.extend(_identity_table_helper(False, True))
 
     ################# NOW TEST THE INSTRUCTIONS #####################
     store_ops = ["hsv.b", "hsv.h", "hsv.w"]
@@ -1022,7 +1055,7 @@ def _generate_hsv_access_fault_tests(test_data: TestData) -> list[str]:
     ]
 
     ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
-    # TODO
+    lines.extend(_identity_table_helper(False, True))
 
     ################# NOW TEST THE INSTRUCTIONS #####################
     store_ops = ["hsv.b", "hsv.h", "hsv.w"]
@@ -1203,7 +1236,7 @@ def _generate_xtinst_illegal_instr_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "# perform illegal instruction exception",
-                ".align 2",
+                ".p2align 2",
                 test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
                 ".word 0x00000000",
                 "nop",
@@ -1567,35 +1600,41 @@ def _generate_xtinst_ecall_tests(test_data: TestData) -> list[str]:
     required_extensions=["S", "H"],
     march_extensions=["H", "Svinval"],
 )
-def make_exceptionsh(test_data: TestData) -> list[str]:
-    """Main entry point for Hypervisor extension exception test generation (refactored)."""
-    lines: list[str] = [
-        "CSRW(medeleg, zero)",
-    ]
+def make_exceptionsh(test_data: TestData) -> list[TestChunk]:
+    """Main entry point for Hypervisor extension exception test generation."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_hedeleg_tests(test_data))
-    lines.extend(_generate_ecall_to_vs_tests(test_data))
-    lines.extend(_generate_ecall_to_hs_tests(test_data))
-    lines.extend(_generate_ecall_to_m_tests(test_data))
-    lines.extend(_generate_ebreak_to_m_tests(test_data))
+    tc.code.extend(["CSRW(medeleg, zero)"])
+    tc.code.extend(_generate_hedeleg_tests(test_data))
+    tc.code.extend(_generate_ecall_to_vs_tests(test_data))
+    tc.code.extend(_generate_ecall_to_hs_tests(test_data))
+    tc.code.extend(_generate_ecall_to_m_tests(test_data))
+    tc.code.extend(_generate_ebreak_to_m_tests(test_data))
 
-    lines.extend(_generate_vstvec_tests(test_data))
-    lines.extend(_generate_priority_tests(test_data))
-    lines.extend(_generate_virtual_instruction_vs_tests(test_data))
-    lines.extend(_generate_virtual_instruction_vu_tests(test_data))
+    tc.code.extend(_generate_vstvec_tests(test_data))
+    tc.code.extend(_generate_priority_tests(test_data))
+    tc.code.extend(_generate_virtual_instruction_vs_tests(test_data))
+    tc.code.extend(_generate_virtual_instruction_vu_tests(test_data))
 
-    lines.extend(_generate_loadstore_priv_tests(test_data))
-    lines.extend(_generate_hfence_priv_tests(test_data))
+    tc.code.extend(_generate_loadstore_priv_tests(test_data))
+    tc.code.extend(_generate_hfence_priv_tests(test_data))
 
-    lines.extend(_generate_xtinst_instr_misaligned_tests(test_data))
-    lines.extend(_generate_xtinst_instr_access_tests(test_data))
-    lines.extend(_generate_xtinst_illegal_instr_tests(test_data))
-    lines.extend(_generate_xtinst_breakpoint_tests(test_data))
-    lines.extend(_generate_xtinst_virt_instr_tests(test_data))
-    lines.extend(_generate_xtinst_load_misaligned_tests(test_data))
-    lines.extend(_generate_xtinst_load_access_tests(test_data))
-    lines.extend(_generate_xtinst_store_misaligned_tests(test_data))
-    lines.extend(_generate_xtinst_store_access_tests(test_data))
-    lines.extend(_generate_xtinst_ecall_tests(test_data))
+    tc.code.extend(_generate_hlv_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_hlv_access_fault_tests(test_data))
+    tc.code.extend(_generate_hsv_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_hsv_access_fault_tests(test_data))
 
-    return lines
+    tc.code.extend(_generate_xtinst_instr_misaligned_tests(test_data))
+    tc.code.extend(_generate_xtinst_instr_access_tests(test_data))
+    tc.code.extend(_generate_xtinst_illegal_instr_tests(test_data))
+    tc.code.extend(_generate_xtinst_breakpoint_tests(test_data))
+    tc.code.extend(_generate_xtinst_virt_instr_tests(test_data))
+    tc.code.extend(_generate_xtinst_load_misaligned_tests(test_data))
+    tc.code.extend(_generate_xtinst_load_access_tests(test_data))
+    tc.code.extend(_generate_xtinst_store_misaligned_tests(test_data))
+    tc.code.extend(_generate_xtinst_store_access_tests(test_data))
+    tc.code.extend(_generate_xtinst_ecall_tests(test_data))
+
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

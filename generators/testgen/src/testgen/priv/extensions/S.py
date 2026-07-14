@@ -712,6 +712,8 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_scause_tests(test_data))
     tc.code.extend(_generate_sstatus_sd_tests(test_data))
     tc.code.extend(_generate_priv_inst_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    tc = test_data.begin_test_chunk("scsr")
     tc.code.extend(_generate_scsr_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())

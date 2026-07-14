@@ -36,16 +36,19 @@ covergroup E_add_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -144,16 +147,19 @@ covergroup E_addi_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -249,16 +255,19 @@ covergroup E_and_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -357,16 +366,19 @@ covergroup E_andi_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -445,12 +457,12 @@ covergroup E_auipc_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_gpr_hazard_w : coverpoint (
+  cp_gpr_hazard_w : coverpoint (
         (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
     ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
         bins waw_depth0 = {1};
     }
-
     cp_imm_edges_20bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Imm Edges
         bins zero  = {0};
@@ -500,14 +512,17 @@ covergroup E_beq_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -620,14 +635,17 @@ covergroup E_bge_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -740,14 +758,17 @@ covergroup E_bgeu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -860,14 +881,17 @@ covergroup E_blt_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -980,14 +1004,17 @@ covergroup E_bltu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -1100,14 +1127,17 @@ covergroup E_bne_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -1242,12 +1272,12 @@ covergroup E_jal_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_gpr_hazard_w : coverpoint (
+  cp_gpr_hazard_w : coverpoint (
         (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
     ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
         bins waw_depth0 = {1};
     }
-
     cp_imm_edges_jal : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // imm is the jump offset
         bins b_4     = {4};
@@ -1301,16 +1331,19 @@ covergroup E_jalr_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1370,16 +1403,19 @@ covergroup E_lb_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1438,16 +1474,19 @@ covergroup E_lbu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1506,16 +1545,19 @@ covergroup E_lh_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1574,16 +1616,19 @@ covergroup E_lhu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1633,12 +1678,12 @@ covergroup E_lui_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_gpr_hazard_w : coverpoint (
+  cp_gpr_hazard_w : coverpoint (
         (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
     ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
         bins waw_depth0 = {1};
     }
-
     cp_imm_edges_20bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Imm Edges
         bins zero  = {0};
@@ -1692,16 +1737,19 @@ covergroup E_lw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1777,16 +1825,19 @@ covergroup E_or_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -1885,16 +1936,19 @@ covergroup E_ori_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1977,14 +2031,17 @@ covergroup E_sb_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2064,14 +2121,17 @@ covergroup E_sh_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2164,16 +2224,19 @@ covergroup E_sll_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -2272,16 +2335,19 @@ covergroup E_slli_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -2372,16 +2438,19 @@ covergroup E_slt_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -2480,16 +2549,19 @@ covergroup E_slti_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2573,16 +2645,19 @@ covergroup E_sltiu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2678,16 +2753,19 @@ covergroup E_sltu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -2798,16 +2876,19 @@ covergroup E_sra_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -2906,16 +2987,19 @@ covergroup E_srai_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3006,16 +3090,19 @@ covergroup E_srl_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3114,16 +3201,19 @@ covergroup E_srli_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3214,16 +3304,19 @@ covergroup E_sub_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3321,14 +3414,17 @@ covergroup E_sw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3421,16 +3517,19 @@ covergroup E_xor_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3529,16 +3628,19 @@ covergroup E_xori_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3623,16 +3725,19 @@ covergroup E_addiw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3728,16 +3833,19 @@ covergroup E_addw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -3837,16 +3945,19 @@ covergroup E_ld_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3905,16 +4016,19 @@ covergroup E_lwu_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3965,14 +4079,17 @@ covergroup E_sd_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_r : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
     }
-
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -4053,16 +4170,19 @@ covergroup E_slliw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4146,16 +4266,19 @@ covergroup E_sllw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4254,16 +4377,19 @@ covergroup E_sraiw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4347,16 +4473,19 @@ covergroup E_sraw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4455,16 +4584,19 @@ covergroup E_srliw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4548,16 +4680,19 @@ covergroup E_srlw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
@@ -4668,16 +4803,19 @@ covergroup E_subw_cg with function sample(ins_t ins);
     }
 
     cp_gpr_hazard_rw : coverpoint (
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD) ? 1 :
-        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD) ? 2 :
-        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 3 : 0
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_gpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 5 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 3 :
+        (check_gpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_gpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 4 : 0
     ) iff (ins.trap == 0) {
-        bins no_hazard  = {0};
-        bins raw_depth0 = {1};
-        bins raw_depth1 = {2};
-        bins waw_depth0 = {3};
+        bins no_hazard      = {0};
+        bins raw_rs1_depth0 = {1};
+        bins raw_rs2_depth0 = {2};
+        bins raw_rs1_depth1 = {3};
+        bins raw_rs2_depth1 = {4};
+        bins waw_depth0     = {5};
     }
-
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }

@@ -33,6 +33,28 @@ typedef enum {
   WAR_HAZARD
 } hazards_t;
 
+typedef enum {
+  HAZARD_FIELD_NONE = 0,
+  HAZARD_FIELD_RS1,
+  HAZARD_FIELD_RS2,
+  HAZARD_FIELD_RS3
+} hazard_field_t;
+
+function hazard_field_t check_gpr_hazard_field(int hart, int issue, int depth = 0);
+  int producer_idx;
+  producer_idx = depth + 1;
+  if (traceDataQ[hart][issue][producer_idx].has_rd) begin
+    if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs1 == traceDataQ[hart][issue][producer_idx].rd)) begin
+      return HAZARD_FIELD_RS1;
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs2 == traceDataQ[hart][issue][producer_idx].rd)) begin
+      return HAZARD_FIELD_RS2;
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs3 == traceDataQ[hart][issue][producer_idx].rd)) begin
+      return HAZARD_FIELD_RS3;
+    end
+  end
+  return HAZARD_FIELD_NONE;
+endfunction
+
 function hazards_t check_fpr_hazards(int hart, int issue, int depth = 0);
   int producer_idx;
   producer_idx = depth + 1;

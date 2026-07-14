@@ -170,7 +170,7 @@ def _make_gpr_hazard(
     if haz_type == "raw" and instr_type == "S" and field == "rs1":
         return _make_store_base_hazard(instr_name, instr_type, coverpoint, test_data, case_idx, filler, filler_name)
 
-    producer = generate_random_params(test_data, "R", exclude_regs=[0, 1, 2, 4, 5, 7, 8, 12, 13])
+    producer = generate_random_params(test_data, "R", exclude_regs=[0, 1, 2, 3, 4, 5, 7, 8, 12, 13])
     assert producer.rd is not None and producer.rs1 is not None and producer.rs2 is not None
 
     if haz_type == "raw":

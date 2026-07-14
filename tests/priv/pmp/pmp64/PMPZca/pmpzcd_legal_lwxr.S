@@ -37,44 +37,6 @@
 RVTEST_BEGIN
 
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    li    x15, 0x3f800000               // bit pattern for 1.0f (IEEE-754 single)
-    fmv.w.x f8, x15                     // move 32-bit integer bits into float reg f8
-    // Store Access Check
-    LA(x8, \ADDRESS)                                         // Address to be verified
-    \TEST_CASE\()_1:
-    c.fsd f8, 0(x8)
-    c.nop
-    c.nop
-    c.nop
-    c.nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    \TEST_CASE\()_2:
-    c.fld f8, 0(x8)
-    c.nop
-    c.nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    mv t0, sp
-    addi sp, x8, 0
-
-
-    c.fsdsp f8, 0(sp)
-    c.nop
-    c.nop
-    c.nop
-    c.nop
-
-
-    c.fldsp f8, 0(sp)
-    c.nop
-    c.nop
-    mv sp, t0
-
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -142,7 +104,7 @@ main:
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
 
@@ -157,7 +119,7 @@ main:
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
 
@@ -172,7 +134,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
@@ -187,7 +149,7 @@ main:
     LI(x4, PMPREGION_LXWR_1100)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 1
 
@@ -202,7 +164,7 @@ main:
     LI(x4, PMPREGION_LXWR_1101)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
 
@@ -217,7 +179,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_6
 
    j exit                                                        // Verification Complete, exit the test
 
@@ -226,18 +188,18 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpzcb_cfg_wr_c.fsd\""
 test_2_str:  .string "\"test: 2;  cp: pmpzcb_cfg_wr_c.fld\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_X:
     jalr x0, x1, 0
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

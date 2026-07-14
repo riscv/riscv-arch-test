@@ -112,7 +112,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
             if asm_setup:
-                tc.code = asm_setup + "\n" + tc.code
+                tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 
@@ -192,7 +192,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             if asm_setup:
-                tc.code = asm_setup + "\n" + tc.code
+                tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 
@@ -260,7 +260,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
             if asm_setup:
-                tc.code = asm_setup + "\n" + tc.code
+                tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 

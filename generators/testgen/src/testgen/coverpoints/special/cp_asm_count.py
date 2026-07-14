@@ -17,10 +17,9 @@ def make_asm_count(instr_name: str, instr_type: str, coverpoint: str, test_data:
     Used for counting instruction execution in simulation.
     """
     tc = test_data.begin_test_chunk()
-    test_lines = [
+    tc.code = [
         "# Testcase cp_asm_count",
         test_data.add_testcase("count", coverpoint),
         f"{instr_name}",
     ]
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

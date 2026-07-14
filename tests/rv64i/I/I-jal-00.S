@@ -408,11 +408,11 @@ I_jal_cg_cp_rd_b31:
 
 # cp_imm_edges_jal: forward jump by 4
   # offset too small, skipping self-check
-  .align 2
+  .p2align 2
 I_jal_cg_cp_imm_edges_jal_b_2:
   jal x10, cp_imm_edges_jal_fwd_b_4
   # offset too small, skipping self-check
-  .align 2
+  .p2align 2
 cp_imm_edges_jal_fwd_b_4:
   # Check jump taken/not-taken
   # offset too small, skipping self-check
@@ -422,11 +422,11 @@ cp_imm_edges_jal_fwd_b_4:
 
 # cp_imm_edges_jal: forward jump by 8
   li x3, 1 # success code
-  .align 3
+  .p2align 3
 I_jal_cg_cp_imm_edges_jal_b_3:
   jal x10, cp_imm_edges_jal_fwd_b_8
   li x3, 7 # failure code
-  .align 3
+  .p2align 3
 cp_imm_edges_jal_fwd_b_8:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -437,11 +437,11 @@ cp_imm_edges_jal_fwd_b_8:
 
 # cp_imm_edges_jal: forward jump by 16
   li x3, 1 # success code
-  .align 4
+  .p2align 4
 I_jal_cg_cp_imm_edges_jal_b_4:
   jal x10, cp_imm_edges_jal_fwd_b_16
   li x3, 7 # failure code
-  .align 4
+  .p2align 4
 cp_imm_edges_jal_fwd_b_16:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -452,11 +452,11 @@ cp_imm_edges_jal_fwd_b_16:
 
 # cp_imm_edges_jal: forward jump by 32
   li x3, 1 # success code
-  .align 5
+  .p2align 5
 I_jal_cg_cp_imm_edges_jal_b_5:
   jal x10, cp_imm_edges_jal_fwd_b_32
   li x3, 7 # failure code
-  .align 5
+  .p2align 5
 cp_imm_edges_jal_fwd_b_32:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -467,11 +467,11 @@ cp_imm_edges_jal_fwd_b_32:
 
 # cp_imm_edges_jal: forward jump by 64
   li x3, 1 # success code
-  .align 6
+  .p2align 6
 I_jal_cg_cp_imm_edges_jal_b_6:
   jal x10, cp_imm_edges_jal_fwd_b_64
   li x3, 7 # failure code
-  .align 6
+  .p2align 6
 cp_imm_edges_jal_fwd_b_64:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -482,11 +482,11 @@ cp_imm_edges_jal_fwd_b_64:
 
 # cp_imm_edges_jal: forward jump by 128
   li x3, 1 # success code
-  .align 7
+  .p2align 7
 I_jal_cg_cp_imm_edges_jal_b_7:
   jal x10, cp_imm_edges_jal_fwd_b_128
   li x3, 7 # failure code
-  .align 7
+  .p2align 7
 cp_imm_edges_jal_fwd_b_128:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -497,11 +497,11 @@ cp_imm_edges_jal_fwd_b_128:
 
 # cp_imm_edges_jal: forward jump by 256
   li x3, 1 # success code
-  .align 8
+  .p2align 8
 I_jal_cg_cp_imm_edges_jal_b_8:
   jal x10, cp_imm_edges_jal_fwd_b_256
   li x3, 7 # failure code
-  .align 8
+  .p2align 8
 cp_imm_edges_jal_fwd_b_256:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -512,11 +512,11 @@ cp_imm_edges_jal_fwd_b_256:
 
 # cp_imm_edges_jal: forward jump by 512
   li x3, 1 # success code
-  .align 9
+  .p2align 9
 I_jal_cg_cp_imm_edges_jal_b_9:
   jal x10, cp_imm_edges_jal_fwd_b_512
   li x3, 7 # failure code
-  .align 9
+  .p2align 9
 cp_imm_edges_jal_fwd_b_512:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -527,11 +527,11 @@ cp_imm_edges_jal_fwd_b_512:
 
 # cp_imm_edges_jal: forward jump by 1024
   li x3, 1 # success code
-  .align 10
+  .p2align 10
 I_jal_cg_cp_imm_edges_jal_b_10:
   jal x10, cp_imm_edges_jal_fwd_b_1024
   li x3, 7 # failure code
-  .align 10
+  .p2align 10
 cp_imm_edges_jal_fwd_b_1024:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -542,11 +542,11 @@ cp_imm_edges_jal_fwd_b_1024:
 
 # cp_imm_edges_jal: forward jump by 2048
   li x3, 1 # success code
-  .align 11
+  .p2align 11
 I_jal_cg_cp_imm_edges_jal_b_11:
   jal x10, cp_imm_edges_jal_fwd_b_2048
   li x3, 7 # failure code
-  .align 11
+  .p2align 11
 cp_imm_edges_jal_fwd_b_2048:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -557,11 +557,11 @@ cp_imm_edges_jal_fwd_b_2048:
 
 # cp_imm_edges_jal: forward jump by 4096
   li x3, 1 # success code
-  .align 12
+  .p2align 12
 I_jal_cg_cp_imm_edges_jal_b_12:
   jal x10, cp_imm_edges_jal_fwd_b_4096
   li x3, 7 # failure code
-  .align 12
+  .p2align 12
 cp_imm_edges_jal_fwd_b_4096:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -572,11 +572,11 @@ cp_imm_edges_jal_fwd_b_4096:
 
 # cp_imm_edges_jal: forward jump by 8192
   li x3, 1 # success code
-  .align 13
+  .p2align 13
 I_jal_cg_cp_imm_edges_jal_b_13:
   jal x10, cp_imm_edges_jal_fwd_b_8192
   li x3, 7 # failure code
-  .align 13
+  .p2align 13
 cp_imm_edges_jal_fwd_b_8192:
   # Check jump taken/not-taken
   # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -587,14 +587,14 @@ cp_imm_edges_jal_fwd_b_8192:
 
 # cp_imm_edges_jal: backward jump by 4
   # offset too small, skipping self-check
-  .align 3
+  .p2align 3
 I_jal_cg_cp_imm_edges_jal_b_m2:
   jal x10, cp_imm_edges_jal_skip_b_m4
-  .align 2
+  .p2align 2
 cp_imm_edges_jal_bwd_b_m4:
   jal x10, cp_imm_edges_jal_done_b_m4
 cp_imm_edges_jal_skip_b_m4:
-  .align 3
+  .p2align 3
   jal x10, cp_imm_edges_jal_bwd_b_m4
   # offset too small, skipping self-check
 cp_imm_edges_jal_done_b_m4:
@@ -606,14 +606,14 @@ cp_imm_edges_jal_done_b_m4:
 
 # cp_imm_edges_jal: backward jump by 8
   li x3, 1 # success code
-  .align 4
+  .p2align 4
 I_jal_cg_cp_imm_edges_jal_b_m3:
   jal x10, cp_imm_edges_jal_skip_b_m8
-  .align 3
+  .p2align 3
 cp_imm_edges_jal_bwd_b_m8:
   jal x10, cp_imm_edges_jal_done_b_m8
 cp_imm_edges_jal_skip_b_m8:
-  .align 4
+  .p2align 4
   jal x10, cp_imm_edges_jal_bwd_b_m8
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m8:
@@ -626,14 +626,14 @@ cp_imm_edges_jal_done_b_m8:
 
 # cp_imm_edges_jal: backward jump by 16
   li x3, 1 # success code
-  .align 5
+  .p2align 5
 I_jal_cg_cp_imm_edges_jal_b_m4:
   jal x10, cp_imm_edges_jal_skip_b_m16
-  .align 4
+  .p2align 4
 cp_imm_edges_jal_bwd_b_m16:
   jal x10, cp_imm_edges_jal_done_b_m16
 cp_imm_edges_jal_skip_b_m16:
-  .align 5
+  .p2align 5
   jal x10, cp_imm_edges_jal_bwd_b_m16
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m16:
@@ -646,14 +646,14 @@ cp_imm_edges_jal_done_b_m16:
 
 # cp_imm_edges_jal: backward jump by 32
   li x3, 1 # success code
-  .align 6
+  .p2align 6
 I_jal_cg_cp_imm_edges_jal_b_m5:
   jal x10, cp_imm_edges_jal_skip_b_m32
-  .align 5
+  .p2align 5
 cp_imm_edges_jal_bwd_b_m32:
   jal x10, cp_imm_edges_jal_done_b_m32
 cp_imm_edges_jal_skip_b_m32:
-  .align 6
+  .p2align 6
   jal x10, cp_imm_edges_jal_bwd_b_m32
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m32:
@@ -666,14 +666,14 @@ cp_imm_edges_jal_done_b_m32:
 
 # cp_imm_edges_jal: backward jump by 64
   li x3, 1 # success code
-  .align 7
+  .p2align 7
 I_jal_cg_cp_imm_edges_jal_b_m6:
   jal x10, cp_imm_edges_jal_skip_b_m64
-  .align 6
+  .p2align 6
 cp_imm_edges_jal_bwd_b_m64:
   jal x10, cp_imm_edges_jal_done_b_m64
 cp_imm_edges_jal_skip_b_m64:
-  .align 7
+  .p2align 7
   jal x10, cp_imm_edges_jal_bwd_b_m64
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m64:
@@ -686,14 +686,14 @@ cp_imm_edges_jal_done_b_m64:
 
 # cp_imm_edges_jal: backward jump by 128
   li x3, 1 # success code
-  .align 8
+  .p2align 8
 I_jal_cg_cp_imm_edges_jal_b_m7:
   jal x10, cp_imm_edges_jal_skip_b_m128
-  .align 7
+  .p2align 7
 cp_imm_edges_jal_bwd_b_m128:
   jal x10, cp_imm_edges_jal_done_b_m128
 cp_imm_edges_jal_skip_b_m128:
-  .align 8
+  .p2align 8
   jal x10, cp_imm_edges_jal_bwd_b_m128
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m128:
@@ -706,14 +706,14 @@ cp_imm_edges_jal_done_b_m128:
 
 # cp_imm_edges_jal: backward jump by 256
   li x3, 1 # success code
-  .align 9
+  .p2align 9
 I_jal_cg_cp_imm_edges_jal_b_m8:
   jal x10, cp_imm_edges_jal_skip_b_m256
-  .align 8
+  .p2align 8
 cp_imm_edges_jal_bwd_b_m256:
   jal x10, cp_imm_edges_jal_done_b_m256
 cp_imm_edges_jal_skip_b_m256:
-  .align 9
+  .p2align 9
   jal x10, cp_imm_edges_jal_bwd_b_m256
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m256:
@@ -726,14 +726,14 @@ cp_imm_edges_jal_done_b_m256:
 
 # cp_imm_edges_jal: backward jump by 512
   li x3, 1 # success code
-  .align 10
+  .p2align 10
 I_jal_cg_cp_imm_edges_jal_b_m9:
   jal x10, cp_imm_edges_jal_skip_b_m512
-  .align 9
+  .p2align 9
 cp_imm_edges_jal_bwd_b_m512:
   jal x10, cp_imm_edges_jal_done_b_m512
 cp_imm_edges_jal_skip_b_m512:
-  .align 10
+  .p2align 10
   jal x10, cp_imm_edges_jal_bwd_b_m512
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m512:
@@ -746,14 +746,14 @@ cp_imm_edges_jal_done_b_m512:
 
 # cp_imm_edges_jal: backward jump by 1024
   li x3, 1 # success code
-  .align 11
+  .p2align 11
 I_jal_cg_cp_imm_edges_jal_b_m10:
   jal x10, cp_imm_edges_jal_skip_b_m1024
-  .align 10
+  .p2align 10
 cp_imm_edges_jal_bwd_b_m1024:
   jal x10, cp_imm_edges_jal_done_b_m1024
 cp_imm_edges_jal_skip_b_m1024:
-  .align 11
+  .p2align 11
   jal x10, cp_imm_edges_jal_bwd_b_m1024
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m1024:
@@ -766,14 +766,14 @@ cp_imm_edges_jal_done_b_m1024:
 
 # cp_imm_edges_jal: backward jump by 2048
   li x3, 1 # success code
-  .align 12
+  .p2align 12
 I_jal_cg_cp_imm_edges_jal_b_m11:
   jal x10, cp_imm_edges_jal_skip_b_m2048
-  .align 11
+  .p2align 11
 cp_imm_edges_jal_bwd_b_m2048:
   jal x10, cp_imm_edges_jal_done_b_m2048
 cp_imm_edges_jal_skip_b_m2048:
-  .align 12
+  .p2align 12
   jal x10, cp_imm_edges_jal_bwd_b_m2048
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m2048:
@@ -786,14 +786,14 @@ cp_imm_edges_jal_done_b_m2048:
 
 # cp_imm_edges_jal: backward jump by 4096
   li x3, 1 # success code
-  .align 13
+  .p2align 13
 I_jal_cg_cp_imm_edges_jal_b_m12:
   jal x10, cp_imm_edges_jal_skip_b_m4096
-  .align 12
+  .p2align 12
 cp_imm_edges_jal_bwd_b_m4096:
   jal x10, cp_imm_edges_jal_done_b_m4096
 cp_imm_edges_jal_skip_b_m4096:
-  .align 13
+  .p2align 13
   jal x10, cp_imm_edges_jal_bwd_b_m4096
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m4096:
@@ -806,14 +806,14 @@ cp_imm_edges_jal_done_b_m4096:
 
 # cp_imm_edges_jal: backward jump by 8192
   li x3, 1 # success code
-  .align 14
+  .p2align 14
 I_jal_cg_cp_imm_edges_jal_b_m13:
   jal x10, cp_imm_edges_jal_skip_b_m8192
-  .align 13
+  .p2align 13
 cp_imm_edges_jal_bwd_b_m8192:
   jal x10, cp_imm_edges_jal_done_b_m8192
 cp_imm_edges_jal_skip_b_m8192:
-  .align 14
+  .p2align 14
   jal x10, cp_imm_edges_jal_bwd_b_m8192
   li x3, 7 # failure code
 cp_imm_edges_jal_done_b_m8192:

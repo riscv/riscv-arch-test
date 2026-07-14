@@ -41,155 +41,6 @@ RVTEST_BEGIN
 
 #define g    (1<<(UDB_PMP_GRANULARITY))
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    RVMODEL_FENCEI
-
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LA(x1, 1f)                          // Store the return Address in x1
-    \TEST_CASE\()_11:
-    jalr ra, 0(a4)
-    nop
-    nop
-1:
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
-
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
-    addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                          // Store the return Address in x1
-    \TEST_CASE\()_12:
-    jalr ra, 0(a4)
-    nop
-    nop
-2:
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
-
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
-    addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                          // Store the return Address in x1
-    \TEST_CASE\()_13:
-    jalr ra, 0(a4)
-    nop
-    nop
-3:
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
-
-    li t0, (g-8)
-    add a4, a4, t0                 // REGIONSTART + g - 4
-    LA(x1, 4f)                          // Store the return Address in x1
-    \TEST_CASE\()_14:
-    jalr ra, 0(a4)
-    nop
-    nop
-4:
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
-
-    addi a4, a4, 4                      // REGIONSTART + g
-    \TEST_CASE\()_15:
-    LA(x1, 5f)                          // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-    nop
-5:
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)
-
-    LI(a4, NOP)                                             // Value to write (NOP)
-    // Store Access Check
-    LA(a5, \ADDRESS)                                        // Address to be verified
-
-    \TEST_CASE\()_1:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    addi a5, a5, -4                                         // REGIONSTART - 4
-
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    addi a5, a5, 8                                          // REGIONSTART + 4
-
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    li t0, (g-8)
-    add a5, a5, t0                                     // REGIONSTART + g - 4
-
-    \TEST_CASE\()_4:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-    addi a5, a5, 4                                          // REGIONSTART + g
-
-    \TEST_CASE\()_5:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
-
-    LA(a5, \ADDRESS)                                        // Address to be verified
-
-    \TEST_CASE\()_6:
-    lw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                   // Signature update
-
-    addi a5, a5, -4                                         // REGIONSTART - 4
-
-    \TEST_CASE\()_7:
-    lw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                   // Signature update
-
-    addi a5, a5, 8                                          // REGIONSTART + 4
-
-    \TEST_CASE\()_8:
-    lw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
-
-    li t0, (g-8)
-    add a5, a5, t0                                      // REGIONSTART + g - 4
-
-    \TEST_CASE\()_9:
-    lw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
-
-    addi a5, a5, 4                                          // REGIONSTART + g
-
-    \TEST_CASE\()_10:
-    lw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)                                   // Signature update
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -241,7 +92,7 @@ main:
     csrw pmpcfg2, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
 // Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 9
@@ -258,7 +109,7 @@ main:
     csrw pmpcfg2, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
 
 // Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 7
@@ -275,7 +126,7 @@ main:
     csrw pmpcfg0, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
@@ -285,35 +136,35 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
-test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_tor_sw_address\""
-test_2_str:  .string "\"test: 2;  cp: cp_cfg_A_tor_sw_address-4\""
-test_3_str:  .string "\"test: 3;  cp: cp_cfg_A_tor_sw_address+4\""
-test_4_str:  .string "\"test: 4;  cp: cp_cfg_A_tor_sw_address+g-4\""
-test_5_str:  .string "\"test: 5;  cp: cp_cfg_A_tor_sw_address+g\""
+test_1_str:  .string "\"test: 1; cp: cp_cfg_A_tor_jalr_address\""
+test_2_str:  .string "\"test: 2; cp: cp_cfg_A_tor_jalr_address-4\""
+test_3_str:  .string "\"test: 3; cp: cp_cfg_A_tor_jalr_address+4\""
+test_4_str:  .string "\"test: 4; cp: cp_cfg_A_tor_jalr_address+g-4\""
+test_5_str:  .string "\"test: 5; cp: cp_cfg_A_tor_jalr_address+g\""
 
-test_6_str:  .string "\"test: 6;  cp: cp_cfg_A_tor_lw_address\""
-test_7_str:  .string "\"test: 7;  cp: cp_cfg_A_tor_lw_address-4\""
-test_8_str:  .string "\"test: 8;  cp: cp_cfg_A_tor_lw_address+4\""
-test_9_str:  .string "\"test: 9;  cp: cp_cfg_A_tor_lw_address+g-4\""
-test_10_str: .string "\"test: 10; cp: cp_cfg_A_tor_lw_address+g\""
+test_6_str:  .string "\"test: 6; cp: cp_cfg_A_tor_sw_address\""
+test_7_str:  .string "\"test: 7; cp: cp_cfg_A_tor_sw_address-4\""
+test_8_str:  .string "\"test: 8; cp: cp_cfg_A_tor_sw_address+4\""
+test_9_str:  .string "\"test: 9; cp: cp_cfg_A_tor_sw_address+g-4\""
+test_10_str: .string "\"test: 10; cp: cp_cfg_A_tor_sw_address+g\""
 
-test_11_str: .string "\"test: 11; cp: cp_cfg_A_tor_jalr_address\""
-test_12_str: .string "\"test: 12; cp: cp_cfg_A_tor_jalr_address-4\""
-test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_jalr_address+4\""
-test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
-test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
+test_11_str: .string "\"test: 11; cp: cp_cfg_A_tor_lw_address\""
+test_12_str: .string "\"test: 12; cp: cp_cfg_A_tor_lw_address-4\""
+test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_lw_address+4\""
+test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_lw_address+g-4\""
+test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_lw_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra

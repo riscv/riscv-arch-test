@@ -20,7 +20,7 @@ from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
+from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.vector_params import extract_instruction_info
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
@@ -42,7 +42,7 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
         f"{INDENT}mv x{IntegerRegisterFile.default_sig_reg}, x{last_chunk.end_sig_reg}"
         f" # restore signature pointer to default register for teardown"
     )
-    last_chunk.code = f"{last_chunk.code}\n{reset}" if last_chunk.code else reset
+    last_chunk.code.append(reset)
 
 
 def generate_unpriv_extension_tests(
@@ -155,7 +155,7 @@ def _generate_unpriv_tests_for_instruction(
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
     # Split into test files and write
-    test_files = _split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
+    test_files = split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
     for file_idx, test_file_chunks in enumerate(test_files):
         _append_sig_reg_reset(test_file_chunks)
         if is_vector:
@@ -175,28 +175,3 @@ def _generate_unpriv_tests_for_instruction(
 
     # Clean up (make sure all registers were returned)
     test_data.destroy()
-
-
-def _split_test_chunks(test_chunks: list[TestChunk], max_per_file: int) -> list[list[TestChunk]]:
-    """Split a list of TestChunks into groups that don't exceed max_per_file testcases each."""
-    # Check for empty list
-    if not test_chunks:
-        raise ValueError("No test chunks provided!")
-
-    test_files: list[list[TestChunk]] = []
-    current_file_chunks: list[TestChunk] = []
-    count = 0
-
-    # Iterate over all test chunks and group into test files
-    for tc in test_chunks:
-        if count > 0 and count + tc.num_testcases > max_per_file:
-            test_files.append(current_file_chunks)
-            current_file_chunks = []
-            count = 0
-        current_file_chunks.append(tc)
-        count += tc.num_testcases
-
-    # Add final file
-    if current_file_chunks:
-        test_files.append(current_file_chunks)
-    return test_files

@@ -37,33 +37,6 @@
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    // Address must be aligned to the cache block
-    LA(a4, \ADDRESS)
-
-    \TEST_CASE\()_1:
-    cbo.zero  (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    \TEST_CASE\()_2:
-    cbo.clean (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    \TEST_CASE\()_3:
-    cbo.flush (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    \TEST_CASE\()_4:
-    cbo.inval (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -115,7 +88,7 @@ main:
     LI(x4, PMPCFG_1|PMPCFG_0)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_1
+    PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     j exit                                        // Verification Complete, exit the test
 exit:
@@ -129,14 +102,14 @@ test_2_str:  .string "\"test: 2;  cp: pmpzicbo_cbo_clean\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_cbo_flush\""
 test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

@@ -184,7 +184,7 @@ The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) prov
 
 The ratified SBI compiles into a ~1MB OpenSBI firmware binary, which is unnecessarily large to load with every test.  Moreover, the SBI calling convention uses `a7` and `a6`, which are not available on RV32E.  Therefore,  T-SBI is a lighter-weight implementation with a custom calling convention that is incompatible with the ratified SBI.
 
-The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` and a result could be returned in `a0` if needed, but the present SBI calls do not require this. Other values of `a0` are reserved.
+The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` (and possibly `a2`) and a result could be returned in `a0` if needed. Other values of `a0` are reserved.
 
 [[t-tsbi]]
 .T-SBI Calls
@@ -193,11 +193,17 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 [%AUTOWIDTH]
 |===
 |Function Name|Operation(`a0`)|Description
-|ECALL_TEST|0x00000073|Test `ecall` to the execution environment.  Returns xEPC in `a0` to indicate that the trap handler was entered.
-|CSR_SET|0x<CSR>5a073|Performs the functionality of a CSRS instruction specified by the opcode. `a1` contains the value to write. <CSR> is the 12-bit CSR encoding.
-|CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `a1` contains the value to write.
-|CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
-|CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
+|TSBI_ECALL_TEST|0x00000073|Test `ecall` to the execution environment.  Returns xEPC in `a0` to indicate that the trap handler was entered.
+|TSBI_CSR_SET|0x<CSR>5a073|Performs the functionality of a CSRS instruction specified by the opcode. `a1` contains the value to write. <CSR> is the 12-bit CSR encoding.
+|TSBI_CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `a1` contains the value to write.
+|TSBI_CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
+|TSBI_CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
+|TSBI_LW|0x0005a503|LW a0, 0(a1) - Load word from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.
+|TSBI_LW+4|0x0045a503|LW a0, 4(a1) - Load word from physical address in `a1`+4 with machine-mode privileges.  Returns result in `a0`.  Used to read upper half of `mtime` or access other memory-mapped I/O.
+|TSBI_LD|0x0005b503|LD a0, 0(a1) - Load doubleword from physical address in `a1` with machine-mode privileges.  Returns result in `a0`.  Used to read `mtime` or access other memory-mapped I/O.  RV64 only
+|TSBI_SW|0x00a5a023|SW a0, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
+|TSBI_SW+4|0x00a5a223|SW a0, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
+|TSBI_SD|0x00a5b023|SD a0, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
 |===
 
 For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
@@ -212,11 +218,11 @@ The ACT trap handlers implement an additional set of convenience calls changing 
 [%AUTOWIDTH]
 |===
 |Function Name|Operation(`a0`)|Description
-|GOTO_MMODE|0x00000101|Switches to M-mode from any privilege mode.  Behavior may be unpredictable if STANDARD_SM_SUPPORTED is false.
-|GOTO_SMODE|0x00000102|Switches to S/HS-mode from any privilege mode.
-|GOTO_UMODE|0x00000103|Switches to U-mode from any privilege mode.
-|GOTO_VSMODE|0x00000104|Switches to VS-mode from any privilege mode.
-|GOTO_VUMODE|0x00000105|Switches to VU-mode from any privilege mode.
+|TSBI_GOTO_MMODE|0x00000001|Switches to M-mode from any privilege mode.  Behavior may be unpredictable if STANDARD_SM_SUPPORTED is false.
+|TSBI_GOTO_SMODE|0x00000002|Switches to S/HS-mode from any privilege mode.
+|TSBI_GOTO_UMODE|0x00000003|Switches to U-mode from any privilege mode.
+|TSBI_GOTO_VSMODE|0x00000004|Switches to VS-mode from any privilege mode.
+|TSBI_GOTO_VUMODE|0x00000005|Switches to VU-mode from any privilege mode.
 |===
 
 NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each trap handler performs the request if possible at the current privilege level, or else makes another `ecall` to pass the request up the privilege chain if necessary.  For example, GOTO_MMODE is always passed up the chain.  A CSR access to S-mode CSRs is handled by the S-mode handler, while a CSR access to M-mode received by the S-mode handler is passed up to the M-mode handler by an `ecall` with unchanged arguments.
@@ -225,16 +231,16 @@ NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each tra
 
 The following macros are defined for developer convenience to access the T-SBI and ACT system calls.  They are not required.
 
-* RVTEST_ECALL_TEST(): returns xEPC in `a0`
-* RVTEST_CSR_SET(csr, value)
-* RVTEST_CSR_CLEAR(csr, value)
-* RVTEST_CSR_WRITE(csr, value)
-* RVTEST_CSR_READ(csr): returns value in `a0`
-* RVTEST_GOTO_MMODE
-* RVTEST_GOTO_SMODE
-* RVTEST_GOTO_UMODE
-* RVTEST_GOTO_VSMODE
-* RVTEST_GOTO_VUMODE
+* RVTEST_TSBI_ECALL_TEST(): returns xEPC in `a0`
+* RVTEST_TSBI_CSR_SET(csr, value)
+* RVTEST_TSBI_CSR_CLEAR(csr, value)
+* RVTEST_TSBI_CSR_WRITE(csr, value)
+* RVTEST_TSBI_CSR_READ(csr): returns value in `a0`
+* RVTEST_TSBI_GOTO_MMODE
+* RVTEST_TSBI_GOTO_SMODE
+* RVTEST_TSBI_GOTO_UMODE
+* RVTEST_TSBI_GOTO_VSMODE
+* RVTEST_TSBI_GOTO_VUMODE
 
 
 TODO

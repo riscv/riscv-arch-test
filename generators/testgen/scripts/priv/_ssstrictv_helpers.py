@@ -194,10 +194,10 @@ def make_valid_indices(instruction: str, instruction_data: list, sew: int, lmul:
     vlmaxReg = common.pickPrivScratch(scalar_data, (scratch, vtypeReg))
     avlReg = scratch
 
-    if   sew == 8  : sew_aligned = -1#"0x1F"
-    elif sew == 16 : sew_aligned = -2#"0x1E"
-    elif sew == 32 : sew_aligned = -4#"0x1C"
-    elif sew == 64 : sew_aligned = -8#"0x18"
+    if   sew == 8  : sew_aligned = 0x1F
+    elif sew == 16 : sew_aligned = 0x1E
+    elif sew == 32 : sew_aligned = 0x1C
+    elif sew == 64 : sew_aligned = 0x18
 
     eew = common.getInstructionEEW(instruction)
     vs2_emul = math.ceil(lmul * eew / sew)
@@ -213,7 +213,7 @@ def make_valid_indices(instruction: str, instruction_data: list, sew: int, lmul:
     common.writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
 
 
-def override_registers(instruction_data: list, override_vd: int | None = None, override_vs1: int | None = None,
+def override_registers(instruction_data: list, *, override_vd: int | None = None, override_vs1: int | None = None,
                        override_vs2: int | None = None, override_vs3: int | None = None, override_rd: int | None = None,
                        override_rs1: int | None = None, override_rs2: int | None = None, override_imm: int | None = None):
     vec_data, scalar_data, _fp_data, _imm_val = instruction_data
@@ -269,7 +269,15 @@ def issue_simple_test(instruction: str, cp: str, *,
         vs1_val_pointer="vector_random",
         lmul= bounded_lmul,
     )
-    override_registers(instruction_data, override_vd, override_vs1, override_vs2, override_vs3, override_rd, override_imm)
+    override_registers(
+        instruction_data,
+        override_vd=override_vd,
+        override_vs1=override_vs1,
+        override_vs2=override_vs2,
+        override_vs3=override_vs3,
+        override_rd=override_rd,
+        override_imm=override_imm
+    )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
     common.writeLine(f"\n# Testcase {cp}")

@@ -263,4 +263,11 @@
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   mhpmevent3
+#define RVMODEL_MHPMCOUNTER mhpmcounter3
+#define RVMODEL_MHPMEVENT_VAL
+#define RVMODEL_MHPMEVENT_CODE
+
 #endif // _RVMODEL_MACROS_H

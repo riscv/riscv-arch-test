@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: Zawrs_wrs-nto_stall_exec
+    coverpoint: ["ZawrsU_cg/cp_wrs_resume"]
+
+  - name: Zawrs_wrs-sto_stall_duration
+    coverpoint: ["ZawrsU_cg/cp_wrs_sto_timeout"]
+
+  - name: Zawrs_stall_terminate
+    coverpoint: ["Can not be tested because it is implementation specific"]
+
+  - name: Zawrs_exec_resume_rules
+    coverpoint: ["ZawrsU_cg/cp_wrs_resume"]
+
+  - name: Zawrs_priv_illegal_instr_excp
+    coverpoint: ["ZawrsU_cg/cp_wrs_nto_timeout"]
+
+  - name: Zawrs_virtual_instr_excp
+    coverpoint: ["Tested in S mode test"]

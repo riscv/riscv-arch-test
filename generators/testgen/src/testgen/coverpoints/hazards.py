@@ -263,13 +263,6 @@ def _make_fpr_hazard(
     setup1, test1, check1 = format_instruction("fadd.s", "FR", test_data, producer)
     setup2, test2, check2 = format_instruction(instr_name, instr_type, test_data, consumer)
 
-    if filler == "stressor":
-        available_regs = sorted(test_data.float_regs.reg_list)
-        if len(available_regs) >= 3:
-            fd, fs1, fs2 = available_regs[:3]
-            filler = f"fadd.s f{fd}, f{fs1}, f{fs2}"
-        else:
-            filler = "addi x0, x0, 0"
     if filler_name == "stressor":
         filler = _make_fpr_stressor(test_data)
     mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []

@@ -140,12 +140,14 @@
         iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b000) {
         // Narrowing Instructions and Widening Instructions are reserved at the max SEW only, so
         // SsstrictV tests should not run them.
-        ignore_bins vnsrl        = { 6'b101100 };
-        ignore_bins vnsra        = { 6'b101101 };
-        ignore_bins vnclipu      = { 6'b101110 };
-        ignore_bins vnclip       = { 6'b101111 };
-        ignore_bins vwredsumu    = { 6'b110000 };
-        ignore_bins vwredsum     = { 6'b110001 };
+        `ifdef ZVE32X_SUPPORTED
+            ignore_bins vnsrl        = { 6'b101100 };
+            ignore_bins vnsra        = { 6'b101101 };
+            ignore_bins vnclipu      = { 6'b101110 };
+            ignore_bins vnclip       = { 6'b101111 };
+            ignore_bins vwredsumu    = { 6'b110000 };
+            ignore_bins vwredsum     = { 6'b110001 };
+        `endif
     }
     // OPFVV: funct3 = 001 — all defined instructions are FP (SEW-dependent)
     v_FVV_f6 : coverpoint ins.current.insn[31:26]
@@ -199,41 +201,47 @@
         iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010) {
         // Narrowing Instructions and Widening Instructions are reserved at the max SEW only, so
         // SsstrictV tests should not run them.
-        ignore_bins vxunary0    = { 6'b010010 }; // These are vzext and vsext which are not defined at SEW=8
-        ignore_bins vwaddu      = { 6'b110000 };
-        ignore_bins vwadd       = { 6'b110001 };
-        ignore_bins vwsubu      = { 6'b110010 };
-        ignore_bins vwsub       = { 6'b110011 };
-        ignore_bins vwaddu_w    = { 6'b110100 };
-        ignore_bins vwadd_w     = { 6'b110101 };
-        ignore_bins vwsubu_w    = { 6'b110110 };
-        ignore_bins vwsub_w     = { 6'b110111 };
-        ignore_bins vwmulu      = { 6'b111000 };
-        ignore_bins vwmulsu     = { 6'b111010 };
-        ignore_bins vwmul       = { 6'b111011 };
-        ignore_bins vwmaccu     = { 6'b111100 };
-        ignore_bins vwmacc      = { 6'b111101 };
-        ignore_bins vwmaccsu    = { 6'b111111 };
+        `ifdef ZVE32X_SUPPORTED
+            ignore_bins vxunary0    = { 6'b010010 }; // These are vzext and vsext which are not defined at SEW=8
+            ignore_bins vwaddu      = { 6'b110000 };
+            ignore_bins vwadd       = { 6'b110001 };
+            ignore_bins vwsubu      = { 6'b110010 };
+            ignore_bins vwsub       = { 6'b110011 };
+            ignore_bins vwaddu_w    = { 6'b110100 };
+            ignore_bins vwadd_w     = { 6'b110101 };
+            ignore_bins vwsubu_w    = { 6'b110110 };
+            ignore_bins vwsub_w     = { 6'b110111 };
+            ignore_bins vwmulu      = { 6'b111000 };
+            ignore_bins vwmulsu     = { 6'b111010 };
+            ignore_bins vwmul       = { 6'b111011 };
+            ignore_bins vwmaccu     = { 6'b111100 };
+            ignore_bins vwmacc      = { 6'b111101 };
+            ignore_bins vwmaccsu    = { 6'b111111 };
+        `endif
     }
     // OPIVI: funct3 = 011
     v_IVI_f6 : coverpoint ins.current.insn[31:26]
         iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b011) {
         // Narrowing Instructions and Widening Instructions are reserved at the max SEW only, so
         // SsstrictV tests should not run them.
-        ignore_bins vnsrl   = { 6'b101100 };
-        ignore_bins vnsra   = { 6'b101101 };
-        ignore_bins vnclipu = { 6'b101110 };
-        ignore_bins vnclip  = { 6'b101111 };
+        `ifdef ZVE32X_SUPPORTED
+            ignore_bins vnsrl   = { 6'b101100 };
+            ignore_bins vnsra   = { 6'b101101 };
+            ignore_bins vnclipu = { 6'b101110 };
+            ignore_bins vnclip  = { 6'b101111 };
+        `endif
     }
     // OPIVX: funct3 = 100
     v_IVX_f6 : coverpoint ins.current.insn[31:26]
         iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b100) {
         // Narrowing Instructions and Widening Instructions are reserved at the max SEW only, so
         // SsstrictV tests should not run them.
-        ignore_bins vnsrl   = { 6'b101100 };
-        ignore_bins vnsra   = { 6'b101101 };
-        ignore_bins vnclipu = { 6'b101110 };
-        ignore_bins vnclip  = { 6'b101111 };
+        `ifdef ZVE32X_SUPPORTED
+            ignore_bins vnsrl   = { 6'b101100 };
+            ignore_bins vnsra   = { 6'b101101 };
+            ignore_bins vnclipu = { 6'b101110 };
+            ignore_bins vnclip  = { 6'b101111 };
+        `endif
     }
     // OPFVF: funct3 = 101 — all defined instructions are FP (SEW-dependent)
     v_FVF_f6 : coverpoint ins.current.insn[31:26]
@@ -284,21 +292,24 @@
     // OPMVX: funct3 = 110
     v_MVX_f6 : coverpoint ins.current.insn[31:26]
         iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b110) {
-        ignore_bins vwaddu      = { 6'b110000 };
-        ignore_bins vwadd       = { 6'b110001 };
-        ignore_bins vwsubu      = { 6'b110010 };
-        ignore_bins vwsub       = { 6'b110011 };
-        ignore_bins vwaddu_w    = { 6'b110100 };
-        ignore_bins vwadd_w     = { 6'b110101 };
-        ignore_bins vwsubu_w    = { 6'b110110 };
-        ignore_bins vwsub_w     = { 6'b110111 };
-        ignore_bins vwmulu      = { 6'b111000 };
-        ignore_bins vwmulsu     = { 6'b111010 };
-        ignore_bins vwmul       = { 6'b111011 };
-        ignore_bins vwmaccu     = { 6'b111100 };
-        ignore_bins vwmacc      = { 6'b111101 };
-        ignore_bins vwmaccus    = { 6'b111110 };
-        ignore_bins vwmaccsu    = { 6'b111111 };
+        // Widening Instructions are reserved at the max SEW only, so SsstrictV tests should not run them.
+        `ifdef ZVE32X_SUPPORTED
+            ignore_bins vwaddu      = { 6'b110000 };
+            ignore_bins vwadd       = { 6'b110001 };
+            ignore_bins vwsubu      = { 6'b110010 };
+            ignore_bins vwsub       = { 6'b110011 };
+            ignore_bins vwaddu_w    = { 6'b110100 };
+            ignore_bins vwadd_w     = { 6'b110101 };
+            ignore_bins vwsubu_w    = { 6'b110110 };
+            ignore_bins vwsub_w     = { 6'b110111 };
+            ignore_bins vwmulu      = { 6'b111000 };
+            ignore_bins vwmulsu     = { 6'b111010 };
+            ignore_bins vwmul       = { 6'b111011 };
+            ignore_bins vwmaccu     = { 6'b111100 };
+            ignore_bins vwmacc      = { 6'b111101 };
+            ignore_bins vwmaccus    = { 6'b111110 };
+            ignore_bins vwmaccsu    = { 6'b111111 };
+        `endif
     }
 
     // ══════════════════════════════════════════════════════════════════

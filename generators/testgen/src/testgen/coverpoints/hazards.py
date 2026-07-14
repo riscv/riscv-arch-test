@@ -20,9 +20,9 @@ from testgen.formatters.registry import get_instr_type_config
 
 def _hazard_class(coverpoint: str) -> str:
     """Return the requested hazard class suffix: r, w, or rw."""
-    parts = coverpoint.split("_")
-    if len(parts) > 3 and parts[-1] in {"r", "w", "rw"}:
-        return parts[-1]
+    for suffix in ("_rw", "_r", "_w"):
+        if coverpoint.endswith(suffix):
+            return suffix[1:]
     return "rw"
 
 

@@ -221,6 +221,7 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
+    // safe to use T1-T3 because this is only invoked in failure code
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
     ret
 
@@ -235,41 +236,41 @@
   // ***DH 4/8/26 check this is proper gating
   #ifdef STANDARD_SM_SUPPORTED
     rvtest_set_msw_int:
-      RVMODEL_SET_MSW_INT(T2, T5)
+      RVMODEL_SET_MSW_INT(a0, a1)
       ret
 
     rvtest_clr_msw_int:
-      RVMODEL_CLR_MSW_INT(T2, T5)
+      RVMODEL_CLR_MSW_INT(a0, a1)
       ret
 
     rvtest_set_mext_int:
-      RVMODEL_SET_MEXT_INT(T2, T5)
+      RVMODEL_SET_MEXT_INT(a0, a1)
       ret
 
     rvtest_clr_mext_int:
-      RVMODEL_CLR_MEXT_INT(T2, T5)
+      RVMODEL_CLR_MEXT_INT(a0, a1)
       ret
   #endif
 
   #ifdef S_SUPPORTED
     rvtest_set_ssw_int:
-      RVMODEL_SET_SSW_INT(T2, T5)
+      RVMODEL_SET_SSW_INT(a0, a1)
       ret
 
     rvtest_clr_ssw_int:
-      RVMODEL_CLR_SSW_INT(T2, T5)
-      li T2, 2
-      csrc mip, T2              /* Always called from M-mode; mip.SSIP must be cleared via mip */
+      RVMODEL_CLR_SSW_INT(a0, a1)
+      li a0, 2
+      csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
       ret
 
     rvtest_set_sext_int:
-      RVMODEL_SET_SEXT_INT(T2, T5)
+      RVMODEL_SET_SEXT_INT(a0, a1)
       ret
 
     rvtest_clr_sext_int:
-      RVMODEL_CLR_SEXT_INT(T2, T5)
-      LI(T3, 512)
-      csrc sip, T3 // clear sip.SEIP
+      RVMODEL_CLR_SEXT_INT(a0, a1)
+      LI(a1, 512)
+      csrc sip, a1 // clear sip.SEIP
       ret
   #endif
 

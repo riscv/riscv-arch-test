@@ -42,7 +42,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cmp_rd_rs1|32|The rd register has the same register number as the rs1 register.
 |cmp_rd_rs2|32|The rd register has the same register number as the rs2 register.
 |cmp_rd_rs1_rs2|32|The rd register has the same register number as both the rs1 and rs2 registers.
-|cp_gpr_hazard|4|Integer register hazard detection.
+|cp_gpr_hazard|3-4|Integer register hazard detection (bin count varies by instruction class: 3 for read-only, 4 for read-write).
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
@@ -74,7 +74,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fs1_badNB|12|The fs1 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs2_badNB|12|The fs2 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs3_badNB|12|The fs3 register contains an incorrectly-NaN-boxed lower-precision value.
-|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard.
+|cp_fpr_hazard|3-4|Floating-point register hazard detection: RAW, WAW, and no hazard (bin count varies by instruction class).
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
@@ -94,27 +94,6 @@ Notes:
 
 * The cmp_* and cp_*_hazard coverpoints occupy the fuzzy land at the edge of certification and verification.  They are included because they are easy.
 
-[[cp-gpr-hazard]]
-==== Integer Register Hazard Coverpoint
-
-Depth=_n_ means there are _n_ instructions between the producer and consumer.
-Depth=0 means the consumer immediately follows the producer.
-Depth=1 means exactly one filler instruction separates them.
-
-The `cp_gpr_hazard` coverpoint checks integer register data dependencies
-between a producer and a consumer instruction using a Category x Category
-approach. The generating producer instruction is always `add`. Consumer
-instructions vary by category.
-
-RAW hazard tests are generated at Depth=0 and Depth=1. Depth=1 tests use two filler classes:
-
-* Class A: NOP filler (`addi x0, x0, 0`).
-* Class B: Structural stressor filler — independent integer work on the same
-  functional unit, without touching the producer destination register.
-
-WAW (Write-After-Write) hazard tests are generated at Depth=0, where both
-producer and consumer write the same destination register.
-The consumer result must win.
 
 [[t-integer-edge-definitions]]
 .Integer Edge Case Definitions
@@ -216,5 +195,6 @@ include::k.adoc[]
 include::zi.adoc[]
 include::v.adoc[]
 include::unprivmisc23.adoc[]
+include::hazards.adoc[]
 include::unprivmisc.adoc[]
 include::e.adoc[]

@@ -107,10 +107,6 @@ def get_flen_for_extension(extension: str) -> int:
 # (they are already covered by other tests)
 SKIP_COVERPOINTS = frozenset(
     {
-        # Hazard coverpoints - covered implicitly by register usage patterns
-        "cp_gpr_hazard_rw",
-        "cp_gpr_hazard_w",
-        "cp_gpr_hazard_r",
         # Sign coverpoints - already covered by edge tests
         "cp_rd_sign",
         # Equal value comparisons - already covered by cr_rs1_rs2_edges

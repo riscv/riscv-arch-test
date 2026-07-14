@@ -1,0 +1,125 @@
+[[appendix-hazard-tests]]
+=== Pipeline Hazard Tests
+
+This appendix describes the architecture of the cp_gpr_hazard and
+cp_fpr_hazard coverpoints and their associated test generators.
+
+==== Hazard Types
+
+Three classes of pipeline data hazards are relevant to RISC-V certification:
+
+* RAW (Read-After-Write): A consumer instruction reads a register before
+  the producer write has retired. The pipeline must forward the correct
+  value to the consumer. This is the primary hazard class tested.
+* WAW (Write-After-Write): Two instructions both write the same destination
+  register. The second write must win. Relevant for multi-cycle instructions.
+* WAR (Write-After-Read): Register WAR is not a real hazard in an in-order
+  pipeline and is excluded. Memory WAR (store then load same address) tests
+  store-to-load forwarding and is deferred to Phase 2.
+
+==== Generator Architecture
+
+The generator uses a Category x Category approach: every consumer instruction
+category is tested against a fixed add producer. Using a fixed producer
+eliminates producer-dependent pipeline variance, isolating the consumer bypass path.
+
+===== Depth
+
+Depth=n means there are n instructions between the producer and consumer.
+
+* Depth=0: Consumer immediately follows producer. Tests basic bypass.
+* Depth=1: One filler instruction separates them. Tests forwarding across
+  a pipeline stage boundary.
+
+Depth=0 and Depth=1 are the certification core. Depth greater than 1 is
+deferred to Phase 2 and requires investigation of RVVI retirement buffer capacity.
+
+===== Filler Classes
+
+Depth=1 tests use two filler classes, each exposing a distinct failure mode:
+
+* Class A NOP (addi x0, x0, 0): Catches a broken basic bypass path.
+* Class B Structural stressor: An independent add on the same functional
+  unit using registers disjoint from both producer and consumer. Catches
+  pipelines that track the last result from the FU rather than the last write
+  to the specific register. Stressor registers are explicitly excluded from
+  overlapping with producer destination or consumer sources.
+
+===== Source Port Coverage
+
+RAW tests exercise each integer source port rs1 and rs2 separately. The SV
+bins raw_rs_depth0 and raw_rs_depth1 aggregate rs1 and rs2 hits. Per-port
+bin granularity requires extending check_gpr_hazards() to return port
+identity and is deferred to Phase 2.
+
+===== Instruction Class Handling
+
+[cols="1,2,2,2"]
+|===
+|Type|Producer|Consumer Source|Observability
+
+|R-type add
+|add rd, rs1, rs2
+|rs1 or rs2
+|SIGUPD on consumer rd
+
+|I-type addi
+|add rd, rs1, rs2
+|rs1
+|SIGUPD on consumer rd
+
+|Load lw
+|add base, rs1, rs2
+|rs1 as base address
+|Bypass failure forces load from garbage address causing signature mismatch
+
+|Store sw
+|add rd, rs1, rs2
+|rs2 as store data
+|Verified via subsequent load from same address
+
+|Branch beq
+|add rd, rs1, rs2
+|rs1 or rs2
+|Wrong value causes wrong-path execution detectable via signature
+
+|JALR
+|Excluded Phase 1
+|rs1 is jump target RAW injection corrupts control flow
+|Phase 2: dedicated safe-landing RAW pattern
+
+|U-type lui auipc
+|add rd, rs1, rs2
+|No integer sources WAW only
+|SIGUPD on consumer rd
+
+|===
+
+===== WAW Tests
+
+WAW tests place a fast add producer and the consumer both writing the same
+destination register. The consumer result must win. SIGUPD is placed on the
+consumer. Producer and consumer are constrained to produce arithmetically
+distinct values where possible to prevent a lucky coincidence masking a WAW bug.
+
+==== Implemented Coverage Phase 1
+
+[cols="1,1,1"]
+|===
+|Hazard Type|Depth|Status
+
+|RAW integer rs1|0 and 1|Implemented
+|RAW integer rs2|0 and 1|Implemented
+|WAW integer rd|0|Implemented
+|WAR memory store to load|0|Phase 2
+|RAW JALR rs1|0|Phase 2
+|RAW depth greater than 1|2+|Phase 2 behind flag
+
+|===
+
+==== Test Budget
+
+The certification core targets approximately 84 tests per instruction at
+Depth=0 and Depth=1, within the 100-test-per-instruction cap. Depth greater
+than 1 optional tests are generated behind a flag only if no RVVI changes
+are required.

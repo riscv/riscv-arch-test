@@ -28,12 +28,12 @@ def _hazard_class(coverpoint: str) -> str:
 
 def _int_sources(instr_type: str) -> list[str]:
     if instr_type == "S":
-        # Store formatters move the signature pointer into rs1 for checking.
-        # Keep hazard tests on store data so the register allocator state stays coherent.
-        return ["rs2"]
+        # rs1 (address base) now covered via _make_store_base_hazard using the
+        # formatter's own address-setup arithmetic as the RAW producer.
+        return ["rs1", "rs2"]
     if instr_type == "JR":
-        # JALR has no rs2, and rs1 is a jump target that needs a dedicated
-        # control-flow-safe RAW pattern.
+        # JALR rs1 is a jump target — a RAW hazard on rs1 would corrupt control flow.
+        # RAW generation for JALR is excluded entirely. No dedicated pattern exists.
         return []
     required = get_instr_type_config(instr_type).required_params or set()
     return [field for field in ("rs1", "rs2", "rs3") if field in required]
@@ -86,8 +86,9 @@ def _generate_with_fixed_float_source(test_data: TestData, instr_type: str, fiel
     raise ValueError(f"Unknown floating-point source field: {field}")
 
 
-def _make_gpr_stressor(test_data: TestData) -> str:
-    available_regs = sorted(test_data.int_regs.reg_list - {0})
+def _make_gpr_stressor(test_data: TestData, forbidden: set[int] | None = None) -> str:
+    forbidden = (forbidden or set()) | {0}
+    available_regs = sorted(test_data.int_regs.reg_list - forbidden)
     if len(available_regs) < 3:
         return "addi x0, x0, 0"
     rd, rs1, rs2 = available_regs[:3]
@@ -110,11 +111,41 @@ def _make_load_base_hazard(
     label_line = test_data.add_testcase(bin_name, coverpoint)
     setup, test, check = format_instruction(instr_name, instr_type, test_data, consumer)
     if filler_name == "stressor":
-        filler = _make_gpr_stressor(test_data)
+        forbidden = {base_reg} | set(consumer.used_int_regs)
+        filler = _make_gpr_stressor(test_data, forbidden)
     mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []
     setup_lines = setup.splitlines()
     setup_lines[-1] = _with_hazard_comment(setup_lines[-1], f"# RAW producer: writes x{base_reg} with load base")
     test = _with_hazard_comment(test, "# RAW consumer: reads rs1 load base - tests bypass forwarding")
+    lines = [f"\n# Testcase {coverpoint} {bin_name}", "\n".join(setup_lines), *mid, label_line, test]
+    if check:
+        lines.append(check)
+    test_data.int_regs.return_registers(consumer.used_int_regs + [base_reg])
+    return [line for line in lines if line]
+
+
+def _make_store_base_hazard(
+    instr_name: str,
+    instr_type: str,
+    coverpoint: str,
+    test_data: TestData,
+    case_idx: int | str,
+    filler: str = "",
+    filler_name: str = "",
+) -> list[str]:
+    """Generate a RAW hazard where a store consumes a freshly written base/address register."""
+    base_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    consumer = generate_random_params(test_data, instr_type, rs1=base_reg, exclude_regs=[0, base_reg])
+    bin_name = case_idx if isinstance(case_idx, str) else f"raw_rs1_{case_idx}"
+    label_line = test_data.add_testcase(bin_name, coverpoint)
+    setup, test, check = format_instruction(instr_name, instr_type, test_data, consumer)
+    if filler_name == "stressor":
+        forbidden = {base_reg} | set(consumer.used_int_regs)
+        filler = _make_gpr_stressor(test_data, forbidden)
+    mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []
+    setup_lines = setup.splitlines()
+    setup_lines[-1] = _with_hazard_comment(setup_lines[-1], f"# RAW producer: writes x{base_reg} with store base")
+    test = _with_hazard_comment(test, "# RAW consumer: reads rs1 store base - tests bypass forwarding")
     lines = [f"\n# Testcase {coverpoint} {bin_name}", "\n".join(setup_lines), *mid, label_line, test]
     if check:
         lines.append(check)
@@ -136,6 +167,8 @@ def _make_gpr_hazard(
     """Generate one adjacent GPR producer/consumer hazard testcase."""
     if haz_type == "raw" and instr_type == "L" and field == "rs1":
         return _make_load_base_hazard(instr_name, instr_type, coverpoint, test_data, case_idx, filler, filler_name)
+    if haz_type == "raw" and instr_type == "S" and field == "rs1":
+        return _make_store_base_hazard(instr_name, instr_type, coverpoint, test_data, case_idx, filler, filler_name)
 
     producer = generate_random_params(test_data, "R", exclude_regs=[0, 1, 2, 4, 5, 7, 8, 12, 13])
     assert producer.rd is not None and producer.rs1 is not None and producer.rs2 is not None
@@ -168,7 +201,8 @@ def _make_gpr_hazard(
         check1 = ""
     setup2, test2, check2 = format_instruction(instr_name, instr_type, test_data, consumer)
     if filler_name == "stressor":
-        filler = _make_gpr_stressor(test_data)
+        forbidden = {producer.rd} | set(consumer.used_int_regs)
+        filler = _make_gpr_stressor(test_data, forbidden)
     mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []
     if haz_type == "raw":
         test1 = _with_hazard_comment(test1, f"# RAW producer: writes x{producer.rd}")
@@ -189,6 +223,15 @@ def _make_gpr_hazard(
     return [line for line in lines if line]
 
 
+def _make_fpr_stressor(test_data: TestData) -> str:
+    """Independent FP-register-consuming filler for depth=1 FPR hazard tests."""
+    available_regs = sorted(test_data.float_regs.reg_list)
+    if len(available_regs) < 3:
+        return "fadd.s f0, f0, f0"
+    fd, fs1, fs2 = available_regs[:3]
+    return f"fadd.s f{fd}, f{fs1}, f{fs2}"
+
+
 def _make_fpr_hazard(
     instr_name: str,
     instr_type: str,
@@ -198,6 +241,7 @@ def _make_fpr_hazard(
     field: str | None,
     case_idx: int | str,
     filler: str = "",
+    filler_name: str = "",
 ) -> list[str]:
     """Generate one adjacent FPR producer/consumer hazard testcase."""
     producer = generate_random_params(test_data, "FR", fp_load_type="single")
@@ -219,7 +263,16 @@ def _make_fpr_hazard(
     setup1, test1, check1 = format_instruction("fadd.s", "FR", test_data, producer)
     setup2, test2, check2 = format_instruction(instr_name, instr_type, test_data, consumer)
 
-    mid = ["  " + filler] if filler else []
+    if filler == "stressor":
+        available_regs = sorted(test_data.float_regs.reg_list)
+        if len(available_regs) >= 3:
+            fd, fs1, fs2 = available_regs[:3]
+            filler = f"fadd.s f{fd}, f{fs1}, f{fs2}"
+        else:
+            filler = "addi x0, x0, 0"
+    if filler_name == "stressor":
+        filler = _make_fpr_stressor(test_data)
+    mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []
     lines = [f"\n# Testcase {coverpoint} {bin_name}", setup1, setup2, test1, *mid, label_line, test2]
     if haz_type == "waw":
         lines.append(check2)
@@ -271,7 +324,7 @@ def make_cp_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data:
                         instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler, filler_name
                     )
                     if make_hazard is _make_gpr_hazard
-                    else make_hazard(instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler)
+                    else make_hazard(instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler, filler_name)
                 )
     if "w" in haz_class and has_dest:
         test_lines.extend(make_hazard(instr_name, instr_type, coverpoint, test_data, "waw", None, "waw"))

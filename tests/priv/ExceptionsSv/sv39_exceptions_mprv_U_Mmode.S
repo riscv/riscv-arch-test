@@ -75,7 +75,6 @@ RVTEST_BEGIN
   SET_REQ_MSTATUS_VAL
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop

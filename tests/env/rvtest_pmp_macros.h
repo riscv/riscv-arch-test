@@ -73,7 +73,6 @@
 .macro PMP_VERIFICATION_RWX ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_1:
@@ -115,7 +114,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
@@ -128,7 +126,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_2:
@@ -140,7 +137,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_3:
@@ -272,7 +268,6 @@
 .macro PMP_VERIFICATION_RWX_ALL ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
   .if (UDB_MXLEN == 64)
@@ -481,7 +476,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
@@ -559,7 +553,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
@@ -572,7 +565,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_18:
@@ -584,7 +576,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_19:
@@ -779,9 +770,8 @@
 .macro PMP_VERIFICATION_RWX_NAPOT_SM_RV64 ADDRESS, TEST_CASE
 
     // Execution Access Check — probe start, start-4, start+4, start+g-4, start+g and
-    // record each outcome (_20.._24). The sentinel x4=0xACCE is reloaded before every
-    // probe because RVTEST_SIGUPD clobbers x4 (the temp reg) in selfcheck mode.
-    LI(x4, 0xACCE)                        // sentinel checked by the trap handler on a fetch fault
+    // record each outcome (_20.._24). Each probe sets ra to its resume label so the
+    // trap handler returns there after an execute (fetch) fault instead of looping.
     LA (a4, \ADDRESS)
     LA(ra, 1f)                            // ra: resume target on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                         // sync I-cache: a prior store may have updated this executable region
@@ -792,7 +782,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_20, test_20_str)
 
-    LI(x4, 0xACCE)                        // reload sentinel (RVTEST_SIGUPD clobbered x4 in selfcheck mode)
     addi a4, a4, -4                       // REGIONSTART - 4
     LA(ra, 2f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_21:
@@ -802,7 +791,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_21, test_21_str)
 
-    LI(x4, 0xACCE)
     addi a4, a4, 8                        // REGIONSTART + 4
     LA(ra, 3f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_22:
@@ -812,7 +800,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_22, test_22_str)
 
-    LI(x4, 0xACCE)
     LI(t0, (1<<(UDB_PMP_GRANULARITY))-8)
     add a4, a4, t0                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
     LA(ra, 4f)                            // ra: resume target on a fetch fault (and the region's ret target)
@@ -823,7 +810,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_23, test_23_str)
 
-    LI(x4, 0xACCE)
     addi a4, a4, 4                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY))
     LA(ra, 5f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_24:

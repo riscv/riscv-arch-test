@@ -57,7 +57,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
-    LI(x4, 0xACCE)
     LI(a5, 0)
     LA(x1, 4f)                                               // Address to be verified
     sw a4, 0(a5)                                             // word-level store test
@@ -78,7 +77,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_4,test_4_str)               // Signature update
 
-    LI(x4, 0xACCE)
     LA(x1, 5f)
     LI(a5, 0)                                                   // Address to be verified
     lw a4, 0(a5)                                             // word-level store test
@@ -88,7 +86,6 @@ RVTEST_BEGIN
     nop
 
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS))
     LA(x1, 1f)                                                // Store the return Address in x1
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
@@ -97,7 +94,6 @@ RVTEST_BEGIN
 1:
     nop
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS-4))
     LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -105,7 +101,6 @@ RVTEST_BEGIN
 2:
     nop
 
-    LI(x4, 0xACCE)
     LI(a5, 0)
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a5)

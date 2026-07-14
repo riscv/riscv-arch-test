@@ -32,7 +32,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.16
+    rev: v0.15.20
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -51,7 +51,7 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.20
+    rev: 0.11.27
     hooks:
       - id: uv-lock
 
@@ -64,7 +64,7 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.8.3
+    rev: v3.8.4
     hooks:
       - id: prettier
 
@@ -79,11 +79,11 @@ repos:
     rev: v3.14.2
     hooks:
       - id: markdown-link-check
-        args: [-q]
+        args: [-q, -c .markdown-link-check.config]
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 43.214.6
+    rev: 43.235.0
     hooks:
       - id: renovate-config-validator
 
@@ -92,3 +92,14 @@ repos:
   #   rev: "v19.1.7"
   #   hooks:
   #     - id: clang-format
+
+  # Forbid the ambiguous `.align` assembler directive (its meaning is
+  # target-dependent); require the explicit `.p2align` (power-of-two
+  # exponent) or `.balign` (byte count) instead.
+  - repo: local
+    hooks:
+      - id: forbid-align-directive
+        name: forbid ambiguous .align directive
+        language: script
+        entry: .github/scripts/check-align-directive.sh
+        files: \.(S|s|h|py)$

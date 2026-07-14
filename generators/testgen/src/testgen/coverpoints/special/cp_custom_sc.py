@@ -25,7 +25,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     tc = test_data.begin_test_chunk()
     lr_insn = "lr.w" if instr_name.endswith(".w") else "lr.d"
-    test_lines: list[str] = []
 
     # cp_custom_aqrl
     for suffix in ["", ".rl", ".aqrl"]:
@@ -41,7 +40,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         label = test_data.current_testcase_label
         retry_label = f"{label}_retry"
         success_label = f"{label}_success"
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -80,7 +79,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     sc_lr_label = test_data.current_testcase_label
     sc_lr_retry_label = f"{sc_lr_label}_retry"
     sc_lr_success_label = f"{sc_lr_label}_success"
-    test_lines.extend(
+    tc.code.extend(
         [
             f"# Testcase: cp_custom_sc_lr with prev {lr_insn}",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -101,7 +100,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             "",
         ]
     )
-    test_lines.extend(
+    tc.code.extend(
         [
             f"# Testcase: cp_custom_sc_lr with prev {lr_insn} first to matching address and then to a different address",
             "# This test is not described with a coverpoint because it involves three consecutive instructions",
@@ -134,7 +133,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         and params.temp_reg is not None
         and params.temp_val is not None
     )
-    test_lines.extend(
+    tc.code.extend(
         [
             "# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -168,7 +167,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             and params.rs2val is not None
             and params.temp_reg is not None
         )
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -186,5 +185,4 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         return_test_regs(test_data, params)
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

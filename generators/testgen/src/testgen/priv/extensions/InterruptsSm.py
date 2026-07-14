@@ -12,6 +12,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -455,17 +456,18 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("InterruptsSm", required_extensions=["Sm"])
-def make_interruptssm(test_data: TestData) -> list[str]:
+def make_interruptssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines: list[str] = []
+    tc.code.extend(_generate_trigger_mti_tests(test_data))
+    tc.code.extend(_generate_trigger_msi_tests(test_data))
+    tc.code.extend(_generate_trigger_mei_tests(test_data))
+    tc.code.extend(_generate_interrupt_cross_tests(test_data))
+    tc.code.extend(_generate_vectored_tests(test_data))
+    tc.code.extend(_generate_priority_tests(test_data))
+    tc.code.extend(_generate_wfi_tests(test_data))
 
-    lines.extend(_generate_trigger_mti_tests(test_data))
-    lines.extend(_generate_trigger_msi_tests(test_data))
-    lines.extend(_generate_trigger_mei_tests(test_data))
-    lines.extend(_generate_interrupt_cross_tests(test_data))
-    lines.extend(_generate_vectored_tests(test_data))
-    lines.extend(_generate_priority_tests(test_data))
-    lines.extend(_generate_wfi_tests(test_data))
-
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

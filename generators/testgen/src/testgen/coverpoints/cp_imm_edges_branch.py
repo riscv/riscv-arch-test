@@ -20,10 +20,9 @@ from testgen.formatters.params import generate_random_params
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for branch immediate edge values."""
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
-    test_lines.extend(
+    tc.code.extend(
         [
             load_int_reg("branch check value", params.temp_reg, 4096, test_data),
             f"LI(x{params.rs1}, 1)",
@@ -52,21 +51,21 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             f"addi x{params.temp_reg}, x{params.temp_reg}, 16 # should happen",
             "",
             "# branch forward by 2048",
-            ".align 11 # align to 2048 bytes",
+            ".p2align 11 # align to 2048 bytes",
             f"{instr_name} x{params.rs1}, x{params.rs2}, 4f",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -32 # shouldn't happen",
             "j 19f # shouldn't happen",
-            ".align 11 # align to 2048 bytes",
+            ".p2align 11 # align to 2048 bytes",
             "4:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 64 # should happen",
             "",
             "# branch forward by 4092",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "nop # use up 4 bytes",
             f"{instr_name} x{params.rs1}, x{params.rs2}, 5f",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -128 # shouldn't happen",
             "j 19f # shouldn't happen",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "5:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 256 # should happen",
             "",
@@ -90,11 +89,11 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             "j 19f # shouldn't happen",
             "",
             "# backward branch by 4096",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "10:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 1 # should happen",
             "j 20f # backward branch succeeded",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "11:",
             f".insn {encode_branch(instr_name, params.rs1, params.rs2, 4096):#x} # {instr_name} x{params.rs1}, x{params.rs2}, -4096; GCC is turning this into a small branch and a jump",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 300 # shouldn't happen",
@@ -111,7 +110,6 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
         ]
     )
     return_test_regs(test_data, params)
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]
 
 

@@ -12,6 +12,7 @@ from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd,
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -691,15 +692,16 @@ def _add_shadow(
 
 
 @add_priv_test_generator("S", required_extensions=["S"])
-def make_s(test_data: TestData) -> list[str]:
+def make_s(test_data: TestData) -> list[TestChunk]:
     """Generate tests for S supervisor-mode testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.append("### Run some tests in machine mode")
-    lines.extend(_generate_mretm_tests(test_data))
-    lines.extend(_generate_sretm_tests(test_data))
-    lines.extend(_generate_srets_tests(test_data))
-    lines.extend(
+    tc.code.append("### Run some tests in machine mode")
+    tc.code.extend(_generate_mretm_tests(test_data))
+    tc.code.extend(_generate_sretm_tests(test_data))
+    tc.code.extend(_generate_srets_tests(test_data))
+    tc.code.extend(
         [
             "",
             "",
@@ -707,9 +709,10 @@ def make_s(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Smode  # Run remaining tests in supervisor mode",
         ]
     )
-    lines.extend(_generate_scause_tests(test_data))
-    lines.extend(_generate_sstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_scsr_tests(test_data))
+    tc.code.extend(_generate_scause_tests(test_data))
+    tc.code.extend(_generate_sstatus_sd_tests(test_data))
+    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_scsr_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -26,7 +26,7 @@
 #define TEST_FILE "sv57_upage_mprv_set_sum_set_Smode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

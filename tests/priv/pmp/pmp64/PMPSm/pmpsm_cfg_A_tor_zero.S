@@ -32,7 +32,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 #define SKIP_MTVAL
 
 // Include framework macros

@@ -17,7 +17,7 @@
 #define TEST_FILE "sv39_VA_all_ones_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

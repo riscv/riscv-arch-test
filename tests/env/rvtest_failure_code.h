@@ -315,6 +315,9 @@
         SREG x31, 248(DEFAULT_TEMP_REG)
 
     #ifdef RVTEST_VECTOR
+        # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
+        LI (x6, 0x600)
+        csrs mstatus, x6
         la x6, vecreg_scratch              # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes

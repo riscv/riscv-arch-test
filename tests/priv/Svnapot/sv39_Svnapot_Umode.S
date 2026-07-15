@@ -16,7 +16,7 @@
 
 #define TEST_FILE "sv39_Svnapot_Umode.S"
 #define SIGUPD_COUNT 15
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

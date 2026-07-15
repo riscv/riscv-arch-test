@@ -1940,7 +1940,13 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
+#ifdef SDTRIG_SUPPORTED
+        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
+        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
+        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+#endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
+skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
 
         csrr    T2, CSR_XCAUSE

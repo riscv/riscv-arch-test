@@ -403,14 +403,14 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
         console.print("[bold red]  Error output:[/]")
         output_lines = _strip_noise(error.output).strip().splitlines()
         if not verbose and len(output_lines) > max_output_lines:
+            # Keep the beginning and end of the error message
+            head_count = 10
             omitted = len(output_lines) - max_output_lines
-            if error.log_file is not None:
-                console.print(f"    [dim]... {omitted} earlier line(s) omitted; see log file ...[/]")
-            else:
-                console.print(
-                    f"    [dim]... {omitted} earlier line(s) omitted; re-run with --verbose to see full output ...[/]"
-                )
-            output_lines = output_lines[-max_output_lines:]
+            hint = "see log file" if error.log_file is not None else "re-run with --verbose to see full output"
+            for line in output_lines[:head_count]:
+                console.print(f"    {line}", soft_wrap=True, highlight=False)
+            console.print(f"    [dim]... {omitted} line(s) omitted; {hint} ...[/]")
+            output_lines = output_lines[-(max_output_lines - head_count) :]
         for line in output_lines:
             console.print(f"    {line}", soft_wrap=True, highlight=False)
         console.print()  # blank line separator

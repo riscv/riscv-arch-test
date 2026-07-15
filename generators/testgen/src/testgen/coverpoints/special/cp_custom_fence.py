@@ -20,17 +20,19 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
 
     tc = test_data.begin_test_chunk()
     # Regular fences
-    test_lines = [
-        "# Testcase cp_custom_fence (regular fences)",
-        test_data.add_testcase("fence", "cp_custom_fence"),
-        "fence",
-        test_data.add_testcase("fence_rw_rw", "cp_custom_fence"),
-        "fence rw, rw",
-        "",
-    ]
+    tc.code.extend(
+        [
+            "# Testcase cp_custom_fence (regular fences)",
+            test_data.add_testcase("fence", "cp_custom_fence"),
+            "fence",
+            test_data.add_testcase("fence_rw_rw", "cp_custom_fence"),
+            "fence rw, rw",
+            "",
+        ]
+    )
 
     # fence.tso
-    test_lines.extend(
+    tc.code.extend(
         [
             "# Testcase cp_custom_fence (fence.tso)",
             test_data.add_testcase("fence_tso_rw_rw", "cp_custom_fence"),
@@ -40,7 +42,7 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
     )
 
     # Reserved fence encodings
-    test_lines.extend(
+    tc.code.extend(
         [
             "# Testcase cp_custom_fence (reserved fence encodings)",
             test_data.add_testcase("reserved_fences", "cp_custom_fence"),
@@ -60,5 +62,4 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
         ]
     )
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

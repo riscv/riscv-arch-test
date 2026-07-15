@@ -41,7 +41,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 instr_name, instr_type, test_data, params, f"{coverpoint}: rd = x{rd}", f"rd{rd}", coverpoint
             )
             if asm_setup:
-                tc.code = asm_setup + "\n" + tc.code
+                tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 
@@ -76,7 +76,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 instr_name, instr_type, test_data, params, f"{coverpoint}: rs2 = x{rs2}", f"rs2{rs2}", coverpoint
             )
             if asm_setup:
-                tc.code = asm_setup + "\n" + tc.code
+                tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 

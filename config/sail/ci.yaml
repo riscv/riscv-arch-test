@@ -4,3 +4,4 @@
 
 ci_enabled: true
 exclude_extensions: ""
+shards: 1

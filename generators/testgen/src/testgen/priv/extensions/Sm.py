@@ -12,6 +12,7 @@ from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, ge
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -641,7 +642,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"csrs misa, x{rc}     # set misa.C if possible",
             f"csrr x{r1}, misa          # read misa to check if misa.C was set",
             f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
-            ".align 2 # 4-byte alignment",
+            ".p2align 2 # 4-byte alignment",
             test_data.add_testcase("pc_1_0", coverpoint, covergroup),
             f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 4-byte aligned",
             f"csrr x{r2}, misa          # read misa to check misa.C changed if writable",
@@ -653,12 +654,12 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"csrs misa, x{rc}     # set misa.C if possible",
             f"csrr x{r1}, misa          # read misa to check if misa.C was set",
             f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
-            ".align 2 # 4-byte alignment",
+            ".p2align 2 # 4-byte alignment",
             ".half 0x0001            # c.nop, can't write that directly because Zca not enabled for Sm",
             test_data.add_testcase("pc_1_1", coverpoint, covergroup),
             f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 2-byte aligned",
             f"csrr x{r2}, misa          # read misa to check misa.C didn't change",
-            ".align 2",
+            ".p2align 2",
             f"and x{r2}, x{r2}, x{rc} # mask off all but C bit",
             f"xor x{r2}, x{r2}, x{r1} # check if misa.C differed before and after clear attempt; should be 0 because writing misa.C is not allowed to differ when PC is 2-byte aligned",
             write_sigupd(r2, test_data),
@@ -968,16 +969,18 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
-def make_sm(test_data: TestData) -> list[str]:
+def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_mcause_tests(test_data))
-    lines.extend(_generate_mstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_mret_tests(test_data))
-    lines.extend(_generate_sret_tests(test_data))
-    lines.extend(_generate_mcsr_tests(test_data))
-    lines.extend(_generate_mcsr_cntr_tests(test_data))
+    tc.code.extend(_generate_mcause_tests(test_data))
+    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_mret_tests(test_data))
+    tc.code.extend(_generate_sret_tests(test_data))
+    tc.code.extend(_generate_mcsr_tests(test_data))
+    tc.code.extend(_generate_mcsr_cntr_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

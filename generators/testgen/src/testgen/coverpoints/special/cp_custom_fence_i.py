@@ -25,7 +25,6 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
         raise ValueError(f"cp_custom_fencei generator only supports fence.i instruction, got {instr_name}")
 
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
 
     cases = [
         ("normal fence.i", "fence.i", 5),
@@ -43,7 +42,7 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
         # Calculate encoded instruction: addi reg1, reg1, add_val
         encoded_instr = encode_addi(reg1, reg1, add_val)
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# Testcase: {desc}",
                 f"LI(x{reg1}, 3)",
@@ -62,5 +61,4 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
         # Return registers
         test_data.int_regs.return_registers([reg1, reg2, reg3])
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

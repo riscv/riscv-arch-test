@@ -4,6 +4,7 @@ include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 
+* Jordan Carlin
 * Ken Dockser
 * David Harris
 

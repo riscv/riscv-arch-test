@@ -315,6 +315,9 @@
         SREG x31, 248(DEFAULT_TEMP_REG)
 
     #ifdef RVTEST_VECTOR
+        # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
+        LI (x6, 0x600)
+        csrs mstatus, x6
         la x6, vecreg_scratch              # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
@@ -1938,7 +1941,7 @@
 // This should be called separately in the RVTEST_DATA_END section to avoid mixing code and data
 .macro RVTEST_FAILURE_DATA
     .data
-    .align 4
+    .p2align 4
     failure_type:                # 0=int, 1=fp, 2=fflags (reuses x0 slot at offset 0), 3=trap handler, 4=vector
     begin_failure_scratch:
         .fill 64, 4, 0xfeedf00dbaaaaaad
@@ -1980,7 +1983,7 @@
     //==========================================================================
     // TRAP DIAGNOSTIC DATA SECTION
     //==========================================================================
-    .align 4
+    .p2align 4
     trap_diag_subtype:                           # 0=unknown, 1=vect, 2=cause, 3=epc, 4=tval,
                                                  # 5=xip, 6=mtval2, 7=mtinst, 8=intID, 9=offset
         .word 0
@@ -2018,7 +2021,7 @@
     // Exception table: cause 0..23 (NUM_SPECD_EXCPTCAUSES)
     // Interrupt table: cause 0..15
     //==========================================================================
-    .align REGWIDTH
+    .balign REGWIDTH
 
     trap_excpt_name_tbl:
         RVTEST_WORD_PTR trap_excpt_name_0

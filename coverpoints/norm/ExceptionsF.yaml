@@ -30,5 +30,5 @@ normative_rule_definitions:
   - name: mstatus_fs_vs_xs_off_op
     coverpoint:
       [
-        "ExceptionsF_cg/cp_{mstatus_fs_illegal_instr,mstatus_fs_csr_write,mstatus_fs_legal}",
+        "ExceptionsF_cg/cp_{mstatus_fs_illegal_instr,mstatus_fs_csr_access,mstatus_fs_legal}",
       ]

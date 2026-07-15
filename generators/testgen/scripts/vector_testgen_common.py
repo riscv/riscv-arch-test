@@ -1172,7 +1172,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
   vectordata += writeData(f"// {test}_{vs}_data for {vs}")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   vectordata += writeData("// Corner Vectors")
 
   eew = sew * emul
@@ -1244,7 +1244,7 @@ def genRandomVectorLS():
   vectordata += writeData("// vector_ls_random_base data")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 4")
+  vectordata += writeData("    .p2align 4")
   vectordata += writeData("// Corner Vectors")
 
   # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
@@ -1309,7 +1309,7 @@ def genVMaskedges():
   num_words = math.ceil(maxVLEN / 32)
 
   # generating random masks for length suite
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for name in range(3):
     vectordata += writeData(f"random_mask_{name}:")
     val = getrandbits(maxVLEN)
@@ -1389,7 +1389,7 @@ def genVsedges(test, sew, emul, crypto=False):
   while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
   v_register_edges["random"] = r
 
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in v_register_edges:
       val = v_register_edges[corner]
       val &= (1 << eew) - 1
@@ -1438,7 +1438,7 @@ def genVsedgesFP(test, sew, emul):
   vectordata += writeData("///////////////////////////////////////////")
   vectordata += writeData("// vector edges data (floating point)")
   vectordata += writeData("///////////////////////////////////////////\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in vs_edges_f:
       val = vs_edges_f[corner]
       vectordata += writeData(f"vs_corner_f_{corner}_{ending}:")
@@ -1505,7 +1505,7 @@ def genCustomData():
     data += writeData("///////////////////////////////////////////")
     data += writeData("// custom coverpoint data labels")
     data += writeData("///////////////////////////////////////////\n")
-    data += writeData("    .align 3")
+    data += writeData("    .p2align 3")
     for label, entries in _custom_data_labels.items():
         data += writeData(f"{label}:")
         for directive, value in entries:
@@ -1517,7 +1517,7 @@ def clearCustomData():
     _custom_data_labels.clear()
 
 def genVtestdata(test, sew):
-  test_data = ".align 4\n"
+  test_data = ".p2align 4\n"
   test_data += "vector_data:\n"
 
   if test in vector_loads:
@@ -1614,6 +1614,7 @@ def getPrivExtraDefines(sew):
         "#define rvtest_strap_routine",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
+        f"#define SEWMINSIZE e{minSEW_MIN}",
         f"#define ELEN {maxELEN}",
         f"#define SEWSIZE {sewsize}",
         f"#define VLESEWMIN {vle}",
@@ -2679,8 +2680,13 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -2",                 f"# x{vstart_reg} = VLMAX-2")
     writeLine(f"li x{scratch2}, {randvstart}")
-    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
+    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % (VLMAX - 2) (0 <= x{scratch2} < VLMAX-2)")
+    writeLine(f"bgt x{vstart_reg}, x0, 1f")
+    writeLine(f"addi x{scratch2}, {vstart_reg}, -1",                     f"# x{scratch2} = VLMAX - 3")
+    writeLine("1:")
+    writeLine(f"addi x{scratch2}, x{scratch2}, 2",                       f"# 2 <= x{scratch2} < VLMAX")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
   writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")
 

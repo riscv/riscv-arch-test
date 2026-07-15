@@ -419,7 +419,6 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     "ExceptionsS",
     required_extensions=["S"],
     extra_defines=[
-        "#define SKIP_MEPC",
         "#define TRAP_SIGUPD_COUNT 50000",
     ],
 )

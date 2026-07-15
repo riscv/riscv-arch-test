@@ -19,8 +19,9 @@
 //                fails. With pmpcfg_i-1.A=OFF, XWR=111, pmpaddr_i-1 = start of
 //                doubleword, pmpcfg_i.A=TOR, XWR=111, pmpaddr_i = start of the
 //                doubleword + 4, pmpcfg_i+1.A=TOR, XWR = 111, pmpaddr_i+1 = start
-//                of doubleword + 8. Should access fault because doubleword is
-//                split over two regions, or pass if access is split into two.
+//                of doubleword + 8. Must access fault because the doubleword
+//                spans two regions and no single PMP entry matches all bytes of
+//                the access.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####

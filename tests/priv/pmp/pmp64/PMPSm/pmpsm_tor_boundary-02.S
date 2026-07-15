@@ -19,9 +19,9 @@
 //                   With pmpcfg_i.L = 1, pmpcfg_i.A = TOR, pmpcfg_i.XWR = 111,
 //                  pmpaddr_i = {upper half of doubleword}, pmpcfg_i-1.A = OFF,
 //                  pmpcfg_i-1.XWR=111, pmpaddr_i-1 = pmpaddr_i - 4. Performing
-//                  {ld, sd} on doubleword. Should access fault because doubleword
-//                  access crosses boundary of word or pass if access is split
-//                  into two.
+//                  {ld, sd} on doubleword. Must access fault: no single PMP
+//                  entry matches all bytes of the doubleword access, and per the
+//                  RISC-V privileged spec.
 
 // --------------------------------------------------------------------------------
 

@@ -21,7 +21,7 @@
 #define TEST_FILE "sv39_svpbmt_disabled_Smode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 50
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

@@ -40,7 +40,7 @@
 
 #define TEST_FILE "sv57_Svpbmt_nonleaf_Umode.S"
 #define SIGUPD_COUNT 45
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

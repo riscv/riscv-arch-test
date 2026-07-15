@@ -23,7 +23,7 @@
 //                as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:

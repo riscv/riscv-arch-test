@@ -24,7 +24,7 @@
 #define TEST_FILE "sv32_global_pte_Umode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

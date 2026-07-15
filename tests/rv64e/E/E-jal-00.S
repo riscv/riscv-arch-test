@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-jal-00.S"
-#define SIGUPD_COUNT 88
+#define SIGUPD_COUNT 90
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -217,6 +217,25 @@ E_jal_cg_cp_rd_b15:
   RVTEST_SIGUPD(x9, x5, x4, x15, E_jal_cg_cp_rd_b15, E_jal_cg_cp_rd_b15_str)
   # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x1, E_jal_cg_cp_rd_b15, E_jal_cg_cp_rd_b15_str)
+
+/////////////////////////////////
+// cp_gpr_hazard_w
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_w waw
+  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xeb5226e691e9c982
+  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0x809d5aa076c851cb
+  LI(x1, 1) # initialize indicator to 1 (jump taken)
+  add x11, x14, x15 # WAW producer: writes x11 (must NOT win)
+E_jal_cg_cp_gpr_hazard_w_waw:
+  jal x11, 1f # WAW consumer: writes x11 (must win - last write)
+  LI(x1, -1) # should not execute (jump not taken)
+1:
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_jal_cg_cp_gpr_hazard_w_waw, E_jal_cg_cp_gpr_hazard_w_waw_str)
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, E_jal_cg_cp_gpr_hazard_w_waw, E_jal_cg_cp_gpr_hazard_w_waw_str)
 
 /////////////////////////////////
 // cp_offset
@@ -657,7 +676,8 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-
+.dword 0xeb5226e691e9c982
+.dword 0x809d5aa076c851cb
 
 // Testcase strings
 E_jal_cg_cp_rd_b0_str: .string "\"test: 1; cg: E_jal_cg; cp: cp_rd; bin: b0\""
@@ -676,30 +696,31 @@ E_jal_cg_cp_rd_b12_str: .string "\"test: 13; cg: E_jal_cg; cp: cp_rd; bin: b12\"
 E_jal_cg_cp_rd_b13_str: .string "\"test: 14; cg: E_jal_cg; cp: cp_rd; bin: b13\""
 E_jal_cg_cp_rd_b14_str: .string "\"test: 15; cg: E_jal_cg; cp: cp_rd; bin: b14\""
 E_jal_cg_cp_rd_b15_str: .string "\"test: 16; cg: E_jal_cg; cp: cp_rd; bin: b15\""
-E_jal_cg_cp_imm_edges_jal_b_2_str: .string "\"test: 17; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_2\""
-E_jal_cg_cp_imm_edges_jal_b_3_str: .string "\"test: 18; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_3\""
-E_jal_cg_cp_imm_edges_jal_b_4_str: .string "\"test: 19; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_4\""
-E_jal_cg_cp_imm_edges_jal_b_5_str: .string "\"test: 20; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_5\""
-E_jal_cg_cp_imm_edges_jal_b_6_str: .string "\"test: 21; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_6\""
-E_jal_cg_cp_imm_edges_jal_b_7_str: .string "\"test: 22; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_7\""
-E_jal_cg_cp_imm_edges_jal_b_8_str: .string "\"test: 23; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_8\""
-E_jal_cg_cp_imm_edges_jal_b_9_str: .string "\"test: 24; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_9\""
-E_jal_cg_cp_imm_edges_jal_b_10_str: .string "\"test: 25; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_10\""
-E_jal_cg_cp_imm_edges_jal_b_11_str: .string "\"test: 26; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_11\""
-E_jal_cg_cp_imm_edges_jal_b_12_str: .string "\"test: 27; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_12\""
-E_jal_cg_cp_imm_edges_jal_b_13_str: .string "\"test: 28; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_13\""
-E_jal_cg_cp_imm_edges_jal_b_m2_str: .string "\"test: 29; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m2\""
-E_jal_cg_cp_imm_edges_jal_b_m3_str: .string "\"test: 30; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m3\""
-E_jal_cg_cp_imm_edges_jal_b_m4_str: .string "\"test: 31; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m4\""
-E_jal_cg_cp_imm_edges_jal_b_m5_str: .string "\"test: 32; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m5\""
-E_jal_cg_cp_imm_edges_jal_b_m6_str: .string "\"test: 33; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m6\""
-E_jal_cg_cp_imm_edges_jal_b_m7_str: .string "\"test: 34; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m7\""
-E_jal_cg_cp_imm_edges_jal_b_m8_str: .string "\"test: 35; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m8\""
-E_jal_cg_cp_imm_edges_jal_b_m9_str: .string "\"test: 36; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m9\""
-E_jal_cg_cp_imm_edges_jal_b_m10_str: .string "\"test: 37; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m10\""
-E_jal_cg_cp_imm_edges_jal_b_m11_str: .string "\"test: 38; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m11\""
-E_jal_cg_cp_imm_edges_jal_b_m12_str: .string "\"test: 39; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m12\""
-E_jal_cg_cp_imm_edges_jal_b_m13_str: .string "\"test: 40; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m13\""
+E_jal_cg_cp_gpr_hazard_w_waw_str: .string "\"test: 17; cg: E_jal_cg; cp: cp_gpr_hazard_w; bin: waw\""
+E_jal_cg_cp_imm_edges_jal_b_2_str: .string "\"test: 18; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_2\""
+E_jal_cg_cp_imm_edges_jal_b_3_str: .string "\"test: 19; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_3\""
+E_jal_cg_cp_imm_edges_jal_b_4_str: .string "\"test: 20; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_4\""
+E_jal_cg_cp_imm_edges_jal_b_5_str: .string "\"test: 21; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_5\""
+E_jal_cg_cp_imm_edges_jal_b_6_str: .string "\"test: 22; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_6\""
+E_jal_cg_cp_imm_edges_jal_b_7_str: .string "\"test: 23; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_7\""
+E_jal_cg_cp_imm_edges_jal_b_8_str: .string "\"test: 24; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_8\""
+E_jal_cg_cp_imm_edges_jal_b_9_str: .string "\"test: 25; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_9\""
+E_jal_cg_cp_imm_edges_jal_b_10_str: .string "\"test: 26; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_10\""
+E_jal_cg_cp_imm_edges_jal_b_11_str: .string "\"test: 27; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_11\""
+E_jal_cg_cp_imm_edges_jal_b_12_str: .string "\"test: 28; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_12\""
+E_jal_cg_cp_imm_edges_jal_b_13_str: .string "\"test: 29; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_13\""
+E_jal_cg_cp_imm_edges_jal_b_m2_str: .string "\"test: 30; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m2\""
+E_jal_cg_cp_imm_edges_jal_b_m3_str: .string "\"test: 31; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m3\""
+E_jal_cg_cp_imm_edges_jal_b_m4_str: .string "\"test: 32; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m4\""
+E_jal_cg_cp_imm_edges_jal_b_m5_str: .string "\"test: 33; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m5\""
+E_jal_cg_cp_imm_edges_jal_b_m6_str: .string "\"test: 34; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m6\""
+E_jal_cg_cp_imm_edges_jal_b_m7_str: .string "\"test: 35; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m7\""
+E_jal_cg_cp_imm_edges_jal_b_m8_str: .string "\"test: 36; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m8\""
+E_jal_cg_cp_imm_edges_jal_b_m9_str: .string "\"test: 37; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m9\""
+E_jal_cg_cp_imm_edges_jal_b_m10_str: .string "\"test: 38; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m10\""
+E_jal_cg_cp_imm_edges_jal_b_m11_str: .string "\"test: 39; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m11\""
+E_jal_cg_cp_imm_edges_jal_b_m12_str: .string "\"test: 40; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m12\""
+E_jal_cg_cp_imm_edges_jal_b_m13_str: .string "\"test: 41; cg: E_jal_cg; cp: cp_imm_edges_jal; bin: b_m13\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

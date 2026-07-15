@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-jalr-00.S"
-#define SIGUPD_COUNT 152
+#define SIGUPD_COUNT 154
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -802,6 +802,30 @@ E_jalr_cg_cmp_rd_rs1_nx0_b15:
   RVTEST_SIGUPD(x10, x5, x4, x15, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
 
 /////////////////////////////////
+// cp_gpr_hazard_rw
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_rw waw
+  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs1: x15 = 0x06ded1350429f242
+  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs2: x11 = 0x0398e2d579c33453
+  LA(x6, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load jump check value: x7 = 0xab38be70a8837440
+  addi x6, x6, -1364 # adjust base address for offset
+  add x14, x15, x11 # WAW producer: writes x14 (must NOT win)
+E_jalr_cg_cp_gpr_hazard_rw_waw:
+  jalr x14, x6, 1364 # WAW consumer: writes x14 (must win - last write)
+  addi x7, x7, -4 # should not execute
+1:
+  addi x7, x7, 2 # should execute
+  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x7, E_jalr_cg_cp_gpr_hazard_rw_waw, E_jalr_cg_cp_gpr_hazard_rw_waw_str)
+  auipc x7, 0 # get current PC
+  sub x14, x14, x7 # subtract current PC to make position-independent
+  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x14, E_jalr_cg_cp_gpr_hazard_rw_waw, E_jalr_cg_cp_gpr_hazard_rw_waw_str)
+
+/////////////////////////////////
 // cp_offset_jalr
 /////////////////////////////////
 
@@ -1271,6 +1295,9 @@ RVTEST_DATA_BEGIN
 .dword 0xb642e6c1c87f3862
 .dword 0x6e3e47cb42a6f508
 .dword 0x34fad371cbe4f0e2
+.dword 0x06ded1350429f242
+.dword 0x0398e2d579c33453
+.dword 0xab38be70a8837440
 .dword 0xf9d238ec2b821ff3
 .dword 0x5d9b8a9308ed3e8a
 .dword 0xe6f5baf8a0943a7a
@@ -1344,31 +1371,32 @@ E_jalr_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 43; cg: E_jalr_cg; cp: cmp_rd
 E_jalr_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 44; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
 E_jalr_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 45; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
 E_jalr_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-E_jalr_cg_cp_offset_jalr_neg_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_offset_jalr; bin: neg\""
-E_jalr_cg_cp_offset_lsbs_0_0_str: .string "\"test: 48; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_0\""
-E_jalr_cg_cp_offset_lsbs_0_1_str: .string "\"test: 49; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_1\""
-E_jalr_cg_cp_offset_lsbs_1_0_str: .string "\"test: 50; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 1_0\""
-E_jalr_cg_cp_offset_lsbs_1_1_str: .string "\"test: 51; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 1_1\""
-E_jalr_cg_cp_imm_edges_0x0_str: .string "\"test: 52; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x0\""
-E_jalr_cg_cp_imm_edges_0x1_str: .string "\"test: 53; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x1\""
-E_jalr_cg_cp_imm_edges_0x2_str: .string "\"test: 54; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x2\""
-E_jalr_cg_cp_imm_edges_0x3_str: .string "\"test: 55; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x3\""
-E_jalr_cg_cp_imm_edges_0x4_str: .string "\"test: 56; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x4\""
-E_jalr_cg_cp_imm_edges_0x8_str: .string "\"test: 57; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x8\""
-E_jalr_cg_cp_imm_edges_0x10_str: .string "\"test: 58; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x10\""
-E_jalr_cg_cp_imm_edges_0x20_str: .string "\"test: 59; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x20\""
-E_jalr_cg_cp_imm_edges_0x40_str: .string "\"test: 60; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x40\""
-E_jalr_cg_cp_imm_edges_0x80_str: .string "\"test: 61; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x80\""
-E_jalr_cg_cp_imm_edges_0x100_str: .string "\"test: 62; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x100\""
-E_jalr_cg_cp_imm_edges_0x200_str: .string "\"test: 63; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x200\""
-E_jalr_cg_cp_imm_edges_0x3ff_str: .string "\"test: 64; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x3ff\""
-E_jalr_cg_cp_imm_edges_0x400_str: .string "\"test: 65; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x400\""
-E_jalr_cg_cp_imm_edges_0x703_str: .string "\"test: 66; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x703\""
-E_jalr_cg_cp_imm_edges_0x7ff_str: .string "\"test: 67; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x7ff\""
-E_jalr_cg_cp_imm_edges_m0x800_str: .string "\"test: 68; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x800\""
-E_jalr_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 69; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x7ff\""
-E_jalr_cg_cp_imm_edges_m0x2_str: .string "\"test: 70; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x2\""
-E_jalr_cg_cp_imm_edges_m0x1_str: .string "\"test: 71; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x1\""
+E_jalr_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_jalr_cg_cp_offset_jalr_neg_str: .string "\"test: 48; cg: E_jalr_cg; cp: cp_offset_jalr; bin: neg\""
+E_jalr_cg_cp_offset_lsbs_0_0_str: .string "\"test: 49; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_0\""
+E_jalr_cg_cp_offset_lsbs_0_1_str: .string "\"test: 50; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_1\""
+E_jalr_cg_cp_offset_lsbs_1_0_str: .string "\"test: 51; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 1_0\""
+E_jalr_cg_cp_offset_lsbs_1_1_str: .string "\"test: 52; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 1_1\""
+E_jalr_cg_cp_imm_edges_0x0_str: .string "\"test: 53; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x0\""
+E_jalr_cg_cp_imm_edges_0x1_str: .string "\"test: 54; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x1\""
+E_jalr_cg_cp_imm_edges_0x2_str: .string "\"test: 55; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x2\""
+E_jalr_cg_cp_imm_edges_0x3_str: .string "\"test: 56; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x3\""
+E_jalr_cg_cp_imm_edges_0x4_str: .string "\"test: 57; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x4\""
+E_jalr_cg_cp_imm_edges_0x8_str: .string "\"test: 58; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x8\""
+E_jalr_cg_cp_imm_edges_0x10_str: .string "\"test: 59; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x10\""
+E_jalr_cg_cp_imm_edges_0x20_str: .string "\"test: 60; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x20\""
+E_jalr_cg_cp_imm_edges_0x40_str: .string "\"test: 61; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x40\""
+E_jalr_cg_cp_imm_edges_0x80_str: .string "\"test: 62; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x80\""
+E_jalr_cg_cp_imm_edges_0x100_str: .string "\"test: 63; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x100\""
+E_jalr_cg_cp_imm_edges_0x200_str: .string "\"test: 64; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x200\""
+E_jalr_cg_cp_imm_edges_0x3ff_str: .string "\"test: 65; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x3ff\""
+E_jalr_cg_cp_imm_edges_0x400_str: .string "\"test: 66; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x400\""
+E_jalr_cg_cp_imm_edges_0x703_str: .string "\"test: 67; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x703\""
+E_jalr_cg_cp_imm_edges_0x7ff_str: .string "\"test: 68; cg: E_jalr_cg; cp: cp_imm_edges; bin: 0x7ff\""
+E_jalr_cg_cp_imm_edges_m0x800_str: .string "\"test: 69; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x800\""
+E_jalr_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 70; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x7ff\""
+E_jalr_cg_cp_imm_edges_m0x2_str: .string "\"test: 71; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x2\""
+E_jalr_cg_cp_imm_edges_m0x1_str: .string "\"test: 72; cg: E_jalr_cg; cp: cp_imm_edges; bin: -0x1\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

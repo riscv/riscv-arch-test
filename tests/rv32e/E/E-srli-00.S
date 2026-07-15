@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-srli-00.S"
-#define SIGUPD_COUNT 162
+#define SIGUPD_COUNT 166
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -917,6 +917,53 @@ E_srli_cg_cmp_rd_rs1_b15:
   RVTEST_SIGUPD(x2, x5, x4, x15, E_srli_cg_cmp_rd_rs1_b15, E_srli_cg_cmp_rd_rs1_b15_str)
 
 /////////////////////////////////
+// cp_gpr_hazard_rw
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_rw raw_rs1_depth0
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x85824a00
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x22914a89
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x32e2bc17
+  add x15, x6, x11 # RAW producer: writes x15
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_depth0:
+  srli x12, x15, 13 # RAW consumer: reads rs1 - tests bypass forwarding
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_depth0, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str)
+
+# Testcase cp_gpr_hazard_rw raw_rs1_nop
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x78555140
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xf777b2e3
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x9ee11d09
+  add x10, x15, x9 # RAW producer: writes x10
+  addi x0, x0, 0 # depth=1 filler: nop
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_nop:
+  srli x8, x10, 31 # RAW consumer: reads rs1 - tests bypass forwarding
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_nop, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_nop_str)
+
+# Testcase cp_gpr_hazard_rw raw_rs1_stressor
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xbbd96a87
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x058b3701
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x2915626b
+  add x10, x14, x15 # RAW producer: writes x10
+  add x3, x6, x7 # depth=1 filler: stressor
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
+  srli x9, x10, 28 # RAW consumer: reads rs1 - tests bypass forwarding
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
+
+# Testcase cp_gpr_hazard_rw waw
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xc99095d3
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x43a00274
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x6064c90f
+  add x9, x14, x6 # WAW producer: writes x9 (must NOT win)
+E_srli_cg_cp_gpr_hazard_rw_waw:
+  srli x9, x0, 22 # WAW consumer: writes x9 (must win - last write)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_srli_cg_cp_gpr_hazard_rw_waw, E_srli_cg_cp_gpr_hazard_rw_waw_str)
+
+/////////////////////////////////
 // cp_uimm
 /////////////////////////////////
 
@@ -1271,6 +1318,18 @@ RVTEST_DATA_BEGIN
 .word 0x4ed09759
 .word 0x4743add9
 .word 0x108b645e
+.word 0x85824a00
+.word 0x22914a89
+.word 0x32e2bc17
+.word 0x78555140
+.word 0xf777b2e3
+.word 0x9ee11d09
+.word 0xbbd96a87
+.word 0x058b3701
+.word 0x2915626b
+.word 0xc99095d3
+.word 0x43a00274
+.word 0x6064c90f
 .word 0xc81e0ec3
 .word 0xc71c0b4f
 .word 0x72c858e8
@@ -1425,38 +1484,42 @@ E_srli_cg_cmp_rd_rs1_b12_str: .string "\"test: 117; cg: E_srli_cg; cp: cmp_rd_rs
 E_srli_cg_cmp_rd_rs1_b13_str: .string "\"test: 118; cg: E_srli_cg; cp: cmp_rd_rs1; bin: b13\""
 E_srli_cg_cmp_rd_rs1_b14_str: .string "\"test: 119; cg: E_srli_cg; cp: cmp_rd_rs1; bin: b14\""
 E_srli_cg_cmp_rd_rs1_b15_str: .string "\"test: 120; cg: E_srli_cg; cp: cmp_rd_rs1; bin: b15\""
-E_srli_cg_cp_uimm_uimm0_str: .string "\"test: 121; cg: E_srli_cg; cp: cp_uimm; bin: uimm0\""
-E_srli_cg_cp_uimm_uimm1_str: .string "\"test: 122; cg: E_srli_cg; cp: cp_uimm; bin: uimm1\""
-E_srli_cg_cp_uimm_uimm2_str: .string "\"test: 123; cg: E_srli_cg; cp: cp_uimm; bin: uimm2\""
-E_srli_cg_cp_uimm_uimm3_str: .string "\"test: 124; cg: E_srli_cg; cp: cp_uimm; bin: uimm3\""
-E_srli_cg_cp_uimm_uimm4_str: .string "\"test: 125; cg: E_srli_cg; cp: cp_uimm; bin: uimm4\""
-E_srli_cg_cp_uimm_uimm5_str: .string "\"test: 126; cg: E_srli_cg; cp: cp_uimm; bin: uimm5\""
-E_srli_cg_cp_uimm_uimm6_str: .string "\"test: 127; cg: E_srli_cg; cp: cp_uimm; bin: uimm6\""
-E_srli_cg_cp_uimm_uimm7_str: .string "\"test: 128; cg: E_srli_cg; cp: cp_uimm; bin: uimm7\""
-E_srli_cg_cp_uimm_uimm8_str: .string "\"test: 129; cg: E_srli_cg; cp: cp_uimm; bin: uimm8\""
-E_srli_cg_cp_uimm_uimm9_str: .string "\"test: 130; cg: E_srli_cg; cp: cp_uimm; bin: uimm9\""
-E_srli_cg_cp_uimm_uimm10_str: .string "\"test: 131; cg: E_srli_cg; cp: cp_uimm; bin: uimm10\""
-E_srli_cg_cp_uimm_uimm11_str: .string "\"test: 132; cg: E_srli_cg; cp: cp_uimm; bin: uimm11\""
-E_srli_cg_cp_uimm_uimm12_str: .string "\"test: 133; cg: E_srli_cg; cp: cp_uimm; bin: uimm12\""
-E_srli_cg_cp_uimm_uimm13_str: .string "\"test: 134; cg: E_srli_cg; cp: cp_uimm; bin: uimm13\""
-E_srli_cg_cp_uimm_uimm14_str: .string "\"test: 135; cg: E_srli_cg; cp: cp_uimm; bin: uimm14\""
-E_srli_cg_cp_uimm_uimm15_str: .string "\"test: 136; cg: E_srli_cg; cp: cp_uimm; bin: uimm15\""
-E_srli_cg_cp_uimm_uimm16_str: .string "\"test: 137; cg: E_srli_cg; cp: cp_uimm; bin: uimm16\""
-E_srli_cg_cp_uimm_uimm17_str: .string "\"test: 138; cg: E_srli_cg; cp: cp_uimm; bin: uimm17\""
-E_srli_cg_cp_uimm_uimm18_str: .string "\"test: 139; cg: E_srli_cg; cp: cp_uimm; bin: uimm18\""
-E_srli_cg_cp_uimm_uimm19_str: .string "\"test: 140; cg: E_srli_cg; cp: cp_uimm; bin: uimm19\""
-E_srli_cg_cp_uimm_uimm20_str: .string "\"test: 141; cg: E_srli_cg; cp: cp_uimm; bin: uimm20\""
-E_srli_cg_cp_uimm_uimm21_str: .string "\"test: 142; cg: E_srli_cg; cp: cp_uimm; bin: uimm21\""
-E_srli_cg_cp_uimm_uimm22_str: .string "\"test: 143; cg: E_srli_cg; cp: cp_uimm; bin: uimm22\""
-E_srli_cg_cp_uimm_uimm23_str: .string "\"test: 144; cg: E_srli_cg; cp: cp_uimm; bin: uimm23\""
-E_srli_cg_cp_uimm_uimm24_str: .string "\"test: 145; cg: E_srli_cg; cp: cp_uimm; bin: uimm24\""
-E_srli_cg_cp_uimm_uimm25_str: .string "\"test: 146; cg: E_srli_cg; cp: cp_uimm; bin: uimm25\""
-E_srli_cg_cp_uimm_uimm26_str: .string "\"test: 147; cg: E_srli_cg; cp: cp_uimm; bin: uimm26\""
-E_srli_cg_cp_uimm_uimm27_str: .string "\"test: 148; cg: E_srli_cg; cp: cp_uimm; bin: uimm27\""
-E_srli_cg_cp_uimm_uimm28_str: .string "\"test: 149; cg: E_srli_cg; cp: cp_uimm; bin: uimm28\""
-E_srli_cg_cp_uimm_uimm29_str: .string "\"test: 150; cg: E_srli_cg; cp: cp_uimm; bin: uimm29\""
-E_srli_cg_cp_uimm_uimm30_str: .string "\"test: 151; cg: E_srli_cg; cp: cp_uimm; bin: uimm30\""
-E_srli_cg_cp_uimm_uimm31_str: .string "\"test: 152; cg: E_srli_cg; cp: cp_uimm; bin: uimm31\""
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 121; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 122; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
+E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 123; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
+E_srli_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 124; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_srli_cg_cp_uimm_uimm0_str: .string "\"test: 125; cg: E_srli_cg; cp: cp_uimm; bin: uimm0\""
+E_srli_cg_cp_uimm_uimm1_str: .string "\"test: 126; cg: E_srli_cg; cp: cp_uimm; bin: uimm1\""
+E_srli_cg_cp_uimm_uimm2_str: .string "\"test: 127; cg: E_srli_cg; cp: cp_uimm; bin: uimm2\""
+E_srli_cg_cp_uimm_uimm3_str: .string "\"test: 128; cg: E_srli_cg; cp: cp_uimm; bin: uimm3\""
+E_srli_cg_cp_uimm_uimm4_str: .string "\"test: 129; cg: E_srli_cg; cp: cp_uimm; bin: uimm4\""
+E_srli_cg_cp_uimm_uimm5_str: .string "\"test: 130; cg: E_srli_cg; cp: cp_uimm; bin: uimm5\""
+E_srli_cg_cp_uimm_uimm6_str: .string "\"test: 131; cg: E_srli_cg; cp: cp_uimm; bin: uimm6\""
+E_srli_cg_cp_uimm_uimm7_str: .string "\"test: 132; cg: E_srli_cg; cp: cp_uimm; bin: uimm7\""
+E_srli_cg_cp_uimm_uimm8_str: .string "\"test: 133; cg: E_srli_cg; cp: cp_uimm; bin: uimm8\""
+E_srli_cg_cp_uimm_uimm9_str: .string "\"test: 134; cg: E_srli_cg; cp: cp_uimm; bin: uimm9\""
+E_srli_cg_cp_uimm_uimm10_str: .string "\"test: 135; cg: E_srli_cg; cp: cp_uimm; bin: uimm10\""
+E_srli_cg_cp_uimm_uimm11_str: .string "\"test: 136; cg: E_srli_cg; cp: cp_uimm; bin: uimm11\""
+E_srli_cg_cp_uimm_uimm12_str: .string "\"test: 137; cg: E_srli_cg; cp: cp_uimm; bin: uimm12\""
+E_srli_cg_cp_uimm_uimm13_str: .string "\"test: 138; cg: E_srli_cg; cp: cp_uimm; bin: uimm13\""
+E_srli_cg_cp_uimm_uimm14_str: .string "\"test: 139; cg: E_srli_cg; cp: cp_uimm; bin: uimm14\""
+E_srli_cg_cp_uimm_uimm15_str: .string "\"test: 140; cg: E_srli_cg; cp: cp_uimm; bin: uimm15\""
+E_srli_cg_cp_uimm_uimm16_str: .string "\"test: 141; cg: E_srli_cg; cp: cp_uimm; bin: uimm16\""
+E_srli_cg_cp_uimm_uimm17_str: .string "\"test: 142; cg: E_srli_cg; cp: cp_uimm; bin: uimm17\""
+E_srli_cg_cp_uimm_uimm18_str: .string "\"test: 143; cg: E_srli_cg; cp: cp_uimm; bin: uimm18\""
+E_srli_cg_cp_uimm_uimm19_str: .string "\"test: 144; cg: E_srli_cg; cp: cp_uimm; bin: uimm19\""
+E_srli_cg_cp_uimm_uimm20_str: .string "\"test: 145; cg: E_srli_cg; cp: cp_uimm; bin: uimm20\""
+E_srli_cg_cp_uimm_uimm21_str: .string "\"test: 146; cg: E_srli_cg; cp: cp_uimm; bin: uimm21\""
+E_srli_cg_cp_uimm_uimm22_str: .string "\"test: 147; cg: E_srli_cg; cp: cp_uimm; bin: uimm22\""
+E_srli_cg_cp_uimm_uimm23_str: .string "\"test: 148; cg: E_srli_cg; cp: cp_uimm; bin: uimm23\""
+E_srli_cg_cp_uimm_uimm24_str: .string "\"test: 149; cg: E_srli_cg; cp: cp_uimm; bin: uimm24\""
+E_srli_cg_cp_uimm_uimm25_str: .string "\"test: 150; cg: E_srli_cg; cp: cp_uimm; bin: uimm25\""
+E_srli_cg_cp_uimm_uimm26_str: .string "\"test: 151; cg: E_srli_cg; cp: cp_uimm; bin: uimm26\""
+E_srli_cg_cp_uimm_uimm27_str: .string "\"test: 152; cg: E_srli_cg; cp: cp_uimm; bin: uimm27\""
+E_srli_cg_cp_uimm_uimm28_str: .string "\"test: 153; cg: E_srli_cg; cp: cp_uimm; bin: uimm28\""
+E_srli_cg_cp_uimm_uimm29_str: .string "\"test: 154; cg: E_srli_cg; cp: cp_uimm; bin: uimm29\""
+E_srli_cg_cp_uimm_uimm30_str: .string "\"test: 155; cg: E_srli_cg; cp: cp_uimm; bin: uimm30\""
+E_srli_cg_cp_uimm_uimm31_str: .string "\"test: 156; cg: E_srli_cg; cp: cp_uimm; bin: uimm31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-ld-00.S"
-#define SIGUPD_COUNT 81
+#define SIGUPD_COUNT 85
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -435,6 +435,48 @@ E_ld_cg_cmp_rd_rs1_nx0_b15:
   addi x3, x3, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
+// cp_gpr_hazard_rw
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_rw raw_rs1_depth0
+  addi x2, x3, 784 # RAW producer: writes x2 with load base
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_depth0:
+  ld x1, -784(x2) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_depth0, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw raw_rs1_nop
+  addi x13, x3, 1351 # RAW producer: writes x13 with load base
+  addi x0, x0, 0 # depth=1 filler: nop
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_nop:
+  ld x14, -1351(x13) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_nop, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_nop_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw raw_rs1_stressor
+  addi x7, x3, 1974 # RAW producer: writes x7 with load base
+  add x1, x2, x6 # depth=1 filler: stressor
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
+  ld x10, -1974(x7) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x10, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_ld_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw waw
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x22a60da431547351
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x1d0f0021b52d82d6
+  addi x1, x3, 172 # copy data_ptr to rs1 and adjust for offset
+  add x10, x11, x15 # WAW producer: writes x10 (must NOT win)
+E_ld_cg_cp_gpr_hazard_rw_waw:
+  ld x10, -172(x1) # WAW consumer: writes x10 (must win - last write)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x10, E_ld_cg_cp_gpr_hazard_rw_waw, E_ld_cg_cp_gpr_hazard_rw_waw_str)
+  addi x3, x3, SIG_STRIDE # increment data_ptr
+
+/////////////////////////////////
 // cp_imm_edges
 /////////////////////////////////
 
@@ -698,6 +740,12 @@ RVTEST_DATA_BEGIN
 .dword 0xa904bd60654a7cb4
 .dword 0xfda72ad268d1bff4
 .dword 0x13ba213e212973ed
+.dword 0xc8ea87758e932537
+.dword 0x5ed0b74edd9246c5
+.dword 0x0a42a41fce8620ba
+.dword 0x22a60da431547351
+.dword 0x1d0f0021b52d82d6
+.dword 0x1fc2cc524cecffc8
 .dword 0x9b3d19ae88e11d32
 .dword 0x055dffcb19d14210
 .dword 0x87bd83e1443ffb4c
@@ -771,31 +819,35 @@ E_ld_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 43; cg: E_ld_cg; cp: cmp_rd_rs1
 E_ld_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 44; cg: E_ld_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
 E_ld_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 45; cg: E_ld_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
 E_ld_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_ld_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-E_ld_cg_cp_imm_edges_0x0_str: .string "\"test: 47; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x0\""
-E_ld_cg_cp_imm_edges_0x1_str: .string "\"test: 48; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x1\""
-E_ld_cg_cp_imm_edges_0x2_str: .string "\"test: 49; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x2\""
-E_ld_cg_cp_imm_edges_0x3_str: .string "\"test: 50; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x3\""
-E_ld_cg_cp_imm_edges_0x4_str: .string "\"test: 51; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x4\""
-E_ld_cg_cp_imm_edges_0x8_str: .string "\"test: 52; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x8\""
-E_ld_cg_cp_imm_edges_0x10_str: .string "\"test: 53; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x10\""
-E_ld_cg_cp_imm_edges_0x20_str: .string "\"test: 54; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x20\""
-E_ld_cg_cp_imm_edges_0x40_str: .string "\"test: 55; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x40\""
-E_ld_cg_cp_imm_edges_0x80_str: .string "\"test: 56; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x80\""
-E_ld_cg_cp_imm_edges_0x100_str: .string "\"test: 57; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x100\""
-E_ld_cg_cp_imm_edges_0x200_str: .string "\"test: 58; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x200\""
-E_ld_cg_cp_imm_edges_0x3ff_str: .string "\"test: 59; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x3ff\""
-E_ld_cg_cp_imm_edges_0x400_str: .string "\"test: 60; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x400\""
-E_ld_cg_cp_imm_edges_0x703_str: .string "\"test: 61; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x703\""
-E_ld_cg_cp_imm_edges_0x7ff_str: .string "\"test: 62; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x7ff\""
-E_ld_cg_cp_imm_edges_m0x800_str: .string "\"test: 63; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x800\""
-E_ld_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 64; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x7ff\""
-E_ld_cg_cp_imm_edges_m0x2_str: .string "\"test: 65; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x2\""
-E_ld_cg_cp_imm_edges_m0x1_str: .string "\"test: 66; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x1\""
-E_ld_cg_cp_memval_double_0x0_str: .string "\"test: 67; cg: E_ld_cg; cp: cp_memval_double; bin: 0x0\""
-E_ld_cg_cp_memval_double_0x1_str: .string "\"test: 68; cg: E_ld_cg; cp: cp_memval_double; bin: 0x1\""
-E_ld_cg_cp_memval_double_0x7fffffffffffffff_str: .string "\"test: 69; cg: E_ld_cg; cp: cp_memval_double; bin: 0x7fffffffffffffff\""
-E_ld_cg_cp_memval_double_0x8000000000000000_str: .string "\"test: 70; cg: E_ld_cg; cp: cp_memval_double; bin: 0x8000000000000000\""
-E_ld_cg_cp_memval_double_0xffffffffffffffff_str: .string "\"test: 71; cg: E_ld_cg; cp: cp_memval_double; bin: 0xffffffffffffffff\""
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 47; cg: E_ld_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 48; cg: E_ld_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
+E_ld_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 49; cg: E_ld_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
+E_ld_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 50; cg: E_ld_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_ld_cg_cp_imm_edges_0x0_str: .string "\"test: 51; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x0\""
+E_ld_cg_cp_imm_edges_0x1_str: .string "\"test: 52; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x1\""
+E_ld_cg_cp_imm_edges_0x2_str: .string "\"test: 53; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x2\""
+E_ld_cg_cp_imm_edges_0x3_str: .string "\"test: 54; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x3\""
+E_ld_cg_cp_imm_edges_0x4_str: .string "\"test: 55; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x4\""
+E_ld_cg_cp_imm_edges_0x8_str: .string "\"test: 56; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x8\""
+E_ld_cg_cp_imm_edges_0x10_str: .string "\"test: 57; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x10\""
+E_ld_cg_cp_imm_edges_0x20_str: .string "\"test: 58; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x20\""
+E_ld_cg_cp_imm_edges_0x40_str: .string "\"test: 59; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x40\""
+E_ld_cg_cp_imm_edges_0x80_str: .string "\"test: 60; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x80\""
+E_ld_cg_cp_imm_edges_0x100_str: .string "\"test: 61; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x100\""
+E_ld_cg_cp_imm_edges_0x200_str: .string "\"test: 62; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x200\""
+E_ld_cg_cp_imm_edges_0x3ff_str: .string "\"test: 63; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x3ff\""
+E_ld_cg_cp_imm_edges_0x400_str: .string "\"test: 64; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x400\""
+E_ld_cg_cp_imm_edges_0x703_str: .string "\"test: 65; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x703\""
+E_ld_cg_cp_imm_edges_0x7ff_str: .string "\"test: 66; cg: E_ld_cg; cp: cp_imm_edges; bin: 0x7ff\""
+E_ld_cg_cp_imm_edges_m0x800_str: .string "\"test: 67; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x800\""
+E_ld_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 68; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x7ff\""
+E_ld_cg_cp_imm_edges_m0x2_str: .string "\"test: 69; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x2\""
+E_ld_cg_cp_imm_edges_m0x1_str: .string "\"test: 70; cg: E_ld_cg; cp: cp_imm_edges; bin: -0x1\""
+E_ld_cg_cp_memval_double_0x0_str: .string "\"test: 71; cg: E_ld_cg; cp: cp_memval_double; bin: 0x0\""
+E_ld_cg_cp_memval_double_0x1_str: .string "\"test: 72; cg: E_ld_cg; cp: cp_memval_double; bin: 0x1\""
+E_ld_cg_cp_memval_double_0x7fffffffffffffff_str: .string "\"test: 73; cg: E_ld_cg; cp: cp_memval_double; bin: 0x7fffffffffffffff\""
+E_ld_cg_cp_memval_double_0x8000000000000000_str: .string "\"test: 74; cg: E_ld_cg; cp: cp_memval_double; bin: 0x8000000000000000\""
+E_ld_cg_cp_memval_double_0xffffffffffffffff_str: .string "\"test: 75; cg: E_ld_cg; cp: cp_memval_double; bin: 0xffffffffffffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

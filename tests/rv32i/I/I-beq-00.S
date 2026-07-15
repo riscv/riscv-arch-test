@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "I-beq-00.S"
-#define SIGUPD_COUNT 420
+#define SIGUPD_COUNT 426
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -4278,6 +4278,99 @@ I_beq_cg_cmp_rs1_rs2_b31:
   RVTEST_SIGUPD(x24, x5, x4, x25, I_beq_cg_cmp_rs1_rs2_b31, I_beq_cg_cmp_rs1_rs2_b31_str)
 
 /////////////////////////////////
+// cp_gpr_hazard_r
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_r raw_rs1_depth0
+  RVTEST_TESTDATA_LOAD_INT(x18, x21) # load rs1: x21 = 0xfed239d0
+  RVTEST_TESTDATA_LOAD_INT(x18, x9) # load rs2: x9 = 0x00daf2e3
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs1: x28 = 0x542b6276
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load rs2: x19 = 0xd0ebdb2e
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load branch taken value: x6 = 0x4f5a8ffe
+  add x28, x21, x9 # RAW producer: writes x28
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_depth0:
+  beq x28, x19, 1f # RAW consumer: reads rs1 - tests bypass forwarding
+  LI(x6, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x6, I_beq_cg_cp_gpr_hazard_r_raw_rs1_depth0, I_beq_cg_cp_gpr_hazard_r_raw_rs1_depth0_str)
+
+# Testcase cp_gpr_hazard_r raw_rs2_depth0
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load rs1: x19 = 0x491494ab
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs2: x28 = 0x76bc4a56
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs1: x6 = 0xba0b3fad
+  RVTEST_TESTDATA_LOAD_INT(x18, x27) # load rs2: x27 = 0xe06fcd54
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load branch taken value: x16 = 0x81fce728
+  add x27, x19, x28 # RAW producer: writes x27
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_depth0:
+  beq x6, x27, 1f # RAW consumer: reads rs2 - tests bypass forwarding
+  LI(x16, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x16 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x16, I_beq_cg_cp_gpr_hazard_r_raw_rs2_depth0, I_beq_cg_cp_gpr_hazard_r_raw_rs2_depth0_str)
+
+# Testcase cp_gpr_hazard_r raw_rs1_nop
+  RVTEST_TESTDATA_LOAD_INT(x18, x31) # load rs1: x31 = 0x12882533
+  RVTEST_TESTDATA_LOAD_INT(x18, x23) # load rs2: x23 = 0xecb9f80c
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs1: x28 = 0x614280cd
+  RVTEST_TESTDATA_LOAD_INT(x18, x25) # load rs2: x25 = 0xfee571e2
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load branch taken value: x6 = 0xf316b03e
+  add x28, x31, x23 # RAW producer: writes x28
+  addi x0, x0, 0 # depth=1 filler: nop
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_nop:
+  beq x28, x25, 1f # RAW consumer: reads rs1 - tests bypass forwarding
+  LI(x6, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x6, I_beq_cg_cp_gpr_hazard_r_raw_rs1_nop, I_beq_cg_cp_gpr_hazard_r_raw_rs1_nop_str)
+
+# Testcase cp_gpr_hazard_r raw_rs1_stressor
+  RVTEST_TESTDATA_LOAD_INT(x18, x30) # load rs1: x30 = 0x9d2ed63d
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load rs2: x28 = 0xeb3687d8
+  RVTEST_TESTDATA_LOAD_INT(x18, x20) # load rs1: x20 = 0x71a4e36b
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs2: x12 = 0x9abd692f
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load branch taken value: x19 = 0x1cdf06c6
+  add x20, x30, x28 # RAW producer: writes x20
+  add x1, x2, x3 # depth=1 filler: stressor
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_stressor:
+  beq x20, x12, 1f # RAW consumer: reads rs1 - tests bypass forwarding
+  LI(x19, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x19, I_beq_cg_cp_gpr_hazard_r_raw_rs1_stressor, I_beq_cg_cp_gpr_hazard_r_raw_rs1_stressor_str)
+
+# Testcase cp_gpr_hazard_r raw_rs2_nop
+  RVTEST_TESTDATA_LOAD_INT(x18, x26) # load rs1: x26 = 0xc205a5b5
+  RVTEST_TESTDATA_LOAD_INT(x18, x23) # load rs2: x23 = 0x54354d51
+  RVTEST_TESTDATA_LOAD_INT(x18, x21) # load rs1: x21 = 0x7d2c0f89
+  RVTEST_TESTDATA_LOAD_INT(x18, x11) # load rs2: x11 = 0xb81ddf34
+  RVTEST_TESTDATA_LOAD_INT(x18, x29) # load branch taken value: x29 = 0x42f6a76f
+  add x11, x26, x23 # RAW producer: writes x11
+  addi x0, x0, 0 # depth=1 filler: nop
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_nop:
+  beq x21, x11, 1f # RAW consumer: reads rs2 - tests bypass forwarding
+  LI(x29, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x29 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x29, I_beq_cg_cp_gpr_hazard_r_raw_rs2_nop, I_beq_cg_cp_gpr_hazard_r_raw_rs2_nop_str)
+
+# Testcase cp_gpr_hazard_r raw_rs2_stressor
+  RVTEST_TESTDATA_LOAD_INT(x18, x26) # load rs1: x26 = 0xf0c89915
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs2: x6 = 0xf3bd74de
+  RVTEST_TESTDATA_LOAD_INT(x18, x23) # load rs1: x23 = 0x674918d1
+  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs2: x14 = 0x5e1b12ff
+  RVTEST_TESTDATA_LOAD_INT(x18, x20) # load branch taken value: x20 = 0xedb549fb
+  add x14, x26, x6 # RAW producer: writes x14
+  add x1, x2, x3 # depth=1 filler: stressor
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_stressor:
+  beq x23, x14, 1f # RAW consumer: reads rs2 - tests bypass forwarding
+  LI(x20, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x20, I_beq_cg_cp_gpr_hazard_r_raw_rs2_stressor, I_beq_cg_cp_gpr_hazard_r_raw_rs2_stressor_str)
+
+/////////////////////////////////
 // cp_offset
 /////////////////////////////////
 
@@ -5041,6 +5134,36 @@ RVTEST_DATA_BEGIN
 .word 0xcfe7f659
 .word 0x82a7bd5d
 .word 0xc28ecc49
+.word 0xfed239d0
+.word 0x00daf2e3
+.word 0x542b6276
+.word 0xd0ebdb2e
+.word 0x4f5a8ffe
+.word 0x491494ab
+.word 0x76bc4a56
+.word 0xba0b3fad
+.word 0xe06fcd54
+.word 0x81fce728
+.word 0x12882533
+.word 0xecb9f80c
+.word 0x614280cd
+.word 0xfee571e2
+.word 0xf316b03e
+.word 0x9d2ed63d
+.word 0xeb3687d8
+.word 0x71a4e36b
+.word 0x9abd692f
+.word 0x1cdf06c6
+.word 0xc205a5b5
+.word 0x54354d51
+.word 0x7d2c0f89
+.word 0xb81ddf34
+.word 0x42f6a76f
+.word 0xf0c89915
+.word 0xf3bd74de
+.word 0x674918d1
+.word 0x5e1b12ff
+.word 0xedb549fb
 .word 0x99aa08f5
 .word 0x00001000
 
@@ -5309,8 +5432,14 @@ I_beq_cg_cmp_rs1_rs2_b28_str: .string "\"test: 261; cg: I_beq_cg; cp: cmp_rs1_rs
 I_beq_cg_cmp_rs1_rs2_b29_str: .string "\"test: 262; cg: I_beq_cg; cp: cmp_rs1_rs2; bin: b29\""
 I_beq_cg_cmp_rs1_rs2_b30_str: .string "\"test: 263; cg: I_beq_cg; cp: cmp_rs1_rs2; bin: b30\""
 I_beq_cg_cmp_rs1_rs2_b31_str: .string "\"test: 264; cg: I_beq_cg; cp: cmp_rs1_rs2; bin: b31\""
-I_beq_cg_cp_offset_neg_str: .string "\"test: 265; cg: I_beq_cg; cp: cp_offset; bin: neg\""
-I_beq_cg_cp_imm_edges_branch_all_str: .string "\"test: 266; cg: I_beq_cg; cp: cp_imm_edges_branch; bin: all\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_depth0_str: .string "\"test: 265; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs1_depth0\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_depth0_str: .string "\"test: 266; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs2_depth0\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_nop_str: .string "\"test: 267; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs1_nop\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs1_stressor_str: .string "\"test: 268; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs1_stressor\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_nop_str: .string "\"test: 269; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs2_nop\""
+I_beq_cg_cp_gpr_hazard_r_raw_rs2_stressor_str: .string "\"test: 270; cg: I_beq_cg; cp: cp_gpr_hazard_r; bin: raw_rs2_stressor\""
+I_beq_cg_cp_offset_neg_str: .string "\"test: 271; cg: I_beq_cg; cp: cp_offset; bin: neg\""
+I_beq_cg_cp_imm_edges_branch_all_str: .string "\"test: 272; cg: I_beq_cg; cp: cp_imm_edges_branch; bin: all\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

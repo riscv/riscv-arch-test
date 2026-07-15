@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-auipc-00.S"
-#define SIGUPD_COUNT 53
+#define SIGUPD_COUNT 54
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -137,6 +137,20 @@ E_auipc_cg_cp_rd_b15:
   auipc x15, 188031 # perform operation
   # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_rd_b15, E_auipc_cg_cp_rd_b15_str)
+
+/////////////////////////////////
+// cp_gpr_hazard_w
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_w waw
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x57fef61f
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0xd012553b
+  add x14, x11, x10 # WAW producer: writes x14 (must NOT win)
+E_auipc_cg_cp_gpr_hazard_w_waw:
+  auipc x14, 368840 # WAW consumer: writes x14 (must win - last write)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, E_auipc_cg_cp_gpr_hazard_w_waw, E_auipc_cg_cp_gpr_hazard_w_waw_str)
 
 /////////////////////////////////
 // cp_imm_edges_20bit
@@ -313,7 +327,8 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-
+.word 0x57fef61f
+.word 0xd012553b
 
 // Testcase strings
 E_auipc_cg_cp_rd_b0_str: .string "\"test: 1; cg: E_auipc_cg; cp: cp_rd; bin: b0\""
@@ -332,33 +347,34 @@ E_auipc_cg_cp_rd_b12_str: .string "\"test: 13; cg: E_auipc_cg; cp: cp_rd; bin: b
 E_auipc_cg_cp_rd_b13_str: .string "\"test: 14; cg: E_auipc_cg; cp: cp_rd; bin: b13\""
 E_auipc_cg_cp_rd_b14_str: .string "\"test: 15; cg: E_auipc_cg; cp: cp_rd; bin: b14\""
 E_auipc_cg_cp_rd_b15_str: .string "\"test: 16; cg: E_auipc_cg; cp: cp_rd; bin: b15\""
-E_auipc_cg_cp_imm_edges_20bit_0x0_str: .string "\"test: 17; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x0\""
-E_auipc_cg_cp_imm_edges_20bit_0x1_str: .string "\"test: 18; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x1\""
-E_auipc_cg_cp_imm_edges_20bit_0x2_str: .string "\"test: 19; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x2\""
-E_auipc_cg_cp_imm_edges_20bit_0x3_str: .string "\"test: 20; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x3\""
-E_auipc_cg_cp_imm_edges_20bit_0x4_str: .string "\"test: 21; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x4\""
-E_auipc_cg_cp_imm_edges_20bit_0x8_str: .string "\"test: 22; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x8\""
-E_auipc_cg_cp_imm_edges_20bit_0x10_str: .string "\"test: 23; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x10\""
-E_auipc_cg_cp_imm_edges_20bit_0x20_str: .string "\"test: 24; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x20\""
-E_auipc_cg_cp_imm_edges_20bit_0x40_str: .string "\"test: 25; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x40\""
-E_auipc_cg_cp_imm_edges_20bit_0x80_str: .string "\"test: 26; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80\""
-E_auipc_cg_cp_imm_edges_20bit_0x100_str: .string "\"test: 27; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x100\""
-E_auipc_cg_cp_imm_edges_20bit_0x200_str: .string "\"test: 28; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x200\""
-E_auipc_cg_cp_imm_edges_20bit_0x400_str: .string "\"test: 29; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x400\""
-E_auipc_cg_cp_imm_edges_20bit_0x800_str: .string "\"test: 30; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x800\""
-E_auipc_cg_cp_imm_edges_20bit_0x1000_str: .string "\"test: 31; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x1000\""
-E_auipc_cg_cp_imm_edges_20bit_0x2000_str: .string "\"test: 32; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x2000\""
-E_auipc_cg_cp_imm_edges_20bit_0x4000_str: .string "\"test: 33; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x4000\""
-E_auipc_cg_cp_imm_edges_20bit_0x8000_str: .string "\"test: 34; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x8000\""
-E_auipc_cg_cp_imm_edges_20bit_0x10000_str: .string "\"test: 35; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x10000\""
-E_auipc_cg_cp_imm_edges_20bit_0x20000_str: .string "\"test: 36; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x20000\""
-E_auipc_cg_cp_imm_edges_20bit_0x40000_str: .string "\"test: 37; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x40000\""
-E_auipc_cg_cp_imm_edges_20bit_0x7fffe_str: .string "\"test: 38; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x7fffe\""
-E_auipc_cg_cp_imm_edges_20bit_0x7ffff_str: .string "\"test: 39; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x7ffff\""
-E_auipc_cg_cp_imm_edges_20bit_0x80000_str: .string "\"test: 40; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80000\""
-E_auipc_cg_cp_imm_edges_20bit_0x80001_str: .string "\"test: 41; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80001\""
-E_auipc_cg_cp_imm_edges_20bit_0xffffe_str: .string "\"test: 42; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0xffffe\""
-E_auipc_cg_cp_imm_edges_20bit_0xfffff_str: .string "\"test: 43; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0xfffff\""
+E_auipc_cg_cp_gpr_hazard_w_waw_str: .string "\"test: 17; cg: E_auipc_cg; cp: cp_gpr_hazard_w; bin: waw\""
+E_auipc_cg_cp_imm_edges_20bit_0x0_str: .string "\"test: 18; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x0\""
+E_auipc_cg_cp_imm_edges_20bit_0x1_str: .string "\"test: 19; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x1\""
+E_auipc_cg_cp_imm_edges_20bit_0x2_str: .string "\"test: 20; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x2\""
+E_auipc_cg_cp_imm_edges_20bit_0x3_str: .string "\"test: 21; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x3\""
+E_auipc_cg_cp_imm_edges_20bit_0x4_str: .string "\"test: 22; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x4\""
+E_auipc_cg_cp_imm_edges_20bit_0x8_str: .string "\"test: 23; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x8\""
+E_auipc_cg_cp_imm_edges_20bit_0x10_str: .string "\"test: 24; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x10\""
+E_auipc_cg_cp_imm_edges_20bit_0x20_str: .string "\"test: 25; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x20\""
+E_auipc_cg_cp_imm_edges_20bit_0x40_str: .string "\"test: 26; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x40\""
+E_auipc_cg_cp_imm_edges_20bit_0x80_str: .string "\"test: 27; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80\""
+E_auipc_cg_cp_imm_edges_20bit_0x100_str: .string "\"test: 28; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x100\""
+E_auipc_cg_cp_imm_edges_20bit_0x200_str: .string "\"test: 29; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x200\""
+E_auipc_cg_cp_imm_edges_20bit_0x400_str: .string "\"test: 30; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x400\""
+E_auipc_cg_cp_imm_edges_20bit_0x800_str: .string "\"test: 31; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x800\""
+E_auipc_cg_cp_imm_edges_20bit_0x1000_str: .string "\"test: 32; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x1000\""
+E_auipc_cg_cp_imm_edges_20bit_0x2000_str: .string "\"test: 33; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x2000\""
+E_auipc_cg_cp_imm_edges_20bit_0x4000_str: .string "\"test: 34; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x4000\""
+E_auipc_cg_cp_imm_edges_20bit_0x8000_str: .string "\"test: 35; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x8000\""
+E_auipc_cg_cp_imm_edges_20bit_0x10000_str: .string "\"test: 36; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x10000\""
+E_auipc_cg_cp_imm_edges_20bit_0x20000_str: .string "\"test: 37; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x20000\""
+E_auipc_cg_cp_imm_edges_20bit_0x40000_str: .string "\"test: 38; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x40000\""
+E_auipc_cg_cp_imm_edges_20bit_0x7fffe_str: .string "\"test: 39; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x7fffe\""
+E_auipc_cg_cp_imm_edges_20bit_0x7ffff_str: .string "\"test: 40; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x7ffff\""
+E_auipc_cg_cp_imm_edges_20bit_0x80000_str: .string "\"test: 41; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80000\""
+E_auipc_cg_cp_imm_edges_20bit_0x80001_str: .string "\"test: 42; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0x80001\""
+E_auipc_cg_cp_imm_edges_20bit_0xffffe_str: .string "\"test: 43; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0xffffe\""
+E_auipc_cg_cp_imm_edges_20bit_0xfffff_str: .string "\"test: 44; cg: E_auipc_cg; cp: cp_imm_edges_20bit; bin: 0xfffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

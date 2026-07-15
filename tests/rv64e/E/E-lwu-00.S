@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "E-lwu-00.S"
-#define SIGUPD_COUNT 83
+#define SIGUPD_COUNT 87
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -432,6 +432,48 @@ E_lwu_cg_cmp_rd_rs1_nx0_b15:
   addi x11, x11, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
+// cp_gpr_hazard_rw
+/////////////////////////////////
+
+
+# Testcase cp_gpr_hazard_rw raw_rs1_depth0
+  addi x12, x11, -431 # RAW producer: writes x12 with load base
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_depth0:
+  lwu x13, 431(x12) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x13, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_depth0, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str)
+  addi x11, x11, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw raw_rs1_nop
+  addi x1, x11, -189 # RAW producer: writes x1 with load base
+  addi x0, x0, 0 # depth=1 filler: nop
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_nop:
+  lwu x9, 189(x1) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x9 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x9, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_nop, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_nop_str)
+  addi x11, x11, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw raw_rs1_stressor
+  addi x14, x11, 438 # RAW producer: writes x14 with load base
+  add x1, x4, x5 # depth=1 filler: stressor
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
+  lwu x2, -438(x14) # RAW consumer: reads rs1 load base - tests bypass forwarding
+  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x2, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
+  addi x11, x11, SIG_STRIDE # increment data_ptr
+
+# Testcase cp_gpr_hazard_rw waw
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x766a6445f02f8fc2
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0xe5a31108f95f41dc
+  addi x1, x11, -1432 # copy data_ptr to rs1 and adjust for offset
+  add x14, x9, x10 # WAW producer: writes x14 (must NOT win)
+E_lwu_cg_cp_gpr_hazard_rw_waw:
+  lwu x14, 1432(x1) # WAW consumer: writes x14 (must win - last write)
+  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x14, E_lwu_cg_cp_gpr_hazard_rw_waw, E_lwu_cg_cp_gpr_hazard_rw_waw_str)
+  addi x11, x11, SIG_STRIDE # increment data_ptr
+
+/////////////////////////////////
 // cp_imm_edges
 /////////////////////////////////
 
@@ -720,6 +762,12 @@ RVTEST_DATA_BEGIN
 .dword 0x1a01894d7bdd4057
 .dword 0xe6594bfe7a24179d
 .dword 0xbd126cdcf5c62c44
+.dword 0xb848f083a1e048e4
+.dword 0xa90e0d4a7ad44631
+.dword 0x86f2d77822ed5d77
+.dword 0x766a6445f02f8fc2
+.dword 0xe5a31108f95f41dc
+.dword 0x87e9bd5c39f38879
 .dword 0xea7792c606bd61c5
 .dword 0x9a4e99a8322187fd
 .dword 0xe615c53da3d91f42
@@ -795,33 +843,37 @@ E_lwu_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 43; cg: E_lwu_cg; cp: cmp_rd_r
 E_lwu_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 44; cg: E_lwu_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
 E_lwu_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 45; cg: E_lwu_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
 E_lwu_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_lwu_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-E_lwu_cg_cp_imm_edges_0x0_str: .string "\"test: 47; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x0\""
-E_lwu_cg_cp_imm_edges_0x1_str: .string "\"test: 48; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x1\""
-E_lwu_cg_cp_imm_edges_0x2_str: .string "\"test: 49; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x2\""
-E_lwu_cg_cp_imm_edges_0x3_str: .string "\"test: 50; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x3\""
-E_lwu_cg_cp_imm_edges_0x4_str: .string "\"test: 51; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x4\""
-E_lwu_cg_cp_imm_edges_0x8_str: .string "\"test: 52; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x8\""
-E_lwu_cg_cp_imm_edges_0x10_str: .string "\"test: 53; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x10\""
-E_lwu_cg_cp_imm_edges_0x20_str: .string "\"test: 54; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x20\""
-E_lwu_cg_cp_imm_edges_0x40_str: .string "\"test: 55; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x40\""
-E_lwu_cg_cp_imm_edges_0x80_str: .string "\"test: 56; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x80\""
-E_lwu_cg_cp_imm_edges_0x100_str: .string "\"test: 57; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x100\""
-E_lwu_cg_cp_imm_edges_0x200_str: .string "\"test: 58; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x200\""
-E_lwu_cg_cp_imm_edges_0x3ff_str: .string "\"test: 59; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x3ff\""
-E_lwu_cg_cp_imm_edges_0x400_str: .string "\"test: 60; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x400\""
-E_lwu_cg_cp_imm_edges_0x703_str: .string "\"test: 61; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x703\""
-E_lwu_cg_cp_imm_edges_0x7ff_str: .string "\"test: 62; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x7ff\""
-E_lwu_cg_cp_imm_edges_m0x800_str: .string "\"test: 63; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x800\""
-E_lwu_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 64; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x7ff\""
-E_lwu_cg_cp_imm_edges_m0x2_str: .string "\"test: 65; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x2\""
-E_lwu_cg_cp_imm_edges_m0x1_str: .string "\"test: 66; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x1\""
-E_lwu_cg_cp_align_word_b0_str: .string "\"test: 67; cg: E_lwu_cg; cp: cp_align_word; bin: b0\""
-E_lwu_cg_cp_align_word_b4_str: .string "\"test: 68; cg: E_lwu_cg; cp: cp_align_word; bin: b4\""
-E_lwu_cg_cp_memval_word_0x0_str: .string "\"test: 69; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x0\""
-E_lwu_cg_cp_memval_word_0x1_str: .string "\"test: 70; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x1\""
-E_lwu_cg_cp_memval_word_0x7fffffff_str: .string "\"test: 71; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x7fffffff\""
-E_lwu_cg_cp_memval_word_0x80000000_str: .string "\"test: 72; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x80000000\""
-E_lwu_cg_cp_memval_word_0xffffffff_str: .string "\"test: 73; cg: E_lwu_cg; cp: cp_memval_word; bin: 0xffffffff\""
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 47; cg: E_lwu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 48; cg: E_lwu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
+E_lwu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 49; cg: E_lwu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
+E_lwu_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 50; cg: E_lwu_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_lwu_cg_cp_imm_edges_0x0_str: .string "\"test: 51; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x0\""
+E_lwu_cg_cp_imm_edges_0x1_str: .string "\"test: 52; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x1\""
+E_lwu_cg_cp_imm_edges_0x2_str: .string "\"test: 53; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x2\""
+E_lwu_cg_cp_imm_edges_0x3_str: .string "\"test: 54; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x3\""
+E_lwu_cg_cp_imm_edges_0x4_str: .string "\"test: 55; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x4\""
+E_lwu_cg_cp_imm_edges_0x8_str: .string "\"test: 56; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x8\""
+E_lwu_cg_cp_imm_edges_0x10_str: .string "\"test: 57; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x10\""
+E_lwu_cg_cp_imm_edges_0x20_str: .string "\"test: 58; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x20\""
+E_lwu_cg_cp_imm_edges_0x40_str: .string "\"test: 59; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x40\""
+E_lwu_cg_cp_imm_edges_0x80_str: .string "\"test: 60; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x80\""
+E_lwu_cg_cp_imm_edges_0x100_str: .string "\"test: 61; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x100\""
+E_lwu_cg_cp_imm_edges_0x200_str: .string "\"test: 62; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x200\""
+E_lwu_cg_cp_imm_edges_0x3ff_str: .string "\"test: 63; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x3ff\""
+E_lwu_cg_cp_imm_edges_0x400_str: .string "\"test: 64; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x400\""
+E_lwu_cg_cp_imm_edges_0x703_str: .string "\"test: 65; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x703\""
+E_lwu_cg_cp_imm_edges_0x7ff_str: .string "\"test: 66; cg: E_lwu_cg; cp: cp_imm_edges; bin: 0x7ff\""
+E_lwu_cg_cp_imm_edges_m0x800_str: .string "\"test: 67; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x800\""
+E_lwu_cg_cp_imm_edges_m0x7ff_str: .string "\"test: 68; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x7ff\""
+E_lwu_cg_cp_imm_edges_m0x2_str: .string "\"test: 69; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x2\""
+E_lwu_cg_cp_imm_edges_m0x1_str: .string "\"test: 70; cg: E_lwu_cg; cp: cp_imm_edges; bin: -0x1\""
+E_lwu_cg_cp_align_word_b0_str: .string "\"test: 71; cg: E_lwu_cg; cp: cp_align_word; bin: b0\""
+E_lwu_cg_cp_align_word_b4_str: .string "\"test: 72; cg: E_lwu_cg; cp: cp_align_word; bin: b4\""
+E_lwu_cg_cp_memval_word_0x0_str: .string "\"test: 73; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x0\""
+E_lwu_cg_cp_memval_word_0x1_str: .string "\"test: 74; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x1\""
+E_lwu_cg_cp_memval_word_0x7fffffff_str: .string "\"test: 75; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x7fffffff\""
+E_lwu_cg_cp_memval_word_0x80000000_str: .string "\"test: 76; cg: E_lwu_cg; cp: cp_memval_word; bin: 0x80000000\""
+E_lwu_cg_cp_memval_word_0xffffffff_str: .string "\"test: 77; cg: E_lwu_cg; cp: cp_memval_word; bin: 0xffffffff\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

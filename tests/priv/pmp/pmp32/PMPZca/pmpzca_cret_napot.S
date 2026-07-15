@@ -119,7 +119,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
 .p2align 11
-.skip (0x802)
+.skip (0x806)                                                  // shifted +4B so REGIONSTART lands at PMP_NAPOT_REGION_START, not PMP_REGION_START
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

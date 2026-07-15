@@ -14,30 +14,32 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`PMP_REGION_START};
+  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
-  addr_offset_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_REGION_START};                // Access exactly at the region base
-    bins below_base   = {`PMP_REGION_START - 4};            // Access 4 bytes below the region
-    bins just_inside  = {`PMP_REGION_START + 4};            // Access 4 bytes into the region
-    bins highest_word = {`PMP_REGION_START + `g_napot - 4}; // Access at the last word in region
-    bins just_beyond  = {`PMP_REGION_START + `g_napot};     // Access exactly at the end of the region
+  // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the actual
+  // NAPOT region-under-test sits g_napot-aligned to avoid swallowing the return-pad
+  addr_offset_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};                // Access exactly at the region base
+    bins below_base   = {(`PMP_NAPOT_REGION_START - 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes below the region
+    bins just_inside  = {(`PMP_NAPOT_REGION_START + 4) & `PMP_ADDR_LOWMASK};            // Access 4 bytes into the region
+    bins highest_word = {(`PMP_NAPOT_REGION_START + `g_napot - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
+    bins just_beyond  = {(`PMP_NAPOT_REGION_START + `g_napot) & `PMP_ADDR_LOWMASK};     // Access exactly at the end of the region
   }
 
-  addr_offset_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base     = {`PMP_REGION_START};      // Access exactly at the region base
-    bins below_base  = {`PMP_REGION_START - 4};  // Access below region base
-    bins beyond_top  = {`PMP_REGION_START + 4};  // Access beyond top of region
+  addr_offset_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};      // Access exactly at the region base
+    bins below_base  = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};  // Access below region base
+    bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
   }
 
   // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-  addr_offset_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_REGION_START};              // Access exactly at the region base
-    bins below_base   = {`PMP_REGION_START - 4};          // Access 4 bytes below the base
-    bins at_top       = {`PMP_REGION_START + `g_tor};     // Access exactly at top of range
-    bins highest_word = {`PMP_REGION_START + `g_tor - 4}; // Access at the last word in region
+  addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
+    bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
+    bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
+    bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
   }
 
   exec_instr: coverpoint ins.current.insn {
@@ -74,8 +76,16 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint ins.current.csr[CSR_PMPADDR0] {
-    bins standard_region = {`STANDARD_REGION};
+  standard_region: coverpoint (ins.current.csr[CSR_PMPADDR0] & `PMP_PMPADDR_LOWMASK) {
+    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+  }
+
+  // addr_in_region (PMP_REGION_START-based) doesn't apply here: entry0 is configured
+  // via standard_region (pmpaddr0 == STANDARD_REGION, i.e. a NAPOT match at
+  // PMP_NAPOT_REGION_START), so the access under test for cp_mprv_* must target that
+  // same NAPOT-safe address, not the plain PMP_REGION_START other crosses use.
+  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
@@ -268,9 +278,9 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   cp_cfg_A_tor_lw: cross priv_mode_s, cfg_A_tor, read_instr_lw, addr_offset_tor ;
   cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
 
-  cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_region ;
-  cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_region ;
-  cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_region ;
+  cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
+  cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
+  cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
 
   cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
@@ -314,7 +324,7 @@ function void pmps_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `STANDARD_REGION) || (pmpaddr[k] == `NON_STANDARD_REGION);
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
   pack_pmpaddr = { ins.current.csr[CSR_PMPADDR15]

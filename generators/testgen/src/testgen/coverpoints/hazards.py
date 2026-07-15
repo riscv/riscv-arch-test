@@ -317,7 +317,9 @@ def make_cp_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data:
                         instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler, filler_name
                     )
                     if make_hazard is _make_gpr_hazard
-                    else make_hazard(instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler, filler_name)
+                    else make_hazard(
+                        instr_name, instr_type, coverpoint, test_data, "raw", field, bin_name, filler, filler_name
+                    )
                 )
     if "w" in haz_class and has_dest:
         test_lines.extend(make_hazard(instr_name, instr_type, coverpoint, test_data, "waw", None, "waw"))

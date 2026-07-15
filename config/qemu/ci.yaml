@@ -19,13 +19,7 @@ ci_enabled: true
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
 # PMPSm: pmpcfg bits [6:5] writable (https://gitlab.com/qemu-project/qemu/-/work_items/3531);
 #        causes pmpsm_csr_walk-* to fail on real QEMU (10/54 pmp64/PMPSm tests,
-#        4/36 pmp32/PMPSm tests). A separate doubleword-PMP-boundary divergence
-#        (sail-riscv didn't fault on an access spanning two PMP regions, contra
-#        [#norm:pmp_full_match_required]) previously also affected pmp64/PMPSm;
-#        resolved by setting memory.misaligned.allowed_within_exp=12 in the qemu
-#        sail.json configs (disables Sail's misaligned-access splitting), making
-#        Sail match QEMU — no sail-riscv issue needed for that part. PMPSm remains
-#        excluded solely due to the pmpcfg[6:5] bug above;
+#        4/36 pmp32/PMPSm tests).
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, closed upstream but not in v11.0.2)
 # ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501);

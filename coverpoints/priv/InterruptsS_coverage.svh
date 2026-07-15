@@ -27,10 +27,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mstatus_mie_one: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         bins one = {1};
     }
-    mstatus_mpie: coverpoint ins.current.csr[CSR_MSTATUS][7] {
-        // bins zero = {0};
-        bins one = {1};
-    }
     mstatus_sie: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
         // autofill 0/1
     }
@@ -56,9 +52,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins zero = {0};
     }
     mideleg_sei: coverpoint ins.current.csr[CSR_MIDELEG][9] {
-        // autofill 0/1
-    }
-    mideleg_ssi: coverpoint ins.current.csr[CSR_MIDELEG][1] {
         // autofill 0/1
     }
     mideleg_mei_zero: coverpoint ins.current.csr[CSR_MIDELEG][11] {
@@ -120,26 +113,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mip_ssip_one: coverpoint ins.current.csr[CSR_MIP][1] {
         bins one = {1};
     }
-    mip_msip_one: coverpoint ins.current.csr[CSR_MIP][3] {
-        bins one = {1};
-    }
     mip_stip_one: coverpoint ins.current.csr[CSR_MIP][5] {
-        bins one = {1};
-    }
-    mip_mtip_one: coverpoint ins.current.csr[CSR_MIP][7] {
         bins one = {1};
     }
     mip_seip_one: coverpoint ins.current.csr[CSR_MIP][9] {
         bins one = {1};
-    }
-    prev_mip_seip_one: coverpoint ins.prev.csr[CSR_MIP][9] {
-        bins one = {1};
-    }
-    mip_meip_one: coverpoint ins.current.csr[CSR_MIP][11] {
-        bins one = {1};
-    }
-    mip_ones: coverpoint ins.current.csr[CSR_MIP][15:0] {
-        wildcard bins ones = {16'b0000101010101010}; // ones in every field that is not tied to zero
     }
     // All S-mode interrupts set: {SEIP, STIP, SSIP}
     mip_ones_s: coverpoint {ins.current.csr[CSR_MIP][9],   // SEIP
@@ -211,45 +189,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mret_insn: coverpoint ins.current.insn {
         bins mret = {32'h30200073};
     }
-    sret_insn: coverpoint ins.current.insn {
-        bins sret = {32'h10200073};
-    }
     // Check if mstatus.MPP is 01 (supervisor mode)
     mstatus_mpp_s: coverpoint ins.current.csr[CSR_MSTATUS][12:11] {
         bins s_mode = {2'b01};
     }
     mstatus_mpp_u: coverpoint ins.current.csr[CSR_MSTATUS][12:11] {
         bins u_mode = {2'b00};
-    }
-    sstatus_spp_u: coverpoint ins.current.csr[CSR_SSTATUS][8] {
-        bins u_mode = {1'b0};
-    }
-    mie_s_ones: coverpoint {ins.current.csr[CSR_MIE][9],
-                            ins.current.csr[CSR_MIE][5],
-                            ins.current.csr[CSR_MIE][1]} {
-        bins ones = {3'b111};
-    }
-    mie_m_walking: coverpoint {ins.current.csr[CSR_MIE][11],
-                               ins.current.csr[CSR_MIE][7],
-                               ins.current.csr[CSR_MIE][3]} {
-        bins meie = {3'b100};
-        bins mtie = {3'b010};
-        bins msie = {3'b001};
-    }
-    mie_s_walking: coverpoint {ins.current.csr[CSR_MIE][9],
-                               ins.current.csr[CSR_MIE][5],
-                               ins.current.csr[CSR_MIE][1]} {
-        bins seie = {3'b100};
-        bins stie = {3'b010};
-        bins ssie = {3'b001};
-    }
-    mie_combinations: coverpoint {ins.current.csr[CSR_MIE][11],
-                                  ins.current.csr[CSR_MIE][9],
-                                  ins.current.csr[CSR_MIE][7],
-                                  ins.current.csr[CSR_MIE][5],
-                                  ins.current.csr[CSR_MIE][3],
-                                  ins.current.csr[CSR_MIE][1]} {
-        // auto fills all 2^6 combinations
     }
     // S-mode enable combinations: {SEIE, STIE, SSIE}
     mie_combinations_s: coverpoint {ins.current.csr[CSR_MIE][9],  // SEIE
@@ -276,14 +221,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins combo_101 = {3'b101};
         bins combo_110 = {3'b110};
         bins combo_111 = {3'b111};
-    }
-    mip_combinations: coverpoint {ins.current.csr[CSR_MIP][11],
-                                  ins.current.csr[CSR_MIP][9],
-                                  ins.current.csr[CSR_MIP][7],
-                                  ins.current.csr[CSR_MIP][5],
-                                  ins.current.csr[CSR_MIP][3],
-                                  ins.current.csr[CSR_MIP][1]} {
-        // auto fills all 2^6 combinations
     }
     // S-mode priority: combinations of SSIP, STIP, SEIP (2^3 = 8 combinations)
     mip_combinations_s: coverpoint {ins.current.csr[CSR_MIP][9],  // SEIP
@@ -353,19 +290,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
                             {ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][3]}) {
         bins equal = {1};
     }
-    // S-mode: Priority among delegated interrupts
-    // Exclude combo_000 (nothing enabled = no interrupt)
-    mideleg_combinations_delegated: coverpoint {ins.current.csr[CSR_MIDELEG][9],
-                                                ins.current.csr[CSR_MIDELEG][5],
-                                                ins.current.csr[CSR_MIDELEG][1]} {
-        bins combo_001 = {3'b001};  // SSIE only
-        bins combo_010 = {3'b010};  // STIE only
-        bins combo_011 = {3'b011};  // SSIE+STIE
-        bins combo_100 = {3'b100};  // SEIE only
-        bins combo_101 = {3'b101};  // SSIE+SEIE
-        bins combo_110 = {3'b110};  // STIE+SEIE
-        bins combo_111 = {3'b111};  // All
-    }
 
     // Check mideleg == mie (only S-mode bits)
     mideleg_mie_eq_s: coverpoint ({ins.current.csr[CSR_MIDELEG][9], ins.current.csr[CSR_MIDELEG][5], ins.current.csr[CSR_MIDELEG][1]} ==
@@ -376,14 +300,8 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins direct   = {2'b00};
         bins vector   = {2'b01};
     }
-    stvec_vectored: coverpoint ins.current.csr[CSR_STVEC][1:0] {
-        bins vector   = {2'b01};
-    }
     mtvec_direct: coverpoint ins.current.csr[CSR_MTVEC][1:0] {
         bins direct   = {2'b00};
-    }
-    mtvec_vectored: coverpoint ins.current.csr[CSR_MTVEC][1:0] {
-        bins vector   = {2'b01};
     }
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
@@ -394,9 +312,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     csrrc: coverpoint ins.current.insn {
         wildcard bins csrrc = {CSRRC};
     }
-    write_mip_seip: coverpoint ins.current.rs1_val[9] iff (ins.current.insn[31:20] == CSR_MIP) {
-        bins write_seip = {1};
-    }
     sip_seip_one: coverpoint ins.current.csr[CSR_SIP][9] {
         bins one = {1};
     }
@@ -406,15 +321,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     sip_ssip_one: coverpoint ins.current.csr[CSR_SIP][1] {
         bins one = {1};
     }
-    write_sstatus_sie: coverpoint ins.current.rs1_val[1] iff ( ins.current.insn[31:20] == CSR_SSTATUS) {
-        bins write_sie = {1};
-    }
     sstatus_sie: coverpoint ins.current.csr[CSR_SSTATUS][1] {
         bins one = {1};
         bins zero = {0};
-    }
-    write_mstatus_mie: coverpoint ins.current.rs1_val[3] iff ( ins.current.insn[31:20] == CSR_MSTATUS) {
-        bins write_mie = {1};
     }
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
@@ -427,9 +336,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     }
     mideleg_sei_one: coverpoint ins.current.csr[CSR_MIDELEG][9] {
         bins one = {1};
-    }
-    s_ext_intr_low: coverpoint ins.current.s_ext_intr {
-        bins no_sei = {0};
     }
     priv_mode_s_after: coverpoint {ins.current.mode_virt, ins.current.mode} {
         type_option.weight = 0;
@@ -470,27 +376,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_priority_mideleg_s:       cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_s, mip_ones_s, mideleg_mie_eq_s;
     cp_wfi_s:                    cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_zero, mie_mtie_one;
     cp_wfi_timeout_s:            cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_one, mie_mtie;
-
-    // M-mode tests
-    cp_interrupts_m:            cross priv_mode_m, mstatus_mie, mtvec_direct, mideleg_ones_zeros_real, mip_walking, mie_walking;
-    cp_vectored_m:              cross priv_mode_m, mstatus_mie_one, mtvec_vectored, mideleg_zeros, mip_walking_s, mie_s_ones;
-    cp_priority_mip_m:          cross priv_mode_m, mie_ones, mideleg_zeros, mip_combinations;
-    cp_priority_mie_m:          cross priv_mode_m, mip_ones, mideleg_zeros, mie_combinations;
-    cp_wfi_m:                   cross priv_mode_m, wfi, mstatus_mie, mstatus_sie, mideleg_ones, mstatus_tw, mie_mtie_one; // NOTE: wfi still exits early so doesn't work
-    cp_trigger_mti_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_mtip_one, csrrs, write_mstatus_mie;
-    cp_trigger_ssi_sip_m:       cross priv_mode_m, mstatus_mie, mie_ones, mideleg_ssi, csrrs, write_sip_ssip;
-    cp_trigger_msi_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_msip_one, csrrs, write_mstatus_mie;
-    cp_trigger_mei_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_meip_one, csrrs, write_mstatus_mie;
-    cp_trigger_sti_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_stip_one, csrrs, write_mstatus_mie;
-    cp_trigger_ssi_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_ssip_one, csrrs, write_mstatus_mie;
-    cp_trigger_sei_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_seip_one, csrrs, write_mstatus_mie;
-    cp_sei1:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrw, write_mip_seip;
-    cp_sei2:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrs, write_mip_seip;
-    cp_sei3:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip_one;
-    cp_sei4:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, s_ext_intr_low,  csrrc, write_mip_seip;
-    cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip_one, csrrc, write_mip_seip;
-    cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip;
-    cp_global_ie:               cross priv_mode_m, mstatus_mie, mstatus_sie, mip_walking_m, mip_mie_eq;
 
     // U-mode tests
     cp_user_mti:                cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_mti_zero, mie_mtie_one, mip_mtip;

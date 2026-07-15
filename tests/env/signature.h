@@ -806,6 +806,45 @@
         .option pop
 #endif
 
+// RVTEST_SIGUPD_VXSAT(sigptr, linkreg, tempreg, instptr, strptr)
+// Reads vxsat and compares/stores it to the signature at 0(sigptr).
+// In SELFCHECK mode, compares the value in vxsat with the value in memory
+// at 0(sigptr) and jumps to a failure handler if different.
+// In non-SELFCHECK mode, stores vxsat to memory at 0(sigptr).
+// In both cases, increments sigptr by SIG_STRIDE.
+//  _SIG_PTR - Base register for signature region
+//  _LINK_REG - Link register to use for failure jump
+//  _TEMP_REG - Temporary register to use for loading signature
+//  _INST_PTR - label on instruction being tested (for PC reporting)
+//  _STR_PTR - label to string describing the test
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
+    beq _TEMP_REG, _LINK_REG, 1f                           ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
+#else
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    SREG _LINK_REG, 0(_SIG_PTR)                            ;\
+    beq x0, x0, 1f                                         ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
+#endif
+
 // Canary value to indicate bounds of signature region
 #if SIG_STRIDE==8
   #define CANARY_VALUE \

@@ -1823,7 +1823,7 @@ def writeSIGUPD_FFLAGS(inst_ptr):
     tempReg = linkReg - 1
     writeLine(f"RVTEST_SIGUPD_FFLAGS(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check fflags in signature")
 
-def writeSIGUPD_CSR(inst_ptr, csr, rd):
+def writeSIGUPD_VXSAT(inst_ptr):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
@@ -1831,12 +1831,12 @@ def writeSIGUPD_CSR(inst_ptr, csr, rd):
     # and rd. linkReg must come from {5, 8, 13} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
     linkOptions = [lr for lr in (5, 8, 13)
-                   if lr != sigReg and lr - 1 != sigReg and lr != rd and lr - 1 != rd]
+                   if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
-      raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
+      raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
     linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
     tempReg = linkReg - 1
-    writeLine(f"RVTEST_SIGUPD_CSR_RD(x{sigReg}, x{linkReg}, x{tempReg}, {csr}, x{rd}, {inst_ptr}, {str_ptr})", f"# check {csr} in signature")
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
 
 
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
@@ -2506,8 +2506,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeSIGUPD_FFLAGS(inst_ptr)
 
     if test in saturating_ins:
-      csr_read = pickScalarScratch(scalar_registers_used)
-      writeSIGUPD_CSR(inst_ptr, "vxsat", csr_read)
+      writeSIGUPD_VXSAT(inst_ptr)
 
     if skip_sigupd:
       # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.

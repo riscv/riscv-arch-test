@@ -33,7 +33,7 @@
 #define SIGUPD_COUNT 150
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

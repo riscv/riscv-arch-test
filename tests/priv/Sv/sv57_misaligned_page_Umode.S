@@ -23,7 +23,7 @@
 #define TEST_FILE "sv57_misaligned_page_Umode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 60
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

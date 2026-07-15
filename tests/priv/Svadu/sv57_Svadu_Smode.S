@@ -44,7 +44,7 @@
 
 #define TEST_FILE "sv57_Svadu_Smode.S"
 #define SIGUPD_COUNT 95
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

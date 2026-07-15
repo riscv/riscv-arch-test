@@ -161,7 +161,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a4, a4, t0                  // REGIONSTART + g - 4
     LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_4:
@@ -210,7 +217,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
@@ -251,7 +265,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)                                   // Signature update
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_14:
@@ -600,7 +621,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a4, a4, t0                  // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
     LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_20:
@@ -665,7 +693,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a5, a5, t0                                      // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
 
     \TEST_CASE\()_6:
@@ -730,7 +765,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a5, a5, t0                                      // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
 
     \TEST_CASE\()_15:

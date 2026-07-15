@@ -135,6 +135,12 @@ main:
     // Test Case 2: Uncompressed return straddling the end of 2nd region
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
 
+    // Test Case 3: Uncompressed return exactly at the start of the 1st region (inside_first_region)
+    PMP_VERIFICATION_X_C NEWREGION1, test_3
+
+    // Test Case 4: Uncompressed return exactly at the start of the 2nd region (inside_second_region)
+    PMP_VERIFICATION_X_C NEWREGION2, test_4
+
     j exit                                                      // Verification Complete, exit the test
 
 exit:

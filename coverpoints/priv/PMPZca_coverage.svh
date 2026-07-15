@@ -18,10 +18,6 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
-  standard_region: coverpoint (ins.current.csr[CSR_PMPADDR5] & `PMP_PMPADDR_LOWMASK) {
-    bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
-  }
-
   exec_c_instr: coverpoint ins.current.insn[15:0] {
     wildcard bins c_jalr = {16'b1001_?????_?????_10};
   }

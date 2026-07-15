@@ -34,7 +34,7 @@
 #define SIGUPD_COUNT 100
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"

@@ -36,7 +36,7 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -46,7 +46,6 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                            // Store the return Address in x1
@@ -57,7 +56,6 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                            // Store the return Address in x1
     \TEST_CASE\()_2:
@@ -67,7 +65,6 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                            // Store the return Address in x1
     \TEST_CASE\()_3:

@@ -15,7 +15,7 @@ from testgen.asm.helpers import reproducible_hash
 from testgen.constants import TESTCASES_PER_PRIV_FILE
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
-from testgen.data.test_chunk import split_test_chunks
+from testgen.data.test_chunk import group_test_chunks
 from testgen.io.writer import write_test_file
 from testgen.priv.registry import (
     get_priv_test_defines,
@@ -54,9 +54,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Reserve registers for priv tests:
     #   - x0: avoid so desired values are actually loaded into registers
     #   - x1/ra: used as the return address for function calls
-    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
+    #   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
+    #   - x10, x11 (a0/a1): designated clobber registers of the mode-switching
+    #     macros. RVTEST_GOTO_MMODE/SMODE/DELEGATED_MMODE signal via a0 and leave
+    #     it as -1; RVTEST_TSBI_* pass arguments/results in a0/a1.
     #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
+
+    priv_exclude_regs = [0, 1, 7, 10, 11, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 
@@ -64,10 +68,10 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     priv_test_generator = get_priv_test_generator(testsuite)
     chunks = priv_test_generator(test_data)
 
-    # Split into test files and write
-    test_files = split_test_chunks(chunks, TESTCASES_PER_PRIV_FILE)
-    for file_idx, test_file_chunks in enumerate(test_files):
-        write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines)
+    # Group by named split, split each group into test files, and write
+    for split_name, test_files in group_test_chunks(chunks, TESTCASES_PER_PRIV_FILE):
+        for file_idx, test_file_chunks in enumerate(test_files):
+            write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
 
     # Clean up (make sure all registers were returned)
     test_data.int_regs.return_registers(priv_exclude_regs)

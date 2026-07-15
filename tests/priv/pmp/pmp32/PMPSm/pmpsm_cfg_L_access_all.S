@@ -36,7 +36,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -47,7 +47,6 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)

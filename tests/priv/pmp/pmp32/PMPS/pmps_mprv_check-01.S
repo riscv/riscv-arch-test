@@ -34,7 +34,7 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -43,7 +43,6 @@ RVTEST_BEGIN
 .macro VERIFICATION_X ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
     \TEST_CASE\()_1:
     jalr ra, 0(a4)

@@ -35,7 +35,7 @@
 #define TEST_FILE "sv32_exceptions_Zaamo_Umode.S"
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 110
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -76,29 +76,27 @@ RVTEST_BEGIN
   .elseif (\ECALL_DELEG == 1)
     RVTEST_GOTO_DELEGATED_MMODE
   .elseif (\ECALL_DELEG == 2)
-    // When everything except S-Ecall is delegated. From U-Mode, set x3=0 and execute GOTO_S_OP. This will leave us in S-mode
+    // When everything except S-Ecall is delegated. From U-Mode, set a0=0 and execute GOTO_S_OP. This will leave us in S-mode
     // (as U-Ecall is delegated) on PC+4 (nop). The nop will raise a fetch-page-fault as PTE.U is set for that page. Now we can
-    // utilize a special functionality of the trap handler to return to address in x1 if x4 has 0xACCE. Modify x1 to have the VA
+    // utilize the trap handler's fetch-fault handling, which resumes at the address in x1 (ra). Modify x1 to have the VA
     // of an Spage pointing to 1f. Then we can normally execute in S-Mode. Modify save-area to have the VA of Spage instead of
     // Upage and execute RVTEST_GOTO_MMODE. This way we can reach M-mode. Restore save-area to point to the Upage again.
 
-    LI( x4, 0xACCE)
-    LA( x1, 1f)         // Return address in case of fetch-page-fault
+    LA( x1, 1f)         // Return address: the trap handler resumes at x1 (ra) on a fetch fault
 
-    lui a0, 0x400       // Adding this to the current PC (VA) will point to the next entry (Spage) in the level 1 page table
-    add x1, x1, a0      // VA of an Spage that points to 1f
+    lui t0, 0x400       // Adding this to the current PC (VA) will point to the next entry (Spage) in the level 1 page table
+    add x1, x1, t0      // VA of an Spage that points to 1f
 
-    mv  t0, x3          // Temporarily store x3
-    li  x3, 0
+    li  a0, 0           // a0==0 signals GOTO_SMODE to the trap handler (x3 is no longer the flag)
     GOTO_S_OP           // Go to Smode
     nop                 // GOTO_S_OP returns here. This will raise a fetch-page-fault (S-mode accessing Upage).
   1:
-    mv   x3, t0         // Fetch-page-fault after being handled returns here (Spage)
+    // Fetch-page-fault after being handled returns here (Spage)
 
     csrr a1, sscratch
     LREG a4, code_bgn_off(a1) // Load VA of Upage
 
-    add  t0, a4, a0
+    add  t0, a4, t0     // t0 still holds the Upage->Spage offset
     SREG t0, code_bgn_off(a1) // Replace with VA of Spage
 
     RVTEST_GOTO_MMODE         // Finally, go to M-mode

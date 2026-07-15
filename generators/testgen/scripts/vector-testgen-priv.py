@@ -386,7 +386,7 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
     def _emit_init(arg_name, base_reg, emul):
         if arg_name not in instruction_arguments:
             return
-        writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m1, tu, mu",  f"# {arg_name} init: LMUL=1 vl=VLMAX, will iterate {emul} reg(s)")
+        writeLine(f"vsetvli x{scratch}, x0, SEWMINSIZE, m1, tu, mu",  f"# {arg_name} init: LMUL=1 vl=VLMAX, will iterate {emul} reg(s)")
         for i in range(emul):
             if base_reg + i > 31:
                 break
@@ -600,6 +600,8 @@ if __name__ == '__main__':
         # single file (CHUNK_SIZE >= len(instructions)).
         if extension.startswith("SsstrictV"):
             CHUNK_SIZE = 25
+        elif extension.startswith("MisalignedV"):
+            CHUNK_SIZE = len(instructions) // 2
         else:
             CHUNK_SIZE = max(len(instructions), 1)
 

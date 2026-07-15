@@ -6,7 +6,11 @@ normative_rule_definitions:
   # would cause the hart to temporarily stall execution in a low-power state
   # until a store occurs to the reservation set or an interrupt is observed.
   - name: Zawrs_wrs-nto_stall_exec
-    coverpoint: ["ZawrsS_cg/cp_wrs_resume"]
+    coverpoint:
+      [
+        "ZawrsS_cg/cp_wrs_resume",
+        "stores not tested in single core configurations",
+      ]
 
   # WRS.STO (WRS-with-short-timeout) is provided that works like WRS.NTO
   # but bounds the stall duration to an implementation-define short timeout
@@ -18,7 +22,8 @@ normative_rule_definitions:
   # While stalled, an implementation is permitted to occasionally terminate the
   # stall and complete execution for any reason.
   - name: Zawrs_stall_terminate
-    coverpoint: ["Can not be tested because it is implementation specific"]
+    coverpoint:
+      ["ZawrsS_cg/cp_wrs_{resume, nto_timeout} loops if terminating early"]
 
   # WRS.NTO and WRS.STO instructions follow the rules of the WFI instruction
   # for resuming execution on a pending interrupt.

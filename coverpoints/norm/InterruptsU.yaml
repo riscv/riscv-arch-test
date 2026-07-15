@@ -11,14 +11,14 @@ normative_rule_definitions:
   # modes less privileged than M when TW=1, even if there are pending
   # globally-disabled interrupts when the instruction is executed.
   - name: mstatus_tw_always_illegal
-    coverpoint: ["Can not be tested because it is implementation specific"]
+    coverpoint: ["InterruptsU_cg/cp_wfi_timeout"]
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
   # interrupt-enable bits and privilege modes. xPIE holds the value of the
   # interrupt-enable bit active prior to the trap, and xPP holds the previous
   # privilege mode.
   - names: [mstatus_xpie_op, mstatus_xpp_op]
-    coverpoint: ["TODO: Not tested by the current coverpoints"]
+    coverpoint: ["InterruptsU_cg/cp_user_{mti, msi, mei}"]
 
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
   # the value of xIE; xIE is set to 0; and xPP is set to y.

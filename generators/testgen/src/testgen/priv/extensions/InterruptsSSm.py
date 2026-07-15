@@ -1,5 +1,5 @@
 ##################################
-# priv/extensions/interruptsSSm.py
+# priv/extensions/InterruptsSSm.py
 #
 # InterruptsS privileged extension test generator.
 # ellyu@hmc.edu July 2026
@@ -31,7 +31,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
     - cp_interrupts_m: Non-delegated (mideleg=0) OR M-interrupts (always M-mode)
     - cp_interrupts_m_deleg: Delegated S-interrupts (mideleg=0x222 + SSIP/STIP/SEIP)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -221,7 +221,7 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
     mstatus.MIE=1, mideleg =0s, all 3 of mie.STIE/SSIE/SEIE, 3 walking 1s in mip.STIP/SSIP/SEIP (3 bins)
     Test vectored with S-interrupts, mideleg=0 (fire in M-mode).
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_vectored_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -339,7 +339,7 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
     Set MIE=0, configure all 64 mip patterns, mie=all 1s, mideleg=0, then set MIE=1.
     Tests which interrupt fires based on priority.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_priority_mip_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -462,7 +462,7 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
     Set MIE=0, configure all 64 mie patterns, set all mip, mideleg=0, then MIE=1.
     Tests which interrupt fires based on enable priority.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_priority_mie_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -575,7 +575,7 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
     WFI should wake on timer regardless of settings.
     8 tests: 2 MIE × 2 SIE × 2 TW
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_wfi_m"
 
     r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4 = test_data.int_regs.get_registers(6)
@@ -677,7 +677,7 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
     Set MTIP pending with MIE=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_mti_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -761,7 +761,7 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
     Use CSRRS to write sip.SSIP, test with MIE={0,1} and mideleg.SSI={0,1}.
     4 tests total.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_ssi_sip_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -868,7 +868,7 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
     Set MSIP pending with MIE=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_msi_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -956,7 +956,7 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
     Set MEIP pending with MIE=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_mei_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1037,7 +1037,7 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
     Set STIP pending with MIE=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_sti_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1120,7 +1120,7 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     Set SSIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_ssi_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1210,7 +1210,7 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
     Set SEIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
     Interrupt fires when MIE rises.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_trigger_sei_m"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1294,7 +1294,7 @@ def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
     Tests interaction between software mip.SEIP writes and PLIC hardware SEIP.
     Note: SEIP not implemented on platform - all tests expected 0%.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
 
     r_scratch = test_data.int_regs.get_register()
 
@@ -1457,7 +1457,7 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
     Cross: MIE={0,1} × SIE={0,1} × M-interrupts (MSIP, MTIP, MEIP)
     2 × 2 × 3 = 12 bins (4 achievable with only MTIP)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsSSm_cg"
     coverpoint = "cp_global_ie"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1556,7 +1556,7 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S", "Zicsr"])
 def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests running in M mode.
 

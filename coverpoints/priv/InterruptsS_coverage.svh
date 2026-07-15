@@ -119,9 +119,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mip_seip_one: coverpoint ins.current.csr[CSR_MIP][9] {
         bins one = {1};
     }
-    mip_ones: coverpoint ins.current.csr[CSR_MIP][15:0] {
-        wildcard bins ones = {16'b0000101010101010}; // ones in every field that is not tied to zero
-    }
     // All S-mode interrupts set: {SEIP, STIP, SSIP}
     mip_ones_s: coverpoint {ins.current.csr[CSR_MIP][9],   // SEIP
                         ins.current.csr[CSR_MIP][5],   // STIP
@@ -199,14 +196,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mstatus_mpp_u: coverpoint ins.current.csr[CSR_MSTATUS][12:11] {
         bins u_mode = {2'b00};
     }
-    mie_combinations: coverpoint {ins.current.csr[CSR_MIE][11],
-                                  ins.current.csr[CSR_MIE][9],
-                                  ins.current.csr[CSR_MIE][7],
-                                  ins.current.csr[CSR_MIE][5],
-                                  ins.current.csr[CSR_MIE][3],
-                                  ins.current.csr[CSR_MIE][1]} {
-        // auto fills all 2^6 combinations
-    }
     // S-mode enable combinations: {SEIE, STIE, SSIE}
     mie_combinations_s: coverpoint {ins.current.csr[CSR_MIE][9],  // SEIE
                                 ins.current.csr[CSR_MIE][5],  // STIE
@@ -232,14 +221,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins combo_101 = {3'b101};
         bins combo_110 = {3'b110};
         bins combo_111 = {3'b111};
-    }
-    mip_combinations: coverpoint {ins.current.csr[CSR_MIP][11],
-                                  ins.current.csr[CSR_MIP][9],
-                                  ins.current.csr[CSR_MIP][7],
-                                  ins.current.csr[CSR_MIP][5],
-                                  ins.current.csr[CSR_MIP][3],
-                                  ins.current.csr[CSR_MIP][1]} {
-        // auto fills all 2^6 combinations
     }
     // S-mode priority: combinations of SSIP, STIP, SEIP (2^3 = 8 combinations)
     mip_combinations_s: coverpoint {ins.current.csr[CSR_MIP][9],  // SEIP

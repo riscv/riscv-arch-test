@@ -17,7 +17,7 @@
 #define TEST_FILE "sv39_nleaf_pte_level0_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

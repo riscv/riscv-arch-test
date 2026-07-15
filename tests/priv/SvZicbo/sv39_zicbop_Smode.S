@@ -21,7 +21,7 @@
 #define TEST_FILE "sv39_zicbop_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

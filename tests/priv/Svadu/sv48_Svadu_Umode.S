@@ -38,7 +38,7 @@
 
 #define TEST_FILE "sv48_Svadu_Umode.S"
 #define SIGUPD_COUNT 80
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

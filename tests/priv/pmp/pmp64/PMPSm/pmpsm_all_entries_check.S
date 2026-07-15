@@ -34,7 +34,7 @@
 #define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 200
 
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

@@ -34,7 +34,7 @@
 
 #define TEST_FILE "sv39_Svpbmt_Umode.S"
 #define SIGUPD_COUNT 35
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

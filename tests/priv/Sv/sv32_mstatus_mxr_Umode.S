@@ -32,7 +32,7 @@
 #define TEST_FILE "sv32_mstatus_mxr_Umode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 40
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

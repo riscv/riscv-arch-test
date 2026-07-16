@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: Set up mise
-      uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4
 
     - name: Cache uv packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

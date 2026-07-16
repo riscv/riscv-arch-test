@@ -23,6 +23,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64ifd_zicsr_zifencei_zfhmin
 ##### END_TEST_CONFIG #####
 

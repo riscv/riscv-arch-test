@@ -14,7 +14,7 @@
 
 # accessible via unprivileged XLEN-bit read-only CSR registers 0xC00–0xC1F
 - name: zihpm_op_sz_mode_acc_priv
-  coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+  coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}", "ZicntrU_cg/cp_mcounteren_access_u"]
 
 - name: zicntr_rdcycle_op
   coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]

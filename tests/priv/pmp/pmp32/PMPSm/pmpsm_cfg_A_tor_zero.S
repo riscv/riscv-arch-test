@@ -57,6 +57,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
+    LI(a4, 0x00008067)                                       // ret (jalr x0, 0(ra)): on cores where addr 0 is mapped RAM the store lands and the later execute probe at 0 must return
     LI(a5, 0)
     LA(x1, 4f)                                               // Address to be verified
     sw a4, 0(a5)                                             // word-level store test

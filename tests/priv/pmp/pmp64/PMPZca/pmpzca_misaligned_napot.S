@@ -28,6 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -133,6 +134,12 @@ main:
     // Test Case 2: Uncompressed return straddling the end of 2nd region
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
 
+    // Test Case 3: Uncompressed return exactly at the start of the 1st region (inside_first_region)
+    PMP_VERIFICATION_X_C NEWREGION1, test_3
+
+    // Test Case 4: Uncompressed return exactly at the start of the 2nd region (inside_second_region)
+    PMP_VERIFICATION_X_C NEWREGION2, test_4
+
     j exit                                                      // Verification Complete, exit the test
 
 
@@ -150,24 +157,25 @@ test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_napot_execute\""
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
+    nop                                                          // NAPOT-safe filler: shifts REGIONSTART to PMP_NAPOT_REGION_START (matches STANDARD_REGION)
 
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept ((REGION_SIZE / 2) -1)
-    nop
+    c.nop                                                        // 2-byte fillers: precise offsets so _2/_4's uncompressed jalr genuinely straddle the region boundary
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
+// No .p2align here (and none before _3/_4 below): the c.nop offsets above must survive
+// unrounded so these uncompressed jalr instructions land mid-word, genuinely straddling the
+// region boundary, instead of being pushed back onto the next grain-aligned boundary.
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept ((REGION_SIZE / 2) -2)
-    nop
+    c.nop
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 

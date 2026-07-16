@@ -29,6 +29,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei_zcf
 ##### END_TEST_CONFIG #####
 

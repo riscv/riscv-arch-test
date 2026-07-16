@@ -14,8 +14,8 @@ covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  rs1_in_region: coverpoint ins.current.rs1_val {
-    bins at_region = {`PMP_SPECIAL_REGION_START};
+  rs1_in_region: coverpoint (ins.current.rs1_val & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_SPECIAL_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   atomic_intrs: coverpoint ins.current.insn {
@@ -89,7 +89,7 @@ function void pmpzaamo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `SPECIAL_STANDARD_REGION) || (pmpaddr[k] == `SPECIAL_NON_STANDARD_REGION);
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
   PMPZaamo_cg.sample(ins, pmpcfg, pmp_hit);

@@ -33,6 +33,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -126,12 +128,13 @@ main:
     .set pmpaddri, pmpaddri+2
     .endr
 
-    // REGIONSTART + i*g in odd PMPADDR
+    // REGIONSTART + i*g in odd PMPADDR. Uses t2 (not t0, which aliases x5 the
+    // accumulator) so the per-iteration LI doesn't clobber the running total.
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    LI(t0, g)
-    add x5, x5, t0
+    LI(t2, g)
+    add x5, x5, t2
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2

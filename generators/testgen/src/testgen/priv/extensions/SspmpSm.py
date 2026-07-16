@@ -20,6 +20,7 @@ from testgen.asm.sections import generate_test_data_section, generate_test_strin
 from testgen.constants import INDENT, indent_asm
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.io.templates import insert_footer_template, insert_header_template
 from testgen.priv.registry import add_priv_test_generator
 
@@ -1593,9 +1594,8 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
 def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     """Test SPMP fault exception codes.
 
-    Covers: cp_spmp_fault_load, cp_spmp_fault_store
-    SPMP violations use page fault exception codes (13, 15).
-    Note: instruction page fault (12) requires a custom trap handler and is not tested here.
+    Covers: cp_spmp_fault_instr, cp_spmp_fault_load, cp_spmp_fault_store
+    SPMP violations use page fault exception codes (12, 13, 15).
     """
     covergroup = "SspmpSm_perm_cg"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
@@ -1645,15 +1645,6 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # ---------- Test instruction page fault (label only; trap handler covers it) ----------
-    lines.extend(
-        [
-            "",
-            "# Instruction page fault label (trap handler catches this in CI)",
-            test_data.add_testcase("smode_instr_fault", "cp_spmp_fault_instr", covergroup),
-        ]
-    )
-
     # ---------- Test store page fault ----------
     coverpoint = "cp_spmp_fault_store"
     lines.extend(
@@ -1671,10 +1662,14 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     )
 
     # ---------- Now reconfigure to deny S-mode to test fault generation ----------
-    # Go to M-mode to reconfigure
+    # Install a valid return target before denying S-mode execute access.
     lines.extend(
         [
             "",
+            f"LI(x{val_reg}, 0x00008067)  # ret",
+            f"LA(x{addr_reg}, scratch)",
+            f"sw x{val_reg}, 0(x{addr_reg})",
+            "fence.i",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
             f"CSRW(0x350, x{sel_reg})",
@@ -1692,6 +1687,19 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
             _sfence_vma(),
+        ]
+    )
+
+    # S-mode instruction fetch from a region without execute permission should fault.
+    lines.extend(
+        [
+            "",
+            "# S-mode fetch from U-mode region with no perms -> instruction page fault (12)",
+            test_data.add_testcase("smode_instr_fault", "cp_spmp_fault_instr", covergroup),
+            "LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra",
+            f"LA(x{addr_reg}, scratch)",
+            f"jalr x1, 0(x{addr_reg})  # should cause instruction page fault",
+            "nop",
         ]
     )
 
@@ -2025,8 +2033,9 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     march_extensions=["Zicsr", "Zifencei"],
     extra_defines=["#define SKIP_MEPC"],  # needed for EnforceNoX / U-mode exec-fault tests
 )
-def make_sspmp(test_data: TestData) -> list[str]:
+def make_sspmp(test_data: TestData) -> list[TestChunk]:
     """Generate all SPMP sub-tests (combined into one file by the framework)."""
+    tc = test_data.begin_test_chunk()
     lines: list[str] = []
     # Boot-time preamble: enable SPMP delegation (required by Sail reference
     # model; harmless on spike).
@@ -2059,7 +2068,8 @@ def make_sspmp(test_data: TestData) -> list[str]:
     lines.extend(_generate_sfence_ordering_tests(test_data))
     # Paging Tests
     lines.extend(_generate_satp_bare_spmp_tests(test_data))
-    return lines
+    tc.code.extend(lines)
+    return [test_data.end_test_chunk()]
 
 
 # ---------------------------------------------------------------------------
@@ -2131,8 +2141,8 @@ def _generate_single_test(
     body_lines = _spmp_preamble() + generator_fn(test_data)
 
     test_data.int_regs.return_register(1)
-    tc.code = "\n".join(body_lines)
-    test_data.end_test_chunk()
+    tc.code.extend(body_lines)
+    tc = test_data.end_test_chunk()
 
     # Assemble the .S file
     filename = f"{name}.S"
@@ -2146,7 +2156,7 @@ def _generate_single_test(
     extra_defines = ["#define RVTEST_PRIV_TEST", "#define SKIP_MEPC"]
     header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
-    body = "\n".join(indent_asm(line) for line in tc.code.split("\n"))
+    body = "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
 
     test_data_section = generate_test_data_section(list(tc.data_values), test_config.xlen, test_config.flen)
     test_string_section = generate_test_string_section(list(tc.data_strings))

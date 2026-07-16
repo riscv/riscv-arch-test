@@ -21,8 +21,7 @@
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
 #define SKIP_MEPC
-#define rvtest_strap_routine
-#define rvtest_mtrap_routine
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -72,9 +71,6 @@ SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str)
 
-# Instruction page fault label (trap handler catches this in CI)
-SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault:
-
 # S-mode store to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   LA(x30, scratch)
@@ -85,6 +81,10 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
 
+  LI(x16, 0x00008067)  # ret
+  LA(x30, scratch)
+  sw x16, 0(x30)
+  fence.i
   RVTEST_GOTO_MMODE
   LI(x29, 0x100)
   CSRW(0x350, x29)
@@ -95,6 +95,13 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# S-mode fetch from U-mode region with no perms -> instruction page fault (12)
+SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra
+  LA(x30, scratch)
+  jalr x1, 0(x30)  # should cause instruction page fault
+  nop
 
 # S-mode load with SUM=0 to U-mode region with no perms -> page fault (13)
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault:
@@ -130,8 +137,8 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_ok\""
-SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_instr; bin: smode_instr_fault\""
-SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_ok\""
+SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_ok\""
+SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_instr; bin: smode_instr_fault\""
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_fault\""
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_fault\""
 

@@ -48,16 +48,16 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
 
     //------------------------------------------
     // cp_spmpcfg_write: Write and readback spmpcfg via sireg2
-    // Tests that R, W, X, A, L, U, SHARED fields are writable
+    // Tracks each address-matching mode through the A field.
     //------------------------------------------
-    cp_spmpcfg_write: coverpoint ins.current.csr[12'h152][9:0] iff
+    cp_spmpcfg_write: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
          ins.current.csr[12'h150] <= 12'h13F) {
         // A field encodings (bits [4:3])
-        bins a_off   = {10'b??_?_?_00_???} with (item[4:3] == 2'b00);
-        bins a_tor   = {10'b??_?_?_01_???} with (item[4:3] == 2'b01);
-        bins a_na4   = {10'b??_?_?_10_???} with (item[4:3] == 2'b10);
-        bins a_napot = {10'b??_?_?_11_???} with (item[4:3] == 2'b11);
+        bins a_off   = {2'b00};
+        bins a_tor   = {2'b01};
+        bins a_na4   = {2'b10};
+        bins a_napot = {2'b11};
     }
 
     //------------------------------------------
@@ -144,7 +144,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     // Building blocks for mpmpdeleg.pmpnum differentiation.
     // pmpnum_val:    the written pmpnum value.
     // delegation_active: inferred from pmpnum != number_of_writable_pmp_entries.
-    //                Here we approximate: pmpnum < 64 => at least one entry delegated.
+    //                pmpnum < 64 => at least one entry delegated.
     // spmp_access_result: whether a subsequent SPMP access returned zero (no delegation)
     //                or a real value (delegation active).
     //------------------------------------------
@@ -153,14 +153,14 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         bins zero    = {0};                 // all delegated
         bins low     = {[1:15]};            // mostly delegated
         bins mid     = {[16:47]};           // split
-        bins high    = {[48:62]};           // mostly PMP
-        bins max     = {[63:$]};            // none delegated
+        bins high    = {[48:63]};           // mostly PMP
+        bins max     = {[64:$]};            // none delegated
     }
 
     delegation_active: coverpoint ins.current.csr[12'h316][6:0] {
         type_option.weight = 0;
-        bins delegating     = {[0:62]};   // pmpnum < max => SPMP enabled
-        bins not_delegating = {[63:$]};   // pmpnum >= max writable => SPMP disabled
+        bins delegating     = {[0:63]};   // pmpnum < max => SPMP enabled
+        bins not_delegating = {[64:$]};   // pmpnum >= max writable => SPMP disabled
     }
 
     // Sample the SPMP readback value (sireg) to classify as zero (no delegation)
@@ -177,8 +177,8 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_mpmpdeleg_pmpnum_field: coverpoint ins.current.csr[12'h316][6:0] {
         bins zero_all_delegated = {0};
-        bins partial[4]         = {[1:62]};
-        bins max_none_delegated = {[63:$]};
+        bins partial[4]         = {[1:63]};
+        bins max_none_delegated = {[64:$]};
     }
 
     //------------------------------------------
@@ -205,7 +205,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     // cp_mpmpdeleg_locked: Cannot set pmpnum below locked PMP entry
     //------------------------------------------
     cp_mpmpdeleg_locked: coverpoint ins.current.csr[12'h316][6:0] {
-        bins pmpnum_val[4] = {[0:63]};
+        bins pmpnum_val[4] = {[0:64]};
     }
 
     //------------------------------------------

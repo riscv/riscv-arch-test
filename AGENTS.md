@@ -1,7 +1,5 @@
 # AGENTS.md
 
-`CLAUDE.md` and `GEMINI.md` are symlinks to this file. Edit `AGENTS.md` only.
-
 ## Repo Shape
 
 - This repo implements the ACT4 framework: generated RISC-V architectural certification tests are compiled into self-checking ELFs whose expected signatures come from Sail.
@@ -72,4 +70,3 @@
 - Passing tests print lines matching `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`; failures use `TEST FAILED`. `SIGRUN` means the ELF was not built self-checking.
 - With `DEBUG=True`, ACT build artifacts in `work/<config>/build/` include `.sig.log` Sail traces and `.sig.trap_report` files.
 - Triage failures in this order: config/UDB mismatch, Sail config mismatch, generated objdump/trace, then DUT behavior.
-- PMP settings use different encodings and must agree: UDB `PMP_GRANULARITY` is `log2(bytes)` (`G + 2`), `sail.json` `pmp.grain` is spec `G`, and `whisper.json` `physical_memory_protection_grain` is bytes. Also keep UDB `NUM_PMP_ENTRIES` in sync with `sail.json` `pmp.count`.

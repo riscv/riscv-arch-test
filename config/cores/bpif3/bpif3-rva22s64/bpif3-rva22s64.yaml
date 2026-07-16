@@ -1,0 +1,366 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: bpif3-rva22s64
+description: >
+  SpacemiT K1 (Banana Pi BPI-F3) — RVA22S64 profile subset.
+  Extension list is derived from three sources only:
+    1. DTS confirmed — extension appears in the K1 Linux device tree ISA string.
+    2. Spec-defined implication — ISA spec requires these to be present given a confirmed extension.
+    3. Behavioral inference — Linux boots on K1; U-mode, S-mode, Sv39, Svbare are required for that.
+  Extensions that are NOT in the DTS and cannot be inferred are excluded.
+  They require ACT tests on real hardware to verify (Za64rs, Za128rs, Zic64b, Zicbop,
+  Ziccamoa/if/clsm/crse, Ssccptr, Sscounterenw, Sstvala, Sstvecd, Svade, scalar crypto, H).
+
+implemented_extensions:
+  # --- Base ISA (DTS confirmed) ---
+  - { name: I,  version: "= 2.1" }
+  - { name: M,  version: "= 2.0" }
+  - { name: A,  version: "= 2.1.0" }
+  - { name: F,  version: "= 2.2.0" }
+  - { name: D,  version: "= 2.2.0" }
+  - { name: C,  version: "= 2.0" }
+  - { name: B,  version: "= 1.0.0" }   # spec-implied: Zba+Zbb+Zbs in DTS => B
+  - { name: V,  version: "= 1.0.0" }   # DTS confirmed; VLEN=256 per SpacemiT hardware docs
+
+  # --- Privilege modes (behavioral inference: Linux boots on K1) ---
+  - { name: U,  version: "= 1.0.0" }
+  - { name: S,  version: "= 1.13.0" }
+  - { name: Sm, version: "= 1.13.0" }
+
+  # --- Atomics (spec-implied from A) ---
+  - { name: Zaamo,  version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+
+  # --- Bit manipulation (DTS confirmed) ---
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+
+  # --- Compressed (spec-implied from C) ---
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+
+  # --- Cache (DTS confirmed: Zicbom, Zicboz; Zicbop intentionally absent) ---
+  - { name: Zicbom, version: "= 1.0.0" }
+  - { name: Zicboz, version: "= 1.0.0" }
+
+  # --- CSR / counter extensions (DTS confirmed) ---
+  - { name: Zicntr,     version: "= 2.0" }
+  - { name: Zicsr,      version: "= 2.0" }
+  - { name: Zifencei,   version: "= 2.0.0" }
+  - { name: Zihintpause,version: "= 2.0.0" }
+  - { name: Zihpm,      version: "= 2.0.0" }
+
+  # --- Conditional / conditional ops (DTS confirmed) ---
+  - { name: Zicond, version: "= 1.0" }
+
+  # --- Float (DTS confirmed: both Zfhmin and full Zfh) ---
+  - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zfh,    version: "= 1.0.0" }
+
+  # --- Crypto timing (DTS confirmed) ---
+  - { name: Zkt, version: "= 1.0.0" }
+
+  # --- Supervisor extensions (DTS confirmed) ---
+  - { name: Sscofpmf, version: "= 1.0.0" }
+  - { name: Sstc,     version: "= 1.0.0" }
+
+  # --- Virtual memory (DTS confirmed / behavioral inference) ---
+  - { name: Sv39,    version: "= 1.0.0" }   # behavioral inference (Linux boot)
+  - { name: Svbare,  version: "= 1.0.0" }   # behavioral inference (Linux boot)
+  - { name: Sv48,    version: "= 1.0.0" }   # community confirmed (milkv.io forum + vendor docs)
+  - { name: Svinval, version: "= 1.0.0" }   # DTS confirmed
+  - { name: Svnapot, version: "= 1.0.0" }   # DTS confirmed
+  - { name: Svpbmt,  version: "= 1.0.0" }   # DTS confirmed
+
+  # --- Vector subsets (spec-implied from V + F + D, VLEN=256) ---
+  - { name: Zve32x,  version: "= 1.0.0" }
+  - { name: Zve32f,  version: "= 1.0.0" }
+  - { name: Zve64x,  version: "= 1.0.0" }
+  - { name: Zve64f,  version: "= 1.0.0" }
+  - { name: Zve64d,  version: "= 1.0.0" }
+  - { name: Zvl32b,  version: "= 1.0.0" }
+  - { name: Zvl64b,  version: "= 1.0.0" }
+  - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }   # VLEN=256 satisfies this
+
+  # --- Vector float extensions (DTS confirmed) ---
+  - { name: Zvfh,    version: "= 1.0.0" }
+  - { name: Zvfhmin, version: "= 1.0.0" }
+  - { name: Zvkt,    version: "= 1.0.0" }
+
+params:
+  # A params
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  MUTABLE_MISA_A: false
+  # M params
+  MUTABLE_MISA_M: false
+  # F params
+  MUTABLE_MISA_F: false
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  # D params
+  MUTABLE_MISA_D: false
+  # C params
+  MUTABLE_MISA_C: false
+  # B params
+  MUTABLE_MISA_B: false
+  # V params
+  MUTABLE_MISA_V: false
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  # CBO params — Zicbop absent from K1 DTS so only Zicbom/Zicboz are active
+  CACHE_BLOCK_SIZE: 64
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: true
+  # U params
+  MUTABLE_MISA_U: false
+  U_MODE_ENDIANNESS: little
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+  # S params
+  MUTABLE_MISA_S: false
+  ASID_WIDTH: 16
+  S_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  SCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  STVEC_MODE_DIRECT: true
+  STVEC_MODE_VECTORED: true
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_TVM_IMPLEMENTED: true
+  # Sm params
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # NOTE: mvendorid, marchid, mimpid must be read from real K1 hardware via csrr.
+  # Set to false until verified values are available. When set to true, add
+  # ARCH_ID_VALUE, IMP_ID_VALUE, VENDOR_ID_BANK, VENDOR_ID_OFFSET from hardware.
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  MISALIGNED_LDST: true          # scalar misaligned loads/stores supported on K1
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  CONFIG_PTR_ADDRESS: 0
+  PMA_GRANULARITY: 3
+  PHYS_ADDR_WIDTH: 56
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  NUM_PMP_ENTRIES: 16            # K1 DTS: riscv,pmpregions = <8>; set to 16 (schema minimum) to match sail.json
+  PMP_GRANULARITY: 2
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # Vector params — VLEN=256 confirmed by SpacemiT hardware documentation
+  VLEN: 256
+  ELEN: 64
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  SEW_MIN: 8
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
+  VILL_SET_ON_RESERVED_VTYPE: true
+  RESERVED_VSET_X0X0_VILL_SET: "always"
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
+  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
+  # K1 does NOT support hardware misaligned vector memory access (community confirmed).
+  # Software workarounds are required. Tests exercising misaligned vector loads/stores
+  # are expected to fault on this target.
+  VECTOR_LS_MISALIGNED_LEGAL: false
+  VECTOR_LOAD_PAST_TRAP: false
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
+  VECTOR_LS_SEG_PARTIAL_ACCESS: false
+  LEGAL_VSTART: "1_stride"
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: false
+  VSSTATUS_VS_EXISTS: false      # no H extension on K1
+  VECTOR_FF_NO_EXCEPTION_TRIM: false
+  VFREDUSUM_NAN: "no_change"
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  IMPRECISE_VECTOR_TRAP_SETTABLE: false
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX

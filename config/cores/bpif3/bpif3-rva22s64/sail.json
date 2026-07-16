@@ -1,0 +1,668 @@
+{
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  // Sail reference model configuration for SpacemiT K1 / Banana Pi BPI-F3.
+  // Only extensions confirmed by DTS, spec implication, or behavioral inference
+  // are enabled. Extensions requiring hardware testing (Za64rs, Za128rs, Zic64b,
+  // Zicbop, Ziccamoa/if/clsm/crse, scalar crypto, H) are left disabled.
+  "base": {
+    "xlen": 64,
+    "E": false,
+    "writable_misa": false,
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      "value": "0xFFFF_FFF8" // hpmcounter3-31 available; cycle/instret always on
+    },
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "stvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    "xtval_nonzero": {
+      "illegal_instruction": true,
+      "software_breakpoint": true,
+      "hardware_breakpoint": true,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "load_page_fault": true,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "samo_page_fault": true,
+      "fetch_address_misaligned": true,
+      "fetch_access_fault": true,
+      "fetch_page_fault": true,
+      "software_check": true,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      "amocas_odd_register": "AMOCAS_Illegal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xtvec_mode": "Xtvec_Ignore",
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    },
+    "medeleg": {
+      // All exception bits are delegatable on K1 (full S-mode support).
+      // Bits for non-delegatable traps (e.g. ecall from M) are ignored by Sail.
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0xFFFF_FFFF_FFFF_FFFF"
+      }
+    },
+    "mideleg": {
+      // All interrupt bits are delegatable on K1 (full S-mode support).
+      // Bits for non-delegatable interrupts are ignored by Sail.
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0xFFFF_FFFF_FFFF_FFFF"
+      }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_13",
+    "mstatus": {
+      "fs_legal_states": "ExtContext_FourState",
+      "vs_legal_states": "ExtContext_FourState"
+    }
+  },
+  "memory": {
+    "pmp": {
+      "grain": 0,
+      // Schema requires count to be 0, 16, or 64. K1 DTS has 8 PMP regions;
+      // entries 9-16 are modeled as read-only-zero via usable_count.
+      "count": 16,
+      "usable_count": 16,
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
+    },
+    "misaligned": {
+      "exceptions": {
+        // K1 supports scalar misaligned loads/stores in hardware.
+        "load_store": {
+          "None": null
+        },
+        // K1 does NOT support misaligned vector memory access (community confirmed).
+        "vector": {
+          "Some": "AccessFault"
+        },
+        "lrsc": "AlignmentException",
+        "amo": "AlignmentException"
+      },
+      "allowed_within_exp": 0,
+      "byte_by_byte": false,
+      "order_decreasing": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    // K1 physical memory layout (Sail model — aligned to Task 2 ACT runner layout):
+    //   Null-guard:      0x00000000 - 0x00000FFF (unmapped; address 0 access fault)
+    //   DRAM-low:        0x00001000 - 0x3FFFFFFF (DTB at 0x1000, low data)
+    //   Gap:             0x40000000 - 0x7FFFFFFF (unmapped → RVMODEL_ACCESS_FAULT_ADDRESS)
+    //   DRAM-mid:        0x80000000 - 0xBFFFFFFF (tohost at 0xC1008000 is in DRAM-k1)
+    //   DRAM-k1:         0xC0000000 - 0xCFFFFFFF (runner firmware + tohost + test ELFs)
+    //   Peripherals:     0xD0000000 - 0xFFFFFFFF (UART, PLIC, CLINT)
+    // The null-guard and gap are intentional:
+    //   1. RVMODEL_ACCESS_FAULT_ADDRESS=0x40000000 must be unmapped for fault tests.
+    //   2. jalr-to-0 tests need instruction access fault (MCAUSE=1), not illegal insn.
+    "regions": [
+      // DRAM-low: 0x1000-0x3FFFFFFF (DTB at 0x1000; 0x0-0xFFF is null-guard)
+      {
+        "base": {
+          "len": 64,
+          "value": "0x00001000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x3FFFF000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMOArithmetic",
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": true,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      },
+      // DRAM-mid: 0x80000000-0xBFFFFFFF (general DRAM, Sail simulation scratch)
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x40000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMOArithmetic",
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": true,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      },
+      // DRAM-k1: 0xC0000000-0xCFFFFFFF
+      // Runner firmware at 0xC0000000, tohost at 0xC1008000, test ELFs at 0xC8000000.
+      {
+        "base": {
+          "len": 64,
+          "value": "0xC0000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000" // 256 MiB: 0xC0000000 - 0xCFFFFFFF
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMOArithmetic",
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": true,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      },
+      // K1 SoC peripheral MMIO: 0xD0000000-0xFFFFFFFF
+      // UART0 at 0xD4017000, PLIC at 0xE0000000, CLINT at 0xE4000000.
+      {
+        "base": {
+          "len": 64,
+          "value": "0xD0000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x30000000" // 0xD0000000 - 0xFFFFFFFF
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      }
+    ]
+  },
+  "platform": {
+    "vendorid": 0, // placeholder — read from K1 hardware via csrr mvendorid
+    "archid": 0, // placeholder — read from K1 hardware via csrr marchid
+    "impid": 0, // placeholder — read from K1 hardware via csrr mimpid
+    "hartid": 0,
+    "cache_block_size_exp": 6, // 64-byte cache blocks (assumed; Zic64b unverified)
+    "reservation": {
+      "reservation_set_size_exp": 3,
+      "require_exact_reservation_addr": false,
+      "invalidate_on_same_hart_store": false
+    },
+    "clint": {
+      // K1 CLINT (spacemit,k1-clint) at 0xE4000000.
+      // MSIP: 0xE4000000, MTIME: 0xE400BFF8, MTIMECMP: 0xE4004000.
+      "supported": true,
+      "base": 3825205248,
+      "size": 65536
+    },
+    "simple_interrupt_generator": {
+      "supported": false,
+      "base": 0
+    },
+    "clock_frequency": 1600000000, // K1 runs at 1.6GHz nominal
+    "instructions_per_tick": 1,
+    "wfi_is_nop": false,
+    "wfi_available_to_user_mode": false,
+    "max_time_to_wait": 200
+  },
+  "extensions": {
+    "M": {
+      "supported": true
+    },
+    "A": {
+      "supported": true
+    },
+    "F": {
+      "supported": true,
+      // K1 updates mstatus.FS precisely on each FP instruction that modifies fflags.
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
+    "D": {
+      "supported": true
+    },
+    "V": {
+      // K1: VLEN=256, ELEN=64 (confirmed by SpacemiT hardware documentation)
+      "support_level": "Full",
+      "vlen_exp": 8, // 2^8 = 256 bits
+      "elen_exp": 6, // 2^6 = 64 bits
+      "reserved_behavior": {
+        "illegal_vtype": "IllegalVtype_SetVill",
+        "vstart_out_of_bounds": "Vstart_Illegal"
+      },
+      "vl_use_ceil": false,
+      "max_index_eew_exp": 6,
+      "vstart": {
+        "zero_required": {
+          "arith": true,
+          "scalar_move": true
+        }
+      }
+    },
+    "B": {
+      "supported": true
+    },
+    "S": {
+      "supported": true
+    },
+    "U": {
+      "supported": true
+    },
+    // Zic64b: not in DTS, not documented. Disabled until ACT testing on hardware confirms it.
+    "Zic64b": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": true
+    },
+    // Zicbop: not in K1 DTS (unlike Zicbom/Zicboz). Disabled.
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": true
+    },
+    // Memory model extensions: never in DTS; require ACT hardware testing to verify.
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": true
+    },
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintpause": {
+      "supported": true
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zaamo": {
+      "supported": true
+    },
+    "Zalrsc": {
+      "supported": true
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": true
+    },
+    "Zfhmin": {
+      "supported": true
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": true
+    },
+    "Zcb": {
+      "supported": false
+    },
+    "Zba": {
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": true
+    },
+    // Scalar crypto: entirely absent from K1 DTS. All disabled.
+    "Zbkb": {
+      "supported": false
+    },
+    "Zbkc": {
+      "supported": false
+    },
+    "Zbkx": {
+      "supported": false
+    },
+    "Zknd": {
+      "supported": false
+    },
+    "Zkne": {
+      "supported": false
+    },
+    "Zknh": {
+      "supported": false
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": true
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": true
+    },
+    "Zvfhmin": {
+      "supported": true
+    },
+    "Zvkt": {
+      "supported": true
+    },
+    // Supervisor extensions confirmed by DTS
+    "Sscofpmf": {
+      "supported": true
+    },
+    // Sscounterenw: not in DTS. Requires ACT testing to verify.
+    "Sscounterenw": {
+      "supported": false
+    },
+    // Ssccptr: not in DTS. Requires ACT testing.
+    "Ssccptr": {
+      "supported": false
+    },
+    "Sstc": {
+      "supported": true
+    },
+    // Sstvala, Sstvecd: not in DTS. Requires ACT testing.
+    "Sstvala": {
+      "supported": false
+    },
+    "Svade": {
+      "supported": false
+    }, // unverified — requires ACT testing on silicon
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": true
+    },
+    "Svnapot": {
+      "supported": true
+    },
+    "Svbare": {
+      "supported": true,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": true
+    },
+    "Sv48": {
+      "supported": true
+    }, // community confirmed (milkv.io forum + vendor docs)
+    "Sv57": {
+      "supported": false
+    }, // not supported on K1
+    "Svpbmt": {
+      "supported": true
+    },
+    // Stateen: Ssstateen unknown, Smstateen unknown.
+    "Stateen": {
+      "Smstateen": {
+        "supported": false
+      },
+      "Ssstateen": {
+        "supported": false
+      },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": true
+    },
+    // H extension absent from K1 DTS and all SpacemiT public documentation.
+    // All Sha sub-extensions depend on H and are therefore also absent.
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 1,
+      "mcid_length": 1
+    },
+    // Pointer Masking extensions: not confirmed on K1. Required by schema.
+    "Ssnpm": {
+      "supported": false,
+      "supported_pmlen_7": false,
+      "supported_pmlen_16": false
+    },
+    "Smnpm": {
+      "supported": false,
+      "supported_pmlen_7": false,
+      "supported_pmlen_16": false
+    },
+    "Smmpm": {
+      "supported": false,
+      "supported_pmlen_7": false,
+      "supported_pmlen_16": false
+    },
+    // Additional required fields per Sail JSON schema. Not confirmed on K1.
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    },
+    "Zabha": {
+      "supported": false
+    },
+    // Atomic extensions not confirmed on K1 hardware
+    "Zacas": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": {
+        "is_nop": false
+      },
+      "sto": {
+        "is_nop": false
+      }
+    },
+    // Compressed extensions not in K1 DTS
+    "Zcmop": {
+      "supported": false
+    },
+    // FP extensions not confirmed on K1
+    "Zfbfmin": {
+      "supported": false
+    },
+    // Integer extensions not in K1 DTS
+    "Zibi": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": false
+    },
+    // Vector extensions not confirmed on K1
+    "Zvabd": {
+      "supported": false
+    },
+    "Zvbb": {
+      "supported": false
+    },
+    "Zvbc": {
+      "supported": false
+    },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvkb": {
+      "supported": false
+    },
+    "Zvkg": {
+      "supported": false
+    },
+    "Zvkned": {
+      "supported": false
+    },
+    "Zvknha": {
+      "supported": false
+    },
+    "Zvknhb": {
+      "supported": false
+    },
+    "Zvksed": {
+      "supported": false
+    },
+    "Zvksh": {
+      "supported": false
+    }
+  }
+}

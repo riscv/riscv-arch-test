@@ -9,19 +9,18 @@
 //               permissions for a designated memory region, ensuring that
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
-//
-// Coverpoints : cp_cfg_X and cp_cfg_RW from PMPU are partially covered in this
+// Coverpoints : cp_cfg_X and cp_cfg_RW from PMPS are partially covered in this
 //                 test file.
 //
 // Test Cases  : Checking that X alone determines execute access and WR bits control
 //               write/read access for every type of load and store. Configuring
-//               PMP in M mode & then switching to U mode. For a standard region with
+//               PMP in M mode and then switching to S mode. For a standard region with
 //               pmpcfg_i.L = 1, pmpcfg_i.A=NAPOT, all legal pmpcfg_i.XWR, making
 //               {lw, sw, jalr} at that start of region.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['U']
+# REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -29,9 +28,10 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_cfg_XWR.S"
+#define TEST_FILE "pmps_cfg_XWR_unlocked.S"
 #define SIGUPD_COUNT 100
 #define rvtest_mtrap_routine
+#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -108,14 +108,14 @@ main:
     .endr
 
 #define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_1100 ((((PMP_L|              PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGION_LXWR_1101 ((((PMP_L|PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LXWR_0000 ((((                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_0001 ((((PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LXWR_0011 ((((PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_0100 ((((              PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGION_LXWR_0101 ((((PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_0111 ((((PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region                                    // Test section address
+#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -125,9 +125,7 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef S_SUPPORTED
     csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -138,7 +136,7 @@ main:
 
 
 //                                            Verification Section
-// Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
+// Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -147,14 +145,15 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr5, x5
-    LI(t1, PMPREGION_LXWR_1000)
+
+    LI(t1, PMPREGION_LXWR_0000)
     csrw pmpcfg1, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
-// Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
+// Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 4
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -163,14 +162,15 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr4, x5
-    LI(t1, PMPREGION_LXWR_1001)
+
+    LI(t1, PMPREGION_LXWR_0001)
     csrw pmpcfg1, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
 
-// Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
+// Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 3
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -179,14 +179,15 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr3, x5
-    LI(t1, PMPREGION_LXWR_1011)
+
+    LI(t1, PMPREGION_LXWR_0011)
     csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
 
-// Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
+// Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 2
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -195,14 +196,15 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr2, x5
-    LI(t1, PMPREGION_LXWR_1100)
+
+    LI(t1, PMPREGION_LXWR_0100)
     csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
 
-// Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 1
+// Test Case: 5 : L -> 0 and XR Permissions given to the PMP Region 1
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -211,14 +213,15 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr1, x5
-    LI(t1, PMPREGION_LXWR_1101)
+
+    LI(t1, PMPREGION_LXWR_0101)
     csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
 
-// Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
+// Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 0
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
@@ -227,10 +230,11 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr0, x5
-    LI(t1, PMPREGION_LXWR_1111)
+
+    LI(t1, PMPREGION_LXWR_0111)
     csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
     RVTEST_GOTO_MMODE
 
@@ -243,15 +247,15 @@ RVTEST_DATA_BEGIN
 .p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmps_cfg_XWR.S_jalr\""
-test_2_str: .string "\"test: 2; cp: pmps_cfg_XWR.S_sb\""
-test_3_str: .string "\"test: 3; cp: pmps_cfg_XWR.S_sh\""
-test_4_str: .string "\"test: 4; cp: pmps_cfg_XWR.S_sw\""
-test_5_str: .string "\"test: 5; cp: pmps_cfg_XWR.S_lb\""
-test_6_str: .string "\"test: 6; cp: pmps_cfg_XWR.S_lbu\""
-test_7_str: .string "\"test: 7; cp: pmps_cfg_XWR.S_lh\""
-test_8_str: .string "\"test: 8; cp: pmps_cfg_XWR.S_lhu\""
-test_9_str: .string "\"test: 9; cp: pmps_cfg_XWR.S_lw\""
+test_1_str: .string "\"test: 1; cp: pmps_cfg_XWR_unlocked.S_jalr\""
+test_2_str: .string "\"test: 2; cp: pmps_cfg_XWR_unlocked.S_sb\""
+test_3_str: .string "\"test: 3; cp: pmps_cfg_XWR_unlocked.S_sh\""
+test_4_str: .string "\"test: 4; cp: pmps_cfg_XWR_unlocked.S_sw\""
+test_5_str: .string "\"test: 5; cp: pmps_cfg_XWR_unlocked.S_lb\""
+test_6_str: .string "\"test: 6; cp: pmps_cfg_XWR_unlocked.S_lbu\""
+test_7_str: .string "\"test: 7; cp: pmps_cfg_XWR_unlocked.S_lh\""
+test_8_str: .string "\"test: 8; cp: pmps_cfg_XWR_unlocked.S_lhu\""
+test_9_str: .string "\"test: 9; cp: pmps_cfg_XWR_unlocked.S_lw\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)

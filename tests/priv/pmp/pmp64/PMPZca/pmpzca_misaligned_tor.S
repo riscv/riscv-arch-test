@@ -28,6 +28,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -138,20 +140,17 @@ TEST_FOR_EXECUTION_0:
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
-    nop
+    c.nop                                                        // 2-byte filler: lands TEST_FOR_EXECUTION_2 2 bytes before the region2 boundary so its uncompressed jalr genuinely straddles it
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                            // Uncompressed return straddling the start
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
     nop
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                             // Uncompressed return straddling the end
 

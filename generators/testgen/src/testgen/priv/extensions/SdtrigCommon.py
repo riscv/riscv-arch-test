@@ -53,9 +53,6 @@ UDB_DEFINES = [
     "#define UDB_MCONTROL6_TRIG2_AVAILABLE",
     "#define UDB_MCONTROL6_TRIG3_AVAILABLE",
     "//#define UDB_ICOUNT_HARDWIRED_1",
-    # extension availability for load/store access widths (see loadstore coverpoints)
-    "//#define RV32",  # c.flw/flwsp/fsw/fswsp (Zcf)
-    "#define RV64",  # lwu/ld/sd
 ]
 
 INSTR_IFDEFS = {
@@ -67,9 +64,9 @@ INSTR_IFDEFS = {
     "lh": [],
     "lhu": [],
     "lw": [],
-    "sd": ["#ifdef RV64"],
-    "lwu": ["#ifdef RV64"],
-    "ld": ["#ifdef RV64"],
+    "sd": ["#if __riscv_xlen == 64"],
+    "lwu": ["#if __riscv_xlen == 64"],
+    "ld": ["#if __riscv_xlen == 64"],
     "fsw": ["#ifdef F_SUPPORTED"],
     "flw": ["#ifdef F_SUPPORTED"],
     "fsd": ["#ifdef D_SUPPORTED"],
@@ -80,19 +77,19 @@ INSTR_IFDEFS = {
     "c.lw": ["#ifdef ZCA_SUPPORTED"],
     "c.swsp": ["#ifdef ZCA_SUPPORTED"],
     "c.lwsp": ["#ifdef ZCA_SUPPORTED"],
-    "c.sd": ["#ifdef ZCA_SUPPORTED", "#ifdef RV64"],
-    "c.ld": ["#ifdef ZCA_SUPPORTED", "#ifdef RV64"],
-    "c.sdsp": ["#ifdef ZCA_SUPPORTED", "#ifdef RV64"],
-    "c.ldsp": ["#ifdef ZCA_SUPPORTED", "#ifdef RV64"],
+    "c.sd": ["#ifdef ZCA_SUPPORTED", "#if __riscv_xlen == 64"],
+    "c.ld": ["#ifdef ZCA_SUPPORTED", "#if __riscv_xlen == 64"],
+    "c.sdsp": ["#ifdef ZCA_SUPPORTED", "#if __riscv_xlen == 64"],
+    "c.ldsp": ["#ifdef ZCA_SUPPORTED", "#if __riscv_xlen == 64"],
     "c.sb": ["#ifdef ZCB_SUPPORTED"],
     "c.sh": ["#ifdef ZCB_SUPPORTED"],
     "c.lbu": ["#ifdef ZCB_SUPPORTED"],
     "c.lh": ["#ifdef ZCB_SUPPORTED"],
     "c.lhu": ["#ifdef ZCB_SUPPORTED"],
-    "c.fsw": ["#ifdef ZCF_SUPPORTED", "#ifdef RV32"],
-    "c.flw": ["#ifdef ZCF_SUPPORTED", "#ifdef RV32"],
-    "c.fswsp": ["#ifdef ZCF_SUPPORTED", "#ifdef RV32"],
-    "c.flwsp": ["#ifdef ZCF_SUPPORTED", "#ifdef RV32"],
+    "c.fsw": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
+    "c.flw": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
+    "c.fswsp": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
+    "c.flwsp": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
     "c.fsd": ["#ifdef ZCD_SUPPORTED"],
     "c.fld": ["#ifdef ZCD_SUPPORTED"],
     "c.fsdsp": ["#ifdef ZCD_SUPPORTED"],
@@ -1087,10 +1084,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     }
 
     fp_d_data_setup = [
-        "#ifdef RV64",
+        "#if __riscv_xlen == 64",
         *_arch_guard(f"fmv.d.x f{data_reg}, x{data_reg}", ["d"]),
         "#endif",
-        "#ifdef RV32",
+        "#if __riscv_xlen == 32",
         f"sw x{data_reg}, 0(x{addr_reg})",
         f"sw x0, 4(x{addr_reg})",
         *_arch_guard(f"fld f{data_reg}, 0(x{addr_reg})", ["d"]),
@@ -1203,7 +1200,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append(f"#ifdef UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE")
         # for match in (0, 2, 3, 8): TODO Add once sail supported
         match = 0
-        lines.append("#ifdef RV32")
+        lines.append("#if __riscv_xlen == 32")
         for data in (0x00000000, 0x12345677, 0x12345678, 0x12345679, 0xFFFFFFFF):
             binname = f"RV32_trig_num_{trig_num}_match_{match}_data_{data}"
             tdata2 = 0x12345678
@@ -1220,7 +1217,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                 ]
             )
         lines.append("#endif")
-        lines.append("#ifdef RV64")
+        lines.append("#if __riscv_xlen == 64")
         for data in (
             0x0000000000000000,
             0x123456789ABCDEEF,
@@ -1267,7 +1264,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append(f"#ifdef UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE")
         # for match in (1, 9): TODO Add once sail supported
         match = 0
-        lines.append("#ifdef RV32")
+        lines.append("#if __riscv_xlen == 32")
         for data in (0x00000000, 0x12345678, 0xFFFFFFFF, *walking_zeros(32)):
             binname = f"RV32_trig_num_{trig_num}_match_{match}_data_{data}"
             tdata2 = 0xFFFFFFFF
@@ -1284,7 +1281,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                 ]
             )
         lines.append("#endif")
-        lines.append("#ifdef RV64")
+        lines.append("#if __riscv_xlen == 64")
         for data in (0x0000000000000000, 0x123456789ABCDEF0, 0xFFFFFFFFFFFFFFFF, *walking_zeros(64)):
             binname = f"RV64_trig_num_{trig_num}_match_{match}_data_{data}"
             tdata2 = 0xFFFFFFFFFFFFFFFF
@@ -1317,7 +1314,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append(f"#ifdef UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE")
         # for match in (4, 5, 12, 13): TODO Add once sail supported
         match = 0
-        lines.append("#ifdef RV32")
+        lines.append("#if __riscv_xlen == 32")
         for data in (0x00000000, 0x12345678, 0xFFFF5678, 0x1234FFFF, 0xFFFFFFFF):
             binname = f"RV32_trig_num_{trig_num}_match_{match}_data_{data}"
             tdata2 = 0x12345678
@@ -1334,7 +1331,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                 ]
             )
         lines.append("#endif")
-        lines.append("#ifdef RV64")
+        lines.append("#if __riscv_xlen == 64")
         for data in (
             0x0000000000000000,
             0x123456789ABCDEF0,

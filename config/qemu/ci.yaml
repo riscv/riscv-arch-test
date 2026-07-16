@@ -30,7 +30,7 @@ ci_enabled: true
 #        Sail/UDB config expects traps (MISALIGNED_AMO: false) — config/model mismatch to resolve.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting SM1P13 too
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

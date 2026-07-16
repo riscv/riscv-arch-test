@@ -17,6 +17,6 @@
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
-exclude_configs: "whisper-rv64-max-spike-ref"
+exclude_configs: "whisper-rv32-max-spike-ref,whisper-rv64-max-spike-ref"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

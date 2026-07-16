@@ -17,7 +17,7 @@
 #define TEST_FILE "sv57_VA_all_zeros_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -55,7 +55,6 @@ RVTEST_BEGIN
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
   LI(  a5, \VA)
-  LI(  x4, 0xACCE)          // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop

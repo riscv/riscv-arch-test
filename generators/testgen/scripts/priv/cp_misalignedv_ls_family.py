@@ -53,7 +53,8 @@ def _init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
         if r != "vd" and r not in args:
             continue
         base_reg = vec_data[r]["reg"]
-        for i in range(nf):
+        segments = vec_data[r]["segments"]
+        for i in range(nf * segments):
             reg = base_reg + i
             if is_whole:
                 common.writeLine(f"vl1re8.v v{reg}, (x{scratch})", f"# init {r}[{i}] (v{reg}) full VLEN preload")

@@ -24,6 +24,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -32,7 +33,7 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -41,7 +42,6 @@ RVTEST_BEGIN                            // Encoded Instruction of nop (64 bit ca
 .macro VERIFICATION_X ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
     \TEST_CASE\()_1:
     jalr ra, 0(a4)
@@ -240,7 +240,7 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
+    .rept PMP_NAPOT_REGION_PAD_WORDS  // NAPOT-safe fillers: places the region at PMP_NAPOT_REGION_START (matches cp_mprv_*'s standard_region requirement)
     jr ra
     .endr
 

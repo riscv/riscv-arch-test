@@ -31,6 +31,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -39,7 +41,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -104,7 +106,6 @@ RVTEST_BEGIN
    RVTEST_FENCEI
 
     LA (a4, (\ADDRESS-4))
-    LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
     LA(x1, 1f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop

@@ -12,11 +12,14 @@
 //  This file is the core of the ACT4 (Architecture Compliance Test, version 4)
 //  trap handling infrastructure. It is #included by test programs and provides:
 //
-//    1. REGISTER ALIASES        — T1..T6 mapped to x6..x11; DEFAULT_SIG/DATA/TEMP/LINK
+//    1. REGISTER ALIASES        — T1..T4 mapped to x6..x9, T5/T6 to x14/x15;
+//                                  DEFAULT_SIG/DATA/TEMP/LINK. a0/a1 (x10/x11) are
+//                                  deliberately NOT used as handler temporaries: they
+//                                  are the T-SBI argument/return registers.
 //    2. ARCHITECTURE CONSTANTS  — interrupt/exception cause counts, masks, mode encodings
 //    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes and macros
 //    4. CSR RENAME MACROS       — XCSR_RENAME parameterizes CSR names by privilege mode
-//    5. GOTO_MMODE / GOTO_SMODE — Legacy macros using x3==0 convention for mode switching
+//    5. GOTO_MMODE / GOTO_SMODE — Legacy macros, overwritten with the new T-SBI macros
 //    6. T-SBI CONVENIENCE MACROS— Test-facing macros for the a0-based SBI calling convention
 //    7. GOTO_LOWER_MODE         — Boot-time macro to descend from M-mode to a lower mode
 //    8. DEFAULT INTERRUPT MACROS— Stubs for RVMODEL interrupt set/clear if not DUT-defined
@@ -51,8 +54,9 @@
 //    tramp_sz + 13*8        | 8             | xtvec_new      — trampoline address currently in xTVEC
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
-//    tramp_sz + 16*8        | 8*REGWIDTH    | trapreg_sv     — T1..T6, sp, spare (handler temp regs)
-//    tramp_sz + 24*8        | 8*REGWIDTH    | rvmodel_sv     — RVMODEL macro scratch + T-SBI CSR scratch
+//    tramp_sz + 16*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
+//    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — RVMODEL macro scratch + T-SBI CSR scratch
+//                           |               |   (slots 4-7: GOTO_LOWER_MODE register save)
 //
 //  xSCRATCH always points to the top of the current mode's save area (Xtramptbl_sv).
 //  On trap entry, sp is swapped with xSCRATCH so sp points to the save area.
@@ -86,7 +90,10 @@
 //    - a0 = operation code (see TSBI_* constants below)
 //    - a1 = optional argument (e.g., CSR rs1 value)
 //    - Result returned in a0
-//    - x3 must be non-zero (x3==0 is reserved for legacy GOTO_MMODE)
+//    - a0/a1 are the ONLY registers the handler may leave modified (a0 as the
+//      return value). The handler never uses a0/a1 as internal temporaries;
+//      its temporaries are T1..T6 (x6..x9, x14, x15), which are always
+//      saved/restored through the save area.
 //
 //  Operations:
 //    TSBI_GOTO_MMODE  (a0=1)          — Switch caller to M-mode
@@ -103,19 +110,13 @@
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
 //                     forwards GOTO_M/VS/VU and M-mode CSR_ACCESS to M-mode via ecall
 //
-//  BACKWARD COMPATIBILITY
-//  =======================
-//
-//  The legacy x3==0 convention (RVTEST_GOTO_MMODE, RVTEST_GOTO_SMODE) is fully
-//  preserved. The T-SBI dispatch only activates when x3 != 0 and a0 contains a
-//  recognized operation code. Tests using the old macros continue to work unchanged.
-//
 //************************************************************************************
 
 #define DEFAULT_SIG_REG  x2                      // signature pointer register
-#define DEFAULT_DATA_REG x3                      // test data pointer register; also used as ecall flag (x3==0 means GOTO_MMODE)
+#define DEFAULT_DATA_REG x3                      // test data pointer register
 #define DEFAULT_TEMP_REG x4                      // general temporary for test macros
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
+
 
 #ifndef T1
   #define T1      x6                             // handler temporary 1
@@ -130,10 +131,10 @@
   #define T4      x9                             // handler temporary 4
 #endif
 #ifndef T5
-  #define T5      x10                            // handler temporary 5 (NOTE: same as a0!)
+  #define T5      x14                            // handler temporary 5
 #endif
 #ifndef T6
-  #define T6      x11                            // handler temporary 6 (NOTE: same as a1!)
+  #define T6      x15                            // handler temporary 6
 #endif
 
 //==============================================================================
@@ -172,7 +173,6 @@
 //   - CSR_ACCESS uses the actual CSR instruction encoding (opcode 0x73 with
 //     funct3 != 0), making it self-describing — the handler doesn't need a
 //     lookup table; it just executes the encoding directly
-//   - The value 0 is NOT used because x3==0 is reserved for the legacy
 //     GOTO_MMODE fast path
 //
 // Dispatch order in the handler:
@@ -182,6 +182,7 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
+#define ALT_GOTO_MMODE      0x00000000           // a0 value: Used by RVTEST_GOTO_DELEGATED_MMODE
 #define TSBI_GOTO_MMODE     0x00000001           // a0 value: switch to Machine mode
 #define TSBI_GOTO_SMODE     0x00000002           // a0 value: switch to Supervisor (or HS) mode
 #define TSBI_GOTO_UMODE     0x00000003           // a0 value: switch to User mode
@@ -230,6 +231,8 @@
 #define MPP_SMODE (1<<MPP_LSB)                   // MPP value for S-mode (01 << 11 = 0x800)
 #define MPP_HMODE (2<<MPP_LSB)                   // MPP value for reserved/HS (10 << 11 = 0x1000)
 #define MPP_MMODE (3<<MPP_LSB)                   // MPP value for M-mode (11 << 11 = 0x1800)
+#define SUM_LSB    18                             // mstatus.SUM bit position (permit supervisor/user memory access)
+#define MXR_LSB    19                             // mstatus.MXR bit position (make executable readable)
 
 //==============================================================================
 // SECTION 6: TRAMPOLINE AND SAVE AREA SIZE CALCULATIONS
@@ -297,12 +300,21 @@
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define trap_sv_off                 (tramp_sz+16*8) // offset to handler register save area (8 regs)
-#define rvmodel_sv_off              (tramp_sz+24*8) // offset to RVMODEL macro scratch area (8 regs)
+// rvmodel_sv starts right after the 8 REGWIDTH-sized trapreg_sv slots. This must
+// be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
+// .data layout on RV32, where REGWIDTH is 4.
+#define rvmodel_sv_off  (trap_sv_off+8*(REGWIDTH))    // offset to RVMODEL macro scratch area (8 regs)
 
 // T-SBI CSR_ACCESS scratch: reuses the first 8 bytes of rvmodel_sv area
 // for the dynamically-written CSR instruction (4B) + ret instruction (4B).
-// This alias makes the purpose explicit in the CSR_ACCESS handler code.
 #define tsbi_csr_scratch_off        rvmodel_sv_off  // T-SBI dynamic instruction scratch offset
+
+// RVTEST_GOTO_LOWER_MODE register save: the upper 4 slots of the M-mode
+// rvmodel_sv area hold T1, T2, T4 and the macro's pointer register (T3) so the
+// macro can restore them after the mret into the target mode. This cannot
+// overlap the CSR_ACCESS scratch (slots 0-1) or an RVMODEL macro invocation:
+// neither can be active while RVTEST_GOTO_LOWER_MODE executes.
+#define goto_lower_sv_off (rvmodel_sv_off+4*(REGWIDTH)) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
 
 //==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
@@ -440,87 +452,11 @@
 .endm
 
 //==============================================================================
-// SECTION 10: LEGACY MODE-SWITCHING MACROS (x3==0 convention)
-//
-// These macros use the ORIGINAL ACT convention where x3 is set to 0 before
-// an ecall to signal "return to higher privilege mode immediately."  The trap
-// handler detects x3==0, skips normal trap signature recording, and instead
-// relocates the return address to return at the new privilege level.
-//
-// RVTEST_GOTO_MMODE:
-//   - Saves x3 in t0, sets x3=0, executes ecall
-//   - M-mode handler detects x3==0, returns in M-mode to instruction after ecall
-//   - Restores x3 from t0
-//   - WARNING: fails if medeleg delegates the ecall cause (infinite loop)
-//   - Tests that set medeleg[ecall_cause] must use RVTEST_GOTO_DELEGATED_MMODE
-//
-// RVTEST_GOTO_DELEGATED_MMODE:
-//   - Same as GOTO_MMODE but uses ALT_GOTO_M_OP (default: .word 0 = illegal inst)
-//   - The illegal instruction trap is NOT delegated, so it reaches M-mode
-//   - M-mode handler detects x3==0 with ALT_GOTO_M_CAUSE, returns in M-mode
-//
-// RVTEST_GOTO_SMODE:
-//   - Used from U-mode when U-mode ecalls are delegated to S-mode
-//   - Saves x3, sets x3=0, ecalls
-//   - S-mode handler detects x3==0, sets SPP=1, bumps sepc+4, srets to S-mode
-//   - Only available when S_SUPPORTED is defined
-//
-// CLOBBERS: t0 (used to save/restore x3)
-// CONSTRAINT: x3 must not already be 0 when used for normal ecall handling
-//==============================================================================
-
-#ifndef GOTO_M_OP
-    #define GOTO_M_OP   ecall                    // default op for GOTO_MMODE: ecall
-#endif
-
-#ifndef GOTO_S_OP
-    #define GOTO_S_OP   ecall                    // default op for GOTO_SMODE: ecall
-#endif
-
-#ifndef CAUSE_SPCL_GO2MMODE_OP
-    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION  // alt cause: illegal instruction
-    #define ALT_GOTO_M_OP    .word 0                     // alt op: emit illegal instruction encoding
-#endif
-
-.macro  RVTEST_GOTO_MMODE
-  .option push
-  .option norvc                                  // disable compressed instructions for consistent code size
-  mv   t0, x3                                   // save x3 (DEFAULT_DATA_REG) in t0
-  li   x3, 0                                    // set x3=0 to signal GOTO_MMODE to handler
-  GOTO_M_OP                                      // ecall: traps to M-mode handler
-  mv   x3, t0                                   // restore x3 from t0 (reached after handler returns in M-mode)
-  .option pop
-.endm
-
-.macro  RVTEST_GOTO_DELEGATED_MMODE
-  .option push
-  .option norvc                                  // disable compressed instructions
-  mv   t0, x3                                   // save x3 in t0
-  li   x3, 0                                    // set x3=0 to signal GOTO_MMODE
-  ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
-  mv   x3, t0                                   // restore x3 (reached after handler returns in M-mode)
-  .option pop
-.endm
-
-.macro  RVTEST_GOTO_SMODE
-  .option push
-  .option norvc                                  // disable compressed instructions
-  #ifdef  S_SUPPORTED
-    mv   t0, x3                                  // save x3 in t0
-    li   x3, 0                                  // set x3=0 to signal GOTO_SMODE
-    GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
-    mv   x3, t0                                 // restore x3 (reached after handler returns in S-mode)
-  #endif
-  .option pop
-.endm
-
-//==============================================================================
-// SECTION 11: T-SBI CONVENIENCE MACROS FOR TESTS
+// SECTION 10: T-SBI CONVENIENCE MACROS FOR TESTS
 //
 // These macros provide a clean test-facing interface for the a0-based T-SBI
-// calling convention. Unlike the legacy GOTO_MMODE (which uses x3==0), these
-// set a0 to the operation code and ecall. The handler distinguishes these from
-// legacy calls by checking x3 != 0.
+// calling convention. Unlike the legacy GOTO_MMODE, these
+// set a0 to the operation code and ecall.
 //
 // Usage in tests:
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
@@ -529,8 +465,8 @@
 //   RVTEST_TSBI_CSR_ACCESS 0x30052573, zero  // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
-// PRESERVES: all other registers including x3
-// PRECONDITION: x3 must be non-zero (it always is during normal test execution)
+// PRESERVES: all other registers
+// PRECONDITION: a0 must be non-zero (it always is during normal test execution)
 //==============================================================================
 
 // Switch to M-mode via T-SBI.
@@ -628,6 +564,81 @@
 .endm
 #endif // H_SUPPORTED
 
+//==============================================================================
+// SECTION 11: LEGACY MODE-SWITCHING MACROS
+//
+// These macros use the ORIGINAL ACT convention, now signaled through a0: a0 is
+// set to 0 before an ecall to signal "return to higher privilege mode
+// immediately."  The trap handler detects a0==0, skips normal trap signature
+// recording, and instead relocates the return address to return at the new
+// privilege level.
+//
+// RVTEST_GOTO_MMODE:
+//   - Sets a0=0, executes ecall; the handler returns in M-mode to the
+//     instruction after the ecall, which overwrites a0 with -1 (see below)
+//   - WARNING: fails if medeleg delegates the ecall cause (infinite loop)
+//   - Tests that set medeleg[ecall_cause] must use RVTEST_GOTO_DELEGATED_MMODE
+//
+// RVTEST_GOTO_DELEGATED_MMODE:
+//   - Same as GOTO_MMODE but uses ALT_GOTO_M_OP (default: .word 0 = illegal inst)
+//   - The illegal instruction trap is NOT delegated, so it reaches M-mode
+//   - M-mode handler detects a0==0 with ALT_GOTO_M_CAUSE, returns in M-mode
+//
+// RVTEST_GOTO_SMODE:
+//   - Used from U-mode when U-mode ecalls are delegated to S-mode
+//   - Sets a0=0, ecalls
+//   - S-mode handler detects a0==0, sets SPP=1, bumps sepc+4, srets to S-mode
+//   - Only available when S_SUPPORTED is defined
+//
+// CLOBBERS: a0 (left as -1 on return). a0 is the single designated clobber
+//   register for ALL mode-switching macros (matching the T-SBI convention,
+//   which also clobbers a0), so tests only ever have to keep one register
+//   free across a mode switch.
+//==============================================================================
+
+#ifndef GOTO_M_OP
+    #define GOTO_M_OP   ecall                    // default op for GOTO_MMODE: ecall
+#endif
+
+#ifndef GOTO_S_OP
+    #define GOTO_S_OP   ecall                    // default op for GOTO_SMODE: ecall
+#endif
+
+#ifndef CAUSE_SPCL_GO2MMODE_OP
+    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION  // alt cause: illegal instruction
+    #define ALT_GOTO_M_OP    .word 0                     // alt op: emit illegal instruction encoding
+#endif
+
+.macro  RVTEST_GOTO_MMODE
+  .option push
+  .option norvc                                  // disable compressed instructions for consistent code size
+  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE to handler
+  GOTO_M_OP                                      // ecall: traps to M-mode handler
+  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
+  .option pop
+.endm
+
+.macro  RVTEST_GOTO_DELEGATED_MMODE
+  .option push
+  .option norvc                                  // disable compressed instructions
+  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE
+  ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
+  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
+  .option pop
+.endm
+
+.macro  RVTEST_GOTO_SMODE
+  .option push
+  .option norvc                                  // disable compressed instructions
+  #ifdef  S_SUPPORTED
+    li   a0, 0                                  // set a0=0 to signal GOTO_SMODE
+    GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
+    li   a0, -1                                 // handler returns HERE (in S-mode): kill the a0==0 signal
+  #endif
+  .option pop
+.endm
+
+
 
 //==============================================================================
 // SECTION 12: RVTEST_GOTO_LOWER_MODE
@@ -647,8 +658,19 @@
 //   4. Write the return address to mepc
 //   5. mret to enter the target mode at the calculated address
 //
-// PRECONDITION: Must be called from M-mode
-// CLOBBERS: T1, T2, T4
+// PRECONDITION: Must be called from M-mode (uses mscratch to locate the M-mode
+//       save area for its register save/restore)
+// CLOBBERS: none. T1, T2, T4 (working registers) and T3 (save-area pointer)
+//       are saved to the M-mode save area's goto_lower_sv slots before the
+//       switch and restored just BEFORE the mret, while still running in
+//       M-mode with bare (physical) addressing. They are NOT restored after
+//       the mret: the target mode may run under a non-identity satp mapping,
+//       where the save area's physical address is unmapped and any load
+//       there would page-fault into an unrecoverable trap loop.
+// NOTE: mscratch briefly holds the caller's T3 during the 4-instruction save
+//       prologue. Interrupts are disabled in every context this macro runs in
+//       (boot: MIE never set; handler context: MIE cleared on trap entry), so
+//       the trap handler cannot observe the temporarily-swapped mscratch.
 // NOTE: This is for BOOT-TIME use only. For run-time mode switching in tests,
 //       use RVTEST_TSBI_GOTO_xMODE or RVTEST_GOTO_MMODE instead.
 //==============================================================================
@@ -663,6 +685,17 @@
 .macro RVTEST_GOTO_LOWER_MODE LMODE
 .option push
 .option norvc                                    // disable compressed for consistent code size
+
+        //---- Step 0: Save the working registers (T1, T2, T4) and the pointer
+        //     register (T3) to the M-mode save area so this macro clobbers
+        //     nothing. T3 is swapped with mscratch so even T3's original value
+        //     can be captured; it is kept as the save-area pointer across the mret and restored last.
+        csrrw  T3, CSR_MSCRATCH, T3               // T3 = M save area ptr, mscratch = orig T3
+        SREG   T1, goto_lower_sv_off+0*REGWIDTH(T3) // save T1
+        SREG   T2, goto_lower_sv_off+1*REGWIDTH(T3) // save T2
+        SREG   T4, goto_lower_sv_off+2*REGWIDTH(T3) // save T4
+        csrrw  T1, CSR_MSCRATCH, T3               // T1 = orig T3; mscratch = save area ptr (restored)
+        SREG   T1, goto_lower_sv_off+3*REGWIDTH(T3) // save orig T3
 
         //---- Step 1: Set/clear mstatus.MPV (virtualization bit) ----
    .if     ((\LMODE\()==VUmode) || (\LMODE\()==VSmode))
@@ -732,11 +765,23 @@
 
         LREG  T4,   -1*sv_area_sz(T2)            // load M-mode code_bgn_ptr for relocation calc
         sub   T1, T1, T4                          // calc address delta between M-mode and target mode
-        addi  T1, T1, 4*WDBYTSZ                  // bias by instruction count from auipc to mret+4
+        addi  T1, T1, 8*WDBYTSZ                  // bias by instruction count from auipc to mret+4 (8 instrs incl. the 4 restores)
 1:      auipc T4, 0                               // T4 = current PC (address of this instruction)
         add   T4, T4, T1                          // T4 = PC + delta = return address in target mode's VM
         csrw  CSR_MEPC, T4                        // set mepc to return address in target mode
-        mret                                      // transition: enter target mode at mepc
+
+        //---- Step 4: Restore saved registers BEFORE the mret, while still in
+        //     M-mode (bare translation), so the loads always use the physical
+        //     save-area address in T3. They MUST NOT be placed after the mret:
+        //     the target mode may run under a non-identity satp mapping, where the
+        //     physical save-area address is unmapped and every load would
+        //     page-fault, ending in an unrecoverable trap loop. All working
+        //     registers are dead once mepc is written, so restoring here is safe.
+        LREG   T1, goto_lower_sv_off+0*REGWIDTH(T3) // restore T1
+        LREG   T2, goto_lower_sv_off+1*REGWIDTH(T3) // restore T2
+        LREG   T4, goto_lower_sv_off+2*REGWIDTH(T3) // restore T4
+        LREG   T3, goto_lower_sv_off+3*REGWIDTH(T3) // restore T3 last (frees the pointer)
+        mret                                      // transition: enter target mode at mepc (lands at 2:)
 2:   .option pop
 .endm
 
@@ -1001,18 +1046,19 @@ rvtest_\__MODE__\()prolog_done:
 //    T1     = saved at trap_sv_off+1*REGWIDTH(sp)
 //    T6     = saved at trap_sv_off+6*REGWIDTH(sp)
 //    orig sp= saved at trap_sv_off+7*REGWIDTH(sp)
+//    a0/a1  = caller's T-SBI operation code / argument, still LIVE in the
+//             registers: since T5/T6 are x14/x15 (not a0/a1), the handler
+//             never overwrites a0/a1 on entry.
 //
-//  CALLER'S a0/a1 RECOVERY:
-//    Since T5=x10=a0 and T6=x11=a1, the handler's csrr T5,xcause overwrites
-//    the caller's a0. But the caller's a0 was saved EARLIER in the handler
-//    entry sequence (step 2 above: SREG T5, trap_sv_off+5*REGWIDTH(sp) saves
-//    the ORIGINAL T5/a0 before it's overwritten with xcause).
-//    Similarly, the caller's a1/T6 is saved at trap_sv_off+6*REGWIDTH(sp).
-//
-//    Therefore, to recover the caller's SBI operation code:
-//      LREG T3, trap_sv_off+5*REGWIDTH(sp)  // T3 = caller's original a0
-//    And to recover the caller's SBI argument:
-//      LREG T2, trap_sv_off+6*REGWIDTH(sp)  // T2 = caller's original a1
+//  CALLER'S a0/a1 HANDLING:
+//    The handler's temporaries are T1..T6 = x6..x9, x14, x15. a0 and a1 are
+//    never used as scratch, so the caller's SBI operation code (a0) and
+//    argument (a1) simply remain valid in their registers throughout the
+//    handler. Dispatch reads them directly out of a0/a1 (no copy needed).
+//    The restore path
+//    (resto_Xrtn) does not touch a0/a1 either, which is what allows the
+//    T-SBI service routines to return their result by writing a0: the value
+//    survives the register restore and the xret back to the caller.
 //
 //==============================================================================
 //==============================================================================
@@ -1070,7 +1116,7 @@ rvtest_\__MODE__\()prolog_done:
  trap_\__MODE__\()handler:                       // start of per-cause stub array
   .rept NUM_SPECD_INTCAUSES                      // for each valid cause:
         csrrw   sp, CSR_XSCRATCH, sp            //   swap sp with save area ptr from xSCRATCH
-        SREG    T6, trap_sv_off+6*REGWIDTH(sp)  //   save T6 (=x11=a1) in handler reg save area
+        SREG    T6, trap_sv_off+6*REGWIDTH(sp)  //   save T6 (x15) in handler reg save area
         jal     T6, common_\__MODE__\()handler  //   jump to common handler; T6 = return addr = vector ID
   .endr
 //---------- End-of-test trampoline ----------
@@ -1088,7 +1134,7 @@ rvtest_\__MODE__\()endtest:                      // impossible cause landed here
 // the trampoline was relocated).
 
 common_\__MODE__\()handler:                      // entered with T6 = vector addr, sp = save area
-        SREG    T5, trap_sv_off+5*REGWIDTH(sp)  // save T5 (=x10=a0=CALLER'S ORIGINAL a0) ***CRITICAL***
+        SREG    T5, trap_sv_off+5*REGWIDTH(sp)  // save T5 (x14) in handler reg save area
         csrrw   T5, CSR_XSCRATCH, sp            // T5 = old xSCRATCH value (= orig sp before swap)
         SREG    T5, trap_sv_off+7*REGWIDTH(sp)  // save original sp in handler reg save area
         LREG    T5, tentry_addr_off(sp)          // T5 = common_Xentry address (from save area)
@@ -1100,25 +1146,27 @@ common_\__MODE__\()handler:                      // entered with T6 = vector add
 //   sp     -> save area
 //   T5     = xcause
 //   T1..T4 saved in save area
-//   T5 (original a0) saved at trap_sv_off+5*REGWIDTH(sp) (by common_Xhandler above)
-//   T6 (original a1) saved at trap_sv_off+6*REGWIDTH(sp) (by per-cause stub above)
+//   T5 (x14) saved at trap_sv_off+5*REGWIDTH(sp) (by common_Xhandler above)
+//   T6 (x15) saved at trap_sv_off+6*REGWIDTH(sp) (by per-cause stub above)
 //   orig sp saved at trap_sv_off+7*REGWIDTH(sp)
+//   a0/a1  untouched — they carry the T-SBI operation code/argument (if any)
 
 common_\__MODE__\()entry:                        // common entry for all traps in this mode
         SREG    T4, trap_sv_off+4*REGWIDTH(sp)  // save T4 (x9)
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
-        csrr    T5, CSR_XCAUSE                   // T5 = xcause (OVERWRITES x10/a0 — caller's a0 already saved)
+        csrr    T5, CSR_XCAUSE                   // T5 = xcause (T5 is x14, so caller's a0 is NOT disturbed)
 
 //==============================================================================
 // T-SBI DISPATCH — M-MODE
 //
 // CONTROL FLOW:
-//   1. Check for ALT_GOTO_M_CAUSE (alternate illegal instruction path) with x3==0 -> rtn2mmode
+//   1. Check for ALT_GOTO_M_CAUSE (alternate illegal instruction path) with a0==0 -> rtn2mmode
 //   2. Check if cause is an ecall (causes 8..11) -> if not, go to normal trap sig
-//   3. Check x3==0 (legacy GOTO_MMODE fast path) -> rtn2mmode
-//   4. NEW: Recover caller's a0 from save area, dispatch on a0:
+//   3. Check a0==0 (legacy GOTO_MMODE fast path) -> rtn2mmode
+//   4. NEW: Dispatch on the caller's a0 (still live — the handler never
+//      touches a0/a1):
 //      a. a0 in [1..5] -> GOTO_xMODE (set MPP/MPV, bump mepc, mret)
 //      b. a0 == 0x73   -> ECALL_TEST (return xEPC in a0, bump mepc)
 //      c. a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (execute dynamic CSR instr)
@@ -1127,8 +1175,9 @@ common_\__MODE__\()entry:                        // common entry for all traps i
 //
 // REGISTER STATE:
 //   T5 = xcause, T4/T3/T2 = available temporaries
-//   sp = save area ptr, caller's a0 at trap_sv_off+5*REGWIDTH(sp)
-//                        caller's a1 at trap_sv_off+6*REGWIDTH(sp)
+//   sp = save area ptr
+//   a0 = caller's SBI operation code (live in register)
+//   a1 = caller's SBI argument (live in register)
 //==============================================================================
 
   .ifc \__MODE__ ,  M                           // ----- BEGIN M-MODE ONLY SECTION -----
@@ -1142,8 +1191,8 @@ spcl_\__MODE__\()chk4alt:                        // Check if cause matches ALT_G
         bnez    T3, spcl_\__MODE__\()chk4ecall   // not the alt cause -> check for standard ecall
 
 spcl_\__MODE__\()param_chk:                      // ALT_GOTO_M cause detected — check if it's a GOTO_MMODE request
-        beqz    x3, \__MODE__\()rtn2mmode         // x3==0 -> this IS a GOTO_MMODE request via alt path -> handle it
-        j           \__MODE__\()trapsig_ptr_upd   // x3!=0 -> normal trap (alt cause happened naturally) -> record sig
+        beqz    a0, \__MODE__\()rtn2mmode         // a0==0 -> this IS a GOTO_MMODE request via alt path -> handle it
+        j           \__MODE__\()trapsig_ptr_upd   // a0!=0 -> normal trap (alt cause happened naturally) -> record sig
 
 spcl_\__MODE__\()chk4ecall:                      // Step 2: Check if cause is an ecall (causes 8, 9, 10, or 11)
         addi    T3, T4, -CAUSE_USER_ECALL         // T3 = masked_cause - 8 (maps ecall causes 8..11 to 0..3)
@@ -1152,46 +1201,47 @@ spcl_\__MODE__\()chk4ecall:                      // Step 2: Check if cause is an
 
    .endif                                        // end of M-mode ALT check (S/H/V modes skip this)
 
-// ----- Legacy x3==0 fast path (GOTO_MMODE / GOTO_SMODE) -----
+// ----- Legacy a0==0 fast path (GOTO_MMODE / GOTO_SMODE) -----
 // This handles the ORIGINAL RVTEST_GOTO_MMODE convention.
-// Tests using the old macros set x3=0 before ecall. The handler detects
+// Tests using the old macros set a0=0 before ecall. The handler detects
 // this and returns in M-mode without recording a trap signature.
 
-.ifc \__MODE__ ,  M                              // M-mode: check x3==0 for GOTO_MMODE
+.ifc \__MODE__ ,  M                              // M-mode: check a0==0 for GOTO_MMODE
 
-\__MODE__\()goto_mchk:                           // Step 3: Is this a legacy GOTO_MMODE? (x3==0)
-        beqz    x3, \__MODE__\()rtn2mmode         // x3==0 -> legacy GOTO_MMODE -> jump to rtn2mmode handler
+\__MODE__\()goto_mchk:                           // Step 3: Is this a legacy GOTO_MMODE? (a0==0)
+        beqz    a0, \__MODE__\()rtn2mmode         // a0==0 -> legacy GOTO_MMODE -> jump to rtn2mmode handler
 
         //==============================================================
         // Step 4: T-SBI DISPATCH — a0-based operation dispatch (M-mode)
         //
-        // We've confirmed: this IS an ecall, and x3 IS NOT 0.
-        // So this is a T-SBI call. Recover the caller's a0 from the
-        // save area (it was saved before xcause overwrote it).
+        // We've confirmed: this IS an ecall, and a0 IS NOT 0.
+        // So this is a T-SBI call. The caller's a0/a1 are still live in
+        // their registers (the handler's temporaries are x6..x9/x14/x15,
+        // so a0/a1 were never overwritten).
         //
         // Available registers: T2, T3, T4 (T5 = xcause, T1/T6 saved)
-        // Caller's a0: at trap_sv_off+5*REGWIDTH(sp)
-        // Caller's a1: at trap_sv_off+6*REGWIDTH(sp)
         //==============================================================
 
 tsbi_\__MODE__\()dispatch:
-        LREG    T3, trap_sv_off+5*REGWIDTH(sp)   // T3 = caller's original a0 (SBI operation code)
+        // a0 (caller's SBI operation code) is read directly below — it is
+        // never clobbered before its last use in this dispatch chain, so no
+        // copy into a T-register is needed.
 
         // --- Check for GOTO_xMODE (a0 == 1..5) ---
-        addi    T4, T3, -1                        // T4 = caller_a0 - 1 (maps [1..5] to [0..4])
+        addi    T4, a0, -1                        // T4 = caller_a0 - 1 (maps [1..5] to [0..4])
         li      T2, 5                              // T2 = 5 (upper bound)
         bltu    T4, T2, tsbi_\__MODE__\()goto_mode // if (a0-1) < 5 -> a0 in [1..5] -> GOTO_xMODE dispatch
 
         // --- Check for ECALL_TEST (a0 == 0x00000073) ---
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73 (ECALL_TEST operation code)
-        beq     T3, T2, tsbi_\__MODE__\()ecall_test // if caller_a0 == 0x73 -> ECALL_TEST handler
+        beq     a0, T2, tsbi_\__MODE__\()ecall_test // if caller_a0 == 0x73 -> ECALL_TEST handler
 
         // --- Check for CSR_ACCESS: opcode[6:0] == 0x73 AND funct3[14:12] != 0 ---
-        andi    T2, T3, 0x7F                       // T2 = caller_a0[6:0] (extract opcode field)
+        andi    T2, a0, 0x7F                       // T2 = caller_a0[6:0] (extract opcode field)
         LI(     T4, 0x73)                           // T4 = 0x73 (SYSTEM opcode)
         bne     T2, T4, tsbi_\__MODE__\()reserved   // opcode != SYSTEM -> not a CSR instruction -> reserved
 
-        srli    T2, T3, 12                          // T2 = caller_a0 >> 12 (shift funct3 to LSBs)
+        srli    T2, a0, 12                          // T2 = caller_a0 >> 12 (shift funct3 to LSBs)
         andi    T2, T2, 0x7                         // T2 = funct3 field (bits 14:12)
         beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> ecall/ebreak/etc, not CSR -> reserved
         j       tsbi_\__MODE__\()csr_access         // funct3!=0 -> valid CSR instruction -> CSR_ACCESS handler
@@ -1245,18 +1295,18 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
 
-        // Dispatch based on caller's a0 (still in T3 from tsbi_Mdispatch)
+        // Dispatch based on caller's a0 (still live in a0 from the ecall)
         li      T2, TSBI_GOTO_MMODE                  // T2 = 1
-        beq     T3, T2, tsbi_\__MODE__\()goto_m     // a0==1 -> GOTO_MMODE
+        beq     a0, T2, tsbi_\__MODE__\()goto_m     // a0==1 -> GOTO_MMODE
         li      T2, TSBI_GOTO_SMODE                  // T2 = 2
-        beq     T3, T2, tsbi_\__MODE__\()goto_s     // a0==2 -> GOTO_SMODE
+        beq     a0, T2, tsbi_\__MODE__\()goto_s     // a0==2 -> GOTO_SMODE
         li      T2, TSBI_GOTO_UMODE                  // T2 = 3
-        beq     T3, T2, tsbi_\__MODE__\()goto_u     // a0==3 -> GOTO_UMODE
+        beq     a0, T2, tsbi_\__MODE__\()goto_u     // a0==3 -> GOTO_UMODE
   #ifdef H_SUPPORTED
         li      T2, TSBI_GOTO_VSMODE                 // T2 = 4
-        beq     T3, T2, tsbi_\__MODE__\()goto_vs    // a0==4 -> GOTO_VSMODE
+        beq     a0, T2, tsbi_\__MODE__\()goto_vs    // a0==4 -> GOTO_VSMODE
         li      T2, TSBI_GOTO_VUMODE                 // T2 = 5
-        beq     T3, T2, tsbi_\__MODE__\()goto_vu    // a0==5 -> GOTO_VUMODE
+        beq     a0, T2, tsbi_\__MODE__\()goto_vu    // a0==5 -> GOTO_VUMODE
   #endif
         li      a0, TSBI_RESERVED_RET                // shouldn't reach here (range checked above), but return -1
         j       resto_\__MODE__\()rtn               // restore and mret
@@ -1357,13 +1407,14 @@ tsbi_\__MODE__\()goto_vu:
         //
         // Mechanism:
         //   1. The caller's a0 contains the 32-bit CSR instruction encoding
-        //      (recovered from save area into T3 at dispatch entry)
+        //      (copied into T3 at dispatch entry; a0 itself is untouched)
         //   2. Write this encoding to scratch memory (rvmodel_sv area in save area)
         //   3. Write a "ret" (jalr x0, x1, 0 = 0x00008067) immediately after it
         //   4. fence.i to sync the instruction cache with the new code
-        //   5. Restore caller's a1 (for rs1) from save area
-        //   6. jalr ra into the scratch location — this executes the CSR instruction
-        //      and the ret returns to the next instruction here
+        //   5. The caller's a1 (rs1 value) is still live in a1 — nothing to restore
+        //   6. Save ra (the CALLER's ra — the handler must not clobber it; the
+        //      Sv/PMP fetch-fault logic resumes at ra), jalr ra into the scratch
+        //      location to execute the CSR instruction, then restore ra
         //   7. a0 now contains the CSR read result (if rd==a0 in the encoding)
         //   8. Bump xEPC+4, restore handler regs, mret
         //
@@ -1383,26 +1434,27 @@ tsbi_\__MODE__\()goto_vu:
         //     opcode[6:0] = 1110011 (SYSTEM)
         //--------------------------------------------------------------
 tsbi_\__MODE__\()csr_access:
-        // T3 still has caller's a0 (the CSR encoding) from tsbi_Mdispatch
-        mv      T4, T3                             // T4 = CSR instruction encoding (copy from T3)
-
+        // a0 still holds the caller's CSR instruction encoding (untouched since the ecall)
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch location in save area's rvmodel_sv
 
-        sw      T4, 0(T2)                          // write CSR instruction to scratch[0:3]
+        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
 
         LI(     T3, 0x00008067)                    // T3 = encoding of "ret" (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
 
         RVTEST_FENCEI                              // sync icache: we just wrote executable code to data memory
 
-        // Restore caller's a1 from save area before executing the CSR instruction.
-        // The CSR encoding may use rs1=a1, so a1 must contain the caller's argument.
-        LREG    a1, trap_sv_off+6*REGWIDTH(sp)     // a1 = caller's original a1 (T6 was saved here)
+        // The caller's a1 is still live in a1 (the handler never touches it),
+        // so the CSR instruction's rs1=a1 sees the caller's argument directly.
 
         // Execute the CSR instruction by calling into scratch memory.
         // jalr with ra: the ret in scratch returns to the instruction after this jalr.
         // a0 will be overwritten with the CSR read result (if rd==a0 in the encoding).
+        // ra belongs to the interrupted test (the Sv/PMP fetch-fault logic resumes
+        // at ra), so preserve it across the call using the spare trapreg_sv slot 0.
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)     // save caller's ra (slot 0 = spare)
         jalr    ra, T2, 0                          // call scratch: execute CSR instr, ret back here
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)     // restore caller's ra
 
         // a0 now holds the CSR read result (if rd was a0 in the encoding)
         csrr    T3, CSR_XEPC                        // T3 = mepc (ecall address)
@@ -1434,15 +1486,16 @@ tsbi_\__MODE__\()csr_access:
 // FORWARDING MECHANISM:
 //   The S-mode handler restores all handler temporary registers, then executes
 //   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9).
-//   The caller's a0/a1/x3 pass through unchanged because:
-//   - a0/a1 (=T5/T6) are restored from the save area before the ecall
-//   - x3 is never modified by the handler
-//   M-mode's T-SBI dispatch sees the S-mode ecall, detects x3!=0 and a0 as
+//   The caller's a0/a1 pass through unchanged because:
+//   - a0/a1 are never touched by the handler (its temporaries are
+//     T1..T6 = x6..x9, x14, x15)
+//   M-mode's T-SBI dispatch sees the S-mode ecall, detects a0!=0 and a0 as
 //   a valid SBI op, and handles it directly.
 //
-// CALLER's a0/a1 RECOVERY:
-//   Same as M-mode: caller's a0 saved at trap_sv_off+5*REGWIDTH(sp),
-//   caller's a1 saved at trap_sv_off+6*REGWIDTH(sp).
+// CALLER's a0/a1 HANDLING:
+//   Same as M-mode: the caller's a0 (operation code) and a1 (argument) remain
+//   live in their registers throughout the handler; dispatch reads them
+//   directly and results are returned by writing a0.
 //==============================================================================
 
 .ifc \__MODE__ ,  S                              // ----- BEGIN S-MODE ONLY SECTION -----
@@ -1452,26 +1505,27 @@ tsbi_\__MODE__\()csr_access:
         and     T4, T4, T5                        // T4 = masked xcause
         addi    T3, T4, -CAUSE_USER_ECALL          // T3 = masked_cause - 8 (U-mode ecall = cause 8)
         bnez    T3, \__MODE__\()trapsig_ptr_upd   // not a U-mode ecall -> normal trap sig recording
-        beqz    x3, \__MODE__\()rtn2smode          // x3==0 -> legacy GOTO_SMODE -> rtn2smode handler
+        beqz    a0, \__MODE__\()rtn2smode          // a0==0 -> legacy GOTO_SMODE -> rtn2smode handler
 
-        //--- T-SBI dispatch: recover caller's a0 and dispatch ---
+        //--- T-SBI dispatch: caller's a0 is live in its register ---
 tsbi_\__MODE__\()dispatch:
-        LREG    T3, trap_sv_off+5*REGWIDTH(sp)   // T3 = caller's original a0 (SBI operation code)
+        // a0 (caller's SBI operation code) is read directly below — it is
+        // never clobbered before its last use in this dispatch chain.
 
         // Check for GOTO_xMODE (a0 == 1..5)
-        addi    T4, T3, -1                         // T4 = a0 - 1
+        addi    T4, a0, -1                         // T4 = a0 - 1
         li      T2, 5                               // T2 = 5
         bltu    T4, T2, tsbi_\__MODE__\()goto_mode // a0 in [1..5] -> GOTO dispatch
 
         // Check for ECALL_TEST (a0 == 0x73)
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73
-        beq     T3, T2, tsbi_\__MODE__\()ecall_test // match -> ECALL_TEST handler
+        beq     a0, T2, tsbi_\__MODE__\()ecall_test // match -> ECALL_TEST handler
 
         // Check for CSR_ACCESS
-        andi    T2, T3, 0x7F                       // T2 = a0[6:0]
+        andi    T2, a0, 0x7F                       // T2 = a0[6:0]
         LI(     T4, 0x73)                           // T4 = SYSTEM opcode
         bne     T2, T4, tsbi_\__MODE__\()reserved   // not SYSTEM -> reserved
-        srli    T2, T3, 12                          // T2 = a0[14:12]
+        srli    T2, a0, 12                          // T2 = a0[14:12]
         andi    T2, T2, 0x7                         // T2 = funct3
         beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> not CSR -> reserved
         j       tsbi_\__MODE__\()csr_access         // valid CSR encoding -> CSR_ACCESS
@@ -1497,21 +1551,21 @@ tsbi_\__MODE__\()goto_mode:
         addi    T4, T4, 4                            // skip ecall
         csrw    CSR_XEPC, T4                         // sepc += 4
 
-        // T3 still has caller's a0 from dispatch entry
+        // a0 still holds the caller's operation code
         li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
-        beq     T3, T2, tsbi_\__MODE__\()forward_to_m // -> forward to M-mode
+        beq     a0, T2, tsbi_\__MODE__\()forward_to_m // -> forward to M-mode
 
         li      T2, TSBI_GOTO_SMODE                  // GOTO_SMODE: return to S-mode
-        beq     T3, T2, tsbi_\__MODE__\()goto_s
+        beq     a0, T2, tsbi_\__MODE__\()goto_s
 
         li      T2, TSBI_GOTO_UMODE                  // GOTO_UMODE: return to U-mode
-        beq     T3, T2, tsbi_\__MODE__\()goto_u
+        beq     a0, T2, tsbi_\__MODE__\()goto_u
 
   #ifdef H_SUPPORTED
         li      T2, TSBI_GOTO_VSMODE                 // GOTO_VSMODE: needs M-mode
-        beq     T3, T2, tsbi_\__MODE__\()forward_to_m
+        beq     a0, T2, tsbi_\__MODE__\()forward_to_m
         li      T2, TSBI_GOTO_VUMODE                 // GOTO_VUMODE: needs M-mode
-        beq     T3, T2, tsbi_\__MODE__\()forward_to_m
+        beq     a0, T2, tsbi_\__MODE__\()forward_to_m
   #endif
 
         li      a0, TSBI_RESERVED_RET                // shouldn't reach here, return -1
@@ -1529,15 +1583,18 @@ tsbi_\__MODE__\()goto_u:                          // Return to U-mode via sret
 
         //--- S-mode forwarding to M-mode ---
         // Restore all handler regs and ecall. M-mode handler processes the request.
+        // The caller's a0 (SBI opcode) and a1 (SBI argument) are still live in
+        // their registers — the handler never modified them — so they pass to
+        // M-mode without any reload.
 tsbi_\__MODE__\()forward_to_m:
         LREG    T1, trap_sv_off+1*REGWIDTH(sp)    // restore T1 (x6)
         LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
         LREG    T4, trap_sv_off+4*REGWIDTH(sp)    // restore T4 (x9)
-        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5/a0 = caller's original a0 (SBI opcode)
-        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6/a1 = caller's original a1 (SBI argument)
+        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
+        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
-        ecall                                      // trap to M-mode with a0/a1/x3 intact
+        ecall                                      // trap to M-mode with a0/a1 intact
         // For GOTO_MMODE: M-mode's rtn2mmode returns directly to caller in M-mode (never returns here)
         // For GOTO_VS/VU: M-mode sets MPP/MPV and mrets to target (never returns here)
         // For CSR_ACCESS: M-mode executes CSR, mrets back to S-mode handler (here), which srets to caller
@@ -1545,22 +1602,22 @@ tsbi_\__MODE__\()forward_to_m:
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:
-        // T3 has caller's a0 (CSR instruction encoding)
+        // a0 still holds the caller's CSR instruction encoding
         // Check if CSR address indicates M-mode CSR: addr bits [11:10] in encoding bits [31:30]
-        srli    T2, T3, 28                          // T2 = encoding[31:28] (top 4 bits)
+        srli    T2, a0, 28                          // T2 = encoding[31:28] (top 4 bits)
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
 
         // S-mode or U-mode CSR: can handle locally using scratch execution
-        mv      T4, T3                             // T4 = CSR instruction encoding
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch memory in rvmodel_sv area
-        sw      T4, 0(T2)                          // write CSR instruction to scratch[0:3]
+        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
         LI(     T3, 0x00008067)                    // T3 = "ret" encoding (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
         RVTEST_FENCEI                              // sync icache after writing code to data memory
-        LREG    a1, trap_sv_off+6*REGWIDTH(sp)     // restore caller's a1 (may be rs1 for the CSR instruction)
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)     // save caller's ra
         jalr    ra, T2, 0                          // execute CSR instruction + ret (result in a0 if rd=a0)
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)     // restore caller's ra
         csrr    T3, CSR_XEPC                        // T3 = sepc
         addi    T3, T3, 4                            // skip past ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
@@ -1571,7 +1628,7 @@ tsbi_\__MODE__\()csr_access:
 //==============================================================================
 // M-MODE FORWARDED ECALL HANDLING (TODO)
 //
-// When M-mode receives an ecall from S-mode (cause 9) with x3!=0,
+// When M-mode receives an ecall from S-mode (cause 9) with a0!=0,
 // it could be the S-mode handler forwarding a T-SBI request.
 // The M-mode dispatch code above (tsbi_Mdispatch) handles the a0 value
 // regardless of which mode the ecall came from. However, for forwarded
@@ -1596,7 +1653,7 @@ tsbi_\__MODE__\()handle_forwarded:
 // NORMAL TRAP HANDLING
 //
 // Reached when the trap is NOT a T-SBI call (either not an ecall,
-// or an ecall with x3==0 that was already handled by the legacy path,
+// or an ecall with a0==0 that was already handled by the legacy path,
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
@@ -1836,8 +1893,19 @@ common_\__MODE__\()excpt_handler:
   .endif
 
 // --- Offset adjustment for physical addresses ---
+// A fault deliberately triggered at an address outside every test segment — the
+// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
+// instruction/load/store access-fault tests) or a null (0) fetch target — has an
+// xEPC that cannot be expressed as a segment-relative offset. Record such an
+// xEPC raw and skip the segment relocation below, which would otherwise fall
+// through to abort_test on the out-of-range EPC. These are fixed constants,
+// identical on the DUT and the reference model, so the raw value is
+// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
+// probe address or 0), so it is unconditional. It used to be gated behind
+// SKIP_MEPC — but the generators no longer emit that define, so keeping the
+// gate silently compiled this skip out and every access-fault test aborted on
+// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
-#ifdef SKIP_MEPC
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc
@@ -1845,7 +1913,6 @@ vmem_adj_\__MODE__\()epc:
                 beq     T3, T2, sv_\__MODE__\()epc
         #endif
                 beqz    T3, sv_\__MODE__\()epc
-#endif
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2
@@ -1873,9 +1940,6 @@ sv_\__MODE__\()epc:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
 
-#ifdef SKIP_MEPC
-        LI(     T6, 0xACCE)
-        bne     x4, T6, adj_\__MODE__\()epc_rtn
         csrr    T2, CSR_XCAUSE
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)
         beq     T2, T6, 1f
@@ -1885,12 +1949,41 @@ sv_\__MODE__\()epc:
         bne     T2, T6, adj_\__MODE__\()epc_rtn
 1:      csrw    CSR_XEPC, ra
         j skp_adj_\__MODE__\()epc
-#endif
 
 adj_\__MODE__\()epc_rtn:
-        andi    T3, T3, ~WDBYTMSK                    // align EPC to 4-byte boundary
-        addi    T3, T3,  2*WDBYTSZ                   // advance past trapping instruction (with padding)
-        csrw    CSR_XEPC, T3                          // write adjusted EPC (will resume after the faulting instr)
+        // Advance xEPC past the trapping instruction by its true width.
+        // Read the low halfword of the instruction at xEPC (T3), in the
+        // addressing/permission context of the code that trapped, then
+        // advance 4 (bits[1:0]==0b11) or 2 (compressed).
+        // xEPC is >=2-byte aligned, so lhu cannot misalign-fault.
+  .ifc \__MODE__ , M
+        // M-mode has no translation of its own. Use MPRV so the load is
+        // performed with MPP's privilege + translation (resolves a virtual
+        // xEPC). SUM lets an effective-S load reach U pages; MXR lets the
+        // load read execute-only (R=0,X=1) pages. Relies on mstatus.MPP
+        // still holding the trapped privilege (don't write MPP before here).
+        csrr    T6, CSR_MSTATUS                      // save full mstatus
+        li      T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB)
+        csrs    CSR_MSTATUS, T2
+        lhu     T2, 0(T3)                            // fetch via trapped context
+        csrw    CSR_MSTATUS, T6                      // restore mstatus verbatim
+  .else
+        // Below M: the load already runs in the trapped privilege with the
+        // active satp, so no MPRV. Still need SUM (read U pages) and MXR
+        // (read execute-only pages).
+        csrr    T6, CSR_SSTATUS                      // save full sstatus
+        li      T2, (1 << SUM_LSB) | (1 << MXR_LSB)
+        csrs    CSR_SSTATUS, T2
+        lhu     T2, 0(T3)
+        csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
+  .endif
+        andi    T2, T2, 3                            // bits[1:0]
+        addi    T2, T2, 1                            // ==4 iff bits were 0b11
+        srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
+        addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
+        slli    T2, T2, 1                            // advance = 4 or 2
+        add     T3, T3, T2                           // next instruction (raw xEPC + width)
+        csrw    CSR_XEPC, T3
 
 skp_adj_\__MODE__\()epc:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
@@ -1919,11 +2012,11 @@ skp_\__MODE__\()tval:
 1:
 // --- Check for trap signature overrun ---
 chk_\__MODE__\()trapsig_overrun:
-        addi    sp, sp, -1*sv_area_sz              // temp adjust sp
-        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr
-        LREG    T2, sv_area_off+sig_bgn_off(sp)    // T2 = sig begin
-        LREG    T1, sv_area_off+sig_seg_siz(sp)    // T1 = sig size
-        addi    sp, sp, 1*sv_area_sz               // undo adjustment
+        addi    sp, sp, -1*sv_area_sz              // temp adjust sp (same as trap_sig_sv)
+        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr (from M-mode shared area)
+        addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
+        LREG    T2, sig_bgn_off(sp)                // T2 = this mode's sig begin
+        LREG    T1, sig_seg_siz(sp)                // T1 = this mode's sig size
 
         add     T1, T1, T2                          // T1 = sig end address
         bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort
@@ -1934,6 +2027,8 @@ chk_\__MODE__\()trapsig_overrun:
 //==============================================================================
 // RESTORE AND RETURN
 // Restores T1-T6 and sp from the save area, then xret to resume execution.
+// a0/a1 are deliberately NOT restored here: the handler never uses them as
+// temporaries, and a0 may carry a T-SBI return value that must reach the caller.
 //==============================================================================
 
  resto_\__MODE__\()rtn:
@@ -1941,8 +2036,8 @@ chk_\__MODE__\()trapsig_overrun:
         LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
         LREG    T4, trap_sv_off+4*REGWIDTH(sp)    // restore T4 (x9)
-        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x10/a0)
-        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x11/a1)
+        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
+        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo xSCRATCH swap)
 
   .ifc \__MODE__ , M
@@ -2136,7 +2231,16 @@ excpt_\__MODE__\()hndlr_tbl:
             csrr T3, mip
         .else
                 .ifc \__MODE__ , S
-                        RVTEST_GOTO_MMODE
+                        // Handler-context GOTO_MMODE: RVTEST_GOTO_MMODE clobbers a0,
+                        // but here a0 belongs to the interrupted test and is NOT part
+                        // of the saved/restored register set. Use T5 to hold a0
+                        // instead — T5 is restored from the save area by resto_Srtn,
+                        // so its use here is invisible to the test.
+                        mv   T5, a0               // save a0 (T5 survives the nested trap: the
+                                                  // M-handler restores it from its save slot)
+                        li   a0, 0                // a0==0 signals legacy GOTO_MMODE
+                        ecall                     // trap to M-mode; returns here in M-mode
+                        mv   a0, T5               // restore a0
                         li T3, 0x200
                         csrc mip, T3
                         csrr T3, mip
@@ -2165,7 +2269,7 @@ excpt_\__MODE__\()hndlr_tbl:
 .popsection                                          // end of .text.rvmodel section
 
 //==============================================================================
-// GOTO_MMODE RETURN HANDLER (M-mode only, legacy x3==0 path)
+// GOTO_MMODE RETURN HANDLER (M-mode only, legacy a0==0 path)
 //==============================================================================
 
 .ifc \__MODE__ , M
@@ -2223,12 +2327,12 @@ rtn_fm_mmode:
 .endif  // end of M-mode rtn2mmode
 
 //==============================================================================
-// GOTO_SMODE RETURN HANDLER (S-mode only, legacy x3==0 path)
+// GOTO_SMODE RETURN HANDLER (S-mode only, legacy a0==0 path)
 //==============================================================================
 
 .ifc \__MODE__ , S
 
-\__MODE__\()rtn2smode:                               // U-mode ecall with x3==0 -> return in S-mode
+\__MODE__\()rtn2smode:                               // U-mode ecall with a0==0 -> return in S-mode
         csrr    T3, CSR_XEPC                          // T3 = sepc (U-mode ecall address)
         addi    T3, T3, 4                              // skip past ecall
         csrw    CSR_XEPC, T3                           // sepc = ecall_addr + 4
@@ -2288,11 +2392,10 @@ rtn_fm_mmode:
 //  misaligned-load support. bits[1:0] fit in the loaded 16 bits.
 //
 //  Register usage:
-//    t0 (x5) — scratch throughout: CSR reads, instruction word, advance amount
-//    t1 (x6) — M-mode handler only: used for the mcause==2 compare and for the final mepc advance.
-//              The S-mode handler never touches t1/x6: with
-//              rvtest_strap_routine defined, x6 is the Mtrampoline save-area
-//              pointer.
+//    a0, a1 (x10, x11) — the ONLY scratch registers (CSR reads, instruction
+//              word, advance amount). These are the framework's designated
+//              clobber registers: the priv test generator never allocates them
+//              to tests, so clobbering them here without save/restore is safe.
 //==============================================================================
 //==============================================================================
 
@@ -2310,81 +2413,109 @@ rtn_fm_mmode:
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
+// ENTRY PROTOCOL: the caller's a0/a1 MUST survive the forward path — the
+// standard handler dispatches on the caller's a0 (a0==0 is the GOTO signal;
+// T-SBI ops are a0 values). Clobbering a0 before `j Mtrampoline` breaks every
+// ecall that arrives through this handler.
 trap_handler_fastillegalinstr:
-        csrr t0, mcause                 // read trap cause
-        li   t1, 2                      // Illegal Instruction cause = 2
-        bne  t0, t1, fast_Mothertrap    // not illegal instruction — use regular handler
+        csrrw a0, CSR_MSCRATCH, a0      // a0 = M save-area ptr; mscratch = caller's a0
+        SREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // stash caller's a1 (rvmodel_sv slot 2 is free)
+        csrr a1, mcause                 // read trap cause
+        xori a1, a1, 2                  // a1 = 0 iff cause == 2 (illegal instruction)
+        bnez a1, fast_Mothertrap        // not illegal — restore regs and use regular handler
+        LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
+        csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
 fast_Millegalinstruction:
-        SREG t0, 0(x2)                  // store mcause (=2) to signature
+        csrr a0, mcause
+        SREG a0, 0(x2)                  // store mcause (=2) to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, mepc
-        SREG t0, 0(x2)                  // store mepc to signature
+        csrr a0, mepc
+        SREG a0, 0(x2)                  // store mepc to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, mtval
-        SREG t0, 0(x2)                  // store mtval to signature
+        csrr a0, mtval
+        SREG a0, 0(x2)                  // store mtval to signature
         addi x2, x2, SIG_STRIDE
-        // Branchless mepc advance — reads bits[1:0] from *mepc using lhu.
-        // advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.
-        // (bits[1:0]+1)>>2 is 1 only for 0b11; all other values (0b10,0b01,0b00) give 0.
-        csrr t0, mepc
-        lhu  t0, 0(t0)                  // load lower 16 bits from *mepc (always 2-byte aligned)
-        andi t0, t0, 3                  // t0 = bits[1:0]
-        addi t0, t0, 1                  // t0 = bits[1:0]+1; equals 4 only when was 0b11
-        srli t0, t0, 2                  // t0 = 1 iff uncompressed (0b11), else 0
-        addi t0, t0, 1                  // t0 = 2 or 1
-        slli t0, t0, 1                  // t0 = 4 (uncompressed) or 2 (compressed)
-        csrr t1, mepc                   // t1 = mepc  (t1 first written here)
-        add  t1, t1, t0                 // t1 = mepc + advance
-        csrw mepc, t1
+        // mepc advance using only a0 — reads bits[1:0] from *mepc using lhu
+        // (lhu because mepc is only guaranteed 2-byte aligned).
+        csrr a0, mepc
+        lhu  a0, 0(a0)                  // load lower 16 bits from *mepc
+        andi a0, a0, 3                  // a0 = bits[1:0]
+        xori a0, a0, 3                  // a0 = 0 iff bits[1:0]==0b11 (uncompressed)
+        beqz a0, fast_Muncompressed
+fast_Mcompressed:
+        csrr a0, mepc
+        addi a0, a0, 2                  // 16-bit instruction: advance mepc by 2
+        j    fast_Mdone
+fast_Muncompressed:
+        csrr a0, mepc
+        addi a0, a0, 4                  // 32-bit instruction: advance mepc by 4
+fast_Mdone:
+        csrw mepc, a0
         mret
 
 fast_Mothertrap:
+        LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
+        csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
         j    Mtrampoline                // hand off all non-illegal-instruction traps
 
 #ifdef S_SUPPORTED
-// ── Fast S-mode handler (stvec) — delegated illegal instructions ───────────
-// Align to the core's WARL mtvec BASE boundary so the prolog's write of the
+// ── Fast S-mode handler (stvec) ─────────────────────────────────────────────
+// Align to the core's WARL stvec BASE boundary so the prolog's write of the
 // handler address into stvec survives.
 .balign 64
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED // TODO: UDB_STVEC_BASE_ALIGNMENT once defined
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 #endif
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
+// Same entry protocol as the M handler: preserve the caller's a0/a1 across the
+// forward path (the S standard handler dispatches delegated U-ecalls on the
+// caller's a0), stashing a0 in sscratch and a1 in the S save-area's free
+// rvmodel_sv slot 2 during the cause check.
 strap_handler_fastillegalinstr:
-        csrr t0, scause
-        xori t0, t0, 2                  // t0=0 iff scause==2 (illegal instruction)
-        bnez t0, fast_Sothertrap        // not illegal — use S-mode framework handler
+        csrrw a0, CSR_SSCRATCH, a0      // a0 = S save-area ptr; sscratch = caller's a0
+        SREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // stash caller's a1
+        csrr a1, scause
+        xori a1, a1, 2                  // a1 = 0 iff scause == 2 (illegal instruction)
+        bnez a1, fast_Sothertrap        // not illegal — restore regs and use the S framework handler
+                                        // (NOT fast_Mothertrap: the M trampoline's mscratch access
+                                        // is itself illegal from S-mode and creates a trap loop)
+        LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
+        csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
 fast_Sillegalinstruction:
-        csrr t0, scause                 // re-read (=2)
-        SREG t0, 0(x2)                  // store scause to signature
+        csrr a0, scause
+        SREG a0, 0(x2)                  // store scause (=2) to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, sepc
-        SREG t0, 0(x2)                  // store sepc to signature
+        csrr a0, sepc
+        SREG a0, 0(x2)                  // store sepc to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, stval
-        SREG t0, 0(x2)                  // store stval to signature
+        csrr a0, stval
+        SREG a0, 0(x2)                  // store stval to signature
         addi x2, x2, SIG_STRIDE
         // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
-        csrr t0, sepc
-        lhu  t0, 0(t0)                  // load lower 16 bits of faulting instruction
-        andi t0, t0, 3
-        xori t0, t0, 3                  // t0=0 iff bits[1:0]==0b11 (uncompressed)
-        beqz t0, fast_Suncompressed
+        csrr a0, sepc
+        lhu  a0, 0(a0)                  // load lower 16 bits of faulting instruction
+        andi a0, a0, 3
+        xori a0, a0, 3                  // a0 = 0 iff bits[1:0]==0b11 (uncompressed)
+        beqz a0, fast_Suncompressed
 fast_Scompressed:
-        csrr t0, sepc
-        addi t0, t0, 2                  // 16-bit instruction: advance sepc by 2
+        csrr a0, sepc
+        addi a0, a0, 2                  // 16-bit instruction: advance sepc by 2
         j    fast_Sdone
 fast_Suncompressed:
-        csrr t0, sepc
-        addi t0, t0, 4                  // 32-bit instruction: advance sepc by 4
+        csrr a0, sepc
+        addi a0, a0, 4                  // 32-bit instruction: advance sepc by 4
 fast_Sdone:
-        csrw sepc, t0
-        sret
+        csrw sepc, a0
+        sret                            // MUST be sret: this handler runs in S-mode — an mret here
+                                        // is itself an illegal instruction and re-enters this
+                                        // handler forever
 
 fast_Sothertrap:
-        j    Strampoline                // hand off non-illegal S-mode traps to framework
+        LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
+        csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
+        j    Strampoline                // hand off all non-illegal-instruction traps
 #endif // S_SUPPORTED
 
 .option pop
@@ -2399,8 +2530,12 @@ fast_Sothertrap:
 //  Restores xEDELEG, xSATP, xSCRATCH, xTVEC, and any relocated trampoline code.
 //
 //  Parameters: __MODE__ (M, S, H, or V)
-//  Precondition: running in M-mode (entered via GOTO_MMODE at test end)
-//  Uses: T1..T6, mscratch to find the correct save area
+//  Precondition: running in M-mode.
+//    The epilogs are only emitted for STANDARD_SM_SUPPORTED; a platform with
+//    a custom (non-standard) M-mode compiles them out entirely and is
+//    responsible for its own cleanup.
+//  Uses: T1..T4, T6, mscratch to find the correct save area (T5 is preserved:
+//    it carries the abort_test 0xBAD0DEAD marker across the epilogs)
 //
 //==============================================================================
 //==============================================================================
@@ -2543,11 +2678,14 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 \__MODE__\()tvec_new:      .dword  0                                         // current xTVEC value (trampoline)
 \__MODE__\()tvec_save:     .dword  0                                         // original xTVEC before prolog
 \__MODE__\()scratch_save:  .dword  0                                         // original xSCRATCH before prolog
-\__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: T1..T6, sp, spare
+\__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
 // rvmodel_sv: scratch area for RVMODEL macros AND T-SBI CSR_ACCESS.
 // T-SBI CSR_ACCESS writes a CSR instruction (4B) + ret (4B) to the first 8 bytes,
 // then executes it via jalr. See tsbi_Xcsr_access in the HANDLER macro.
+// Slots 4-7 of the M-mode copy are the RVTEST_GOTO_LOWER_MODE register save
+// (goto_lower_sv_off): T1, T2, T4, T3. None of these uses can be active at
+// the same time.
 \__MODE__\()rvmodel_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // RVMODEL/T-SBI scratch area
 \__MODE__\()sv_area_end:                           // end marker (used for size calculation assertions)
 

@@ -255,7 +255,9 @@ def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> li
 def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_instr_page_fault — R|W PTE (no X) → instruction page fault on jalr.
 
-    x4 = 0xACCE signals the trap handler to use ra (x1) as the return address.
+    The jalr uses x1 (ra) as its link register, so ra holds the fall-through
+    address; the trap handler resumes there after the instruction page fault
+    (advancing past a fetch fault would just re-fault).
     """
     addr_reg = test_data.int_regs.get_register()
 
@@ -273,7 +275,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
         instrs_rv64=[_jalr(_VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_jalr(_VA_PF_PAGE_RV32, "rv32")],
         section_title="Instruction Page Fault (R|W PTE, no X)",
-        extra_setup=["LI(x4, 0xACCE)"],
+        extra_setup=[],
     )
     test_data.int_regs.return_registers([addr_reg])
     return lines
@@ -283,9 +285,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
     "Sstvala",
     required_extensions=["Sstvala"],
     march_extensions=["S", "Zicsr"],
-    extra_defines=[
-        "#define SKIP_MEPC",
-    ],
+    extra_defines=[],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""

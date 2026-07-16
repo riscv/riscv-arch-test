@@ -110,6 +110,9 @@
 `ifdef INTERRUPTSS_COVERAGE
   `include "InterruptsS_coverage.svh"
 `endif
+`ifdef INTERRUPTSSSM_COVERAGE
+  `include "InterruptsSSm_coverage.svh"
+`endif
 `ifdef INTERRUPTSSM_COVERAGE
   `include "InterruptsSm_coverage.svh"
 `endif

@@ -2018,11 +2018,11 @@ skp_\__MODE__\()tval:
 1:
 // --- Check for trap signature overrun ---
 chk_\__MODE__\()trapsig_overrun:
-        addi    sp, sp, -1*sv_area_sz              // temp adjust sp
-        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr
-        LREG    T2, sv_area_off+sig_bgn_off(sp)    // T2 = sig begin
-        LREG    T1, sv_area_off+sig_seg_siz(sp)    // T1 = sig size
-        addi    sp, sp, 1*sv_area_sz               // undo adjustment
+        addi    sp, sp, -1*sv_area_sz              // temp adjust sp (same as trap_sig_sv)
+        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr (from M-mode shared area)
+        addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
+        LREG    T2, sig_bgn_off(sp)                // T2 = this mode's sig begin
+        LREG    T1, sig_seg_siz(sp)                // T1 = this mode's sig size
 
         add     T1, T1, T2                          // T1 = sig end address
         bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort

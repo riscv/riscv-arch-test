@@ -886,7 +886,11 @@ init_\__MODE__\()scratch:
 #ifdef RVMODEL_MTIMECMP_ADDRESS            // this looks a bit odd to keep it constant size
 init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its address is defined
         LI(  T2,  -1)
+  #ifdef RVMODEL_LOAD_MTIMECMP_ADDR
+        RVMODEL_LOAD_MTIMECMP_ADDR(T4)
+  #else
         LI(  T4,  RVMODEL_MTIMECMP_ADDRESS)
+  #endif
         SREG T2,  0(T4)
   .if (UDB_MXLEN==32)
         SREG T2,  4(T4)

@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x9, 0x107)
+  CSRW(miselect, x9)  # select resident SPMP entry 7
+  LI(x6, -1)  # maximal NAPOT region
+  CSRW(mireg, x6)
+  LI(x6, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x6)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x6, -1)
+  CSRW(CSR_SPMPEN, x6)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -52,12 +65,12 @@ RVTEST_BEGIN
 /////////////////////////////////
 # Read satp to confirm Bare mode (required for SPMP)
 SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str)
+  # Read satp into x25 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x25, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str)
   RVTEST_GOTO_MMODE
 SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check:
-  # Read satp into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x9, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str)
+  # Read satp into x25 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x25, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str)
   RVTEST_GOTO_LOWER_MODE Smode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

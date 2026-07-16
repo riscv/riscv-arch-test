@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x26, 0x107)
+  CSRW(miselect, x26)  # select resident SPMP entry 7
+  LI(x23, -1)  # maximal NAPOT region
+  CSRW(mireg, x23)
+  LI(x23, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x23)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x23, -1)
+  CSRW(CSR_SPMPEN, x23)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -52,67 +65,71 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # === Ordering sequence for SPMP entry 0 ===
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x23, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x23)  # write sireg (spmpaddr)
+  LI(x28, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x28)
+  LI(x8, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
   nop
-  LI(x23, 0x11b)  # spmpcfg value
-  CSRW(0x152, x23)  # write sireg2 (spmpcfg)
+  LI(x8, 0x11b)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x8)
 SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x28 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x28, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x19 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 1 ===
-  LI(x26, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x26)
-  LI(x23, 0x20000400)  # spmpaddr value
-  CSRW(0x151, x23)  # write sireg (spmpaddr)
+  LI(x28, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x28)
+  LI(x8, 0x20000400)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
   nop
-  LI(x23, 0x11b)  # spmpcfg value
-  CSRW(0x152, x23)  # write sireg2 (spmpcfg)
+  LI(x8, 0x11b)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x8)
 SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x28 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x28, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x19 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 2 ===
-  LI(x26, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x26)
-  LI(x23, 0x20000800)  # spmpaddr value
-  CSRW(0x151, x23)  # write sireg (spmpaddr)
+  LI(x28, 0x102)  # siselect = SPMP entry 2
+  CSRW(siselect, x28)
+  LI(x8, 0x20000800)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
   nop
-  LI(x23, 0x11b)  # spmpcfg value
-  CSRW(0x152, x23)  # write sireg2 (spmpcfg)
+  LI(x8, 0x11b)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x8)
 SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x28 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x28, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x19 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 3 ===
-  LI(x26, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x26)
-  LI(x23, 0x20000c00)  # spmpaddr value
-  CSRW(0x151, x23)  # write sireg (spmpaddr)
+  LI(x28, 0x103)  # siselect = SPMP entry 3
+  CSRW(siselect, x28)
+  LI(x8, 0x20000c00)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
   nop
-  LI(x23, 0x11b)  # spmpcfg value
-  CSRW(0x152, x23)  # write sireg2 (spmpcfg)
+  LI(x8, 0x11b)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x8)
 SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x28 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x28, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str)
-  LI(x26, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x26)
-  LI(x23, 0x0)  # spmpcfg value
-  CSRW(0x152, x23)  # write sireg2 (spmpcfg)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x19 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str)
+  LI(x28, 0x103)  # siselect = SPMP entry 3
+  CSRW(siselect, x28)
+  LI(x8, 0x0)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
-  LI(x23, 0x0)  # spmpaddr value
-  CSRW(0x151, x23)  # write sireg (spmpaddr)
+  LI(x8, 0x0)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 

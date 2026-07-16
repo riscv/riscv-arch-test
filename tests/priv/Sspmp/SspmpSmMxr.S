@@ -9,14 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmMxr.S"
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 11
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x9, 0x107)
+  CSRW(miselect, x9)  # select resident SPMP entry 7
+  LI(x6, -1)  # maximal NAPOT region
+  CSRW(mireg, x6)
+  LI(x6, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x6)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x6, -1)
+  CSRW(CSR_SPMPEN, x6)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -49,32 +62,41 @@ RVTEST_BEGIN
 //   Test sstatus.MXR effect on SPMP permission checking.
 //   MXR=1 makes execute-only regions also readable.
 /////////////////////////////////
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x6, 0x19)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  LA(x30, scratch)
+  LI(x7, 0x5A5A5A5A)
+  sw x7, 0(x30)
+  LI(x22, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x22)
+  srli x24, x30, 2  # 8-byte NAPOT encoding
+  CSRW(0x151, x24)
+  nop
+  LI(x7, 0x1c)  # spmpcfg value
+  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRR(x11, sstatus)  # save sstatus
 
 # sstatus.MXR = 0
-  CSRR(x7, sstatus)  # save sstatus
-  LI(x6, 0x80000)  # sstatus.MXR bit (bit 19)
-  CSRC(sstatus, x6)  # clear MXR bit
+  LI(x7, 0x80000)  # sstatus.MXR bit (bit 19)
+  CSRC(sstatus, x7)  # clear MXR bit
 SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region:
-  # Read sstatus into x22 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x22, SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region_str)
-  CSRW(sstatus, x7)  # restore sstatus
+  lw x24, 0(x30)  # faults for MXR=0, succeeds for MXR=1
+  nop  # trap handler resumes here after the MXR=0 load fault
 
 # sstatus.MXR = 1
-  CSRR(x7, sstatus)  # save sstatus
-  LI(x6, 0x80000)  # sstatus.MXR bit (bit 19)
-  CSRS(sstatus, x6)  # set MXR bit
+  LI(x7, 0x80000)  # sstatus.MXR bit (bit 19)
+  CSRS(sstatus, x7)  # set MXR bit
 SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region:
-  # Read sstatus into x22 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x22, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str)
-  CSRW(sstatus, x7)  # restore sstatus
-  LI(x6, 0x0)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  lw x24, 0(x30)  # faults for MXR=0, succeeds for MXR=1
+  nop  # trap handler resumes here after the MXR=0 load fault
+  # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x24, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str)
+  CSRW(sstatus, x11)  # restore sstatus
+  LI(x7, 0x0)  # spmpcfg value
+  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  nop
+  LI(x7, 0x0)  # spmpaddr value
+  CSRW(0x151, x7)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 

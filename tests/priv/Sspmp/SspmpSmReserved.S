@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x22, 0x107)
+  CSRW(miselect, x22)  # select resident SPMP entry 7
+  LI(x6, -1)  # maximal NAPOT region
+  CSRW(mireg, x6)
+  LI(x6, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x6)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x6, -1)
+  CSRW(CSR_SPMPEN, x6)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -51,36 +64,36 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Reserved RWX=010
-  LI(x22, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x22)
-  LI(x6, 0x11a)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  LI(x12, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x12)
+  LI(x26, 0x11a)  # spmpcfg value
+  CSRW(0x152, x26)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str)
+  # Read spmpcfg (sireg2) into x23 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x23, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str)
 
 # Reserved RWX=011
-  LI(x22, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x22)
-  LI(x6, 0x11b)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  LI(x12, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x12)
+  LI(x26, 0x11e)  # spmpcfg value
+  CSRW(0x152, x26)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str)
+  # Read spmpcfg (sireg2) into x23 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x23, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str)
 
 # Reserved: SHARED=1, U=0
-  LI(x22, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x22)
-  LI(x6, 0x21c)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  LI(x12, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x12)
+  LI(x26, 0x219)  # spmpcfg value
+  CSRW(0x152, x26)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str)
-  LI(x6, 0x0)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x23 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x23, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str)
+  LI(x26, 0x0)  # spmpcfg value
+  CSRW(0x152, x26)  # write sireg2 (spmpcfg)
   nop
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x29, 0x107)
+  CSRW(miselect, x29)  # select resident SPMP entry 7
+  LI(x16, -1)  # maximal NAPOT region
+  CSRW(mireg, x16)
+  LI(x16, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x16)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x16, -1)
+  CSRW(CSR_SPMPEN, x16)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -51,46 +64,46 @@ RVTEST_BEGIN
 //   Exception code 13 = load page fault
 //   Exception code 15 = store/AMO page fault
 /////////////////////////////////
-  LI(x29, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x29)
-  LA(x30, scratch)
-  srli x30, x30, 2  # convert to spmpaddr format
-  ori x30, x30, 0x1FF  # NAPOT 4K region
-  CSRW(0x151, x30)  # write spmpaddr via sireg
+  LI(x15, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x15)
+  LA(x24, scratch)
+  srli x24, x24, 2  # convert to spmpaddr format
+# No low bits set: 8-byte NAPOT region
+  CSRW(0x151, x24)  # write spmpaddr via sireg
   nop
-  LI(x16, 0x1f)  # spmpcfg value
-  CSRW(0x152, x16)  # write sireg2 (spmpcfg)
+  LI(x30, 0x1f)  # spmpcfg value
+  CSRW(0x152, x30)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # S-mode load to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok:
-  LA(x30, scratch)
-  lw x15, 0(x30)
+  LA(x24, scratch)
+  lw x20, 0(x24)
   nop
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str)
+  # Check if x20 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x20, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str)
 
 # S-mode store to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
-  LA(x30, scratch)
-  LI(x16, 0xCAFEBABE)
-  sw x16, 0(x30)
+  LA(x24, scratch)
+  LI(x30, 0xCAFEBABE)
+  sw x30, 0(x24)
   nop
-  lw x15, 0(x30)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
+  lw x20, 0(x24)
+  # Check if x20 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x20, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
 
-  LI(x16, 0x00008067)  # ret
-  LA(x30, scratch)
-  sw x16, 0(x30)
+  LI(x30, 0x00008067)  # ret
+  LA(x24, scratch)
+  sw x30, 0(x24)
   fence.i
   RVTEST_GOTO_MMODE
-  LI(x29, 0x100)
-  CSRW(0x350, x29)
+  LI(x15, 0x100)
+  CSRW(0x350, x15)
   nop
-  LI(x16, 0x118)
-  CSRW(0x352, x16)
+  LI(x30, 0x118)
+  CSRW(0x352, x30)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -99,25 +112,25 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
 # S-mode fetch from U-mode region with no perms -> instruction page fault (12)
 SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra
-  LA(x30, scratch)
-  jalr x1, 0(x30)  # should cause instruction page fault
+  LA(x24, scratch)
+  jalr x1, 0(x24)  # should cause instruction page fault
   nop
 
 # S-mode load with SUM=0 to U-mode region with no perms -> page fault (13)
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault:
-  LA(x30, scratch)
-  lw x15, 0(x30)  # should cause load page fault
+  LA(x24, scratch)
+  lw x20, 0(x24)  # should cause load page fault
   nop  # trap handler skips this
 
 # S-mode store to U-mode region with no perms -> page fault (15)
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
-  LA(x30, scratch)
-  sw x16, 0(x30)  # should cause store page fault
+  LA(x24, scratch)
+  sw x30, 0(x24)  # should cause store page fault
   nop  # trap handler skips this
 
   RVTEST_GOTO_MMODE
-  LI(x29, 0x100)
-  CSRW(0x350, x29)
+  LI(x15, 0x100)
+  CSRW(0x350, x15)
   nop
   CSRW(0x352, zero)
   nop

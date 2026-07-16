@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x28, 0x107)
+  CSRW(miselect, x28)  # select resident SPMP entry 7
+  LI(x17, -1)  # maximal NAPOT region
+  CSRW(mireg, x17)
+  LI(x17, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x17)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x17, -1)
+  CSRW(CSR_SPMPEN, x17)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -50,22 +63,22 @@ RVTEST_BEGIN
 //   Configure SPMP to deny all access, then do M-mode access.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  LI(x28, 0x100)
-  CSRW(0x350, x28)  # miselect = SPMP entry 0
+  LI(x10, 0x100)
+  CSRW(0x350, x10)  # miselect = SPMP entry 0
   nop
-  LI(x17, 0x20000fff)
-  CSRW(0x351, x17)  # write spmpaddr via mireg
+  LI(x22, 0x20000fff)
+  CSRW(0x351, x22)  # write spmpaddr via mireg
   nop
-  LI(x17, 0x18)
-  CSRW(0x352, x17)  # write spmpcfg via mireg2
+  LI(x22, 0x18)
+  CSRW(0x352, x22)  # write spmpcfg via mireg2
   nop
   sfence.vma x0, x0
 SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
-  LA(x17, scratch)
-  lw x10, 0(x17)  # M-mode load should succeed despite SPMP
+  LA(x22, scratch)
+  lw x7, 0(x22)  # M-mode load should succeed despite SPMP
   nop
-  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x10, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
   CSRW(0x352, zero)  # clear spmpcfg
   nop
   CSRW(0x351, zero)  # clear spmpaddr

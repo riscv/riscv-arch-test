@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x10, 0x107)
+  CSRW(miselect, x10)  # select resident SPMP entry 7
+  LI(x30, -1)  # maximal NAPOT region
+  CSRW(mireg, x30)
+  LI(x30, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x30)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x30, -1)
+  CSRW(CSR_SPMPEN, x30)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -53,69 +66,69 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Pre-install `ret` (0x00008067) at scratch[0]
-  LA(x14, scratch)
-  LI(x30, 0x00008067)  # ret
-  sw x30, 0(x14)
+  LA(x23, scratch)
+  LI(x8, 0x00008067)  # ret
+  sw x8, 0(x23)
   fence.i  # sync icache with the data write
-  LI(x10, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x10)
-  LA(x14, scratch)
-  srli x14, x14, 2  # convert to spmpaddr format
-  ori x14, x14, 0x1FF  # NAPOT 4 KB region
-  CSRW(0x151, x14)  # write spmpaddr via sireg
+  LI(x15, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x15)
+  LA(x23, scratch)
+  srli x23, x23, 2  # convert to spmpaddr format
+# No low bits set: 8-byte NAPOT region
+  CSRW(0x151, x23)  # write spmpaddr via sireg
   nop
-  LI(x30, 0x11f)  # spmpcfg value
-  CSRW(0x152, x30)  # write sireg2 (spmpcfg)
+  LI(x8, 0x11f)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # sstatus.SUM = 0  ->  S-mode denied any access to U-mode region
-  CSRR(x8, sstatus)  # save sstatus
-  LI(x30, 0x40000)  # sstatus.SUM bit (bit 18)
-  CSRC(sstatus, x30)  # clear SUM bit
+  CSRR(x11, sstatus)  # save sstatus
+  LI(x8, 0x40000)  # sstatus.SUM bit (bit 18)
+  CSRC(sstatus, x8)  # clear SUM bit
 
 # Expected: load page fault (cause 13); strap handler advances sepc by 4.
 SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied:
-  LA(x14, scratch)
-  lw x15, 0(x14)  # faults
+  LA(x23, scratch)
+  lw x14, 0(x23)  # faults
   nop  # trap handler skips to here
 
 # Expected: store page fault (cause 15); strap handler advances sepc by 4.
 SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied:
-  sw x30, 0(x14)  # faults
+  sw x8, 0(x23)  # faults
   nop  # trap handler skips to here
 
 # sstatus.SUM = 1  ->  S-mode data access allowed; fetch denied (EnforceNoX)
-  LI(x30, 0x40000)
-  CSRS(sstatus, x30)  # set SUM bit
+  LI(x8, 0x40000)
+  CSRS(sstatus, x8)  # set SUM bit
 
 # Expected: load succeeds, reads the `ret` instruction value.
 SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load:
-  LA(x14, scratch)
-  lw x15, 0(x14)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
+  LA(x23, scratch)
+  lw x14, 0(x23)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
 
 # Expected: store succeeds.  Re-install `ret` so the jalr target is clean.
 SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store:
-  LI(x30, 0x00008067)  # ret
-  sw x30, 0(x14)
-  lw x15, 0(x14)
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str)
+  LI(x8, 0x00008067)  # ret
+  sw x8, 0(x23)
+  lw x14, 0(x23)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str)
   fence.i  # sync icache with the data write
 
 # Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.
 # SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.
 SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  LA(x14, scratch)
-  jalr x1, 0(x14)  # fetch page fault (cause 12); handler returns here
+  LA(x23, scratch)
+  jalr x1, 0(x23)  # fetch page fault (cause 12); handler returns here
   nop
 
-  CSRW(sstatus, x8)  # restore sstatus
-  LI(x30, 0x0)  # spmpcfg value
-  CSRW(0x152, x30)  # write sireg2 (spmpcfg)
+  CSRW(sstatus, x11)  # restore sstatus
+  LI(x8, 0x0)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 

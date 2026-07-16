@@ -1,36 +1,28 @@
 # Parameter mappings for the SspmpSm test suite
 
 parameter_definitions:
-  - name: NUM_SPMP_ENTRIES
+  - name: NUM_PMP_ENTRIES
     coverpoint:
       [
         "cp_{spmp_indirect_access, spmpaddr_write, spmpcfg_write, spmp_oob_read_zero, spmp_oob_write_ignored, mpmpdeleg_pmpnum_field}",
       ]
     effect:
       [
-        "Determines the number of available SPMP entries (1-64). Tests adapt to the implemented count; out-of-bounds coverpoints validate unimplemented indices.",
+        "In the Smpmpdeleg resource-sharing profile, determines the writable PMP pool and the maximum delegated SPMP count. This suite requires at least eight writable entries.",
       ]
 
-  - name: SPMP_GRAIN
+  - name: PMP_GRANULARITY
     coverpoint: ["cp_addr_match_{na4, napot}"]
     effect:
       [
-        "Minimum granularity of SPMP regions. NA4 is only available when grain is 0.",
-      ]
-
-  - name: NUM_PMP_ENTRIES
-    coverpoint:
-      ["cp_mpmpdeleg_{pmpnum_field, pmpnum_zero, no_delegation, locked}"]
-    effect:
-      [
-        "Total number of PMP entries in the implementation, determines delegation range.",
+        "Determines the matching granularity inherited by shared PMP/SPMP address registers; NA4 availability and NAPOT behavior depend on it.",
       ]
 
   - name: MXLEN
     coverpoint: ["cp_spmpen_{readwrite, activation, locked_readonly}"]
     effect:
       [
-        "XLEN-dependent register widths. On RV32 the Sspmpen extension also exposes spmpenh; these coverpoints exercise the XLEN-sensitive paths.",
+        "Determines the spmpen width. RV32 additionally exposes spmpenh as the upper-half alias, which is covered separately.",
       ]
 
   - name: SXLEN

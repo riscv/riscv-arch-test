@@ -9,14 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmPermSmode.S"
-#define SIGUPD_COUNT 16
+#define SIGUPD_COUNT 14
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x19, 0x107)
+  CSRW(miselect, x19)  # select resident SPMP entry 7
+  LI(x17, -1)  # maximal NAPOT region
+  CSRW(mireg, x17)
+  LI(x17, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x17)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x17, -1)
+  CSRW(CSR_SPMPEN, x17)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -47,76 +60,309 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_smode_rule
 //   Configure SPMP S-mode-only rules (SHARED=0, U=0) with various RWX.
-//   Write each encoding to spmpcfg and read back to verify the field is accepted.
+//   Exercise each permission from S-mode, then verify that U-mode is denied
+//   regardless of the RWX bits.
 /////////////////////////////////
+# Delegate U-mode ecall so RVTEST_GOTO_SMODE can return from each U-mode probe
+  RVTEST_GOTO_MMODE
+  LI(x9, 0x100)
+  CSRS(CSR_MEDELEG, x9)
+  RVTEST_GOTO_LOWER_MODE Smode
+  LA(x8, scratch)
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  srli x27, x8, 2  # 8-byte NAPOT region
+  CSRW(0x151, x27)
+  nop
 
-# S-mode rule with RWX=none
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x18)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=none ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x18)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_str)
-
-# S-mode rule with RWX=x
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x19)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_load:
+  lw x27, 0(x8)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_str)
 
-# S-mode rule with RWX=r
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x1c)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=x ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x1c)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_str)
-
-# S-mode rule with RWX=rx
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x1d)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_load:
+  lw x27, 0(x8)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_str)
 
-# S-mode rule with RWX=rw
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x1e)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=r ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x19)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_str)
-
-# S-mode rule with RWX=rwx
-  LI(x19, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x19)
-  LI(x17, 0x1f)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load:
+  lw x27, 0(x8)
+  nop
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx:
-  # Read spmpcfg (sireg2) into x25 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x25, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_str)
-  LI(x17, 0x0)  # spmpcfg value
-  CSRW(0x152, x17)  # write sireg2 (spmpcfg)
+
+# === S-mode-only rule with RWX=rx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x1d)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load:
+  lw x27, 0(x8)
+  nop
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === S-mode-only rule with RWX=rw ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x1b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load:
+  lw x27, 0(x8)
+  nop
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === S-mode-only rule with RWX=rwx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x8)
+  fence.i
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x1f)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load:
+  lw x27, 0(x8)
+  nop
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_store:
+  LI(x9, 0x00008067)
+  sw x9, 0(x8)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_load:
+  lw x27, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_store:
+  sw x9, 0(x8)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x8)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  LI(x9, 0x0)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -130,12 +376,42 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_str: .string "\"test: 6; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_load_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_store_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_fetch_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_load_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_store_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_fetch_str: .string "\"test: 6; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_load_str: .string "\"test: 7; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_store_str: .string "\"test: 8; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_fetch_str: .string "\"test: 9; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_load_str: .string "\"test: 10; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_store_str: .string "\"test: 11; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_fetch_str: .string "\"test: 12; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load_str: .string "\"test: 13; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_store_str: .string "\"test: 14; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_fetch_str: .string "\"test: 15; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_load_str: .string "\"test: 16; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_store_str: .string "\"test: 17; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_fetch_str: .string "\"test: 18; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load_str: .string "\"test: 19; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_store_str: .string "\"test: 20; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_fetch_str: .string "\"test: 21; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_load_str: .string "\"test: 22; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_store_str: .string "\"test: 23; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_fetch_str: .string "\"test: 24; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load_str: .string "\"test: 25; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_store_str: .string "\"test: 26; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_fetch_str: .string "\"test: 27; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_load_str: .string "\"test: 28; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_store_str: .string "\"test: 29; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_fetch_str: .string "\"test: 30; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load_str: .string "\"test: 31; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_store_str: .string "\"test: 32; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_fetch_str: .string "\"test: 33; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_load_str: .string "\"test: 34; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_store_str: .string "\"test: 35; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_fetch_str: .string "\"test: 36; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_fetch\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

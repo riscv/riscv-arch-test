@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x8, 0x107)
+  CSRW(miselect, x8)  # select resident SPMP entry 7
+  LI(x19, -1)  # maximal NAPOT region
+  CSRW(mireg, x19)
+  LI(x19, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x19)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x19, -1)
+  CSRW(CSR_SPMPEN, x19)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -49,23 +62,23 @@ RVTEST_BEGIN
 //   When entry 0 uses TOR mode, the lower bound is implicitly 0.
 //   The range is [0, spmpaddr[0]).
 /////////////////////////////////
-  LI(x8, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x8)
-  LI(x19, 0x20004000)  # spmpaddr value
-  CSRW(0x151, x19)  # write sireg (spmpaddr)
+  LI(x15, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x15)
+  LI(x31, 0x20004000)  # spmpaddr value
+  CSRW(0x151, x31)  # write sireg (spmpaddr)
   nop
-  LI(x19, 0x10b)  # spmpcfg value
-  CSRW(0x152, x19)  # write sireg2 (spmpcfg)
+  LI(x31, 0x10b)  # spmpcfg value
+  CSRW(0x152, x31)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
-  # Read spmpcfg (sireg2) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
-  LI(x19, 0x0)  # spmpcfg value
-  CSRW(0x152, x19)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x10 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x10, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
+  LI(x31, 0x0)  # spmpcfg value
+  CSRW(0x152, x31)  # write sireg2 (spmpcfg)
   nop
-  LI(x19, 0x0)  # spmpaddr value
-  CSRW(0x151, x19)  # write sireg (spmpaddr)
+  LI(x31, 0x0)  # spmpaddr value
+  CSRW(0x151, x31)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 

@@ -9,14 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmPriority.S"
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 11
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x9, 0x107)
+  CSRW(miselect, x9)  # select resident SPMP entry 7
+  LI(x16, -1)  # maximal NAPOT region
+  CSRW(mireg, x16)
+  LI(x16, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x16)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x16, -1)
+  CSRW(CSR_SPMPEN, x16)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -49,50 +62,61 @@ RVTEST_BEGIN
 //   Test that lowest-numbered matching SPMP entry determines access.
 //   Configure overlapping entries with different permissions.
 /////////////////////////////////
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x16, 0x20000fff)  # spmpaddr value
-  CSRW(0x151, x16)  # write sireg (spmpaddr)
+  LA(x13, scratch)
+  LI(x9, 0x13579BDF)
+  sw x9, 0(x13)
+  srli x13, x13, 2  # 8-byte NAPOT region
+  LI(x31, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x31)
+  CSRW(0x151, x13)
   nop
-  LI(x16, 0x118)  # spmpcfg value
-  CSRW(0x152, x16)  # write sireg2 (spmpcfg)
+  LI(x9, 0x18)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x16, 0x20000fff)  # spmpaddr value
-  CSRW(0x151, x16)  # write sireg (spmpaddr)
+  LI(x31, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x31)
+  CSRW(0x151, x13)
   nop
-  LI(x16, 0x11e)  # spmpcfg value
-  CSRW(0x152, x16)  # write sireg2 (spmpcfg)
+  LI(x9, 0x1b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
+  LI(x31, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x31)
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-# Entry 0 (no permissions) should take priority over Entry 1 (RW)
-SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins:
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  # Read spmpcfg (sireg2) into x31 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x31, SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins, SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_str)
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary:
-  # Read spmpcfg (sireg2) into x31 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x31, SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary, SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary_str)
-SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations:
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x16, 0x0)  # spmpcfg value
-  CSRW(0x152, x16)  # write sireg2 (spmpcfg)
+# Entry 0 matches first, so the load must fault despite entry 1 allowing it
+SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_deny:
+SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_ignores_entry0_permissions:
+  LA(x13, scratch)
+  lw x19, 0(x13)
+  nop  # trap handler resumes here
+  LI(x31, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x31)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  LI(x16, 0x0)  # spmpaddr value
-  CSRW(0x151, x16)  # write sireg (spmpaddr)
+  LI(x31, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x31)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off:
+  LA(x13, scratch)
+  lw x19, 0(x13)
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off, SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off_str)
+  LI(x31, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x31)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x16, 0x0)  # spmpcfg value
-  CSRW(0x152, x16)  # write sireg2 (spmpcfg)
+  LI(x9, 0x0)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
-  LI(x16, 0x0)  # spmpaddr value
-  CSRW(0x151, x16)  # write sireg (spmpaddr)
+  LI(x31, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x31)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
+  nop
+  LI(x9, 0x0)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -106,9 +130,9 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_str: .string "\"test: 1; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry0_wins\""
-SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary_str: .string "\"test: 2; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry1_secondary\""
-SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations_str: .string "\"test: 3; cg: SspmpSm_addr_cg; cp: cp_match_irrespective_perm_bits; bin: match_rwx_variations\""
+SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_deny_str: .string "\"test: 1; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry0_wins_deny\""
+SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_ignores_entry0_permissions_str: .string "\"test: 2; cg: SspmpSm_addr_cg; cp: cp_match_irrespective_perm_bits; bin: match_ignores_entry0_permissions\""
+SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off_str: .string "\"test: 3; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry1_allows_after_entry0_off\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

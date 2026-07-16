@@ -9,14 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmNoMatch.S"
-#define SIGUPD_COUNT 11
+#define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x20, 0x107)
+  CSRW(miselect, x20)  # select resident SPMP entry 7
+  LI(x21, -1)  # maximal NAPOT region
+  CSRW(mireg, x21)
+  LI(x21, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x21)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x21, -1)
+  CSRW(CSR_SPMPEN, x21)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -47,32 +60,59 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_no_match_deny
 //   Verify that when no SPMP entry matches, S/U-mode access is denied.
-//   Configure all tested entries with A=OFF (disabled), then attempt access.
+//   Leave the scratch bytes unmatched while retaining explicit resident rules
+//   for test code and trap-handler data, then load from scratch.
 /////////////////////////////////
-  LI(x20, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x20)
-  LI(x21, 0x0)  # spmpcfg value
-  CSRW(0x152, x21)  # write sireg2 (spmpcfg)
-  nop
-  LI(x20, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x20)
-  LI(x21, 0x0)  # spmpcfg value
-  CSRW(0x152, x21)  # write sireg2 (spmpcfg)
-  nop
-  LI(x20, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x20)
-  LI(x21, 0x0)  # spmpcfg value
-  CSRW(0x152, x21)  # write sireg2 (spmpcfg)
-  nop
-  LI(x20, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x20)
-  LI(x21, 0x0)  # spmpcfg value
-  CSRW(0x152, x21)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off:
-  # Read spmpcfg (sireg2) into x31 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x31, SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off, SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off_str)
+  RVTEST_GOTO_MMODE
+  LA(x7, scratch)
+  srli x7, x7, 2
+  LI(x31, 0x100)
+  CSRW(miselect, x31)
+  CSRW(mireg, x7)  # entry 0 TOR top = scratch
+  LI(x15, 0xf)
+  CSRW(mireg2, x15)
+  LI(x31, 0x101)
+  CSRW(miselect, x31)
+  addi x7, x7, 66
+  CSRW(mireg, x7)  # entry 1 boundary = scratch + 264
+  CSRW(mireg2, zero)  # entry 1 OFF: leave scratch unmatched
+  LI(x31, 0x102)
+  CSRW(miselect, x31)
+  LI(x15, -1)
+  CSRW(mireg, x15)  # entry 2 TOR top = maximum address
+  LI(x15, 0xf)
+  CSRW(mireg2, x15)
+  LI(x31, 0x107)
+  CSRW(miselect, x31)
+  CSRW(mireg2, zero)  # temporarily disable the catch-all entry
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0
+SspmpSm_perm_cg_cp_no_match_deny_no_match_load_fault:
+  LA(x7, scratch)
+  lw x27, 0(x7)  # no matching entry: load page fault
+  nop  # trap handler resumes here
+  RVTEST_GOTO_MMODE
+  LI(x31, 0x107)
+  CSRW(miselect, x31)
+  LI(x15, -1)
+  CSRW(mireg, x15)
+  LI(x15, 0x31f)
+  CSRW(mireg2, x15)
+  LI(x31, 0x100)
+  CSRW(miselect, x31)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  LI(x31, 0x101)
+  CSRW(miselect, x31)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  LI(x31, 0x102)
+  CSRW(miselect, x31)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Smode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -84,7 +124,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_no_match_deny; bin: no_match_all_off\""
+SspmpSm_perm_cg_cp_no_match_deny_no_match_load_fault_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_no_match_deny; bin: no_match_load_fault\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

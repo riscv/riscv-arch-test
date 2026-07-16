@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x26, 0x107)
+  CSRW(miselect, x26)  # select resident SPMP entry 7
+  LI(x22, -1)  # maximal NAPOT region
+  CSRW(mireg, x22)
+  LI(x22, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x22)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x22, -1)
+  CSRW(CSR_SPMPEN, x22)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -53,30 +66,30 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Pre-install `ret` (0x00008067) at scratch[0]
-  LA(x10, scratch)
-  LI(x22, 0x00008067)  # ret
-  sw x22, 0(x10)
+  LA(x16, scratch)
+  LI(x10, 0x00008067)  # ret
+  sw x10, 0(x16)
   fence.i  # sync icache with the data write
 
 # Delegate U-mode ecall (medeleg bit 8) to S-mode for RVTEST_GOTO_SMODE
   RVTEST_GOTO_MMODE
-  LI(x22, 0x100)  # bit 8: U-mode ecall
-  CSRS(CSR_MEDELEG, x22)
+  LI(x10, 0x100)  # bit 8: U-mode ecall
+  CSRS(CSR_MEDELEG, x10)
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 
 # === U-mode rule with RWX=none ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x118)  # U=1, RWX=none
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x118)  # U=1, RWX=none
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -84,20 +97,20 @@ RVTEST_BEGIN
 # === In U-mode ===
 # load: succeeds iff R=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -105,16 +118,16 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
 
 # === U-mode rule with RWX=x ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x119)  # U=1, RWX=x
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x11c)  # U=1, RWX=x
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -122,20 +135,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (no) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -143,16 +156,16 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
 
 # === U-mode rule with RWX=r ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x11c)  # U=1, RWX=r
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x119)  # U=1, RWX=r
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -160,20 +173,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -181,16 +194,16 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
 
 # === U-mode rule with RWX=rx ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x11d)  # U=1, RWX=rx
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x11d)  # U=1, RWX=rx
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -198,20 +211,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -219,16 +232,16 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
 
 # === U-mode rule with RWX=rw ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x11e)  # U=1, RWX=rw
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x11b)  # U=1, RWX=rw
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -236,20 +249,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (yes) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -257,16 +270,16 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
 
 # === U-mode rule with RWX=rwx ===
   RVTEST_GOTO_MMODE
-  LI(x26, 0x100)
-  CSRW(miselect, x26)
+  LI(x11, 0x100)
+  CSRW(miselect, x11)
   nop
-  LA(x10, scratch)
-  srli x10, x10, 2  # spmpaddr format
-  ori x10, x10, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x10)  # spmpaddr via mireg
+  LA(x16, scratch)
+  srli x16, x16, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x16)  # spmpaddr via mireg
   nop
-  LI(x22, 0x11f)  # U=1, RWX=rwx
-  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  LI(x10, 0x11f)  # U=1, RWX=rwx
+  CSRW(mireg2, x10)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Umode
@@ -274,30 +287,30 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load:
-  LA(x10, scratch)
-  lw x11, 0(x10)
+  LA(x16, scratch)
+  lw x7, 0(x16)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store:
-  LI(x22, 0x00008067)  # ret (preserves the jalr target)
-  sw x22, 0(x10)
+  LI(x10, 0x00008067)  # ret (preserves the jalr target)
+  sw x10, 0(x16)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x16)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
   RVTEST_GOTO_SMODE
 
 # Clean up: clear spmpcfg via S-mode indirect access
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x0)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
+  LI(x11, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x11)
+  LI(x10, 0x0)  # spmpcfg value
+  CSRW(0x152, x10)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 

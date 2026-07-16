@@ -9,8 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,12 +34,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x19, 0x107)
+  CSRW(miselect, x19)  # select resident SPMP entry 7
+  LI(x15, -1)  # maximal NAPOT region
+  CSRW(mireg, x15)
+  LI(x15, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x15)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x15, -1)
+  CSRW(CSR_SPMPEN, x15)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -50,80 +63,80 @@ RVTEST_BEGIN
 //   Also test that locked TOR entries lock the preceding spmpaddr.
 //   NOTE: Lock can only be cleared from M-mode via miselect.
 /////////////////////////////////
-  LI(x19, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x19)
-  LI(x15, 0x8000000)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x8, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x8)
+  LI(x25, 0x8000000)  # spmpaddr value
+  CSRW(0x151, x25)  # write sireg (spmpaddr)
   nop
-  LI(x19, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x19)
-  LI(x15, 0x8000400)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x8, 0x102)  # siselect = SPMP entry 2
+  CSRW(siselect, x8)
+  LI(x25, 0x8000400)  # spmpaddr value
+  CSRW(0x151, x25)  # write sireg (spmpaddr)
   nop
-  LI(x15, 0x109)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  LI(x25, 0x109)  # spmpcfg value
+  CSRW(0x152, x25)  # write sireg2 (spmpcfg)
   nop
 
 # Verify entry is currently unlocked
 SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked:
-  # Read spmpcfg (sireg2) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked_str)
-  LI(x15, 0x189)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked_str)
+  LI(x25, 0x189)  # spmpcfg value
+  CSRW(0x152, x25)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_entry2_locked:
-  # Read spmpcfg (sireg2) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked_str)
-  LI(x15, 0x11b)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked_str)
+  LI(x25, 0x11b)  # spmpcfg value
+  CSRW(0x152, x25)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg:
-  # Read spmpcfg (sireg2) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg_str)
-  LI(x15, 0x2)  # try to set W bit
-  CSRS(0x152, x15)  # csrrs sireg2
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg_str)
+  LI(x25, 0x2)  # try to set W bit
+  CSRS(0x152, x25)  # csrrs sireg2
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg:
-  # Read spmpcfg (sireg2) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg_str)
-  LI(x15, 0x1)  # try to clear R bit
-  CSRC(0x152, x15)  # csrrc sireg2
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg_str)
+  LI(x25, 0x1)  # try to clear R bit
+  CSRC(0x152, x25)  # csrrc sireg2
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg:
-  # Read spmpcfg (sireg2) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str)
-  LI(x15, 0xdead)  # attempt to change locked spmpaddr
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str)
+  LI(x25, 0xdead)  # attempt to change locked spmpaddr
+  CSRW(0x151, x25)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write:
-  # Read spmpaddr (sireg) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str)
-  LI(x19, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x19)
-  LI(x15, 0xbeef)  # attempt to change prev entry's spmpaddr
-  CSRW(0x151, x15)  # write sireg (spmpaddr[1])
+  # Read spmpaddr (sireg) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str)
+  LI(x8, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x8)
+  LI(x25, 0xbeef)  # attempt to change prev entry's spmpaddr
+  CSRW(0x151, x25)  # write sireg (spmpaddr[1])
   nop
 SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr:
-  # Read spmpaddr (sireg) into x8 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str)
+  # Read spmpaddr (sireg) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str)
 
 # Clear lock bit from M-mode via miselect
   RVTEST_GOTO_MMODE
-  LI(x19, 0x102)
-  CSRW(0x350, x19)  # miselect = SPMP entry 2
+  LI(x8, 0x102)
+  CSRW(0x350, x8)  # miselect = SPMP entry 2
   nop
-  LI(x15, 0x109)  # cfg without L bit
-  CSRW(0x352, x15)  # write mireg2 to clear lock
+  LI(x25, 0x109)  # cfg without L bit
+  CSRW(0x352, x25)  # write mireg2 to clear lock
   nop
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
-  # Read 0x352 into x8 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x8, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
+  # Read 0x352 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
   CSRW(0x352, zero)  # clear mireg2
   nop
   CSRW(0x351, zero)  # clear mireg
   nop
-  LI(x19, 0x101)
-  CSRW(0x350, x19)
+  LI(x8, 0x101)
+  CSRW(0x350, x8)
   nop
   CSRW(0x351, zero)
   nop

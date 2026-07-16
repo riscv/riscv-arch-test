@@ -10,6 +10,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSPMPSM
+`define SSPMP_LAST_SELECTOR (12'h100 + `UDB_NUM_PMP_ENTRIES - 1)
+`define SSPMP_FIRST_OOB_SELECTOR (12'h100 + `UDB_NUM_PMP_ENTRIES)
 
 ///////////////////////////////////////////
 // CSR Access Covergroup
@@ -25,12 +27,12 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //         then reading/writing sireg (spmpaddr) and sireg2 (spmpcfg)
     //------------------------------------------
     siselect_val: coverpoint ins.current.csr[12'h150] {
-        bins spmp_entry[4] = {[12'h100:12'h13F]};
+        bins spmp_entry[4] = {[12'h100:`SSPMP_LAST_SELECTOR]};
     }
 
     cp_spmp_indirect_access: coverpoint ins.current.insn iff
         ((ins.current.insn[31:20] inside {12'h150, 12'h151, 12'h152}) &&
-         (ins.current.csr[12'h150] inside {[12'h100:12'h13F]})) {
+         (ins.current.csr[12'h150] inside {[12'h100:`SSPMP_LAST_SELECTOR]})) {
         wildcard bins csrrw_sireg  = {CSRRW};
         wildcard bins csrrs_sireg  = {CSRRS};
         wildcard bins csrrc_sireg  = {CSRRC};
@@ -41,7 +43,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_spmpaddr_write: coverpoint ins.current.csr[12'h151] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins addr_zero = {0};
         bins addr_nonzero = {[1:$]};
     }
@@ -52,7 +54,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_spmpcfg_write: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         // A field encodings (bits [4:3])
         bins a_off   = {2'b00};
         bins a_tor   = {2'b01};
@@ -65,7 +67,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_spmp_lock: coverpoint ins.current.csr[12'h152][7] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins locked = {1};
         bins unlocked = {0};
     }
@@ -74,23 +76,35 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     // cp_spmp_lock_write_ignored: Writes to locked entry via siselect are ignored
     //------------------------------------------
     cp_spmp_lock_write_ignored: coverpoint {
-        ins.prev.csr[12'h152][7],
-        ins.current.insn[14:12]
-    } iff (ins.current.csr[12'h150] >= 12'h100 &&
-           ins.current.csr[12'h150] <= 12'h13F) {
-        bins locked_csrrw = {4'b1_001};
-        bins locked_csrrs = {4'b1_010};
-        bins locked_csrrc = {4'b1_011};
+        ins.current.insn[14:12],
+        ((ins.current.insn[31:20] == 12'h151 &&
+          ins.prev.csr[12'h151] == ins.current.csr[12'h151]) ||
+         (ins.current.insn[31:20] == 12'h152 &&
+          ins.prev.csr[12'h152] == ins.current.csr[12'h152]))
+    } iff (ins.prev.csr[12'h152][7] == 1 &&
+           ins.current.csr[12'h150] >= 12'h100 &&
+           ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR &&
+           ins.current.insn[31:20] inside {12'h151, 12'h152} &&
+           (ins.current.insn[14:12] == 3'b001 ||
+            (ins.current.insn[14:12] inside {3'b010, 3'b011} &&
+             ins.current.rs1_val != '0))) {
+        bins locked_csrrw = {4'b001_1};
+        bins locked_csrrs = {4'b010_1};
+        bins locked_csrrc = {4'b011_1};
     }
 
     //------------------------------------------
     // cp_spmp_lock_tor_prevaddr: Locked TOR entry also locks previous spmpaddr
     //------------------------------------------
     cp_spmp_lock_tor_prevaddr: coverpoint {
-        ins.prev.csr[12'h152][7],
-        ins.prev.csr[12'h152][4:3]
-    } {
-        bins locked_tor = {3'b1_01};
+        ins.current.insn[14:12],
+        (ins.prev.csr[12'h151] == ins.current.csr[12'h151])
+    } iff (ins.current.insn[31:20] == 12'h151 &&
+           ins.current.csr[12'h150] == 12'h101) {
+        // The test has already locked entry 2 in TOR mode. Selecting entry 1
+        // hides entry 2's cfg from sireg2, so observe the required effect:
+        // a CSRRW to entry 1's spmpaddr leaves its value unchanged.
+        bins locked_tor_prevaddr_write_ignored = {4'b001_1};
     }
 
     //------------------------------------------
@@ -101,7 +115,10 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     siselect_oob: coverpoint ins.current.csr[12'h150] {
         type_option.weight = 0;
-        bins oob_range = {[12'h140:12'h1FF]};
+        `ifndef UDB_NUM_PMP_ENTRIES_64
+            bins unimplemented_entry = {[`SSPMP_FIRST_OOB_SELECTOR:12'h13F]};
+        `endif
+        bins reserved_selector = {[12'h140:12'h1FF]};
     }
 
     csr_op_type: coverpoint ins.current.insn[14:12] {
@@ -114,14 +131,16 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     }
 
     sireg_read_val_zero: coverpoint ins.current.csr[12'h151] iff
-        (ins.current.csr[12'h150] inside {[12'h140:12'h1FF]}) {
+        (((ins.current.csr[12'h150] >= `SSPMP_FIRST_OOB_SELECTOR) &&
+          (ins.current.csr[12'h150] <= 12'h13F)) ||
+         (ins.current.csr[12'h150] inside {[12'h140:12'h1FF]})) {
         type_option.weight = 0;
         bins read_zero = {0};
     }
 
     //------------------------------------------
     // cp_spmp_oob_read_zero: Out-of-bounds siselect reads must return zero
-    //   Maps to normative rule: siselect_oob_read_zero
+    //   Maps to normative rule: siselect_oob_access
     //------------------------------------------
     cp_spmp_oob_read_zero: cross siselect_oob, csr_op_type, sireg_read_val_zero {
         bins oob_read_returns_zero = binsof(csr_op_type.read_op) &&
@@ -131,7 +150,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
 
     //------------------------------------------
     // cp_spmp_oob_write_ignored: Out-of-bounds siselect writes must be silently ignored
-    //   Maps to normative rule: siselect_oob_write_ignored
+    //   Maps to normative rule: siselect_oob_access
     //   The readback after an OOB write still returns zero (no state change).
     //------------------------------------------
     cp_spmp_oob_write_ignored: cross siselect_oob, csr_op_type, sireg_read_val_zero {
@@ -144,23 +163,21 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     // Building blocks for mpmpdeleg.pmpnum differentiation.
     // pmpnum_val:    the written pmpnum value.
     // delegation_active: inferred from pmpnum != number_of_writable_pmp_entries.
-    //                pmpnum < 64 => at least one entry delegated.
+    //                pmpnum below the implemented PMP count delegates at least one entry.
     // spmp_access_result: whether a subsequent SPMP access returned zero (no delegation)
     //                or a real value (delegation active).
     //------------------------------------------
     pmpnum_val: coverpoint ins.current.csr[12'h316][6:0] {
         type_option.weight = 0;
-        bins zero    = {0};                 // all delegated
-        bins low     = {[1:15]};            // mostly delegated
-        bins mid     = {[16:47]};           // split
-        bins high    = {[48:63]};           // mostly PMP
-        bins max     = {[64:$]};            // none delegated
+        bins zero       = {0};
+        bins partial[4] = {[1:(`UDB_NUM_PMP_ENTRIES-1)]};
+        bins max        = {[`UDB_NUM_PMP_ENTRIES:$]};
     }
 
     delegation_active: coverpoint ins.current.csr[12'h316][6:0] {
         type_option.weight = 0;
-        bins delegating     = {[0:63]};   // pmpnum < max => SPMP enabled
-        bins not_delegating = {[64:$]};   // pmpnum >= max writable => SPMP disabled
+        bins delegating     = {[0:(`UDB_NUM_PMP_ENTRIES-1)]};
+        bins not_delegating = {[`UDB_NUM_PMP_ENTRIES:$]};
     }
 
     // Sample the SPMP readback value (sireg) to classify as zero (no delegation)
@@ -177,8 +194,8 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_mpmpdeleg_pmpnum_field: coverpoint ins.current.csr[12'h316][6:0] {
         bins zero_all_delegated = {0};
-        bins partial[4]         = {[1:63]};
-        bins max_none_delegated = {[64:$]};
+        bins partial[4]         = {[1:(`UDB_NUM_PMP_ENTRIES-1)]};
+        bins max_none_delegated = {[`UDB_NUM_PMP_ENTRIES:$]};
     }
 
     //------------------------------------------
@@ -186,9 +203,10 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //   Crosses pmpnum=0 with a delegated SPMP read returning non-zero state.
     //   Maps to normative rule: mpmpdeleg_pmpnum_zero_delegates_all
     //------------------------------------------
-    cp_mpmpdeleg_pmpnum_zero: cross pmpnum_val, delegation_active {
+    cp_mpmpdeleg_pmpnum_zero: cross pmpnum_val, delegation_active, spmp_access_result {
         bins zero_and_delegating = binsof(pmpnum_val.zero) &&
-                                   binsof(delegation_active.delegating);
+                                   binsof(delegation_active.delegating) &&
+                                   binsof(spmp_access_result.spmp_nonzero);
     }
 
     //------------------------------------------
@@ -204,8 +222,47 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     // cp_mpmpdeleg_locked: Cannot set pmpnum below locked PMP entry
     //------------------------------------------
-    cp_mpmpdeleg_locked: coverpoint ins.current.csr[12'h316][6:0] {
-        bins pmpnum_val[4] = {[0:64]};
+    `ifdef XLEN64
+        pmp7_locked: coverpoint ins.current.csr[12'h3A0][63] {
+            type_option.weight = 0;
+            bins locked = {1};
+        }
+    `else
+        pmp7_locked: coverpoint ins.current.csr[12'h3A1][31] {
+            type_option.weight = 0;
+            bins locked = {1};
+        }
+    `endif
+
+    pmpnum_write_request: coverpoint ins.current.rs1_val[6:0] iff
+        (ins.current.insn[31:20] == 12'h316 && ins.current.insn[14:12] == 3'b001) {
+        type_option.weight = 0;
+        bins below_locked_pmp7 = {7'd4};
+        bins architectural_max = {7'd64};
+    }
+
+    pmpnum_write_readback: coverpoint ins.current.csr[12'h316][6:0] iff
+        (ins.current.insn[31:20] == 12'h316 && ins.current.insn[14:12] == 3'b001) {
+        type_option.weight = 0;
+        bins no_delegation = {[`UDB_NUM_PMP_ENTRIES:$]};
+    }
+
+    pmpnum_write_unchanged: coverpoint
+        (ins.prev.csr[12'h316][6:0] == ins.current.csr[12'h316][6:0]) iff
+        (ins.current.insn[31:20] == 12'h316 && ins.current.insn[14:12] == 3'b001) {
+        type_option.weight = 0;
+        bins changed = {0};
+        bins ignored = {1};
+    }
+
+    cp_mpmpdeleg_locked: cross pmp7_locked, pmpnum_write_request,
+                                pmpnum_write_readback, pmpnum_write_unchanged {
+        bins architectural_max_allowed = binsof(pmp7_locked.locked) &&
+                                         binsof(pmpnum_write_request.architectural_max) &&
+                                         binsof(pmpnum_write_readback.no_delegation);
+        bins below_locked_entry_rejected = binsof(pmp7_locked.locked) &&
+                                           binsof(pmpnum_write_request.below_locked_pmp7) &&
+                                           binsof(pmpnum_write_unchanged.ignored);
     }
 
     //------------------------------------------
@@ -217,7 +274,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //   indirect-access path).  spmpen writes are not modelled here because
     //   this covergroup samples siselect state, not the prev instruction's
     //   target CSR address.
-    //   Maps to normative rule: sfence_vma_ordering
+    //   Maps to normative rule: sspmp_sfence_vma_ordering
     //------------------------------------------
     sfence_vma_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
@@ -226,15 +283,17 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         wildcard bins sfence_x0_x0 = {32'b0001001_00000_00000_000_00000_1110011};
     }
 
-    prev_wrote_spmp_csr: coverpoint ins.prev.csr[12'h150] {
+    prev_wrote_spmp_csr: coverpoint ins.prev.insn[31:20] iff
+        (ins.prev.csr[12'h150] inside {[12'h100:`SSPMP_LAST_SELECTOR]}) {
         type_option.weight = 0;
-        // Previous instruction targeted sireg(2) with siselect in the SPMP range.
-        bins prev_spmp_sel = {[12'h100:12'h13F]};
+        bins prev_sireg  = {12'h151};
+        bins prev_sireg2 = {12'h152};
     }
 
     cp_sfence_ordering: cross sfence_vma_insn, prev_wrote_spmp_csr {
         bins sfence_after_spmp_write = binsof(sfence_vma_insn.sfence_x0_x0) &&
-                                       binsof(prev_wrote_spmp_csr.prev_spmp_sel);
+                                       (binsof(prev_wrote_spmp_csr.prev_sireg) ||
+                                        binsof(prev_wrote_spmp_csr.prev_sireg2));
     }
 
     //------------------------------------------
@@ -242,7 +301,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_mmode_indirect_access: coverpoint ins.current.csr[12'h350] iff
         (ins.prev.mode == 2'b11) {
-        bins spmp_range[4] = {[12'h100:12'h13F]};
+        bins spmp_range[4] = {[12'h100:`SSPMP_LAST_SELECTOR]};
     }
 
     //------------------------------------------
@@ -252,8 +311,10 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         ins.prev.csr[12'h352][7],
         ins.current.csr[12'h352][7]
     } iff (ins.prev.mode == 2'b11 &&
+           ins.current.insn[31:20] == 12'h352 &&
+           ins.current.insn[14:12] == 3'b001 &&
            ins.current.csr[12'h350] >= 12'h100 &&
-           ins.current.csr[12'h350] <= 12'h13F) {
+           ins.current.csr[12'h350] <= `SSPMP_LAST_SELECTOR) {
         bins clear_lock = {2'b10};  // was locked, now unlocked
     }
 
@@ -285,14 +346,15 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         (ins.current.csr[12'h152][9] == 0 &&
          ins.current.csr[12'h152][8] == 0) {
         type_option.weight = 0;
-        bins r_only = {3'b100};
-        bins rw     = {3'b110};
+        // The spec names encodings as RWX; csr[2:0] is physically {X,W,R}.
+        bins r_only = {3'b001};
+        bins rw     = {3'b011};
         bins rx     = {3'b101};
         bins rwx    = {3'b111};
-        bins x_only = {3'b001};
+        bins x_only = {3'b100};
     }
 
-    cp_smode_rule: cross smode_rule_rwx, priv_mode_m_s, access_type;
+    cp_smode_rule: cross smode_rule_rwx, priv_mode_s_u, access_type;
 
     //------------------------------------------
     // cp_umode_rule: U-mode rule (SHARED=0, U=1)
@@ -304,11 +366,11 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         (ins.current.csr[12'h152][9] == 0 &&
          ins.current.csr[12'h152][8] == 1) {
         type_option.weight = 0;
-        bins r_only = {3'b100};
-        bins rw     = {3'b110};
+        bins r_only = {3'b001};
+        bins rw     = {3'b011};
         bins rx     = {3'b101};
         bins rwx    = {3'b111};
-        bins x_only = {3'b001};
+        bins x_only = {3'b100};
     }
 
     cp_umode_rule: cross umode_rule_rwx, priv_mode_u, access_type;
@@ -388,34 +450,59 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     // cp_shared_rule: Shared-Region rule (SHARED=1, U=1)
     // Both S and U mode: Enforced
     // RWX=000: Enforce/Enforce (no access)
-    // RWX=100: Enforce/Read-only
-    // RWX=110: Enforce/Enforce
+    // RWX=100: Enforce/Enforce
+    // RWX=110: Enforce/Read-only
     // RWX=001: Enforce/Enforce
-    // RWX=101: Enforce/Exec-only
-    // RWX=111: Enforce/Enforce
+    // RWX=101: Enforce/Enforce
+    // RWX=111: Enforce/Exec-only
     //------------------------------------------
     shared_rule_rwx: coverpoint ins.current.csr[12'h152][2:0] iff
         (ins.current.csr[12'h152][9] == 1 &&
          ins.current.csr[12'h152][8] == 1) {
         type_option.weight = 0;
         bins none     = {3'b000};
-        bins r_only   = {3'b100};
-        bins rw       = {3'b110};
-        bins x_only   = {3'b001};
+        bins r_only   = {3'b001};
+        bins rw       = {3'b011};
+        bins x_only   = {3'b100};
         bins rx       = {3'b101};
         bins rwx      = {3'b111};
     }
 
-    cp_shared_rule: cross shared_rule_rwx, priv_mode_m_s, access_type;
+    cp_shared_rule: cross shared_rule_rwx, priv_mode_s_u, access_type;
 
     //------------------------------------------
-    // cp_reserved_encoding: RWX=010 and RWX=011 are reserved
+    // cp_shared_sum_ignored: Shared-region S-mode data access is independent
+    // of sstatus.SUM. The generator performs the same permitted load with
+    // SUM clear and set.
+    //------------------------------------------
+    shared_sum_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    cp_shared_sum_ignored: cross shared_rule_rwx, sum_bit, priv_mode_s,
+                                  shared_sum_load_insn, data_access_outcome {
+        bins sum0_load_allowed = binsof(shared_rule_rwx.r_only) &&
+                                 binsof(sum_bit.sum_0) &&
+                                 binsof(priv_mode_s) &&
+                                 binsof(shared_sum_load_insn.lw) &&
+                                 binsof(data_access_outcome.no_trap);
+        bins sum1_load_allowed = binsof(shared_rule_rwx.r_only) &&
+                                 binsof(sum_bit.sum_1) &&
+                                 binsof(priv_mode_s) &&
+                                 binsof(shared_sum_load_insn.lw) &&
+                                 binsof(data_access_outcome.no_trap);
+    }
+
+    //------------------------------------------
+    // cp_reserved_encoding: conceptual RWX=010/011 are reserved.
+    // In the physical {X,W,R} slice these are 010 and 110 respectively.
     //------------------------------------------
     cp_reserved_encoding: coverpoint ins.current.csr[12'h152][2:0] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins rwx_010 = {3'b010};
-        bins rwx_011 = {3'b011};
+        bins rwx_011 = {3'b110};
     }
 
     //------------------------------------------
@@ -464,7 +551,7 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_addr_match_off: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins off = {2'b00};
     }
 
@@ -473,7 +560,7 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_addr_match_tor: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins tor = {2'b01};
     }
 
@@ -482,7 +569,7 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_addr_match_na4: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins na4 = {2'b10};
     }
 
@@ -491,14 +578,14 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     //------------------------------------------
     cp_addr_match_napot: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= 12'h13F) {
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins napot = {2'b11};
     }
 
     //------------------------------------------
     // cp_addr_match_tor_entry0: TOR on entry 0 (implicit lower bound = 0)
     //   Spec §2.3: "Particularly, if spmpcfg[0].A is set to TOR, zero is used for the lower bound."
-    //   Maps to normative rule: addr_match_tor_entry0
+    //   Maps to normative rule: spmpcfg-a_tor_entry0
     //------------------------------------------
     siselect_entry0: coverpoint ins.current.csr[12'h150] {
         type_option.weight = 0;
@@ -526,17 +613,17 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     // Which SPMP entry is currently selected (proxy for entry_index).
     entry_index: coverpoint ins.current.csr[12'h150] {
         type_option.weight = 0;
-        bins entry_lo[2] = {[12'h100:12'h101]};
-        bins entry_mid   = {[12'h102:12'h10F]};
-        bins entry_hi    = {[12'h110:12'h13F]};
+        bins entry0 = {12'h100};
+        bins entry1 = {12'h101};
+        bins higher = {[12'h102:`SSPMP_LAST_SELECTOR]};
     }
 
     // RWX bit combinations of the current spmpcfg value.
     perm_bits: coverpoint ins.current.csr[12'h152][2:0] {
         type_option.weight = 0;
         bins rwx_none = {3'b000};
-        bins rwx_r    = {3'b100};
-        bins rwx_rw   = {3'b110};
+        bins rwx_r    = {3'b001};
+        bins rwx_rw   = {3'b011};
         bins rwx_rx   = {3'b101};
         bins rwx_rwx  = {3'b111};
     }
@@ -551,9 +638,9 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     // same region.  Cross entry_index × match_result exercises the priority decision.
     //   Maps to normative rule: match_priority
     cp_priority_match: cross entry_index, match_result {
-        bins lowest_wins_deny  = binsof(entry_index.entry_lo) && binsof(match_result.deny);
-        bins lowest_wins_allow = binsof(entry_index.entry_lo) && binsof(match_result.allow);
-        bins secondary_entry   = binsof(entry_index.entry_mid) || binsof(entry_index.entry_hi);
+        bins entry0_wins_deny = binsof(entry_index.entry0) && binsof(match_result.deny);
+        bins entry1_after_entry0_off = binsof(entry_index.entry1) && binsof(match_result.allow);
+        ignore_bins higher_entries = binsof(entry_index.higher);
     }
 
     // cp_match_irrespective_perm_bits: address-match decision is independent of RWX.
@@ -619,18 +706,61 @@ covergroup SspmpSm_spmpen_cg with function sample(ins_t ins);
     }
 
     //------------------------------------------
+    // cp_spmpenh_readwrite: RV32 alias for spmpen[63:32]
+    //------------------------------------------
+    `ifndef XLEN64
+        cp_spmpenh_readwrite: coverpoint ins.current.csr[12'h193] {
+            bins all_zeros = {32'h0000_0000};
+            bins all_ones  = {32'hFFFF_FFFF};
+            bins other[4]  = default;
+        }
+    `endif
+
+    //------------------------------------------
     // cp_spmpen_activation: Entry active iff spmpen[i] & spmpcfg[i].A != 0
     // Tests toggling spmpen[i] with A=NAPOT and A=OFF
     //------------------------------------------
-    cp_spmpen_activation: coverpoint {
-        ins.current.csr[12'h183][0],
-        ins.current.csr[12'h152][4:3]
-    } iff (ins.current.csr[12'h150] >= 12'h100 &&
-           ins.current.csr[12'h150] <= 12'h13F) {
-        bins en_napot    = {3'b1_11};  // spmpen=1, A=NAPOT -> active
-        bins en_off      = {3'b1_00};  // spmpen=1, A=OFF   -> inactive
-        bins dis_napot   = {3'b0_11};  // spmpen=0, A=NAPOT -> inactive
-        bins dis_off     = {3'b0_00};  // spmpen=0, A=OFF   -> inactive
+    spmpen_entry0_enabled: coverpoint ins.current.csr[12'h183][0] {
+        type_option.weight = 0;
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+
+    spmpen_entry0_a: coverpoint ins.current.csr[12'h152][4:3] iff
+        (ins.current.csr[12'h150] == 12'h100) {
+        type_option.weight = 0;
+        bins off   = {2'b00};
+        bins napot = {2'b11};
+    }
+
+    spmpen_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    spmpen_access_outcome: coverpoint ins.current.trap {
+        type_option.weight = 0;
+        bins allowed = {0};
+        bins denied  = {1};
+    }
+
+    cp_spmpen_activation: cross spmpen_entry0_enabled, spmpen_entry0_a,
+                                 priv_mode_s, spmpen_load_insn, spmpen_access_outcome {
+        bins disabled_napot_allows = binsof(spmpen_entry0_enabled.disabled) &&
+                                     binsof(spmpen_entry0_a.napot) &&
+                                     binsof(priv_mode_s) &&
+                                     binsof(spmpen_load_insn.lw) &&
+                                     binsof(spmpen_access_outcome.allowed);
+        bins enabled_napot_denies = binsof(spmpen_entry0_enabled.enabled) &&
+                                    binsof(spmpen_entry0_a.napot) &&
+                                    binsof(priv_mode_s) &&
+                                    binsof(spmpen_load_insn.lw) &&
+                                    binsof(spmpen_access_outcome.denied);
+        bins enabled_off_allows = binsof(spmpen_entry0_enabled.enabled) &&
+                                  binsof(spmpen_entry0_a.off) &&
+                                  binsof(priv_mode_s) &&
+                                  binsof(spmpen_load_insn.lw) &&
+                                  binsof(spmpen_access_outcome.allowed);
     }
 
     //------------------------------------------
@@ -673,3 +803,6 @@ function void sspmpsm_sample(int hart, int issue, ins_t ins);
     SspmpSm_paging_cg.sample(ins);
     SspmpSm_spmpen_cg.sample(ins);
 endfunction
+
+`undef SSPMP_LAST_SELECTOR
+`undef SSPMP_FIRST_OOB_SELECTOR

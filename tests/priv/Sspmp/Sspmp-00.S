@@ -9,14 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Sspmpen']
-# # # no param constraints
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Sspmpen', 'Smpmpdeleg']
+# params:
+#   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Sspmp-00.S"
-#define SIGUPD_COUNT 124
+#define SIGUPD_COUNT 130
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define SKIP_MEPC
@@ -32,12 +33,24 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // SPMP boot preamble
-//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
-//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+//   Exercise the Smpmpdeleg resource-sharing profile by delegating all writable
+//   PMP entries, then install a lowest-priority resident rule for the test code.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries
   nop
+  LI(x15, 0x107)
+  CSRW(miselect, x15)  # select resident SPMP entry 7
+  LI(x7, -1)  # maximal NAPOT region
+  CSRW(mireg, x7)
+  LI(x7, 0x31f)  # shared S:RWX / U:X resident rule
+  CSRW(mireg2, x7)
+  nop
+#ifdef SSPMPEN_SUPPORTED
+  LI(x7, -1)
+  CSRW(CSR_SPMPEN, x7)  # activate all delegated entries
+  nop
+#endif
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_LOWER_MODE Smode
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
@@ -50,244 +63,244 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # === SPMP entry 0 ===
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  CSRR(x13, 0x151)  # save spmpaddr[0]
+  LI(x7, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x7)
+  CSRR(x15, 0x151)  # save spmpaddr[0]
   nop
-  CSRR(x8, 0x152)  # save spmpcfg[0]
+  CSRR(x6, 0x152)  # save spmpcfg[0]
   nop
 SspmpSm_csr_cg_cp_spmp_indirect_access_sireg_indirect_access:
-  LI(x7, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  LI(x14, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write_str)
-  LI(x7, 0x0)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write_str)
+  LI(x14, 0x0)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero_str)
-  li x7, -1  # all ones
-  CSRW(0x151, x7)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero_str)
+  li x14, -1  # all ones
+  CSRW(0x151, x14)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones_str)
-  LI(x7, 0x105)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones_str)
+  LI(x14, 0x105)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off_str)
-  LI(x7, 0x10d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off_str)
+  LI(x14, 0x10d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor_str)
-  LI(x7, 0x115)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor_str)
+  LI(x14, 0x115)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4_str)
-  LI(x7, 0x11d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4_str)
+  LI(x14, 0x11d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot_str)
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot_str)
+  LI(x14, 0x0)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero_str)
-  CSRW(0x151, x13)  # restore spmpaddr[0]
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero_str)
+  CSRW(0x151, x15)  # restore spmpaddr[0]
   nop
-  CSRW(0x152, x8)  # restore spmpcfg[0]
+  CSRW(0x152, x6)  # restore spmpcfg[0]
   nop
 
 # === SPMP entry 1 ===
-  LI(x15, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x15)
-  CSRR(x13, 0x151)  # save spmpaddr[1]
+  LI(x7, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x7)
+  CSRR(x15, 0x151)  # save spmpaddr[1]
   nop
-  CSRR(x8, 0x152)  # save spmpcfg[1]
+  CSRR(x6, 0x152)  # save spmpcfg[1]
   nop
-  LI(x7, 0x20000400)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  LI(x14, 0x20000400)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write_str)
-  LI(x7, 0x0)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write_str)
+  LI(x14, 0x0)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero_str)
-  li x7, -1  # all ones
-  CSRW(0x151, x7)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero_str)
+  li x14, -1  # all ones
+  CSRW(0x151, x14)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones_str)
-  LI(x7, 0x105)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones_str)
+  LI(x14, 0x105)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off_str)
-  LI(x7, 0x10d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off_str)
+  LI(x14, 0x10d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor_str)
-  LI(x7, 0x115)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor_str)
+  LI(x14, 0x115)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4_str)
-  LI(x7, 0x11d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4_str)
+  LI(x14, 0x11d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot_str)
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot_str)
+  LI(x14, 0x0)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero_str)
-  CSRW(0x151, x13)  # restore spmpaddr[1]
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero_str)
+  CSRW(0x151, x15)  # restore spmpaddr[1]
   nop
-  CSRW(0x152, x8)  # restore spmpcfg[1]
+  CSRW(0x152, x6)  # restore spmpcfg[1]
   nop
 
 # === SPMP entry 2 ===
-  LI(x15, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x15)
-  CSRR(x13, 0x151)  # save spmpaddr[2]
+  LI(x7, 0x102)  # siselect = SPMP entry 2
+  CSRW(siselect, x7)
+  CSRR(x15, 0x151)  # save spmpaddr[2]
   nop
-  CSRR(x8, 0x152)  # save spmpcfg[2]
+  CSRR(x6, 0x152)  # save spmpcfg[2]
   nop
-  LI(x7, 0x20000800)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  LI(x14, 0x20000800)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write_str)
-  LI(x7, 0x0)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write_str)
+  LI(x14, 0x0)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero_str)
-  li x7, -1  # all ones
-  CSRW(0x151, x7)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero_str)
+  li x14, -1  # all ones
+  CSRW(0x151, x14)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones_str)
-  LI(x7, 0x105)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones_str)
+  LI(x14, 0x105)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off_str)
-  LI(x7, 0x10d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off_str)
+  LI(x14, 0x10d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor_str)
-  LI(x7, 0x115)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor_str)
+  LI(x14, 0x115)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4_str)
-  LI(x7, 0x11d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4_str)
+  LI(x14, 0x11d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot_str)
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot_str)
+  LI(x14, 0x0)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero_str)
-  CSRW(0x151, x13)  # restore spmpaddr[2]
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero_str)
+  CSRW(0x151, x15)  # restore spmpaddr[2]
   nop
-  CSRW(0x152, x8)  # restore spmpcfg[2]
+  CSRW(0x152, x6)  # restore spmpcfg[2]
   nop
 
 # === SPMP entry 3 ===
-  LI(x15, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x15)
-  CSRR(x13, 0x151)  # save spmpaddr[3]
+  LI(x7, 0x103)  # siselect = SPMP entry 3
+  CSRW(siselect, x7)
+  CSRR(x15, 0x151)  # save spmpaddr[3]
   nop
-  CSRR(x8, 0x152)  # save spmpcfg[3]
+  CSRR(x6, 0x152)  # save spmpcfg[3]
   nop
-  LI(x7, 0x20000c00)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  LI(x14, 0x20000c00)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write_str)
-  LI(x7, 0x0)  # spmpaddr value
-  CSRW(0x151, x7)  # write sireg (spmpaddr)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write_str)
+  LI(x14, 0x0)  # spmpaddr value
+  CSRW(0x151, x14)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero_str)
-  li x7, -1  # all ones
-  CSRW(0x151, x7)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero_str)
+  li x14, -1  # all ones
+  CSRW(0x151, x14)
   nop
 SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones:
-  # Read spmpaddr (sireg) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x6, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones_str)
-  LI(x7, 0x105)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x8, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones, SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones_str)
+  LI(x14, 0x105)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off_str)
-  LI(x7, 0x10d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off_str)
+  LI(x14, 0x10d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor_str)
-  LI(x7, 0x115)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor_str)
+  LI(x14, 0x115)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4_str)
-  LI(x7, 0x11d)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4_str)
+  LI(x14, 0x11d)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot_str)
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot_str)
+  LI(x14, 0x0)  # spmpcfg value
+  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero_str)
-  CSRW(0x151, x13)  # restore spmpaddr[3]
+  # Read spmpcfg (sireg2) into x8 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x8, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero, SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero_str)
+  CSRW(0x151, x15)  # restore spmpaddr[3]
   nop
-  CSRW(0x152, x8)  # restore spmpcfg[3]
+  CSRW(0x152, x6)  # restore spmpcfg[3]
   nop
 
 
@@ -297,80 +310,80 @@ SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero:
 //   Also test that locked TOR entries lock the preceding spmpaddr.
 //   NOTE: Lock can only be cleared from M-mode via miselect.
 /////////////////////////////////
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x12, 0x8000000)  # spmpaddr value
-  CSRW(0x151, x12)  # write sireg (spmpaddr)
+  LI(x13, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x13)
+  LI(x6, 0x8000000)  # spmpaddr value
+  CSRW(0x151, x6)  # write sireg (spmpaddr)
   nop
-  LI(x9, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x9)
-  LI(x12, 0x8000400)  # spmpaddr value
-  CSRW(0x151, x12)  # write sireg (spmpaddr)
+  LI(x13, 0x102)  # siselect = SPMP entry 2
+  CSRW(siselect, x13)
+  LI(x6, 0x8000400)  # spmpaddr value
+  CSRW(0x151, x6)  # write sireg (spmpaddr)
   nop
-  LI(x12, 0x109)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+  LI(x6, 0x109)  # spmpcfg value
+  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
   nop
 
 # Verify entry is currently unlocked
 SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked_str)
-  LI(x12, 0x189)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked, SspmpSm_csr_cg_cp_spmp_lock_entry2_unlocked_str)
+  LI(x6, 0x189)  # spmpcfg value
+  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_entry2_locked:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked_str)
-  LI(x12, 0x11b)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked, SspmpSm_csr_cg_cp_spmp_lock_entry2_locked_str)
+  LI(x6, 0x11b)  # spmpcfg value
+  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg_str)
-  LI(x12, 0x2)  # try to set W bit
-  CSRS(0x152, x12)  # csrrs sireg2
+  # Read spmpcfg (sireg2) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrw_cfg_str)
+  LI(x6, 0x2)  # try to set W bit
+  CSRS(0x152, x6)  # csrrs sireg2
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg_str)
-  LI(x12, 0x1)  # try to clear R bit
-  CSRC(0x152, x12)  # csrrc sireg2
+  # Read spmpcfg (sireg2) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrs_cfg_str)
+  LI(x6, 0x1)  # try to clear R bit
+  CSRC(0x152, x6)  # csrrc sireg2
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str)
-  LI(x12, 0xdead)  # attempt to change locked spmpaddr
-  CSRW(0x151, x12)  # write sireg (spmpaddr)
+  # Read spmpcfg (sireg2) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str)
+  LI(x6, 0xdead)  # attempt to change locked spmpaddr
+  CSRW(0x151, x6)  # write sireg (spmpaddr)
   nop
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write:
-  # Read spmpaddr (sireg) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x13, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str)
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x12, 0xbeef)  # attempt to change prev entry's spmpaddr
-  CSRW(0x151, x12)  # write sireg (spmpaddr[1])
+  # Read spmpaddr (sireg) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write, SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str)
+  LI(x13, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x13)
+  LI(x6, 0xbeef)  # attempt to change prev entry's spmpaddr
+  CSRW(0x151, x6)  # write sireg (spmpaddr[1])
   nop
 SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr:
-  # Read spmpaddr (sireg) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x13, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str)
+  # Read spmpaddr (sireg) into x9 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr, SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str)
 
 # Clear lock bit from M-mode via miselect
   RVTEST_GOTO_MMODE
-  LI(x9, 0x102)
-  CSRW(0x350, x9)  # miselect = SPMP entry 2
+  LI(x13, 0x102)
+  CSRW(0x350, x13)  # miselect = SPMP entry 2
   nop
-  LI(x12, 0x109)  # cfg without L bit
-  CSRW(0x352, x12)  # write mireg2 to clear lock
+  LI(x6, 0x109)  # cfg without L bit
+  CSRW(0x352, x6)  # write mireg2 to clear lock
   nop
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
-  # Read 0x352 into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x13, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
+  # Read 0x352 into x9 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x9, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
   CSRW(0x352, zero)  # clear mireg2
   nop
   CSRW(0x351, zero)  # clear mireg
   nop
-  LI(x9, 0x101)
-  CSRW(0x350, x9)
+  LI(x13, 0x101)
+  CSRW(0x350, x13)
   nop
   CSRW(0x351, zero)
   nop
@@ -385,56 +398,56 @@ SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
 //   Reads should return zero, writes should be ignored.
 /////////////////////////////////
 
-# Out-of-bounds index 0x140
-  LI(x13, 0x140)
-  CSRW(siselect, x13)
+# Out-of-bounds index 0x100 + UDB_NUM_PMP_ENTRIES
+  LI(x9, 0x100 + UDB_NUM_PMP_ENTRIES)
+  CSRW(siselect, x9)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg_str)
-  li x6, -1
-  CSRW(0x151, x6)  # write sireg (should be ignored)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_cfg:
+  # Read spmpcfg (sireg2) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_cfg_str)
+  li x13, -1
+  CSRW(0x151, x13)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_first_unimplemented_write_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_first_unimplemented_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_first_unimplemented_write_addr_str)
 
 # Out-of-bounds index 0x150
-  LI(x13, 0x150)
-  CSRW(siselect, x13)
+  LI(x9, 0x150)
+  CSRW(siselect, x9)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg_str)
-  li x6, -1
-  CSRW(0x151, x6)  # write sireg (should be ignored)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_cfg:
+  # Read spmpcfg (sireg2) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_cfg_str)
+  li x13, -1
+  CSRW(0x151, x13)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_150_write_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_150_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_150_write_addr_str)
 
 # Out-of-bounds index 0x1ff
-  LI(x13, 0x1ff)
-  CSRW(siselect, x13)
+  LI(x9, 0x1ff)
+  CSRW(siselect, x9)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg_str)
-  li x6, -1
-  CSRW(0x151, x6)  # write sireg (should be ignored)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_cfg:
+  # Read spmpcfg (sireg2) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_cfg_str)
+  li x13, -1
+  CSRW(0x151, x13)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr:
-  # Read spmpaddr (sireg) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x9, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr_str)
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero:
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change:
 
@@ -446,97 +459,97 @@ SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change:
 /////////////////////////////////
 
 # A=OFF: entry disabled
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_off_entry0_off:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_addr_cg_cp_addr_match_off_entry0_off, SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str)
+  # Read spmpcfg (sireg2) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_addr_match_off_entry0_off, SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str)
 
 # A=TOR: top of range matching
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x13, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LI(x15, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x13, 0x20004000)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x13, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x13)
+  LI(x15, 0x20004000)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x10b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x15, 0x10b)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg_str)
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
+  # Read spmpcfg (sireg2) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg_str)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
 SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr:
-  # Read spmpaddr (sireg) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr_str)
-  LI(x9, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x9)
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x14, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr_str)
+  LI(x13, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x13)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x13, 0x0)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LI(x15, 0x0)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
 
 # A=NA4: naturally aligned 4-byte region
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x13, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LI(x15, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x111)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x15, 0x111)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str)
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
 
 # A=NAPOT: naturally aligned power-of-two region (8 bytes minimum)
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LI(x13, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LI(x15, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x11b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x15, 0x11b)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str)
-  LI(x13, 0x200001ff)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  # Read spmpcfg (sireg2) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str)
+  LI(x15, 0x200001ff)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k:
-  # Read spmpaddr (sireg) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str)
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  # Read spmpaddr (sireg) into x14 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x14, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str)
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
-  LI(x13, 0x0)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x15, 0x0)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -548,21 +561,21 @@ SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k:
 /////////////////////////////////
   LI(x13, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x13)
-  LI(x15, 0x20004000)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x12, 0x20004000)  # spmpaddr value
+  CSRW(0x151, x12)  # write sireg (spmpaddr)
   nop
-  LI(x15, 0x10b)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  LI(x12, 0x10b)  # spmpcfg value
+  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
   # Read spmpcfg (sireg2) into x14 and check.
   RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  LI(x12, 0x0)  # spmpcfg value
+  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
-  LI(x15, 0x0)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x12, 0x0)  # spmpaddr value
+  CSRW(0x151, x12)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -572,45 +585,56 @@ SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
 //   Test that lowest-numbered matching SPMP entry determines access.
 //   Configure overlapping entries with different permissions.
 /////////////////////////////////
-  LI(x13, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x13)
-  LI(x12, 0x20000fff)  # spmpaddr value
-  CSRW(0x151, x12)  # write sireg (spmpaddr)
+  LA(x8, scratch)
+  LI(x12, 0x13579BDF)
+  sw x12, 0(x8)
+  srli x8, x8, 2  # 8-byte NAPOT region
+  LI(x14, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x14)
+  CSRW(0x151, x8)
   nop
-  LI(x12, 0x118)  # spmpcfg value
+  LI(x12, 0x18)  # spmpcfg value
   CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
-  LI(x13, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x13)
-  LI(x12, 0x20000fff)  # spmpaddr value
-  CSRW(0x151, x12)  # write sireg (spmpaddr)
+  LI(x14, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x14)
+  CSRW(0x151, x8)
   nop
-  LI(x12, 0x11e)  # spmpcfg value
+  LI(x12, 0x1b)  # spmpcfg value
   CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
+  LI(x14, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x14)
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-# Entry 0 (no permissions) should take priority over Entry 1 (RW)
-SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins:
-  LI(x13, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x13)
-  # Read spmpcfg (sireg2) into x14 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins, SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_str)
-  LI(x13, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x13)
-SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary:
-  # Read spmpcfg (sireg2) into x14 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x14, SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary, SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary_str)
-SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations:
-  LI(x13, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x13)
+# Entry 0 matches first, so the load must fault despite entry 1 allowing it
+SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_deny:
+SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_ignores_entry0_permissions:
+  LA(x8, scratch)
+  lw x13, 0(x8)
+  nop  # trap handler resumes here
+  LI(x14, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x14)
+  LI(x12, 0x0)  # spmpcfg value
+  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+  nop
+  LI(x14, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x14)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off:
+  LA(x8, scratch)
+  lw x13, 0(x8)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off, SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off_str)
+  LI(x14, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x14)
   LI(x12, 0x0)  # spmpcfg value
   CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
   LI(x12, 0x0)  # spmpaddr value
   CSRW(0x151, x12)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x13)
+  LI(x14, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x14)
   LI(x12, 0x0)  # spmpcfg value
   CSRW(0x152, x12)  # write sireg2 (spmpcfg)
   nop
@@ -623,76 +647,309 @@ SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations:
 /////////////////////////////////
 // cp_smode_rule
 //   Configure SPMP S-mode-only rules (SHARED=0, U=0) with various RWX.
-//   Write each encoding to spmpcfg and read back to verify the field is accepted.
+//   Exercise each permission from S-mode, then verify that U-mode is denied
+//   regardless of the RWX bits.
 /////////////////////////////////
+# Delegate U-mode ecall so RVTEST_GOTO_SMODE can return from each U-mode probe
+  RVTEST_GOTO_MMODE
+  LI(x13, 0x100)
+  CSRS(CSR_MEDELEG, x13)
+  RVTEST_GOTO_LOWER_MODE Smode
+  LA(x7, scratch)
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  srli x8, x7, 2  # 8-byte NAPOT region
+  CSRW(0x151, x8)
+  nop
 
-# S-mode rule with RWX=none
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x18)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=none ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x18)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_str)
-
-# S-mode rule with RWX=x
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x19)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_load:
+  lw x8, 0(x7)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_str)
 
-# S-mode rule with RWX=r
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x1c)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=x ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x1c)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_str)
-
-# S-mode rule with RWX=rx
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x1d)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_load:
+  lw x8, 0(x7)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_str)
 
-# S-mode rule with RWX=rw
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x1e)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# === S-mode-only rule with RWX=r ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x19)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_str)
-
-# S-mode rule with RWX=rwx
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x12, 0x1f)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load:
+  lw x8, 0(x7)
+  nop
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_str)
-  LI(x12, 0x0)  # spmpcfg value
-  CSRW(0x152, x12)  # write sireg2 (spmpcfg)
+
+# === S-mode-only rule with RWX=rx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x1d)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load:
+  lw x8, 0(x7)
+  nop
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === S-mode-only rule with RWX=rw ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x1b)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load:
+  lw x8, 0(x7)
+  nop
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === S-mode-only rule with RWX=rwx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)  # ret
+  sw x13, 0(x7)
+  fence.i
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x1f)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load:
+  lw x8, 0(x7)
+  nop
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load, SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x7)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U-mode is denied by every S-mode-only rule
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_load:
+  lw x8, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_store:
+  sw x13, 0(x7)
+  nop
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x7)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  LI(x13, 0x0)  # spmpaddr value
+  CSRW(0x151, x13)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -706,9 +963,9 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx:
 /////////////////////////////////
 
 # Pre-install `ret` (0x00008067) at scratch[0]
-  LA(x8, scratch)
+  LA(x7, scratch)
   LI(x15, 0x00008067)  # ret
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   fence.i  # sync icache with the data write
 
 # Delegate U-mode ecall (medeleg bit 8) to S-mode for RVTEST_GOTO_SMODE
@@ -720,13 +977,13 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx:
 
 # === U-mode rule with RWX=none ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
   LI(x15, 0x118)  # U=1, RWX=none
   CSRW(mireg2, x15)  # spmpcfg via mireg2
@@ -737,20 +994,20 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx:
 # === In U-mode ===
 # load: succeeds iff R=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=none
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -758,15 +1015,15 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
 
 # === U-mode rule with RWX=x ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
-  LI(x15, 0x119)  # U=1, RWX=x
+  LI(x15, 0x11c)  # U=1, RWX=x
   CSRW(mireg2, x15)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
@@ -775,20 +1032,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (no) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=x
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -796,15 +1053,15 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
 
 # === U-mode rule with RWX=r ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
-  LI(x15, 0x11c)  # U=1, RWX=r
+  LI(x15, 0x119)  # U=1, RWX=r
   CSRW(mireg2, x15)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
@@ -813,20 +1070,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=r
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -834,13 +1091,13 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
 
 # === U-mode rule with RWX=rx ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
   LI(x15, 0x11d)  # U=1, RWX=rx
   CSRW(mireg2, x15)  # spmpcfg via mireg2
@@ -851,20 +1108,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (no) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=rx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -872,15 +1129,15 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
 
 # === U-mode rule with RWX=rw ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
-  LI(x15, 0x11e)  # U=1, RWX=rw
+  LI(x15, 0x11b)  # U=1, RWX=rw
   CSRW(mireg2, x15)  # spmpcfg via mireg2
   nop
   sfence.vma x0, x0
@@ -889,20 +1146,20 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (yes) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (no) in RWX=rw
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
@@ -910,13 +1167,13 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
 
 # === U-mode rule with RWX=rwx ===
   RVTEST_GOTO_MMODE
-  LI(x13, 0x100)
-  CSRW(miselect, x13)
+  LI(x8, 0x100)
+  CSRW(miselect, x8)
   nop
-  LA(x8, scratch)
-  srli x8, x8, 2  # spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB
-  CSRW(mireg, x8)  # spmpaddr via mireg
+  LA(x7, scratch)
+  srli x7, x7, 2  # spmpaddr format
+# No low bits set: 8-byte NAPOT region, excluding trap save areas
+  CSRW(mireg, x7)  # spmpaddr via mireg
   nop
   LI(x15, 0x11f)  # U=1, RWX=rwx
   CSRW(mireg2, x15)  # spmpcfg via mireg2
@@ -927,28 +1184,28 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
 # === In U-mode ===
 # load: succeeds iff R=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load:
-  LA(x8, scratch)
-  lw x7, 0(x8)
+  LA(x7, scratch)
+  lw x9, 0(x7)
   nop  # trap handler skips here on R=0
 
 # store: succeeds iff W=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store:
   LI(x15, 0x00008067)  # ret (preserves the jalr target)
-  sw x15, 0(x8)
+  sw x15, 0(x7)
   nop  # trap handler skips here on W=0
 
 # fetch: succeeds iff X=1 (yes) in RWX=rwx
 SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  jalr x1, 0(x8)  # on fetch fault (X=0) handler forces xepc = ra
+  jalr x1, 0(x7)  # on fetch fault (X=0) handler forces xepc = ra
   nop
 
 # Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
   RVTEST_GOTO_SMODE
 
 # Clean up: clear spmpcfg via S-mode indirect access
-  LI(x13, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x13)
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
   LI(x15, 0x0)  # spmpcfg value
   CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
@@ -964,69 +1221,69 @@ SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch:
 /////////////////////////////////
 
 # Pre-install `ret` (0x00008067) at scratch[0]
-  LA(x8, scratch)
-  LI(x14, 0x00008067)  # ret
-  sw x14, 0(x8)
+  LA(x7, scratch)
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x7)
   fence.i  # sync icache with the data write
-  LI(x9, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x9)
-  LA(x8, scratch)
-  srli x8, x8, 2  # convert to spmpaddr format
-  ori x8, x8, 0x1FF  # NAPOT 4 KB region
-  CSRW(0x151, x8)  # write spmpaddr via sireg
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LA(x7, scratch)
+  srli x7, x7, 2  # convert to spmpaddr format
+# No low bits set: 8-byte NAPOT region
+  CSRW(0x151, x7)  # write spmpaddr via sireg
   nop
-  LI(x14, 0x11f)  # spmpcfg value
-  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
+  LI(x9, 0x11f)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # sstatus.SUM = 0  ->  S-mode denied any access to U-mode region
-  CSRR(x7, sstatus)  # save sstatus
-  LI(x14, 0x40000)  # sstatus.SUM bit (bit 18)
-  CSRC(sstatus, x14)  # clear SUM bit
+  CSRR(x6, sstatus)  # save sstatus
+  LI(x9, 0x40000)  # sstatus.SUM bit (bit 18)
+  CSRC(sstatus, x9)  # clear SUM bit
 
 # Expected: load page fault (cause 13); strap handler advances sepc by 4.
 SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied:
-  LA(x8, scratch)
-  lw x12, 0(x8)  # faults
+  LA(x7, scratch)
+  lw x15, 0(x7)  # faults
   nop  # trap handler skips to here
 
 # Expected: store page fault (cause 15); strap handler advances sepc by 4.
 SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied:
-  sw x14, 0(x8)  # faults
+  sw x9, 0(x7)  # faults
   nop  # trap handler skips to here
 
 # sstatus.SUM = 1  ->  S-mode data access allowed; fetch denied (EnforceNoX)
-  LI(x14, 0x40000)
-  CSRS(sstatus, x14)  # set SUM bit
+  LI(x9, 0x40000)
+  CSRS(sstatus, x9)  # set SUM bit
 
 # Expected: load succeeds, reads the `ret` instruction value.
 SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load:
-  LA(x8, scratch)
-  lw x12, 0(x8)
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
+  LA(x7, scratch)
+  lw x15, 0(x7)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
 
 # Expected: store succeeds.  Re-install `ret` so the jalr target is clean.
 SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store:
-  LI(x14, 0x00008067)  # ret
-  sw x14, 0(x8)
-  lw x12, 0(x8)
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str)
+  LI(x9, 0x00008067)  # ret
+  sw x9, 0(x7)
+  lw x15, 0(x7)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str)
   fence.i  # sync icache with the data write
 
 # Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.
 # SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.
 SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  LA(x8, scratch)
-  jalr x1, 0(x8)  # fetch page fault (cause 12); handler returns here
+  LA(x7, scratch)
+  jalr x1, 0(x7)  # fetch page fault (cause 12); handler returns here
   nop
 
-  CSRW(sstatus, x7)  # restore sstatus
-  LI(x14, 0x0)  # spmpcfg value
-  CSRW(0x152, x14)  # write sireg2 (spmpcfg)
+  CSRW(sstatus, x6)  # restore sstatus
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -1036,32 +1293,41 @@ SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied:
 //   Test sstatus.MXR effect on SPMP permission checking.
 //   MXR=1 makes execute-only regions also readable.
 /////////////////////////////////
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x7, 0x19)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  LA(x6, scratch)
+  LI(x15, 0x5A5A5A5A)
+  sw x15, 0(x6)
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  srli x13, x6, 2  # 8-byte NAPOT encoding
+  CSRW(0x151, x13)
+  nop
+  LI(x15, 0x1c)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRR(x12, sstatus)  # save sstatus
 
 # sstatus.MXR = 0
-  CSRR(x15, sstatus)  # save sstatus
-  LI(x7, 0x80000)  # sstatus.MXR bit (bit 19)
-  CSRC(sstatus, x7)  # clear MXR bit
+  LI(x15, 0x80000)  # sstatus.MXR bit (bit 19)
+  CSRC(sstatus, x15)  # clear MXR bit
 SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region:
-  # Read sstatus into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x13, SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region_str)
-  CSRW(sstatus, x15)  # restore sstatus
+  lw x13, 0(x6)  # faults for MXR=0, succeeds for MXR=1
+  nop  # trap handler resumes here after the MXR=0 load fault
 
 # sstatus.MXR = 1
-  CSRR(x15, sstatus)  # save sstatus
-  LI(x7, 0x80000)  # sstatus.MXR bit (bit 19)
-  CSRS(sstatus, x7)  # set MXR bit
+  LI(x15, 0x80000)  # sstatus.MXR bit (bit 19)
+  CSRS(sstatus, x15)  # set MXR bit
 SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region:
-  # Read sstatus into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x13, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str)
-  CSRW(sstatus, x15)  # restore sstatus
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  lw x13, 0(x6)  # faults for MXR=0, succeeds for MXR=1
+  nop  # trap handler resumes here after the MXR=0 load fault
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region, SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str)
+  CSRW(sstatus, x12)  # restore sstatus
+  LI(x15, 0x0)  # spmpcfg value
+  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  nop
+  LI(x15, 0x0)  # spmpaddr value
+  CSRW(0x151, x15)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -1070,77 +1336,347 @@ SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region:
 // cp_shared_rule
 //   Configure SPMP Shared-Region rules (SHARED=1, U=1) with various RWX.
 //   Both S and U modes: Enforced per encoding table.
-//   Special: RWX=100 -> S:Enforce, U:Read-only
-//            RWX=101 -> S:Enforce, U:Exec-only
+//   Special: RWX=110 -> S:Enforce, U:Read-only
+//            RWX=111 -> S:Enforce, U:Exec-only
 /////////////////////////////////
+# Delegate U-mode ecall so each U-mode probe can return to S-mode
+  RVTEST_GOTO_MMODE
+  LI(x13, 0x100)
+  CSRS(CSR_MEDELEG, x13)
+  RVTEST_GOTO_LOWER_MODE Smode
+  LA(x14, scratch)
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  srli x12, x14, 2  # 8-byte NAPOT region
+  CSRW(0x151, x12)
+  nop
 
-# Shared rule with RWX=none
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x318)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# === Shared rule with RWX=none ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x318)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_none:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_none, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_none_str)
-
-# Shared rule with RWX=x
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x319)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_load:
+  lw x12, 0(x14)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: load page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_load:
+  lw x12, 0(x14)
+  nop
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_x:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_x, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_x_str)
 
-# Shared rule with RWX=r
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x31c)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# === Shared rule with RWX=x ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x31c)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_r:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_r, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_r_str)
-
-# Shared rule with RWX=rx
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x31d)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# S load: load page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_load:
+  lw x12, 0(x14)
+  nop
+# S store: store page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: load page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_load:
+  lw x12, 0(x14)
+  nop
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rx:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rx, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rx_str)
 
-# Shared rule with RWX=rw
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x31e)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# === Shared rule with RWX=r ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x319)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rw:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rw, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rw_str)
-
-# Shared rule with RWX=rwx
-  LI(x15, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x15)
-  LI(x8, 0x31f)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+# S load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_s_r_load, SspmpSm_perm_cg_cp_shared_rule_shared_s_r_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_str)
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rwx:
-  # Read spmpcfg (sireg2) into x6 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x6, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rwx, SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rwx_str)
-  LI(x8, 0x0)  # spmpcfg value
-  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+
+# === Shared rule with RWX=rx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x31d)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load, SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load_str)
+# S store: store page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_str)
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === Shared rule with RWX=rw ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x31b)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load, SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_str)
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: instruction page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+
+# === Shared rule with RWX=rwx ===
+# Install a safe jalr target while the specific rule is OFF
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  fence.i
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x31f)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+# S load: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load:
+  lw x12, 0(x14)
+  nop
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load, SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load_str)
+# S store: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_store:
+  LI(x13, 0x00008067)
+  sw x13, 0(x14)
+  nop
+# S fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_MMODE
+  RVTEST_GOTO_LOWER_MODE Umode
+# U load: load page fault
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_load:
+  lw x12, 0(x14)
+  nop
+# Shared encodings never grant U-mode write permission
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_store:
+  sw x13, 0(x14)
+  nop
+# U fetch: allowed
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_fetch:
+  LI(x4, 0xACCE)
+  jalr x1, 0(x14)
+  nop
+  RVTEST_GOTO_SMODE
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  LI(x8, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x8)
+  LI(x13, 0x319)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+
+# Shared-region S-mode access ignores sstatus.SUM
+  CSRR(x7, sstatus)
+  LI(x13, 0x40000)  # sstatus.SUM
+  CSRC(sstatus, x13)
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed:
+  lw x12, 0(x14)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed, SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed_str)
+  CSRS(sstatus, x13)
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed:
+  lw x12, 0(x14)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed, SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed_str)
+  CSRW(sstatus, x7)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  nop
+  LI(x13, 0x0)  # spmpaddr value
+  CSRW(0x151, x13)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -1152,68 +1688,95 @@ SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rwx:
 /////////////////////////////////
 
 # Reserved RWX=010
-  LI(x8, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x8)
-  LI(x7, 0x11a)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  LI(x7, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x7)
+  LI(x13, 0x11a)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str)
 
 # Reserved RWX=011
-  LI(x8, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x8)
-  LI(x7, 0x11b)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  LI(x7, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x7)
+  LI(x13, 0x11e)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011, SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str)
 
 # Reserved: SHARED=1, U=0
-  LI(x8, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x8)
-  LI(x7, 0x21c)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  LI(x7, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x7)
+  LI(x13, 0x219)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
 SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0:
-  # Read spmpcfg (sireg2) into x9 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str)
-  LI(x7, 0x0)  # spmpcfg value
-  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0, SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
 
 
 /////////////////////////////////
 // cp_no_match_deny
 //   Verify that when no SPMP entry matches, S/U-mode access is denied.
-//   Configure all tested entries with A=OFF (disabled), then attempt access.
+//   Leave the scratch bytes unmatched while retaining explicit resident rules
+//   for test code and trap-handler data, then load from scratch.
 /////////////////////////////////
-  LI(x7, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x7)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
-  nop
-  LI(x7, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x7)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
-  nop
-  LI(x7, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x7)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
-  nop
-  LI(x7, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x7)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off:
-  # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off, SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off_str)
+  RVTEST_GOTO_MMODE
+  LA(x14, scratch)
+  srli x14, x14, 2
+  LI(x9, 0x100)
+  CSRW(miselect, x9)
+  CSRW(mireg, x14)  # entry 0 TOR top = scratch
+  LI(x13, 0xf)
+  CSRW(mireg2, x13)
+  LI(x9, 0x101)
+  CSRW(miselect, x9)
+  addi x14, x14, 66
+  CSRW(mireg, x14)  # entry 1 boundary = scratch + 264
+  CSRW(mireg2, zero)  # entry 1 OFF: leave scratch unmatched
+  LI(x9, 0x102)
+  CSRW(miselect, x9)
+  LI(x13, -1)
+  CSRW(mireg, x13)  # entry 2 TOR top = maximum address
+  LI(x13, 0xf)
+  CSRW(mireg2, x13)
+  LI(x9, 0x107)
+  CSRW(miselect, x9)
+  CSRW(mireg2, zero)  # temporarily disable the catch-all entry
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0
+SspmpSm_perm_cg_cp_no_match_deny_no_match_load_fault:
+  LA(x14, scratch)
+  lw x7, 0(x14)  # no matching entry: load page fault
+  nop  # trap handler resumes here
+  RVTEST_GOTO_MMODE
+  LI(x9, 0x107)
+  CSRW(miselect, x9)
+  LI(x13, -1)
+  CSRW(mireg, x13)
+  LI(x13, 0x31f)
+  CSRW(mireg2, x13)
+  LI(x9, 0x100)
+  CSRW(miselect, x9)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  LI(x9, 0x101)
+  CSRW(miselect, x9)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  LI(x9, 0x102)
+  CSRW(miselect, x9)
+  CSRW(mireg2, zero)
+  CSRW(mireg, zero)
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Smode
 
 
 /////////////////////////////////
@@ -1223,46 +1786,46 @@ SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off:
 //   Exception code 13 = load page fault
 //   Exception code 15 = store/AMO page fault
 /////////////////////////////////
-  LI(x8, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x8)
-  LA(x7, scratch)
-  srli x7, x7, 2  # convert to spmpaddr format
-  ori x7, x7, 0x1FF  # NAPOT 4K region
-  CSRW(0x151, x7)  # write spmpaddr via sireg
+  LI(x13, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x13)
+  LA(x15, scratch)
+  srli x15, x15, 2  # convert to spmpaddr format
+# No low bits set: 8-byte NAPOT region
+  CSRW(0x151, x15)  # write spmpaddr via sireg
   nop
-  LI(x6, 0x1f)  # spmpcfg value
-  CSRW(0x152, x6)  # write sireg2 (spmpcfg)
+  LI(x7, 0x1f)  # spmpcfg value
+  CSRW(0x152, x7)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # S-mode load to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok:
-  LA(x7, scratch)
-  lw x13, 0(x7)
+  LA(x15, scratch)
+  lw x14, 0(x15)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok, SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str)
 
 # S-mode store to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
-  LA(x7, scratch)
-  LI(x6, 0xCAFEBABE)
-  sw x6, 0(x7)
+  LA(x15, scratch)
+  LI(x7, 0xCAFEBABE)
+  sw x7, 0(x15)
   nop
-  lw x13, 0(x7)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
+  lw x14, 0(x15)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
 
-  LI(x6, 0x00008067)  # ret
-  LA(x7, scratch)
-  sw x6, 0(x7)
+  LI(x7, 0x00008067)  # ret
+  LA(x15, scratch)
+  sw x7, 0(x15)
   fence.i
   RVTEST_GOTO_MMODE
-  LI(x8, 0x100)
-  CSRW(0x350, x8)
+  LI(x13, 0x100)
+  CSRW(0x350, x13)
   nop
-  LI(x6, 0x118)
-  CSRW(0x352, x6)
+  LI(x7, 0x118)
+  CSRW(0x352, x7)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -1271,25 +1834,25 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
 # S-mode fetch from U-mode region with no perms -> instruction page fault (12)
 SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault:
   LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra
-  LA(x7, scratch)
-  jalr x1, 0(x7)  # should cause instruction page fault
+  LA(x15, scratch)
+  jalr x1, 0(x15)  # should cause instruction page fault
   nop
 
 # S-mode load with SUM=0 to U-mode region with no perms -> page fault (13)
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault:
-  LA(x7, scratch)
-  lw x13, 0(x7)  # should cause load page fault
+  LA(x15, scratch)
+  lw x14, 0(x15)  # should cause load page fault
   nop  # trap handler skips this
 
 # S-mode store to U-mode region with no perms -> page fault (15)
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
-  LA(x7, scratch)
-  sw x6, 0(x7)  # should cause store page fault
+  LA(x15, scratch)
+  sw x7, 0(x15)  # should cause store page fault
   nop  # trap handler skips this
 
   RVTEST_GOTO_MMODE
-  LI(x8, 0x100)
-  CSRW(0x350, x8)
+  LI(x13, 0x100)
+  CSRW(0x350, x13)
   nop
   CSRW(0x352, zero)
   nop
@@ -1308,19 +1871,19 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
   LI(x9, 0x100)
   CSRW(0x350, x9)  # miselect = SPMP entry 0
   nop
-  LI(x13, 0x20000fff)
-  CSRW(0x351, x13)  # write spmpaddr via mireg
+  LI(x8, 0x20000fff)
+  CSRW(0x351, x8)  # write spmpaddr via mireg
   nop
-  LI(x13, 0x18)
-  CSRW(0x352, x13)  # write spmpcfg via mireg2
+  LI(x8, 0x18)
+  CSRW(0x352, x8)  # write spmpcfg via mireg2
   nop
   sfence.vma x0, x0
 SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
-  LA(x13, scratch)
-  lw x7, 0(x13)  # M-mode load should succeed despite SPMP
+  LA(x8, scratch)
+  lw x12, 0(x8)  # M-mode load should succeed despite SPMP
   nop
-  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x7, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
   CSRW(0x352, zero)  # clear spmpcfg
   nop
   CSRW(0x351, zero)  # clear spmpaddr
@@ -1337,198 +1900,87 @@ SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
   RVTEST_GOTO_MMODE
 
 # M-mode access to SPMP entry 0
-  LI(x9, 0x100)
-  CSRW(0x350, x9)  # miselect = SPMP entry 0
+  LI(x14, 0x100)
+  CSRW(0x350, x14)  # miselect = SPMP entry 0
   nop
-  LI(x8, 0x24000000)
-  CSRW(0x351, x8)  # write spmpaddr via mireg
+  LI(x9, 0x24000000)
+  CSRW(0x351, x9)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr:
-  # Read 0x351 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str)
-  LI(x8, 0x11d)
-  CSRW(0x352, x8)  # write spmpcfg via mireg2
+  # Read 0x351 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str)
+  LI(x9, 0x11d)
+  CSRW(0x352, x9)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg:
-  # Read 0x352 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str)
+  # Read 0x352 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str)
   CSRW(0x352, zero)
   nop
   CSRW(0x351, zero)
   nop
 
 # M-mode access to SPMP entry 1
-  LI(x9, 0x101)
-  CSRW(0x350, x9)  # miselect = SPMP entry 1
+  LI(x14, 0x101)
+  CSRW(0x350, x14)  # miselect = SPMP entry 1
   nop
-  LI(x8, 0x24000800)
-  CSRW(0x351, x8)  # write spmpaddr via mireg
+  LI(x9, 0x24000800)
+  CSRW(0x351, x9)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr:
-  # Read 0x351 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str)
-  LI(x8, 0x11d)
-  CSRW(0x352, x8)  # write spmpcfg via mireg2
+  # Read 0x351 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str)
+  LI(x9, 0x11d)
+  CSRW(0x352, x9)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg:
-  # Read 0x352 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str)
+  # Read 0x352 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str)
   CSRW(0x352, zero)
   nop
   CSRW(0x351, zero)
   nop
 
 # M-mode access to SPMP entry 2
-  LI(x9, 0x102)
-  CSRW(0x350, x9)  # miselect = SPMP entry 2
+  LI(x14, 0x102)
+  CSRW(0x350, x14)  # miselect = SPMP entry 2
   nop
-  LI(x8, 0x24001000)
-  CSRW(0x351, x8)  # write spmpaddr via mireg
+  LI(x9, 0x24001000)
+  CSRW(0x351, x9)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr:
-  # Read 0x351 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str)
-  LI(x8, 0x11d)
-  CSRW(0x352, x8)  # write spmpcfg via mireg2
+  # Read 0x351 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str)
+  LI(x9, 0x11d)
+  CSRW(0x352, x9)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg:
-  # Read 0x352 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str)
+  # Read 0x352 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str)
   CSRW(0x352, zero)
   nop
   CSRW(0x351, zero)
   nop
 
 # M-mode access to SPMP entry 3
-  LI(x9, 0x103)
-  CSRW(0x350, x9)  # miselect = SPMP entry 3
+  LI(x14, 0x103)
+  CSRW(0x350, x14)  # miselect = SPMP entry 3
   nop
-  LI(x8, 0x24001800)
-  CSRW(0x351, x8)  # write spmpaddr via mireg
+  LI(x9, 0x24001800)
+  CSRW(0x351, x9)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr:
-  # Read 0x351 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str)
-  LI(x8, 0x11d)
-  CSRW(0x352, x8)  # write spmpcfg via mireg2
+  # Read 0x351 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str)
+  LI(x9, 0x11d)
+  CSRW(0x352, x9)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg:
-  # Read 0x352 into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x7, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str)
+  # Read 0x352 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str)
   CSRW(0x352, zero)
   nop
   CSRW(0x351, zero)
-  nop
-  RVTEST_GOTO_LOWER_MODE Smode
-
-
-/////////////////////////////////
-// cp_mpmpdeleg_pmpnum_field / cp_mpmpdeleg_locked
-//   Test mpmpdeleg CSR (Smpmpdeleg extension).
-//   mpmpdeleg.pmpnum[6:0] determines the delegation boundary.
-//   Entries >= pmpnum are delegated as SPMP entries.
-/////////////////////////////////
-  RVTEST_GOTO_MMODE
-  CSRR(x14, CSR_MPMPDELEG)  # save mpmpdeleg
-  nop
-
-# pmpnum = 0 (delegate all PMP entries as SPMP)
-  CSRW(CSR_MPMPDELEG, zero)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated:
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str)
-
-# pmpnum = 8
-  LI(x7, 8)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8_str)
-
-# pmpnum = 16
-  LI(x7, 16)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16_str)
-
-# pmpnum = 32
-  LI(x7, 32)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32_str)
-
-# pmpnum = 64 (no delegation, SPMP disabled)
-  LI(x7, 64)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated:
-SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str)
-
-# pmpnum = 100 (should clamp to number of writable entries)
-  LI(x7, 100)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str)
-
-
-/////////////////////////////////
-// cp_mpmpdeleg_locked
-//   Lock PMP entry 7, then try to set pmpnum < 8.
-//   Should be rejected (pmpnum retains prior value).
-/////////////////////////////////
-
-# Lock PMP[7]
-  LI(x7, 0x99)  # L=1, A=NAPOT, X=1
-#if __riscv_xlen == 64
-  CSRR(x13, pmpcfg0)
-  nop
-  li x9, 0xFF
-  slli x9, x9, 56  # mask for byte 7 (entry 7)
-  not x9, x9
-  and x13, x13, x9  # clear byte 7
-  slli x7, x7, 56  # shift cfg to byte 7
-  or x13, x13, x7
-  CSRW(pmpcfg0, x13)
-  nop
-#else
-  CSRR(x13, pmpcfg1)
-  nop
-  li x9, 0xFF
-  slli x9, x9, 24  # mask for byte 3 (entry 7)
-  not x9, x9
-  and x13, x13, x9  # clear byte 3
-  slli x7, x7, 24  # shift cfg to byte 3
-  or x13, x13, x7
-  CSRW(pmpcfg1, x13)
-  nop
-#endif
-
-  LI(x7, 16)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str)
-
-  LI(x7, 4)
-  CSRW(CSR_MPMPDELEG, x7)
-  nop
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected:
-  # Read CSR_MPMPDELEG into x13 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str)
-
-  CSRW(CSR_MPMPDELEG, x14)  # restore mpmpdeleg
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 
@@ -1540,106 +1992,147 @@ SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected:
 //   An entry is active only when spmpen[i] & spmpcfg[i].A != 0.
 //   When spmpcfg[i].L == 1, spmpen[i] becomes read-only.
 /////////////////////////////////
-  CSRR(x13, CSR_SPMPEN)  # save spmpen
+  RVTEST_GOTO_MMODE
+  CSRR(x14, CSR_SPMPEN)  # save spmpen
   nop
+#if __riscv_xlen == 32
+  CSRR(x7, CSR_SPMPENH)  # save upper 32 bits
+  nop
+#endif
 
 # Write all-ones to spmpen, read back (WARL register)
-  LI(x15, -1)  # all ones
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, -1)  # all ones
+  CSRW(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str)
 
 # Write zero to spmpen (disable all entries)
   CSRW(CSR_SPMPEN, zero)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str)
 
 # Enable only entry 0
-  LI(x15, 1)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 1)
+  CSRW(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str)
 
 # Enable only entry 1
-  LI(x15, 2)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 2)
+  CSRW(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str)
 
 # Enable only entry 2
-  LI(x15, 4)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 4)
+  CSRW(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str)
 
 # Enable only entry 3
-  LI(x15, 8)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 8)
+  CSRW(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str)
+#if __riscv_xlen == 32
+
+# Probe the RV32 alias for spmpen[63:32]
+  LI(x13, -1)
+  CSRW(CSR_SPMPENH, x13)
+  nop
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones:
+  # Read CSR_SPMPENH into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPENH, x12, SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones, SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones_str)
+  CSRW(CSR_SPMPENH, zero)
+  nop
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero:
+  # Read CSR_SPMPENH into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPENH, x12, SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero, SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero_str)
+  CSRW(CSR_SPMPENH, x7)  # restore upper 32 bits
+#endif
+  CSRW(CSR_SPMPEN, x14)  # restore resident entry before returning to S-mode
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Smode
 
 
 /////////////////////////////////
 // cp_spmpen_activation
 //   Verify entry activation depends on spmpen[i] & spmpcfg[i].A.
-//   Configure entry 0 with A=NAPOT, then toggle spmpen[0].
+//   Configure entry 0 as a deny rule over scratch, then toggle spmpen[0]
+//   and perform real S-mode loads to observe allow/fault behavior.
 /////////////////////////////////
 
-  LI(x12, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x12)
-  LI(x15, 0x21ffffff)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LA(x15, scratch)
+  LI(x13, 0x2468ACE0)
+  sw x13, 0(x15)
+  srli x12, x15, 2
+  CSRW(0x151, x12)
   nop
-  LI(x15, 0x1f)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  LI(x13, 0x18)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
 
 # Disable entry 0 via spmpen[0] = 0
-  CSRW(CSR_SPMPEN, zero)
+  LI(x13, 0x80)
+  CSRW(CSR_SPMPEN, x13)
   nop
   sfence.vma x0, x0
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str)
+SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed:
+  lw x12, 0(x15)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed, SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed_str)
 
 # Enable entry 0 via spmpen[0] = 1
-  LI(x15, 1)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 0x81)
+  CSRW(CSR_SPMPEN, x13)
   nop
   sfence.vma x0, x0
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str)
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_napot_load_denied:
+  lw x12, 0(x15)
+  nop  # trap handler resumes here
 
 # Set A=OFF (disable), spmpen[0]=1 -> entry still inactive
   CSRW(0x152, zero)  # spmpcfg.A=OFF via sireg2
   nop
-  LI(x15, 1)
-  CSRW(CSR_SPMPEN, x15)
+  LI(x13, 0x81)
+  CSRW(CSR_SPMPEN, x13)
   nop
   sfence.vma x0, x0
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
-  # Read 0x152 into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x152, x9, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str)
-  LI(x12, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x12)
-  LI(x15, 0x0)  # spmpcfg value
-  CSRW(0x152, x15)  # write sireg2 (spmpcfg)
+  # Read 0x152 into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str)
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed:
+  lw x12, 0(x15)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed, SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed_str)
+  LI(x9, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x9)
+  LI(x13, 0x0)  # spmpcfg value
+  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
   nop
-  LI(x15, 0x0)  # spmpaddr value
-  CSRW(0x151, x15)  # write sireg (spmpaddr)
+  LI(x13, 0x0)  # spmpaddr value
+  CSRW(0x151, x13)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
   RVTEST_GOTO_MMODE
@@ -1651,40 +2144,40 @@ SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
 //   Test: lock entry 1, then try to toggle spmpen[1].
 /////////////////////////////////
 
-  LI(x12, 0x101)
-  CSRW(miselect, x12)  # miselect = SPMP entry 1
+  LI(x9, 0x101)
+  CSRW(miselect, x9)  # miselect = SPMP entry 1
   nop
 
 # Pre-set spmpen[1] = 1 before locking
-  LI(x15, 0x2)
-  CSRS(CSR_SPMPEN, x15)
+  LI(x13, 0x2)
+  CSRS(CSR_SPMPEN, x13)
   nop
-  LI(x15, 0x199)  # L=1, R, NAPOT, U
-  CSRW(mireg2, x15)
+  LI(x13, 0x199)  # L=1, R, NAPOT, U
+  CSRW(mireg2, x13)
   nop
 
 # Try to clear spmpen[1] (locked, should be rejected -> stays 1)
-  LI(x15, 0x2)
-  CSRC(CSR_SPMPEN, x15)
+  LI(x13, 0x2)
+  CSRC(CSR_SPMPEN, x13)
   nop
 SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str)
 
 # Verify spmpen[1] is still 1 (read-only when locked)
 SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set:
-  # Read CSR_SPMPEN into x9 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x9, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str)
+  # Read CSR_SPMPEN into x12 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x12, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str)
 
 # Clean up: clear locked entry config
-  LI(x12, 0x101)
-  CSRW(miselect, x12)
+  LI(x9, 0x101)
+  CSRW(miselect, x9)
   nop
-  CSRW(mireg2, zero)  # try to clear (may be ignored if locked)
+  CSRW(mireg2, zero)  # M-mode indirect access clears L and deactivates the entry
   nop
   CSRW(mireg, zero)
   nop
-  CSRW(CSR_SPMPEN, x13)  # restore spmpen
+  CSRW(CSR_SPMPEN, x14)  # restore spmpen
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -1698,67 +2191,71 @@ SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set:
 /////////////////////////////////
 
 # === Ordering sequence for SPMP entry 0 ===
-  LI(x14, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x14)
-  LI(x13, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x6, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x6)
+  LI(x9, 0x20000000)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x11b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x9, 0x11b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x9)
 SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 1 ===
-  LI(x14, 0x101)  # siselect = SPMP entry 1
-  CSRW(siselect, x14)
-  LI(x13, 0x20000400)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x6, 0x101)  # siselect = SPMP entry 1
+  CSRW(siselect, x6)
+  LI(x9, 0x20000400)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x11b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x9, 0x11b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x9)
 SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 2 ===
-  LI(x14, 0x102)  # siselect = SPMP entry 2
-  CSRW(siselect, x14)
-  LI(x13, 0x20000800)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x6, 0x102)  # siselect = SPMP entry 2
+  CSRW(siselect, x6)
+  LI(x9, 0x20000800)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x11b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x9, 0x11b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x9)
 SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str)
 
 # === Ordering sequence for SPMP entry 3 ===
-  LI(x14, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x14)
-  LI(x13, 0x20000c00)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x6, 0x103)  # siselect = SPMP entry 3
+  CSRW(siselect, x6)
+  LI(x9, 0x20000c00)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
-  LI(x13, 0x11b)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  LI(x9, 0x11b)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  CSRW(0x152, x9)
 SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg:
-  # Read spmpcfg (sireg2) into x12 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x12, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str)
-  LI(x14, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x14)
-  LI(x13, 0x0)  # spmpcfg value
-  CSRW(0x152, x13)  # write sireg2 (spmpcfg)
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  # Read spmpcfg (sireg2) into x15 and check.
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str)
+  LI(x6, 0x103)  # siselect = SPMP entry 3
+  CSRW(siselect, x6)
+  LI(x9, 0x0)  # spmpcfg value
+  CSRW(0x152, x9)  # write sireg2 (spmpcfg)
   nop
-  LI(x13, 0x0)  # spmpaddr value
-  CSRW(0x151, x13)  # write sireg (spmpaddr)
+  LI(x9, 0x0)  # spmpaddr value
+  CSRW(0x151, x9)  # write sireg (spmpaddr)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
@@ -1777,6 +2274,146 @@ SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode:
 SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check:
   # Read satp into x9 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x9, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str)
+  RVTEST_GOTO_LOWER_MODE Smode
+
+
+/////////////////////////////////
+// cp_mpmpdeleg_pmpnum_field / cp_mpmpdeleg_locked
+//   Test mpmpdeleg CSR (Smpmpdeleg extension).
+//   mpmpdeleg.pmpnum[6:0] determines the delegation boundary.
+//   Entries >= pmpnum are delegated as SPMP entries.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+
+# pmpnum = 0 (delegate all PMP entries as SPMP)
+  CSRW(CSR_MPMPDELEG, zero)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str)
+  RVTEST_GOTO_LOWER_MODE Smode
+  LI(x15, 0x107)
+  CSRW(siselect, x15)
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating:
+  # Read 0x151 into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x151, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str)
+  RVTEST_GOTO_MMODE
+
+# partial pmpnum: 1
+  LI(x9, 1)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_min:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_min, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_min_str)
+
+# partial pmpnum: UDB_NUM_PMP_ENTRIES / 4
+  LI(x9, UDB_NUM_PMP_ENTRIES / 4)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_quarter:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_quarter, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_quarter_str)
+
+# partial pmpnum: UDB_NUM_PMP_ENTRIES / 2
+  LI(x9, UDB_NUM_PMP_ENTRIES / 2)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_half:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_half, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_half_str)
+
+# partial pmpnum: 3 * UDB_NUM_PMP_ENTRIES / 4
+  LI(x9, 3 * UDB_NUM_PMP_ENTRIES / 4)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_three_quarters:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_three_quarters, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_three_quarters_str)
+
+# partial pmpnum: UDB_NUM_PMP_ENTRIES - 1
+  LI(x9, UDB_NUM_PMP_ENTRIES - 1)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_last:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_last, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_last_str)
+
+# Request pmpnum = 64 (clamps to writable count; no SPMP delegation)
+  LI(x9, 64)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str)
+  RVTEST_GOTO_LOWER_MODE Smode
+  LI(x15, 0x100)
+  CSRW(siselect, x15)
+SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero:
+  # Read 0x151 into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(0x151, x14, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str)
+  RVTEST_GOTO_MMODE
+
+# pmpnum = 100 (should clamp to number of writable entries)
+  LI(x9, 100)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str)
+
+
+/////////////////////////////////
+// cp_mpmpdeleg_locked
+//   Lock PMP entry 7, then try to set pmpnum < 8.
+//   Should be rejected (pmpnum retains prior value).
+/////////////////////////////////
+
+# Lock PMP[7]
+  LI(x15, -1)
+  CSRW(pmpaddr7, x15)  # deterministic maximal NAPOT region
+  LI(x9, 0x9f)  # L=1, A=NAPOT, RWX
+#if __riscv_xlen == 64
+  CSRR(x14, pmpcfg0)
+  nop
+  li x15, 0xFF
+  slli x15, x15, 56  # mask for byte 7 (entry 7)
+  not x15, x15
+  and x14, x14, x15  # clear byte 7
+  slli x9, x9, 56  # shift cfg to byte 7
+  or x14, x14, x9
+  CSRW(pmpcfg0, x14)
+  nop
+#else
+  CSRR(x14, pmpcfg1)
+  nop
+  li x15, 0xFF
+  slli x15, x15, 24  # mask for byte 3 (entry 7)
+  not x15, x15
+  and x14, x14, x15  # clear byte 3
+  slli x9, x9, 24  # shift cfg to byte 3
+  or x14, x14, x9
+  CSRW(pmpcfg1, x14)
+  nop
+#endif
+
+  LI(x9, 8)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+
+  LI(x9, 64)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok_str)
+
+  LI(x9, 4)
+  CSRW(CSR_MPMPDELEG, x9)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected:
+  # Read CSR_MPMPDELEG into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x14, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected, SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str)
   RVTEST_GOTO_LOWER_MODE Smode
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1830,15 +2467,15 @@ SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str: .string "
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str: .string "\"test: 39; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_write_ignored; bin: entry2_locked_addr_write\""
 SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str: .string "\"test: 40; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_tor_prevaddr; bin: entry1_locked_tor_prevaddr\""
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str: .string "\"test: 41; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_clear_mmode; bin: entry2_mmode_unlock\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr_str: .string "\"test: 42; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x140_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg_str: .string "\"test: 43; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x140_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr_str: .string "\"test: 44; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x140_write_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr_str: .string "\"test: 45; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x150_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg_str: .string "\"test: 46; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x150_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr_str: .string "\"test: 47; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x150_write_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr_str: .string "\"test: 48; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x1ff_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg_str: .string "\"test: 49; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x1ff_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr_str: .string "\"test: 50; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x1ff_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_addr_str: .string "\"test: 42; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_first_unimplemented_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_first_unimplemented_read_cfg_str: .string "\"test: 43; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_first_unimplemented_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_first_unimplemented_write_addr_str: .string "\"test: 44; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_first_unimplemented_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_addr_str: .string "\"test: 45; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_reserved_150_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_150_read_cfg_str: .string "\"test: 46; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_reserved_150_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_150_write_addr_str: .string "\"test: 47; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_reserved_150_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_addr_str: .string "\"test: 48; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_reserved_1ff_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_reserved_1ff_read_cfg_str: .string "\"test: 49; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_reserved_1ff_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr_str: .string "\"test: 50; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_reserved_1ff_write_addr\""
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero_str: .string "\"test: 51; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_read_returns_zero\""
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change_str: .string "\"test: 52; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_write_no_state_change\""
 SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str: .string "\"test: 53; cg: SspmpSm_addr_cg; cp: cp_addr_match_off; bin: entry0_off\""
@@ -1848,91 +2485,160 @@ SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str: .string "\"test: 56; cg: Sspmp
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str: .string "\"test: 57; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot\""
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str: .string "\"test: 58; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot_4k\""
 SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str: .string "\"test: 59; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor_entry0; bin: tor_on_entry0\""
-SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_str: .string "\"test: 60; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry0_wins\""
-SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary_str: .string "\"test: 61; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry1_secondary\""
-SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations_str: .string "\"test: 62; cg: SspmpSm_addr_cg; cp: cp_match_irrespective_perm_bits; bin: match_rwx_variations\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_str: .string "\"test: 63; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_str: .string "\"test: 64; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_str: .string "\"test: 65; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_str: .string "\"test: 66; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_str: .string "\"test: 67; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw\""
-SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_str: .string "\"test: 68; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load_str: .string "\"test: 69; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store_str: .string "\"test: 70; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch_str: .string "\"test: 71; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_fetch\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load_str: .string "\"test: 72; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store_str: .string "\"test: 73; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch_str: .string "\"test: 74; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_fetch\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load_str: .string "\"test: 75; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store_str: .string "\"test: 76; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch_str: .string "\"test: 77; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_fetch\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load_str: .string "\"test: 78; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store_str: .string "\"test: 79; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch_str: .string "\"test: 80; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_fetch\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load_str: .string "\"test: 81; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store_str: .string "\"test: 82; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch_str: .string "\"test: 83; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_fetch\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load_str: .string "\"test: 84; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_load\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store_str: .string "\"test: 85; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_store\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch_str: .string "\"test: 86; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_fetch\""
-SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied_str: .string "\"test: 87; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_load_denied\""
-SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied_str: .string "\"test: 88; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_store_denied\""
-SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str: .string "\"test: 89; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_load\""
-SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str: .string "\"test: 90; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_store\""
-SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied_str: .string "\"test: 91; cg: SspmpSm_perm_cg; cp: cp_enforce_no_x; bin: sum_1_fetch_denied\""
-SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region_str: .string "\"test: 92; cg: SspmpSm_perm_cg; cp: cp_mxr_effect; bin: mxr_0_x_only_region\""
-SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str: .string "\"test: 93; cg: SspmpSm_perm_cg; cp: cp_mxr_effect; bin: mxr_1_x_only_region\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_none_str: .string "\"test: 94; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_none\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_x_str: .string "\"test: 95; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_x\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_r_str: .string "\"test: 96; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_r\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rx_str: .string "\"test: 97; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_rx\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rw_str: .string "\"test: 98; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_rw\""
-SspmpSm_perm_cg_cp_shared_rule_shared_rwx_rwx_str: .string "\"test: 99; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_rwx_rwx\""
-SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str: .string "\"test: 100; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_rwx_010\""
-SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str: .string "\"test: 101; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_rwx_011\""
-SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str: .string "\"test: 102; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_shared1_u0\""
-SspmpSm_perm_cg_cp_no_match_deny_no_match_all_off_str: .string "\"test: 103; cg: SspmpSm_perm_cg; cp: cp_no_match_deny; bin: no_match_all_off\""
-SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str: .string "\"test: 104; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_ok\""
-SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str: .string "\"test: 105; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_ok\""
-SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault_str: .string "\"test: 106; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_instr; bin: smode_instr_fault\""
-SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault_str: .string "\"test: 107; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_fault\""
-SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault_str: .string "\"test: 108; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_fault\""
-SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str: .string "\"test: 109; cg: SspmpSm_perm_cg; cp: cp_mmode_bypass; bin: mmode_bypass_load\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str: .string "\"test: 110; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry0_addr\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str: .string "\"test: 111; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry0_cfg\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str: .string "\"test: 112; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry1_addr\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str: .string "\"test: 113; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry1_cfg\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str: .string "\"test: 114; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry2_addr\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str: .string "\"test: 115; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry2_cfg\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str: .string "\"test: 116; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_addr\""
-SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str: .string "\"test: 117; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_cfg\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str: .string "\"test: 118; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: zero_all_delegated\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str: .string "\"test: 119; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_zero; bin: zero_and_delegating\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8_str: .string "\"test: 120; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_8\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16_str: .string "\"test: 121; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_16\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32_str: .string "\"test: 122; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_32\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 123; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
-SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 124; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str: .string "\"test: 125; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: clamp_pmpnum_100\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str: .string "\"test: 126; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_16_ok\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 127; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 128; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 129; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 130; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 131; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 132; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 133; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 134; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 135; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 136; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 137; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 138; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str: .string "\"test: 139; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str: .string "\"test: 140; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str: .string "\"test: 141; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str: .string "\"test: 142; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_sfence_after_cfg\""
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str: .string "\"test: 143; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mode\""
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str: .string "\"test: 144; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mmode_check\""
+SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_deny_str: .string "\"test: 60; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry0_wins_deny\""
+SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_ignores_entry0_permissions_str: .string "\"test: 61; cg: SspmpSm_addr_cg; cp: cp_match_irrespective_perm_bits; bin: match_ignores_entry0_permissions\""
+SspmpSm_addr_cg_cp_priority_match_priority_entry1_allows_after_entry0_off_str: .string "\"test: 62; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry1_allows_after_entry0_off\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_load_str: .string "\"test: 63; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_store_str: .string "\"test: 64; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_fetch_str: .string "\"test: 65; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_none_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_load_str: .string "\"test: 66; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_store_str: .string "\"test: 67; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_fetch_str: .string "\"test: 68; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_none_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_load_str: .string "\"test: 69; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_store_str: .string "\"test: 70; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_fetch_str: .string "\"test: 71; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_x_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_load_str: .string "\"test: 72; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_store_str: .string "\"test: 73; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_fetch_str: .string "\"test: 74; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_x_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_load_str: .string "\"test: 75; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_store_str: .string "\"test: 76; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_fetch_str: .string "\"test: 77; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_r_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_load_str: .string "\"test: 78; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_store_str: .string "\"test: 79; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_fetch_str: .string "\"test: 80; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_r_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_load_str: .string "\"test: 81; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_store_str: .string "\"test: 82; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_fetch_str: .string "\"test: 83; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_load_str: .string "\"test: 84; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_store_str: .string "\"test: 85; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_fetch_str: .string "\"test: 86; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_load_str: .string "\"test: 87; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_store_str: .string "\"test: 88; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_fetch_str: .string "\"test: 89; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rw_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_load_str: .string "\"test: 90; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_store_str: .string "\"test: 91; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_fetch_str: .string "\"test: 92; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rw_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_load_str: .string "\"test: 93; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_load\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_store_str: .string "\"test: 94; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_store\""
+SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_fetch_str: .string "\"test: 95; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: smode_rwx_rwx_fetch\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_load_str: .string "\"test: 96; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_load\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_store_str: .string "\"test: 97; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_store\""
+SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_fetch_str: .string "\"test: 98; cg: SspmpSm_perm_cg; cp: cp_smode_rule; bin: umode_denied_rwx_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load_str: .string "\"test: 99; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store_str: .string "\"test: 100; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch_str: .string "\"test: 101; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load_str: .string "\"test: 102; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store_str: .string "\"test: 103; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch_str: .string "\"test: 104; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load_str: .string "\"test: 105; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store_str: .string "\"test: 106; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch_str: .string "\"test: 107; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load_str: .string "\"test: 108; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store_str: .string "\"test: 109; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch_str: .string "\"test: 110; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load_str: .string "\"test: 111; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store_str: .string "\"test: 112; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch_str: .string "\"test: 113; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load_str: .string "\"test: 114; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store_str: .string "\"test: 115; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch_str: .string "\"test: 116; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_fetch\""
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied_str: .string "\"test: 117; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_load_denied\""
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied_str: .string "\"test: 118; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_store_denied\""
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str: .string "\"test: 119; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_load\""
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str: .string "\"test: 120; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_store\""
+SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied_str: .string "\"test: 121; cg: SspmpSm_perm_cg; cp: cp_enforce_no_x; bin: sum_1_fetch_denied\""
+SspmpSm_perm_cg_cp_mxr_effect_mxr_0_x_only_region_str: .string "\"test: 122; cg: SspmpSm_perm_cg; cp: cp_mxr_effect; bin: mxr_0_x_only_region\""
+SspmpSm_perm_cg_cp_mxr_effect_mxr_1_x_only_region_str: .string "\"test: 123; cg: SspmpSm_perm_cg; cp: cp_mxr_effect; bin: mxr_1_x_only_region\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_load_str: .string "\"test: 124; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_none_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_store_str: .string "\"test: 125; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_none_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_none_fetch_str: .string "\"test: 126; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_none_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_load_str: .string "\"test: 127; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_none_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_store_str: .string "\"test: 128; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_none_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_none_fetch_str: .string "\"test: 129; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_none_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_load_str: .string "\"test: 130; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_x_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_store_str: .string "\"test: 131; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_x_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_x_fetch_str: .string "\"test: 132; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_x_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_load_str: .string "\"test: 133; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_x_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_store_str: .string "\"test: 134; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_x_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_x_fetch_str: .string "\"test: 135; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_x_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_load_str: .string "\"test: 136; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_r_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_store_str: .string "\"test: 137; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_r_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_r_fetch_str: .string "\"test: 138; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_r_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_str: .string "\"test: 139; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_store_str: .string "\"test: 140; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_fetch_str: .string "\"test: 141; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load_str: .string "\"test: 142; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_store_str: .string "\"test: 143; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch_str: .string "\"test: 144; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_str: .string "\"test: 145; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_store_str: .string "\"test: 146; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_fetch_str: .string "\"test: 147; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load_str: .string "\"test: 148; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_store_str: .string "\"test: 149; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch_str: .string "\"test: 150; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_str: .string "\"test: 151; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_store_str: .string "\"test: 152; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_fetch_str: .string "\"test: 153; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load_str: .string "\"test: 154; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_store_str: .string "\"test: 155; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_fetch_str: .string "\"test: 156; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_load_str: .string "\"test: 157; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_store_str: .string "\"test: 158; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_fetch_str: .string "\"test: 159; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_fetch\""
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed_str: .string "\"test: 160; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum0_shared_load_allowed\""
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed_str: .string "\"test: 161; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum1_shared_load_allowed\""
+SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_010_str: .string "\"test: 162; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_rwx_010\""
+SspmpSm_perm_cg_cp_reserved_encoding_reserved_rwx_011_str: .string "\"test: 163; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_rwx_011\""
+SspmpSm_perm_cg_cp_reserved_encoding_reserved_shared1_u0_str: .string "\"test: 164; cg: SspmpSm_perm_cg; cp: cp_reserved_encoding; bin: reserved_shared1_u0\""
+SspmpSm_perm_cg_cp_no_match_deny_no_match_load_fault_str: .string "\"test: 165; cg: SspmpSm_perm_cg; cp: cp_no_match_deny; bin: no_match_load_fault\""
+SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok_str: .string "\"test: 166; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_ok\""
+SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str: .string "\"test: 167; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_ok\""
+SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault_str: .string "\"test: 168; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_instr; bin: smode_instr_fault\""
+SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault_str: .string "\"test: 169; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_load; bin: smode_load_fault\""
+SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault_str: .string "\"test: 170; cg: SspmpSm_perm_cg; cp: cp_spmp_fault_store; bin: smode_store_fault\""
+SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str: .string "\"test: 171; cg: SspmpSm_perm_cg; cp: cp_mmode_bypass; bin: mmode_bypass_load\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str: .string "\"test: 172; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry0_addr\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str: .string "\"test: 173; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry0_cfg\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str: .string "\"test: 174; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry1_addr\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str: .string "\"test: 175; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry1_cfg\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str: .string "\"test: 176; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry2_addr\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str: .string "\"test: 177; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry2_cfg\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str: .string "\"test: 178; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_addr\""
+SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str: .string "\"test: 179; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_cfg\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 180; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 181; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 182; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 183; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 184; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 185; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones_str: .string "\"test: 186; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero_str: .string "\"test: 187; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 188; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed_str: .string "\"test: 189; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: disabled_napot_load_allowed\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 190; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_napot_load_denied_str: .string "\"test: 191; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_napot_load_denied\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 192; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed_str: .string "\"test: 193; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_off_load_allowed\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 194; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 195; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str: .string "\"test: 196; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str: .string "\"test: 197; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str: .string "\"test: 198; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str: .string "\"test: 199; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_sfence_after_cfg\""
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str: .string "\"test: 200; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mode\""
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str: .string "\"test: 201; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mmode_check\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str: .string "\"test: 202; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: zero_all_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str: .string "\"test: 203; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_zero; bin: zero_and_delegating\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_min_str: .string "\"test: 204; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_min\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_quarter_str: .string "\"test: 205; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_quarter\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_half_str: .string "\"test: 206; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_half\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_three_quarters_str: .string "\"test: 207; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_three_quarters\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_last_str: .string "\"test: 208; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_last\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 209; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 210; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str: .string "\"test: 211; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: clamp_pmpnum_100\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok_str: .string "\"test: 212; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_max_ok\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 213; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

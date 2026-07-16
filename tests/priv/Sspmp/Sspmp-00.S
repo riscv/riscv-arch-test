@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Sspmpen', 'Smpmpdeleg']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Sspmpen', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -370,24 +370,24 @@ SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr:
 # Clear lock bit from M-mode via miselect
   RVTEST_GOTO_MMODE
   LI(x8, 0x102)
-  CSRW(0x350, x8)  # miselect = SPMP entry 2
+  CSRW(miselect, x8)  # miselect = SPMP entry 2
   nop
   LI(x13, 0x109)  # cfg without L bit
-  CSRW(0x352, x13)  # write mireg2 to clear lock
+  CSRW(mireg2, x13)  # write mireg2 to clear lock
   nop
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
-  # Read 0x352 into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x14, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
-  CSRW(0x352, zero)  # clear mireg2
+  # Read mireg2 into x14 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x14, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
+  CSRW(mireg2, zero)  # clear mireg2
   nop
-  CSRW(0x351, zero)  # clear mireg
+  CSRW(mireg, zero)  # clear mireg
   nop
   LI(x8, 0x101)
-  CSRW(0x350, x8)
+  CSRW(miselect, x8)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
-  CSRW(0x352, zero)
+  CSRW(mireg2, zero)
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 
@@ -1822,10 +1822,10 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   fence.i
   RVTEST_GOTO_MMODE
   LI(x8, 0x100)
-  CSRW(0x350, x8)
+  CSRW(miselect, x8)
   nop
   LI(x14, 0x118)
-  CSRW(0x352, x14)
+  CSRW(mireg2, x14)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -1852,11 +1852,11 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
 
   RVTEST_GOTO_MMODE
   LI(x8, 0x100)
-  CSRW(0x350, x8)
+  CSRW(miselect, x8)
   nop
-  CSRW(0x352, zero)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -1869,13 +1869,13 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
 /////////////////////////////////
   RVTEST_GOTO_MMODE
   LI(x9, 0x100)
-  CSRW(0x350, x9)  # miselect = SPMP entry 0
+  CSRW(miselect, x9)  # miselect = SPMP entry 0
   nop
   LI(x8, 0x20000fff)
-  CSRW(0x351, x8)  # write spmpaddr via mireg
+  CSRW(mireg, x8)  # write spmpaddr via mireg
   nop
   LI(x8, 0x18)
-  CSRW(0x352, x8)  # write spmpcfg via mireg2
+  CSRW(mireg2, x8)  # write spmpcfg via mireg2
   nop
   sfence.vma x0, x0
 SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
@@ -1884,9 +1884,9 @@ SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
   nop
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
-  CSRW(0x352, zero)  # clear spmpcfg
+  CSRW(mireg2, zero)  # clear spmpcfg
   nop
-  CSRW(0x351, zero)  # clear spmpaddr
+  CSRW(mireg, zero)  # clear spmpaddr
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -1901,86 +1901,86 @@ SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
 
 # M-mode access to SPMP entry 0
   LI(x8, 0x100)
-  CSRW(0x350, x8)  # miselect = SPMP entry 0
+  CSRW(miselect, x8)  # miselect = SPMP entry 0
   nop
   LI(x14, 0x24000000)
-  CSRW(0x351, x14)  # write spmpaddr via mireg
+  CSRW(mireg, x14)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr:
-  # Read 0x351 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str)
+  # Read mireg into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_addr_str)
   LI(x14, 0x11d)
-  CSRW(0x352, x14)  # write spmpcfg via mireg2
+  CSRW(mireg2, x14)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg:
-  # Read 0x352 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str)
-  CSRW(0x352, zero)
+  # Read mireg2 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry0_cfg_str)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
 
 # M-mode access to SPMP entry 1
   LI(x8, 0x101)
-  CSRW(0x350, x8)  # miselect = SPMP entry 1
+  CSRW(miselect, x8)  # miselect = SPMP entry 1
   nop
   LI(x14, 0x24000800)
-  CSRW(0x351, x14)  # write spmpaddr via mireg
+  CSRW(mireg, x14)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr:
-  # Read 0x351 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str)
+  # Read mireg into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_addr_str)
   LI(x14, 0x11d)
-  CSRW(0x352, x14)  # write spmpcfg via mireg2
+  CSRW(mireg2, x14)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg:
-  # Read 0x352 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str)
-  CSRW(0x352, zero)
+  # Read mireg2 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry1_cfg_str)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
 
 # M-mode access to SPMP entry 2
   LI(x8, 0x102)
-  CSRW(0x350, x8)  # miselect = SPMP entry 2
+  CSRW(miselect, x8)  # miselect = SPMP entry 2
   nop
   LI(x14, 0x24001000)
-  CSRW(0x351, x14)  # write spmpaddr via mireg
+  CSRW(mireg, x14)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr:
-  # Read 0x351 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str)
+  # Read mireg into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str)
   LI(x14, 0x11d)
-  CSRW(0x352, x14)  # write spmpcfg via mireg2
+  CSRW(mireg2, x14)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg:
-  # Read 0x352 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str)
-  CSRW(0x352, zero)
+  # Read mireg2 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
 
 # M-mode access to SPMP entry 3
   LI(x8, 0x103)
-  CSRW(0x350, x8)  # miselect = SPMP entry 3
+  CSRW(miselect, x8)  # miselect = SPMP entry 3
   nop
   LI(x14, 0x24001800)
-  CSRW(0x351, x14)  # write spmpaddr via mireg
+  CSRW(mireg, x14)  # write spmpaddr via mireg
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr:
-  # Read 0x351 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x351, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str)
+  # Read mireg into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str)
   LI(x14, 0x11d)
-  CSRW(0x352, x14)  # write spmpcfg via mireg2
+  CSRW(mireg2, x14)  # write spmpcfg via mireg2
   nop
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg:
-  # Read 0x352 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str)
-  CSRW(0x352, zero)
+  # Read mireg2 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x15, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg, SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 

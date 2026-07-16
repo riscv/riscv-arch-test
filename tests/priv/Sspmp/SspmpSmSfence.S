@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei

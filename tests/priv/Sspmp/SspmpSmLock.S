@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -123,24 +123,24 @@ SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr:
 # Clear lock bit from M-mode via miselect
   RVTEST_GOTO_MMODE
   LI(x8, 0x102)
-  CSRW(0x350, x8)  # miselect = SPMP entry 2
+  CSRW(miselect, x8)  # miselect = SPMP entry 2
   nop
   LI(x25, 0x109)  # cfg without L bit
-  CSRW(0x352, x25)  # write mireg2 to clear lock
+  CSRW(mireg2, x25)  # write mireg2 to clear lock
   nop
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
-  # Read 0x352 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x352, x15, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
-  CSRW(0x352, zero)  # clear mireg2
+  # Read mireg2 into x15 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg2, x15, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock, SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str)
+  CSRW(mireg2, zero)  # clear mireg2
   nop
-  CSRW(0x351, zero)  # clear mireg
+  CSRW(mireg, zero)  # clear mireg
   nop
   LI(x8, 0x101)
-  CSRW(0x350, x8)
+  CSRW(miselect, x8)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
-  CSRW(0x352, zero)
+  CSRW(mireg2, zero)
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 

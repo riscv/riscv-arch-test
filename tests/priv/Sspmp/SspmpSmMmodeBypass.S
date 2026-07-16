@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -64,13 +64,13 @@ RVTEST_BEGIN
 /////////////////////////////////
   RVTEST_GOTO_MMODE
   LI(x10, 0x100)
-  CSRW(0x350, x10)  # miselect = SPMP entry 0
+  CSRW(miselect, x10)  # miselect = SPMP entry 0
   nop
   LI(x22, 0x20000fff)
-  CSRW(0x351, x22)  # write spmpaddr via mireg
+  CSRW(mireg, x22)  # write spmpaddr via mireg
   nop
   LI(x22, 0x18)
-  CSRW(0x352, x22)  # write spmpcfg via mireg2
+  CSRW(mireg2, x22)  # write spmpcfg via mireg2
   nop
   sfence.vma x0, x0
 SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
@@ -79,9 +79,9 @@ SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load:
   nop
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load, SspmpSm_perm_cg_cp_mmode_bypass_mmode_bypass_load_str)
-  CSRW(0x352, zero)  # clear spmpcfg
+  CSRW(mireg2, zero)  # clear spmpcfg
   nop
-  CSRW(0x351, zero)  # clear spmpaddr
+  CSRW(mireg, zero)  # clear spmpaddr
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode

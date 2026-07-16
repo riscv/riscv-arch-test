@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp', 'Smpmpdeleg']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -100,10 +100,10 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   fence.i
   RVTEST_GOTO_MMODE
   LI(x15, 0x100)
-  CSRW(0x350, x15)
+  CSRW(miselect, x15)
   nop
   LI(x30, 0x118)
-  CSRW(0x352, x30)
+  CSRW(mireg2, x30)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode
@@ -130,11 +130,11 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
 
   RVTEST_GOTO_MMODE
   LI(x15, 0x100)
-  CSRW(0x350, x15)
+  CSRW(miselect, x15)
   nop
-  CSRW(0x352, zero)
+  CSRW(mireg2, zero)
   nop
-  CSRW(0x351, zero)
+  CSRW(mireg, zero)
   nop
   sfence.vma x0, x0
   RVTEST_GOTO_LOWER_MODE Smode

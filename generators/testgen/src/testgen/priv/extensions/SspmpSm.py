@@ -396,33 +396,33 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
             "# Clear lock bit from M-mode via miselect",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + test_entry:x})",
-            f"CSRW(0x350, x{sel_reg})  # miselect = SPMP entry {test_entry}",
+            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {test_entry}",
             "nop",
         ]
     )
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_unlocked:x})  # cfg without L bit",
-            f"CSRW(0x352, x{val_reg})  # write mireg2 to clear lock",
+            f"CSRW(mireg2, x{val_reg})  # write mireg2 to clear lock",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_mmode_unlock", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, ("0x352", None), test_data),
+            gen_csr_read_sigupd(check_reg, ("mireg2", None), test_data),
         ]
     )
 
     # Clean up: clear the entries
     lines.extend(
         [
-            "CSRW(0x352, zero)  # clear mireg2",
+            "CSRW(mireg2, zero)  # clear mireg2",
             "nop",
-            "CSRW(0x351, zero)  # clear mireg",
+            "CSRW(mireg, zero)  # clear mireg",
             "nop",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + prev_entry:x})",
-            f"CSRW(0x350, x{sel_reg})",
+            f"CSRW(miselect, x{sel_reg})",
             "nop",
-            "CSRW(0x351, zero)",
+            "CSRW(mireg, zero)",
             "nop",
-            "CSRW(0x352, zero)",
+            "CSRW(mireg2, zero)",
             "nop",
             "RVTEST_GOTO_LOWER_MODE Smode",
         ]
@@ -1492,7 +1492,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-            f"CSRW(0x350, x{sel_reg})  # miselect = SPMP entry 0",
+            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry 0",
             "nop",
         ]
     )
@@ -1501,7 +1501,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{napot_wide:x})",
-            f"CSRW(0x351, x{val_reg})  # write spmpaddr via mireg",
+            f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
             "nop",
         ]
     )
@@ -1509,7 +1509,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_deny:x})",
-            f"CSRW(0x352, x{val_reg})  # write spmpcfg via mireg2",
+            f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
             "nop",
             "sfence.vma x0, x0",
         ]
@@ -1529,9 +1529,9 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     # Clean up
     lines.extend(
         [
-            "CSRW(0x352, zero)  # clear spmpcfg",
+            "CSRW(mireg2, zero)  # clear spmpcfg",
             "nop",
-            "CSRW(0x351, zero)  # clear spmpaddr",
+            "CSRW(mireg, zero)  # clear spmpaddr",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -1566,7 +1566,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# M-mode access to SPMP entry {entry}",
                 f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-                f"CSRW(0x350, x{sel_reg})  # miselect = SPMP entry {entry}",
+                f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {entry}",
                 "nop",
             ]
         )
@@ -1576,10 +1576,10 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{val_reg}, 0x{addr_val >> 2:x})",
-                f"CSRW(0x351, x{val_reg})  # write spmpaddr via mireg",
+                f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_addr", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, ("0x351", None), test_data),
+                gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
             ]
         )
 
@@ -1588,19 +1588,19 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{val_reg}, 0x{cfg_val:x})",
-                f"CSRW(0x352, x{val_reg})  # write spmpcfg via mireg2",
+                f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_cfg", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, ("0x352", None), test_data),
+                gen_csr_read_sigupd(check_reg, ("mireg2", None), test_data),
             ]
         )
 
         # Clean up
         lines.extend(
             [
-                "CSRW(0x352, zero)",
+                "CSRW(mireg2, zero)",
                 "nop",
-                "CSRW(0x351, zero)",
+                "CSRW(mireg, zero)",
                 "nop",
             ]
         )
@@ -1989,7 +1989,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "fence.i",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(0x350, x{sel_reg})",
+            f"CSRW(miselect, x{sel_reg})",
             "nop",
         ]
     )
@@ -1999,7 +1999,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_deny:x})",
-            f"CSRW(0x352, x{val_reg})",
+            f"CSRW(mireg2, x{val_reg})",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2052,11 +2052,11 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(0x350, x{sel_reg})",
+            f"CSRW(miselect, x{sel_reg})",
             "nop",
-            "CSRW(0x352, zero)",
+            "CSRW(mireg2, zero)",
             "nop",
-            "CSRW(0x351, zero)",
+            "CSRW(mireg, zero)",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2399,7 +2399,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     "Sspmp",
     # The combined test exercises Sspmpen (spmpen CSR) via _generate_spmpen_tests,
     # and this suite explicitly exercises the Smpmpdeleg resource-sharing profile.
-    required_extensions=["Sm", "S", "Zicsr", "Sspmp", "Sspmpen", "Smpmpdeleg"],
+    required_extensions=["Sm", "S", "Zicsr", "Smcsrind", "Sscsrind", "Sspmp", "Sspmpen", "Smpmpdeleg"],
     march_extensions=["Zicsr", "Zifencei"],
     params=["NUM_PMP_ENTRIES: '>=8'"],
     extra_defines=["#define SKIP_MEPC"],  # needed for EnforceNoX / U-mode exec-fault tests
@@ -2483,7 +2483,7 @@ def _generate_single_test(
     extra_required_extensions: list[str] | None = None,
 ) -> None:
     """Generate a single Sspmp sub-test .S file."""
-    required_exts = ["Sm", "S", "Zicsr", "Sspmp", "Smpmpdeleg"]
+    required_exts = ["Sm", "S", "Zicsr", "Smcsrind", "Sscsrind", "Sspmp", "Smpmpdeleg"]
     if extra_required_extensions:
         required_exts = required_exts + list(extra_required_extensions)
     test_config = TestConfig(

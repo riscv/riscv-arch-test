@@ -41,23 +41,23 @@ def _zawrs_trap_handler(
         lines.append("xt_trap_handler:")
         lines.extend(
             [
-                "# increment xepc by 4 so it does not land on the same instruction",
-                f"CSRR(x{r_temp}, xepc)",
+                "# increment xEPC by 4 so it does not land on the same instruction",
+                f"CSRR(x{r_temp}, xEPC)",
                 f"addi x{r_temp}, x{r_temp}, 0x4",
-                f"CSRW(xepc, x{r_temp})",
+                f"CSRW(xEPC, x{r_temp})",
             ]
         )
     lines.extend(
         [
-            "# Record xcause, restore xtvec",
-            f"csrr x{r_cause}, xcause",
-            f"csrw xtvec, x{r_scratch}",
+            "# Record xCAUSE, restore xTVEC",
+            f"csrr x{r_cause}, xCAUSE",
+            f"csrw xTVEC, x{r_scratch}",
         ]
     )
     if is_int:
         lines.extend(
             [
-                "#if defined(S_SUPPORTED) && defined(SSTC_SUPPORTED)",
+                "#ifdef SSTC_SUPPORTED",
                 f"LI(x{r_scratch}, 1)",
                 *clr_stimer_int(r_temp, r_timecmp, r_temp2, r_scratch),
                 "#else",
@@ -67,12 +67,24 @@ def _zawrs_trap_handler(
         )
     lines.extend(
         [
-            "xret",
+            "xRET",
             ".option pop",
             "4:",
         ]
     )
     return lines
+
+
+def _define_helper(prefix: str) -> list[str]:
+    """Emit the CSR and trap handler defines based on privileg prefix"""
+    return [
+        f"#define xt_int_handler {prefix}t_int_handler",
+        f"#define xCAUSE {prefix}cause",
+        f"#define xTVEC {prefix}tvec",
+        f"#define xRET {prefix}ret",
+        f"#define xt_trap_handler {prefix}t_trap_handler",
+        f"#define xEPC {prefix}epc",
+    ]
 
 
 def _zawrs_define_helper(priv: str) -> list[str]:
@@ -81,34 +93,15 @@ def _zawrs_define_helper(priv: str) -> list[str]:
     if priv != "M":
         lines.extend(
             [
-                "#if defined(S_SUPPORTED) && defined(SSTC_SUPPORTED)",
-                "#define xt_int_handler st_int_handler",  # test using STIP
-                "#define xcause scause",
-                "#define xtvec stvec",
-                "#define xret sret",
-                "#define xt_trap_handler st_trap_handler",
-                "#define xepc sepc",
+                "#ifdef SSTC_SUPPORTED",  # test using STIP
+                *_define_helper("s"),
                 "#else",
-                "#define xt_int_handler mt_int_handler",
-                "#define xcause mcause",
-                "#define xtvec mtvec",
-                "#define xret mret",
-                "#define xt_trap_handler mt_trap_handler",
-                "#define xepc mepc",
+                *_define_helper("m"),
                 "#endif",
             ]
         )
     else:  # if test is for M mode
-        lines.extend(
-            [
-                "#define xt_int_handler mt_int_handler",
-                "#define xcause mcause",
-                "#define xtvec mtvec",
-                "#define xret mret",
-                "#define xt_trap_handler mt_trap_handler",
-                "#define xepc mepc",
-            ]
-        )
+        lines.extend(_define_helper("m"))
     return lines
 
 
@@ -136,9 +129,21 @@ def _wrs_resume_helper(
         sie_list = [0, 1]
         tw_list = [0]
     else:  # if test is for M mode
-        sie_list = [0]  # to ensure that the python for loop does not repeat for sie values
+        sie_list = [0]  # SIE value does not matter for M mode, just set to 0
         tw_list = [0, 1]
 
+    if priv != "M":
+        lines.extend(
+            [
+                "#ifdef SSTC_SUPPORTED",
+                "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP",
+                *set_menvcfg_stce(r_temp, True),
+                "# Delegate supervisor timer interrupt (STI) to S-mode",
+                f"LI(x{r_temp}, 0x20)",
+                f"CSRS(mideleg, x{r_temp})",
+                "#endif",
+            ]
+        )
     for op in ["WRS.NTO", "WRS.STO"]:
         for tw_val in tw_list:
             for sie_val in sie_list:
@@ -153,9 +158,9 @@ def _wrs_resume_helper(
                             f"LI(x{r_temp}, 0x200000)",
                             f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
                             "",
-                            f"# Install local trap handler in xtvec (direct mode); save old xtvec in x{r_scratch}",
+                            f"# Install local trap handler in xTVEC (direct mode); save old xTVEC in x{r_scratch}",
                             f"LA(x{r_temp}, xt_int_handler)",
-                            f"csrrw x{r_scratch}, xtvec, x{r_temp}",
+                            f"csrrw x{r_scratch}, xTVEC, x{r_temp}",
                             "",
                         ]
                     )
@@ -167,12 +172,7 @@ def _wrs_resume_helper(
                                 f"# sstatus.SIE = {sie_val}",
                                 f"{'csrsi' if sie_val else 'csrci'} sstatus, 2",
                                 "#endif",
-                                "#if defined(S_SUPPORTED) && defined(SSTC_SUPPORTED)",
-                                "# Enable Sstc (menvcfg.STCE) so stimecmp drives sip.STIP",
-                                *set_menvcfg_stce(r_temp, True),
-                                "# Delegate supervisor timer interrupt (STI) to S-mode",
-                                f"LI(x{r_temp}, 0x20)",
-                                f"CSRS(mideleg, x{r_temp})",
+                                "#ifdef SSTC_SUPPORTED",
                                 "# Set sie.STIE",
                                 f"LI(x{r_temp}, 0x20)",
                                 f"CSRS(sie, x{r_temp})",
@@ -214,19 +214,25 @@ def _wrs_resume_helper(
                             f"bnez x{r_cause}, 2f              # MIE=1: handler recorded mcause -> done",
                         ]
                     )
+                    # Since wrs instructions can terminate early, in order to test the resume behavior of wrs instructions,
+                    # the test repeats the instruction until timer interrupt fires. For the case where interrupt is not expected
+                    # to fire, the test repeats wrs instruction until interrupts becomes pending
+                    # Two cases where the interrupt is not expected to fire are listed below:
+                    ################## The test runs in M mode with mstatus.MIE = 0 ######################################
                     if (priv == "M") & (mie_val == 0):
                         lines.extend(
                             [
-                                "# Only moves on if MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
+                                "# Only moves on if mstatus.MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
                                 f"csrr x{r_temp}, mip",
                                 f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
                                 f"bnez x{r_temp}, 2f              # Interrupt pending -> done",
                             ]
                         )
+                    ################## The test runs in S mode with mstatus.SIE = 0 ######################################
                     if (priv == "S") & (sie_val == 0):
                         lines.extend(
                             [
-                                "#if defined(S_SUPPORTED) && defined(SSTC_SUPPORTED)",
+                                "#ifdef SSTC_SUPPORTED",
                                 "# Only moves on if SIE = 0 and sip.STIP = 1, expect no interrupt should be taken",
                                 f"csrr x{r_temp}, sip",
                                 f"andi x{r_temp}, x{r_temp}, 0x20  # Extract mip.MTIP",
@@ -247,7 +253,7 @@ def _wrs_resume_helper(
                     if (priv == "S") & (sie_val == 0):
                         lines.extend(
                             [
-                                "#if defined(S_SUPPORTED) && defined(SSTC_SUPPORTED)",
+                                "#ifdef SSTC_SUPPORTED",
                                 f"csrw stvec, x{r_scratch}",
                                 "#endif",
                             ]
@@ -292,19 +298,19 @@ def _wrs_no_mie_helper(
                 "###### Setup (M Mode) ######",
                 "# Disable all interrupts in mie",
                 "CSRW mie, zero",
-                "# mstatus.MIE = 1 and MPIE = 1",
-                f"LI(x{r_temp}, 0x88)",
+                "# mstatus.MIE, SIE and MPIE = 1",
+                f"LI(x{r_temp}, 0x8A)",
                 f"CSRS(mstatus, x{r_temp})",
             ]
         )
         if op == "WRS.NTO":
             lines.extend(
                 [
-                    # "#ifndef UDB_ZAWRS_NTO_IS_NOP",
-                    f"# Install local trap handler in xtvec (direct mode); save old xtvec in x{r_scratch}",
+                    "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+                    f"# Install local trap handler in xTVEC (direct mode); save old xTVEC in x{r_scratch}",
                     f"LA(x{r_temp}, xt_trap_handler)",
-                    f"csrrw x{r_scratch}, xtvec, x{r_temp}",
-                    # "#endif",
+                    f"csrrw x{r_scratch}, xTVEC, x{r_temp}",
+                    "#endif",
                 ]
             )
         lines.extend(
@@ -324,8 +330,6 @@ def _wrs_no_mie_helper(
                     "# set SSI and SEI through mip",
                     f"LI(x{r_temp}, 0x202)",
                     f"CSRS(mip, x{r_temp})",
-                    "# Set mstatus.SIE",
-                    "csrsi mstatus, 0x2",
                     "#endif",
                     "",
                     "# Set TW bit",
@@ -357,11 +361,10 @@ def _wrs_no_mie_helper(
         if op == "WRS.NTO":
             lines.extend(
                 [
-                    # This part commented out because the parameter is not defined yet
-                    # "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+                    "#ifndef UDB_ZAWRS_NTO_IS_NOP",
                     "# r_cause is 0, no trap happened",
                     f"beqz x{r_cause}, 1b",
-                    # "#endif",
+                    "#endif",
                 ]
             )
         lines.extend(
@@ -407,14 +410,14 @@ def _wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[
     tw_list = [0] if priv != "M" else [0, 1]
 
     for tw_val in tw_list:
-        for wrs_ops in ["WRS.STO", "WRS.NTO"]:
+        for wrs_op in ["WRS.STO", "WRS.NTO"]:
             lines.extend(
                 [
                     "#### Setup (M mode) ####",
                     "# Disable all interrupts in mie",
                     "CSRW mie, zero",
-                    "# mstatus.MPIE = 0",
-                    f"LI(x{r_temp}, 0x80)",
+                    "# mstatus.MPIE, SIE and MIE = 0",
+                    f"LI(x{r_temp}, 0x8A)",
                     f"CSRC(mstatus, x{r_temp})",
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
@@ -425,11 +428,6 @@ def _wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[
             if priv != "M":
                 lines.extend(
                     [
-                        "# clear SIE",
-                        "#ifdef S_SUPPORTED",
-                        "csrci mstatus, 2",
-                        "#endif",
-                        f"# Go down to {priv} mode to execute the instruction",
                         f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                     ]
                 )
@@ -440,11 +438,11 @@ def _wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[
                     f"LA(x{r_scratch}, scratch)",
                     f"sc.w x{r_temp}, x{r_temp2}, (x{r_scratch})",
                     test_data.add_testcase(
-                        f"tw_{tw_val}_{'STO' if wrs_ops == 'WRS.STO' else 'NTO'}",
+                        f"tw_{tw_val}_{'STO' if wrs_op == 'WRS.STO' else 'NTO'}",
                         coverpoint,
                         covergroup,
                     ),
-                    f"{wrs_ops}",
+                    f"{wrs_op}",
                     "",
                     "RVTEST_GOTO_MMODE",
                 ]
@@ -480,29 +478,20 @@ def _wrs_timeout_helper(
                     "###### Setup (M Mode) ######",
                     "# Disable all interrupts in mie",
                     "CSRW mie, zero",
-                    "# mstatus.MIE = 0 and MPIE = 0",
-                    f"LI(x{r_temp}, 0x88)",
+                    "# mstatus.MIE, SIE and MPIE = 0",
+                    f"LI(x{r_temp}, 0x8A)",
                     f"CSRC(mstatus, x{r_temp})",
                     "# Write TW bit",
                     f"LI(x{r_temp}, 0x200000)",
                     f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
                 ]
             )
-            if priv != "M":
-                lines.extend(
-                    [
-                        "#ifdef S_SUPPORTED",
-                        "# Clear mstatus.SIE",
-                        "csrci mstatus, 0x2",
-                        "#endif",
-                    ]
-                )
             if coverpoint == "cp_wrs_nto_timeout_h":
                 lines.extend(
                     [
-                        "# Set VTM",
-                        f"LI(x{r_temp}, 0x100000)",
-                        f"CSRS(mstatus, x{r_temp})",
+                        "# Set VTW",
+                        f"LI(x{r_temp}, 0x200000)",
+                        f"CSRS(hstatus, x{r_temp})",
                         "# No delegation in hedeleg",
                         "CSRW hedeleg, zero",
                     ]
@@ -511,9 +500,9 @@ def _wrs_timeout_helper(
                 lines.extend(
                     [
                         "# Set up trap handler - will trap to either S or M mode based on what is supported",
-                        f"# Install local trap handler in xtvec (direct mode); save old xtvec in x{r_scratch}",
+                        f"# Install local trap handler in xTVEC (direct mode); save old xTVEC in x{r_scratch}",
                         f"LA(x{r_temp}, xt_trap_handler)",
-                        f"csrrw x{r_scratch}, xtvec, x{r_temp}",
+                        f"csrrw x{r_scratch}, xTVEC, x{r_temp}",
                     ]
                 )
             if priv != "M":
@@ -537,11 +526,10 @@ def _wrs_timeout_helper(
             if op == "WRS.NTO":
                 lines.extend(
                     [
-                        # This part commented out because the parameter is not defined yet
-                        # "#ifndef UDB_ZAWRS_NTO_IS_NOP",
-                        "# r_cause is 0, no trap happened",
+                        "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+                        f"# check if x{r_cause} = 0, WRS.NTO terminated prematurely, repeat until timeout",
                         f"beqz x{r_cause}, 1b",
-                        # "#endif",
+                        "#endif",
                     ]
                 )
             lines.extend(
@@ -558,6 +546,6 @@ def _wrs_timeout_helper(
                 )
 
     if coverpoint == "cp_wrs_nto_timeout_h":
-        lines.append("#endif")
+        lines.append("#endif // H_SUPPORTED")
 
     return lines

@@ -233,3 +233,9 @@ normative_rule_definitions:
   # set to 0.
   - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
     coverpoint: ["TODO"]
+
+  # An implementation may have WFI always raise an illegal-instruction exception in
+  # modes less privileged than M when TW=1, even if there are pending
+  # globally-disabled interrupts when the instruction is executed.
+  - name: mstatus_tw_always_illegal
+    coverpoint: ["InterruptsS_cg/cp_wfi_timeout"]

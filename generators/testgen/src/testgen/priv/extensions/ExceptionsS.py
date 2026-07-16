@@ -418,6 +418,9 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 @add_priv_test_generator(
     "ExceptionsS",
     required_extensions=["S"],
+    extra_defines=[
+        "#define TRAP_SIGUPD_COUNT 50000",
+    ],
 )
 def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     """Main entry point for S-mode exception test generation (refactored)."""

@@ -128,7 +128,7 @@ def _generate_wrs_no_mie_tests(
     mstatus.TW = 1
     mip.mtip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}
     execute {WRS.NTO/WRS.STO} in U mode
-    2 x 2 bins
+    2 bins
     """
     ######################################
     coverpoint = "cp_wrs_no_mie"
@@ -156,7 +156,7 @@ def _generate_wrs_nto_timeout_tests(
     mstatus.SIE = 0 (if S supported)
     mie=all 0s to disable interrupts
     execute WRS.NTO in U mode"
-    2 bins
+    1 bin
     """
 
     ######################################

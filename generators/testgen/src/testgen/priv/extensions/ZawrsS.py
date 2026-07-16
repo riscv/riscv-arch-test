@@ -218,7 +218,9 @@ def make_zawrss(test_data: TestData) -> list[TestChunk]:
 
     r_cause, r_scratch, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(5)
     tc.code.extend(_zawrs_define_helper("S"))
+    # interrupt trap handler
     tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, True, r_temp, r_timecmp, r_temp2))
+    # exception trap handler
     tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, False, r_temp))
 
     tc.code.extend(_generate_wrs_sto_timeout_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))

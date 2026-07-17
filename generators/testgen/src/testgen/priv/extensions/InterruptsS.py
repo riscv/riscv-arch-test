@@ -111,12 +111,12 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
             lines.extend(
                 [
-		        "#ifndef SM1P11P0_SUPPORTED",
-		        *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
-		        "#else",
-		        f"LI(x{r_scratch}, 0x20)",
-		        f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
-		        "#endif",
+                    "#ifndef SM1P11P0_SUPPORTED",
+                    *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
+                    "#else",
+                    f"LI(x{r_scratch}, 0x20)",
+                    f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
+                    "#endif",
                 ]
             )
 
@@ -2776,6 +2776,4 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_wfi_u_tests(test_data))
     tc.code.extend(_generate_wfi_timeout_u_tests(test_data))
 
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
-
+    return lines

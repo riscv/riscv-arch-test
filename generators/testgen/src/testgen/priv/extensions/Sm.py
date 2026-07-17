@@ -1277,23 +1277,6 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r1, r2])
     return lines
 
-
-@add_priv_test_generator("Sm", required_extensions=["Sm"])
-def make_sm(test_data: TestData) -> list[str]:
-    """Generate tests for Sm machine-mode testsuite."""
-    lines: list[str] = []
-
-    lines.extend(_generate_mcause_tests(test_data))
-    lines.extend(_generate_mstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_mret_tests(test_data))
-    lines.extend(_generate_sret_tests(test_data))
-    lines.extend(_generate_mcsr_tests(test_data))
-    lines.extend(_generate_mcsr_cntr_tests(test_data))
-
-    return lines
-
-
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""

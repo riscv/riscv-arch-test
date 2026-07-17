@@ -59,4 +59,11 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
 )
 def make_ssstrictss(test_data: TestData) -> list[TestChunk]:
     """SsstrictS — supervisor-mode strict compliance tests."""
-    return generate_ssstrict_suite(test_data, "SsstrictS", "S", _S_CSR_SKIP)
+    seed(42)
+    lines: list[str] = []
+    lines.extend(_generate_csr_tests_s(test_data))
+    lines.extend(generate_illegal_instr(test_data, "SsstrictS_instr_cg"))
+    lines.extend(generate_compressed_instr(test_data, "SsstrictS_comp_instr_cg"))
+    lines.extend(generate_vector_illegal_instr(test_data, "SsstrictS_instr_cg"))
+    return lines
+

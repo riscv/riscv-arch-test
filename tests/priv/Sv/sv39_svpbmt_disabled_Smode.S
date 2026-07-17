@@ -99,8 +99,8 @@ main:
   SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
   #ifndef SM1P11P0_SUPPORTED
-	LI(t0, MENVCFG_PBMTE)
-	CSRC(menvcfg, t0)
+      LI(t0, MENVCFG_PBMTE)
+      CSRC(menvcfg, t0)
   #endif
 
 //---------------------------------------------------------------------------------------------------------------------------------

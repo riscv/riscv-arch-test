@@ -16,7 +16,11 @@ from testgen.priv.registry import add_priv_test_generator
     "SdtrigS",
     required_extensions=["S", "Sdtrig"],
     march_extensions=["I", "Zicsr"],
-    extra_defines=[*UDB_DEFINES, "#define SKIP_MEPC"],  # SKIP_MEPC: hangs otherwise
+    extra_defines=[
+        *UDB_DEFINES,
+        "#define SKIP_MEPC",  # SKIP_MEPC: hangs otherwise.
+        "#define RVTEST_TEMP_BOOT_TO_S",
+    ],
 )
 def make_sdtrigs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SdtrigS debug-trigger testsuite."""

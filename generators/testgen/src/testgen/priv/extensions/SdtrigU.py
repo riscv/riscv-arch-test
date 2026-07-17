@@ -18,7 +18,11 @@ MODE = "U"
     "SdtrigU",
     required_extensions=["U", "Sdtrig"],
     march_extensions=["I", "Zicsr"],
-    extra_defines=[*UDB_DEFINES, "#define SKIP_MEPC"],  # SKIP_MEPC: hangs otherwise
+    extra_defines=[
+        *UDB_DEFINES,
+        "#define SKIP_MEPC",  # SKIP_MEPC: hangs otherwise.
+        "#define RVTEST_TEMP_BOOT_TO_U",
+    ],
 )
 def make_sdtrigu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SdtrigU debug-trigger testsuite."""

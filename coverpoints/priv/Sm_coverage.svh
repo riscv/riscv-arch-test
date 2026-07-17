@@ -475,7 +475,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     `ifdef ZAWRS_SUPPORTED
         wrs_nto: coverpoint ins.current.insn {
-            bins wrs_nto = {32'h00D00073}; // wrs.nto encoding
+            bins wrs_nto = {WRS_NTO}; // wrs.nto encoding
         }
     `endif
 

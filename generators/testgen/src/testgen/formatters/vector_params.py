@@ -179,10 +179,12 @@ def randomize_registers(
     return new_params
 
 
-def get_overlap_constraints(instr_type_config: InstructionTypeConfig, masked: bool) -> set[tuple[str, str]]:
+def get_overlap_constraints(
+    info: InstructionInfo, instr_type_config: InstructionTypeConfig, masked: bool, sew: int
+) -> set[tuple[str, str]]:
     """
-    This helper function extracts the overlap constraints from a InstructionTypeConfig, given whether or not the
-    operation is masked
+    This helper function extracts the overlap constraints from InstructionInfo and an InstructionTypeConfig pair, given
+    whether or not the operation is masked and what the SEW is.
     """
     no_overlap: set[tuple[str, str]] = set()
 
@@ -200,6 +202,24 @@ def get_overlap_constraints(instr_type_config: InstructionTypeConfig, masked: bo
             for reg in instr_type_config.required_params:
                 if reg.startswith("v"):
                     no_overlap.add(("v0", reg))
+
+    if info.index_eew is not None and info.index_eew != sew and instr_type_config.required_params:
+        # vs2 is the index register
+        # Any source overlap with this index register is illegal
+        for source_reg in ["vs1", "vs3"]:
+            if source_reg in instr_type_config.required_params:
+                no_overlap.add(("vs2", source_reg))
+
+        if ("vd", "vs2") not in no_overlap and ("vs2", "vd") not in no_overlap:
+            # If we don't already have an overlap, apply the following rules (b and c)
+            # V-spec §5.2 register-overlap rules between dest and source register groups:
+            #   (a) EEW_dest == EEW_src                -> any overlap legal
+            #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
+            #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
+            if info.index_eew > sew:
+                no_overlap.add(("vd", "vs2_top"))
+            else:
+                no_overlap.add(("vd_bottom", "vs2"))
 
     return no_overlap
 
@@ -268,7 +288,7 @@ def get_occupied_v_registers(
     return occupied
 
 
-def check_overlap(
+def has_invalid_overlap(
     params: InstructionParams,
     info: InstructionInfo,
     no_overlap: set[tuple[str, str]],
@@ -355,8 +375,9 @@ def generate_random_vector_params(
     assert instr_type_config.vector_data is not None, (
         f"Vector Data must be provided for vector instruction type {instr_type}"
     )
+    info = extract_instruction_info(instruction, instr_type)
 
-    no_overlap = get_overlap_constraints(instr_type_config, masked)
+    no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:
         no_overlap |= additional_no_overlap
 
@@ -367,25 +388,6 @@ def generate_random_vector_params(
     scalar_vector_regs = instr_type_config.vector_data.scalar_regs
     if scalar_vector_regs is None:
         scalar_vector_regs = set()
-
-    info = extract_instruction_info(instruction, instr_type)
-    if info.index_eew is not None and info.index_eew != sew and instr_type_config.required_params:
-        # vs2 is the index register
-        # Any source overlap with this index register is illegal
-        for source_reg in ["vs1", "vs3"]:
-            if source_reg in instr_type_config.required_params:
-                no_overlap.add(("vs2", source_reg))
-
-        if ("vd", "vs2") not in no_overlap and ("vs2", "vd") not in no_overlap:
-            # If we don't already have an overlap, apply the following rules (b and c)
-            # V-spec §5.2 register-overlap rules between dest and source register groups:
-            #   (a) EEW_dest == EEW_src                -> any overlap legal
-            #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
-            #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
-            if info.index_eew > sew:
-                no_overlap.add(("vd", "vs2_top"))
-            else:
-                no_overlap.add(("vd_bottom", "vs2"))
 
     preset_params.lmul = lmul
     # These are effective lmuls for the operation, but we still must respect the callers choice of lmul
@@ -399,19 +401,19 @@ def generate_random_vector_params(
     # check and resolve and register overlap
     ####################################################################################
 
-    register_overlap = True
+    invalid_overlap = True
     randomization_count = 0
     params = InstructionParams()
     preset_params_dict = dataclasses.asdict(preset_params)
     params_dict = dataclasses.asdict(params)
 
-    while register_overlap:
+    while invalid_overlap:
         params = randomize_registers(preset_params, test_data, instr_type_config, info, lmul)
         params_dict = dataclasses.asdict(params)
 
-        register_overlap = check_overlap(params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs)
+        invalid_overlap = has_invalid_overlap(params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs)
 
-        if register_overlap:
+        if invalid_overlap:
             # Return the registers that we use
             registers = {"vs1", "vs2", "vs3", "vd", "rs1", "rs2", "rd", "fs1", "fd"}
             if instr_type_config.required_params is not None:

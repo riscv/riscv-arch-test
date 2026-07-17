@@ -87,6 +87,10 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
                         key = key + "_" + value
                     coverpoints.append(key)
+
+            # Some cp_custom coverpoints are
+            coverpoints = expand_coverpoints(coverpoints)
+
             instructions.append(
                 TestPlanData(
                     instr_name=instr,
@@ -98,3 +102,109 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 )
             )
     return instructions
+
+
+def expand_coverpoints(coverpoints: list[str]) -> list[str]:
+    coverpoint_expansion_map = {
+        "cp_custom_wvv": [
+            "cp_custom_vdOverlapTopVs2_vd_vs2_lmul1",
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul1",
+            "cp_custom_vdOverlapTopVs2_vd_vs2_lmul2",
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul2",
+            "cp_custom_vdOverlapTopVs2_vd_vs2_lmul4",
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul4",
+        ],
+        "cp_custom_wvv_all": [
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4",
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1",
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2",
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4",
+        ],
+        "cp_custom_wwv_all": [
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1",
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2",
+            "cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4",
+        ],
+        "cp_custom_wwv": [
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul1",
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul2",
+            "cp_custom_vdOverlapTopVs1_vd_vs1_lmul4",
+        ],
+        "cp_custom_shift_vv": ["cp_custom_vshift_upperbits_vs1_ones"],
+        "cp_custom_shift_wv": [
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+            "cp_custom_vshiftn_upperbits_vs1_ones",
+        ],
+        "cp_custom_wvx": [
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4",
+        ],
+        "cp_custom_wvx_all": [
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+            "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4",
+        ],
+        "cp_custom_shift_vx": ["cp_custom_vshift_upperbits_rs1_ones"],
+        "cp_custom_shift_wx": [
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+            "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+            "cp_custom_vshiftn_upperbits_rs1_ones",
+        ],
+        "cp_custom_shift_wi": [
+            "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+            "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+            "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
+        ],
+        "cp_custom_vindexVV": ["cp_custom_vindexedges_index_ge_vlmax", "cp_custom_vindexedges_index_gt_vl_lt_vlmax"],
+        "cp_custom_vindexVX": [],  # Edge cases for VX-type gather/slide are covered by cp_rs1_edges.
+        "cp_custom_maskwrite_masked": ["cp_custom_vmask_write_lmulge1", "cp_custom_vmask_write_v0_masked"],
+        "cp_custom_maskwrite_unmasked": ["cp_custom_vmask_write_lmulge1"],
+        "cp_custom_red": [
+            "cp_custom_element0Masked",
+            "cp_custom_vmask_write_v0_masked",
+            "cp_custom_voffgroup_vd_lmul2",
+            "cp_custom_voffgroup_vd_lmul4",
+            "cp_custom_voffgroup_vd_lmul8",
+            "cp_custom_voffgroup_vs1_lmul2",
+            "cp_custom_voffgroup_vs1_lmul4",
+            "cp_custom_voffgroup_vs1_lmul8",
+        ],
+        "cp_custom_wred": [
+            "cp_custom_element0Masked",
+            "cp_custom_vmask_write_v0_masked",
+            "cp_custom_vreductionw_vd_vs1_emul_16",
+            "cp_custom_voffgroup_vd_lmul2",
+            "cp_custom_voffgroup_vd_lmul4",
+            "cp_custom_voffgroup_vs1_lmul2",
+            "cp_custom_voffgroup_vs1_lmul4",
+        ],
+        "cp_custom_vext2": ["cp_custom_vext2_overlapping_vd_vs2"],
+        "cp_custom_vext4": ["cp_custom_vext4_overlapping_vd_vs2"],
+        "cp_custom_vext8": ["cp_custom_vext8_overlapping_vd_vs2"],
+        "cp_custom_gprwrite": ["cp_custom_gprWriting_vstart_eq_vl"],
+        "cp_custom_vmv_s_x": [
+            "cp_custom_voffgroup_vd_lmul2",
+            "cp_custom_voffgroup_vd_lmul4",
+            "cp_custom_voffgroup_vd_lmul8",
+        ],
+        "cp_custom_vmv_x_s": [
+            "cp_custom_gprWriting_vstart_eq_vl",
+            "cp_custom_voffgroup_vs2_lmul2",
+            "cp_custom_voffgroup_vs2_lmul4",
+            "cp_custom_voffgroup_vs2_lmul8",
+        ],
+    }
+
+    expanded_coverpoints = []
+    for coverpoint in coverpoints:
+        if coverpoint in coverpoint_expansion_map:
+            expanded_coverpoints.extend(coverpoint_expansion_map[coverpoint])
+        else:
+            expanded_coverpoints.append(coverpoint)
+    return expanded_coverpoints

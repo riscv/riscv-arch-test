@@ -33,7 +33,7 @@
 #define TEST_FILE "sv32_satp_access_test.S"
 #define SIGUPD_COUNT 55
 #define TRAP_SIGUPD_COUNT 30
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

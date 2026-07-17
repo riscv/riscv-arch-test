@@ -303,7 +303,7 @@
 // rvmodel_sv starts right after the 8 REGWIDTH-sized trapreg_sv slots. This must
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
-#define rvmodel_sv_off  (trap_sv_off+8*REGWIDTH)    // offset to RVMODEL macro scratch area (8 regs)
+#define rvmodel_sv_off  (trap_sv_off+8*(REGWIDTH))    // offset to RVMODEL macro scratch area (8 regs)
 
 // T-SBI CSR_ACCESS scratch: reuses the first 8 bytes of rvmodel_sv area
 // for the dynamically-written CSR instruction (4B) + ret instruction (4B).
@@ -314,7 +314,7 @@
 // macro can restore them after the mret into the target mode. This cannot
 // overlap the CSR_ACCESS scratch (slots 0-1) or an RVMODEL macro invocation:
 // neither can be active while RVTEST_GOTO_LOWER_MODE executes.
-#define goto_lower_sv_off (rvmodel_sv_off+4*REGWIDTH) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
+#define goto_lower_sv_off (rvmodel_sv_off+4*(REGWIDTH)) // GOTO_LOWER_MODE T1/T2/T4/T3 save slots
 
 //==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
@@ -1435,11 +1435,9 @@ tsbi_\__MODE__\()goto_vu:
         //--------------------------------------------------------------
 tsbi_\__MODE__\()csr_access:
         // a0 still holds the caller's CSR instruction encoding (untouched since the ecall)
-        mv      T4, a0                             // T4 = CSR instruction encoding (copy from a0)
-
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch location in save area's rvmodel_sv
 
-        sw      T4, 0(T2)                          // write CSR instruction to scratch[0:3]
+        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
 
         LI(     T3, 0x00008067)                    // T3 = encoding of "ret" (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
@@ -1612,9 +1610,8 @@ tsbi_\__MODE__\()csr_access:
         beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
 
         // S-mode or U-mode CSR: can handle locally using scratch execution
-        mv      T4, a0                             // T4 = CSR instruction encoding
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch memory in rvmodel_sv area
-        sw      T4, 0(T2)                          // write CSR instruction to scratch[0:3]
+        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
         LI(     T3, 0x00008067)                    // T3 = "ret" encoding (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
         RVTEST_FENCEI                              // sync icache after writing code to data memory
@@ -1967,8 +1964,7 @@ adj_\__MODE__\()epc_rtn:
         // still holding the trapped privilege (don't write MPP before here).
         csrr    T6, CSR_MSTATUS                      // save full mstatus
         li      T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB)
-        or      T2, T6, T2
-        csrw    CSR_MSTATUS, T2
+        csrs    CSR_MSTATUS, T2
         lhu     T2, 0(T3)                            // fetch via trapped context
         csrw    CSR_MSTATUS, T6                      // restore mstatus verbatim
   .else
@@ -1977,8 +1973,7 @@ adj_\__MODE__\()epc_rtn:
         // (read execute-only pages).
         csrr    T6, CSR_SSTATUS                      // save full sstatus
         li      T2, (1 << SUM_LSB) | (1 << MXR_LSB)
-        or      T2, T6, T2
-        csrw    CSR_SSTATUS, T2
+        csrs    CSR_SSTATUS, T2
         lhu     T2, 0(T3)
         csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
   .endif
@@ -2017,11 +2012,11 @@ skp_\__MODE__\()tval:
 1:
 // --- Check for trap signature overrun ---
 chk_\__MODE__\()trapsig_overrun:
-        addi    sp, sp, -1*sv_area_sz              // temp adjust sp
-        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr
-        LREG    T2, sv_area_off+sig_bgn_off(sp)    // T2 = sig begin
-        LREG    T1, sv_area_off+sig_seg_siz(sp)    // T1 = sig size
-        addi    sp, sp, 1*sv_area_sz               // undo adjustment
+        addi    sp, sp, -1*sv_area_sz              // temp adjust sp (same as trap_sig_sv)
+        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr (from M-mode shared area)
+        addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
+        LREG    T2, sig_bgn_off(sp)                // T2 = this mode's sig begin
+        LREG    T1, sig_seg_siz(sp)                // T1 = this mode's sig size
 
         add     T1, T1, T2                          // T1 = sig end address
         bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort

@@ -19022,6 +19022,78 @@ covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    all_std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+
+    all_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    all_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    all_vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    all_vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_all_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vs2_all_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vs2_all_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    all_vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1: cross all_std_vec, all_vtype_lmul_1, all_vs2_vd_overlap_lmul1, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_2;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2: cross all_std_vec, all_vtype_lmul_2, all_vs2_vd_overlap_lmul2, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_4;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4: cross all_std_vec, all_vtype_lmul_4, all_vs2_vd_overlap_lmul4, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_8;
+
+    //// end cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
     }
@@ -19822,6 +19894,78 @@ covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
     cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    all_std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+
+    all_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    all_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    all_vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    all_vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_all_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vs2_all_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vs2_all_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    all_vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1: cross all_std_vec, all_vtype_lmul_1, all_vs2_vd_overlap_lmul1, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_2;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2: cross all_std_vec, all_vtype_lmul_2, all_vs2_vd_overlap_lmul2, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_4;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4: cross all_std_vec, all_vtype_lmul_4, all_vs2_vd_overlap_lmul4, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_8;
+
+    //// end cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
@@ -21396,6 +21540,78 @@ covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    all_std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+
+    all_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    all_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    all_vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    all_vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_all_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vs2_all_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vs2_all_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    all_vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1: cross all_std_vec, all_vtype_lmul_1, all_vs2_vd_overlap_lmul1, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_2;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2: cross all_std_vec, all_vtype_lmul_2, all_vs2_vd_overlap_lmul2, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_4;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4: cross all_std_vec, all_vtype_lmul_4, all_vs2_vd_overlap_lmul4, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_8;
+
+    //// end cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
     }
@@ -22141,6 +22357,78 @@ covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
     cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
 
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    all_std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+
+    all_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    all_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    all_vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    all_vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    all_vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_all_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vs2_all_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vs2_all_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    all_vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1: cross all_std_vec, all_vtype_lmul_1, all_vs2_vd_overlap_lmul1, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_2;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2: cross all_std_vec, all_vtype_lmul_2, all_vs2_vd_overlap_lmul2, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_4;
+    cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4: cross all_std_vec, all_vtype_lmul_4, all_vs2_vd_overlap_lmul4, all_vd_eq_vs2, vs2_all_reg_aligned_lmul_8;
+
+    //// end cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
@@ -40666,6 +40954,33 @@ covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vreductionw_vd_vs1_emul_16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening reduction operations
+    // Tests that widening reductions at LMUL=8 do NOT trap even though EMUL would
+    // be 16, because reduction scalar destinations use EMUL=1 per V spec §13.3.
+
+    // Self-contained validity: vill clear, vstart=0, vl>0, no trap
+    vreductionw_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    // LMUL=8 (vlmul encoding = 3)
+    vreductionw_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins eight = {3};
+    }
+
+    cp_custom_vreductionw_vd_vs1_emul_16 :      cross vreductionw_valid, vreductionw_lmul_8;
+
+    //// end cp_custom_vreductionw_vd_vs1_emul_16 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_wred
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -40993,6 +41308,33 @@ covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vreductionw_vd_vs1_emul_16
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening reduction operations
+    // Tests that widening reductions at LMUL=8 do NOT trap even though EMUL would
+    // be 16, because reduction scalar destinations use EMUL=1 per V spec §13.3.
+
+    // Self-contained validity: vill clear, vstart=0, vl>0, no trap
+    vreductionw_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    // LMUL=8 (vlmul encoding = 3)
+    vreductionw_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins eight = {3};
+    }
+
+    cp_custom_vreductionw_vd_vs1_emul_16 :      cross vreductionw_valid, vreductionw_lmul_8;
+
+    //// end cp_custom_vreductionw_vd_vs1_emul_16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_wred

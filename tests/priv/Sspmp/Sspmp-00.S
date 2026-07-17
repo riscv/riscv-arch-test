@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Sspmp-00.S"
-#define SIGUPD_COUNT 130
+#define SIGUPD_COUNT 132
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define SKIP_MEPC
@@ -449,7 +449,11 @@ SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr:
   # Read spmpaddr (sireg) into x12 and check.
   RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr_str)
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero_str)
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change:
+  # Read spmpaddr (sireg) into x12 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x12, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change_str)
 
 
 /////////////////////////////////

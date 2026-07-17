@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmOobAccess.S"
-#define SIGUPD_COUNT 19
+#define SIGUPD_COUNT 21
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
@@ -114,7 +114,11 @@ SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr:
   # Read spmpaddr (sireg) into x25 and check.
   RVTEST_SIGUPD_CSR_READ(0x151, x25, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_reserved_1ff_write_addr_str)
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero:
+  # Read spmpaddr (sireg) into x25 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x25, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero_str)
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change:
+  # Read spmpaddr (sireg) into x25 and check.
+  RVTEST_SIGUPD_CSR_READ(0x151, x25, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

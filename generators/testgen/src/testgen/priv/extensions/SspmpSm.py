@@ -497,7 +497,9 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("oob_read_returns_zero", read_cp, covergroup),
+            _spmp_read_addr_sigupd(check_reg, test_data),
             test_data.add_testcase("oob_write_no_state_change", write_cp, covergroup),
+            _spmp_read_addr_sigupd(check_reg, test_data),
         ]
     )
 

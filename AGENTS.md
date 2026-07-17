@@ -45,11 +45,11 @@
 - CSV columns: `Instruction`, `Type`, `RV32`, `RV64`, then coverpoints. `Type` must match a registered formatter; coverpoint columns must match registered generators. Use `testplans/I.csv` as the reference shape.
 - Registry files are auto-discovered by decorators; do not add manual registration. Files whose names start with `_` are skipped by discovery.
 
-| Subsystem | Decorator | Directory |
-| --- | --- | --- |
-| Coverpoint generators | `@add_coverpoint_generator("cp_name")` | `generators/testgen/src/testgen/coverpoints/` |
+| Subsystem              | Decorator                                    | Directory                                          |
+| ---------------------- | -------------------------------------------- | -------------------------------------------------- |
+| Coverpoint generators  | `@add_coverpoint_generator("cp_name")`       | `generators/testgen/src/testgen/coverpoints/`      |
 | Instruction formatters | `@add_instruction_formatter("TYPE", config)` | `generators/testgen/src/testgen/formatters/types/` |
-| Priv test generators | `@add_priv_test_generator("Suite", ...)` | `generators/testgen/src/testgen/priv/extensions/` |
+| Priv test generators   | `@add_priv_test_generator("Suite", ...)`     | `generators/testgen/src/testgen/priv/extensions/`  |
 
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 - Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.

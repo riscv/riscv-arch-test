@@ -49,7 +49,7 @@ https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7
 ,===
 
 
-include::norm/InterruptsS_norm_rules.adoc[]
+include::norm/InterruptsSSm_norm_rules.adoc[]
 
 ==== InterruptsU User-Mode Interrupts
 

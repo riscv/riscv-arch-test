@@ -165,7 +165,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_interrupts"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -234,7 +234,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
 
                 lines.append("")
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save])
     return lines
 
 
@@ -245,7 +245,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_vectored"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -314,7 +314,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
     lines.append("#endif")
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
     return lines
 
 
@@ -325,7 +325,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_priority"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -376,7 +376,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch])
     return lines
 
 

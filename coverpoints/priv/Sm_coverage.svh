@@ -483,7 +483,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins illegal_insn = {64'd2};   // mcause = 2: illegal instruction exception
     }
 
-    cp_minstret_insn:    cross priv_mode_m, retiring_insns;               
+    cp_minstret_insn:    cross priv_mode_m, retiring_insns;
 
     `ifdef ZAWRS_SUPPORTED
         cp_minstret_wrs:     cross priv_mode_m, wrs_nto;

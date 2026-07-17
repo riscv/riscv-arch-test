@@ -55,7 +55,6 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
 
     Args:
         vector_data_labels: List of triples (label, data, eew) containing the vector data
-        xlen: Target XLEN (32 or 64)
 
     Returns:
         Assembly code for the .data section

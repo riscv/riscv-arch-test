@@ -5,13 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import (
-    load_vec_reg,
-    prep_base_v,
-    prep_mask_v,
-    reload_vtype,
-    write_sigupd,
-)
+from testgen.asm.helpers import write_sigupd
+from testgen.asm.vector_helpers import load_vec_reg, prep_base_v, prep_mask_v, reload_vtype
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter

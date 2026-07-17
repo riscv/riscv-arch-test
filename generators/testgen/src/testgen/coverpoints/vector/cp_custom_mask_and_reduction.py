@@ -7,6 +7,7 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.params import PresetMask
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -49,7 +50,7 @@ def make_vmask_write_v0_masked(
         suite="length",
         vl="vlmax",
         vd=0,
-        maskval="ones",
+        maskval=PresetMask.ONES,
         additional_no_overlap={("vs1", "v0"), ("vs2", "v0")},
     )
     desc = "cp_custom_vmask_write_v0_masked (vd=v0, mask=ones)"
@@ -74,7 +75,7 @@ def make_element0Masked(instr_name: str, instr_type: str, coverpoint: str, test_
         lmul=1,
         suite="length",
         vl="vlmax",
-        maskval="ones",
+        maskval=PresetMask.ONES,
         additional_no_overlap={("vd", "v0"), ("vs1", "v0"), ("vs2", "v0")},
     )
     desc = "cp_custom_element0Masked (maskval=ones, vl=vlmax)"

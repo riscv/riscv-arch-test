@@ -6,12 +6,13 @@
 ##################################
 
 import math
-import random
 import re
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.vector_helpers import get_legal_lmuls
+from testgen.data.params import PresetMask
+from testgen.data.random import random_range
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -74,10 +75,10 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     for l in lmul_exponents:
         lmul = 2.0**l
         for vl in vl_options:
-            vta = random.randint(0, 1)
-            vma = random.randint(0, 1)
-            masked = random.random() < 0.5 if can_mask else False
-            maskval = "vlmaxm1_ones" if masked else None
+            vta = random_range(0, 1)
+            vma = random_range(0, 1)
+            masked = random_range(0, 1) == 1 if can_mask else False
+            maskval = PresetMask.VLMAX_M1_ONES if masked else None
             no_overlap = _NO_OVERLAP_MASKED if masked else None
 
             params = generate_random_vector_params(

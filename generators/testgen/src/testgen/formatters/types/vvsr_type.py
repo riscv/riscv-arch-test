@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import (
+from testgen.asm.vector_helpers import (
     load_vec_reg,
     prep_base_v,
     prep_mask_v,

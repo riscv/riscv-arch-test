@@ -12,7 +12,15 @@ Instruction parameter dataclass.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Literal
+
+
+class PresetMask(Enum):
+    ZEROS = 0
+    ONES = 1
+    VLMAX_M1_ONES = 2
+    VLMAX_D2_P1_ONES = 3
 
 
 @dataclass
@@ -72,14 +80,15 @@ class InstructionParams:
     # Other Vector Information
     lmul: int | float | None = None
     sew: int | None = None
-    vl: int | str | None = None
+    vl: int | Literal["vlmax", "random"] | None = None
     vstart: int | None = None
     vector_suite: Literal["length", "base"] | None = None
-    maskval: str | None = None
     vxrm: str | None = None  # Vector Fixed Point Rounding Mode
     ta: bool | None = None  # Tail Agnostic
     ma: bool | None = None  # Mask Agnostic
     egs: int | None = None  # Element Group Size
+
+    maskval: str | PresetMask | None = None
 
     # Immediate value
     immval: int | None = None

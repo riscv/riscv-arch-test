@@ -10,14 +10,14 @@
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.constants import INDENT
-from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
-from testgen.priv.registry import add_priv_test_generator
 from testgen.asm.interrupts import (
     clr_mtimer_int,
     set_mtimer_int_soon,
 )
+from testgen.constants import INDENT
+from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
+from testgen.priv.registry import add_priv_test_generator
 
 
 def _gen_misa_dependencies(
@@ -980,7 +980,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_minstret_insn"
 
     r_val, r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(5)
-    lines= []
+    lines = []
 
     ######################################
     # Ensure counters are running
@@ -1010,14 +1010,14 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     )
 
     ######################################
-    # ecall 
+    # ecall
     ######################################
     lines.append(comment_banner(coverpoint, "ecall: does not retire)"))
     lines.extend(
         [
             test_data.add_testcase("ecall", coverpoint, covergroup),
             f"mv x{r_tmp}, x3                        # save x3 before overwriting it",
-            f"li x3, 0                               # x3=0 signals legacy GOTO_MMODE to the handler",
+            "li x3, 0                               # x3=0 signals legacy GOTO_MMODE to the handler",
             f"CSRR(x{r_before}, minstret)",
             "ecall                         # traps; x3==0 -> handler takes rtn2mmode, bypasses T-SBI a0 dispatch",
             f"CSRR(x{r_after}, minstret)",
@@ -1093,7 +1093,11 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     lines.append("#ifdef ZAWRS_SUPPORTED")
     r_mtimecmp, r_t0 = test_data.int_regs.get_registers(2)
     r_mtime, r_t1, r_t2, r_t3, r_scratch = r_before, r_after, r_val, r_diff, r_tmp  # reused, not freshly acquired
-    lines.append(comment_banner("cp_minstret_wrs", "wrs.nto: arm timer (can't rely on reservation clearing itself), delta must be 1"))
+    lines.append(
+        comment_banner(
+            "cp_minstret_wrs", "wrs.nto: arm timer (can't rely on reservation clearing itself), delta must be 1"
+        )
+    )
     lines.extend(
         [
             test_data.add_testcase("wrs_nto", "cp_minstret_wrs", covergroup),
@@ -1131,6 +1135,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_val, r_before, r_after, r_diff, r_tmp])
     return lines
+
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"], march_extensions=["Sm", "Zawrs"])
 def make_sm(test_data: TestData) -> list[TestChunk]:

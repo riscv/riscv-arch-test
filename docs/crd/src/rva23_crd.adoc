@@ -56,7 +56,7 @@ The primary goal of RVA23 is to provide binary compatibility for S- and U-mode o
 
 The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
 
-Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or custom CSRs that break compatibility with ratified M-mode.
+Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, custom M-mode might have some security features or custom CSRs that break compatibility with ratified M-mode.
 
 RVA23 does not place any specific requirements on M-mode implementations as it is not required that M-mode code is portable for compliant designs. Instead, in order to be able to run portable code for modes below M-mode, the processor must interface with a Supervisor Execution Environment (SEE).  The RISC-V SBI specification provides an example of a SEE.  Certification tests do not exercise the RISC-V SBI, but provide a simpler Test Supervisor Binary Interface (T-SBI) to access the execution environment.
 
@@ -66,7 +66,7 @@ NOTE: The abstraction is not just for custom M-mode ISAs. It allows for hiding d
 
 Nevertheless, RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select `PMLEN`.
 
-RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements a test SBI (described below). If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which in turn delivers the interrupt to S-mode.
+RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements a test SBI (described below). If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which may in turn deliver the interrupt to S-mode.
 
 The execution environment must provide a Test Supervisor Binary Interface (T-SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`.  The certification suite provides a reference T-SBI implementation that runs on standard M-mode, but custom M-mode that differs significantly from standard M-mode might have to provide its own T-SBI implementation.
 
@@ -78,6 +78,7 @@ Testing M-mode trap behavior is OUT-OF-SCOPE for RVA23 certification with a few 
 
 * `ecall` from S-mode must not be delegated because the T-SBI must trap to M-mode to handle these calls.
 * Any trap cause that should be handled invisibly by the firmware must not be delegated.
+* Hardware may not support delegating certain traps to S-mode.
 
 Invisible traps are traps to emulate a function in firmware that is not implemented in hardware.  An example of an invisible trap is to fix a `fdiv` instruction that malfunctions for certain input values.
 If a system required invisible traps to produce correct RVA23 behavior, the user must provide custom firmware to handle these traps, and the certification tests rely on this firmware.  For example, `fdiv` would throw an illegal instruction exception, and this exception would not be delegated to S-mode.  The user would have to provide a M-mode trap handler that inspects illegal instruction exceptions and determines if the instruction is an `fdiv`.  If so, it invisibly fixes any problem and returns.  Otherwise, the M-mode handler places trap information into `sstatus`,`sepc`/`scause`/`stval` and invokes the S-mode trap handler to handle other illegal instructions.
@@ -160,47 +161,41 @@ The user must provide:
 
 === Parameters
 
-The UDB description must specify at least the following parameters.  More are likely to be required as the tests mature and the parameters working group identifies more.
+The UDB description must specify at least the following parameters.  More are likely to be required as the tests mature and the parameters working group identifies more.  This section is a work in progress.
 
 * Most existing UDB parameters
 
-* PHYS_ADDR_WIDTH
-* Optional interrupts: {SEI, SSI}_INTR_IMPL.  May need the same for VSEI, VSSI (not yet in UDB).
-* Sdtrig parameters
+* Address: PHYS_ADDR_WIDTH
+* Optional interrupts: {SEI, SSI}_INTR_IMPL.  May need the same for VSEI, VSSI (not yet in UDB). NUM_EXTERNAL_GUEST_INTERRUPTS (corresponds to GEILEN)
+* Sdtrig parameters TBD, DBG_HCONTEXT_WDITH, DBG_SCONTEXT_WIDTH
 * A way of specifying constraints on medeleg, mideleg, hedeleg, and hideleg.
-* NUM_EXTERNAL_GUEST_INTERRUPTS (corresponds to GEILEN)
-* ASID_WIDTH, *** for hypervisor
 * State Enables: MSTATEEN_ENVCFG_TYPE, MSTATEEN_CONTEXT_TYPE, HSTATEEN_ENVCFG_TYPE, HSTATEEN_CONTEXT_TYPE
-
-
-* Debug: DBG_HCONTEXT_WDITH, DBG_SCONTEXT_WIDTH
 * Vector: ELEN, *** others
-* Counters: MCOUNTEREANBLE_EN, HCOUNTERENABLE_EN, HPM_COUNTER_EN, ***others,
-TBD: HPM_EVENTS
+* Counters: TIME_CSR_IMPLEMENTED, MCOUNTEREANBLE_EN, HCOUNTERENABLE_EN, SCOUNTERENABLE_EN, HPM_COUNTER_EN, COUNTINHIBIT_EN, TBD: HPM_EVENTS
 * Sscofpmf parameters about counters
-* For boot code:
-- MCOUNTINHIBIT_IMPLEMENTED
-- NUM_USABLE_PMP_ENTRIES, PMP_TOR_SUPPORTED, PMP_NAPOT_SUPPORTED to set up access to memory by lower privilege modes
-- MTVEC_ACCESS, MTVEC_BASE_ALIGNMENT_DIRECT, MTVEC_BASE_ALIGNMENT_VECTORED, MTVEC_ILLEGAL_WRITE_BEHAVIOR, MTVEC_MODES to the extent needed for setting up trap vector TODO
+* STVAL_WIDTH
 
-Parameters that affect expected results, but do not affect what is tested.  The reference model needs to accept these parameters to generate expected results.
-REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
-REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+The following parameters affect the boot code or T-SBI.
+* MCOUNTINHIBIT_IMPLEMENTED
+* NUM_USABLE_PMP_ENTRIES, PMP_TOR_SUPPORTED, PMP_NAPOT_SUPPORTED to set up access to memory by lower privilege modes
+* MTVEC_ACCESS, MTVEC_BASE_ALIGNMENT_DIRECT, MTVEC_BASE_ALIGNMENT_VECTORED, MTVEC_ILLEGAL_WRITE_BEHAVIOR, MTVEC_MODES to the extent needed for setting up trap vector TODO
+
+The following parameters  affect expected results, but do not affect what is tested.  The reference model needs to accept these parameters to generate expected results.
+* ASID_WIDTH, VMID_WIDTH
+* REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
+* REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+* REPORT_VA_IN_STVAL_ON_{ILLEGAL_INSTRUCTION, BREAKPOINT, {INSTRUCTION, LOAD, STORE_AMO}_{ACCESS_FAULT, MISALIGNED}}, TRAP_ON_ECALL_FROM_S
+similar for VSTVAL
 ...
 
 
-The following parameter values are implied for the RVA23 profile:
-MISALIGNED_LDST_EXCEPTION_PRIORITY = low if Zama16b is supported
-MISALIGNED_AMO = True if Zama16b is supported
 
-TIME_CSR_IMPLEMENTED
 
-COUNTINHIBIT_EN
 
-MEI_INTR_IMPL
 
-MSTATEEN_ENVCFG_TYPE, SCOUNTENABLE_EN, STVAL_WIDTH
-REPORT_VA_IN_STVAL_ON_{ILLEGAL_INSTRUCTION, BREAKPOINT, {INSTRUCTION, LOAD, STORE_AMO}_{ACCESS_FAULT, MISALIGNED}}, TRAP_ON_ECALL_FROM_S
+
+
+MSTATEEN_ENVCFG_TYPE, SCOUNTENABLE_EN,
 *** is there a MCOUNTERENABLE_EN?
 PMLEN supported values
 

@@ -1779,9 +1779,9 @@ def writeSIGUPD(inst_ptr, rd):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != rd and lr - 1 != rd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD: no legal linkReg given sigReg={sigReg} rd={rd}")
@@ -1795,8 +1795,8 @@ def writeSIGUPD_F(fd):
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
     str_ptr = "test_" + str(testcase_count)
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != fd and lr - 1 != fd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_F: no legal linkReg given sigReg={sigReg} fd={fd}")
@@ -1882,8 +1882,8 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != vd and lr - 1 != vd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_V: no legal linkReg given sigReg={sigReg} vd={vd}")

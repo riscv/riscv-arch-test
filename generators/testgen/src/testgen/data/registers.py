@@ -471,10 +471,13 @@ class VectorRegisterFile(RegisterFile):
             suppress_overlap: If the allocation would result in double allocation of a register, this normally throws an
                 error, but when this argument is set no errors are thrown on overlaps.
         """
+        allocated = []
         for reg in range(register, register + width):
             if reg in self.reg_list:
                 self.consume_registers([reg])
+                allocated.append(reg)
             elif not suppress_overlap or reg >= self.reg_count:
+                self.return_registers(allocated)
                 raise ValueError(f"Unable to Allocate Registers for Operand {name}, v{register} with width {width}")
         self.operand_map[name] = (register, width)
 

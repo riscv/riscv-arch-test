@@ -5,9 +5,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import dataclasses
 import random
 import re
+from dataclasses import dataclass
 
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 from testgen.data.random import random_int
@@ -233,7 +233,7 @@ def _corner_value(corner: str, eew: int) -> int:
     raise ValueError(f"Unknown corner: {corner}")
 
 
-@dataclasses.dataclass
+@dataclass
 class InstructionInfo:
     """
     Information about individual vector instructions.

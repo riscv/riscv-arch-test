@@ -229,6 +229,7 @@ class TestData:
         """Clean up resources used by TestData."""
         self._int_regs.destroy()
         self._float_regs.destroy()
+        self._vec_regs.destroy()
 
     def register_vector_data(
         self, label: str, sew: int, *, elements: list[int] | None = None, random_elements: int | None = None
@@ -242,7 +243,7 @@ class TestData:
             random_elements: Integer number of random elements to be emitted in the data section
         """
         assert (elements is None) ^ (random_elements is None), (
-            "Exactly One of Bytes and Random Bytes Must Be Set for register_vector_data"
+            "Exactly one of elements and random_elements must be set for register_vector_data"
         )
 
         if random_elements is not None:

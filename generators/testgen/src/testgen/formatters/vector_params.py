@@ -73,7 +73,7 @@ def randomize_register(
         segments = info.segments
         if (
             instr_type_config.instruction_class
-            and "index" in instr_type_config.instruction_class
+            and "indexed" in instr_type_config.instruction_class
             and register_name == "vs2"
         ):
             segments = 1
@@ -148,12 +148,14 @@ def randomize_registers(
         new_params.rs2 = randomize_register("rs2", test_data, instr_type_config, lmul, info, new_params.rs2)
         if new_params.rs2val is not None:
             if info.load_store_eew is not None:
-                new_params.rs2val = random.randint(-2, 2 + 1) * int(info.load_store_eew / 8)
+                new_params.rs2val = random_range(-2, 2 + 1) * int(info.load_store_eew / 8)
             else:
                 new_params.rs2val = random_int(test_data.config.xlen)
     if "rs1" in registers:
         new_params.rs1 = randomize_register("rs1", test_data, instr_type_config, lmul, info, new_params.rs1)
-        if new_params.rs1val_pointer is not None and instr_type_config.instruction_class in ["load", "store"]:
+        if new_params.rs1val_pointer is not None and (
+            "load" in instr_type_config.instruction_class or "store" in instr_type_config.instruction_class
+        ):
             new_params.rs1val_pointer = "vector_ls_random_base"
 
             assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
@@ -168,7 +170,7 @@ def randomize_registers(
         new_params.rd = randomize_register("rd", test_data, instr_type_config, lmul, info, new_params.rd)
 
     if "fs1" in registers:
-        new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs2)
+        new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
         if new_params.fs1val is not None:
             new_params.fs1val = random_int(test_data.config.flen)
     if "fd" in registers:
@@ -243,9 +245,9 @@ def get_occupied_v_registers(
     if info.vext_multiplier is not None:
         smallest_emul = min(smallest_emul, lmul * info.vext_multiplier)
     if info.load_store_eew is not None:
-        smallest_emul = min(smallest_emul, lmul * info.load_store_eew)
+        smallest_emul = min(smallest_emul, lmul * info.load_store_eew / sew)
     if info.index_eew is not None:
-        smallest_emul = min(smallest_emul, lmul * info.index_eew)
+        smallest_emul = min(smallest_emul, lmul * info.index_eew / sew)
     smallest_emul = int(smallest_emul)
 
     # segment instructions take up consecutive registers even when lmul < 1
@@ -443,7 +445,7 @@ def generate_random_vector_params(
             segments = info.segments
             if (
                 instr_type_config.instruction_class
-                and "index" not in instr_type_config.instruction_class
+                and "indexed" not in instr_type_config.instruction_class
                 and register != "vs2"
             ):
                 segments = 1

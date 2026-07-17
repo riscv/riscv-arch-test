@@ -55,7 +55,7 @@ class VectorTypeConfig:
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
-    masked_constraints: set[tuple[str, str]] = field(default_factory=set)
+    masked_constraints: set[tuple[str, str]] | None = None
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
@@ -77,7 +77,7 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
-        instruction_class: String containing broader instruction categories (e.g. "load", "store", "indexed")
+        instruction_class: List of strings containing broader instruction categories (e.g. "load", "store", "indexed")
         vector_data: Optional attribute containing data necessary for vector instructions
     """
 
@@ -88,7 +88,7 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
-    instruction_class: str = ""
+    instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
     vector_data: VectorTypeConfig | None = None
 
 

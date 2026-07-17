@@ -41,16 +41,21 @@ UDB_DEFINES = [
     "//#define UDB_TCONTROL_AVAILABLE",
     "//#define UDB_HCONTEXT_AVAILABLE",
     "//#define UDB_MSCONTEXT_AVAILABLE",
-    "#define UDB_MCONTROL6_TRIG0_AVAILABLE",
-    "#define UDB_ICOUNT_TRIG0_AVAILABLE",
+    "#define UDB_ITRIGGER_SUPPORTED",
     "#define UDB_ITRIGGER_TRIG0_AVAILABLE",
-    "#define UDB_ETRIGGER_TRIG0_AVAILABLE",
-    "#define UDB_MCONTROL6_TRIG1_AVAILABLE",
-    "#define UDB_ICOUNT_TRIG1_AVAILABLE",
     "#define UDB_ITRIGGER_TRIG1_AVAILABLE",
+    "#define UDB_ETRIGGER_SUPPORTED",
+    "#define UDB_ETRIGGER_TRIG0_AVAILABLE",
     "#define UDB_ETRIGGER_TRIG1_AVAILABLE",
+    "#define UDB_MCONTROL6_TRIG0_AVAILABLE",
+    "#define UDB_MCONTROL6_TRIG1_AVAILABLE",
     "#define UDB_MCONTROL6_TRIG2_AVAILABLE",
     "#define UDB_MCONTROL6_TRIG3_AVAILABLE",
+    "#define UDB_ICOUNT_SUPPORTED",
+    "#define UDB_ICOUNT_TRIG0_AVAILABLE",
+    "#define UDB_ICOUNT_TRIG1_AVAILABLE",
+    "#define UDB_ICOUNT_TRIG2_AVAILABLE",
+    "#define UDB_ICOUNT_TRIG3_AVAILABLE",
     "//#define UDB_ICOUNT_HARDWIRED_1",
 ]
 
@@ -131,6 +136,17 @@ def _load_reg(reg: int, val: int | str) -> str:
     return f"LA(x{reg}, {val})" if isinstance(val, str) else f"LI(x{reg}, 0x{val:x})"
 
 
+def _sigupd_masked(data_reg: int, temp_reg: int, mask: int, test_data: TestData, comment: str = "") -> list[str]:
+    """Clear ``mask`` bits in x{data_reg} (optional/non-portable fields), then sigupd it."""
+    note = f" # {comment}" if comment else ""
+    return [
+        f"LI(x{temp_reg}, 0x{mask:x}){note}",
+        f"not x{temp_reg}, x{temp_reg}",
+        f"and x{data_reg}, x{data_reg}, x{temp_reg} # mask out",
+        write_sigupd(data_reg, test_data),
+    ]
+
+
 def _arch_guard(instr: str, exts: list[str]) -> list[str]:
     """Bracket a single instruction with `.option arch, +ext...` (no-op if exts empty)."""
     if not exts:
@@ -149,7 +165,7 @@ def _ifdef_guard(instr: str, closing: bool = False) -> list[str]:
 
 def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
     """Disable a trigger by zeroing tdata1/2/3."""
-    lines: list[str] = [f"# dixable trigger {trig_num}"]
+    lines: list[str] = [f"# disable trigger {trig_num}"]
     if mode == "Sm":
         lines.append("csrci mstatus, 0x8 # MIE=0 while reconfiguring")
     elif mode == "S":
@@ -279,6 +295,48 @@ def _config_icount(
             f"# tdata1: type={icount} priv={privbits:05b} count={count} pending={pending} action={action}",
             *_load_tdata1(reg, icount, mode, lowfields),  # load data in tdata1
             *_arm_triggers(mode, True),  # arm trigger
+        ]
+    )
+    return lines
+
+
+def _config_itrigger(
+    reg: int,
+    tselect: int,
+    tdata2: int | str,
+    mode: str,
+    *,
+    privbits: int | None = None,
+    nmi: int = 0,
+    action: int = 0,
+    tdata3: int | str = 0,
+) -> list[str]:
+    """Emit assembly configuring trigger ``tselect`` as an itrigger."""
+    if privbits is None:
+        privbits = MODE_PRIVBIT[mode]
+
+    m = (privbits >> 4) & 1
+    s = (privbits >> 3) & 1
+    u = (privbits >> 2) & 1
+    vs = (privbits >> 1) & 1
+    vu = privbits & 1
+    lowfields = (vs << 12) | (vu << 11) | (nmi << 10) | (m << 9) | (s << 7) | (u << 6) | (action & 0x3F)
+    itrigger = 4  # tdata1.type
+    lines: list[str] = []
+    lines.extend(
+        [
+            f"# configure trigger {tselect} as itrigger",
+            *_arm_triggers(mode, False),
+            _load_reg(reg, tselect),
+            _csr_access(f"csrw tselect, x{reg}", mode),
+            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
+            _load_reg(reg, tdata2),
+            _csr_access(f"csrw tdata2, x{reg} # interrupt-cause mask", mode),
+            _load_reg(reg, tdata3),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
+            f"# tdata1: type={itrigger} priv={privbits:05b} nmi={nmi} action={action}",
+            *_load_tdata1(reg, itrigger, mode, lowfields),  # load data in tdata1
+            *_arm_triggers(mode, True),
         ]
     )
     return lines
@@ -819,7 +877,6 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     seed(reproducible_hash(covergroup))
     tc = test_data.begin_test_chunk("Mcontrol6")
     lines: list[str] = tc.code
-    lines.extend([*_arm_triggers(mode, True)])
 
     # setup registers
     sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
@@ -864,7 +921,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append(f"#ifdef UDB_MCONTROL6_TRIG{trig_num}_AVAILABLE")
         for perm in range(8):  # perm_xsl
             label = f"exec_adr_trig_num_{trig_num}_xls_{perm:03b}"
-            binname = f"trig_num_{trig_num}_exec_adr_fire_perm_{perm:03b}"
+            binname = f"trig_num_{trig_num}_exec_adr_perm_{perm:03b}"
             lines.extend(
                 [
                     _add_tc(test_data, mode, binname, coverpoint, covergroup),
@@ -1397,20 +1454,19 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.append("#ifdef UDB_ICOUNT_HARDWIRED_1")
     for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
         binname = f"trig_num_{trig_num}"
         lines.extend(
             [
                 _add_tc(test_data, mode, binname, coverpoint, covergroup),
-                *_config_icount(temp_reg, trig_num, 1, mode),
+                *_config_icount(temp_reg, trig_num, 1, mode, privbits=0b11111),
                 "nop # decrement count",
                 _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-                f"LI(x{temp_reg}, 0x1000000) # icount hit bit (bit 24)",
-                f"not x{temp_reg}, x{temp_reg}",
-                f"and x{data_reg}, x{data_reg}, x{temp_reg} # mask out optional hit bit",
-                write_sigupd(data_reg, test_data),
+                *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
             ]
         )
         lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
     lines.append("#endif")
 
     ######################################
@@ -1423,21 +1479,22 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        binname = f"trig_num_{trig_num}"
-        lines.extend(
-            [
-                _add_tc(test_data, mode, binname, coverpoint, covergroup),
-                *_config_icount(temp_reg, trig_num, 9, mode),
-                *["nop # decrement count"] * 9,
-                "nop # spacer",
-                _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
-                f"LI(x{temp_reg}, 0x1000000) # icount hit bit (bit 24)",
-                f"not x{temp_reg}, x{temp_reg}",
-                f"and x{data_reg}, x{data_reg}, x{temp_reg} # mask out optional hit bit",
-                write_sigupd(data_reg, test_data),
-            ]
-        )
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+        for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
+            privbits = MODE_PRIVBIT[mode] if priv_en else 0
+            binname = f"trig_num_{trig_num}_priv_{priv_en}"
+            lines.extend(
+                [
+                    _add_tc(test_data, mode, binname, coverpoint, covergroup),
+                    *_config_icount(temp_reg, trig_num, 9, mode, privbits=privbits),
+                    *["nop # decrement count"] * 9,
+                    "nop # spacer",
+                    _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
+                    *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+                ]
+            )
+            lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
 
     ######################################
     coverpoint = "cp_sdtrig_icount_trap"
@@ -1449,14 +1506,22 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
-        binname = f"trig_num_{trig_num}"
-        lines.extend(
-            [
-                _add_tc(test_data, mode, binname, coverpoint, covergroup),
-                *_config_icount(temp_reg, trig_num, 9, mode),
-            ]
-        )
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
+        for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
+            privbits = MODE_PRIVBIT[mode] if priv_en else 0
+            binname = f"trig_num_{trig_num}_priv_{priv_en}"
+            lines.extend(
+                [
+                    _add_tc(test_data, mode, binname, coverpoint, covergroup),
+                    *_config_icount(temp_reg, trig_num, 1, mode, privbits=privbits),
+                    ".word 0x00000000",
+                    "nop # spacer",
+                    _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
+                    *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
+                ]
+            )
+            lines.extend(_disable_trigger(temp_reg, trig_num, mode))
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
 
     ######################################
     coverpoint = "cp_sdtrig_icount_eq0"
@@ -1468,13 +1533,20 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
+        lines.append(f"#ifdef UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
         for pending in (0, 1):  # tdata1[8]
             binname = f"trig_num_{trig_num}_pending_{pending}"
             lines.extend(
                 [
                     _add_tc(test_data, mode, binname, coverpoint, covergroup),
+                    *_config_icount(temp_reg, trig_num, 0, mode, pending=pending),
+                    "nop # Fires trigger when pending = 1",
+                    *["nop # count must stay zero"] * 9,
+                    _csr_access(f"csrr x{data_reg}, tdata1 # read back hardwired fields", mode),
+                    *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
                 ]
             )
+        lines.append(f"#endif // UDB_ICOUNT_TRIG{trig_num}_AVAILABLE")
 
     lines.append("#endif")  # endif ICOUNT_SUPPORTED
 
@@ -1673,7 +1745,7 @@ def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))
     test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-    # test_chunks.extend(_generate_icount_tests(test_data, mode))
+    test_chunks.extend(_generate_icount_tests(test_data, mode))
     # test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_textra_tests(test_data, mode))

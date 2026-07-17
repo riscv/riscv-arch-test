@@ -474,20 +474,21 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     `ifdef ZAWRS_SUPPORTED
-    wrs_nto: coverpoint ins.current.insn {
-        bins wrs_nto = {32'h00D00073}; // wrs.nto encoding
-    }
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {32'h00D00073}; // wrs.nto encoding
+        }
     `endif
 
     illegal_trap: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcause", "int") {
         bins illegal_insn = {64'd2};   // mcause = 2: illegal instruction exception
     }
 
-    cp_minstret_insn:    cross priv_mode_m, retiring_insns;               // minstret increments for each retiring type
+    cp_minstret_insn:    cross priv_mode_m, retiring_insns;               
+
     `ifdef ZAWRS_SUPPORTED
-    cp_minstret_wrs:     cross priv_mode_m, wrs_nto;
+        cp_minstret_wrs:     cross priv_mode_m, wrs_nto;
     `endif
-    cp_minstret_illegal: cross priv_mode_m, csrr, minstret, illegal_trap; // minstret read after illegal-instruction trap
+    cp_minstret_illegal: cross priv_mode_m, illegal_trap; // minstret read after illegal-instruction trap
 
 endgroup
 

@@ -14,6 +14,10 @@ from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
+from testgen.asm.interrupts import (
+    clr_mtimer_int,
+    set_mtimer_int_soon,
+)
 
 
 def _gen_misa_dependencies(
@@ -975,73 +979,160 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mcsr_cg"
     coverpoint = "cp_minstret_insn"
 
-    r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
+    r_val, r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(5)
+    lines= []
 
-    lines = [
-        comment_banner(coverpoint, "Read minstret before/after each retiring instruction, log the delta"),
-        "",
-        f"CSRR(x{r_before}, minstret)",
-        f"add x{r_diff}, x{r_before}, zero  # instruction under test",
-        test_data.add_testcase("add", coverpoint, covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "",
-        f"CSRR(x{r_before}, minstret)",
-        "ecall                         # traps, retires first",
-        test_data.add_testcase("ecall", coverpoint, covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "",
-        f"CSRR(x{r_before}, minstret)",
-        "ebreak                        # traps, retires first",
-        test_data.add_testcase("ebreak", coverpoint, covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "",
-        f"LA(x{r_tmp}, 1f)",
-        f"CSRW(mepc, x{r_tmp})",
-        f"CSRR(x{r_before}, minstret)",
-        "mret",
-        test_data.add_testcase("mret", coverpoint, covergroup),
-        f"addi x{r_after}, zero, -1     # must not execute",
-        "1:",
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "",
-        "RVTEST_GOTO_MMODE             # ensure M-mode so wfi doesn't trap",
-        f"CSRR(x{r_before}, minstret)",
-        "wfi",
-        test_data.add_testcase("wfi", coverpoint, covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "",
-        "#ifdef ZAWRS_SUPPORTED",
-        f"CSRR(x{r_before}, minstret)",
-        ".word 0x00D00073              # wrs.nto (no assembler support)",
-        test_data.add_testcase("wrs_nto", "cp_minstret_wrs", covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-        "#endif // ZAWRS_SUPPORTED",
-        "",
-        f"CSRR(x{r_before}, minstret)",
-        ".word 0x00000000              # illegal instruction, traps before retiring",
-        test_data.add_testcase("illegal", "cp_minstret_illegal", covergroup),
-        f"CSRR(x{r_after}, minstret)",
-        f"sub x{r_diff}, x{r_after}, x{r_before}",
-        write_sigupd(r_diff, test_data),
-    ]
+    ######################################
+    # Ensure counters are running
+    ######################################
+    lines.append(comment_banner("Enable Counters", "Ensure mcountinhibit is 0 so counters can run"))
+    lines.extend(
+        [
+            f"LI(x{r_val}, 0)                      # Load 0 (enable all counters)",
+            f"CSRW(mcountinhibit, x{r_val})        # Clear inhibit register",
+            "nop\nnop\nnop",
+        ]
+    )
 
-    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
+    ######################################
+    # add — retires normally, no trap
+    ######################################
+    lines.append(comment_banner(coverpoint, "add: retires normally, delta must be 1"))
+    lines.extend(
+        [
+            test_data.add_testcase("add", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            f"add x{r_diff}, x{r_before}, zero  # instruction under test",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    # ecall 
+    ######################################
+    lines.append(comment_banner(coverpoint, "ecall: does not retire)"))
+    lines.extend(
+        [
+            test_data.add_testcase("ecall", coverpoint, covergroup),
+            f"mv x{r_tmp}, x3                        # save x3 before overwriting it",
+            f"li x3, 0                               # x3=0 signals legacy GOTO_MMODE to the handler",
+            f"CSRR(x{r_before}, minstret)",
+            "ecall                         # traps; x3==0 -> handler takes rtn2mmode, bypasses T-SBI a0 dispatch",
+            f"CSRR(x{r_after}, minstret)",
+            f"mv x3, x{r_tmp}                        # restore x3",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    # ebreak
+    ######################################
+    lines.append(comment_banner(coverpoint, "ebreak: does not retire"))
+    lines.extend(
+        [
+            test_data.add_testcase("ebreak", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            "ebreak                        # breakpoint exception, never reaches T-SBI dispatch, safe bare",
+            "nop",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    # mret — retires directly, no trap handler involved
+    ######################################
+    lines.append(comment_banner(coverpoint, "mret: retires normally, delta must be 1"))
+    lines.extend(
+        [
+            test_data.add_testcase("mret", coverpoint, covergroup),
+            f"LI(x{r_tmp}, MSTATUS_MPP)",
+            f"CSRS(mstatus, x{r_tmp})               # force MPP=M so mret can't drop privilege",
+            f"LA(x{r_tmp}, 1f)",
+            f"CSRW(mepc, x{r_tmp})",
+            f"CSRR(x{r_before}, minstret)",
+            "mret                          # jumps directly to 1:, no trap handler involved",
+            "1:",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    # wfi — arm timer, MIE=0 so it retires without trapping
+    ######################################
+    r_mtimecmp, r_t0 = test_data.int_regs.get_registers(2)
+    r_mtime, r_t1, r_t2, r_t3, r_scratch = r_before, r_after, r_val, r_diff, r_tmp  # reused, not freshly acquired
+    lines.append(comment_banner(coverpoint, "wfi: arm timer, MIE=0 so it retires immediately, delta must be 1"))
+    lines.extend(
+        [
+            test_data.add_testcase("wfi", coverpoint, covergroup),
+            "CSRW(mie, zero)                        # MIE bits off; we only need MTIP pending, not taken",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+            f"LI(x{r_scratch}, 0x80)",
+            f"CSRS(mie, x{r_scratch})                # enable MTIE so mip.MTIP can go pending",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
+            f"CSRR(x{r_before}, minstret)",
+            "wfi                          # interrupt already pending, retires immediately, mstatus.MIE=0 so no trap",
+            f"CSRR(x{r_after}, minstret)",
+            *clr_mtimer_int(r_t0, r_mtimecmp),
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp, r_t0])  # only return what was freshly acquired
+
+    ######################################
+    # wrs.nto
+    ######################################
+    lines.append("#ifdef ZAWRS_SUPPORTED")
+    r_mtimecmp, r_t0 = test_data.int_regs.get_registers(2)
+    r_mtime, r_t1, r_t2, r_t3, r_scratch = r_before, r_after, r_val, r_diff, r_tmp  # reused, not freshly acquired
+    lines.append(comment_banner("cp_minstret_wrs", "wrs.nto: arm timer (can't rely on reservation clearing itself), delta must be 1"))
+    lines.extend(
+        [
+            test_data.add_testcase("wrs_nto", "cp_minstret_wrs", covergroup),
+            "CSRW(mie, zero)",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+            f"LI(x{r_scratch}, 0x80)",
+            f"CSRS(mie, x{r_scratch})",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+            f"CSRR(x{r_before}, minstret)",
+            "wrs.nto              ",
+            f"CSRR(x{r_after}, minstret)",
+            *clr_mtimer_int(r_t0, r_mtimecmp),
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp, r_t0])
+    lines.append("#endif // ZAWRS_SUPPORTED")
+
+    ######################################
+    # illegal instruction
+    ######################################
+    lines.append(comment_banner("cp_minstret_illegal", "illegal instruction: does not retire, delta must be 0"))
+    lines.extend(
+        [
+            test_data.add_testcase("illegal", "cp_minstret_illegal", covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            ".word 0xFFFFFFFF              # illegal 32-bit instr (bits[1:0]=11), traps before retiring",
+            "nop",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_val, r_before, r_after, r_diff, r_tmp])
     return lines
 
-
-@add_priv_test_generator("Sm", required_extensions=["Sm"])
+@add_priv_test_generator("Sm", required_extensions=["Sm"], march_extensions=["Sm", "Zawrs"])
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
     test_chunks: list[TestChunk] = []
@@ -1054,6 +1145,7 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_sret_tests(test_data))
     tc.code.extend(_generate_mcsr_tests(test_data))
     tc.code.extend(_generate_mcsr_cntr_tests(test_data))
+    tc.code.extend(_generate_mcsr_minstret_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -385,7 +385,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -423,7 +423,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     "# Enable MTIE, spin with MIE=0 until timer fires (mip.MTIP=1)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRW(mie, x{r_scratch})",
-                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
                     f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
                 ]
             )
@@ -437,7 +437,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                         *clr_mtimer_int(r_t0, r_mtimecmp),
                         f"LI(x{r_scratch}, 0x8)",
                         f"CSRS(mstatus, x{r_scratch})",
-                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
                     ]
                 )
 
@@ -451,7 +451,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch])
     return lines
 
 

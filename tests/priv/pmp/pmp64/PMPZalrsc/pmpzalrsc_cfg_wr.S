@@ -69,6 +69,38 @@ RVTEST_BEGIN
 
 .endm
 
+.macro VERIFICATION_RWX_SUCCESS ADDRESS TEST_CASE
+
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(t2, 100)                                              // Retry counter for constrained LR/SC loop
+\TEST_CASE\()_w_retry:
+    \TEST_CASE\()_1:
+    lr.w a3, (a5)
+    \TEST_CASE\()_2:
+    sc.w a2, a3, (a5)
+    beqz a2, \TEST_CASE\()_w_success                        // SC succeeded, skip retry
+    addi t2, t2, -1                                          // Decrement retry count
+    bnez t2, \TEST_CASE\()_w_retry                           // Retry LR/SC if not exhausted
+\TEST_CASE\()_w_success:
+    RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_1, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_2, test_2_str)
+
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(t2, 100)                                              // Retry counter for constrained LR/SC loop
+\TEST_CASE\()_d_retry:
+    \TEST_CASE\()_3:
+    lr.d a3, (a5)
+    \TEST_CASE\()_4:
+    sc.d a2, a3, (a5)
+    beqz a2, \TEST_CASE\()_d_success                        // SC succeeded, skip retry
+    addi t2, t2, -1                                          // Decrement retry count
+    bnez t2, \TEST_CASE\()_d_retry                           // Retry LR/SC if not exhausted
+\TEST_CASE\()_d_success:
+    RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_3, test_3_str)
+    RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_4, test_4_str)
+
+.endm
+
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
@@ -157,7 +189,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
@@ -202,7 +234,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_6
 
 
     j exit                                                        // Verification Complete, exit the test

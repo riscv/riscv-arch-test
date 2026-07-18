@@ -600,7 +600,7 @@ if __name__ == '__main__':
         # single file (CHUNK_SIZE >= len(instructions)).
         if extension.startswith("SsstrictV"):
             CHUNK_SIZE = 25
-        elif extension.startswith("MisalignedV"):
+        elif extension.startswith("MisalignV"):
             CHUNK_SIZE = len(instructions) // 2
         else:
             CHUNK_SIZE = max(len(instructions), 1)

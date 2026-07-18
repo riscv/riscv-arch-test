@@ -5,3 +5,52 @@
 <<t-used-parameters>> summarizes all of the UDB parameters that affect coverpoints in this testplan.  <<t-unused-parameters>> summarizes the UDB parameters that are not yet exercised.
 
 include::param/summary.adoc[]
+
+
+The UDB description must specify at least the following parameters.  More are likely to be required as the tests mature and the parameters working group identifies more.  This section is a work in progress.
+
+* Most existing UDB parameters
+
+* Address: PHYS_ADDR_WIDTH
+* Optional interrupts: {SEI, SSI}_INTR_IMPL.  May need the same for VSEI, VSSI (not yet in UDB). NUM_EXTERNAL_GUEST_INTERRUPTS (corresponds to GEILEN)
+* Sdtrig parameters TBD, DBG_HCONTEXT_WDITH, DBG_SCONTEXT_WIDTH
+* A way of specifying constraints on medeleg, mideleg, hedeleg, and hideleg.
+* State Enables: MSTATEEN_ENVCFG_TYPE, MSTATEEN_CONTEXT_TYPE, HSTATEEN_ENVCFG_TYPE, HSTATEEN_CONTEXT_TYPE
+* Vector: ELEN, *** others
+* Counters: TIME_CSR_IMPLEMENTED, MCOUNTEREANBLE_EN, HCOUNTERENABLE_EN, SCOUNTERENABLE_EN, HPM_COUNTER_EN, COUNTINHIBIT_EN, TBD: HPM_EVENTS
+* Sscofpmf parameters about counters
+* STVAL_WIDTH
+
+The following parameters affect the boot code or T-SBI.
+* MCOUNTINHIBIT_IMPLEMENTED
+* NUM_USABLE_PMP_ENTRIES, PMP_TOR_SUPPORTED, PMP_NAPOT_SUPPORTED to set up access to memory by lower privilege modes
+* MTVEC_ACCESS, MTVEC_BASE_ALIGNMENT_DIRECT, MTVEC_BASE_ALIGNMENT_VECTORED, MTVEC_ILLEGAL_WRITE_BEHAVIOR, MTVEC_MODES to the extent needed for setting up trap vector TODO
+
+The following parameters  affect expected results, but do not affect what is tested.  The reference model needs to accept these parameters to generate expected results.
+* ASID_WIDTH, VMID_WIDTH
+* REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
+* REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+* REPORT_VA_IN_STVAL_ON_{ILLEGAL_INSTRUCTION, BREAKPOINT, {INSTRUCTION, LOAD, STORE_AMO}_{ACCESS_FAULT, MISALIGNED}}, TRAP_ON_ECALL_FROM_S
+similar for VSTVAL
+...
+
+
+
+
+
+
+
+
+MSTATEEN_ENVCFG_TYPE, SCOUNTENABLE_EN,
+*** is there a MCOUNTERENABLE_EN?
+PMLEN supported values
+
+STVEC_MODE_DIRECT, STVEC_MODE_VECTORED, ***UDB_WFI_AVALIABLE_TO_USER_MODE added to sail 6/3/2026
+*** about WFI being NOP
+UDB_ZAWRS_NTO_IS_NOP
+
+MISALIGNED_LDST, MISALIGNED_LDST_EXCEPTION_PRIORITY, MTVAL_WIDTH, MTVEC_ACCESS, MTVEC_BASE_ALIGNMENT_DIRECT, MTVEC_ILLEGAL_WRITE_BEHAVIOR, MTVEC_MODES, REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTON, REPORT_VA_IN_MTVAL_ON_BREAKPOINT, REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_VAULT, REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED, REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT, REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED, REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT, REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED, TRAP_ON_EBREAK, TRAP_ON_ECALL_FROM_M
+
+*** relationship of Zicclsm to MISALGINED_LDST
+
+Furthermore, the following UDB parameters affect the boot code:

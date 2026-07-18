@@ -39,7 +39,7 @@ normative_rule_definitions:
   # floating-point state may cause the state to transition from Initial or Clean to
   # Dirty.
   - name: mstatus_fs_imprecise
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+    coverpoint: ["Untestable"]
 
   # dirtiness might not be tracked at all, in which case the valid FS states are Off
   # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to
@@ -51,7 +51,7 @@ normative_rule_definitions:
   # the fcsr but does not alter its contents, and FS=Initial or FS=Clean, it is
   # implementation-defined whether FS transitions to Dirty.
   - name: mstatus_fs_no_change_dirty
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+    coverpoint: ["Untestable"]
 
   # although CSRs and instructions are associated with one privilege level, they are
   # also accessible at all higher privilege levels.

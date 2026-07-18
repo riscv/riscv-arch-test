@@ -27,6 +27,17 @@ def _gen_fs_init(fs: int, temp_reg: int) -> str:
     return "\n".join(lines)
 
 
+def _gen_fp_csr_init(csr_name: str, value: int, temp_reg: int) -> str:
+    """Initialize an FP CSR while mstatus.FS is Dirty."""
+    lines = [
+        f"LI(x{temp_reg}, {3 << 13})",
+        f"CSRS(mstatus, x{temp_reg}) # Set mstatus.FS to dirty",
+        f"LI(x{temp_reg}, {value})",
+        f"CSRW({csr_name}, x{temp_reg}) # Initialize {csr_name}",
+    ]
+    return "\n".join(lines)
+
+
 def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     """Generate CSR tests."""
     covergroup = "SmF_fcsr_cg"
@@ -97,27 +108,19 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
         )
     )
 
-    insns = [
+    # For FS=Initial/Clean, instructions that do not deterministically update floating-point state
+    # can legally either leave FS unchanged or dirty it. Skip those cases.
+    nondeterministic_initial_clean_insns = [
         f"fsw f1, 0(x{scratch_reg})",
-        f"flw f0, 0(x{scratch_reg})",
-        "fadd.s f0, f1, f2",
-        "fsub.s f0, f1, f2",
-        "fmul.s f0, f1, f2",
-        "fdiv.s f0, f1, f2",
-        "fcvt.s.w f0, x0",
         f"fcvt.w.s x{temp_reg}, f0",
-        "fmadd.s f0, f1, f2, f3",
-        "fsqrt.s f0, f1",
-        "fsgnj.s f0, f1, f2",
         f"feq.s x{temp_reg}, f1, f2",
         f"fmv.x.w x{temp_reg}, f1",
-        f"fmv.w.x f0, x{temp_reg}",
         f"fclass.s x{temp_reg}, f3",
-        "fmin.s f0, f1, f2",
-        f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",
         f"csrr x{temp_reg}, fcsr",
         f"csrr x{temp_reg}, frm",
         f"csrr x{temp_reg}, fflags",
+    ]
+    fp_csr_write_insns = [
         f"csrrw x{temp_reg}, fcsr, x{temp_reg}",
         f"csrrw x{temp_reg}, frm, x{temp_reg}",
         f"csrrw x{temp_reg}, fflags, x{temp_reg}",
@@ -128,6 +131,21 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
         f"csrrc x{temp_reg}, frm, x{temp_reg}",
         f"csrrc x{temp_reg}, fflags, x{temp_reg}",
     ]
+    deterministic_insns = [
+        f"flw f0, 0(x{scratch_reg})",
+        "fadd.s f0, f1, f2",
+        "fsub.s f0, f1, f2",
+        "fmul.s f0, f1, f2",
+        "fdiv.s f0, f1, f2",
+        "fcvt.s.w f0, x0",
+        "fmadd.s f0, f1, f2, f3",
+        "fsqrt.s f0, f1",
+        "fsgnj.s f0, f1, f2",
+        f"fmv.w.x f0, x{temp_reg}",
+        "fmin.s f0, f1, f2",
+        f"add x{temp_reg}, x{temp_reg}, x{temp_reg}",
+    ]
+    insns = [*nondeterministic_initial_clean_insns, *fp_csr_write_insns, *deterministic_insns]
 
     lines.extend(
         [
@@ -142,11 +160,27 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     for fs in range(4):
         coverpoint_full = f"{coverpoint}_fs{fs}"
         for insn in insns:
+            if fs in (1, 2) and insn in nondeterministic_initial_clean_insns:
+                continue  # skip nondeterministic instructions for FS=1 or FS=2
+            if insn in fp_csr_write_insns:
+                if "fcsr" in insn:
+                    csr_name = "fcsr"
+                elif "frm" in insn:
+                    csr_name = "frm"
+                else:
+                    csr_name = "fflags"
+                setup_lines = [
+                    _gen_fp_csr_init(csr_name, 1 if "csrrc" in insn else 0, temp_reg),
+                    _gen_fs_init(fs, temp_reg),
+                    f"LI(x{temp_reg}, 1) # make {insn} change {csr_name}",
+                ]
+            else:
+                setup_lines = [_gen_fs_init(fs, temp_reg)]
             lines.extend(
                 [
                     "",
                     f"# Testcase: {insn} with mstatus.FS={fs}",
-                    _gen_fs_init(fs, temp_reg),
+                    *setup_lines,
                     test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
                     gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
@@ -172,6 +206,8 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
             ]
         )
         for insn in [f"fmvh.x.d x{temp_reg}, f1", f"fmvp.d.x f0, x{temp_reg}, x{temp_reg}"]:
+            if fs in (1, 2) and insn.startswith("fmvh.x.d "):
+                continue
             lines.extend(
                 [
                     "",

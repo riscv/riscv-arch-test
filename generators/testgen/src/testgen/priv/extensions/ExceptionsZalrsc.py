@@ -52,7 +52,7 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
 def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate store address misaligned exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_address_misaligned"
-    addr_reg, data_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(5)
+    addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6)
 
     lines = [comment_banner(coverpoint)]
     # illegal sc.w does not get coverage as SAIL stores content in by bytes instead of giving exceptions
@@ -69,12 +69,12 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
                 f"lr.w x{temp_reg}, (x{addr_reg})",  # establish reservation
                 "nop",
-                f"addi x{check_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
                 test_data.add_testcase(f"sc.w_off{offset}", coverpoint, covergroup),
-                f"sc.w x{check_reg}, x{data_reg}, (x{addr_reg})",
+                f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
                 "nop",
                 write_sigupd(temp_reg, test_data),
-                write_sigupd(check_reg, test_data),
+                write_sigupd(rd_reg, test_data),
                 f"{INDENT}# Check scratch region",
                 f"lw x{check_reg}, 0(x{base_reg})",
                 write_sigupd(check_reg, test_data),
@@ -89,12 +89,12 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
                 f"lr.d x{temp_reg}, (x{addr_reg})",  # establish reservation
                 "nop",
-                f"addi x{check_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
                 test_data.add_testcase(f"sc.d_off{offset}", coverpoint, covergroup),
-                f"sc.d x{check_reg}, x{data_reg}, (x{addr_reg})",
+                f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
                 "nop",
                 write_sigupd(temp_reg, test_data),
-                write_sigupd(check_reg, test_data),
+                write_sigupd(rd_reg, test_data),
                 f"{INDENT}# Check scratch region",
                 f"lw x{check_reg}, 0(x{base_reg})",
                 write_sigupd(check_reg, test_data),
@@ -107,7 +107,7 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 "#endif",
             ]
         )
-    test_data.int_regs.return_registers([addr_reg, data_reg, base_reg, temp_reg, check_reg])
+    test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg, base_reg, temp_reg, check_reg])
     return lines
 
 

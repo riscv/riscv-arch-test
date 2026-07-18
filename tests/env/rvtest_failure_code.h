@@ -1686,24 +1686,23 @@
     //--------------------------------------------------------------
     trap_report_generic:
         LA(a0, trap_diag_generic_str)
-        call rvmodel_io_write_str // print "Unrecognized trap failure..."
+        call rvmodel_io_write_str
 
         // Print instruction at saved mepc
         LREG a2, saved_mepc
         LA(a0, xepcinstrstr)
-        call rvmodel_io_write_str  // Print "Instruction that trapped:"
-
-        lhu a0, 0(a2)       // a0 = lower half of instruction, which might not be word aligned
-        li a1, 16           // assume 16-bit instruction`
-        andi x8, a0, 3      // check bottom 2 bits of instruction
-        li x9, 3            // if 11, it's a 32-bit instruction
-        bne x8, x9, 1f      // No: keep a1=16
-        lhu x8, 2(a2)       // load upper half of instruction
-        slli x8, x8, 16     // shift upper half into position
-        or a0, a0, x8       // combine into 32-bit instruction
-        li a1, 32           // set a1=32 for 32-bit instruction
+        call rvmodel_io_write_str
+        lhu a0, 0(a2)
+        li a1, 16
+        andi x8, a0, 3
+        li x9, 3
+        bne x8, x9, 1f
+        lhu x8, 2(a2)
+        slli x8, x8, 16
+        or a0, a0, x8
+        li a1, 32
     1:
-        jal failedtest_hex_to_str   # Call failedtest_hex_to_str(a0, a1) with a0 = instruction, a1 = instruction length in bits
+        jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 

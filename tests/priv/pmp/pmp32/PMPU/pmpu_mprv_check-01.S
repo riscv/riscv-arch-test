@@ -98,17 +98,17 @@ main:
 //                                            Verification Section
 // Test Case: 1 : mstatus.MPRV = 0, L = 0, mstatus.MPP = 00 and No Permissions given to the PMP Region 0
 
-    li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
+    LI(t0, (MPP|MPRV)) // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : mstatus.MPRV = 1, L = 0, mstatus.MPP = 00 and No Permissions given to the PMP Region 0
 
-    li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
+    LI(t0, (MPP|MPRV)) // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
-    li t0, (MPRV)
+    LI(t0, (MPRV))
     csrs mstatus, t0
 
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
@@ -128,17 +128,17 @@ main:
 
 // Test Case: 1 : mstatus.MPRV = 0, L = 1, mstatus.MPP = 00 and No Permissions given to the PMP Region 0
 
-    li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
+    LI(t0, (MPP|MPRV)) // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 2 : mstatus.MPRV = 1, L = 1, mstatus.MPP = 00 and No Permissions given to the PMP Region 0
 
-    li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
+    LI(t0, (MPP|MPRV)) // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
-    li t0, (MPRV)
+    LI(t0, (MPRV))
     csrs mstatus, t0
 
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4

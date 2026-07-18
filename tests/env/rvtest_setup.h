@@ -259,7 +259,7 @@
 
     rvtest_clr_ssw_int:
       RVMODEL_CLR_SSW_INT(a0, a1)
-      li a0, 2
+      LI(a0, 2)
       csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
       ret
 
@@ -495,10 +495,10 @@
       #if __riscv_xlen == 64
         #define MSTATUS_UXL_64         0x0000000200000000
         #define MSTATUS_SXL_64         0x0000000800000000
-        li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
+        LI(t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64)
         csrw mstatus, t0  // Set just all these fields
       #else    // RV32
-        li t0, MSTATUS_MPP
+        LI(t0, MSTATUS_MPP)
         csrw mstatus, t0
         #ifndef SM1P11P0_SUPPORTED
           csrw mstatush, zero // Clear all these fields
@@ -521,7 +521,7 @@
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
       #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
-        li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+        LI(t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)
         csrw menvcfg, t0
         #if __riscv_xlen == 32
           csrw menvcfgh, zero // Clear upper bits if they exist
@@ -543,17 +543,17 @@
       // mstateen0.C = 0: Disable custom state
       #ifdef SMSTATEEN_SUPPORTED
         #if __riscv_xlen == 64
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEEN0_JVT)
           csrw mstateen0, t0
         #else    // RV32
           csrw mstateen0h, zero
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEEN0_JVT)
           csrw mstateen0, t0
         #endif
         #ifdef ZFINX_SUPPORTED
-          li t0, MSTATEEN0_FCSR
+          LI(t0, MSTATEEN0_FCSR)
           csrs mstateen0, t0 // Set mstateen0.FCSR
-          li t0, 0
+          LI(t0, 0)
         #endif
       #endif
 
@@ -631,7 +631,7 @@
 
       // make counters accessible to a lower privilege mode if one exists
       #ifdef U_SUPPORTED
-        li t0, -1
+        LI(t0, -1)
         csrw mcounteren, t0 // Enable all counters for access from next lower priv mode
       #endif
 
@@ -712,8 +712,8 @@
     // medeleg[22] = 1: delegate virtual instruction
     // mideleg[23] = 1: delegate store guest-page fault
     // higher bits are reserved or custom
-    li t0, 0x0FCB5FF
-    li t0, 0x0FCB0FF # *** dh 4/24/26 temporary don't delegate any ecalls until SBI forwarding is implemented
+    LI(t0, 0x0FCB5FF)
+    LI(t0, 0x0FCB0FF)  # *** dh 4/24/26 temporary don't delegate any ecalls until SBI forwarding is implemented
     csrw medeleg, t0
 
     // Delegate supervisor interrupts to S-mode. Do not delege M-mode interrupts.
@@ -728,7 +728,7 @@
     // mideleg.MSIP = 0: don't delegate machine software interrupts
     // mideleg.MTIP = 0: don't delegate machine timer interrupts
     // mideleg.MEIP = 0: don't delegate machine external interrupts
-    li t0, 0x3666
+    LI(t0, 0x3666)
     csrw mideleg, t0
 
     // Enable necessary state for access from lower privilege modes
@@ -740,22 +740,22 @@
 
     #ifdef SMSTATEEN_SUPPORTED
       #if __riscv_xlen == 64
-        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG  # alternate names for SE0 and ENVCFG in encoding.h
+        LI(t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG)  # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0, t0  // Set these fields
       #else    // RV32
-        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG   # alternate names for SE0 and ENVCFG in encoding.h
+        LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG)  # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0h, t0 // Set these fields
       #endif
     #endif
     #ifdef SSSTATEEN_SUPPORTED
-      li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
+      LI(t0, SSTATEEN0_JVT | SSTATEEN0_FCSR)
       csrs sstateen0, t0 // enable access from lower privilege mode
     #endif
 
     // Initialize S-mode CSRs
 
     // make counters accessible to a lower privilege mode if one exists
-    li t0, -1
+    LI(t0, -1)
     csrw scounteren, t0 // Enable all counters for access from next lower priv mode
 
     // Disable all privileged environment configuration, and enable unprivileged configuration
@@ -768,7 +768,7 @@
     // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
     // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
     // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
+    LI(t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)
     csrw senvcfg, t0
 
     // Boot into S-mode
@@ -825,12 +825,12 @@
     // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
     // for floating-point and vector
     #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
-      li t0, MSTATUS_FS
+      LI(t0, MSTATUS_FS)
       csrs mstatus, t0 // Set FS to dirty to enable floating-point
       csrw fcsr, zero // Initialize fcsr
     #endif
     #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
-      li t0, MSTATUS_VS
+      LI(t0, MSTATUS_VS)
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
     #endif

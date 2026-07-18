@@ -87,7 +87,7 @@ RVTEST_BEGIN
     lui t0, 0x40000     // Adding this to the current PC (VA) will point to the next entry (Spage) in the level 2 page table
     add x1, x1, t0      // VA of an Spage that points to 1f
 
-    li  a0, 0           // a0==0 signals GOTO_SMODE to the trap handler (x3 is no longer the flag)
+    LI(a0, 0)           // a0==0 signals GOTO_SMODE to the trap handler (x3 is no longer the flag)
     GOTO_S_OP           // Go to Smode
     nop                 // GOTO_S_OP returns here. This will raise a fetch-page-fault (S-mode accessing Upage).
   1:
@@ -205,7 +205,7 @@ main:
   sfence.vma
 
   // Test case 9-10: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 1 Store/AMO page fault
-  li a1, 1
+  LI(a1, 1)
   CSRW(medeleg, a1)
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test9
   sfence.vma

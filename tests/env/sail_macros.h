@@ -1,4 +1,4 @@
-# sail_macros.h
+﻿# sail_macros.h
 # RVMODEL macro definitions for Sail reference model
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
@@ -38,8 +38,8 @@
 # When the test is run in simulation, this should end the simulation.
 #undef RVMODEL_HALT_PASS
 #define RVMODEL_HALT_PASS  \
-  li x1, 1                ;\
-  la t0, tohost           ;\
+  LI(x1, 1                );\
+  LA(t0, tohost           );\
   write_tohost_pass:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
@@ -50,8 +50,8 @@
 # When the test is run in simulation, this should end the simulation.
 #undef RVMODEL_HALT_FAIL
 #define RVMODEL_HALT_FAIL \
-  li x1, 3                ;\
-  la t0, tohost           ;\
+  LI(x1, 3                );\
+  LA(t0, tohost           );\
   write_tohost_fail:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
@@ -78,10 +78,10 @@
   lbu _R1, 0(_STR_PTR)        ;/* Load byte */        \
   beqz _R1, 3f                ;/* Exit if null */     \
 2: /* htif_putc */           ;                      \
-  la _R2, tohost       ;   \
+  LA(_R2, tohost       );   \
   sw _R1, 0(_R2)     ; \
   /* device=1 (terminal), cmd=1 (output) */ \
-  li _R1, 0x01010000 ;\
+  LI(_R1, 0x01010000 );\
   sw _R1, 4(_R2)   ;\
   addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
   j 1b                       ;/* Loop */             \
@@ -107,28 +107,28 @@
 #define SAIL_SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 11);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 31) | (1 << 11));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
 
 
 #undef RVMODEL_CLR_MEXT_INT
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 11);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 11));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 #define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
-  li _R1, 1;                 \
-  li _R2, SAIL_MSIP_ADDRESS;              \
+  LI(_R1, 1);                 \
+  LI(_R2, SAIL_MSIP_ADDRESS);              \
   sw _R1, 0(_R2);
 
 
 #undef RVMODEL_CLR_MSW_INT
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, SAIL_MSIP_ADDRESS;              \
+  LI(_R2, SAIL_MSIP_ADDRESS);              \
   sw zero, 0(_R2);
 
 
@@ -136,26 +136,26 @@
 ##### Supervisor Interrupts #####
 #undef RVMODEL_SET_SEXT_INT
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 9);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 31) | (1 << 9));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
 #undef RVMODEL_CLR_SEXT_INT
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 9);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 9));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
 
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 1);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 31) | (1 << 1));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Set SSW interrupt */ \
 
 #undef RVMODEL_CLR_SSW_INT
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
-  li _R1, (1 << 1);               \
-  li _R2, SAIL_SIG_ADDRESS;    \
+  LI(_R1, (1 << 1));               \
+  LI(_R2, SAIL_SIG_ADDRESS);    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
 #endif // _SAIL_MACROS_H

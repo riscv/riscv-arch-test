@@ -129,7 +129,7 @@ main:
     .endr
 
     // REGIONSTART + i*g in odd PMPADDR. Uses t2 (not t0, which aliases x5 the
-    // accumulator) so the per-iteration LI doesn't clobber the running total.
+    // accumulator) so the per-iteration LI() doesn't clobber the running total.
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7

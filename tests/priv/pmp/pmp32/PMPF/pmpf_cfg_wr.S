@@ -93,7 +93,7 @@ main:
 
     // Enable the FPU: set mstatus.FS = 01 (Initial)
     // mstatus bits 14:13 = FS. Value 0x00006000 sets FS=11 (Dirty), safe for all F ops.
-    li   x4, 0x00006000
+    LI(x4, 0x00006000)
     csrs mstatus, x4        // set FS bits without disturbing anything else
 
     // zero out fcsr so fflags start clean

@@ -407,7 +407,7 @@
 //   TEST_CASE - prefix for the local result labels (TEST_CASE_1 .. _2)
 .macro PMP_VERIFICATION_X_ZCD ADDRESS, TEST_CASE
 
-    li    x15, 0x3f800000               // bit pattern for 1.0f (IEEE-754 single)
+    LI(x15, 0x3f800000)               // bit pattern for 1.0f (IEEE-754 single)
     fmv.w.x f8, x15                     // move 32-bit integer bits into float reg f8
     // Store Access Check
     LA(x8, \ADDRESS)                                         // Address to be verified

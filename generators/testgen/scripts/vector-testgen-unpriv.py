@@ -1654,7 +1654,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     insertTemplate(test, getSigSpace(xlen, flen), "testgen_header.S", sew=sew, vdsew=vdsew)
 
     if test in vfloattypes:
-      float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
+      float_en = "\n# set mstatus.FS to 10 to enable fp\nLI(t0, 0x4000)\ncsrs mstatus, t0\n\n"
       f.write(float_en)
 
     if extension.startswith(("VfCustom", "Vf")) and sew > 32:
@@ -1666,7 +1666,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     f.write("\n")
     f.write("// Initial set vl = 1\n")
-    f.write("li x31, 1\n")
+    f.write("LI(x31, 1)\n")
     f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n\n\n")
 
     if (test in vd_widen_ins) or (test in vs2_widen_ins):

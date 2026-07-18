@@ -431,7 +431,7 @@
             /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                          \
             /* Override the saved vl to 1 so the active mask covers only element 0 and     */                           \
             /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
-            li          _TEMP_REG, 1             ;                                                                      \
+            LI(_TEMP_REG, 1             ;                                                                      \)
         .elseif (_VCOMPRESS_FLAG == 1) ; \
             vcpop.m _TEMP_REG, _VS1 ; /* Count number of active elements in vs1 to get effective vl for vcompress.m */ \
         .else; \
@@ -453,7 +453,7 @@
         /* vl > SEW_MAX because the rs1 input to vmsltu.vx will get truncated, so its possible we have */ \
         /* to calculate the hard way. vl cannot exceed SEW_MAX for SEW > 16 */                  \
         .if (_VD_EEW <= 16); \
-            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+            LI(_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
         .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
@@ -474,7 +474,7 @@
         vsetvli _LINK_REG, x0, e8, m1, ta, ma ;  /* A mask has lmul = 1, so calculate with lmul = 1 */                                                 \
         vmv.v.i _VTMP, 0; /* Zero out _VTMP, so that we can place the desired value in the first bytes */ \
         /* To move into the first byte, we need to move with tail undisturbed into vl = 1 */ \
-        li _TEMP_REG3, 1; /* vl = 1 */ \
+        LI(_TEMP_REG3, 1; /* vl = 1 */ \)
         vsetvli x0, _TEMP_REG3, e8, m1, tu, ma ;  /* Set VL = 1 */                                                 \
         /* Calculate the bits in the element bordering zeros and ones in the mask */ \
         andi _LINK_REG, _TEMP_REG, 0x7; /* _LINK_REG = vl & 0x7 */ \
@@ -624,7 +624,7 @@
             /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                          \
             /* Override the saved vl to 1 so the active mask covers only element 0 and     */                           \
             /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
-            li          _TEMP_REG, 1             ;                                                                      \
+            LI(_TEMP_REG, 1             ;                                                                      \)
         .elseif (_VCOMPRESS_FLAG == 1) ; \
             vcpop.m _TEMP_REG, _VS1 ; /* Count number of active elements in vs1 to get effective vl for vcompress.m */ \
         .else; \
@@ -644,7 +644,7 @@
         .endif; \
         /* Build active element mask */                                                      \
         .if (_VD_EEW <= 16); \
-            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+            LI(_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
         .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \

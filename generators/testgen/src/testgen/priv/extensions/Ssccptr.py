@@ -60,14 +60,14 @@ def _setup_identity_map(test_data: TestData) -> list[str]:
         "# AUIPC-based superpage identity map — portable to any load address",
         f"auipc x{r0}, 0",  # r0 = current PC
         "#if __riscv_xlen == 64",
-        f"li x{r1}, ~((1 << 30) - 1)",  # 1 GiB alignment mask
+        f"LI(x{r1}, ~((1 << 30) - 1))",  # 1 GiB alignment mask
         "#else",
-        f"li x{r1}, ~((1 << 22) - 1)",  # 4 MiB alignment mask
+        f"LI(x{r1}, ~((1 << 22) - 1))",  # 4 MiB alignment mask
         "#endif",
         f"and x{r0}, x{r0}, x{r1}",  # r0 = superpage-aligned base PA
         f"srli x{r0}, x{r0}, 12",  # r0 = PPN
         f"slli x{r0}, x{r0}, 10",  # r0 = PPN in PTE field position
-        f"li x{r1}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        f"LI(x{r1}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V))",
         f"or x{r0}, x{r0}, x{r1}",  # r0 = leaf PTE value
         f"LA(x{r2}, rvtest_Sroot_pg_tbl)",  # r2 = root page table base
         f"LA(x{r1}, rvtest_code_begin)",  # r1 = code base address

@@ -300,7 +300,7 @@ def pickPrivScratch(scalar_register_data=None, exclude=()):
   """Pick a scratch xreg that doesn't collide with framework-reserved regs,
   the live signature pointer, any chosen rd/rs1/rs2 operands, or caller-supplied
   excludes. Critically, the scratch register is written by the priv test prep
-  (vsetivli x{scratch}, la x{scratch}, vsetvli x{scratch}, ...). If sigReg is
+  (vsetivli x{scratch}, LA(x{scratch}, ...), vsetvli x{scratch}, ...). If sigReg is
   not excluded the prep destroys the signature pointer mid-test, leaving every
   subsequent SIGUPD store to write to a tiny address (the LMUL/byte-stride
   value) and trap."""
@@ -2226,11 +2226,11 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
     emul_field = max(register_emul_field, 1)
 
     if register_value is not None:
-      writeLine(f"li x{tempReg}, {register_value}", "# Load immediate value into integer register")
+      writeLine(f"LI(x{tempReg}, {register_value})", "# Load immediate value into integer register")
       for i in range(nf_prefill):
         writeLine(f"vmv.v.x v{register + i*emul_field}, x{tempReg}", f"# Load desired value into v{register + i*emul_field}")
     else:
-      writeLine(f"la x{tempReg}, {register_val_pointer}",  "# Load address of desired value")
+      writeLine(f"LA(x{tempReg}, {register_val_pointer})",  "# Load address of desired value")
       if register_val_pointer == "vs_corner_zero_emul8" and instruction not in crypto_ins:
         writeLine(f"vl1re{getInstructionEEW(instruction)}.v v{register}, (x{tempReg})",               "# zero register")
       elif nf_prefill > 1:
@@ -2326,14 +2326,14 @@ def loadScalarReg(register_argument_name: str, scalar_register_data):
   register          = register_data['reg']
   register_value    = register_data['val']
 
-  writeLine(f"li x{register}, {register_value}", "# Load immediate value into integer register")
+  writeLine(f"LI(x{register}, {register_value})", "# Load immediate value into integer register")
 
 def loadScalarAddress(register_argument_name: str, scalar_register_data):
   register_data     = scalar_register_data[register_argument_name]
   register          = register_data['reg']
   register_pointer  = register_data['val_pointer']
 
-  writeLine(f"la x{register}, {register_pointer}", "# Load address pointer integer register for loads")
+  writeLine(f"LA(x{register}, {register_pointer})", "# Load address pointer integer register for loads")
 
 # handleSignaturePointerConflict switches to a different signature pointer if the current one is needed for the test
 def handleSignaturePointerConflict(*registers):
@@ -2446,7 +2446,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       # itself traps (which doubles trap-signature pressure and can overflow the
       # TRAP_SIGUPD_COUNT buffer in tests/env/rvtest_setup.h).
       vstart_scratch = pickScalarScratch(list(scalar_registers_used) + [sigReg])
-      writeLine(f"li x{vstart_scratch}, {(3 << 13) | (3 << 9)}", "# FS|VS = Dirty mask")
+      writeLine(f"LI(x{vstart_scratch}, {(3 << 13) | (3 << 9)})", "# FS|VS = Dirty mask")
       writeLine(f"csrs mstatus, x{vstart_scratch}",              "# restore FS|VS = Dirty before vector CSR access")
       # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl
       # leaves vstart > vl, which is reserved-behavior for the SIGUPD vse/vle that
@@ -2501,7 +2501,7 @@ def loadFrmRoundingMode(frm, *scalar_registers_used):
   tempReg = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(tempReg)
 
-  writeLine(f"li x{tempReg}, {frmList[frm]}", "# generate mask for desired frm")
+  writeLine(f"LI(x{tempReg}, {frmList[frm]})", "# generate mask for desired frm")
   writeLine(f"csrw fcsr, x{tempReg}", f"# set fcsr.frm to {frm}")
   return scalar_registers_used
 
@@ -2511,7 +2511,7 @@ def loadVxrmRoundingMode(vxrm, *scalar_registers_used):
   tempReg3 = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(tempReg3)
 
-  writeLine(f"li x{tempReg3}, {vxrmList[vxrm]}", "# generate mask for desired frm")
+  writeLine(f"LI(x{tempReg3}, {vxrmList[vxrm]})", "# generate mask for desired frm")
   writeLine(f"csrw vcsr, x{tempReg3}", f"# set fcsr.frm to {vxrm}")
   return scalar_registers_used
 
@@ -2520,7 +2520,7 @@ def loadVxsatMode(*scalar_registers_used):
   # TODO dont use t0 find a register that works
   # writeLine(f"csrr t0, vcsr"
   # writeLine(f"andi t1, t0, 1"
-  # writeLine(f"la t2, vxsat_address"
+  # writeLine(f"LA(t2, vxsat_address)"
   # writeLine(f"sw t1, 0(t2)"
   return
 
@@ -2659,7 +2659,7 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"vmsltu.vx v0, v{mask_vreg}, x{tempReg}",     "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
   else: # random mask
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
-    writeLine(f"la x{tempReg}, {maskval}")
+    writeLine(f"LA(x{tempReg}, {maskval})")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
 def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
@@ -2670,7 +2670,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   # pointer mid-test and triggering a chain of store-fault traps.
   vstart_reg = scratch
   if   (vstartval == "one"):
-    writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
+    writeLine(f"LI(x{vstart_reg}, 1)",                                    f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
@@ -2681,7 +2681,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -2",                 f"# x{vstart_reg} = VLMAX-2")
-    writeLine(f"li x{scratch2}, {randvstart}")
+    writeLine(f"LI(x{scratch2}, {randvstart})")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % (VLMAX - 2) (0 <= x{scratch2} < VLMAX-2)")
     writeLine(f"bgt x{vstart_reg}, x0, 1f")
     writeLine(f"addi x{scratch2}, {vstart_reg}, -1",                     f"# x{scratch2} = VLMAX - 3")
@@ -2894,7 +2894,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
         writeLine(f"vsetvli x{tempReg}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening")
       elif (instruction in wvsins): # edge case for wvsins in base suite since vwred instructions writes to a widened scalar vd
         if (suite == "base"):
-          writeLine(f"li x{tempReg}, 1", "# load vl=1 for widening register for base suite of vwred instructions for vd initialization")
+          writeLine(f"LI(x{tempReg}, 1)", "# load vl=1 for widening register for base suite of vwred instructions for vd initialization")
           writeLine(f"vsetvli x0, x{tempReg}, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vl=1 and sew to widened for vd load, since vd is scalar")
         else:
           writeLine(f"vsetvli x{tempReg}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening for length suite")
@@ -2998,7 +2998,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
     if force_vill:
       villReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(villReg)
-      writeLine(f"li x{villReg}, {1 << (xlen - 1)}",                               "# Load vtype value with vill bit set")
+      writeLine(f"LI(x{villReg}, {1 << (xlen - 1)})",                               "# Load vtype value with vill bit set")
       writeLine(f"vsetvl x0, x0, x{villReg}",                                       "# Set vtype with vill=1 via vsetvl")
 
     if vector_register_data['vd']['reg_type'] == "mask" or vector_register_data['vd']['reg_type'] == "scalar" \
@@ -3148,7 +3148,7 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
 
   if vl == "random":
     randomVl = getrandbits(32)
-    writeLine(f"li x{tempReg2}, {randomVl}",                                      "# Load value for random vl preparation")
+    writeLine(f"LI(x{tempReg2}, {randomVl})",                                      "# Load value for random vl preparation")
     writeLine(f"vsetvli x{vlmaxReg}, x0, e{sew}, m{lmulflag}{taflag}{maflag}",    f"# x{vlmaxReg} = VLMAX")
     writeLine(f"remu x{tempReg2}, x{tempReg2}, x{vlmaxReg}",                      "# ensure that vl < VLMAX")
     if egs != 1:
@@ -3181,11 +3181,11 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
     for vreg in vector_registers_used:
       if vreg is not None:
         writeLine(f"vmv.v.i v{vreg}, 13",                       f"# Initialize v{vreg} to 0xD for deterministic undisturbed/tail elements in base suite")
-    writeLine(f"li x{tempReg2}, {vl}",                                            "# Load desired vl value") # put desired vl into an integer register
+    writeLine(f"LI(x{tempReg2}, {vl})",                                            "# Load desired vl value") # put desired vl into an integer register
     writeLine(f"vsetvli x0, x{tempReg2}, e{sew}, m{lmulflag}{taflag}{maflag}")
 
   if (vstart):   # if vstart specified
-    writeLine(f"li x{tempReg2}, {vstart}",                                        "# Load desired vstart value")
+    writeLine(f"LI(x{tempReg2}, {vstart})",                                        "# Load desired vstart value")
     writeLine(f"csrw vstart, x{tempReg2}")
 
   return scalar_registers_used

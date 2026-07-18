@@ -103,3 +103,14 @@ repos:
         language: script
         entry: .github/scripts/check-align-directive.sh
         files: \.(S|s|h|py)$
+
+  # Forbid raw li/la pseudoinstructions in assembly test files;
+  # require the LI()/LA() macros from tests/env/utils.h instead.
+  - repo: local
+    hooks:
+      - id: forbid-li-la-pseudoinstructions
+        name: forbid li/la pseudoinstructions (use LI/LA macros)
+        language: script
+        entry: .github/scripts/check-li-la-pseudoinstructions.sh
+        files: \.(S|s|py|h)$
+        exclude: ^(tests-dev/|tests/env/utils\.h|config/)

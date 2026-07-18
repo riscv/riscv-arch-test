@@ -56,7 +56,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_ones, test2_ones_str)
 
   // satp.PPN = Walking Ones
-  li a2, 1
+  LI(a2, 1)
   .rept(44)
     or   a0, a1, a2
     CSRW(satp, a0)
@@ -87,7 +87,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test3_ones, test3_ones_str)
 
   // satp.ASID = Walking Ones
-  li   a2, 1
+  LI(a2, 1)
   slli a2, a2, 44
   .rept(16)
     or   a0, a1, a2

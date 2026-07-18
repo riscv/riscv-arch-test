@@ -67,7 +67,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x12               // Test signature initialization
+  LI(a2, 0x12) // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

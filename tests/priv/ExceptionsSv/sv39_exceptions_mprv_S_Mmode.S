@@ -213,7 +213,7 @@ main:
   sfence.vma
 
   // Test case 9-10: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 2 faults
-  li a1, 1
+  LI(a1, 1)
   CSRW(medeleg, a1)
   TEST_CASES_RUNNER Mmode, va_data, LEVEL2, test9
   sfence.vma

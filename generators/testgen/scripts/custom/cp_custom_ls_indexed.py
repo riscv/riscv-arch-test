@@ -60,7 +60,7 @@ def make(test: str, sew: int) -> None:
             # collision with rs1/sigReg, including post-switch sigReg.
             # Reload vs2 from custom data after sanitization.
             pre_lines = [
-                f"la x{{s0}}, {label}",
+                f"LA(x{{s0}}, {label})",
                 f"vle64.v v{vs2}, (x{{s0}})",
             ]
             writeTest(description, test, data, sew=sew, lmul=1, vl=1, pre_test_lines=pre_lines, pre_test_scratch_regs=1)

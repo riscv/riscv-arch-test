@@ -33,17 +33,17 @@ main:
 // Test case 1: Access satp in M-mode using csrrw, csrrs, csrrc | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li a0, 1
+  LI(a0, 1)
   CSRW(satp, a0)
   test1_csrw:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrw, test1_csrw_str)
 
-  li a0, 2
+  LI(a0, 2)
   CSRS(satp, a0)
   test1_csrs:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrs, test1_csrs_str)
 
-  li a0, 1
+  LI(a0, 1)
   CSRC(satp, t0)
   test1_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrc, test1_csrc_str)
@@ -55,17 +55,17 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  li a0, 4
+  LI(a0, 4)
   CSRW(satp, a0)
   test2_csrw:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrw, test2_csrw_str)
 
-  li a0, 8
+  LI(a0, 8)
   CSRS(satp, a0)
   test2_csrs:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrs, test2_csrs_str)
 
-  li a0, 4
+  LI(a0, 4)
   CSRC(satp, t0)
   test2_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrc, test2_csrc_str)
@@ -79,13 +79,13 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Umode
 
-  li a0, 3
+  LI(a0, 3)
   CSRW(satp, a0)
 
-  li a0, 12
+  LI(a0, 12)
   CSRS(satp, a0)
 
-  li a0, 6
+  LI(a0, 6)
   CSRC(satp, t0)
 
   RVTEST_GOTO_MMODE
@@ -124,7 +124,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test5_ones, test5_ones_str)
 
   // satp.PPN = Walking Ones
-  li a2, 1
+  LI(a2, 1)
   .rept(44)
     or   a0, a1, a2
     CSRW(satp, a0)
@@ -155,7 +155,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test6_ones, test6_ones_str)
 
   // satp.ASID = Walking Ones
-  li   a2, 1
+  LI(a2, 1)
   slli a2, a2, 44
   .rept(16)
     or   a0, a1, a2

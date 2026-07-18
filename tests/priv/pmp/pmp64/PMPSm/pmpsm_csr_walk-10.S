@@ -86,7 +86,7 @@ main:
     //
     // The original walking-ones loop ran for all 64 bits (bnez t2 terminates
     // when the shifted-out bit reaches zero).  We replace it with 64 explicit
-    // li blocks — one per bit — each containing a .rept over all even cfg regs.
+    // LI() blocks — one per bit — each containing a .rept over all even cfg regs.
     // -----------------------------------------------------------------------
 
     // --- pmpcfg even walking ones, bit 0 ---

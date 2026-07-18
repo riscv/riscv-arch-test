@@ -91,11 +91,11 @@ def _pf_identity_map_sv39() -> list[str]:
     return [
         "# Sv39: 1 GiB identity superpage for code+data (PC-relative, link-address agnostic)",
         "auipc t0, 0",
-        "li t1, ~((1 << 30) - 1)",  # 1 GiB alignment mask
+        "LI(t1, ~((1 << 30) - 1))",  # 1 GiB alignment mask
         "and t0, t0, t1",  # t0 = superpage base PA
         "srli t0, t0, 12",
         "slli t0, t0, 10",  # PPN in PTE position
-        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        "LI(t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V))",
         "or t0, t0, t1",  # leaf PTE value
         "LA(t2, rvtest_Sroot_pg_tbl)",
         "LA(t1, rvtest_code_begin)",
@@ -116,11 +116,11 @@ def _pf_identity_map_sv32() -> list[str]:
     return [
         "# Sv32: 4 MiB identity superpage for code+data (PC-relative, link-address agnostic)",
         "auipc t0, 0",
-        "li t1, ~((1 << 22) - 1)",  # 4 MiB alignment mask
+        "LI(t1, ~((1 << 22) - 1))",  # 4 MiB alignment mask
         "and t0, t0, t1",  # t0 = superpage base PA
         "srli t0, t0, 12",
         "slli t0, t0, 10",  # PPN in PTE position
-        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        "LI(t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V))",
         "or t0, t0, t1",  # leaf PTE value
         "LA(t2, rvtest_Sroot_pg_tbl)",
         "LA(t1, rvtest_code_begin)",

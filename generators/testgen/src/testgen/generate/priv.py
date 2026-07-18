@@ -55,12 +55,10 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     #   - x0: avoid so desired values are actually loaded into registers
     #   - x1/ra: used as the return address for function calls
     #   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
-    #   - x10, x11 (a0/a1): designated clobber registers of the mode-switching
-    #     macros. RVTEST_GOTO_MMODE/SMODE/DELEGATED_MMODE signal via a0 and leave
-    #     it as -1; RVTEST_TSBI_* pass arguments/results in a0/a1.
+    #   - x10, x11, x12 (a0/a1/a2): Used by T-SBI.
     #   - x16-x31: ensure the same test can be used for I or E bases
 
-    priv_exclude_regs = [0, 1, 7, 10, 11, *range(16, 32)]
+    priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

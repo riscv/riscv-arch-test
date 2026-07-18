@@ -86,209 +86,209 @@ Zalrsc_lr_d_cg_cp_rs1_nx0_b6:
   RVTEST_SIGUPD(x27, x8, x7, x29, Zalrsc_lr_d_cg_cp_rs1_nx0_b6, Zalrsc_lr_d_cg_cp_rs1_nx0_b6_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x7)
   addi x7, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b7:
   lr.d x25, (x7) # perform load (0xf6fa0d12549294fe)
-  # Check if x25 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x25, Zalrsc_lr_d_cg_cp_rs1_nx0_b7, Zalrsc_lr_d_cg_cp_rs1_nx0_b7_str)
+  # Check if x25 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x25, Zalrsc_lr_d_cg_cp_rs1_nx0_b7, Zalrsc_lr_d_cg_cp_rs1_nx0_b7_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x8)
   addi x8, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b8:
   lr.d x19, (x8) # perform load (0x56dd4a4be2bdda89)
-  # Check if x19 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x19, Zalrsc_lr_d_cg_cp_rs1_nx0_b8, Zalrsc_lr_d_cg_cp_rs1_nx0_b8_str)
+  # Check if x19 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x19, Zalrsc_lr_d_cg_cp_rs1_nx0_b8, Zalrsc_lr_d_cg_cp_rs1_nx0_b8_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x9)
   addi x9, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b9:
   lr.d x29, (x9) # perform load (0x34dd31b41c86caa1)
-  # Check if x29 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x29, Zalrsc_lr_d_cg_cp_rs1_nx0_b9, Zalrsc_lr_d_cg_cp_rs1_nx0_b9_str)
+  # Check if x29 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x29, Zalrsc_lr_d_cg_cp_rs1_nx0_b9, Zalrsc_lr_d_cg_cp_rs1_nx0_b9_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x10)
   addi x10, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b10:
   lr.d x11, (x10) # perform load (0x356e8c418624b196)
-  # Check if x11 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x11, Zalrsc_lr_d_cg_cp_rs1_nx0_b10, Zalrsc_lr_d_cg_cp_rs1_nx0_b10_str)
+  # Check if x11 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x11, Zalrsc_lr_d_cg_cp_rs1_nx0_b10, Zalrsc_lr_d_cg_cp_rs1_nx0_b10_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x11)
   addi x11, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b11:
-  lr.d x14, (x11) # perform load (0x5e9517ff15fdb295)
-  # Check if x14 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x14, Zalrsc_lr_d_cg_cp_rs1_nx0_b11, Zalrsc_lr_d_cg_cp_rs1_nx0_b11_str)
+  lr.d x12, (x11) # perform load (0x5e9517ff15fdb295)
+  # Check if x12 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x12, Zalrsc_lr_d_cg_cp_rs1_nx0_b11, Zalrsc_lr_d_cg_cp_rs1_nx0_b11_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
   addi x12, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b12:
-  lr.d x17, (x12) # perform load (0x8cec75545daa4a91)
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zalrsc_lr_d_cg_cp_rs1_nx0_b12, Zalrsc_lr_d_cg_cp_rs1_nx0_b12_str)
+  lr.d x18, (x12) # perform load (0xf3e342efe55718db)
+  # Check if x18 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x18, Zalrsc_lr_d_cg_cp_rs1_nx0_b12, Zalrsc_lr_d_cg_cp_rs1_nx0_b12_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
   addi x13, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b13:
-  lr.d x28, (x13) # perform load (0xbbe205de39d3388a)
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zalrsc_lr_d_cg_cp_rs1_nx0_b13, Zalrsc_lr_d_cg_cp_rs1_nx0_b13_str)
+  lr.d x16, (x13) # perform load (0x55d6532133b3b754)
+  # Check if x16 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x16, Zalrsc_lr_d_cg_cp_rs1_nx0_b13, Zalrsc_lr_d_cg_cp_rs1_nx0_b13_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
   addi x14, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b14:
-  lr.d x3, (x14) # perform load (0xba97dc5a3a4c38cd)
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zalrsc_lr_d_cg_cp_rs1_nx0_b14, Zalrsc_lr_d_cg_cp_rs1_nx0_b14_str)
+  lr.d x28, (x14) # perform load (0xbe9279d913579048)
+  # Check if x28 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x28, Zalrsc_lr_d_cg_cp_rs1_nx0_b14, Zalrsc_lr_d_cg_cp_rs1_nx0_b14_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
   addi x15, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b15:
-  lr.d x30, (x15) # perform load (0xe6efbf10e5d92a9f)
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zalrsc_lr_d_cg_cp_rs1_nx0_b15, Zalrsc_lr_d_cg_cp_rs1_nx0_b15_str)
+  lr.d x10, (x15) # perform load (0x6299097ac83a8560)
+  # Check if x10 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x10, Zalrsc_lr_d_cg_cp_rs1_nx0_b15, Zalrsc_lr_d_cg_cp_rs1_nx0_b15_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x16)
   addi x16, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b16:
-  lr.d x26, (x16) # perform load (0x09772cec6bb96b0a)
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zalrsc_lr_d_cg_cp_rs1_nx0_b16, Zalrsc_lr_d_cg_cp_rs1_nx0_b16_str)
+  lr.d x6, (x16) # perform load (0x0d9cec13953f7093)
+  # Check if x6 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x6, Zalrsc_lr_d_cg_cp_rs1_nx0_b16, Zalrsc_lr_d_cg_cp_rs1_nx0_b16_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x17)
   addi x17, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b17:
-  lr.d x21, (x17) # perform load (0x0d9cec13953f7093)
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zalrsc_lr_d_cg_cp_rs1_nx0_b17, Zalrsc_lr_d_cg_cp_rs1_nx0_b17_str)
+  lr.d x6, (x17) # perform load (0x08e5eb33ee5c11a2)
+  # Check if x6 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x6, Zalrsc_lr_d_cg_cp_rs1_nx0_b17, Zalrsc_lr_d_cg_cp_rs1_nx0_b17_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x18)
   addi x18, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b18:
-  lr.d x4, (x18) # perform load (0x08e5eb33ee5c11a2)
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zalrsc_lr_d_cg_cp_rs1_nx0_b18, Zalrsc_lr_d_cg_cp_rs1_nx0_b18_str)
+  lr.d x0, (x18) # perform load (0xf0073dac15679560)
+  # Check if x0 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x0, Zalrsc_lr_d_cg_cp_rs1_nx0_b18, Zalrsc_lr_d_cg_cp_rs1_nx0_b18_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x19)
   addi x19, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b19:
-  lr.d x0, (x19) # perform load (0xf0073dac15679560)
-  # Check if x0 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x0, Zalrsc_lr_d_cg_cp_rs1_nx0_b19, Zalrsc_lr_d_cg_cp_rs1_nx0_b19_str)
+  lr.d x21, (x19) # perform load (0xdb31ebb07e5cecaf)
+  # Check if x21 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x21, Zalrsc_lr_d_cg_cp_rs1_nx0_b19, Zalrsc_lr_d_cg_cp_rs1_nx0_b19_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x20)
   addi x20, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b20:
-  lr.d x21, (x20) # perform load (0xdb31ebb07e5cecaf)
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zalrsc_lr_d_cg_cp_rs1_nx0_b20, Zalrsc_lr_d_cg_cp_rs1_nx0_b20_str)
+  lr.d x25, (x20) # perform load (0x0a12f4a1f22e76e5)
+  # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x25, Zalrsc_lr_d_cg_cp_rs1_nx0_b20, Zalrsc_lr_d_cg_cp_rs1_nx0_b20_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x21)
   addi x21, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b21:
-  lr.d x25, (x21) # perform load (0x0a12f4a1f22e76e5)
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zalrsc_lr_d_cg_cp_rs1_nx0_b21, Zalrsc_lr_d_cg_cp_rs1_nx0_b21_str)
+  lr.d x30, (x21) # perform load (0x57e79ce230511be1)
+  # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x30, Zalrsc_lr_d_cg_cp_rs1_nx0_b21, Zalrsc_lr_d_cg_cp_rs1_nx0_b21_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x22)
   addi x22, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b22:
-  lr.d x30, (x22) # perform load (0x57e79ce230511be1)
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zalrsc_lr_d_cg_cp_rs1_nx0_b22, Zalrsc_lr_d_cg_cp_rs1_nx0_b22_str)
+  lr.d x24, (x22) # perform load (0xeb7f8ecce6e6fac2)
+  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x24, Zalrsc_lr_d_cg_cp_rs1_nx0_b22, Zalrsc_lr_d_cg_cp_rs1_nx0_b22_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x23)
   addi x23, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b23:
-  lr.d x24, (x23) # perform load (0xeb7f8ecce6e6fac2)
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zalrsc_lr_d_cg_cp_rs1_nx0_b23, Zalrsc_lr_d_cg_cp_rs1_nx0_b23_str)
+  lr.d x8, (x23) # perform load (0xf0dd6556c7c7885d)
+  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x8, Zalrsc_lr_d_cg_cp_rs1_nx0_b23, Zalrsc_lr_d_cg_cp_rs1_nx0_b23_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x24)
   addi x24, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b24:
-  lr.d x6, (x24) # perform load (0xf0dd6556c7c7885d)
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zalrsc_lr_d_cg_cp_rs1_nx0_b24, Zalrsc_lr_d_cg_cp_rs1_nx0_b24_str)
+  lr.d x8, (x24) # perform load (0x5eac378319cdd868)
+  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x8, Zalrsc_lr_d_cg_cp_rs1_nx0_b24, Zalrsc_lr_d_cg_cp_rs1_nx0_b24_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x25)
   addi x25, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b25:
-  lr.d x6, (x25) # perform load (0x5eac378319cdd868)
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zalrsc_lr_d_cg_cp_rs1_nx0_b25, Zalrsc_lr_d_cg_cp_rs1_nx0_b25_str)
+  lr.d x24, (x25) # perform load (0xf0e9b62d32f0fa64)
+  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x24, Zalrsc_lr_d_cg_cp_rs1_nx0_b25, Zalrsc_lr_d_cg_cp_rs1_nx0_b25_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x26)
   addi x26, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b26:
-  lr.d x24, (x26) # perform load (0xf0e9b62d32f0fa64)
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zalrsc_lr_d_cg_cp_rs1_nx0_b26, Zalrsc_lr_d_cg_cp_rs1_nx0_b26_str)
+  lr.d x18, (x26) # perform load (0xf78f119ac29f2520)
+  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x18, Zalrsc_lr_d_cg_cp_rs1_nx0_b26, Zalrsc_lr_d_cg_cp_rs1_nx0_b26_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
-  mv x23, x27 # switch signature pointer register to avoid conflict with test
+  mv x21, x27 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x27)
   addi x27, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b27:
-  lr.d x14, (x27) # perform load (0x725b277e0f57d9f3)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x14, Zalrsc_lr_d_cg_cp_rs1_nx0_b27, Zalrsc_lr_d_cg_cp_rs1_nx0_b27_str)
+  lr.d x19, (x27) # perform load (0x5edd888264d893ce)
+  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_lr_d_cg_cp_rs1_nx0_b27, Zalrsc_lr_d_cg_cp_rs1_nx0_b27_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x28)
   addi x28, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b28:
-  lr.d x19, (x28) # perform load (0x5edd888264d893ce)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x19, Zalrsc_lr_d_cg_cp_rs1_nx0_b28, Zalrsc_lr_d_cg_cp_rs1_nx0_b28_str)
+  lr.d x7, (x28) # perform load (0x5c4a0ffcb637141f)
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_lr_d_cg_cp_rs1_nx0_b28, Zalrsc_lr_d_cg_cp_rs1_nx0_b28_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x29)
   addi x29, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b29:
-  lr.d x5, (x29) # perform load (0x5c4a0ffcb637141f)
-  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x5, Zalrsc_lr_d_cg_cp_rs1_nx0_b29, Zalrsc_lr_d_cg_cp_rs1_nx0_b29_str)
+  lr.d x16, (x29) # perform load (0x6eada946295114af)
+  # Check if x16 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x16, Zalrsc_lr_d_cg_cp_rs1_nx0_b29, Zalrsc_lr_d_cg_cp_rs1_nx0_b29_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x30)
   addi x30, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b30:
-  lr.d x16, (x30) # perform load (0x6eada946295114af)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x16, Zalrsc_lr_d_cg_cp_rs1_nx0_b30, Zalrsc_lr_d_cg_cp_rs1_nx0_b30_str)
+  lr.d x27, (x30) # perform load (0x2b0cc2847f075556)
+  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_lr_d_cg_cp_rs1_nx0_b30, Zalrsc_lr_d_cg_cp_rs1_nx0_b30_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x31)
   addi x31, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rs1_nx0_b31:
-  lr.d x27, (x31) # perform load (0x2b0cc2847f075556)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x27, Zalrsc_lr_d_cg_cp_rs1_nx0_b31, Zalrsc_lr_d_cg_cp_rs1_nx0_b31_str)
+  lr.d x12, (x31) # perform load (0x314597afbecc40b1)
+  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_lr_d_cg_cp_rs1_nx0_b31, Zalrsc_lr_d_cg_cp_rs1_nx0_b31_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -299,8 +299,8 @@ Zalrsc_lr_d_cg_cp_rs1_nx0_b31:
   addi x26, x1, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b0:
   lr.d x0, (x26) # perform load (0xa72fad38e30c2e5a)
-  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x0, Zalrsc_lr_d_cg_cp_rd_b0, Zalrsc_lr_d_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x0, Zalrsc_lr_d_cg_cp_rd_b0, Zalrsc_lr_d_cg_cp_rd_b0_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
   mv x17, x1 # switch data pointer register to avoid conflict with test
@@ -308,48 +308,50 @@ Zalrsc_lr_d_cg_cp_rd_b0:
   addi x26, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b1:
   lr.d x1, (x26) # perform load (0x96cf7e915e5d9a3a)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x1, Zalrsc_lr_d_cg_cp_rd_b1, Zalrsc_lr_d_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_lr_d_cg_cp_rd_b1, Zalrsc_lr_d_cg_cp_rd_b1_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x2)
-  addi x21, x17, 0 # copy data_ptr to rs1
+  addi x22, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b2:
-  lr.d x2, (x21) # perform load (0xbd225089f9e239ec)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x2, Zalrsc_lr_d_cg_cp_rd_b2, Zalrsc_lr_d_cg_cp_rd_b2_str)
+  lr.d x2, (x22) # perform load (0xbd225089f9e239ec)
+  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_lr_d_cg_cp_rd_b2, Zalrsc_lr_d_cg_cp_rd_b2_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x3)
-  addi x5, x17, 0 # copy data_ptr to rs1
+  addi x7, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b3:
-  lr.d x3, (x5) # perform load (0x7172ebef65aaa777)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x3, Zalrsc_lr_d_cg_cp_rd_b3, Zalrsc_lr_d_cg_cp_rd_b3_str)
+  lr.d x3, (x7) # perform load (0x7172ebef65aaa777)
+  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_lr_d_cg_cp_rd_b3, Zalrsc_lr_d_cg_cp_rd_b3_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  addi x15, x17, 0 # copy data_ptr to rs1
+  addi x19, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b4:
-  lr.d x4, (x15) # perform load (0xbc4bc7314b017560)
-  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x4, Zalrsc_lr_d_cg_cp_rd_b4, Zalrsc_lr_d_cg_cp_rd_b4_str)
+  lr.d x4, (x19) # perform load (0xeea2ff933c4bc731)
+  # Check if x4 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x4, Zalrsc_lr_d_cg_cp_rd_b4, Zalrsc_lr_d_cg_cp_rd_b4_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x5)
   addi x25, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b5:
   lr.d x5, (x25) # perform load (0x334e920db0a580f0)
-  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x5, Zalrsc_lr_d_cg_cp_rd_b5, Zalrsc_lr_d_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_lr_d_cg_cp_rd_b5, Zalrsc_lr_d_cg_cp_rd_b5_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x6)
-  addi x21, x17, 0 # copy data_ptr to rs1
+  addi x22, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b6:
-  lr.d x6, (x21) # perform load (0x740b1a33f04e8b96)
-  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x6, Zalrsc_lr_d_cg_cp_rd_b6, Zalrsc_lr_d_cg_cp_rd_b6_str)
+  lr.d x6, (x22) # perform load (0x740b1a33f04e8b96)
+  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_lr_d_cg_cp_rd_b6, Zalrsc_lr_d_cg_cp_rd_b6_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
   mv x4, x7 # switch temp register to avoid conflict with test
@@ -358,520 +360,521 @@ Zalrsc_lr_d_cg_cp_rd_b6:
   addi x10, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b7:
   lr.d x7, (x10) # perform load (0x75daf151c7559e4c)
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, Zalrsc_lr_d_cg_cp_rd_b7, Zalrsc_lr_d_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_lr_d_cg_cp_rd_b7, Zalrsc_lr_d_cg_cp_rd_b7_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x8)
   addi x7, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b8:
   lr.d x8, (x7) # perform load (0x3db6b0388e9fc4db)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, Zalrsc_lr_d_cg_cp_rd_b8, Zalrsc_lr_d_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_lr_d_cg_cp_rd_b8, Zalrsc_lr_d_cg_cp_rd_b8_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x9)
   addi x28, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b9:
   lr.d x9, (x28) # perform load (0xbd4a0351d7d26e74)
-  # Check if x9 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x9, Zalrsc_lr_d_cg_cp_rd_b9, Zalrsc_lr_d_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_lr_d_cg_cp_rd_b9, Zalrsc_lr_d_cg_cp_rd_b9_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x10)
   addi x25, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b10:
   lr.d x10, (x25) # perform load (0x533724778276f73e)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, Zalrsc_lr_d_cg_cp_rd_b10, Zalrsc_lr_d_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_lr_d_cg_cp_rd_b10, Zalrsc_lr_d_cg_cp_rd_b10_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x11)
   addi x27, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b11:
   lr.d x11, (x27) # perform load (0xbf8ff41612dcf595)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, Zalrsc_lr_d_cg_cp_rd_b11, Zalrsc_lr_d_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_lr_d_cg_cp_rd_b11, Zalrsc_lr_d_cg_cp_rd_b11_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x12)
   addi x14, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b12:
   lr.d x12, (x14) # perform load (0x3c82fb567495d5f0)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, Zalrsc_lr_d_cg_cp_rd_b12, Zalrsc_lr_d_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_lr_d_cg_cp_rd_b12, Zalrsc_lr_d_cg_cp_rd_b12_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x13)
   addi x24, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b13:
   lr.d x13, (x24) # perform load (0x960e7308187df1a3)
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, Zalrsc_lr_d_cg_cp_rd_b13, Zalrsc_lr_d_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_lr_d_cg_cp_rd_b13, Zalrsc_lr_d_cg_cp_rd_b13_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x14)
   addi x11, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b14:
   lr.d x14, (x11) # perform load (0x2c7aeb66b7dec366)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, Zalrsc_lr_d_cg_cp_rd_b14, Zalrsc_lr_d_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_lr_d_cg_cp_rd_b14, Zalrsc_lr_d_cg_cp_rd_b14_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x15)
   addi x16, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b15:
   lr.d x15, (x16) # perform load (0x9b8b5ba75e0a64c5)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, Zalrsc_lr_d_cg_cp_rd_b15, Zalrsc_lr_d_cg_cp_rd_b15_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_lr_d_cg_cp_rd_b15, Zalrsc_lr_d_cg_cp_rd_b15_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x16)
-  addi x22, x17, 0 # copy data_ptr to rs1
+  addi x23, x17, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b16:
-  lr.d x16, (x22) # perform load (0x917bb8fd511f284f)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, Zalrsc_lr_d_cg_cp_rd_b16, Zalrsc_lr_d_cg_cp_rd_b16_str)
+  lr.d x16, (x23) # perform load (0x917bb8fd511f284f)
+  # Check if x16 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x16, Zalrsc_lr_d_cg_cp_rd_b16, Zalrsc_lr_d_cg_cp_rd_b16_str)
   addi x17, x17, SIG_STRIDE # increment data_ptr
 
-  mv x21, x17 # switch data pointer register to avoid conflict with test
+  mv x22, x17 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x17)
-  addi x18, x21, 0 # copy data_ptr to rs1
+  addi x18, x22, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b17:
   lr.d x17, (x18) # perform load (0x5aae2527b24dea30)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, Zalrsc_lr_d_cg_cp_rd_b17, Zalrsc_lr_d_cg_cp_rd_b17_str)
-  addi x21, x21, SIG_STRIDE # increment data_ptr
+  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_lr_d_cg_cp_rd_b17, Zalrsc_lr_d_cg_cp_rd_b17_str)
+  addi x22, x22, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x18)
-  addi x31, x21, 0 # copy data_ptr to rs1
+  addi x31, x22, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b18:
   lr.d x18, (x31) # perform load (0x50370c0bb39b2685)
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, Zalrsc_lr_d_cg_cp_rd_b18, Zalrsc_lr_d_cg_cp_rd_b18_str)
-  addi x21, x21, SIG_STRIDE # increment data_ptr
+  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_lr_d_cg_cp_rd_b18, Zalrsc_lr_d_cg_cp_rd_b18_str)
+  addi x22, x22, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x19)
-  addi x26, x21, 0 # copy data_ptr to rs1
+  addi x26, x22, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b19:
   lr.d x19, (x26) # perform load (0x2d9d2e5bba2ed482)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, Zalrsc_lr_d_cg_cp_rd_b19, Zalrsc_lr_d_cg_cp_rd_b19_str)
-  addi x21, x21, SIG_STRIDE # increment data_ptr
+  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_lr_d_cg_cp_rd_b19, Zalrsc_lr_d_cg_cp_rd_b19_str)
+  addi x22, x22, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x20)
-  addi x29, x21, 0 # copy data_ptr to rs1
+  addi x29, x22, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b20:
   lr.d x20, (x29) # perform load (0xe5e627f28ccdcfa4)
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, Zalrsc_lr_d_cg_cp_rd_b20, Zalrsc_lr_d_cg_cp_rd_b20_str)
-  addi x21, x21, SIG_STRIDE # increment data_ptr
+  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_lr_d_cg_cp_rd_b20, Zalrsc_lr_d_cg_cp_rd_b20_str)
+  addi x22, x22, SIG_STRIDE # increment data_ptr
 
-  mv x11, x21 # switch data pointer register to avoid conflict with test
+  mv x11, x21 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x21)
-  addi x30, x11, 0 # copy data_ptr to rs1
+  addi x30, x22, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b21:
   lr.d x21, (x30) # perform load (0x6bc00264290b103e)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, Zalrsc_lr_d_cg_cp_rd_b21, Zalrsc_lr_d_cg_cp_rd_b21_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x21, Zalrsc_lr_d_cg_cp_rd_b21, Zalrsc_lr_d_cg_cp_rd_b21_str)
+  addi x22, x22, SIG_STRIDE # increment data_ptr
 
+  mv x10, x22 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x22)
-  addi x29, x11, 0 # copy data_ptr to rs1
+  addi x15, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b22:
-  lr.d x22, (x29) # perform load (0xb5eadd69042e05e2)
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, Zalrsc_lr_d_cg_cp_rd_b22, Zalrsc_lr_d_cg_cp_rd_b22_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x22, (x15) # perform load (0x4f98e70d9286af9e)
+  # Check if x22 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x22, Zalrsc_lr_d_cg_cp_rd_b22, Zalrsc_lr_d_cg_cp_rd_b22_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
-  mv x27, x23 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x23)
-  addi x30, x11, 0 # copy data_ptr to rs1
+  addi x16, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b23:
-  lr.d x23, (x30) # perform load (0xe2852dd84d3cd47f)
-  # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x23, Zalrsc_lr_d_cg_cp_rd_b23, Zalrsc_lr_d_cg_cp_rd_b23_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x23, (x16) # perform load (0xda0fb0bfdeb3ab35)
+  # Check if x23 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x23, Zalrsc_lr_d_cg_cp_rd_b23, Zalrsc_lr_d_cg_cp_rd_b23_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x24)
-  addi x14, x11, 0 # copy data_ptr to rs1
+  addi x20, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b24:
-  lr.d x24, (x14) # perform load (0xc0e98591061f7350)
-  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x24, Zalrsc_lr_d_cg_cp_rd_b24, Zalrsc_lr_d_cg_cp_rd_b24_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x24, (x20) # perform load (0xfd3edd1a3cd443d1)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x24, Zalrsc_lr_d_cg_cp_rd_b24, Zalrsc_lr_d_cg_cp_rd_b24_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x25)
-  addi x18, x11, 0 # copy data_ptr to rs1
+  addi x7, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b25:
-  lr.d x25, (x18) # perform load (0x20dd86aafc941324)
-  # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x25, Zalrsc_lr_d_cg_cp_rd_b25, Zalrsc_lr_d_cg_cp_rd_b25_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x25, (x7) # perform load (0x20dd86aafc941324)
+  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x25, Zalrsc_lr_d_cg_cp_rd_b25, Zalrsc_lr_d_cg_cp_rd_b25_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x26)
-  addi x19, x11, 0 # copy data_ptr to rs1
+  addi x20, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b26:
-  lr.d x26, (x19) # perform load (0xd46b0f885b7ba47f)
-  # Check if x26 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x26, Zalrsc_lr_d_cg_cp_rd_b26, Zalrsc_lr_d_cg_cp_rd_b26_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x26, (x20) # perform load (0xd46b0f885b7ba47f)
+  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x26, Zalrsc_lr_d_cg_cp_rd_b26, Zalrsc_lr_d_cg_cp_rd_b26_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
-  mv x18, x27 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x27)
-  addi x31, x11, 0 # copy data_ptr to rs1
+  addi x14, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b27:
-  lr.d x27, (x31) # perform load (0x9032cefe816f623f)
-  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x27, Zalrsc_lr_d_cg_cp_rd_b27, Zalrsc_lr_d_cg_cp_rd_b27_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x27, (x14) # perform load (0x9032cefe816f623f)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x27, Zalrsc_lr_d_cg_cp_rd_b27, Zalrsc_lr_d_cg_cp_rd_b27_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x28)
-  addi x31, x11, 0 # copy data_ptr to rs1
+  addi x31, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b28:
   lr.d x28, (x31) # perform load (0x8bfefc7f14052a0d)
-  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x28, Zalrsc_lr_d_cg_cp_rd_b28, Zalrsc_lr_d_cg_cp_rd_b28_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x28, Zalrsc_lr_d_cg_cp_rd_b28, Zalrsc_lr_d_cg_cp_rd_b28_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x29)
-  addi x27, x11, 0 # copy data_ptr to rs1
+  addi x27, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b29:
   lr.d x29, (x27) # perform load (0xc6832d519220fdb5)
-  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x29, Zalrsc_lr_d_cg_cp_rd_b29, Zalrsc_lr_d_cg_cp_rd_b29_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x29, Zalrsc_lr_d_cg_cp_rd_b29, Zalrsc_lr_d_cg_cp_rd_b29_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x30)
-  addi x27, x11, 0 # copy data_ptr to rs1
+  addi x27, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b30:
   lr.d x30, (x27) # perform load (0x86725eda8f731a42)
-  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_lr_d_cg_cp_rd_b30, Zalrsc_lr_d_cg_cp_rd_b30_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x30, Zalrsc_lr_d_cg_cp_rd_b30, Zalrsc_lr_d_cg_cp_rd_b30_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_rd (Test destination rd = x31)
-  addi x28, x11, 0 # copy data_ptr to rs1
+  addi x28, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_rd_b31:
   lr.d x31, (x28) # perform load (0xcb498fd29df8cc62)
-  # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x31, Zalrsc_lr_d_cg_cp_rd_b31, Zalrsc_lr_d_cg_cp_rd_b31_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zalrsc_lr_d_cg_cp_rd_b31, Zalrsc_lr_d_cg_cp_rd_b31_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
 // cmp_rd_rs1_nx0
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x1)
-  addi x1, x11, 0 # copy data_ptr to rs1
+  addi x1, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b1:
   lr.d x1, (x1) # perform load (0x58674289b3df1b08)
-  # Check if x1 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x1, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b1, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b1_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x1, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b1, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b1_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x2)
-  addi x2, x11, 0 # copy data_ptr to rs1
+  addi x2, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b2:
   lr.d x2, (x2) # perform load (0xd28fd7a2988cd6c8)
-  # Check if x2 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x2, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b2, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b2_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x2, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b2, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b2_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x3)
-  addi x3, x11, 0 # copy data_ptr to rs1
+  addi x3, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b3:
   lr.d x3, (x3) # perform load (0xcf33127b8acbff90)
-  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b3, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b3_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x3, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b3, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b3_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x4)
-  addi x4, x11, 0 # copy data_ptr to rs1
+  addi x4, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b4:
   lr.d x4, (x4) # perform load (0xa03aaece5d49da0d)
-  # Check if x4 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x4, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b4, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b4_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x4, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b4, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b4_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x5)
-  addi x5, x11, 0 # copy data_ptr to rs1
+  addi x5, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b5:
   lr.d x5, (x5) # perform load (0x2595a18eb53d86b4)
-  # Check if x5 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x5, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b5, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b5_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x5 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x5, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b5, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b5_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x6)
-  addi x6, x11, 0 # copy data_ptr to rs1
+  addi x6, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b6:
   lr.d x6, (x6) # perform load (0xf7b7d6ba368dff53)
-  # Check if x6 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x6, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b6, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b6_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x6, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b6, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b6_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x7)
-  addi x7, x11, 0 # copy data_ptr to rs1
+  addi x7, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b7:
   lr.d x7, (x7) # perform load (0x9bc7d9bad2991b04)
-  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b7, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b7_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x7, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b7, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b7_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x8)
-  addi x8, x11, 0 # copy data_ptr to rs1
+  addi x8, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b8:
   lr.d x8, (x8) # perform load (0x1c377ff015423681)
-  # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x8, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b8, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b8_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x8, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b8, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b8_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x9)
-  addi x9, x11, 0 # copy data_ptr to rs1
+  addi x9, x10, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b9:
   lr.d x9, (x9) # perform load (0x1b26a783371d10d2)
-  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x9, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b9, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b9_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b9, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b9_str)
+  addi x10, x10, SIG_STRIDE # increment data_ptr
 
+  mv x20, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x10)
-  addi x10, x11, 0 # copy data_ptr to rs1
+  addi x10, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b10:
-  lr.d x10, (x10) # perform load (0xf97062f8599d1a71)
-  # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x10, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b10, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b10_str)
-  addi x11, x11, SIG_STRIDE # increment data_ptr
+  lr.d x10, (x10) # perform load (0x0f99664aba34b8bf)
+  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x10, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b10, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b10_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
-  mv x30, x11 # switch data pointer register to avoid conflict with test
+  mv x15, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x11)
-  addi x11, x30, 0 # copy data_ptr to rs1
+  addi x11, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b11:
-  lr.d x11, (x11) # perform load (0xbf3386ea3e891a4e)
-  # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x11, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b11, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b11_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x11, (x11) # perform load (0x5df9601afa1f23ec)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b11, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b11_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x12)
-  addi x12, x30, 0 # copy data_ptr to rs1
+  addi x12, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b12:
-  lr.d x12, (x12) # perform load (0xbddc5ee9ab3d711f)
-  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b12, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b12_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x12, (x12) # perform load (0x88fc2a891d913b0e)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b12, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b12_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x13)
-  addi x13, x30, 0 # copy data_ptr to rs1
+  addi x13, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b13:
-  lr.d x13, (x13) # perform load (0x5df9601afa1f23ec)
-  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x13, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b13, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b13_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x13, (x13) # perform load (0x1f51764edce5ffaa)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b13, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b13_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x14)
-  addi x14, x30, 0 # copy data_ptr to rs1
+  addi x14, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b14:
-  lr.d x14, (x14) # perform load (0x88fc2a891d913b0e)
-  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x14, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b14, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b14_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x14, (x14) # perform load (0xc8e16aa7c5bdb310)
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b14, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b14_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
+  mv x19, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x15)
-  addi x15, x30, 0 # copy data_ptr to rs1
+  addi x15, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b15:
-  lr.d x15, (x15) # perform load (0x1f51764edce5ffaa)
-  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x15, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b15, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b15_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x15, (x15) # perform load (0x77c77ef5abf9ef68)
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b15, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b15_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x16)
-  addi x16, x30, 0 # copy data_ptr to rs1
+  addi x16, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b16:
-  lr.d x16, (x16) # perform load (0xc8e16aa7c5bdb310)
-  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b16, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b16_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x16, (x16) # perform load (0x16622fdb610aa3ed)
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b16, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b16_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x17)
-  addi x17, x30, 0 # copy data_ptr to rs1
+  addi x17, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b17:
-  lr.d x17, (x17) # perform load (0xa38cbd8ed48cce52)
-  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x18, x5, x4, x17, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b17, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b17_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x17, (x17) # perform load (0x646f245be6ba01a3)
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b17, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b17_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
-  mv x28, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x18)
-  addi x18, x30, 0 # copy data_ptr to rs1
+  addi x18, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b18:
-  lr.d x18, (x18) # perform load (0x8feb348ef7c77ef5)
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b18, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b18_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x18, (x18) # perform load (0x26c84e75662b1529)
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b18, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b18_str)
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
+  mv x28, x19 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x19)
-  addi x19, x30, 0 # copy data_ptr to rs1
+  addi x19, x20, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b19:
-  lr.d x19, (x19) # perform load (0xb6b7931bc80fbf4e)
+  lr.d x19, (x19) # perform load (0x3a35167b6da0069f)
   # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x19, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b19, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b19_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x20, x20, SIG_STRIDE # increment data_ptr
 
+  mv x16, x20 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x20)
-  addi x20, x30, 0 # copy data_ptr to rs1
+  addi x20, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b20:
-  lr.d x20, (x20) # perform load (0xecf48b1096622fdb)
+  lr.d x20, (x20) # perform load (0xf71bc44f39ffe2e9)
   # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x20, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b20, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b20_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x21)
-  addi x21, x30, 0 # copy data_ptr to rs1
+  addi x21, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b21:
-  lr.d x21, (x21) # perform load (0x1d15a31bd165e5f4)
+  lr.d x21, (x21) # perform load (0xb8c0d6227adb8ac2)
   # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x21, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b21, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b21_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x22)
-  addi x22, x30, 0 # copy data_ptr to rs1
+  addi x22, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b22:
-  lr.d x22, (x22) # perform load (0x741418efc9c06c8f)
+  lr.d x22, (x22) # perform load (0xf2d2ef9b4df62fab)
   # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x22, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b22, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b22_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x23)
-  addi x23, x30, 0 # copy data_ptr to rs1
+  addi x23, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b23:
-  lr.d x23, (x23) # perform load (0xcfb3351b1a198424)
+  lr.d x23, (x23) # perform load (0x39e2b256d789bc73)
   # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x23, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b23, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b23_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x24)
-  addi x24, x30, 0 # copy data_ptr to rs1
+  addi x24, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b24:
-  lr.d x24, (x24) # perform load (0xfc28f141771bc44f)
+  lr.d x24, (x24) # perform load (0xe257de93266ce75a)
   # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x24, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b24, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b24_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x25)
-  addi x25, x30, 0 # copy data_ptr to rs1
+  addi x25, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b25:
-  lr.d x25, (x25) # perform load (0xf2d2ef9b4df62fab)
+  lr.d x25, (x25) # perform load (0x2d68123bbe20c189)
   # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x25, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b25, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b25_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x26)
-  addi x26, x30, 0 # copy data_ptr to rs1
+  addi x26, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b26:
-  lr.d x26, (x26) # perform load (0x39e2b256d789bc73)
+  lr.d x26, (x26) # perform load (0xc49ed9f62c64b4c4)
   # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x26, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b26, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b26_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x27)
-  addi x27, x30, 0 # copy data_ptr to rs1
+  addi x27, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b27:
-  lr.d x27, (x27) # perform load (0xe257de93266ce75a)
+  lr.d x27, (x27) # perform load (0xf5792284d6de8321)
   # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x27, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b27, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b27_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
-  mv x24, x28 # switch signature pointer register to avoid conflict with test
+  mv x19, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x28)
-  addi x28, x30, 0 # copy data_ptr to rs1
+  addi x28, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b28:
-  lr.d x28, (x28) # perform load (0xf35bad16ad68123b)
-  # Check if x28 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x28, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b28, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b28_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x28, (x28) # perform load (0x8de2dffd205736d0)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b28, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b28_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x29)
-  addi x29, x30, 0 # copy data_ptr to rs1
+  addi x29, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b29:
-  lr.d x29, (x29) # perform load (0x20e75e6d7fbd19b5)
-  # Check if x29 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x29, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b29, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b29_str)
-  addi x30, x30, SIG_STRIDE # increment data_ptr
+  lr.d x29, (x29) # perform load (0xc6fb18a6120b6712)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b29, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b29_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
-  mv x15, x30 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x30)
-  addi x30, x15, 0 # copy data_ptr to rs1
+  addi x30, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b30:
-  lr.d x30, (x30) # perform load (0x7b3cc3a9016f9367)
-  # Check if x30 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x30, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b30, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b30_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  lr.d x30, (x30) # perform load (0xfe49359d9ae776bc)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b30, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b30_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x31)
-  addi x31, x15, 0 # copy data_ptr to rs1
+  addi x31, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b31:
-  lr.d x31, (x31) # perform load (0x26a0b5f0e33c03e8)
-  # Check if x31 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x31, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b31, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b31_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  lr.d x31, (x31) # perform load (0xc47cc8ac0127c79f)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b31, Zalrsc_lr_d_cg_cmp_rd_rs1_nx0_b31_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
 // cp_custom_lr
 /////////////////////////////////
 
 # Testcase: cp_custom_aqrl with suffix ''
-  addi x23, x15, 0 # copy data_ptr to rs1
+  addi x24, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_aqrl:
-  lr.d x30, (x23) # perform load (0xa07d53058d2100b4)
-  # Check if x30 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x30, Zalrsc_lr_d_cg_cp_custom_aqrl, Zalrsc_lr_d_cg_cp_custom_aqrl_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  lr.d x30, (x24) # perform load (0xa07d53058d2100b4)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, Zalrsc_lr_d_cg_cp_custom_aqrl, Zalrsc_lr_d_cg_cp_custom_aqrl_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase: cp_custom_aqrl with suffix '.aq'
-  addi x8, x15, 0 # copy data_ptr to rs1
+  addi x8, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_aqrl_aq:
   lr.d.aq x10, (x8) # perform load (0x0f920dfd9de31a1b)
-  # Check if x10 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x10, Zalrsc_lr_d_cg_cp_custom_aqrl_aq, Zalrsc_lr_d_cg_cp_custom_aqrl_aq_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, Zalrsc_lr_d_cg_cp_custom_aqrl_aq, Zalrsc_lr_d_cg_cp_custom_aqrl_aq_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase: cp_custom_aqrl with suffix '.aqrl'
-  addi x27, x15, 0 # copy data_ptr to rs1
+  addi x27, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_aqrl_aqrl:
   lr.d.aqrl x18, (x27) # perform load (0x0c0b1bd88bfcd7dd)
-  # Check if x18 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x18, Zalrsc_lr_d_cg_cp_custom_aqrl_aqrl, Zalrsc_lr_d_cg_cp_custom_aqrl_aqrl_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, Zalrsc_lr_d_cg_cp_custom_aqrl_aqrl, Zalrsc_lr_d_cg_cp_custom_aqrl_aqrl_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 
 # Testcase cp_custom_rd_edges (Test source rs1 value = 0x0000000000000000)
-  addi x9, x15, 0 # copy data_ptr to rs1
+  addi x9, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_rd_edges_0:
   lr.d x12, (x9) # perform load (0x0000000000000000)
-  # Check if x12 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x12, Zalrsc_lr_d_cg_cp_custom_rd_edges_0, Zalrsc_lr_d_cg_cp_custom_rd_edges_0_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, Zalrsc_lr_d_cg_cp_custom_rd_edges_0, Zalrsc_lr_d_cg_cp_custom_rd_edges_0_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_custom_rd_edges (Test source rs1 value = 0x0000000000000001)
-  addi x10, x15, 0 # copy data_ptr to rs1
+  addi x10, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_rd_edges_1:
   lr.d x8, (x10) # perform load (0x0000000000000001)
-  # Check if x8 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x8, Zalrsc_lr_d_cg_cp_custom_rd_edges_1, Zalrsc_lr_d_cg_cp_custom_rd_edges_1_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, Zalrsc_lr_d_cg_cp_custom_rd_edges_1, Zalrsc_lr_d_cg_cp_custom_rd_edges_1_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_custom_rd_edges (Test source rs1 value = 0x-000000000000001)
-  addi x7, x15, 0 # copy data_ptr to rs1
+  addi x7, x16, 0 # copy data_ptr to rs1
 Zalrsc_lr_d_cg_cp_custom_rd_edges_m1:
   lr.d x2, (x7) # perform load (0xffffffffffffffff)
-  # Check if x2 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x2, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1_str)
-  addi x15, x15, SIG_STRIDE # increment data_ptr
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1_str)
+  addi x16, x16, SIG_STRIDE # increment data_ptr
 
-  mv x2, x24 # restore signature pointer to default register for teardown
+  mv x2, x19 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -891,11 +894,10 @@ RVTEST_DATA_BEGIN
 .dword 0x34dd31b41c86caa1
 .dword 0x356e8c418624b196
 .dword 0x5e9517ff15fdb295
-.dword 0x8cec75545daa4a91
-.dword 0xbbe205de39d3388a
-.dword 0xba97dc5a3a4c38cd
-.dword 0xe6efbf10e5d92a9f
-.dword 0x09772cec6bb96b0a
+.dword 0xf3e342efe55718db
+.dword 0x55d6532133b3b754
+.dword 0xbe9279d913579048
+.dword 0x6299097ac83a8560
 .dword 0x0d9cec13953f7093
 .dword 0x08e5eb33ee5c11a2
 .dword 0xf0073dac15679560
@@ -906,16 +908,17 @@ RVTEST_DATA_BEGIN
 .dword 0xf0dd6556c7c7885d
 .dword 0x5eac378319cdd868
 .dword 0xf0e9b62d32f0fa64
-.dword 0x725b277e0f57d9f3
+.dword 0xf78f119ac29f2520
 .dword 0x5edd888264d893ce
 .dword 0x5c4a0ffcb637141f
 .dword 0x6eada946295114af
 .dword 0x2b0cc2847f075556
+.dword 0x314597afbecc40b1
 .dword 0xa72fad38e30c2e5a
 .dword 0x96cf7e915e5d9a3a
 .dword 0xbd225089f9e239ec
 .dword 0x7172ebef65aaa777
-.dword 0xbc4bc7314b017560
+.dword 0xeea2ff933c4bc731
 .dword 0x334e920db0a580f0
 .dword 0x740b1a33f04e8b96
 .dword 0x75daf151c7559e4c
@@ -933,9 +936,9 @@ RVTEST_DATA_BEGIN
 .dword 0x2d9d2e5bba2ed482
 .dword 0xe5e627f28ccdcfa4
 .dword 0x6bc00264290b103e
-.dword 0xb5eadd69042e05e2
-.dword 0xe2852dd84d3cd47f
-.dword 0xc0e98591061f7350
+.dword 0x4f98e70d9286af9e
+.dword 0xda0fb0bfdeb3ab35
+.dword 0xfd3edd1a3cd443d1
 .dword 0x20dd86aafc941324
 .dword 0xd46b0f885b7ba47f
 .dword 0x9032cefe816f623f
@@ -952,28 +955,28 @@ RVTEST_DATA_BEGIN
 .dword 0x9bc7d9bad2991b04
 .dword 0x1c377ff015423681
 .dword 0x1b26a783371d10d2
-.dword 0xf97062f8599d1a71
-.dword 0xbf3386ea3e891a4e
-.dword 0xbddc5ee9ab3d711f
+.dword 0x0f99664aba34b8bf
 .dword 0x5df9601afa1f23ec
 .dword 0x88fc2a891d913b0e
 .dword 0x1f51764edce5ffaa
 .dword 0xc8e16aa7c5bdb310
-.dword 0xa38cbd8ed48cce52
-.dword 0x8feb348ef7c77ef5
-.dword 0xb6b7931bc80fbf4e
-.dword 0xecf48b1096622fdb
-.dword 0x1d15a31bd165e5f4
-.dword 0x741418efc9c06c8f
-.dword 0xcfb3351b1a198424
-.dword 0xfc28f141771bc44f
+.dword 0x77c77ef5abf9ef68
+.dword 0x16622fdb610aa3ed
+.dword 0x646f245be6ba01a3
+.dword 0x26c84e75662b1529
+.dword 0x3a35167b6da0069f
+.dword 0xf71bc44f39ffe2e9
+.dword 0xb8c0d6227adb8ac2
 .dword 0xf2d2ef9b4df62fab
 .dword 0x39e2b256d789bc73
 .dword 0xe257de93266ce75a
-.dword 0xf35bad16ad68123b
-.dword 0x20e75e6d7fbd19b5
-.dword 0x7b3cc3a9016f9367
-.dword 0x26a0b5f0e33c03e8
+.dword 0x2d68123bbe20c189
+.dword 0xc49ed9f62c64b4c4
+.dword 0xf5792284d6de8321
+.dword 0x8de2dffd205736d0
+.dword 0xc6fb18a6120b6712
+.dword 0xfe49359d9ae776bc
+.dword 0xc47cc8ac0127c79f
 .dword 0xa07d53058d2100b4
 .dword 0x0f920dfd9de31a1b
 .dword 0x0c0b1bd88bfcd7dd

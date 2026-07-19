@@ -1,7 +1,0 @@
-{
-  "ignorePatterns": [
-    {
-      "pattern": "^https://lists\\.riscv\\.org"
-    }
-  ]
-}

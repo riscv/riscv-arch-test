@@ -19,6 +19,10 @@ normative_rule_definitions:
   ##############################################
   # Section 2.2: SPMP CSRs
   ##############################################
+  - name: num_spmp_entries_param
+    coverpoint:
+      ["SspmpSm_csr_cg/{cp_spmp_indirect_access, cp_spmp_oob_read_zero}"]
+
   - name: spmpaddr_format_rv32
     coverpoint: ["SspmpSm_csr_cg/cp_spmpaddr_write"]
 
@@ -27,6 +31,9 @@ normative_rule_definitions:
 
   - name: spmpaddr_warl
     coverpoint: ["SspmpSm_csr_cg/cp_spmpaddr_write"]
+
+  - name: spmpaddr_impl_bits_same
+    coverpoint: ["SspmpSm_csr_cg/cp_spmpaddr_impl_bits_same"]
 
   - name: spmpcfg_rwx_bits
     coverpoint:
@@ -37,6 +44,9 @@ normative_rule_definitions:
       [
         "SspmpSm_addr_cg/{cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot}",
       ]
+
+  - name: spmpcfg_bits_5_6_rsv
+    coverpoint: ["SspmpSm_csr_cg/cp_spmpcfg_reserved_zero"]
 
   - name: spmpcfg_lock_bit
     coverpoint: ["SspmpSm_csr_cg/cp_spmp_lock"]
@@ -80,6 +90,9 @@ normative_rule_definitions:
   ##############################################
   # Section 2.4: Permission Encoding
   ##############################################
+  - name: spmp_checks_lower_priv
+    coverpoint: ["SspmpSm_perm_cg/{cp_smode_rule, cp_umode_rule}"]
+
   - name: smode_rule_enforce
     coverpoint: ["SspmpSm_perm_cg/cp_smode_rule"]
 
@@ -115,6 +128,9 @@ normative_rule_definitions:
   ##############################################
   - name: match_priority
     coverpoint: ["SspmpSm_addr_cg/cp_priority_match"]
+
+  - name: spmp_match_all_bytes
+    coverpoint: ["SspmpSm_addr_cg/cp_spmp_match_all_bytes"]
 
   - name: no_match_deny
     coverpoint: ["SspmpSm_perm_cg/cp_no_match_deny"]
@@ -153,6 +169,9 @@ normative_rule_definitions:
         "SspmpSm_perm_cg/{cp_spmp_fault_instr, cp_spmp_fault_load, cp_spmp_fault_store}",
       ]
 
+  - name: spmp_exception_priority
+    coverpoint: ["SspmpSm_perm_cg/cp_spmp_exception_priority"]
+
   ##############################################
   # Section 3: Sspmpen (Context Switch Optimization)
   ##############################################
@@ -168,9 +187,19 @@ normative_rule_definitions:
   - name: spmpen_locked_readonly
     coverpoint: ["SspmpSm_spmpen_cg/cp_spmpen_locked_readonly"]
 
+  - name: spmpen_upper_bits_write_ignored
+    coverpoint: ["SspmpSm_spmpen_cg/cp_spmpen_upper_bits_ignored"]
+
   ##############################################
   # Section 4.1: Resource Sharing (Smpmpdeleg)
   ##############################################
+  - name: smpmpdeleg_pmp_entries
+    coverpoint:
+      ["SspmpSm_csr_cg/{cp_mpmpdeleg_pmpnum_field, cp_mpmpdeleg_oob_access}"]
+
+  - name: mpmpdeleg
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_field"]
+
   - name: mpmpdeleg_pmpnum_field
     coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_field"]
 
@@ -185,6 +214,15 @@ normative_rule_definitions:
 
   - name: mpmpdeleg_locked_pmp_constraint
     coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_locked"]
+
+  - name: mpmpdeleg_oob_access
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_oob_access"]
+
+  - name: mpmpdeleg-pmpnum_locked_spmp_override
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_locked_spmp_override"]
+
+  - name: mpmpdeleg-pmpnum_reconfig_high_entries
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_reconfig_high_entries"]
 
   ##############################################
   # Section 4.2: M-mode Access to SPMP CSRs

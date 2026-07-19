@@ -12,6 +12,9 @@
 `define COVER_SSPMPSM
 `define SSPMP_LAST_SELECTOR (12'h100 + `UDB_NUM_PMP_ENTRIES - 1)
 `define SSPMP_FIRST_OOB_SELECTOR (12'h100 + `UDB_NUM_PMP_ENTRIES)
+`define SSPMP_PARTIAL_PMPNUM (`UDB_NUM_PMP_ENTRIES / 4)
+`define SSPMP_PARTIAL_COUNT (`UDB_NUM_PMP_ENTRIES - `SSPMP_PARTIAL_PMPNUM)
+`define SSPMP_PARTIAL_MASK ((64'h1 << `SSPMP_PARTIAL_COUNT) - 1)
 
 ///////////////////////////////////////////
 // CSR Access Covergroup
@@ -48,6 +51,24 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         bins addr_nonzero = {[1:$]};
     }
 
+    spmpaddr_width_compare_entry: coverpoint ins.current.csr[12'h150] iff
+        ((ins.current.insn & 32'hfe00_707f) == 32'h0000_4033) {
+        type_option.weight = 0;
+        bins compared_entry[3] = {[12'h101:12'h103]};
+    }
+
+    spmpaddr_width_compare_result: coverpoint ins.current.rd_val iff
+        ((ins.current.insn & 32'hfe00_707f) == 32'h0000_4033) {
+        type_option.weight = 0;
+        bins same_mask = {0};
+    }
+
+    cp_spmpaddr_impl_bits_same: cross spmpaddr_width_compare_entry,
+                                      spmpaddr_width_compare_result {
+        bins writable_entries_match = binsof(spmpaddr_width_compare_entry.compared_entry) &&
+                                      binsof(spmpaddr_width_compare_result.same_mask);
+    }
+
     //------------------------------------------
     // cp_spmpcfg_write: Write and readback spmpcfg via sireg2
     // Tracks each address-matching mode through the A field.
@@ -60,6 +81,16 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
         bins a_tor   = {2'b01};
         bins a_na4   = {2'b10};
         bins a_napot = {2'b11};
+    }
+
+    cp_spmpcfg_reserved_zero: coverpoint {
+        ins.current.rs1_val[6:5],
+        ins.current.csr[12'h152][6:5]
+    } iff (ins.current.insn[31:20] == 12'h152 &&
+         ins.current.insn[14:12] == 3'b001 &&
+        (ins.current.csr[12'h150] >= 12'h100 &&
+         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR)) {
+        bins reserved_write_ignored = {4'b11_00};
     }
 
     //------------------------------------------
@@ -220,6 +251,85 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     }
 
     //------------------------------------------
+    // Dynamic delegation boundary behavior.
+    //------------------------------------------
+    locked_spmp0_before_reconfig: coverpoint ins.prev.csr[12'h352][7] iff
+        (ins.current.insn[31:20] == 12'h316 &&
+         ins.current.insn[14:12] == 3'b001 &&
+         ins.prev.csr[12'h350] == 12'h100) {
+        type_option.weight = 0;
+        bins locked = {1};
+    }
+
+    pmpnum_increment_request: coverpoint ins.current.rs1_val[6:0] iff
+        (ins.current.insn[31:20] == 12'h316 && ins.current.insn[14:12] == 3'b001) {
+        type_option.weight = 0;
+        bins one = {1};
+    }
+
+    pmpnum_increment_result: coverpoint ins.current.csr[12'h316][6:0] iff
+        (ins.current.insn[31:20] == 12'h316 && ins.current.insn[14:12] == 3'b001) {
+        type_option.weight = 0;
+        bins one = {1};
+    }
+
+    cp_mpmpdeleg_locked_spmp_override: cross locked_spmp0_before_reconfig,
+                                             pmpnum_increment_request,
+                                             pmpnum_increment_result {
+        bins locked_spmp_does_not_block = binsof(locked_spmp0_before_reconfig.locked) &&
+                                          binsof(pmpnum_increment_request.one) &&
+                                          binsof(pmpnum_increment_result.one);
+    }
+
+    reconfig_pmpnum: coverpoint ins.current.csr[12'h316][6:0] {
+        type_option.weight = 0;
+        bins one = {1};
+    }
+
+    reconfig_selector: coverpoint ins.current.csr[12'h350] {
+        type_option.weight = 0;
+        bins highest_valid = {(`SSPMP_LAST_SELECTOR - 1)};
+        bins first_oob     = {`SSPMP_LAST_SELECTOR};
+    }
+
+    reconfig_mireg_op: coverpoint ins.current.insn[14:12] iff
+        (ins.current.insn[31:20] == 12'h351) {
+        type_option.weight = 0;
+        bins read  = {3'b010};
+        bins write = {3'b001};
+    }
+
+    reconfig_mireg_result: coverpoint ins.current.csr[12'h351] {
+        type_option.weight = 0;
+        bins zero = {0};
+        bins preserved = {[1:$]};
+    }
+
+    cp_mpmpdeleg_reconfig_high_entries: cross reconfig_pmpnum, reconfig_selector,
+                                              reconfig_mireg_op, reconfig_mireg_result {
+        bins former_highest_is_oob = binsof(reconfig_pmpnum.one) &&
+                                     binsof(reconfig_selector.first_oob) &&
+                                     binsof(reconfig_mireg_op.read) &&
+                                     binsof(reconfig_mireg_result.zero);
+        bins new_highest_inherits_state = binsof(reconfig_pmpnum.one) &&
+                                          binsof(reconfig_selector.highest_valid) &&
+                                          binsof(reconfig_mireg_op.read) &&
+                                          binsof(reconfig_mireg_result.preserved);
+    }
+
+    cp_mpmpdeleg_oob_access: cross reconfig_pmpnum, reconfig_selector,
+                                   reconfig_mireg_op, reconfig_mireg_result {
+        bins oob_read_zero = binsof(reconfig_pmpnum.one) &&
+                             binsof(reconfig_selector.first_oob) &&
+                             binsof(reconfig_mireg_op.read) &&
+                             binsof(reconfig_mireg_result.zero);
+        bins oob_write_ignored = binsof(reconfig_pmpnum.one) &&
+                                 binsof(reconfig_selector.first_oob) &&
+                                 binsof(reconfig_mireg_op.write) &&
+                                 binsof(reconfig_mireg_result.zero);
+    }
+
+    //------------------------------------------
     // cp_mpmpdeleg_locked: Cannot set pmpnum below locked PMP entry
     //------------------------------------------
     `ifdef XLEN64
@@ -266,34 +376,46 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     }
 
     //------------------------------------------
-    // cp_sfence_ordering: SFENCE.VMA x0,x0 after an SPMP CSR write.
+    // cp_sfence_ordering: a successful load immediately after SFENCE.VMA.
     //   Per Spec §2.7: software must execute SFENCE.VMA rs1=x0,rs2=x0 to order
     //   subsequent S/U memory accesses against preceding SPMP CSR writes.
-    //   We look for an SFENCE.VMA whose previous instruction wrote sireg/sireg2
-    //   with siselect in the SPMP range (i.e. touched an SPMP CSR via the
-    //   indirect-access path).  spmpen writes are not modelled here because
-    //   this covergroup samples siselect state, not the prev instruction's
-    //   target CSR address.
+    //   The generator places SFENCE.VMA immediately after the indirect SPMP
+    //   write and then performs a load governed by the newly installed rule.
+    //   Sampling the load makes the coverage behavioral rather than merely a
+    //   syntactic observation that a fence instruction was emitted.
     //   Maps to normative rule: sspmp_sfence_vma_ordering
     //------------------------------------------
-    sfence_vma_insn: coverpoint ins.current.insn {
+    prev_sfence_vma_insn: coverpoint ins.prev.insn {
         type_option.weight = 0;
         // SFENCE.VMA encoding: funct7=0001001, rs2, rs1, funct3=000, rd=00000, opcode=1110011
         // With rs1=x0, rs2=x0 the rs1/rs2 fields are zero.
         wildcard bins sfence_x0_x0 = {32'b0001001_00000_00000_000_00000_1110011};
     }
 
-    prev_wrote_spmp_csr: coverpoint ins.prev.insn[31:20] iff
-        (ins.prev.csr[12'h150] inside {[12'h100:`SSPMP_LAST_SELECTOR]}) {
+    ordered_load_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
-        bins prev_sireg  = {12'h151};
-        bins prev_sireg2 = {12'h152};
+        wildcard bins lw = {LW};
     }
 
-    cp_sfence_ordering: cross sfence_vma_insn, prev_wrote_spmp_csr {
-        bins sfence_after_spmp_write = binsof(sfence_vma_insn.sfence_x0_x0) &&
-                                       (binsof(prev_wrote_spmp_csr.prev_sireg) ||
-                                        binsof(prev_wrote_spmp_csr.prev_sireg2));
+    ordered_spmp_rule: coverpoint {
+        ins.current.csr[12'h152][4:3],
+        ins.current.csr[12'h152][2:0]
+    } iff (ins.current.csr[12'h150] inside {[12'h100:`SSPMP_LAST_SELECTOR]}) {
+        type_option.weight = 0;
+        bins napot_read = {5'b11_001};
+    }
+
+    ordered_access_outcome: coverpoint ins.current.trap {
+        type_option.weight = 0;
+        bins allowed = {0};
+    }
+
+    cp_sfence_ordering: cross prev_sfence_vma_insn, ordered_load_insn,
+                              ordered_spmp_rule, ordered_access_outcome {
+        bins ordered_load_allowed = binsof(prev_sfence_vma_insn.sfence_x0_x0) &&
+                                    binsof(ordered_load_insn.lw) &&
+                                    binsof(ordered_spmp_rule.napot_read) &&
+                                    binsof(ordered_access_outcome.allowed);
     }
 
     //------------------------------------------
@@ -337,6 +459,23 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         bins trap    = {1};
     }
 
+    // Classify only the probe accesses emitted by this suite. Allowed fetches
+    // execute the fixed `ret` word; denied accesses are identified by the
+    // precise SPMP page-fault cause.
+    permission_access_kind: coverpoint
+        ((((ins.current.trap == 1) && (ins.current.csr[12'h142] == 12)) ||
+          (ins.current.insn == 32'h0000_8067)) ? 2 :
+         (((ins.current.trap == 1) && (ins.current.csr[12'h142] == 13)) ||
+          ((ins.current.insn & 32'h0000_707f) == 32'h0000_2003)) ? 0 :
+         (((ins.current.trap == 1) && (ins.current.csr[12'h142] == 15)) ||
+          ((ins.current.insn & 32'h0000_707f) == 32'h0000_2023)) ? 1 : 3) {
+        type_option.weight = 0;
+        bins load  = {0};
+        bins store = {1};
+        bins fetch = {2};
+        ignore_bins other = {3};
+    }
+
     //------------------------------------------
     // cp_smode_rule: S-mode-only rule (SHARED=0, U=0)
     // S-mode: Enforced with R/W/X permissions
@@ -346,6 +485,7 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         (ins.current.csr[12'h152][9] == 0 &&
          ins.current.csr[12'h152][8] == 0) {
         type_option.weight = 0;
+        bins none   = {3'b000};
         // The spec names encodings as RWX; csr[2:0] is physically {X,W,R}.
         bins r_only = {3'b001};
         bins rw     = {3'b011};
@@ -354,7 +494,8 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         bins x_only = {3'b100};
     }
 
-    cp_smode_rule: cross smode_rule_rwx, priv_mode_s_u, access_type;
+    cp_smode_rule: cross smode_rule_rwx, priv_mode_s_u,
+                         permission_access_kind, access_type;
 
     //------------------------------------------
     // cp_umode_rule: U-mode rule (SHARED=0, U=1)
@@ -366,6 +507,7 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         (ins.current.csr[12'h152][9] == 0 &&
          ins.current.csr[12'h152][8] == 1) {
         type_option.weight = 0;
+        bins none   = {3'b000};
         bins r_only = {3'b001};
         bins rw     = {3'b011};
         bins rx     = {3'b101};
@@ -373,7 +515,8 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         bins x_only = {3'b100};
     }
 
-    cp_umode_rule: cross umode_rule_rwx, priv_mode_u, access_type;
+    cp_umode_rule: cross umode_rule_rwx, priv_mode_u,
+                         permission_access_kind, access_type;
 
     //------------------------------------------
     // SUM/EnforceNoX differentiation.
@@ -408,9 +551,12 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     // Any U-mode rule with R=1 allows S-mode data access under SUM=1: r_only,
     // rw, rx, and rwx all qualify.  x_only (R=0) would still trap on load, so
     // it is excluded.
-    cp_sum_effect: cross umode_rule_rwx, sum_bit, priv_mode_s, data_access_outcome {
+    cp_sum_effect: cross umode_rule_rwx, sum_bit, priv_mode_s,
+                         permission_access_kind, data_access_outcome {
         bins sum1_data_allowed = binsof(sum_bit.sum_1) &&
                                  binsof(priv_mode_s) &&
+                                 (binsof(permission_access_kind.load) ||
+                                  binsof(permission_access_kind.store)) &&
                                  binsof(data_access_outcome.no_trap) &&
                                  (binsof(umode_rule_rwx.r_only) ||
                                   binsof(umode_rule_rwx.rw)     ||
@@ -419,9 +565,11 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     }
 
     // cp_enforce_no_x: SUM=1 ∧ S-mode instruction fetch ∧ fetch fault  (X denied)
-    cp_enforce_no_x: cross umode_rule_rwx, sum_bit, priv_mode_s, x_access_faulted {
+    cp_enforce_no_x: cross umode_rule_rwx, sum_bit, priv_mode_s,
+                           permission_access_kind, x_access_faulted {
         bins sum1_fetch_denied = binsof(sum_bit.sum_1) &&
                                  binsof(priv_mode_s) &&
+                                 binsof(permission_access_kind.fetch) &&
                                  binsof(x_access_faulted.fetch_fault) &&
                                  (binsof(umode_rule_rwx.rx) ||
                                   binsof(umode_rule_rwx.rwx) ||
@@ -429,9 +577,15 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     }
 
     // cp_sum_denied: SUM=0 ∧ S-mode access ∧ trap  (entire U-mode region inaccessible)
-    cp_sum_denied: cross umode_rule_rwx, sum_bit, priv_mode_s, data_access_outcome {
-        bins sum0_smode_denied = binsof(sum_bit.sum_0) &&
+    cp_sum_denied: cross umode_rule_rwx, sum_bit, priv_mode_s,
+                         permission_access_kind, data_access_outcome {
+        bins sum0_load_denied = binsof(sum_bit.sum_0) &&
+                                binsof(priv_mode_s) &&
+                                binsof(permission_access_kind.load) &&
+                                binsof(data_access_outcome.trap);
+        bins sum0_store_denied = binsof(sum_bit.sum_0) &&
                                  binsof(priv_mode_s) &&
+                                 binsof(permission_access_kind.store) &&
                                  binsof(data_access_outcome.trap);
     }
 
@@ -444,7 +598,27 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         bins mxr_1 = {1};
     }
 
-    cp_mxr_effect: cross smode_rule_rwx, mxr_bit, access_type;
+    mxr_load_result: coverpoint
+        (((ins.current.trap == 1) && (ins.current.csr[12'h142] == 13)) ? 1 :
+         (((ins.current.trap == 0) &&
+           ((ins.current.insn & 32'h0000_707f) == 32'h0000_2003)) ? 0 : 2)) {
+        type_option.weight = 0;
+        bins allowed = {0};
+        bins denied  = {1};
+        ignore_bins other = {2};
+    }
+
+    cp_mxr_effect: cross smode_rule_rwx, mxr_bit, priv_mode_s,
+                         mxr_load_result {
+        bins mxr0_load_denied = binsof(smode_rule_rwx.x_only) &&
+                                binsof(mxr_bit.mxr_0) &&
+                                binsof(priv_mode_s) &&
+                                binsof(mxr_load_result.denied);
+        bins mxr1_load_allowed = binsof(smode_rule_rwx.x_only) &&
+                                 binsof(mxr_bit.mxr_1) &&
+                                 binsof(priv_mode_s) &&
+                                 binsof(mxr_load_result.allowed);
+    }
 
     //------------------------------------------
     // cp_shared_rule: Shared-Region rule (SHARED=1, U=1)
@@ -468,7 +642,8 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
         bins rwx      = {3'b111};
     }
 
-    cp_shared_rule: cross shared_rule_rwx, priv_mode_s_u, access_type;
+    cp_shared_rule: cross shared_rule_rwx, priv_mode_s_u,
+                          permission_access_kind, access_type;
 
     //------------------------------------------
     // cp_shared_sum_ignored: Shared-region S-mode data access is independent
@@ -508,32 +683,123 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     //------------------------------------------
     // cp_no_match_deny: No matching entry denies access
     //------------------------------------------
-    cp_no_match_deny: coverpoint ins.current.trap iff
-        (ins.prev.mode != 2'b11) {  // Not M-mode
-        bins denied = {1};
+    no_match_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    no_match_selected_off: coverpoint ins.current.csr[12'h152][4:3] iff
+        (ins.current.csr[12'h150] == 12'h107) {
+        type_option.weight = 0;
+        bins off = {2'b00};
+    }
+
+    no_match_cause: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
+        type_option.weight = 0;
+        bins load_page_fault = {13};
+    }
+
+    cp_no_match_deny: cross no_match_load_insn, priv_mode_s,
+                            no_match_selected_off, no_match_cause {
+        bins smode_unmatched_load_denied = binsof(no_match_load_insn.lw) &&
+                                           binsof(priv_mode_s) &&
+                                           binsof(no_match_selected_off.off) &&
+                                           binsof(no_match_cause.load_page_fault);
     }
 
     //------------------------------------------
     // SPMP fault coverpoints (page fault exception codes)
     //------------------------------------------
-    cp_spmp_fault_instr: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
+    spmp_deny_rule: coverpoint {
+        ins.current.csr[12'h152][9:8],
+        ins.current.csr[12'h152][4:3],
+        ins.current.csr[12'h152][2:0]
+    } iff (ins.current.csr[12'h150] == 12'h100) {
+        type_option.weight = 0;
+        bins umode_napot_none = {7'b01_11_000};
+    }
+
+    spmp_fault_cause: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
+        type_option.weight = 0;
         bins instr_page_fault = {12};
-    }
-
-    cp_spmp_fault_load: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
-        bins load_page_fault = {13};
-    }
-
-    cp_spmp_fault_store: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
+        bins load_page_fault  = {13};
         bins store_page_fault = {15};
+    }
+
+    spmp_fault_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    spmp_fault_store_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins sw = {SW};
+    }
+
+    cp_spmp_fault_instr: cross spmp_deny_rule, priv_mode_s, spmp_fault_cause {
+        bins denied_fetch_page_fault = binsof(spmp_deny_rule.umode_napot_none) &&
+                                       binsof(priv_mode_s) &&
+                                       binsof(spmp_fault_cause.instr_page_fault);
+    }
+
+    cp_spmp_fault_load: cross spmp_deny_rule, priv_mode_s,
+                              spmp_fault_load_insn, spmp_fault_cause {
+        bins denied_load_page_fault = binsof(spmp_deny_rule.umode_napot_none) &&
+                                      binsof(priv_mode_s) &&
+                                      binsof(spmp_fault_load_insn.lw) &&
+                                      binsof(spmp_fault_cause.load_page_fault);
+    }
+
+    cp_spmp_fault_store: cross spmp_deny_rule, priv_mode_s,
+                               spmp_fault_store_insn, spmp_fault_cause {
+        bins denied_store_page_fault = binsof(spmp_deny_rule.umode_napot_none) &&
+                                       binsof(priv_mode_s) &&
+                                       binsof(spmp_fault_store_insn.sw) &&
+                                       binsof(spmp_fault_cause.store_page_fault);
+    }
+
+    pmp_priority_gap: coverpoint ins.current.csr[12'h3a0][23:0] {
+        type_option.weight = 0;
+        bins scratch_hole = {24'h0f000f};
+    }
+
+    cp_spmp_exception_priority: cross spmp_deny_rule, pmp_priority_gap,
+                                      priv_mode_s, spmp_fault_load_insn,
+                                      spmp_fault_cause {
+        bins page_fault_precedes_access_fault = binsof(spmp_deny_rule.umode_napot_none) &&
+                                                binsof(pmp_priority_gap.scratch_hole) &&
+                                                binsof(priv_mode_s) &&
+                                                binsof(spmp_fault_load_insn.lw) &&
+                                                binsof(spmp_fault_cause.load_page_fault);
     }
 
     //------------------------------------------
     // cp_mmode_bypass: M-mode memory access bypasses SPMP
     //------------------------------------------
-    cp_mmode_bypass: coverpoint ins.current.trap iff
-        (ins.prev.mode == 2'b11) {
-        bins no_trap = {0};
+    mmode_deny_rule: coverpoint {
+        ins.current.csr[12'h352][4:3],
+        ins.current.csr[12'h352][2:0]
+    } iff (ins.current.csr[12'h350] == 12'h100) {
+        type_option.weight = 0;
+        bins napot_none = {5'b11_000};
+    }
+
+    mmode_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    mmode_access_outcome: coverpoint ins.current.trap {
+        type_option.weight = 0;
+        bins allowed = {0};
+    }
+
+    cp_mmode_bypass: cross mmode_deny_rule, priv_mode_m,
+                           mmode_load_insn, mmode_access_outcome {
+        bins deny_rule_bypassed = binsof(mmode_deny_rule.napot_none) &&
+                                  binsof(priv_mode_m) &&
+                                  binsof(mmode_load_insn.lw) &&
+                                  binsof(mmode_access_outcome.allowed);
     }
 
 endgroup
@@ -546,40 +812,62 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
 
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    //------------------------------------------
-    // cp_addr_match_off: A=OFF, entry is disabled
-    //------------------------------------------
-    cp_addr_match_off: coverpoint ins.current.csr[12'h152][4:3] iff
+    addr_match_mode: coverpoint ins.current.csr[12'h152][4:3] iff
         (ins.current.csr[12'h150] >= 12'h100 &&
          ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
+        type_option.weight = 0;
         bins off = {2'b00};
-    }
-
-    //------------------------------------------
-    // cp_addr_match_tor: A=TOR, top-of-range matching
-    //------------------------------------------
-    cp_addr_match_tor: coverpoint ins.current.csr[12'h152][4:3] iff
-        (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins tor = {2'b01};
-    }
-
-    //------------------------------------------
-    // cp_addr_match_na4: A=NA4, naturally aligned 4-byte region
-    //------------------------------------------
-    cp_addr_match_na4: coverpoint ins.current.csr[12'h152][4:3] iff
-        (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
         bins na4 = {2'b10};
+        bins napot = {2'b11};
     }
 
-    //------------------------------------------
-    // cp_addr_match_napot: A=NAPOT, naturally aligned power-of-two region
-    //------------------------------------------
-    cp_addr_match_napot: coverpoint ins.current.csr[12'h152][4:3] iff
-        (ins.current.csr[12'h150] >= 12'h100 &&
-         ins.current.csr[12'h150] <= `SSPMP_LAST_SELECTOR) {
-        bins napot = {2'b11};
+    addr_match_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    addr_match_smode: coverpoint ins.prev.mode {
+        type_option.weight = 0;
+        bins smode = {2'b01};
+    }
+
+    addr_match_outcome: coverpoint ins.current.trap {
+        type_option.weight = 0;
+        bins allowed = {0};
+        bins denied = {1};
+    }
+
+    cp_addr_match_off: cross addr_match_mode, addr_match_load_insn,
+                             addr_match_smode, addr_match_outcome {
+        bins off_falls_through = binsof(addr_match_mode.off) &&
+                                 binsof(addr_match_load_insn.lw) &&
+                                 binsof(addr_match_smode.smode) &&
+                                 binsof(addr_match_outcome.allowed);
+    }
+
+    cp_addr_match_tor: cross addr_match_mode, addr_match_load_insn,
+                             addr_match_smode, addr_match_outcome {
+        bins tor_load_allowed = binsof(addr_match_mode.tor) &&
+                                binsof(addr_match_load_insn.lw) &&
+                                binsof(addr_match_smode.smode) &&
+                                binsof(addr_match_outcome.allowed);
+    }
+
+    cp_addr_match_na4: cross addr_match_mode, addr_match_load_insn,
+                             addr_match_smode, addr_match_outcome {
+        bins na4_load_allowed = binsof(addr_match_mode.na4) &&
+                                binsof(addr_match_load_insn.lw) &&
+                                binsof(addr_match_smode.smode) &&
+                                binsof(addr_match_outcome.allowed);
+    }
+
+    cp_addr_match_napot: cross addr_match_mode, addr_match_load_insn,
+                               addr_match_smode, addr_match_outcome {
+        bins napot_load_allowed = binsof(addr_match_mode.napot) &&
+                                  binsof(addr_match_load_insn.lw) &&
+                                  binsof(addr_match_smode.smode) &&
+                                  binsof(addr_match_outcome.allowed);
     }
 
     //------------------------------------------
@@ -591,10 +879,46 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins entry0 = {12'h100};
     }
-    cp_addr_match_tor_entry0: cross siselect_entry0, cp_addr_match_tor {
+    cp_addr_match_tor_entry0: cross siselect_entry0, addr_match_mode,
+                                   addr_match_load_insn, addr_match_smode,
+                                   addr_match_outcome {
         bins tor_on_entry0 = binsof(siselect_entry0.entry0) &&
-                             binsof(cp_addr_match_tor);
+                             binsof(addr_match_mode.tor) &&
+                             binsof(addr_match_load_insn.lw) &&
+                             binsof(addr_match_smode.smode) &&
+                             binsof(addr_match_outcome.allowed);
     }
+
+    `ifdef XLEN64
+        match_all_bytes_rule: coverpoint {
+            ins.current.csr[12'h152][4:3],
+            ins.current.csr[12'h152][2:0]
+        } iff (ins.current.csr[12'h150] == 12'h100) {
+            type_option.weight = 0;
+            bins na4_read = {5'b10_001};
+        }
+
+        match_all_bytes_ld: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins ld = {LD};
+        }
+
+        match_all_bytes_cause: coverpoint ins.current.csr[12'h142] iff
+            (ins.current.trap == 1) {
+            type_option.weight = 0;
+            bins load_page_fault = {13};
+        }
+
+        cp_spmp_match_all_bytes: cross siselect_entry0, match_all_bytes_rule,
+                                       addr_match_smode, match_all_bytes_ld,
+                                       match_all_bytes_cause {
+            bins partial_match_denied = binsof(siselect_entry0.entry0) &&
+                                        binsof(match_all_bytes_rule.na4_read) &&
+                                        binsof(addr_match_smode.smode) &&
+                                        binsof(match_all_bytes_ld.ld) &&
+                                        binsof(match_all_bytes_cause.load_page_fault);
+        }
+    `endif
 
     //------------------------------------------
     // Priority/match differentiation.
@@ -637,9 +961,16 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     // cp_priority_match: first-match-wins behaviour when multiple entries cover the
     // same region.  Cross entry_index × match_result exercises the priority decision.
     //   Maps to normative rule: match_priority
-    cp_priority_match: cross entry_index, match_result {
-        bins entry0_wins_deny = binsof(entry_index.entry0) && binsof(match_result.deny);
-        bins entry1_after_entry0_off = binsof(entry_index.entry1) && binsof(match_result.allow);
+    cp_priority_match: cross entry_index, match_result,
+                             addr_match_load_insn, addr_match_smode {
+        bins entry0_wins_deny = binsof(entry_index.entry0) &&
+                                binsof(match_result.deny) &&
+                                binsof(addr_match_load_insn.lw) &&
+                                binsof(addr_match_smode.smode);
+        bins entry1_after_entry0_off = binsof(entry_index.entry1) &&
+                                       binsof(match_result.allow) &&
+                                       binsof(addr_match_load_insn.lw) &&
+                                       binsof(addr_match_smode.smode);
         ignore_bins higher_entries = binsof(entry_index.higher);
     }
 
@@ -647,11 +978,15 @@ covergroup SspmpSm_addr_cg with function sample(ins_t ins);
     // Cross entry_index × perm_bits × match_result demonstrates that the same address
     // matches regardless of whether RWX bits are set.
     //   Maps to normative rule: match_irrespective_perm_bits
-    cp_match_irrespective_perm_bits: cross entry_index, perm_bits, match_result {
-        bins match_rwx_none = binsof(perm_bits.rwx_none) && binsof(match_result.deny);
-        bins match_rwx_rw   = binsof(perm_bits.rwx_rw);
-        bins match_rwx_rx   = binsof(perm_bits.rwx_rx);
-        bins match_rwx_rwx  = binsof(perm_bits.rwx_rwx);
+    cp_match_irrespective_perm_bits: cross entry_index, perm_bits, match_result,
+                                           addr_match_load_insn, addr_match_smode {
+        bins match_rwx_none = binsof(perm_bits.rwx_none) &&
+                              binsof(match_result.deny) &&
+                              binsof(addr_match_load_insn.lw) &&
+                              binsof(addr_match_smode.smode);
+        bins match_rwx_rw   = binsof(perm_bits.rwx_rw) && binsof(addr_match_load_insn.lw);
+        bins match_rwx_rx   = binsof(perm_bits.rwx_rx) && binsof(addr_match_load_insn.lw);
+        bins match_rwx_rwx  = binsof(perm_bits.rwx_rwx) && binsof(addr_match_load_insn.lw);
     }
 
 endgroup
@@ -662,15 +997,46 @@ endgroup
 covergroup SspmpSm_paging_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
     //------------------------------------------
-    // cp_satp_bare_spmp: satp.mode == Bare with Sspmp active
+    // cp_satp_bare_spmp: satp.mode == Bare with an active deny rule
+    // causing an S-mode load page fault.
     //------------------------------------------
-    cp_satp_bare_spmp: coverpoint ins.current.csr[12'h180] {
+    satp_bare_mode: coverpoint ins.current.csr[12'h180] {
+        type_option.weight = 0;
         `ifdef XLEN64
             bins bare_mode = {0} with (item[63:60] == 4'b0000);
         `else
             bins bare_mode = {0} with (item[31] == 1'b0);
         `endif
+    }
+
+    paging_spmp_deny_rule: coverpoint {
+        ins.current.csr[12'h152][4:3],
+        ins.current.csr[12'h152][2:0]
+    } iff (ins.current.csr[12'h150] == 12'h100) {
+        type_option.weight = 0;
+        bins napot_none = {5'b11_000};
+    }
+
+    paging_load_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins lw = {LW};
+    }
+
+    paging_fault_cause: coverpoint ins.current.csr[12'h142] iff (ins.current.trap == 1) {
+        type_option.weight = 0;
+        bins load_page_fault = {13};
+    }
+
+    cp_satp_bare_spmp: cross satp_bare_mode, paging_spmp_deny_rule,
+                             priv_mode_s, paging_load_insn, paging_fault_cause {
+        bins bare_spmp_load_denied = binsof(satp_bare_mode.bare_mode) &&
+                                     binsof(paging_spmp_deny_rule.napot_none) &&
+                                     binsof(priv_mode_s) &&
+                                     binsof(paging_load_insn.lw) &&
+                                     binsof(paging_fault_cause.load_page_fault);
     }
 
 endgroup
@@ -713,6 +1079,60 @@ covergroup SspmpSm_spmpen_cg with function sample(ins_t ins);
             bins all_zeros = {32'h0000_0000};
             bins all_ones  = {32'hFFFF_FFFF};
             bins other[4]  = default;
+        }
+    `endif
+
+    //------------------------------------------
+    // cp_spmpen_upper_bits_ignored: partition at one quarter of the writable
+    // resource count, then verify that only the delegated low bits retain ones.
+    //------------------------------------------
+    spmpen_partial_pmpnum: coverpoint ins.current.csr[12'h316][6:0] {
+        type_option.weight = 0;
+        bins partial = {`SSPMP_PARTIAL_PMPNUM};
+    }
+
+    spmpen_partial_read: coverpoint ins.current.insn[31:20] iff
+        (ins.current.insn[14:12] == 3'b010) {
+        type_option.weight = 0;
+        bins spmpen = {12'h183};
+        `ifndef XLEN64
+            bins spmpenh = {12'h193};
+        `endif
+    }
+
+    `ifdef XLEN64
+        spmpen_partial_value: coverpoint ins.current.csr[12'h183] {
+            type_option.weight = 0;
+            bins delegated_ones = {`SSPMP_PARTIAL_MASK};
+        }
+
+        cp_spmpen_upper_bits_ignored: cross spmpen_partial_pmpnum,
+                                            spmpen_partial_read,
+                                            spmpen_partial_value {
+            bins upper_bits_zero = binsof(spmpen_partial_pmpnum.partial) &&
+                                 binsof(spmpen_partial_read.spmpen) &&
+                                 binsof(spmpen_partial_value.delegated_ones);
+        }
+    `else
+        spmpen_partial_low_value: coverpoint ins.current.csr[12'h183] {
+            type_option.weight = 0;
+            bins delegated_low = {(`SSPMP_PARTIAL_MASK & 64'hFFFF_FFFF)};
+        }
+
+        spmpen_partial_high_value: coverpoint ins.current.csr[12'h193] {
+            type_option.weight = 0;
+            bins delegated_high = {(`SSPMP_PARTIAL_MASK >> 32)};
+        }
+
+        cp_spmpen_upper_bits_ignored: cross spmpen_partial_pmpnum,
+                                            spmpen_partial_read,
+                                            spmpen_partial_low_value,
+                                            spmpen_partial_high_value {
+            bins upper_bits_zero = binsof(spmpen_partial_pmpnum.partial) &&
+                                 (binsof(spmpen_partial_read.spmpen) ||
+                                  binsof(spmpen_partial_read.spmpenh)) &&
+                                 binsof(spmpen_partial_low_value.delegated_low) &&
+                                 binsof(spmpen_partial_high_value.delegated_high);
         }
     `endif
 
@@ -806,3 +1226,6 @@ endfunction
 
 `undef SSPMP_LAST_SELECTOR
 `undef SSPMP_FIRST_OOB_SELECTOR
+`undef SSPMP_PARTIAL_PMPNUM
+`undef SSPMP_PARTIAL_COUNT
+`undef SSPMP_PARTIAL_MASK

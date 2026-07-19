@@ -8,14 +8,14 @@ parameter_definitions:
       ]
     effect:
       [
-        "In the Smpmpdeleg resource-sharing profile, determines the writable PMP pool and the maximum delegated SPMP count. This suite requires at least eight writable entries.",
+        "Sets the number of writable entries within the mandatory 64-entry architectural PMP space. mpmpdeleg.pmpnum partitions those implemented entries between PMP and SPMP; this suite requires at least eight.",
       ]
 
   - name: PMP_GRANULARITY
     coverpoint: ["cp_addr_match_{na4, napot}"]
     effect:
       [
-        "Determines the matching granularity inherited by shared PMP/SPMP address registers; NA4 availability and NAPOT behavior depend on it.",
+        "Determines the matching granularity inherited by shared PMP/SPMP address registers. This suite requires four-byte granularity because it exercises NA4 and eight-byte NAPOT regions.",
       ]
 
   - name: MXLEN

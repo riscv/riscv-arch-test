@@ -204,10 +204,8 @@
     },
     // SPMP: S-level Physical Memory Protection (Sspmp extension).
     "spmp": {
-      "enabled": true,
       "grain": 0,
       "count": 64,
-      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true

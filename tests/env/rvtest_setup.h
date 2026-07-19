@@ -159,6 +159,7 @@
 
     // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
     // always boot to at least M-mode
+    // TODO: RVTEST_bOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
       // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
@@ -221,7 +222,7 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
-    // safe to use T1-T3 because this is only invoked in failure code
+    // safe to use T1-T3 because this is only invoked in termination code
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
     ret
 

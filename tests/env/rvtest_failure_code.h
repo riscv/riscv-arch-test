@@ -1694,7 +1694,7 @@
         call rvmodel_io_write_str  // Print "Instruction that trapped:"
 
         lhu a0, 0(a2)       // a0 = lower half of instruction, which might not be word aligned
-        li a1, 16           // assume 16-bit instruction`
+        li a1, 16           // assume 16-bit instruction
         andi x8, a0, 3      // check bottom 2 bits of instruction
         li x9, 3            // if 11, it's a 32-bit instruction
         bne x8, x9, 1f      // No: keep a1=16

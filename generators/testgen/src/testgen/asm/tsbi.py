@@ -48,7 +48,6 @@ def add_tsbi(instr: str) -> str:
             *preamble,
             f"{INDENT}LI(a0, {add_opcode(instr)}) # {instr}",
             f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
-            f"{INDENT}nop # next instruction after ecall is skipped; TODO remove this skipping when trap handler is updated, remove nops more widely after traps",
             *postscript,
         ]
     )

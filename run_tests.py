@@ -29,7 +29,7 @@ _TRACE_PC_RE = re.compile(rb"core\s+\d+: (?:\d+ )?0x([0-9a-f]+)")
 # Simulator-reported failure reasons worth surfacing verbatim in FAIL messages, e.g.
 # whisper's "Error: Failed stop: Hart 0: Core entered critical-error state ..." or
 # qemu's "qemu: fatal: M-mode double trap"
-_ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical.error|fatal", re.IGNORECASE)
+_ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical[-_ ]error|fatal", re.IGNORECASE)
 # Spike's debug module ROM occupies 0x800-0xfff; a hart that enters the critical-error
 # state (e.g. a double trap with Smdbltrp) is parked in its wfi loop forever.
 _DEBUG_ROM_RANGE = range(0x800, 0x1000)

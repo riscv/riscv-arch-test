@@ -368,8 +368,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b3:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b4:
   fminm.h f19, f18, f4 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f19, ZfaZfh_fminm_h_cg_cp_fs2_b4, ZfaZfh_fminm_h_cg_cp_fs2_b4_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f19, ZfaZfh_fminm_h_cg_cp_fs2_b4, ZfaZfh_fminm_h_cg_cp_fs2_b4_str)
 
 # Testcase cp_fs2 (Test source fs2 = f5)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f8) # load fs1: f8 = 0x05c3
@@ -377,8 +377,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b4:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b5:
   fminm.h f4, f8, f5 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f4, ZfaZfh_fminm_h_cg_cp_fs2_b5, ZfaZfh_fminm_h_cg_cp_fs2_b5_str)
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, ZfaZfh_fminm_h_cg_cp_fs2_b5, ZfaZfh_fminm_h_cg_cp_fs2_b5_str)
 
 # Testcase cp_fs2 (Test source fs2 = f6)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0x0577
@@ -386,8 +386,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b5:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b6:
   fminm.h f23, f9, f6 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f23, ZfaZfh_fminm_h_cg_cp_fs2_b6, ZfaZfh_fminm_h_cg_cp_fs2_b6_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f23, ZfaZfh_fminm_h_cg_cp_fs2_b6, ZfaZfh_fminm_h_cg_cp_fs2_b6_str)
 
 # Testcase cp_fs2 (Test source fs2 = f7)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0x88c7
@@ -395,8 +395,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b6:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b7:
   fminm.h f11, f27, f7 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, ZfaZfh_fminm_h_cg_cp_fs2_b7, ZfaZfh_fminm_h_cg_cp_fs2_b7_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaZfh_fminm_h_cg_cp_fs2_b7, ZfaZfh_fminm_h_cg_cp_fs2_b7_str)
 
 # Testcase cp_fs2 (Test source fs2 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0x87b0
@@ -404,8 +404,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b7:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b8:
   fminm.h f19, f28, f8 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f19, ZfaZfh_fminm_h_cg_cp_fs2_b8, ZfaZfh_fminm_h_cg_cp_fs2_b8_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f19, ZfaZfh_fminm_h_cg_cp_fs2_b8, ZfaZfh_fminm_h_cg_cp_fs2_b8_str)
 
 # Testcase cp_fs2 (Test source fs2 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs1: f19 = 0x1123
@@ -413,8 +413,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b8:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b9:
   fminm.h f8, f19, f9 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, ZfaZfh_fminm_h_cg_cp_fs2_b9, ZfaZfh_fminm_h_cg_cp_fs2_b9_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaZfh_fminm_h_cg_cp_fs2_b9, ZfaZfh_fminm_h_cg_cp_fs2_b9_str)
 
 # Testcase cp_fs2 (Test source fs2 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x41d4
@@ -422,8 +422,8 @@ ZfaZfh_fminm_h_cg_cp_fs2_b9:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b10:
   fminm.h f19, f17, f10 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f19, ZfaZfh_fminm_h_cg_cp_fs2_b10, ZfaZfh_fminm_h_cg_cp_fs2_b10_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f19, ZfaZfh_fminm_h_cg_cp_fs2_b10, ZfaZfh_fminm_h_cg_cp_fs2_b10_str)
 
 # Testcase cp_fs2 (Test source fs2 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f4) # load fs1: f4 = 0x97f7
@@ -431,188 +431,188 @@ ZfaZfh_fminm_h_cg_cp_fs2_b10:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b11:
   fminm.h f18, f4, f11 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f18, ZfaZfh_fminm_h_cg_cp_fs2_b11, ZfaZfh_fminm_h_cg_cp_fs2_b11_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f18, ZfaZfh_fminm_h_cg_cp_fs2_b11, ZfaZfh_fminm_h_cg_cp_fs2_b11_str)
 
 # Testcase cp_fs2 (Test source fs2 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs1: f26 = 0xcf74
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0xcf74
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0xefee
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b12:
-  fminm.h f30, f26, f12 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaZfh_fminm_h_cg_cp_fs2_b12, ZfaZfh_fminm_h_cg_cp_fs2_b12_str)
+  fminm.h f21, f24, f12 # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f21, ZfaZfh_fminm_h_cg_cp_fs2_b12, ZfaZfh_fminm_h_cg_cp_fs2_b12_str)
 
 # Testcase cp_fs2 (Test source fs2 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs1: f30 = 0x7748
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0x901e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0x554e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0x634e
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b13:
-  fminm.h f20, f30, f13 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, ZfaZfh_fminm_h_cg_cp_fs2_b13, ZfaZfh_fminm_h_cg_cp_fs2_b13_str)
+  fminm.h f18, f24, f13 # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, ZfaZfh_fminm_h_cg_cp_fs2_b13, ZfaZfh_fminm_h_cg_cp_fs2_b13_str)
 
 # Testcase cp_fs2 (Test source fs2 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0xcf6e
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x8510
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x1fb9
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x1410
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b14:
-  fminm.h f25, f28, f14 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, ZfaZfh_fminm_h_cg_cp_fs2_b14, ZfaZfh_fminm_h_cg_cp_fs2_b14_str)
+  fminm.h f22, f17, f14 # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, ZfaZfh_fminm_h_cg_cp_fs2_b14, ZfaZfh_fminm_h_cg_cp_fs2_b14_str)
 
 # Testcase cp_fs2 (Test source fs2 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs1: f5 = 0x1de1
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0xdd79
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0x63e6
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0x4aab
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b15:
-  fminm.h f1, f5, f15 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, ZfaZfh_fminm_h_cg_cp_fs2_b15, ZfaZfh_fminm_h_cg_cp_fs2_b15_str)
+  fminm.h f4, f13, f15 # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, ZfaZfh_fminm_h_cg_cp_fs2_b15, ZfaZfh_fminm_h_cg_cp_fs2_b15_str)
 
 # Testcase cp_fs2 (Test source fs2 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x4aa2
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x396b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xdd79
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x7fe7
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b16:
-  fminm.h f2, f17, f16 # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, ZfaZfh_fminm_h_cg_cp_fs2_b16, ZfaZfh_fminm_h_cg_cp_fs2_b16_str)
+  fminm.h f1, f27, f16 # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, ZfaZfh_fminm_h_cg_cp_fs2_b16, ZfaZfh_fminm_h_cg_cp_fs2_b16_str)
 
 # Testcase cp_fs2 (Test source fs2 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs1: f15 = 0x90b4
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0x6b38
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0x8ad0
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0x1f1b
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b17:
-  fminm.h f11, f15, f17 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, ZfaZfh_fminm_h_cg_cp_fs2_b17, ZfaZfh_fminm_h_cg_cp_fs2_b17_str)
+  fminm.h f15, f28, f17 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b17, ZfaZfh_fminm_h_cg_cp_fs2_b17_str)
 
 # Testcase cp_fs2 (Test source fs2 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs1: f12 = 0x9ab7
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs2: f18 = 0x5a63
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs1: f26 = 0x396b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs2: f18 = 0x75bf
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b18:
-  fminm.h f8, f12, f18 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, ZfaZfh_fminm_h_cg_cp_fs2_b18, ZfaZfh_fminm_h_cg_cp_fs2_b18_str)
+  fminm.h f10, f26, f18 # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, ZfaZfh_fminm_h_cg_cp_fs2_b18, ZfaZfh_fminm_h_cg_cp_fs2_b18_str)
 
 # Testcase cp_fs2 (Test source fs2 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs1: f5 = 0x296d
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0x42f1
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0xdaac
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0xe281
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b19:
-  fminm.h f15, f5, f19 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b19, ZfaZfh_fminm_h_cg_cp_fs2_b19_str)
+  fminm.h f25, f1, f19 # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, ZfaZfh_fminm_h_cg_cp_fs2_b19, ZfaZfh_fminm_h_cg_cp_fs2_b19_str)
 
 # Testcase cp_fs2 (Test source fs2 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x84b5
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs2: f20 = 0x71df
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0x26c7
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs2: f20 = 0x69c6
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b20:
-  fminm.h f30, f11, f20 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaZfh_fminm_h_cg_cp_fs2_b20, ZfaZfh_fminm_h_cg_cp_fs2_b20_str)
+  fminm.h f24, f9, f20 # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, ZfaZfh_fminm_h_cg_cp_fs2_b20, ZfaZfh_fminm_h_cg_cp_fs2_b20_str)
 
 # Testcase cp_fs2 (Test source fs2 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0x8a04
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs2: f21 = 0xe993
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0x296d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs2: f21 = 0x42f1
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b21:
-  fminm.h f27, f28, f21 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaZfh_fminm_h_cg_cp_fs2_b21, ZfaZfh_fminm_h_cg_cp_fs2_b21_str)
+  fminm.h f5, f27, f21 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, ZfaZfh_fminm_h_cg_cp_fs2_b21, ZfaZfh_fminm_h_cg_cp_fs2_b21_str)
 
 # Testcase cp_fs2 (Test source fs2 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xd9d9
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0xc316
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x84b5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0x71df
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b22:
-  fminm.h f15, f27, f22 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b22, ZfaZfh_fminm_h_cg_cp_fs2_b22_str)
+  fminm.h f30, f11, f22 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaZfh_fminm_h_cg_cp_fs2_b22, ZfaZfh_fminm_h_cg_cp_fs2_b22_str)
 
 # Testcase cp_fs2 (Test source fs2 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x960b
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x06ac
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0x8a04
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0xe993
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b23:
-  fminm.h f6, f3, f23 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, ZfaZfh_fminm_h_cg_cp_fs2_b23, ZfaZfh_fminm_h_cg_cp_fs2_b23_str)
+  fminm.h f27, f28, f23 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaZfh_fminm_h_cg_cp_fs2_b23, ZfaZfh_fminm_h_cg_cp_fs2_b23_str)
 
 # Testcase cp_fs2 (Test source fs2 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f4) # load fs1: f4 = 0x6fcd
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs2: f24 = 0x0d89
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xd9d9
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs2: f24 = 0xc316
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b24:
-  fminm.h f26, f4, f24 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, ZfaZfh_fminm_h_cg_cp_fs2_b24, ZfaZfh_fminm_h_cg_cp_fs2_b24_str)
+  fminm.h f15, f27, f24 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b24, ZfaZfh_fminm_h_cg_cp_fs2_b24_str)
 
 # Testcase cp_fs2 (Test source fs2 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f0) # load fs1: f0 = 0x80f0
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs2: f25 = 0x833c
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x960b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs2: f25 = 0x06ac
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b25:
-  fminm.h f10, f0, f25 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, ZfaZfh_fminm_h_cg_cp_fs2_b25, ZfaZfh_fminm_h_cg_cp_fs2_b25_str)
+  fminm.h f6, f3, f25 # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, ZfaZfh_fminm_h_cg_cp_fs2_b25, ZfaZfh_fminm_h_cg_cp_fs2_b25_str)
 
 # Testcase cp_fs2 (Test source fs2 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xf48f
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs2: f26 = 0x6ae5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f4) # load fs1: f4 = 0x6fcd
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs2: f26 = 0x0d89
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b26:
-  fminm.h f4, f27, f26 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, ZfaZfh_fminm_h_cg_cp_fs2_b26, ZfaZfh_fminm_h_cg_cp_fs2_b26_str)
+  fminm.h f25, f4, f26 # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, ZfaZfh_fminm_h_cg_cp_fs2_b26, ZfaZfh_fminm_h_cg_cp_fs2_b26_str)
 
 # Testcase cp_fs2 (Test source fs2 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0x2691
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs2: f27 = 0x4f4d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f0) # load fs1: f0 = 0x80f0
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs2: f27 = 0x833c
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b27:
-  fminm.h f9, f10, f27 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, ZfaZfh_fminm_h_cg_cp_fs2_b27, ZfaZfh_fminm_h_cg_cp_fs2_b27_str)
+  fminm.h f10, f0, f27 # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, ZfaZfh_fminm_h_cg_cp_fs2_b27, ZfaZfh_fminm_h_cg_cp_fs2_b27_str)
 
 # Testcase cp_fs2 (Test source fs2 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs1: f23 = 0xdadb
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x043d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs1: f26 = 0xf48f
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x6ae5
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b28:
-  fminm.h f15, f23, f28 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b28, ZfaZfh_fminm_h_cg_cp_fs2_b28_str)
+  fminm.h f4, f26, f28 # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, ZfaZfh_fminm_h_cg_cp_fs2_b28, ZfaZfh_fminm_h_cg_cp_fs2_b28_str)
 
 # Testcase cp_fs2 (Test source fs2 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs1: f25 = 0x82cd
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs2: f29 = 0x0603
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0x2691
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs2: f29 = 0x4f4d
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b29:
-  fminm.h f30, f25, f29 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaZfh_fminm_h_cg_cp_fs2_b29, ZfaZfh_fminm_h_cg_cp_fs2_b29_str)
+  fminm.h f9, f10, f29 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, ZfaZfh_fminm_h_cg_cp_fs2_b29, ZfaZfh_fminm_h_cg_cp_fs2_b29_str)
 
 # Testcase cp_fs2 (Test source fs2 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs1: f14 = 0xe0dc
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0xc1b2
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs1: f23 = 0xdadb
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0x043d
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b30:
-  fminm.h f24, f14, f30 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, ZfaZfh_fminm_h_cg_cp_fs2_b30, ZfaZfh_fminm_h_cg_cp_fs2_b30_str)
+  fminm.h f15, f23, f30 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cp_fs2_b30, ZfaZfh_fminm_h_cg_cp_fs2_b30_str)
 
 # Testcase cp_fs2 (Test source fs2 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0xc954
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0xfb58
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs1: f25 = 0x82cd
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0x0603
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fs2_b31:
-  fminm.h f27, f9, f31 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaZfh_fminm_h_cg_cp_fs2_b31, ZfaZfh_fminm_h_cg_cp_fs2_b31_str)
+  fminm.h f29, f25, f31 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaZfh_fminm_h_cg_cp_fs2_b31, ZfaZfh_fminm_h_cg_cp_fs2_b31_str)
 
 /////////////////////////////////
 // cp_fd
@@ -687,8 +687,8 @@ ZfaZfh_fminm_h_cg_cp_fd_b6:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b7:
   fminm.h f7, f9, f2 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, ZfaZfh_fminm_h_cg_cp_fd_b7, ZfaZfh_fminm_h_cg_cp_fd_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, ZfaZfh_fminm_h_cg_cp_fd_b7, ZfaZfh_fminm_h_cg_cp_fd_b7_str)
 
 # Testcase cp_fd (Test destination fd = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f4) # load fs1: f4 = 0xe3f8
@@ -696,17 +696,17 @@ ZfaZfh_fminm_h_cg_cp_fd_b7:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b8:
   fminm.h f8, f4, f9 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, ZfaZfh_fminm_h_cg_cp_fd_b8, ZfaZfh_fminm_h_cg_cp_fd_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaZfh_fminm_h_cg_cp_fd_b8, ZfaZfh_fminm_h_cg_cp_fd_b8_str)
 
 # Testcase cp_fd (Test destination fd = f9)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0xcac1
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs1: f12 = 0xcac1
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x7652
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b9:
-  fminm.h f9, f13, f16 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, ZfaZfh_fminm_h_cg_cp_fd_b9, ZfaZfh_fminm_h_cg_cp_fd_b9_str)
+  fminm.h f9, f12, f16 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, ZfaZfh_fminm_h_cg_cp_fd_b9, ZfaZfh_fminm_h_cg_cp_fd_b9_str)
 
 # Testcase cp_fd (Test destination fd = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x88eb
@@ -714,8 +714,8 @@ ZfaZfh_fminm_h_cg_cp_fd_b9:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b10:
   fminm.h f10, f17, f7 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, ZfaZfh_fminm_h_cg_cp_fd_b10, ZfaZfh_fminm_h_cg_cp_fd_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, ZfaZfh_fminm_h_cg_cp_fd_b10, ZfaZfh_fminm_h_cg_cp_fd_b10_str)
 
 # Testcase cp_fd (Test destination fd = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x231d
@@ -723,186 +723,186 @@ ZfaZfh_fminm_h_cg_cp_fd_b10:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b11:
   fminm.h f11, f3, f5 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, ZfaZfh_fminm_h_cg_cp_fd_b11, ZfaZfh_fminm_h_cg_cp_fd_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaZfh_fminm_h_cg_cp_fd_b11, ZfaZfh_fminm_h_cg_cp_fd_b11_str)
 
 # Testcase cp_fd (Test destination fd = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs1: f22 = 0xdea4
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f0) # load fs2: f0 = 0x5f79
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs1: f21 = 0x6d91
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0xdea4
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b12:
-  fminm.h f12, f22, f0 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaZfh_fminm_h_cg_cp_fd_b12, ZfaZfh_fminm_h_cg_cp_fd_b12_str)
+  fminm.h f12, f21, f23 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, ZfaZfh_fminm_h_cg_cp_fd_b12, ZfaZfh_fminm_h_cg_cp_fd_b12_str)
 
 # Testcase cp_fd (Test destination fd = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs1: f5 = 0x5bc4
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0x6d55
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs1: f26 = 0x0598
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0x5bc4
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b13:
-  fminm.h f13, f5, f30 # perform operation
+  fminm.h f13, f26, f31 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, ZfaZfh_fminm_h_cg_cp_fd_b13, ZfaZfh_fminm_h_cg_cp_fd_b13_str)
 
 # Testcase cp_fd (Test destination fd = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs1: f26 = 0xe49e
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x96da
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs1: f29 = 0x6d55
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs2: f26 = 0xe49e
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b14:
-  fminm.h f14, f26, f16 # perform operation
+  fminm.h f14, f29, f26 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, ZfaZfh_fminm_h_cg_cp_fd_b14, ZfaZfh_fminm_h_cg_cp_fd_b14_str)
 
 # Testcase cp_fd (Test destination fd = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs1: f29 = 0xa10b
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0xe15d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs1: f16 = 0x96da
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0xa10b
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b15:
-  fminm.h f15, f29, f23 # perform operation
+  fminm.h f15, f16, f30 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaZfh_fminm_h_cg_cp_fd_b15, ZfaZfh_fminm_h_cg_cp_fd_b15_str)
 
 # Testcase cp_fd (Test destination fd = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs1: f30 = 0x1edd
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0x7f9d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs1: f23 = 0xe15d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0x1edd
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b16:
-  fminm.h f16, f30, f22 # perform operation
+  fminm.h f16, f23, f31 # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, ZfaZfh_fminm_h_cg_cp_fd_b16, ZfaZfh_fminm_h_cg_cp_fd_b16_str)
 
 # Testcase cp_fd (Test destination fd = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x5328
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x668b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs1: f22 = 0x7f9d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs2: f11 = 0x5328
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b17:
-  fminm.h f17, f11, f23 # perform operation
+  fminm.h f17, f22, f11 # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfaZfh_fminm_h_cg_cp_fd_b17, ZfaZfh_fminm_h_cg_cp_fd_b17_str)
 
 # Testcase cp_fd (Test destination fd = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0xa432
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs2: f5 = 0xc34b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs1: f22 = 0x668b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs2: f1 = 0xa432
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b18:
-  fminm.h f18, f1, f5 # perform operation
+  fminm.h f18, f22, f1 # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, ZfaZfh_fminm_h_cg_cp_fd_b18, ZfaZfh_fminm_h_cg_cp_fd_b18_str)
 
 # Testcase cp_fd (Test destination fd = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0xc5e0
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0xf7a3
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0xc34b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs2: f1 = 0xc5e0
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b19:
-  fminm.h f19, f1, f15 # perform operation
+  fminm.h f19, f3, f1 # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfaZfh_fminm_h_cg_cp_fd_b19, ZfaZfh_fminm_h_cg_cp_fd_b19_str)
 
 # Testcase cp_fd (Test destination fd = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0x0736
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0xa8ac
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs1: f31 = 0x4493
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0xf7a3
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b20:
-  fminm.h f20, f24, f17 # perform operation
+  fminm.h f20, f31, f28 # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, ZfaZfh_fminm_h_cg_cp_fd_b20, ZfaZfh_fminm_h_cg_cp_fd_b20_str)
 
 # Testcase cp_fd (Test destination fd = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0xf3cb
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0xddaa
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0x0736
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0xa8ac
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b21:
-  fminm.h f21, f24, f15 # perform operation
+  fminm.h f21, f24, f17 # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, ZfaZfh_fminm_h_cg_cp_fd_b21, ZfaZfh_fminm_h_cg_cp_fd_b21_str)
 
 # Testcase cp_fd (Test destination fd = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs1: f31 = 0x963a
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs2: f3 = 0x13c9
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs1: f24 = 0xf3cb
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0xddaa
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b22:
-  fminm.h f22, f31, f3 # perform operation
+  fminm.h f22, f24, f15 # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, ZfaZfh_fminm_h_cg_cp_fd_b22, ZfaZfh_fminm_h_cg_cp_fd_b22_str)
 
 # Testcase cp_fd (Test destination fd = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0xa89d
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0xe45b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs1: f31 = 0x963a
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs2: f3 = 0x13c9
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b23:
-  fminm.h f23, f9, f14 # perform operation
+  fminm.h f23, f31, f3 # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, ZfaZfh_fminm_h_cg_cp_fd_b23, ZfaZfh_fminm_h_cg_cp_fd_b23_str)
 
 # Testcase cp_fd (Test destination fd = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f2) # load fs1: f2 = 0x6d02
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x66d8
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0xa89d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0xe45b
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b24:
-  fminm.h f24, f2, f28 # perform operation
+  fminm.h f24, f9, f14 # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaZfh_fminm_h_cg_cp_fd_b24, ZfaZfh_fminm_h_cg_cp_fd_b24_str)
 
 # Testcase cp_fd (Test destination fd = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs1: f22 = 0x8117
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x86e8
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f2) # load fs1: f2 = 0x6d02
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x66d8
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b25:
-  fminm.h f25, f22, f14 # perform operation
+  fminm.h f25, f2, f28 # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, ZfaZfh_fminm_h_cg_cp_fd_b25, ZfaZfh_fminm_h_cg_cp_fd_b25_str)
 
 # Testcase cp_fd (Test destination fd = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x3d39
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x0dbf
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs1: f22 = 0x8117
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x86e8
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b26:
-  fminm.h f26, f3, f14 # perform operation
+  fminm.h f26, f22, f14 # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfaZfh_fminm_h_cg_cp_fd_b26, ZfaZfh_fminm_h_cg_cp_fd_b26_str)
 
 # Testcase cp_fd (Test destination fd = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f8) # load fs1: f8 = 0xcbf5
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0xe023
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x3d39
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x0dbf
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b27:
-  fminm.h f27, f8, f19 # perform operation
+  fminm.h f27, f3, f14 # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaZfh_fminm_h_cg_cp_fd_b27, ZfaZfh_fminm_h_cg_cp_fd_b27_str)
 
 # Testcase cp_fd (Test destination fd = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0x5cdb
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs2: f3 = 0x0114
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f8) # load fs1: f8 = 0xcbf5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0xe023
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b28:
-  fminm.h f28, f9, f3 # perform operation
+  fminm.h f28, f8, f19 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaZfh_fminm_h_cg_cp_fd_b28, ZfaZfh_fminm_h_cg_cp_fd_b28_str)
 
 # Testcase cp_fd (Test destination fd = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x56af
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x5c8e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0x5cdb
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs2: f3 = 0x0114
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b29:
-  fminm.h f29, f3, f23 # perform operation
+  fminm.h f29, f9, f3 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, ZfaZfh_fminm_h_cg_cp_fd_b29, ZfaZfh_fminm_h_cg_cp_fd_b29_str)
 
 # Testcase cp_fd (Test destination fd = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs1: f18 = 0x3c68
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0x7c8c
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x56af
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x5c8e
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b30:
-  fminm.h f30, f18, f13 # perform operation
+  fminm.h f30, f3, f23 # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, ZfaZfh_fminm_h_cg_cp_fd_b30, ZfaZfh_fminm_h_cg_cp_fd_b30_str)
 
 # Testcase cp_fd (Test destination fd = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs1: f30 = 0xa817
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x83e9
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs1: f18 = 0x3c68
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0x7c8c
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cp_fd_b31:
-  fminm.h f31, f30, f23 # perform operation
+  fminm.h f31, f18, f13 # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, ZfaZfh_fminm_h_cg_cp_fd_b31, ZfaZfh_fminm_h_cg_cp_fd_b31_str)
 
@@ -1491,8 +1491,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs1_b6:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7:
   fminm.h f7, f7, f24 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f8) # load fs1: f8 = 0x2724
@@ -1500,8 +1500,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs1_b7:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8:
   fminm.h f8, f8, f18 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f9) # load fs1: f9 = 0x62b8
@@ -1509,8 +1509,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs1_b8:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9:
   fminm.h f9, f9, f11 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0x1f05
@@ -1518,8 +1518,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs1_b9:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10:
   fminm.h f10, f10, f7 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0xb26e
@@ -1527,33 +1527,33 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs1_b10:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b11:
   fminm.h f11, f11, f8 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b11, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b11, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b11_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs1: f12 = 0x320f
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0x2929
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs1: f12 = 0x2929
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f2) # load fs2: f2 = 0x80ee
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b12:
-  fminm.h f12, f12, f22 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b12, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b12_str)
+  fminm.h f12, f12, f2 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b12, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b12_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0xd1b6
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0x92fe
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0x6a97
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0x0921
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b13:
-  fminm.h f13, f13, f12 # perform operation
+  fminm.h f13, f13, f30 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b13, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b13_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs1: f14 = 0x0921
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs2: f18 = 0x0e73
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs1: f14 = 0x6753
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x0e73
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs1_b14:
-  fminm.h f14, f14, f18 # perform operation
+  fminm.h f14, f14, f28 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b14, ZfaZfh_fminm_h_cg_cmp_fd_fs1_b14_str)
 
@@ -1783,8 +1783,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b6:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7:
   fminm.h f7, f27, f7 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs1: f29 = 0xed38
@@ -1792,8 +1792,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b7:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8:
   fminm.h f8, f29, f8 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f5) # load fs1: f5 = 0xa3c7
@@ -1801,8 +1801,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b8:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9:
   fminm.h f9, f5, f9 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs1: f31 = 0x44f3
@@ -1810,8 +1810,8 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b9:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10:
   fminm.h f10, f31, f10 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f10) # load fs1: f10 = 0x3463
@@ -1819,75 +1819,75 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b10:
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b11:
   fminm.h f11, f10, f11 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b11, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b11, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b11_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f8) # load fs1: f8 = 0x8192
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0x39a8
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs1: f18 = 0x896e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0x8192
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b12:
-  fminm.h f12, f8, f12 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b12, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b12_str)
+  fminm.h f12, f18, f12 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b12, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b12_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs1: f28 = 0x7e0d
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0xac8d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs1: f18 = 0x39a8
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs2: f13 = 0x9ef6
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b13:
-  fminm.h f13, f28, f13 # perform operation
+  fminm.h f13, f18, f13 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b13, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b13_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x9e83
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0x92fc
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0x7e0d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs2: f14 = 0xac8d
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b14:
-  fminm.h f14, f17, f14 # perform operation
+  fminm.h f14, f27, f14 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b14, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b14_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x6a5f
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0x2640
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs1: f17 = 0x9e83
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs2: f15 = 0x92fc
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b15:
-  fminm.h f15, f3, f15 # perform operation
+  fminm.h f15, f17, f15 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b15, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b15_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0xbbd6
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x3bfd
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f3) # load fs1: f3 = 0x6a5f
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f16) # load fs2: f16 = 0x2640
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b16:
-  fminm.h f16, f13, f16 # perform operation
+  fminm.h f16, f3, f16 # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b16, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b16_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs1: f15 = 0xfb67
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0xde1f
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f13) # load fs1: f13 = 0xbbd6
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f17) # load fs2: f17 = 0x3bfd
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b17:
-  fminm.h f17, f15, f17 # perform operation
+  fminm.h f17, f13, f17 # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b17, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b17_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x29c1
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs2: f18 = 0xc856
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f15) # load fs1: f15 = 0xfb67
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f18) # load fs2: f18 = 0xde1f
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b18:
-  fminm.h f18, f1, f18 # perform operation
+  fminm.h f18, f15, f18 # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b18, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b18_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0xd857
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0xc903
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x29c1
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs2: f19 = 0xc856
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b19:
   fminm.h f19, f1, f19 # perform operation
@@ -1895,98 +1895,98 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b19:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b19, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b19_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0xfac3
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs2: f20 = 0x981e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0xd857
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs2: f20 = 0xc903
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b20:
-  fminm.h f20, f11, f20 # perform operation
+  fminm.h f20, f1, f20 # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b20, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b20_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f0) # load fs1: f0 = 0x802e
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs2: f21 = 0x8ba5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0xfac3
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f21) # load fs2: f21 = 0x981e
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b21:
-  fminm.h f21, f0, f21 # perform operation
+  fminm.h f21, f11, f21 # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b21, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b21_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs1: f20 = 0x3bc1
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0x959a
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f0) # load fs1: f0 = 0x802e
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f22) # load fs2: f22 = 0x8ba5
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b22:
-  fminm.h f22, f20, f22 # perform operation
+  fminm.h f22, f0, f22 # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b22, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b22_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x8bd8
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x6b6b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs1: f20 = 0x3bc1
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs2: f23 = 0x959a
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b23:
-  fminm.h f23, f11, f23 # perform operation
+  fminm.h f23, f20, f23 # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b23, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b23_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs1: f14 = 0x1e0c
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs2: f24 = 0xfca0
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x8bd8
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f24) # load fs2: f24 = 0x6b6b
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b24:
-  fminm.h f24, f14, f24 # perform operation
+  fminm.h f24, f11, f24 # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b24, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b24_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xfdc1
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs2: f25 = 0xc8d5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f14) # load fs1: f14 = 0x1e0c
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f25) # load fs2: f25 = 0xfca0
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b25:
-  fminm.h f25, f27, f25 # perform operation
+  fminm.h f25, f14, f25 # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b25, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b25_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f6) # load fs1: f6 = 0xca2f
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs2: f26 = 0x2d85
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs1: f27 = 0xfdc1
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f26) # load fs2: f26 = 0xc8d5
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b26:
-  fminm.h f26, f6, f26 # perform operation
+  fminm.h f26, f27, f26 # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b26, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b26_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs1: f23 = 0xba4d
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs2: f27 = 0x893b
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f6) # load fs1: f6 = 0xca2f
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f27) # load fs2: f27 = 0x2d85
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b27:
-  fminm.h f27, f23, f27 # perform operation
+  fminm.h f27, f6, f27 # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b27, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b27_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x02a0
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x5108
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f23) # load fs1: f23 = 0xba4d
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f28) # load fs2: f28 = 0x893b
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b28:
-  fminm.h f28, f1, f28 # perform operation
+  fminm.h f28, f23, f28 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b28, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b28_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs1: f19 = 0x8add
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs2: f29 = 0x1a8f
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x02a0
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f29) # load fs2: f29 = 0x5108
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b29:
-  fminm.h f29, f19, f29 # perform operation
+  fminm.h f29, f1, f29 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b29, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b29_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs1: f19 = 0xc039
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0x6599
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs1: f19 = 0x8add
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f30) # load fs2: f30 = 0x1a8f
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b30:
   fminm.h f30, f19, f30 # perform operation
@@ -1994,11 +1994,11 @@ ZfaZfh_fminm_h_cg_cmp_fd_fs2_b30:
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b30, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b30_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f1) # load fs1: f1 = 0x16bc
-  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0x17f5
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f19) # load fs1: f19 = 0xc039
+  RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f31) # load fs2: f31 = 0x6599
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fminm_h_cg_cmp_fd_fs2_b31:
-  fminm.h f31, f1, f31 # perform operation
+  fminm.h f31, f19, f31 # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b31, ZfaZfh_fminm_h_cg_cmp_fd_fs2_b31_str)
 
@@ -9159,18 +9159,22 @@ RVTEST_DATA_BEGIN
 .dword 0x000000005142b7fb
 .dword 0xffffffff9a31cf74
 .dword 0x000000000c08efee
-.dword 0x000000002c2c7748
-.dword 0xffffffffce43901e
-.dword 0x000000002a06cf6e
-.dword 0x000000001bc98510
-.dword 0xffffffff8fdd1de1
+.dword 0xffffffffadd3554e
+.dword 0x000000004b69634e
+.dword 0x0000000008c71fb9
+.dword 0xffffffffa59d1410
+.dword 0x0000000058a863e6
+.dword 0x0000000027244aab
 .dword 0x000000002cd5dd79
-.dword 0x000000005c0f4aa2
+.dword 0x0000000071187fe7
+.dword 0x000000003c198ad0
+.dword 0xffffffffbae41f1b
 .dword 0x000000004f16396b
-.dword 0x000000000a6790b4
-.dword 0xffffffff89996b38
-.dword 0x0000000039089ab7
-.dword 0xffffffff9cff5a63
+.dword 0xffffffffc70775bf
+.dword 0xffffffffb64edaac
+.dword 0xffffffffd5e1e281
+.dword 0xffffffff921126c7
+.dword 0xffffffff999969c6
 .dword 0x000000005e76296d
 .dword 0xffffffffd6a542f1
 .dword 0xffffffff8b2b84b5
@@ -9193,10 +9197,6 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffdb5a043d
 .dword 0xffffffff8e5282cd
 .dword 0x000000003f360603
-.dword 0x0000000028ebe0dc
-.dword 0xffffffffcf6cc1b2
-.dword 0xfffffffffc1dc954
-.dword 0xfffffffff9a7fb58
 .dword 0x000000007c3752e6
 .dword 0x00000000556c40d0
 .dword 0xffffffffbab18e3c
@@ -9221,8 +9221,9 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffa078718e
 .dword 0x0000000023c0231d
 .dword 0xffffffff9bbc6c49
+.dword 0x000000004f566d91
 .dword 0xffffffff855adea4
-.dword 0x0000000014445f79
+.dword 0xffffffff99d20598
 .dword 0xffffffffe2b95bc4
 .dword 0x0000000042936d55
 .dword 0xffffffffe67de49e
@@ -9236,6 +9237,7 @@ RVTEST_DATA_BEGIN
 .dword 0x000000000742a432
 .dword 0x0000000045b7c34b
 .dword 0xfffffffff1e9c5e0
+.dword 0xffffffffeca74493
 .dword 0x000000004d26f7a3
 .dword 0xffffffffa0bf0736
 .dword 0x00000000211fa8ac
@@ -9259,8 +9261,6 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffa28d5c8e
 .dword 0x000000000c3d3c68
 .dword 0xffffffff892b7c8c
-.dword 0xffffffffbef9a817
-.dword 0x000000003e0a83e9
 .dword 0x0000000000000000
 .dword 0x000000000e7d0912
 .dword 0x0000000000008000
@@ -9397,11 +9397,11 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffdd45328e
 .dword 0xffffffffb93bb26e
 .dword 0x000000007ab58db1
-.dword 0x0000000005e7320f
 .dword 0xffffffffdd712929
-.dword 0x0000000023dad1b6
-.dword 0x00000000243192fe
+.dword 0x00000000613580ee
+.dword 0x000000003a996a97
 .dword 0x000000004b2f0921
+.dword 0x0000000007e06753
 .dword 0xffffffffd1dd0e73
 .dword 0x0000000045da5fa1
 .dword 0x000000001997fbc5
@@ -9461,8 +9461,10 @@ RVTEST_DATA_BEGIN
 .dword 0x000000001dd80cce
 .dword 0x0000000022963463
 .dword 0xffffffffa0c72026
+.dword 0xffffffffee60896e
 .dword 0x000000005d4f8192
 .dword 0xffffffffd0a339a8
+.dword 0x0000000057529ef6
 .dword 0xffffffff80347e0d
 .dword 0xffffffff9216ac8d
 .dword 0xffffffffb3f49e83
@@ -9499,8 +9501,6 @@ RVTEST_DATA_BEGIN
 .dword 0xffffffffa6f51a8f
 .dword 0x00000000099ac039
 .dword 0xffffffffb7036599
-.dword 0x0000000079da16bc
-.dword 0xffffffffd47817f5
 .dword 0x0000000000000000
 .dword 0x0000000000000000
 .dword 0x0000000000000000

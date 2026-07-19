@@ -26,16 +26,16 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-    # Log failure. x13 contains return address of jal from the failure and x12 is a vacant temporary register
-    failedtest_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)              # store return address
-        SREG DEFAULT_TEMP_REG, 32(x12)  # save DEFAULT_TEMP_REG
-        SREG DEFAULT_LINK_REG, 40(x12)  # save DEFAULT_LINK_REG
-        SREG x1, 8(x12)                 # save x1 early
-        sw zero, 0(x12)                 # failure_type = 0 (integer)
-        mv DEFAULT_TEMP_REG, x12        # move scratch base into DEFAULT_TEMP_REG
-        mv DEFAULT_LINK_REG, x13        # move return address into DEFAULT_LINK_REG
+    # Log failure. x14 contains return address of jal from the failure and x13 is a vacant temporary register
+    failedtest_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)              # store return address
+        SREG DEFAULT_TEMP_REG, 32(x13)  # save DEFAULT_TEMP_REG
+        SREG DEFAULT_LINK_REG, 40(x13)  # save DEFAULT_LINK_REG
+        SREG x1, 8(x13)                 # save x1 early
+        sw zero, 0(x13)                 # failure_type = 0 (integer)
+        mv DEFAULT_TEMP_REG, x13        # move scratch base into DEFAULT_TEMP_REG
+        mv DEFAULT_LINK_REG, x14        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
@@ -85,16 +85,16 @@
         mv DEFAULT_LINK_REG, x8
         j failedtest_saveregs
 
-    failedtest_fp_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_fp_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 1
-        sw x1, 0(x12)                               # failure_type = 1 (fp)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 1 (fp)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         j failedtest_saveregs
 
     # fflags failure entry points (failure_type = 2)
@@ -118,16 +118,16 @@
         mv DEFAULT_LINK_REG, x8
         j failedtest_saveregs
 
-    failedtest_fflags_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_fflags_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 2
-        sw x1, 0(x12)                               # failure_type = 2 (fflags)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 2 (fflags)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         j failedtest_saveregs
 #endif // F_SUPPORTED
 
@@ -156,16 +156,16 @@
         li x1, 0                                    # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
-    failedtest_vec_active_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_vec_active_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 4
-        sw x1, 0(x12)                               # failure_type = 4 (vector)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 4 (vector)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         li x1, 0                                    # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
@@ -192,16 +192,16 @@
         li x1, 1                                    # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
-    failedtest_vec_tail_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_vec_tail_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 4
-        sw x1, 0(x12)                               # failure_type = 4 (vector)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 4 (vector)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         li x1, 1                                    # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
@@ -228,16 +228,16 @@
         li x1, 2                                    # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
-    failedtest_vec_mask_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_vec_mask_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 4
-        sw x1, 0(x12)                               # failure_type = 4 (vector)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 4 (vector)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         li x1, 2                                    # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
@@ -264,16 +264,16 @@
         li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
-    failedtest_vec_base_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_vec_base_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 112(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 4
-        sw x1, 0(x12)                               # failure_type = 4 (vector)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 4 (vector)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 

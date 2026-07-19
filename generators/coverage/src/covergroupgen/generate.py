@@ -104,7 +104,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
@@ -452,7 +452,7 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
     """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
     Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    MAXINDEXEEW_GE{eew}. Priv MisalignV / ExceptionsVls covergroups gate
     behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
     (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
     EEW=64 indexed LS while other sims take a load access fault, producing
@@ -463,7 +463,7 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
         return None
     if arch in _VLS_PER_SEW_ARCHES:
         return (eew, "MAXINDEXEEW_GE")
-    if arch in ("MisalignedV", "ExceptionsVls"):
+    if arch in ("MisalignV", "ExceptionsVls"):
         # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
         if eew >= 64:
             return (eew, "XLEN")
@@ -567,7 +567,7 @@ def _gen_instrs(
         vectorwiden = _is_vector_widen(arch, instr)
 
         # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
         # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
         # takes illegal-instruction on EEW=64 indexed LS while other sims
         # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
@@ -708,7 +708,7 @@ def _write_extension_files(
         try:
             effew = _get_effew(arch)
         except ValueError:
-            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignedV) have no SEW expansion or EFFEW.
+            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) have no SEW expansion or EFFEW.
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 

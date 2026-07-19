@@ -12,16 +12,16 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmSatpBare.S"
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 11
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -59,19 +59,34 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_satp_bare_spmp
-//   Verify SPMP and paging are mutually exclusive.
-//   When satp.mode == Bare, SPMP provides isolation.
-//   Read satp to confirm Bare mode.
+//   Verify that SPMP provides isolation when satp.mode is Bare.
+//   Confirm Bare, install a deny rule over scratch, and observe the
+//   resulting S-mode load page fault.
 /////////////////////////////////
 # Read satp to confirm Bare mode (required for SPMP)
 SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode:
-  # Read satp into x25 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x25, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str)
-  RVTEST_GOTO_MMODE
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check:
-  # Read satp into x25 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x25, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str)
-  RVTEST_GOTO_LOWER_MODE Smode
+  # Read satp into x27 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x27, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode, SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str)
+  LI(x25, 0x100)  # siselect = SPMP entry 0
+  CSRW(siselect, x25)
+  LA(x16, scratch)
+  srli x30, x16, 2
+  CSRW(0x151, x30)
+  nop
+  LI(x30, 0x18)  # spmpcfg value
+  CSRW(0x152, x30)  # write sireg2 (spmpcfg)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_spmp_load_denied:
+  lw x27, 0(x16)
+  nop  # trap handler resumes here after load page fault
+  LI(x30, 0x0)  # spmpcfg value
+  CSRW(0x152, x30)  # write sireg2 (spmpcfg)
+  nop
+  LI(x30, 0x0)  # spmpaddr value
+  CSRW(0x151, x30)  # write sireg (spmpaddr)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -84,7 +99,7 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str: .string "\"test: 1; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mode\""
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str: .string "\"test: 2; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mmode_check\""
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_spmp_load_denied_str: .string "\"test: 2; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_spmp_load_denied\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

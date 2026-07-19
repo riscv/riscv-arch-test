@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -64,15 +64,24 @@ RVTEST_BEGIN
 //   SUM=1: S-mode data access is allowed; instruction fetch is still
 //          denied by EnforceNoX even when X=1 in the rule.
 /////////////////////////////////
+  j sspmpsm_sum_probe_end
+  .balign 8
+sspmpsm_sum_probe:
+  .option push
+  .option norvc
+  ret
+  nop
+  .option pop
+sspmpsm_sum_probe_end:
 
-# Pre-install `ret` (0x00008067) at scratch[0]
-  LA(x23, scratch)
+# Initialize the aligned access probe
+  LA(x23, sspmpsm_sum_probe)
   LI(x8, 0x00008067)  # ret
   sw x8, 0(x23)
   fence.i  # sync icache with the data write
   LI(x15, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x15)
-  LA(x23, scratch)
+  LA(x23, sspmpsm_sum_probe)
   srli x23, x23, 2  # convert to spmpaddr format
 # No low bits set: 8-byte NAPOT region
   CSRW(0x151, x23)  # write spmpaddr via sireg
@@ -89,7 +98,7 @@ RVTEST_BEGIN
 
 # Expected: load page fault (cause 13); strap handler advances sepc by 4.
 SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied:
-  LA(x23, scratch)
+  LA(x23, sspmpsm_sum_probe)
   lw x14, 0(x23)  # faults
   nop  # trap handler skips to here
 
@@ -104,7 +113,7 @@ SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied:
 
 # Expected: load succeeds, reads the `ret` instruction value.
 SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load:
-  LA(x23, scratch)
+  LA(x23, sspmpsm_sum_probe)
   lw x14, 0(x23)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
@@ -119,10 +128,8 @@ SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store:
   fence.i  # sync icache with the data write
 
 # Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.
-# SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.
 SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
-  LA(x23, scratch)
+  LA(x23, sspmpsm_sum_probe)
   jalr x1, 0(x23)  # fetch page fault (cause 12); handler returns here
   nop
 

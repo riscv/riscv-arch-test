@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -64,12 +64,21 @@ RVTEST_BEGIN
 //   Special: RWX=110 -> S:Enforce, U:Read-only
 //            RWX=111 -> S:Enforce, U:Exec-only
 /////////////////////////////////
+  j sspmpsm_shared_probe_end
+  .balign 8
+sspmpsm_shared_probe:
+  .option push
+  .option norvc
+  ret
+  nop
+  .option pop
+sspmpsm_shared_probe_end:
 # Delegate U-mode ecall so each U-mode probe can return to S-mode
   RVTEST_GOTO_MMODE
   LI(x28, 0x100)
   CSRS(CSR_MEDELEG, x28)
   RVTEST_GOTO_LOWER_MODE Smode
-  LA(x12, scratch)
+  LA(x12, sspmpsm_shared_probe)
   LI(x21, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x21)
   srli x13, x12, 2  # 8-byte NAPOT region
@@ -98,7 +107,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_none_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_s_none_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -113,7 +121,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_u_none_store:
   nop
 # U fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_u_none_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
@@ -146,7 +153,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_x_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_s_x_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -161,7 +167,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_u_x_store:
   nop
 # U fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_u_x_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
@@ -196,7 +201,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_r_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_s_r_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -205,18 +209,20 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_r_fetch:
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load:
   lw x13, 0(x12)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_str)
 # Shared encodings never grant U-mode write permission
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_store:
   sw x28, 0(x12)
   nop
 # U fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
+# Record the successful U-mode load only after returning to S-mode;
+# the resident rule intentionally gives U-mode execute-only access.
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_result:
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_result, SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_result_str)
   LI(x21, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x21)
   LI(x28, 0x0)  # spmpcfg value
@@ -248,7 +254,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -257,18 +262,20 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch:
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load:
   lw x13, 0(x12)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_str)
 # Shared encodings never grant U-mode write permission
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_store:
   sw x28, 0(x12)
   nop
 # U fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
+# Record the successful U-mode load only after returning to S-mode;
+# the resident rule intentionally gives U-mode execute-only access.
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_result:
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_result, SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_result_str)
   LI(x21, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x21)
   LI(x28, 0x0)  # spmpcfg value
@@ -300,7 +307,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -309,18 +315,20 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch:
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load:
   lw x13, 0(x12)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_str)
 # Shared encodings never grant U-mode write permission
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_store:
   sw x28, 0(x12)
   nop
 # U fetch: instruction page fault
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
+# Record the successful U-mode load only after returning to S-mode;
+# the resident rule intentionally gives U-mode execute-only access.
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_result:
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_result, SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_result_str)
   LI(x21, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x21)
   LI(x28, 0x0)  # spmpcfg value
@@ -352,7 +360,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_MMODE
@@ -367,7 +374,6 @@ SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_store:
   nop
 # U fetch: allowed
 SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x12)
   nop
   RVTEST_GOTO_SMODE
@@ -433,26 +439,29 @@ SspmpSm_perm_cg_cp_shared_rule_shared_s_r_fetch_str: .string "\"test: 15; cg: Ss
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_str: .string "\"test: 16; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_load\""
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_store_str: .string "\"test: 17; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_store\""
 SspmpSm_perm_cg_cp_shared_rule_shared_u_r_fetch_str: .string "\"test: 18; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load_str: .string "\"test: 19; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_store_str: .string "\"test: 20; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch_str: .string "\"test: 21; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_str: .string "\"test: 22; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_store_str: .string "\"test: 23; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_fetch_str: .string "\"test: 24; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load_str: .string "\"test: 25; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_store_str: .string "\"test: 26; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch_str: .string "\"test: 27; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_str: .string "\"test: 28; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_store_str: .string "\"test: 29; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_fetch_str: .string "\"test: 30; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load_str: .string "\"test: 31; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_store_str: .string "\"test: 32; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_fetch_str: .string "\"test: 33; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_fetch\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_load_str: .string "\"test: 34; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_load\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_store_str: .string "\"test: 35; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_store\""
-SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_fetch_str: .string "\"test: 36; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_fetch\""
-SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed_str: .string "\"test: 37; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum0_shared_load_allowed\""
-SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed_str: .string "\"test: 38; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum1_shared_load_allowed\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_r_load_result_str: .string "\"test: 19; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_r_load_result\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_load_str: .string "\"test: 20; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_store_str: .string "\"test: 21; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rx_fetch_str: .string "\"test: 22; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_str: .string "\"test: 23; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_store_str: .string "\"test: 24; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_fetch_str: .string "\"test: 25; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rx_load_result_str: .string "\"test: 26; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rx_load_result\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_load_str: .string "\"test: 27; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_store_str: .string "\"test: 28; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rw_fetch_str: .string "\"test: 29; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rw_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_str: .string "\"test: 30; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_store_str: .string "\"test: 31; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_fetch_str: .string "\"test: 32; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rw_load_result_str: .string "\"test: 33; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rw_load_result\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_load_str: .string "\"test: 34; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_store_str: .string "\"test: 35; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_s_rwx_fetch_str: .string "\"test: 36; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_s_rwx_fetch\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_load_str: .string "\"test: 37; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_load\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_store_str: .string "\"test: 38; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_store\""
+SspmpSm_perm_cg_cp_shared_rule_shared_u_rwx_fetch_str: .string "\"test: 39; cg: SspmpSm_perm_cg; cp: cp_shared_rule; bin: shared_u_rwx_fetch\""
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum0_shared_load_allowed_str: .string "\"test: 40; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum0_shared_load_allowed\""
+SspmpSm_perm_cg_cp_shared_sum_ignored_sum1_shared_load_allowed_str: .string "\"test: 41; cg: SspmpSm_perm_cg; cp: cp_shared_sum_ignored; bin: sum1_shared_load_allowed\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -60,71 +60,95 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_sfence_ordering
 //   SFENCE.VMA x0,x0 orders preceding SPMP CSR writes against subsequent
-//   S/U-mode memory accesses (Spec §2.7).  Exercise the ordering sequence
-//   for several SPMP entries / configurations.
+//   S/U-mode memory accesses (Spec §2.7). After each fence, load from the
+//   newly configured S-mode region and record the result.
 /////////////////////////////////
+  LA(x15, scratch)
 
 # === Ordering sequence for SPMP entry 0 ===
   LI(x28, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x28)
-  LI(x8, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  srli x8, x15, 2
+  CSRW(0x151, x8)
   nop
-  LI(x8, 0x11b)  # spmpcfg value
+  LI(x8, 0x19)  # spmpcfg value
   CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   CSRW(0x152, x8)
-SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg:
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-  # Read spmpcfg (sireg2) into x19 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str)
+SspmpSm_csr_cg_cp_sfence_ordering_entry0_load_after_sfence:
+  lw x19, 0(x15)
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry0_load_after_sfence, SspmpSm_csr_cg_cp_sfence_ordering_entry0_load_after_sfence_str)
+  LI(x8, 0x0)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+  nop
+  LI(x8, 0x0)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # === Ordering sequence for SPMP entry 1 ===
   LI(x28, 0x101)  # siselect = SPMP entry 1
   CSRW(siselect, x28)
-  LI(x8, 0x20000400)  # spmpaddr value
-  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  srli x8, x15, 2
+  CSRW(0x151, x8)
   nop
-  LI(x8, 0x11b)  # spmpcfg value
+  LI(x8, 0x19)  # spmpcfg value
   CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   CSRW(0x152, x8)
-SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg:
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-  # Read spmpcfg (sireg2) into x19 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str)
+SspmpSm_csr_cg_cp_sfence_ordering_entry1_load_after_sfence:
+  lw x19, 0(x15)
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry1_load_after_sfence, SspmpSm_csr_cg_cp_sfence_ordering_entry1_load_after_sfence_str)
+  LI(x8, 0x0)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+  nop
+  LI(x8, 0x0)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # === Ordering sequence for SPMP entry 2 ===
   LI(x28, 0x102)  # siselect = SPMP entry 2
   CSRW(siselect, x28)
-  LI(x8, 0x20000800)  # spmpaddr value
-  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  srli x8, x15, 2
+  CSRW(0x151, x8)
   nop
-  LI(x8, 0x11b)  # spmpcfg value
+  LI(x8, 0x19)  # spmpcfg value
   CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   CSRW(0x152, x8)
-SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg:
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-  # Read spmpcfg (sireg2) into x19 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str)
+SspmpSm_csr_cg_cp_sfence_ordering_entry2_load_after_sfence:
+  lw x19, 0(x15)
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry2_load_after_sfence, SspmpSm_csr_cg_cp_sfence_ordering_entry2_load_after_sfence_str)
+  LI(x8, 0x0)  # spmpcfg value
+  CSRW(0x152, x8)  # write sireg2 (spmpcfg)
+  nop
+  LI(x8, 0x0)  # spmpaddr value
+  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 # === Ordering sequence for SPMP entry 3 ===
   LI(x28, 0x103)  # siselect = SPMP entry 3
   CSRW(siselect, x28)
-  LI(x8, 0x20000c00)  # spmpaddr value
-  CSRW(0x151, x8)  # write sireg (spmpaddr)
+  srli x8, x15, 2
+  CSRW(0x151, x8)
   nop
-  LI(x8, 0x11b)  # spmpcfg value
+  LI(x8, 0x19)  # spmpcfg value
   CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
   CSRW(0x152, x8)
-SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg:
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-  # Read spmpcfg (sireg2) into x19 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg, SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str)
-  LI(x28, 0x103)  # siselect = SPMP entry 3
-  CSRW(siselect, x28)
+SspmpSm_csr_cg_cp_sfence_ordering_entry3_load_after_sfence:
+  lw x19, 0(x15)
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, SspmpSm_csr_cg_cp_sfence_ordering_entry3_load_after_sfence, SspmpSm_csr_cg_cp_sfence_ordering_entry3_load_after_sfence_str)
   LI(x8, 0x0)  # spmpcfg value
   CSRW(0x152, x8)  # write sireg2 (spmpcfg)
   nop
@@ -143,10 +167,10 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry0_load_after_sfence_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_load_after_sfence\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry1_load_after_sfence_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_load_after_sfence\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry2_load_after_sfence_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_load_after_sfence\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry3_load_after_sfence_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_load_after_sfence\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -270,10 +270,6 @@
         `cover_info("//      Ssstateen - Enabled");
         `include "Ssstateen_coverage_init.svh"
     `endif
-    `ifdef COVER_SSPMPSM
-        `cover_info("//      SspmpSm - Enabled");
-        `include "SspmpSm_coverage_init.svh"
-    `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");
         `include "SsstrictS_coverage_init.svh"

@@ -206,9 +206,6 @@
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
 `endif
-`ifdef SSPMPSM_COVERAGE
-  `include "SspmpSm_coverage.svh"
-`endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"
 `endif

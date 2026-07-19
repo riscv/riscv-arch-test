@@ -12,16 +12,16 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmMpmpdeleg.S"
-#define SIGUPD_COUNT 22
+#define SIGUPD_COUNT 26
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -144,11 +144,56 @@ SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100:
 
 
 /////////////////////////////////
+// cp_mpmpdeleg_reconfig_high_entries / cp_mpmpdeleg_oob_access / cp_mpmpdeleg_locked_spmp_override
+//   Configure the highest writable SPMP resource with pmpnum=0, lock SPMP[0],
+//   then raise pmpnum to 1. The locked SPMP entry must not block M-mode;
+//   the former highest selector becomes OOB and its state moves to the new highest index.
+/////////////////////////////////
+  CSRW(CSR_MPMPDELEG, zero)
+  nop
+  LI(x7, 0x100 + UDB_NUM_PMP_ENTRIES - 1)
+  CSRW(miselect, x7)  # highest SPMP index while pmpnum=0
+  LI(x16, 0x12345)
+  CSRW(mireg, x16)  # recognizable state in the highest writable entry
+  CSRW(mireg2, zero)  # keep the high entry inactive
+  LI(x7, 0x100)
+  CSRW(miselect, x7)  # SPMP[0]
+  LI(x16, 0x80)  # L=1, A=OFF
+  CSRW(mireg2, x16)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_spmp_override_locked_spmp0_pmpnum_increment:
+  LI(x16, 1)
+  CSRW(CSR_MPMPDELEG, x16)  # must override locked SPMP[0]
+  nop
+  # Read CSR_MPMPDELEG into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x13, SspmpSm_csr_cg_cp_mpmpdeleg_locked_spmp_override_locked_spmp0_pmpnum_increment, SspmpSm_csr_cg_cp_mpmpdeleg_locked_spmp_override_locked_spmp0_pmpnum_increment_str)
+  LI(x7, 0x100 + UDB_NUM_PMP_ENTRIES - 1)
+  CSRW(miselect, x7)  # now one past the SPMP range
+SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_read_zero:
+  # Read mireg into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x13, SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_read_zero, SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_read_zero_str)
+  LI(x16, -1)
+  CSRW(mireg, x16)
+  nop
+SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_write_ignored:
+  # Read mireg into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x13, SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_write_ignored, SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_write_ignored_str)
+  LI(x7, 0x100 + UDB_NUM_PMP_ENTRIES - 2)
+  CSRW(miselect, x7)  # highest valid SPMP index after reconfiguration
+SspmpSm_csr_cg_cp_mpmpdeleg_reconfig_high_entries_reconfig_new_highest_inherits_state:
+  # Read mireg into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mireg, x13, SspmpSm_csr_cg_cp_mpmpdeleg_reconfig_high_entries_reconfig_new_highest_inherits_state, SspmpSm_csr_cg_cp_mpmpdeleg_reconfig_high_entries_reconfig_new_highest_inherits_state_str)
+
+
+/////////////////////////////////
 // cp_mpmpdeleg_locked
 //   Lock PMP entry 7, then try to set pmpnum < 8.
 //   Should be rejected (pmpnum retains prior value).
 /////////////////////////////////
 
+  LI(x16, 8)
+  CSRW(CSR_MPMPDELEG, x16)
+  nop
 # Lock PMP[7]
   LI(x7, -1)
   CSRW(pmpaddr7, x7)  # deterministic maximal NAPOT region
@@ -216,8 +261,12 @@ SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_last_str: .string "\"tes
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
 SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 9; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str: .string "\"test: 10; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: clamp_pmpnum_100\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_max_ok\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 12; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_spmp_override_locked_spmp0_pmpnum_increment_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked_spmp_override; bin: locked_spmp0_pmpnum_increment\""
+SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_read_zero_str: .string "\"test: 12; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_oob_access; bin: reconfig_former_highest_read_zero\""
+SspmpSm_csr_cg_cp_mpmpdeleg_oob_access_reconfig_former_highest_write_ignored_str: .string "\"test: 13; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_oob_access; bin: reconfig_former_highest_write_ignored\""
+SspmpSm_csr_cg_cp_mpmpdeleg_reconfig_high_entries_reconfig_new_highest_inherits_state_str: .string "\"test: 14; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_reconfig_high_entries; bin: reconfig_new_highest_inherits_state\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_max_ok_str: .string "\"test: 15; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_max_ok\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 16; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

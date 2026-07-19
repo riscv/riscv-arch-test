@@ -12,16 +12,16 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmAddrMatch.S"
-#define SIGUPD_COUNT 16
+#define SIGUPD_COUNT 15
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -59,47 +59,49 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_addr_match_{off,tor,na4,napot}
-//   Test each address matching mode by configuring SPMP entries
-//   and verifying the matching behavior.
+//   Test each address matching mode with an S-mode load from scratch.
+//   Each signature update follows the memory access governed by the rule.
 /////////////////////////////////
+  LA(x25, scratch)
 
 # A=OFF: entry disabled
   LI(x7, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x7)
+  srli x11, x25, 2
+  CSRW(0x151, x11)
+  nop
   LI(x11, 0x0)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_off_entry0_off:
-  # Read spmpcfg (sireg2) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x26, SspmpSm_addr_cg_cp_addr_match_off_entry0_off, SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str)
+  lw x26, 0(x25)  # entry 0 is OFF; resident rule allows
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, SspmpSm_addr_cg_cp_addr_match_off_entry0_off, SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str)
 
 # A=TOR: top of range matching
   LI(x7, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x7)
-  LI(x11, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x11)  # write sireg (spmpaddr)
+  srli x11, x25, 2
+  CSRW(0x151, x11)  # TOR lower bound = scratch
   nop
   LI(x11, 0x0)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
   LI(x7, 0x101)  # siselect = SPMP entry 1
   CSRW(siselect, x7)
-  LI(x11, 0x20004000)  # spmpaddr value
-  CSRW(0x151, x11)  # write sireg (spmpaddr)
+  addi x11, x25, 8
+  srli x11, x11, 2
+  CSRW(0x151, x11)  # TOR upper bound = scratch + 8
   nop
-  LI(x11, 0x10b)  # spmpcfg value
+  LI(x11, 0xd)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg:
-  # Read spmpcfg (sireg2) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x26, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg_str)
-  LI(x7, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x7)
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr:
-  # Read spmpaddr (sireg) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x26, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr_str)
+SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_load:
+  lw x26, 0(x25)
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_load, SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_load_str)
   LI(x7, 0x101)  # siselect = SPMP entry 1
   CSRW(siselect, x7)
   LI(x11, 0x0)  # spmpcfg value
@@ -114,19 +116,20 @@ SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr:
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
 
-# A=NA4: naturally aligned 4-byte region
+# A=NA4: naturally aligned 4-byte region at scratch
   LI(x7, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x7)
-  LI(x11, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x11)  # write sireg (spmpaddr)
+  srli x11, x25, 2
+  CSRW(0x151, x11)
   nop
-  LI(x11, 0x111)  # spmpcfg value
+  LI(x11, 0x15)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4:
-  # Read spmpcfg (sireg2) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x26, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str)
+  lw x26, 0(x25)
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4, SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str)
   LI(x11, 0x0)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
@@ -134,22 +137,27 @@ SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4:
 # A=NAPOT: naturally aligned power-of-two region (8 bytes minimum)
   LI(x7, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x7)
-  LI(x11, 0x20000000)  # spmpaddr value
-  CSRW(0x151, x11)  # write sireg (spmpaddr)
+  srli x11, x25, 2
+  CSRW(0x151, x11)
   nop
-  LI(x11, 0x11b)  # spmpcfg value
+  LI(x11, 0x1d)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot:
-  # Read spmpcfg (sireg2) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x26, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str)
-  LI(x11, 0x200001ff)  # spmpaddr value
-  CSRW(0x151, x11)  # write sireg (spmpaddr)
+  lw x26, 0(x25)
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str)
+  srli x11, x25, 2
+  andi x11, x11, -1024  # align the encoded base to 4 KiB
+  ori x11, x11, 0x1ff
+  CSRW(0x151, x11)
   nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k:
-  # Read spmpaddr (sireg) into x26 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x26, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str)
+  lw x26, 0(x25)
+  # Check if x26 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x26, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k, SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str)
   LI(x11, 0x0)  # spmpcfg value
   CSRW(0x152, x11)  # write sireg2 (spmpcfg)
   nop
@@ -169,11 +177,10 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str: .string "\"test: 1; cg: SspmpSm_addr_cg; cp: cp_addr_match_off; bin: entry0_off\""
-SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_cfg_str: .string "\"test: 2; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor; bin: entry1_tor_cfg\""
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr_str: .string "\"test: 3; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor; bin: entry0_tor_base_addr\""
-SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str: .string "\"test: 4; cg: SspmpSm_addr_cg; cp: cp_addr_match_na4; bin: entry0_na4\""
-SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str: .string "\"test: 5; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot\""
-SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str: .string "\"test: 6; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot_4k\""
+SspmpSm_addr_cg_cp_addr_match_tor_entry1_tor_load_str: .string "\"test: 2; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor; bin: entry1_tor_load\""
+SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str: .string "\"test: 3; cg: SspmpSm_addr_cg; cp: cp_addr_match_na4; bin: entry0_na4\""
+SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str: .string "\"test: 4; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot\""
+SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str: .string "\"test: 5; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot_4k\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

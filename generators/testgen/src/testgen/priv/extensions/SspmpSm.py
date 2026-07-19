@@ -119,6 +119,21 @@ def _sfence_vma() -> str:
     return "sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses"
 
 
+def _generate_access_probe(label: str) -> list[str]:
+    """Emit an aligned writable probe that is also a valid jalr target."""
+    return [
+        f"j {label}_end",
+        ".balign 8",
+        f"{label}:",
+        ".option push",
+        ".option norvc",
+        "ret",
+        "nop",
+        ".option pop",
+        f"{label}_end:",
+    ]
+
+
 def _spmp_preamble(test_data: TestData) -> list[str]:
     """Delegate the shared entries and install a resident catch-all rule.
 
@@ -173,7 +188,9 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
     Covers: cp_spmp_indirect_access, cp_spmpaddr_write, cp_spmpcfg_write
     """
     covergroup = "SspmpSm_csr_cg"
-    sel_reg, val_reg, check_reg, save_cfg_reg, save_addr_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    sel_reg, val_reg, check_reg, save_cfg_reg, save_addr_reg, width_mask_reg = test_data.int_regs.get_registers(
+        6, exclude_regs=[0]
+    )
 
     lines = [
         comment_banner(
@@ -198,6 +215,11 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
             ]
         )
 
+        # Disable the entry before changing its address. Otherwise an active
+        # TOR/NAPOT rule inherited from an earlier test can redirect the probe
+        # writes onto the resident code or trap-handler regions.
+        lines.extend(_spmp_write_cfg(val_reg, 0))
+
         # ---------- cp_spmp_indirect_access ----------
         if entry == 0:
             lines.extend(
@@ -210,8 +232,10 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
         coverpoint = "cp_spmpaddr_write"
 
         # Write a non-zero address
-        addr_val = 0x80000000 + entry * 0x1000
+        addr_val = 0x20000000 + entry * 0x1000
         lines.extend(_spmp_write_addr(val_reg, addr_val >> 2))  # spmpaddr stores addr[55:2]
+        if entry == 0:
+            lines.append(_spmp_read_addr_sigupd(check_reg, test_data))
         lines.extend(
             [
                 test_data.add_testcase(f"entry{entry}_addr_write", coverpoint, covergroup),
@@ -228,6 +252,12 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
             ]
         )
 
+        # The architectural address-width probe is performed in NAPOT mode.
+        # Keep RWX set while the all-ones address creates a catch-all entry so
+        # the probe cannot block the test's own S-mode execution.
+        width_probe_cfg = RWX_RWX | (A_NAPOT << SPMPCFG_A_LO)
+        lines.extend(_spmp_write_cfg(val_reg, width_probe_cfg))
+
         # Write all-ones to probe address width
         lines.extend(
             [
@@ -238,9 +268,25 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
                 _spmp_read_addr_sigupd(check_reg, test_data),
             ]
         )
+        if entry == 0:
+            lines.append(f"mv x{width_mask_reg}, x{check_reg}  # reference implemented address mask")
+        else:
+            lines.extend(
+                [
+                    test_data.add_testcase(
+                        f"entry{entry}_addr_width_matches_entry0", "cp_spmpaddr_impl_bits_same", covergroup
+                    ),
+                    f"xor x{check_reg}, x{check_reg}, x{width_mask_reg}",
+                    write_sigupd(check_reg, test_data),
+                ]
+            )
+        lines.extend(_spmp_write_cfg(val_reg, 0))
 
         # ---------- Test spmpcfg write/read ----------
         coverpoint = "cp_spmpcfg_write"
+
+        # Keep every active A-mode probe away from the linked test image.
+        lines.extend(_spmp_write_addr(val_reg, addr_val >> 2))
 
         # Test each A field encoding
         for a_mode, a_name in [(A_OFF, "off"), (A_TOR, "tor"), (A_NA4, "na4"), (A_NAPOT, "napot")]:
@@ -253,6 +299,15 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
                     _spmp_read_cfg_sigupd(check_reg, test_data),
                 ]
             )
+
+        # Reserved bits 5 and 6 are WPRI: writes are ignored and read as zero.
+        lines.extend(_spmp_write_cfg(val_reg, 0b11 << 5))
+        lines.extend(
+            [
+                test_data.add_testcase(f"entry{entry}_cfg_reserved_5_6", "cp_spmpcfg_reserved_zero", covergroup),
+                _spmp_read_cfg_sigupd(check_reg, test_data),
+            ]
+        )
 
         # Test writing all zeros to cfg
         lines.extend(_spmp_write_cfg(val_reg, 0))
@@ -273,7 +328,7 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_cfg_reg, save_addr_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_cfg_reg, save_addr_reg, width_mask_reg])
     return lines
 
 
@@ -513,13 +568,15 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     Covers: cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot
     """
     covergroup = "SspmpSm_addr_cg"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
             "cp_addr_match_{off,tor,na4,napot}",
-            "Test each address matching mode by configuring SPMP entries\nand verifying the matching behavior.",
+            "Test each address matching mode with an S-mode load from scratch.\n"
+            "Each signature update follows the memory access governed by the rule.",
         ),
+        f"LA(x{addr_reg}, scratch)",
     ]
 
     # ---------- A=OFF: entry disabled, no match ----------
@@ -531,13 +588,21 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
         ]
     )
     lines.extend(_spmp_select(entry, sel_reg))
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+        ]
+    )
     cfg_off = A_OFF << SPMPCFG_A_LO  # A=OFF
     lines.extend(_spmp_write_cfg(val_reg, cfg_off))
     lines.extend(
         [
             _sfence_vma(),
             test_data.add_testcase(f"entry{entry}_off", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
+            f"lw x{check_reg}, 0(x{addr_reg})  # entry 0 is OFF; resident rule allows",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
@@ -551,30 +616,33 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     )
     # Set entry 0 addr (base of range)
     lines.extend(_spmp_select(0, sel_reg))
-    base_addr = 0x80000000
-    lines.extend(_spmp_write_addr(val_reg, base_addr >> 2))
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})  # TOR lower bound = scratch",
+            "nop",
+        ]
+    )
     lines.extend(_spmp_write_cfg(val_reg, 0))  # entry 0 cfg does not matter for TOR match
 
     # Set entry 1 with TOR mode
     lines.extend(_spmp_select(1, sel_reg))
-    top_addr = 0x80010000
-    lines.extend(_spmp_write_addr(val_reg, top_addr >> 2))
-    cfg_tor = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_TOR << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    lines.extend(
+        [
+            f"addi x{val_reg}, x{addr_reg}, 8",
+            f"srli x{val_reg}, x{val_reg}, 2",
+            f"CSRW(0x151, x{val_reg})  # TOR upper bound = scratch + 8",
+            "nop",
+        ]
+    )
+    cfg_tor = RWX_RX | (A_TOR << SPMPCFG_A_LO)
     lines.extend(_spmp_write_cfg(val_reg, cfg_tor))
     lines.extend(
         [
             _sfence_vma(),
-            test_data.add_testcase("entry1_tor_cfg", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
-        ]
-    )
-
-    # Verify entry 0 spmpaddr (the base)
-    lines.extend(_spmp_select(0, sel_reg))
-    lines.extend(
-        [
-            test_data.add_testcase("entry0_tor_base_addr", coverpoint, covergroup),
-            _spmp_read_addr_sigupd(check_reg, test_data),
+            test_data.add_testcase("entry1_tor_load", coverpoint, covergroup),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
@@ -590,19 +658,25 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     entry = 0
     lines.extend(
         [
-            "\n# A=NA4: naturally aligned 4-byte region",
+            "\n# A=NA4: naturally aligned 4-byte region at scratch",
         ]
     )
     lines.extend(_spmp_select(entry, sel_reg))
-    na4_addr = 0x80000000
-    lines.extend(_spmp_write_addr(val_reg, na4_addr >> 2))
-    cfg_na4 = (1 << SPMPCFG_R) | (A_NA4 << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+        ]
+    )
+    cfg_na4 = RWX_RX | (A_NA4 << SPMPCFG_A_LO)
     lines.extend(_spmp_write_cfg(val_reg, cfg_na4))
     lines.extend(
         [
             _sfence_vma(),
             test_data.add_testcase(f"entry{entry}_na4", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
@@ -619,27 +693,41 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(_spmp_select(entry, sel_reg))
     # For NAPOT with 8-byte region: addr = base >> 2, lsb = 0 (encodes 8 bytes)
-    napot_addr = 0x80000000
-    # For an 8-byte NAPOT region, spmpaddr = (base >> 2) | 0 (the pattern encodes size)
-    lines.extend(_spmp_write_addr(val_reg, napot_addr >> 2))
-    cfg_napot = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+        ]
+    )
+    cfg_napot = RWX_RX | (A_NAPOT << SPMPCFG_A_LO)
     lines.extend(_spmp_write_cfg(val_reg, cfg_napot))
     lines.extend(
         [
             _sfence_vma(),
             test_data.add_testcase(f"entry{entry}_napot", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
     # Also test a larger NAPOT region (4KB = 0x1000 bytes)
     # For 4KB NAPOT: spmpaddr LSBs = 0b0_1111_1111 (9 bits set for 2^12 region)
-    napot_4k_addr = (napot_addr >> 2) | 0x1FF
-    lines.extend(_spmp_write_addr(val_reg, napot_4k_addr))
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"andi x{val_reg}, x{val_reg}, -1024  # align the encoded base to 4 KiB",
+            f"ori x{val_reg}, x{val_reg}, 0x1ff",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+            _sfence_vma(),
+        ]
+    )
     lines.extend(
         [
             test_data.add_testcase(f"entry{entry}_napot_4k", coverpoint, covergroup),
-            _spmp_read_addr_sigupd(check_reg, test_data),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
@@ -648,7 +736,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_write_addr(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
@@ -661,6 +749,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_smode_rule"
+    probe_label = "sspmpsm_perm_s_probe"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -671,6 +760,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
             "regardless of the RWX bits.",
         ),
     ]
+    lines.extend(_generate_access_probe(probe_label))
 
     entry = 0
     lines.extend(
@@ -680,7 +770,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 0x100)",
             f"CSRS(CSR_MEDELEG, x{val_reg})",
             "RVTEST_GOTO_LOWER_MODE Smode",
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
         ]
     )
     lines.extend(_spmp_select(entry, sel_reg))
@@ -735,7 +825,6 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
                 "nop",
                 f"# S fetch: {'allowed' if rwx_val & RWX_X else 'instruction page fault'}",
                 test_data.add_testcase(f"smode_rwx_{rwx_name}_fetch", coverpoint, covergroup),
-                "LI(x4, 0xACCE)  # SKIP_MEPC sentinel",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
                 "RVTEST_GOTO_MMODE",
@@ -748,7 +837,6 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
                 f"sw x{val_reg}, 0(x{addr_reg})",
                 "nop",
                 test_data.add_testcase(f"umode_denied_{rwx_name}_fetch", coverpoint, covergroup),
-                "LI(x4, 0xACCE)",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
                 "RVTEST_GOTO_SMODE",
@@ -772,19 +860,18 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_umode_rule
       For each RWX encoding we program SPMP entry 0 as a U-mode region
-      covering `scratch`, drop to U-mode, and verify the access checks:
+      covering an aligned probe in the test's code range, drop to U-mode, and
+      verify the access checks:
         - lw   succeeds iff R=1, else load page fault (cause 13)
         - sw   succeeds iff W=1, else store page fault (cause 15)
-        - jalr succeeds iff X=1, else fetch page fault (cause 12),
-                recovered via SKIP_MEPC + x4 = 0xACCE sentinel.
+        - jalr succeeds iff X=1, else fetch page fault (cause 12).
       After each iteration, RVTEST_GOTO_SMODE ecalls back to S-mode; medeleg
       bit 8 is set up-front so U-mode ecall is delegated to S-mode, which
       provides the rtn2smode fast path.
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_umode_rule"
-    # x4 is framework-reserved as the RVTEST_SIGUPD temp and is also the
-    # SKIP_MEPC sentinel we LI just before jalr.
+    probe_label = "sspmpsm_perm_u_probe"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -792,19 +879,20 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
             coverpoint,
             "Configure SPMP U-mode rules (SHARED=0, U=1) with various RWX and\n"
             "exercise R / W / X permissions from inside U-mode.  Faulting\n"
-            "instructions rely on the framework's trap handler to advance xepc;\n"
-            "the fetch case uses SKIP_MEPC (x4 = 0xACCE) to force xepc = ra.",
+            "instructions use a probe in the code range so the framework trap\n"
+            "handler can report the fault and resume at the jalr return address.",
         ),
     ]
+    lines.extend(_generate_access_probe(probe_label))
 
     entry = 0
 
-    # Pre-install `ret` (0x00008067) at scratch[0] from S-mode, before SPMP is
-    # programmed.  This keeps the jalr target clean for cases where X=1.
+    # Re-install `ret` before SPMP is programmed. This keeps the writable code
+    # probe unchanged when stores are allowed.
     lines.extend(
         [
-            "\n# Pre-install `ret` (0x00008067) at scratch[0]",
-            f"LA(x{addr_reg}, scratch)",
+            "\n# Initialize the aligned access probe",
+            f"LA(x{addr_reg}, {probe_label})",
             f"LI(x{val_reg}, 0x00008067)  # ret",
             f"sw x{val_reg}, 0(x{addr_reg})",
             "fence.i  # sync icache with the data write",
@@ -842,7 +930,7 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
                 f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
                 f"CSRW(miselect, x{sel_reg})",
                 "nop",
-                f"LA(x{addr_reg}, scratch)",
+                f"LA(x{addr_reg}, {probe_label})",
                 f"srli x{addr_reg}, x{addr_reg}, 2  # spmpaddr format",
                 "# No low bits set: 8-byte NAPOT region, excluding trap save areas",
                 f"CSRW(mireg, x{addr_reg})  # spmpaddr via mireg",
@@ -856,7 +944,7 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
                 "# === In U-mode ===",
                 f"# load: succeeds iff R=1 ({'yes' if rwx_val & RWX_R else 'no'}) in RWX={rwx_name}",
                 test_data.add_testcase(f"umode_rwx_{rwx_name}_load", coverpoint, covergroup),
-                f"LA(x{addr_reg}, scratch)",
+                f"LA(x{addr_reg}, {probe_label})",
                 f"lw x{check_reg}, 0(x{addr_reg})",
                 "nop  # trap handler skips here on R=0",
                 "",
@@ -868,8 +956,7 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
                 "",
                 f"# fetch: succeeds iff X=1 ({'yes' if rwx_val & RWX_X else 'no'}) in RWX={rwx_name}",
                 test_data.add_testcase(f"umode_rwx_{rwx_name}_fetch", coverpoint, covergroup),
-                "LI(x4, 0xACCE)  # SKIP_MEPC sentinel",
-                f"jalr x1, 0(x{addr_reg})  # on fetch fault (X=0) handler forces xepc = ra",
+                f"jalr x1, 0(x{addr_reg})  # fetch faults resume at ra",
                 "nop",
                 "",
                 "# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)",
@@ -877,8 +964,16 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    # Clean up: clear spmpcfg and restore medeleg (bit 8 cleared at CODE_END
-    # by the framework's resto_edeleg, but clear explicitly to be polite).
+        if rwx_val & RWX_R:
+            lines.extend(
+                [
+                    "# Record the successful U-mode load after returning to S-mode",
+                    test_data.add_testcase(f"umode_rwx_{rwx_name}_load_result", coverpoint, covergroup),
+                    write_sigupd(check_reg, test_data),
+                ]
+            )
+
+    # Clean up spmpcfg. The framework restores medeleg at CODE_END.
     lines.extend(
         [
             "\n# Clean up: clear spmpcfg via S-mode indirect access",
@@ -902,10 +997,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_sum_effect"
-    # x4 is reserved by the framework (RVTEST_SIGUPD temp) AND used by this
-    # test as the SKIP_MEPC sentinel for the EnforceNoX jalr.  We LI 0xACCE
-    # into x4 immediately before the jalr; no sigupd happens in between, so
-    # the sentinel survives until the trap handler inspects it.
+    probe_label = "sspmpsm_sum_probe"
     sel_reg, val_reg, check_reg, save_reg, addr_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -917,34 +1009,30 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             "       denied by EnforceNoX even when X=1 in the rule.",
         ),
     ]
+    lines.extend(_generate_access_probe(probe_label))
 
     entry = 0
 
-    # Pre-install `ret` (0x00008067) at scratch[0] so that if EnforceNoX ever
-    # fails to fire and the fetch succeeds, the jalr lands on a clean return
-    # rather than executing garbage.  This write must happen BEFORE we program
-    # SPMP because afterwards the region is U-mode-only with no S-mode
-    # permissions.
+    # Initialize the writable code probe before installing the U-mode rule.
     lines.extend(
         [
-            "\n# Pre-install `ret` (0x00008067) at scratch[0]",
-            f"LA(x{addr_reg}, scratch)",
+            "\n# Initialize the aligned access probe",
+            f"LA(x{addr_reg}, {probe_label})",
             f"LI(x{val_reg}, 0x00008067)  # ret",
             f"sw x{val_reg}, 0(x{addr_reg})",
             "fence.i  # sync icache with the data write",
         ]
     )
 
-    # Configure SPMP entry 0 over the first 8 bytes of scratch. Keeping the
-    # trap save areas outside this region lets the S-mode handler record the
-    # expected permission faults safely.
+    # Configure SPMP entry 0 over the 8-byte probe. Trap-handler state remains
+    # outside this region and is governed by the resident catch-all rule.
     # X=1 is required so that cp_enforce_no_x.sum1_fetch_denied can fire
     # (the bin requires umode_rule_rwx ∈ {rx, rwx, x_only}).
     cfg_val = RWX_RWX | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
     lines.extend(_spmp_select(entry, sel_reg))
     lines.extend(
         [
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
             "# No low bits set: 8-byte NAPOT region",
             f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
@@ -964,7 +1052,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             "",
             "# Expected: load page fault (cause 13); strap handler advances sepc by 4.",
             test_data.add_testcase("sum_0_smode_load_denied", "cp_sum_denied", covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"lw x{check_reg}, 0(x{addr_reg})  # faults",
             "nop  # trap handler skips to here",
             "",
@@ -984,7 +1072,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             "",
             "# Expected: load succeeds, reads the `ret` instruction value.",
             test_data.add_testcase("sum_1_data_allowed_load", coverpoint, covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"lw x{check_reg}, 0(x{addr_reg})",
             write_sigupd(check_reg, test_data),
             "",
@@ -997,10 +1085,8 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             "fence.i  # sync icache with the data write",
             "",
             "# Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.",
-            "# SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.",
             test_data.add_testcase("sum_1_fetch_denied", "cp_enforce_no_x", covergroup),
-            "LI(x4, 0xACCE)  # SKIP_MEPC sentinel",
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"jalr x1, 0(x{addr_reg})  # fetch page fault (cause 12); handler returns here",
             "nop",
             "",
@@ -1096,6 +1182,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_shared_rule"
+    probe_label = "sspmpsm_shared_probe"
     sel_reg, val_reg, check_reg, addr_reg, save_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -1107,6 +1194,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
             "         RWX=111 -> S:Enforce, U:Exec-only",
         ),
     ]
+    lines.extend(_generate_access_probe(probe_label))
 
     entry = 0
     lines.extend(
@@ -1116,7 +1204,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 0x100)",
             f"CSRS(CSR_MEDELEG, x{val_reg})",
             "RVTEST_GOTO_LOWER_MODE Smode",
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
         ]
     )
     lines.extend(_spmp_select(entry, sel_reg))
@@ -1172,7 +1260,6 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
                 "nop",
                 f"# S fetch: {'allowed' if rwx_val & RWX_X else 'instruction page fault'}",
                 test_data.add_testcase(f"shared_s_{rwx_name}_fetch", coverpoint, covergroup),
-                "LI(x4, 0xACCE)",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
                 "RVTEST_GOTO_MMODE",
@@ -1183,8 +1270,6 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
                 "nop",
             ]
         )
-        if u_read:
-            lines.append(write_sigupd(check_reg, test_data))
         lines.extend(
             [
                 "# Shared encodings never grant U-mode write permission",
@@ -1193,12 +1278,20 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
                 "nop",
                 f"# U fetch: {'allowed' if u_exec else 'instruction page fault'}",
                 test_data.add_testcase(f"shared_u_{rwx_name}_fetch", coverpoint, covergroup),
-                "LI(x4, 0xACCE)",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
                 "RVTEST_GOTO_SMODE",
             ]
         )
+        if u_read:
+            lines.extend(
+                [
+                    "# Record the successful U-mode load only after returning to S-mode;",
+                    "# the resident rule intentionally gives U-mode execute-only access.",
+                    test_data.add_testcase(f"shared_u_{rwx_name}_load_result", coverpoint, covergroup),
+                    write_sigupd(check_reg, test_data),
+                ]
+            )
         lines.extend(_spmp_select(entry, sel_reg))
         lines.extend(_spmp_write_cfg(val_reg, 0))
         lines.append(_sfence_vma())
@@ -1346,6 +1439,8 @@ def _generate_no_match_deny_tests(test_data: TestData) -> list[str]:
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
             "sfence.vma x0, x0",
+            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
+            f"CSRW(siselect, x{sel_reg})  # selected resident entry is OFF",
             test_data.add_testcase("no_match_load_fault", coverpoint, covergroup),
             f"LA(x{addr_reg}, scratch)",
             f"lw x{check_reg}, 0(x{addr_reg})  # no matching entry: load page fault",
@@ -1470,6 +1565,157 @@ def _generate_priority_match_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_match_all_bytes_tests(test_data: TestData) -> list[str]:
+    """Test that the first matching entry must cover every byte of an access.
+
+    Covers: cp_spmp_match_all_bytes
+    """
+    covergroup = "SspmpSm_addr_cg"
+    coverpoint = "cp_spmp_match_all_bytes"
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "On RV64, configure entry 0 as a 4-byte NA4 read region at scratch,\n"
+            "then issue an aligned 8-byte load. Entry 0 matches the first bytes but\n"
+            "not the full access, so the load must raise a page fault.",
+        ),
+        f"LA(x{addr_reg}, scratch)",
+    ]
+    lines.extend(_spmp_select(0, sel_reg))
+    lines.extend(
+        [
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+        ]
+    )
+    lines.extend(_spmp_write_cfg(val_reg, RWX_R | (A_NA4 << SPMPCFG_A_LO)))
+    lines.extend(
+        [
+            _sfence_vma(),
+            "#if __riscv_xlen == 64",
+            test_data.add_testcase("na4_partial_ld_fault", coverpoint, covergroup),
+            f"ld x{check_reg}, 0(x{addr_reg})  # entry 0 does not cover all eight bytes",
+            "nop  # trap handler resumes here",
+            "#endif",
+        ]
+    )
+    lines.extend(_spmp_write_cfg(val_reg, 0))
+    lines.extend(_spmp_write_addr(val_reg, 0))
+    lines.append(_sfence_vma())
+
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
+    return lines
+
+
+def _generate_exception_priority_tests(test_data: TestData) -> list[str]:
+    """Test that an SPMP page fault takes priority over a PMP access fault.
+
+    Covers: cp_spmp_exception_priority
+    """
+    covergroup = "SspmpSm_perm_cg"
+    coverpoint = "cp_spmp_exception_priority"
+    (
+        sel_reg,
+        val_reg,
+        check_reg,
+        addr_reg,
+        save_pmpcfg_reg,
+        save_pmpaddr0_reg,
+        save_pmpaddr1_reg,
+    ) = test_data.int_regs.get_registers(7, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Create a PMP no-match hole and an SPMP deny rule over the same 8-byte\n"
+            "scratch region. The S-mode load violates both mechanisms; SPMP must win\n"
+            "and report load page fault (13), not load access fault (5).",
+        ),
+        "RVTEST_GOTO_MMODE",
+        f"LI(x{val_reg}, 3)",
+        f"CSRW(CSR_MPMPDELEG, x{val_reg})  # PMP[0..2], remaining entries delegated to SPMP",
+        "nop",
+        f"LA(x{addr_reg}, scratch)",
+        f"CSRR(x{save_pmpcfg_reg}, pmpcfg0)",
+        f"CSRR(x{save_pmpaddr0_reg}, pmpaddr0)",
+        f"CSRR(x{save_pmpaddr1_reg}, pmpaddr1)",
+        f"CSRR(x{check_reg}, pmpaddr2)",
+        "#if __riscv_xlen == 64",
+        f"sd x{check_reg}, 16(x{addr_reg})  # save pmpaddr2 outside the denied 8-byte region",
+        "#else",
+        f"sw x{check_reg}, 16(x{addr_reg})",
+        "#endif",
+        f"srli x{check_reg}, x{addr_reg}, 2",
+        f"CSRW(pmpaddr0, x{check_reg})  # PMP TOR allow below scratch",
+        f"addi x{check_reg}, x{check_reg}, 2",
+        f"CSRW(pmpaddr1, x{check_reg})  # OFF boundary at scratch + 8",
+        f"LI(x{check_reg}, -1)",
+        f"CSRW(pmpaddr2, x{check_reg})  # PMP TOR allow above the hole",
+        f"LI(x{val_reg}, 0x000f000f)  # PMP0/PMP2 TOR RWX; PMP1 OFF",
+        f"CSRW(pmpcfg0, x{val_reg})",
+        "nop",
+        f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
+        f"CSRW(miselect, x{sel_reg})",
+        f"srli x{check_reg}, x{addr_reg}, 2",
+        f"CSRW(mireg, x{check_reg})",
+        f"LI(x{val_reg}, 0x{(A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U):x})  # SPMP deny rule",
+        f"CSRW(mireg2, x{val_reg})",
+        f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x} + UDB_NUM_PMP_ENTRIES - 3 - 1)",
+        f"CSRW(miselect, x{sel_reg})",
+        f"LI(x{val_reg}, -1)",
+        f"CSRW(mireg, x{val_reg})",
+        f"LI(x{val_reg}, 0x{BASELINE_CFG:x})",
+        f"CSRW(mireg2, x{val_reg})",
+        "sfence.vma x0, x0",
+        "RVTEST_GOTO_LOWER_MODE Smode",
+        f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
+        f"CSRW(siselect, x{sel_reg})",
+        _sfence_vma(),
+        test_data.add_testcase("spmp_fault_precedes_pmp_fault", coverpoint, covergroup),
+        f"lw x{check_reg}, 0(x{addr_reg})",
+        "nop  # trap handler resumes here after load page fault",
+        "RVTEST_GOTO_MMODE",
+        f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
+        f"CSRW(miselect, x{sel_reg})",
+        "CSRW(mireg2, zero)",
+        "CSRW(mireg, zero)",
+        f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x} + UDB_NUM_PMP_ENTRIES - 3 - 1)",
+        f"CSRW(miselect, x{sel_reg})",
+        "CSRW(mireg2, zero)  # clear temporary pmpnum=3 resident rule",
+        "CSRW(mireg, zero)",
+        "CSRW(pmpcfg0, zero)  # disable the temporary PMP rules before restoring",
+        f"CSRW(pmpaddr0, x{save_pmpaddr0_reg})",
+        f"CSRW(pmpaddr1, x{save_pmpaddr1_reg})",
+        "#if __riscv_xlen == 64",
+        f"ld x{check_reg}, 16(x{addr_reg})",
+        "#else",
+        f"lw x{check_reg}, 16(x{addr_reg})",
+        "#endif",
+        f"CSRW(pmpaddr2, x{check_reg})",
+        f"CSRW(pmpcfg0, x{save_pmpcfg_reg})",
+        "CSRW(CSR_MPMPDELEG, zero)",
+        "nop",
+        "sfence.vma x0, x0",
+        "RVTEST_GOTO_LOWER_MODE Smode",
+    ]
+
+    test_data.int_regs.return_registers(
+        [
+            sel_reg,
+            val_reg,
+            check_reg,
+            addr_reg,
+            save_pmpcfg_reg,
+            save_pmpaddr0_reg,
+            save_pmpaddr1_reg,
+        ]
+    )
+    return lines
+
+
 def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     """Test that M-mode bypasses SPMP.
 
@@ -1477,7 +1723,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_mmode_bypass"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -1498,11 +1744,11 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
             "nop",
         ]
     )
-    # NAPOT covering a wide range, no permissions
-    napot_wide = (0x80000000 >> 2) | 0xFFF
+    # NAPOT covering the exact load target, with no permissions.
     lines.extend(
         [
-            f"LI(x{val_reg}, 0x{napot_wide:x})",
+            f"LA(x{addr_reg}, scratch)",
+            f"srli x{val_reg}, x{addr_reg}, 2  # 8-byte NAPOT region",
             f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
             "nop",
         ]
@@ -1521,8 +1767,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("mmode_bypass_load", coverpoint, covergroup),
-            f"LA(x{val_reg}, scratch)",
-            f"lw x{check_reg}, 0(x{val_reg})  # M-mode load should succeed despite SPMP",
+            f"lw x{check_reg}, 0(x{addr_reg})  # M-mode load should succeed despite SPMP",
             "nop",
             write_sigupd(check_reg, test_data),
         ]
@@ -1540,7 +1785,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
@@ -1714,10 +1959,55 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
         ]
     )
 
+    # ---------- Dynamic boundary, OOB, and locked-SPMP override ----------
+    lines.extend(
+        [
+            comment_banner(
+                "cp_mpmpdeleg_reconfig_high_entries / cp_mpmpdeleg_oob_access / cp_mpmpdeleg_locked_spmp_override",
+                "Configure the highest writable SPMP resource with pmpnum=0, lock SPMP[0],\n"
+                "then raise pmpnum to 1. The locked SPMP entry must not block M-mode;\n"
+                "the former highest selector becomes OOB and its state moves to the new highest index.",
+            ),
+            f"CSRW({mpmpdeleg_csr}, zero)",
+            "nop",
+            f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 1)",
+            f"CSRW(miselect, x{sel_reg})  # highest SPMP index while pmpnum=0",
+            f"LI(x{val_reg}, 0x12345)",
+            f"CSRW(mireg, x{val_reg})  # recognizable state in the highest writable entry",
+            "CSRW(mireg2, zero)  # keep the high entry inactive",
+            f"LI(x{sel_reg}, 0x100)",
+            f"CSRW(miselect, x{sel_reg})  # SPMP[0]",
+            f"LI(x{val_reg}, 0x{1 << SPMPCFG_L:x})  # L=1, A=OFF",
+            f"CSRW(mireg2, x{val_reg})",
+            "nop",
+            test_data.add_testcase("locked_spmp0_pmpnum_increment", "cp_mpmpdeleg_locked_spmp_override", covergroup),
+            f"LI(x{val_reg}, 1)",
+            f"CSRW({mpmpdeleg_csr}, x{val_reg})  # must override locked SPMP[0]",
+            "nop",
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
+            f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 1)",
+            f"CSRW(miselect, x{sel_reg})  # now one past the SPMP range",
+            test_data.add_testcase("reconfig_former_highest_read_zero", "cp_mpmpdeleg_oob_access", covergroup),
+            gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
+            f"LI(x{val_reg}, -1)",
+            f"CSRW(mireg, x{val_reg})",
+            "nop",
+            test_data.add_testcase("reconfig_former_highest_write_ignored", "cp_mpmpdeleg_oob_access", covergroup),
+            gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
+            f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 2)",
+            f"CSRW(miselect, x{sel_reg})  # highest valid SPMP index after reconfiguration",
+            test_data.add_testcase(
+                "reconfig_new_highest_inherits_state", "cp_mpmpdeleg_reconfig_high_entries", covergroup
+            ),
+            gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
+        ]
+    )
+
     # ---------- Test locked PMP constraint ----------
     coverpoint = "cp_mpmpdeleg_locked"
 
-    # Lock PMP entry 7, then try to set pmpnum < 8
+    # First make PMP[0..7] visible, then lock PMP entry 7 and try to set
+    # pmpnum below 8. PMP[0] is already locked after the override test above.
     lines.extend(
         [
             comment_banner(
@@ -1725,6 +2015,9 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
                 "Lock PMP entry 7, then try to set pmpnum < 8.\nShould be rejected (pmpnum retains prior value).",
             ),
             "",
+            f"LI(x{val_reg}, 8)",
+            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            "nop",
             "# Lock PMP[7]",
             f"LI(x{sel_reg}, -1)",
             f"CSRW(pmpaddr7, x{sel_reg})  # deterministic maximal NAPOT region",
@@ -1818,21 +2111,22 @@ def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
     writes."
 
     The test exercises this sequence: select an SPMP entry, write spmpaddr +
-    spmpcfg via sireg / sireg2, issue SFENCE.VMA x0,x0, then perform a
-    readback.  The coverpoint samples SFENCE.VMA whose previous instruction
-    targeted an SPMP siselect value.
+    spmpcfg via sireg / sireg2, issue SFENCE.VMA x0,x0, then perform a load
+    governed by the new rule. The coverpoint samples SFENCE.VMA whose previous
+    instruction targeted an SPMP siselect value.
     """
     covergroup = "SspmpSm_csr_cg"
     coverpoint = "cp_sfence_ordering"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
             coverpoint,
             "SFENCE.VMA x0,x0 orders preceding SPMP CSR writes against subsequent\n"
-            "S/U-mode memory accesses (Spec §2.7).  Exercise the ordering sequence\n"
-            "for several SPMP entries / configurations.",
+            "S/U-mode memory accesses (Spec §2.7). After each fence, load from the\n"
+            "newly configured S-mode region and record the result.",
         ),
+        f"LA(x{addr_reg}, scratch)",
     ]
 
     for entry in range(NUM_TEST_ENTRIES):
@@ -1840,30 +2134,35 @@ def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
         lines.extend(_spmp_select(entry, sel_reg))
 
         # Write spmpaddr via sireg
-        addr_val = (0x80000000 + entry * 0x1000) >> 2
-        lines.extend(_spmp_write_addr(val_reg, addr_val))
+        lines.extend(
+            [
+                f"srli x{val_reg}, x{addr_reg}, 2",
+                f"CSRW(0x151, x{val_reg})",
+                "nop",
+            ]
+        )
 
-        # Write spmpcfg via sireg2 (NAPOT + RW + U)
-        cfg_val = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+        # Write spmpcfg via sireg2 (S-mode read-only NAPOT).
+        cfg_val = RWX_R | (A_NAPOT << SPMPCFG_A_LO)
         lines.extend(_spmp_write_cfg(val_reg, cfg_val))
 
         # Repeat the cfg write without an intervening nop so the trace can
         # directly associate the preceding indirect write with SFENCE.VMA.
         lines.append(f"CSRW(0x152, x{val_reg})")
 
-        # Label and issue SFENCE.VMA x0,x0. This is the instruction
-        # cp_sfence_ordering samples after the SPMP CSR write above.
-        lines.append(test_data.add_testcase(f"entry{entry}_sfence_after_cfg", coverpoint, covergroup))
+        # Issue the fence immediately after the indirect write, then label the
+        # governed load so the coverpoint observes SFENCE.VMA as its predecessor.
         lines.append(_sfence_vma())
-        lines.append(_spmp_read_cfg_sigupd(check_reg, test_data))
+        lines.append(test_data.add_testcase(f"entry{entry}_load_after_sfence", coverpoint, covergroup))
+        lines.append(f"lw x{check_reg}, 0(x{addr_reg})")
+        lines.append(write_sigupd(check_reg, test_data))
 
-    # Clean up: zero the last touched entry
-    lines.extend(_spmp_select(NUM_TEST_ENTRIES - 1, sel_reg))
-    lines.extend(_spmp_write_cfg(val_reg, 0))
-    lines.extend(_spmp_write_addr(val_reg, 0))
-    lines.append(_sfence_vma())
+        # Keep the next iteration independent of this entry's rule.
+        lines.extend(_spmp_write_cfg(val_reg, 0))
+        lines.extend(_spmp_write_addr(val_reg, 0))
+        lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
@@ -1874,14 +2173,14 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_paging_cg"
     coverpoint = "cp_satp_bare_spmp"
-    check_reg = test_data.int_regs.get_registers(1, exclude_regs=[0])[0]
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
             coverpoint,
-            "Verify SPMP and paging are mutually exclusive.\n"
-            "When satp.mode == Bare, SPMP provides isolation.\n"
-            "Read satp to confirm Bare mode.",
+            "Verify that SPMP provides isolation when satp.mode is Bare.\n"
+            "Confirm Bare, install a deny rule over scratch, and observe the\n"
+            "resulting S-mode load page fault.",
         ),
     ]
 
@@ -1894,17 +2193,32 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Also test from M-mode
+    # A real denied access demonstrates that SPMP, rather than only the satp
+    # readback, is the active isolation mechanism in Bare mode.
+    lines.extend(_spmp_select(0, sel_reg))
     lines.extend(
         [
-            "RVTEST_GOTO_MMODE",
-            test_data.add_testcase("satp_bare_mmode_check", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-            "RVTEST_GOTO_LOWER_MODE Smode",
+            f"LA(x{addr_reg}, scratch)",
+            f"srli x{val_reg}, x{addr_reg}, 2",
+            f"CSRW(0x151, x{val_reg})",
+            "nop",
+        ]
+    )
+    lines.extend(_spmp_write_cfg(val_reg, A_NAPOT << SPMPCFG_A_LO))
+    lines.extend(
+        [
+            _sfence_vma(),
+            test_data.add_testcase("satp_bare_spmp_load_denied", coverpoint, covergroup),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            "nop  # trap handler resumes here after load page fault",
         ]
     )
 
-    test_data.int_regs.return_registers([check_reg])
+    lines.extend(_spmp_write_cfg(val_reg, 0))
+    lines.extend(_spmp_write_addr(val_reg, 0))
+    lines.append(_sfence_vma())
+
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
@@ -1915,6 +2229,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     SPMP violations use page fault exception codes (12, 13, 15).
     """
     covergroup = "SspmpSm_perm_cg"
+    probe_label = "sspmpsm_fault_probe"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -1926,17 +2241,19 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "Exception code 15 = store/AMO page fault",
         ),
     ]
+    lines.extend(_generate_access_probe(probe_label))
 
     # ---------- Setup: configure SPMP to protect a region ----------
     # S-mode setup: create an S-mode-only rule that allows S-mode access (U denied)
     entry = 0
     lines.extend(_spmp_select(entry, sel_reg))
 
-    # Use only the first 8 bytes of scratch so trap-handler save areas remain
-    # accessible through the resident catch-all rule.
+    # Use an 8-byte probe in the linked code range. That keeps fetch-fault EPCs
+    # relocatable by the standard trap handler while leaving its save areas on
+    # the resident catch-all rule.
     lines.extend(
         [
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
             "# No low bits set: 8-byte NAPOT region",
             f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
@@ -1956,7 +2273,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "# S-mode load to S-mode-only region should succeed",
             test_data.add_testcase("smode_load_ok", coverpoint, covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"lw x{check_reg}, 0(x{addr_reg})",
             "nop",
             write_sigupd(check_reg, test_data),
@@ -1970,7 +2287,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "# S-mode store to S-mode-only region should succeed",
             test_data.add_testcase("smode_store_ok", coverpoint, covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"LI(x{val_reg}, 0xCAFEBABE)",
             f"sw x{val_reg}, 0(x{addr_reg})",
             "nop",
@@ -1986,7 +2303,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"LI(x{val_reg}, 0x00008067)  # ret",
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"sw x{val_reg}, 0(x{addr_reg})",
             "fence.i",
             "RVTEST_GOTO_MMODE",
@@ -2015,8 +2332,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "# S-mode fetch from U-mode region with no perms -> instruction page fault (12)",
             test_data.add_testcase("smode_instr_fault", "cp_spmp_fault_instr", covergroup),
-            "LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra",
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"jalr x1, 0(x{addr_reg})  # should cause instruction page fault",
             "nop",
         ]
@@ -2029,7 +2345,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "# S-mode load with SUM=0 to U-mode region with no perms -> page fault (13)",
             test_data.add_testcase("smode_load_fault", coverpoint, covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"lw x{check_reg}, 0(x{addr_reg})  # should cause load page fault",
             "nop  # trap handler skips this",
         ]
@@ -2042,7 +2358,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "# S-mode store to U-mode region with no perms -> page fault (15)",
             test_data.add_testcase("smode_store_fault", coverpoint, covergroup),
-            f"LA(x{addr_reg}, scratch)",
+            f"LA(x{addr_reg}, {probe_label})",
             f"sw x{val_reg}, 0(x{addr_reg})  # should cause store page fault",
             "nop  # trap handler skips this",
         ]
@@ -2077,7 +2393,7 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "SspmpSm_addr_cg"
     coverpoint = "cp_addr_match_tor_entry0"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -2088,15 +2404,25 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
 
     # Configure entry 0 with TOR
     lines.extend(_spmp_select(0, sel_reg))
-    top_addr = 0x80010000
-    lines.extend(_spmp_write_addr(val_reg, top_addr >> 2))
-    cfg_tor_e0 = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_TOR << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    lines.extend(
+        [
+            f"LA(x{addr_reg}, scratch)",
+            f"addi x{val_reg}, x{addr_reg}, 8",
+            f"srli x{val_reg}, x{val_reg}, 2",
+            f"CSRW(0x151, x{val_reg})  # TOR top = scratch + 8; lower bound is zero",
+            "nop",
+        ]
+    )
+    # Entry 0 TOR spans the resident code below scratch, so preserve execute
+    # permission while the rule is active.
+    cfg_tor_e0 = RWX_RWX | (A_TOR << SPMPCFG_A_LO)
     lines.extend(_spmp_write_cfg(val_reg, cfg_tor_e0))
     lines.extend(
         [
             _sfence_vma(),
             test_data.add_testcase("tor_on_entry0", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
         ]
     )
 
@@ -2105,7 +2431,7 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_write_addr(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
@@ -2147,6 +2473,36 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             f"CSRR(x{save_high_reg}, CSR_SPMPENH)  # save upper 32 bits",
             "nop",
             "#endif",
+        ]
+    )
+
+    # Partition the writable resources at one quarter of their count. The
+    # remaining entries are delegated and the upper spmpen bits must ignore
+    # writes. With the 64-entry max configs this retains the 16/48 split.
+    lines.extend(
+        [
+            f"CSRR(x{addr_reg}, CSR_MPMPDELEG)  # save pmpnum",
+            f"LI(x{val_reg}, UDB_NUM_PMP_ENTRIES / 4)",
+            f"CSRW(CSR_MPMPDELEG, x{val_reg})",
+            "nop",
+            f"LI(x{val_reg}, -1)",
+            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            "#if __riscv_xlen == 32",
+            f"CSRW(CSR_SPMPENH, x{val_reg})",
+            "#endif",
+            "nop",
+            test_data.add_testcase("spmpen_upper_bits_ignored", "cp_spmpen_upper_bits_ignored", covergroup),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
+            "#if __riscv_xlen == 32",
+            test_data.add_testcase("spmpenh_upper_bits_ignored", "cp_spmpen_upper_bits_ignored", covergroup),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPENH", None), test_data),
+            "#endif",
+            f"CSRW(CSR_MPMPDELEG, x{addr_reg})  # restore pmpnum",
+            f"CSRW(CSR_SPMPEN, x{save_reg})",
+            "#if __riscv_xlen == 32",
+            f"CSRW(CSR_SPMPENH, x{save_high_reg})",
+            "#endif",
+            "nop",
         ]
     )
 
@@ -2254,7 +2610,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # Disable entry 0 while keeping the resident entry active.
     lines.extend(
         [
-            "\n# Disable entry 0 via spmpen[0] = 0",
+            "\n# spmpen=0x80: disable entry 0 and keep resident entry 7 enabled",
             f"LI(x{val_reg}, 0x{resident_mask:x})",
             f"CSRW(CSR_SPMPEN, x{val_reg})",
             "nop",
@@ -2270,7 +2626,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # Enable entry 0 while keeping the resident entry active.
     lines.extend(
         [
-            "\n# Enable entry 0 via spmpen[0] = 1",
+            "\n# spmpen=0x81: enable entry 0 and keep resident entry 7 enabled",
             f"LI(x{val_reg}, 0x{resident_mask | 1:x})",
             f"CSRW(CSR_SPMPEN, x{val_reg})",
             "nop",
@@ -2403,8 +2759,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # and this suite explicitly exercises the Smpmpdeleg resource-sharing profile.
     required_extensions=["Sm", "S", "Zicsr", "Smcsrind", "Sscsrind", "Sspmp", "Sspmpen", "Smpmpdeleg"],
     march_extensions=["Zicsr", "Zifencei"],
-    params=["NUM_PMP_ENTRIES: '>=8'"],
-    extra_defines=["#define SKIP_MEPC"],  # needed for EnforceNoX / U-mode exec-fault tests
+    params=["NUM_PMP_ENTRIES: '>=8'", "PMP_GRANULARITY: 2"],
 )
 def make_sspmp(test_data: TestData) -> list[TestChunk]:
     """Generate all SPMP sub-tests (combined into one file by the framework)."""
@@ -2419,6 +2774,7 @@ def make_sspmp(test_data: TestData) -> list[TestChunk]:
     lines.extend(_generate_addr_match_tests(test_data))
     lines.extend(_generate_spmp_entry_tor_entry0_tests(test_data))
     lines.extend(_generate_priority_match_tests(test_data))
+    lines.extend(_generate_match_all_bytes_tests(test_data))
     # Permission Tests
     lines.extend(_generate_permission_smode_tests(test_data))
     lines.extend(_generate_permission_umode_tests(test_data))
@@ -2429,6 +2785,7 @@ def make_sspmp(test_data: TestData) -> list[TestChunk]:
     lines.extend(_generate_no_match_deny_tests(test_data))
     # Fault Tests
     lines.extend(_generate_spmp_fault_tests(test_data))
+    lines.extend(_generate_exception_priority_tests(test_data))
     # M-mode Tests
     lines.extend(_generate_mmode_bypass_tests(test_data))
     lines.extend(_generate_mmode_indirect_access_tests(test_data))
@@ -2461,6 +2818,7 @@ _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]], list[str]]] =
     ("SspmpSmAddrMatch", _generate_addr_match_tests, []),
     ("SspmpSmTorEntry0", _generate_spmp_entry_tor_entry0_tests, []),
     ("SspmpSmPriority", _generate_priority_match_tests, []),
+    ("SspmpSmMatchAllBytes", _generate_match_all_bytes_tests, []),
     ("SspmpSmPermSmode", _generate_permission_smode_tests, []),
     ("SspmpSmPermUmode", _generate_permission_umode_tests, []),
     ("SspmpSmSum", _generate_sum_effect_tests, []),
@@ -2469,6 +2827,7 @@ _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]], list[str]]] =
     ("SspmpSmReserved", _generate_reserved_encoding_tests, []),
     ("SspmpSmNoMatch", _generate_no_match_deny_tests, []),
     ("SspmpSmFault", _generate_spmp_fault_tests, []),
+    ("SspmpSmExceptionPriority", _generate_exception_priority_tests, []),
     ("SspmpSmMmodeBypass", _generate_mmode_bypass_tests, []),
     ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests, []),
     ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests, []),
@@ -2498,7 +2857,7 @@ def _generate_single_test(
         # to sync the icache after writing the jalr target for fetch-fault tests.
         # It is harmless for sub-tests that do not issue fence.i.
         march_extensions=["Zicsr", "Zifencei"],
-        extra_params=["NUM_PMP_ENTRIES: '>=8'"],
+        extra_params=["NUM_PMP_ENTRIES: '>=8'", "PMP_GRANULARITY: 2"],
     )
 
     test_data = TestData(test_config)
@@ -2519,11 +2878,7 @@ def _generate_single_test(
     sigupd_count = _SIGUPD_MARGIN + tc.sigupd_count
 
     test_file_relative = Path("Sspmp") / filename
-    # SKIP_MEPC enables the trap handler's fetch-fault recovery path used by
-    # EnforceNoX / U-mode exec-fault tests (x4 = 0xACCE sentinel + jalr).  It
-    # is a no-op unless the test sets x4 = 0xACCE immediately before the
-    # faulting fetch, so it is safe to include globally.
-    extra_defines = ["#define RVTEST_PRIV_TEST", "#define SKIP_MEPC"]
+    extra_defines = ["#define RVTEST_PRIV_TEST"]
     header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
     body = "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))

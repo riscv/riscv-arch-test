@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -64,16 +64,19 @@ RVTEST_BEGIN
 /////////////////////////////////
   LI(x15, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x15)
-  LI(x31, 0x20004000)  # spmpaddr value
-  CSRW(0x151, x31)  # write sireg (spmpaddr)
+  LA(x29, scratch)
+  addi x31, x29, 8
+  srli x31, x31, 2
+  CSRW(0x151, x31)  # TOR top = scratch + 8; lower bound is zero
   nop
-  LI(x31, 0x10b)  # spmpcfg value
+  LI(x31, 0xf)  # spmpcfg value
   CSRW(0x152, x31)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
-  # Read spmpcfg (sireg2) into x10 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x10, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
+  lw x10, 0(x29)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
   LI(x31, 0x0)  # spmpcfg value
   CSRW(0x152, x31)  # write sireg2 (spmpcfg)
   nop

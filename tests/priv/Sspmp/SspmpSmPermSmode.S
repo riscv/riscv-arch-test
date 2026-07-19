@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -63,12 +63,21 @@ RVTEST_BEGIN
 //   Exercise each permission from S-mode, then verify that U-mode is denied
 //   regardless of the RWX bits.
 /////////////////////////////////
+  j sspmpsm_perm_s_probe_end
+  .balign 8
+sspmpsm_perm_s_probe:
+  .option push
+  .option norvc
+  ret
+  nop
+  .option pop
+sspmpsm_perm_s_probe_end:
 # Delegate U-mode ecall so RVTEST_GOTO_SMODE can return from each U-mode probe
   RVTEST_GOTO_MMODE
   LI(x9, 0x100)
   CSRS(CSR_MEDELEG, x9)
   RVTEST_GOTO_LOWER_MODE Smode
-  LA(x8, scratch)
+  LA(x8, sspmpsm_perm_s_probe)
   LI(x25, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x25)
   srli x27, x8, 2  # 8-byte NAPOT region
@@ -97,7 +106,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_none_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -110,7 +118,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_none_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE
@@ -143,7 +150,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_x_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -156,7 +162,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_x_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE
@@ -191,7 +196,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_r_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -204,7 +208,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_r_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE
@@ -239,7 +242,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rx_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -252,7 +254,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_rx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE
@@ -287,7 +288,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_store:
   nop
 # S fetch: instruction page fault
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rw_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -300,7 +300,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_rw_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE
@@ -335,7 +334,6 @@ SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_store:
   nop
 # S fetch: allowed
 SspmpSm_perm_cg_cp_smode_rule_smode_rwx_rwx_fetch:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_MMODE
@@ -348,7 +346,6 @@ SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_store:
   sw x9, 0(x8)
   nop
 SspmpSm_perm_cg_cp_smode_rule_umode_denied_rwx_fetch:
-  LI(x4, 0xACCE)
   jalr x1, 0(x8)
   nop
   RVTEST_GOTO_SMODE

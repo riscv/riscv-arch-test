@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -21,7 +22,6 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -64,9 +64,18 @@ RVTEST_BEGIN
 //   Exception code 13 = load page fault
 //   Exception code 15 = store/AMO page fault
 /////////////////////////////////
+  j sspmpsm_fault_probe_end
+  .balign 8
+sspmpsm_fault_probe:
+  .option push
+  .option norvc
+  ret
+  nop
+  .option pop
+sspmpsm_fault_probe_end:
   LI(x15, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x15)
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   srli x24, x24, 2  # convert to spmpaddr format
 # No low bits set: 8-byte NAPOT region
   CSRW(0x151, x24)  # write spmpaddr via sireg
@@ -78,7 +87,7 @@ RVTEST_BEGIN
 
 # S-mode load to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok:
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   lw x20, 0(x24)
   nop
   # Check if x20 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -86,7 +95,7 @@ SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_ok:
 
 # S-mode store to S-mode-only region should succeed
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   LI(x30, 0xCAFEBABE)
   sw x30, 0(x24)
   nop
@@ -95,7 +104,7 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
   RVTEST_SIGUPD(x2, x5, x4, x20, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok, SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok_str)
 
   LI(x30, 0x00008067)  # ret
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   sw x30, 0(x24)
   fence.i
   RVTEST_GOTO_MMODE
@@ -111,20 +120,19 @@ SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_ok:
 
 # S-mode fetch from U-mode region with no perms -> instruction page fault (12)
 SspmpSm_perm_cg_cp_spmp_fault_instr_smode_instr_fault:
-  LI(x4, 0xACCE)  # SKIP_MEPC sentinel; fetch-fault handler resumes at ra
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   jalr x1, 0(x24)  # should cause instruction page fault
   nop
 
 # S-mode load with SUM=0 to U-mode region with no perms -> page fault (13)
 SspmpSm_perm_cg_cp_spmp_fault_load_smode_load_fault:
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   lw x20, 0(x24)  # should cause load page fault
   nop  # trap handler skips this
 
 # S-mode store to U-mode region with no perms -> page fault (15)
 SspmpSm_perm_cg_cp_spmp_fault_store_smode_store_fault:
-  LA(x24, scratch)
+  LA(x24, sspmpsm_fault_probe)
   sw x30, 0(x24)  # should cause store page fault
   nop  # trap handler skips this
 

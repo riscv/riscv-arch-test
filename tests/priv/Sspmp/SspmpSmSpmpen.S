@@ -12,16 +12,16 @@
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Smcsrind', 'Sscsrind', 'Sspmp', 'Smpmpdeleg', 'Sspmpen']
 # params:
 #   NUM_PMP_ENTRIES: '>=8'
+#   PMP_GRANULARITY: 2
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmSpmpen.S"
-#define SIGUPD_COUNT 25
+#define SIGUPD_COUNT 27
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
 #define BOOT_TO_SMODE
 
 // Include framework macros
@@ -71,6 +71,30 @@ RVTEST_BEGIN
   CSRR(x23, CSR_SPMPENH)  # save upper 32 bits
   nop
 #endif
+  CSRR(x25, CSR_MPMPDELEG)  # save pmpnum
+  LI(x27, UDB_NUM_PMP_ENTRIES / 4)
+  CSRW(CSR_MPMPDELEG, x27)
+  nop
+  LI(x27, -1)
+  CSRW(CSR_SPMPEN, x27)
+#if __riscv_xlen == 32
+  CSRW(CSR_SPMPENH, x27)
+#endif
+  nop
+SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpen_upper_bits_ignored:
+  # Read CSR_SPMPEN into x11 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x11, SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpen_upper_bits_ignored, SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpen_upper_bits_ignored_str)
+#if __riscv_xlen == 32
+SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpenh_upper_bits_ignored:
+  # Read CSR_SPMPENH into x11 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPENH, x11, SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpenh_upper_bits_ignored, SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpenh_upper_bits_ignored_str)
+#endif
+  CSRW(CSR_MPMPDELEG, x25)  # restore pmpnum
+  CSRW(CSR_SPMPEN, x6)
+#if __riscv_xlen == 32
+  CSRW(CSR_SPMPENH, x23)
+#endif
+  nop
 
 # Write all-ones to spmpen, read back (WARL register)
   LI(x27, -1)  # all ones
@@ -159,7 +183,7 @@ SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero:
   CSRW(0x152, x27)  # write sireg2 (spmpcfg)
   nop
 
-# Disable entry 0 via spmpen[0] = 0
+# spmpen=0x80: disable entry 0 and keep resident entry 7 enabled
   LI(x27, 0x80)
   CSRW(CSR_SPMPEN, x27)
   nop
@@ -172,7 +196,7 @@ SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed:
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x11, SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed, SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed_str)
 
-# Enable entry 0 via spmpen[0] = 1
+# spmpen=0x81: enable entry 0 and keep resident entry 7 enabled
   LI(x27, 0x81)
   CSRW(CSR_SPMPEN, x27)
   nop
@@ -264,22 +288,24 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 1; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 2; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 3; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 4; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 5; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 6; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
-SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones_str: .string "\"test: 7; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_allones\""
-SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero_str: .string "\"test: 8; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_zero\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 9; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed_str: .string "\"test: 10; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: disabled_napot_load_allowed\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 11; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_napot_load_denied_str: .string "\"test: 12; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_napot_load_denied\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 13; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed_str: .string "\"test: 14; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_off_load_allowed\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 15; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 16; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
+SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpen_upper_bits_ignored_str: .string "\"test: 1; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_upper_bits_ignored; bin: spmpen_upper_bits_ignored\""
+SspmpSm_spmpen_cg_cp_spmpen_upper_bits_ignored_spmpenh_upper_bits_ignored_str: .string "\"test: 2; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_upper_bits_ignored; bin: spmpenh_upper_bits_ignored\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 3; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 4; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 5; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 6; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 7; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 8; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_allones_str: .string "\"test: 9; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpenh_readwrite_spmpenh_write_zero_str: .string "\"test: 10; cg: SspmpSm_spmpen_cg; cp: cp_spmpenh_readwrite; bin: spmpenh_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 11; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_disabled_napot_load_allowed_str: .string "\"test: 12; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: disabled_napot_load_allowed\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 13; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_napot_load_denied_str: .string "\"test: 14; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_napot_load_denied\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 15; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_enabled_off_load_allowed_str: .string "\"test: 16; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: enabled_off_load_allowed\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 17; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 18; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

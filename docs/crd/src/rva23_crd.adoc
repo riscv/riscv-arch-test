@@ -87,7 +87,7 @@ The M-mode trap handler performs the following functions:
 . Call custom firmware, if any exists, to handle invisible traps.  The custom firmware will save registers relative to `sp`, inspect machine state to see if the trap is an invisible trap, and if so, perform the function, clean up, and return to the appropriate place (perhaps the instruction after the one that trapped, or an S-mode handler if the custom firmware expects S-mode to receive the trap next).  If the trap is not an invisible trap, the custom firmware will return to the next step of the M-mode trap handler.
 . For traps that are not delegated in hardware but should still go to S-mode, set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the machine-mode trap CSRs, and return to the S-mode trap handler to effectively delegate to S-mode.
 
-=== SBI Control of M-mode CSRs
+=== T-SBI Control of M-mode CSRs
 
 RVA23 certification requires that the T-SBI provide methods of emulating every writable standard M-mode CSR field that can affect the behavior of lower privilege modes.  With a standard M-mode, the T-SBI may just write bitfields in the M-mode registers.  With custom M-mode, the T-SBI must make it appear to S-mode software that the field holds the value written by the T-SBI, even though the implementation might be different. These CSRs and memory-mapped I/O registers are:
 
@@ -143,7 +143,7 @@ The following M-mode CSRs/fields are OUT-OF-SCOPE and not tested:
 
 === Interrupts
 
-All supervisor interrupts (SEI, STI, SSI, and LCOFIP) are IN-SCOPE for testing. Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also IN-SCOPE. Machine interrupts are OUT-OF-SCOPE.
+All supervisor interrupts (SEI, STI, SSI, and LCOFI) are IN-SCOPE for testing. Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also IN-SCOPE. Machine interrupts are OUT-OF-SCOPE.
 
 LCOFI is mandatory because it is part of the Sscofpmf extension, which is required by the profile. STI and VSTI are mandatory because Sstc is a required part of the profile. The other supervisor interrupts (SEI, SSI) are optional per the supervisor specification: "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."  SGEI is optional because GEILEN can be 0.  The other hypervisor interrupts (VSEI, VSSI) are vague in the specification but are treated as optional because their supervisor counterparts are optional.
 

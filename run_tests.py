@@ -25,6 +25,10 @@ _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 _SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
+_TRACE_PC_RE = re.compile(rb"core\s+\d+: (?:\d+ )?0x([0-9a-f]+)")
+# Spike's debug module ROM occupies 0x800-0xfff; a hart that enters the critical-error
+# state (e.g. a double trap with Smdbltrp) is parked in its wfi loop forever.
+_DEBUG_ROM_RANGE = range(0x800, 0x1000)
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -68,6 +72,21 @@ def bold_cyan(text: str) -> str:
 
 def dim(text: str) -> str:
     return _color("2", text)
+
+
+def _trace_ends_in_debug_rom(trace_file: Path) -> bool:
+    """Return True if the last traced PCs are in spike's debug module ROM park loop."""
+    try:
+        with trace_file.open("rb") as f:
+            f.seek(0, os.SEEK_END)
+            f.seek(max(0, f.tell() - 4096))
+            tail = f.read()
+    except OSError:
+        return False
+    # The final line may be truncated mid-write when the process is killed, so
+    # accept a match in any of the last few PCs rather than only the very last.
+    pcs = _TRACE_PC_RE.findall(tail)
+    return any(int(pc, 16) in _DEBUG_ROM_RANGE for pc in pcs[-5:])
 
 
 def run_test(
@@ -143,6 +162,12 @@ def run_test(
     # Build trace/summary file references for failure output
     trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
     summary_msg = f"\n         Summary: {dim(str(summary_file))}" if has_summary_file else ""
+    if trace_file.exists() and _trace_ends_in_debug_rom(trace_file):
+        trace_msg += (
+            f"\n{red('FAIL')}"
+            "           Trace ends in the debug module ROM park loop: the hart likely entered the"
+            "\n         critical-error state (e.g. double trap with Smdbltrp) and will never resume."
+        )
 
     if timed_out:
         print(
@@ -287,6 +312,10 @@ def main() -> int:
             rel_log = str(elf_path.relative_to(elf_dir).with_suffix(".log"))
             entries.append((rel_log, rvcp_summary))
             print(f"{rel_log}  {rvcp_summary}", file=f, flush=True)
+        # Let workers exit normally so their buffered stdout (per-test FAIL details) is
+        # flushed before the context manager's terminate() would kill them.
+        pool.close()
+        pool.join()
 
     # Rewrite the top-level summary log sorted and column-aligned now that all results are in.
     entries.sort()

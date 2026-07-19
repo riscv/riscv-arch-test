@@ -2,8 +2,6 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Sail reference model
 
-# SsstrictSm is excluded for a Sail assertion failure https://github.com/riscv/sail-riscv/issues/1807
-# Sm excludd for another Sail assertion (same reason)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,Sm"
+exclude_extensions:
 shards: 1

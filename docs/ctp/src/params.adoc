@@ -13,11 +13,11 @@ The UDB description must specify at least the following parameters.  More are li
 
 * Address: PHYS_ADDR_WIDTH
 * Optional interrupts: {SEI, SSI}_INTR_IMPL.  May need the same for VSEI, VSSI (not yet in UDB). NUM_EXTERNAL_GUEST_INTERRUPTS (corresponds to GEILEN)
-* Sdtrig parameters TBD, DBG_HCONTEXT_WDITH, DBG_SCONTEXT_WIDTH
+* Sdtrig parameters TBD, DBG_HCONTEXT_WIDITH, DBG_SCONTEXT_WIDTH
 * A way of specifying constraints on medeleg, mideleg, hedeleg, and hideleg.
 * State Enables: MSTATEEN_ENVCFG_TYPE, MSTATEEN_CONTEXT_TYPE, HSTATEEN_ENVCFG_TYPE, HSTATEEN_CONTEXT_TYPE
 * Vector: ELEN, *** others
-* Counters: TIME_CSR_IMPLEMENTED, MCOUNTEREANBLE_EN, HCOUNTERENABLE_EN, SCOUNTERENABLE_EN, HPM_COUNTER_EN, COUNTINHIBIT_EN, TBD: HPM_EVENTS
+* Counters: TIME_CSR_IMPLEMENTED, MCOUNTERENBLE_EN, HCOUNTERENABLE_EN, SCOUNTERENABLE_EN, HPM_COUNTER_EN, COUNTINHIBIT_EN, TBD: HPM_EVENTS
 * Sscofpmf parameters about counters
 * STVAL_WIDTH
 

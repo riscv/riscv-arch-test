@@ -92,8 +92,8 @@ class IntegerRegisterFile(RegisterFile):
     default_sig_reg = 2
     default_data_reg = 3
     default_temp_reg = 4
-    temp_regs = (4, 7, 12)  # Limit legal temp/link registers to simplify failure handler
-    link_temp_regs = (4, 5, 7, 8, 12, 13)  # Valid temp/link register pairs
+    temp_regs = (4, 7, 13)  # Limit legal temp/link registers to simplify failure handler
+    link_temp_regs = (4, 5, 7, 8, 13, 14)  # Valid temp/link register pairs
 
     def __init__(self, e_register_file: bool = False) -> None:
         # Use default RegisterFile functions but set register count based on E
@@ -328,7 +328,7 @@ class FloatRegisterFile(RegisterFile):
     """Class to represent a floating point register file."""
 
     default_temp_reg = 4
-    temp_regs = (4, 7, 12)  # Limit legal temp registers to simplify failure handler
+    temp_regs = (4, 7, 13)  # Limit legal temp registers to simplify failure handler
 
     def __init__(self) -> None:
         # There are always 32 floating point registers

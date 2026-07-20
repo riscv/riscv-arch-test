@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,cp_misalignedv_ls_element_misaligned,cp_misalignedv_ls_wholereg_misaligned
+Instruction,Type,RV32,RV64,cp_misalignv_ls_element_misaligned,cp_misalignv_ls_wholereg_misaligned
 vl1re16.v,VX,x,x,,x
 vl1re32.v,VX,x,x,,x
 vl1re64.v,VX,x,x,,x

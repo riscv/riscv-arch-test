@@ -1642,7 +1642,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
+    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
       ext_str_no_I = "_M_V_Zicsr_Zifencei"
       # Vector-FP priv suites need scalar/vector FP extensions in -march so the
@@ -1779,9 +1779,9 @@ def writeSIGUPD(inst_ptr, rd):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != rd and lr - 1 != rd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD: no legal linkReg given sigReg={sigReg} rd={rd}")
@@ -1795,8 +1795,8 @@ def writeSIGUPD_F(fd):
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
     str_ptr = "test_" + str(testcase_count)
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != fd and lr - 1 != fd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_F: no legal linkReg given sigReg={sigReg} fd={fd}")
@@ -1882,8 +1882,8 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != vd and lr - 1 != vd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_V: no legal linkReg given sigReg={sigReg} vd={vd}")
@@ -3669,7 +3669,7 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv")))
+                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignV", "V", "Zv")))
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:

@@ -2317,7 +2317,7 @@ rtn_fm_mmode:
         add     T2, T4, T2                             // T2 = M-mode code_begin + relative offset = return addr
 
   #ifdef SMDBLTRP_SUPPORTED
-        # clear MDT bit in mstatus (if it was set) before returning without mret
+        # clear MDT bit in mstatus/h (if it was set) before returning without mret
         #if (UDB_MXLEN==64)
                 LI(T3, MSTATUS_MDT)
                 csrc   CSR_MSTATUS, T3

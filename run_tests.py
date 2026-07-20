@@ -88,21 +88,6 @@ def _simulator_error_lines(log_file: Path, limit: int = 3) -> list[str]:
     return [line.strip() for line in lines[2:] if _ERROR_LINE_RE.search(line) and "Monitoring net" not in line][:limit]
 
 
-def _trace_ends_in_debug_rom(trace_file: Path) -> bool:
-    """Return True if the last traced PCs are in spike's debug module ROM park loop."""
-    try:
-        with trace_file.open("rb") as f:
-            f.seek(0, os.SEEK_END)
-            f.seek(max(0, f.tell() - 4096))
-            tail = f.read()
-    except OSError:
-        return False
-    # The final line may be truncated mid-write when the process is killed, so
-    # accept a match in any of the last few PCs rather than only the very last.
-    pcs = _TRACE_PC_RE.findall(tail)
-    return any(int(pc, 16) in _DEBUG_ROM_RANGE for pc in pcs[-5:])
-
-
 def run_test(
     command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool, timeout: int
 ) -> tuple[bool, Path, str]:
@@ -186,12 +171,6 @@ def run_test(
     trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
     summary_msg = f"\n         Summary: {dim(str(summary_file))}" if has_summary_file else ""
     error_msg = "".join(f"\n         {dim(line)}" for line in _simulator_error_lines(log_file))
-    if trace_file.exists() and _trace_ends_in_debug_rom(trace_file):
-        trace_msg += (
-            f"\n{red('FAIL')}"
-            "           Trace ends in the debug module ROM park loop: the hart likely entered the"
-            "\n         critical-error state (e.g. double trap with Smdbltrp) and will never resume."
-        )
 
     if timed_out:
         print(

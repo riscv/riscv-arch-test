@@ -1,5 +1,5 @@
 ##################################
-# asm/helpers.py
+# asm/vector_helpers.py
 #
 # Assembly generation helpers for vector tests
 # rwolk@hmc.edu 17 July 2026
@@ -303,7 +303,12 @@ def prep_base_v(
         test_data.int_regs.return_registers([vlmax_reg])
         vl_register_or_imm = f"x{temp_reg}"
     elif params.vl == "vlmax":
-        lines.extend(["# Load Vl=VLMAX", f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}"])
+        lines.extend(
+            [
+                "# Load Vl=VLMAX",
+                f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}",
+            ]
+        )
         vl_register_or_imm = "x0"
     else:
         vl = params.vl if params.vl is not None else 1

@@ -18,8 +18,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.formatters.vector_params import generate_random_vector_params
 
-_VREG_COUNT = 32
-
 
 def _make_vext_overlap_test(
     test_data: TestData,
@@ -74,7 +72,7 @@ def _make_vext_overlaps(
     test_chunks = []
     for lmul in lmul_list:
         vs2_emul = max(1, lmul // vext_factor)
-        vd = random.choice(range(0, _VREG_COUNT, lmul))
+        vd = random.choice(range(0, test_data.vec_regs.reg_count, lmul))
         vs2 = vd + (lmul - vs2_emul)
 
         desc = f"cp_custom_vext{vext_factor}_overlapping_vd_vs2 (lmul={lmul}, vd=v{vd}, vs2=v{vs2})"

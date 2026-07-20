@@ -7,6 +7,7 @@
 
 
 from testgen.asm.helpers import return_test_regs
+from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.vector_helpers import get_base_lmul
 from testgen.data.params import PresetMask
@@ -32,7 +33,9 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
         PresetMask.VLMAX_D2_P1_ONES,
         "cp_mask_random",
     ]
-    test_data.register_vector_data("cp_mask_random", test_data.config.sew, random_elements=1)
+    test_data.register_vector_data(
+        "cp_mask_random", test_data.config.sew, random_elements=VLEN_MAX // test_data.config.sew
+    )
 
     test_chunks = []
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)

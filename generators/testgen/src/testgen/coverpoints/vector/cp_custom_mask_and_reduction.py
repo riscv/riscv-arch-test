@@ -13,8 +13,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.formatters.vector_params import generate_random_vector_params
 
-_VREG_COUNT = 32
-
 
 @add_coverpoint_generator("cp_custom_vmask_write_lmulge1")
 def make_vmask_write_lmulge1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
@@ -110,7 +108,7 @@ def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_da
     """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
-    for v in range(_VREG_COUNT):
+    for v in range(test_data.vec_regs.reg_count):
         if v % lmul == 0:
             continue
         test_data.vec_regs.allocate_operand("vd", v, 1)
@@ -133,7 +131,7 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
     """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
-    for v in range(_VREG_COUNT):
+    for v in range(test_data.vec_regs.reg_count):
         if v % lmul == 0:
             continue
         test_data.vec_regs.allocate_operand("vs1", v, 1)
@@ -156,7 +154,7 @@ def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_d
     """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
-    for v in range(_VREG_COUNT):
+    for v in range(test_data.vec_regs.reg_count):
         if v % lmul == 0:
             continue
         test_data.vec_regs.allocate_operand("vs2", v, 1)

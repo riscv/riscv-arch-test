@@ -67,7 +67,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                 [
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 1s",
                     _gen_fs_init(fs, temp_reg),
-                    f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
+                    f"csrr x{save_reg}, {csr_name}    # Save CSR",
                     test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint_full, covergroup),
                     f"csrw {csr_name}, x{ones_reg}    # Write all 1s to CSR",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),

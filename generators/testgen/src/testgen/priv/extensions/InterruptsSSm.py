@@ -96,7 +96,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             "# Set mtvec.MODE = 0 (direct)",
-                            f"CSRR x{r_scratch}, mtvec",
+                            f"csrr x{r_scratch}, mtvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"csrw mtvec, x{r_scratch}",
@@ -266,7 +266,7 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "# Set mtvec.MODE = 1 (vectored)",
-                f"CSRR x{r_scratch}, mtvec",
+                f"csrr x{r_scratch}, mtvec",
                 f"SRLI x{r_scratch}, x{r_scratch}, 2",
                 f"SLLI x{r_scratch}, x{r_scratch}, 2",
                 f"ADDI x{r_scratch}, x{r_scratch}, 1 # MODE=1",
@@ -886,7 +886,7 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "# Test: MSIP fires when MIE rises (CSRRS)",
+            "# Test: MSIP fires when MIE rises (csrrs)",
             "RVTEST_GOTO_MMODE",
             "csrw mie, zero",
             "csrci mstatus, 8 # MIE=0",
@@ -927,9 +927,9 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Use CSRRS to set MIE=1 (interrupt fires)",
+            "# Use csrrs to set MIE=1 (interrupt fires)",
             f"LI(x{r_scratch}, 0x8) # MIE bit (bit 3)",
-            f"csrs mstatus, x{r_scratch} # Set MIE=1 via CSRRS",
+            f"csrs mstatus, x{r_scratch} # Set MIE=1 via csrrs",
             "nop",
             "nop",
         ]
@@ -951,9 +951,9 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
-    """Generate MEIP trigger test when MIE rises via CSRRS.
+    """Generate MEIP trigger test when MIE rises via csrrs.
 
-    Set MEIP pending with MIE=0, then use CSRRS to set MIE=1.
+    Set MEIP pending with MIE=0, then use csrrs to set MIE=1.
     Interrupt fires when MIE rises.
     """
     covergroup = "InterruptsSSm_cg"
@@ -974,7 +974,7 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "# Test: MEIP fires when MIE rises (CSRRS)",
+            "# Test: MEIP fires when MIE rises (csrrs)",
             "RVTEST_GOTO_MMODE",
             "csrw mie, zero",
             "csrci mstatus, 8 # MIE=0",
@@ -1010,9 +1010,9 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Use CSRRS to set MIE=1 (interrupt fires)",
+            "# Use csrrs to set MIE=1 (interrupt fires)",
             f"LI(x{r_scratch}, 0x8) # MIE bit (bit 3)",
-            f"CSRRS x0, mstatus, x{r_scratch} # Set MIE=1 via CSRRS",
+            f"csrrs x0, mstatus, x{r_scratch} # Set MIE=1 via csrrs",
         ]
     )
 
@@ -1032,9 +1032,9 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
-    """Generate STIP trigger test when MIE rises via CSRRS.
+    """Generate STIP trigger test when MIE rises via csrrs.
 
-    Set STIP pending with MIE=0, then use CSRRS to set MIE=1.
+    Set STIP pending with MIE=0, then use csrrs to set MIE=1.
     Interrupt fires when MIE rises.
     """
     covergroup = "InterruptsSSm_cg"
@@ -1055,7 +1055,7 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "# Test: STIP fires when MIE rises (CSRRS)",
+            "# Test: STIP fires when MIE rises (csrrs)",
             "RVTEST_GOTO_MMODE",
             "csrw mie, zero",
             "csrci mstatus, 8 # MIE=0",
@@ -1092,9 +1092,9 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Use CSRRS to set MIE=1 (interrupt fires)",
+            "# Use csrrs to set MIE=1 (interrupt fires)",
             f"LI(x{r_scratch}, 0x8) # MIE bit (bit 3)",
-            f"CSRRS x0, mstatus, x{r_scratch} # Set MIE=1 via CSRRS",
+            f"csrrs x0, mstatus, x{r_scratch} # Set MIE=1 via csrrs",
             "nop",
             "nop",
         ]
@@ -1115,9 +1115,9 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
-    """Generate SSIP trigger test when MIE rises via CSRRS.
+    """Generate SSIP trigger test when MIE rises via csrrs.
 
-    Set SSIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
+    Set SSIP pending with MIE=0, mideleg=0, then use csrrs to set MIE=1.
     Interrupt fires when MIE rises.
     """
     covergroup = "InterruptsSSm_cg"
@@ -1138,7 +1138,7 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "# Test: SSIP fires when MIE rises (CSRRS)",
+            "# Test: SSIP fires when MIE rises (csrrs)",
             "RVTEST_GOTO_MMODE",
             "csrw mie, zero",
             "csrci mstatus, 8 # MIE=0",
@@ -1180,9 +1180,9 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Use CSRRS to set MIE=1 (interrupt fires)",
+            "# Use csrrs to set MIE=1 (interrupt fires)",
             f"LI(x{r_scratch}, 0x8) # MIE bit (bit 3)",
-            f"CSRRS x0, mstatus, x{r_scratch} # Set MIE=1 via CSRRS",
+            f"csrrs x0, mstatus, x{r_scratch} # Set MIE=1 via csrrs",
             "nop",
             "nop",
         ]
@@ -1205,9 +1205,9 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
-    """Generate SEIP trigger test when MIE rises via CSRRS.
+    """Generate SEIP trigger test when MIE rises via csrrs.
 
-    Set SEIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
+    Set SEIP pending with MIE=0, mideleg=0, then use csrrs to set MIE=1.
     Interrupt fires when MIE rises.
     """
     covergroup = "InterruptsSSm_cg"
@@ -1228,7 +1228,7 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "# Test: SEIP fires when MIE rises (CSRRS)",
+            "# Test: SEIP fires when MIE rises (csrrs)",
             "RVTEST_GOTO_MMODE",
             "csrw mie, zero",
             "csrci mstatus, 8 # MIE=0",
@@ -1265,9 +1265,9 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Use CSRRS to set MIE=1 (interrupt fires)",
+            "# Use csrrs to set MIE=1 (interrupt fires)",
             f"LI(x{r_scratch}, 0x8) # MIE bit (bit 3)",
-            f"CSRRS x0, mstatus, x{r_scratch} # Set MIE=1 via CSRRS",
+            f"csrrs x0, mstatus, x{r_scratch} # Set MIE=1 via csrrs",
             "nop",
             "nop",
         ]

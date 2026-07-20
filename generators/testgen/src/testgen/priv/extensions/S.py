@@ -29,7 +29,7 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
             coverpoint,
             "with interrupt = 0: test writing each exception cause",
         ),
-        f"CSRR(x{save_reg}, scause)     # save CSR before testing it",
+        f"csrr x{save_reg}, scause     # save CSR before testing it",
     ]
 
     gated_exceptions = [
@@ -116,7 +116,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
-        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"csrr x{save_reg}, sstatus        # read and save sstatus",
         f"{INDENT}# set up x{reg3} with sstatus except SD, FS, XS, VS cleared",
         f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
         f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
@@ -161,7 +161,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                 "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
                 "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
             ),
-            f"CSRR(x{save_reg}, sstatus)",
+            f"csrr x{save_reg}, sstatus",
             "",
         ]
     )
@@ -171,7 +171,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {uxl} ({label})",
-                f"CSRR(x{check_reg}, sstatus)                     # read current sstatus into GPR",
+                f"csrr x{check_reg}, sstatus                     # read current sstatus into GPR",
                 f"LI(x{reg2}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
                 f"and x{check_reg}, x{check_reg}, x{reg2}         # clear UXL bits [33:32]",
                 f"LI(x{reg2}, {uxl << 32})                        # UXL={uxl} shifted into position [33:32]",
@@ -218,19 +218,16 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "# Testcase: ebreak instruction",
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak              # test ebreak instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
         "",
         # mret test
         "# Testcase: mret instruction",
         test_data.add_testcase("mret", coverpoint, covergroup),
         "mret                # test mret instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
         "",
         # sfence.vma test
         "# Testcase: sfence.vma instruction",
         test_data.add_testcase("sfence_vma", coverpoint, covergroup),
         "sfence.vma          # test sfence.vma instruction",
-        "nop                 # might be skipped",
     ]
 
     return lines
@@ -251,7 +248,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Setup",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"csrr x{save_reg}, mstatus        # read and save mstatus",
         f"{INDENT}# set up x{reg1} with mstatus except MPP, MPRV, MPIE, MIE cleared",
         f"LI(x{reg2}, 0x21888)          # x{reg2} has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPP, MPRV, MPIE, MIE bits set",
@@ -308,7 +305,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Setup",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"csrr x{save_reg}, mstatus        # read and save mstatus",
         f"LI(x{reg1}, 1 << 2)",
         f"csrc medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
@@ -373,7 +370,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Setup",
-        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"csrr x{save_reg}, sstatus        # read and save sstatus",
         f"{INDENT}# set up x{reg1} with sstatus except SPP, SPIE, SIE cleared",
         f"LI(x{reg2}, 0x122)          # x{reg2} has all SPP, SPIE, SIE bits set (bits [8], [5], [1] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but SPP, SPIE, SIE bits set",
@@ -592,7 +589,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRR(t0, 0x{csr:03x})    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
+                f"csrr t0, 0x{csr:03x}    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
             ]
         )
 

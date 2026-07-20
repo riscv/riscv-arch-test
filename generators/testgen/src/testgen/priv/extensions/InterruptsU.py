@@ -54,7 +54,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x80)",
                     f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
@@ -113,7 +113,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x08) # Enable MSIE",
                     f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
@@ -172,7 +172,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mstatus_mie else 'csrc'} mstatus, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x800) # Enable MEIE",
                     f"csrw mie, x{r_scratch}",
                     "RVTEST_GOTO_LOWER_MODE Umode",
@@ -222,7 +222,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             [
                 "# Write MIE based on bins",
                 f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
             ]
         )
 
@@ -286,7 +286,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                     f"LI(x{r_scratch}, 0x80)",
                     f"csrc mie, x{r_scratch}",
                     f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_scratch}",
                 ]
             )
 

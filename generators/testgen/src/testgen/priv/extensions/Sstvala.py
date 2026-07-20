@@ -180,7 +180,6 @@ def _emit_pf_block(
             block.extend(extra_setup)
             block.append(test_data.add_testcase(name, coverpoint, covergroup))
             block.extend(asm)
-            block.append("nop")
         block.extend(["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma", ""])
         return block
 

@@ -134,13 +134,13 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
         lines.extend(
             [
                 f"{INDENT}# Check if Sstc is enabled",
-                f"CSRR x{r_scratch}, menvcfg",
+                f"csrr x{r_scratch}, menvcfg",
                 "#if __riscv_xlen == 64",
-                f"SRLI x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
+                f"srli x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
                 "#else",
-                f"SRLI x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
+                f"srli x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
                 "#endif",
-                f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+                f"andi x{r_scratch}, x{r_scratch}, 0x1",
             ]
         )
         check_reg = r_scratch
@@ -201,13 +201,13 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) ->
         lines.extend(
             [
                 f"{INDENT}# Check if Sstc is enabled",
-                f"CSRR x{r_scratch}, menvcfg",
+                f"csrr x{r_scratch}, menvcfg",
                 "#if __riscv_xlen == 64",
-                f"SRLI x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
+                f"srli x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
                 "#else",
-                f"SRLI x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
+                f"srli x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
                 "#endif",
-                f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+                f"andi x{r_scratch}, x{r_scratch}, 0x1",
             ]
         )
         check_reg = r_scratch
@@ -320,16 +320,16 @@ def set_menvcfg_stce(r_scratch: int, enable: bool) -> list[str]:
         r_scratch: Scratch register
         enable: True to set STCE=1, False to clear STCE=0
     """
-    op = "CSRS" if enable else "CSRC"
+    op = "csrs" if enable else "csrc"
     return [
         f"{INDENT}# {'Enable' if enable else 'Disable'} menvcfg.STCE",
         "#if __riscv_xlen == 64",
         f"    LI(x{r_scratch}, 1)",
         f"    slli x{r_scratch}, x{r_scratch}, 63",
-        f"    {op}(menvcfg, x{r_scratch})",
+        f"    {op} menvcfg, x{r_scratch}",
         "#else",
         f"    LI(x{r_scratch}, 0x80000000)",
-        f"    {op}(menvcfgh, x{r_scratch})",
+        f"    {op} menvcfgh, x{r_scratch}",
         "#endif",
     ]
 
@@ -417,11 +417,11 @@ def set_mpie(r_scratch: int, enable: bool) -> list[str]:
         r_scratch: Scratch register to hold the MPIE bitmask
         enable: True → MPIE=1 (MIE=1 in lower mode), False → MPIE=0 (MIE=0)
     """
-    op = "CSRS" if enable else "CSRC"
+    op = "csrs" if enable else "csrc"
     comment = "MPIE=1 -> MIE=1 after mret" if enable else "MPIE=0 -> MIE=0 after mret"
     return [
         f"LI(x{r_scratch}, 0x80)  # {comment}",
-        f"{op}(mstatus, x{r_scratch})",
+        f"{op} mstatus, x{r_scratch}",
     ]
 
 

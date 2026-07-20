@@ -86,7 +86,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "# 6. Read STCE (needed for timer functions)",
-                    f"CSRR x{r_stce}, menvcfg",
+                    f"csrr x{r_stce}, menvcfg",
                     "#if __riscv_xlen == 64",
                     f"    srli x{r_stce}, x{r_stce}, 63",
                     "#else",
@@ -100,7 +100,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
                 [
                     "# 7. Set SIE in mstatus (last step before STIP)",
                     f"LI(x{r_scratch}, 0x02)  # SIE bit",
-                    f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if sie_val else 'csrc'} mstatus, x{r_scratch}",
                 ]
             )
 
@@ -206,7 +206,7 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
                     [
                         "# Delegated: set SIE",
                         f"LI(x{r_scratch}, 0x02) # SIE bit",
-                        f"{'CSRS' if int_enable_val else 'CSRC'}(mstatus, x{r_scratch})",
+                        f"{'csrs' if int_enable_val else 'csrc'} mstatus, x{r_scratch}",
                     ]
                 )
             else:
@@ -310,7 +310,7 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{r_scratch}, 0x02) # SIE bit",
                     f"# {'set' if sie_val else 'clear'} mstatus.SIE",
-                    f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if sie_val else 'csrc'} mstatus, x{r_scratch}",
                     "",
                     "# enable all interrupts in mie",
                     f"LI(x{r_scratch}, -1)",
@@ -402,7 +402,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
                 [
                     "# Set SIE in mstatus",
                     f"LI(x{r_scratch}, 0x02)  # SIE bit",
-                    f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"{'csrs' if sie_val else 'csrc'} mstatus, x{r_scratch}",
                 ]
             )
 
@@ -498,7 +498,7 @@ def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
             [
                 "# Set SIE",
                 f"LI(x{r_scratch}, 0x02)",
-                f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                f"{'csrs' if sie_val else 'csrc'} mstatus, x{r_scratch}",
             ]
         )
 
@@ -585,7 +585,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "# Read STCE",
-            f"CSRR x{r_stce}, menvcfg",
+            f"csrr x{r_stce}, menvcfg",
             "#if __riscv_xlen == 64",
             f"    srli x{r_stce}, x{r_stce}, 63",
             "#else",
@@ -609,9 +609,9 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
     # In S-mode with STIP=1, SIE=0
     lines.extend(
         [
-            "# Use CSRRS to set sstatus.SIE=1 (interrupt should fire immediately)",
+            "# Use csrrs to set sstatus.SIE=1 (interrupt should fire immediately)",
             f"    LI(x{r_scratch}, 0x02) # SIE bit",
-            f"    csrrs x0, sstatus, x{r_scratch} # CSRRS sets SIE=1",
+            f"    csrrs x0, sstatus, x{r_scratch} # csrrs sets SIE=1",
             "    nop",
         ]
     )
@@ -843,7 +843,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         "# Set mtvec.MODE = 0 (direct)",
-                        f"CSRR x{r_scratch}, mtvec",
+                        f"csrr x{r_scratch}, mtvec",
                         f"SRLI x{r_scratch}, x{r_scratch}, 2",
                         f"SLLI x{r_scratch}, x{r_scratch}, 2",
                         f"csrw mtvec, x{r_scratch}",
@@ -893,7 +893,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     if mip_name == "stip":
                         lines.extend(
                             [
-                                f"CSRR x{r_stce}, menvcfg",
+                                f"csrr x{r_stce}, menvcfg",
                                 "#if __riscv_xlen == 64",
                                 f"    srli x{r_stce}, x{r_stce}, 63",
                                 "#else",
@@ -1002,7 +1002,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "# Set stvec.MODE",
-                    f"CSRR x{r_scratch}, stvec",
+                    f"csrr x{r_scratch}, stvec",
                     f"SRLI x{r_scratch}, x{r_scratch}, 2",
                     f"SLLI x{r_scratch}, x{r_scratch}, 2",
                     f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
@@ -1049,7 +1049,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                 if int_name == "stip":
                     lines.extend(
                         [
-                            f"CSRR x{r_stce}, menvcfg",
+                            f"csrr x{r_stce}, menvcfg",
                             "#if __riscv_xlen == 64",
                             f"    srli x{r_stce}, x{r_stce}, 63",
                             "#else",
@@ -1134,7 +1134,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
             *clr_mtimer_int(r_temp, r_stimecmp),
             "",
             "# Set mtvec.MODE = 00",
-            f"CSRR x{r_scratch}, mtvec",
+            f"csrr x{r_scratch}, mtvec",
             f"SRLI x{r_scratch}, x{r_scratch}, 2",
             f"SLLI x{r_scratch}, x{r_scratch}, 2",
             f"csrw mtvec, x{r_scratch}",
@@ -1256,7 +1256,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
             *clr_mtimer_int(r_temp, r_stimecmp),
             "",
             "# Set mtvec.MODE to direct (00)",
-            f"CSRR x{r_scratch}, mtvec",
+            f"csrr x{r_scratch}, mtvec",
             f"SRLI x{r_scratch}, x{r_scratch}, 2",
             f"SLLI x{r_scratch}, x{r_scratch}, 2",
             f"csrw mtvec, x{r_scratch}",
@@ -1359,7 +1359,7 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             "RVTEST_CLR_MEXT_INT",
             *clr_stimer_mmode(r_scratch),
             *clr_mtimer_int(r_temp, r_stimecmp),
-            f"CSRR x{r_scratch}, mtvec",
+            f"csrr x{r_scratch}, mtvec",
             f"SRLI x{r_scratch}, x{r_scratch}, 2",
             f"SLLI x{r_scratch}, x{r_scratch}, 2",
             f"csrw mtvec, x{r_scratch}",
@@ -1501,7 +1501,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "# mtvec direct",
-                f"CSRR x{r_scratch}, mtvec",
+                f"csrr x{r_scratch}, mtvec",
                 f"SRLI x{r_scratch}, x{r_scratch}, 2",
                 f"SLLI x{r_scratch}, x{r_scratch}, 2",
                 f"csrw mtvec, x{r_scratch}",
@@ -1592,7 +1592,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "# mtvec",
-                f"CSRR x{r_scratch}, mtvec",
+                f"csrr x{r_scratch}, mtvec",
                 f"SRLI x{r_scratch}, x{r_scratch}, 2",
                 f"SLLI x{r_scratch}, x{r_scratch}, 2",
                 f"csrw mtvec, x{r_scratch}",
@@ -1957,12 +1957,12 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             "# Set both mtvec and stvec MODE",
-                            f"CSRR x{r_scratch}, mtvec",
+                            f"csrr x{r_scratch}, mtvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {mtvec_mode}",
                             f"csrw mtvec, x{r_scratch}",
-                            f"CSRR x{r_scratch}, stvec",
+                            f"csrr x{r_scratch}, stvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {mtvec_mode}",
@@ -2065,12 +2065,12 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             "# Set both mtvec and stvec MODE",
-                            f"CSRR x{r_scratch}, mtvec",
+                            f"csrr x{r_scratch}, mtvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
                             f"csrw mtvec, x{r_scratch}",
-                            f"CSRR x{r_scratch}, stvec",
+                            f"csrr x{r_scratch}, stvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
@@ -2177,12 +2177,12 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             "# Set both mtvec and stvec MODE",
-                            f"CSRR x{r_scratch}, mtvec",
+                            f"csrr x{r_scratch}, mtvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
                             f"csrw mtvec, x{r_scratch}",
-                            f"CSRR x{r_scratch}, stvec",
+                            f"csrr x{r_scratch}, stvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
@@ -2294,12 +2294,12 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             "# Set both mtvec and stvec MODE",
-                            f"CSRR x{r_scratch}, mtvec",
+                            f"csrr x{r_scratch}, mtvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
                             f"csrw mtvec, x{r_scratch}",
-                            f"CSRR x{r_scratch}, stvec",
+                            f"csrr x{r_scratch}, stvec",
                             f"SRLI x{r_scratch}, x{r_scratch}, 2",
                             f"SLLI x{r_scratch}, x{r_scratch}, 2",
                             f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
@@ -2374,12 +2374,12 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                 "RVTEST_CLR_SEXT_INT",
                 f"LI(x{r_scratch}, 0x200)",
                 f"csrw mideleg, x{r_scratch}",
-                f"CSRR x{r_scratch}, mtvec",
+                f"csrr x{r_scratch}, mtvec",
                 f"SRLI x{r_scratch}, x{r_scratch}, 2",
                 f"SLLI x{r_scratch}, x{r_scratch}, 2",
                 f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
                 f"csrw mtvec, x{r_scratch}",
-                f"CSRR x{r_scratch}, stvec",
+                f"csrr x{r_scratch}, stvec",
                 f"SRLI x{r_scratch}, x{r_scratch}, 2",
                 f"SLLI x{r_scratch}, x{r_scratch}, 2",
                 f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",

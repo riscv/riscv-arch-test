@@ -33,7 +33,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup: Enable all interrupts in mie",
         f"LI(x{r1}, -1)",
-        f"CSRW mie, x{r1}",
+        f"csrw mie, x{r1}",
         "",
     ]
 
@@ -41,7 +41,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 0, should NOT take interrupt",
             test_data.add_testcase("mie_0", coverpoint, covergroup),
-            "CSRCI mstatus, 8    # mstatus.MIE = 0",
+            "csrci mstatus, 8    # mstatus.MIE = 0",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -53,7 +53,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 1 should take interrupt",
             test_data.add_testcase("mie_1", coverpoint, covergroup),
-            "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
+            "csrsi mstatus, 8    # mstatus.MIE = 1",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
@@ -80,7 +80,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup: Enable all interrupts in mie",
         f"LI(x{r1}, -1)                 # Enable all interrupts",
-        f"CSRW mie, x{r1}               # Enable all interrupts in mie",
+        f"csrw mie, x{r1}               # Enable all interrupts in mie",
         "",
     ]
 
@@ -88,7 +88,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 0 should NOT take interrupt",
             test_data.add_testcase("mie_0", coverpoint, covergroup),
-            "CSRCI mstatus, 8    # mstatus.MIE = 0",
+            "csrci mstatus, 8    # mstatus.MIE = 0",
             "RVTEST_SET_MSW_INT     # Trigger software interrupt",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MSW_INT     # Clear interrupt",
@@ -100,7 +100,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 1 should take interrupt",
             test_data.add_testcase("mie_1", coverpoint, covergroup),
-            "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
+            "csrsi mstatus, 8    # mstatus.MIE = 1",
             "RVTEST_SET_MSW_INT     # Interrupt fires",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
@@ -127,7 +127,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup: Enable all interrupts in mie",
         f"LI(x{r1}, -1)                 # Enable all interrupts",
-        f"CSRW mie, x{r1}               # Enable all interrupts in mie",
+        f"csrw mie, x{r1}               # Enable all interrupts in mie",
         "",
     ]
 
@@ -135,7 +135,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 0 should NOT take interrupt",
             test_data.add_testcase("mie_0", coverpoint, covergroup),
-            "CSRCI mstatus, 8",
+            "csrci mstatus, 8",
             "RVTEST_SET_MEXT_INT",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MEXT_INT",
@@ -147,7 +147,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
         [
             "# Testcase: mstatus.MIE = 1 should take interrupt",
             test_data.add_testcase("mie_1", coverpoint, covergroup),
-            "CSRRSI zero, mstatus, 8",
+            "csrsi mstatus, 8",
             "RVTEST_SET_MEXT_INT",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "",
@@ -185,7 +185,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"# Set mstatus.MIE to {mstatus_mie}",
-                f"{'CSRSI' if mstatus_mie else 'CSRCI'} mstatus, 8",
+                f"{'csrsi' if mstatus_mie else 'csrci'} mstatus, 8",
                 "",
             ]
         )
@@ -262,11 +262,11 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"# Set mtvec.MODE = {mode:02b} ({mode_name})",
-                "CSRCI mtvec, 3",
-                f"CSRSI mtvec, {mode}",
-                "CSRSI mstatus, 8",
+                "csrci mtvec, 3",
+                f"csrsi mtvec, {mode}",
+                "csrsi mstatus, 8",
                 f"LI(x{r_mie_all}, 0x888)",
-                f"CSRW mie, x{r_mie_all}",
+                f"csrw mie, x{r_mie_all}",
                 "",
             ]
         )
@@ -276,7 +276,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"# Testcase: {mode_name}_{int_pending}",
-                    f"CSRR x{r_mie_save}, mie",
+                    f"csrr x{r_mie_save}, mie",
                     test_data.add_testcase(f"{mode_name}_{int_pending}", coverpoint, covergroup),
                 ]
             )
@@ -292,7 +292,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
             # Settling time
             lines.extend(
                 [
-                    f"CSRW mie, x{r_mie_save}",
+                    f"csrw mie, x{r_mie_save}",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                 ]
             )
@@ -311,7 +311,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
     # Restore direct mode only where supported; vectored-only cores stay vectored.
     lines.append("#ifdef UDB_MTVEC_MODES_0")
-    lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+    lines.append("csrci mtvec, 1     # restore mtvec.MODE = 00 (direct)")
     lines.append("#endif")
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
@@ -333,7 +333,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
             "With mstatus.MIE = 1, write cross product of 8 values of mie.{MSIE/MTIE/MEIE}\n"
             "with hardware events giving the 8 values of mip.{MSIP/MTIP/MEIP} (8 x 8 bins)",
         ),
-        "CSRSI mstatus, 8   # mstatus.MIE = 1",
+        "csrsi mstatus, 8   # mstatus.MIE = 1",
         "",
     ]
 
@@ -341,7 +341,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"# Set x{r_mie_mask} = {mie_value:#05x} for mie",
-                "CSRW mie, zero",
+                "csrw mie, zero",
                 f"LI(x{r_mie_mask}, {mie_value:#05x})",
                 "",
             ]
@@ -365,7 +365,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"CSRW mie, x{r_mie_mask}",
+                    f"csrw mie, x{r_mie_mask}",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "# Clear and disable interrupts to reset for next testcase",
                     "RVTEST_CLR_MEXT_INT",

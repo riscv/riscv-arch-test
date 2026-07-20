@@ -148,7 +148,6 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
         lines.extend(_set_fs_vs(fs=0, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_{name}_fs_off", coverpoint, _CG))
         lines.append(f"vfadd.vv v3, {vs2_reg}, {vs1_reg}  # traps: FS=Off")
-        lines.append("nop")
     lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
     return lines
 

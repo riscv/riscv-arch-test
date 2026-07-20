@@ -55,10 +55,9 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
     save_reg = test_data.int_regs.get_register()
     lines.append(f"LI(x{save_reg}, -1)  # all 1s mask for csr ops")
     for csr in _VECTOR_CSRS:
-        for op_name, op in (("csrrs", "CSRS"), ("csrrc", "CSRC"), ("csrrw", "CSRW")):
+        for op_name, op in (("csrrs", "csrs"), ("csrrc", "csrc"), ("csrrw", "csrw")):
             lines.append(test_data.add_testcase(f"{csr}_{op_name}", coverpoint, _CG))
-            lines.append(f"{op}({csr}, x{save_reg})  # {op_name} {csr}")
-            lines.append("nop")
+            lines.append(f"{op} {csr}, x{save_reg}  # {op_name} {csr}")
     test_data.int_regs.return_registers([save_reg])
     return lines
 
@@ -160,7 +159,6 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vadd_vs_off", "cp_mstatus_vs_off_arithmetic", _CG))
     lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
-    lines.append("nop")
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
 
     lines.append(comment_banner("cp_mstatus_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
@@ -171,7 +169,6 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vsetvli_vs_off", "cp_mstatus_vs_off_csr", _CG))
     lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
-    lines.append("nop")
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     return lines
 
@@ -515,7 +512,7 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
             lines.append(f"# {sew_name}, {lmul_name}")
             lines.append(f"LI(x{walk_reg}, 1)")
             for i in range(32):
-                # vsetivli must be the immediately-preceding instruction of the CSRW
+                # vsetivli must be the immediately-preceding instruction of the csrw
                 # so that ins.prev.insn == vsetivli at sample time.
                 lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
                 lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))

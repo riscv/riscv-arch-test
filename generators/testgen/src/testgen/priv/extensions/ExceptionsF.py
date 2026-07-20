@@ -34,7 +34,6 @@ def add_fp_instructions(
             f"LA(x{int_reg2}, scratch)",
             f"addi x{int_reg2}, x{int_reg2}, 2",
             f"fsw f{source_reg1}, 0(x{int_reg2})",
-            "nop",
             write_sigupd(source_reg1, test_data, "float"),
             test_data.add_testcase(f"flw_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
@@ -42,7 +41,6 @@ def add_fp_instructions(
             f"LA(x{int_reg2}, scratch)",
             f"addi x{int_reg2}, x{int_reg2}, 2",
             f"flw f{source_reg2}, 0(x{int_reg2})",
-            "nop",
             write_sigupd(source_reg2, test_data, "float"),
         ]
     )
@@ -296,7 +294,6 @@ def add_fp_load_misaligned_test(
         [
             test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
             f"{op} f{check_reg}, 0(x{addr_reg})",
-            "nop",
             write_sigupd(check_reg, test_data),
         ]
     )
@@ -323,7 +320,6 @@ def add_fp_store_misaligned_test(
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
         test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
         f"{op} f{data_reg}, 0(x{addr_reg})",
-        "nop",
         # Read back scratch memory to verify store result
         f"LA(x{addr_reg}, scratch)",
         f"lw x{check_reg}, 0(x{addr_reg})",
@@ -373,7 +369,7 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
     ]
 
     for csr in ["fcsr", "frm", "fflags"]:
-        for csr_instr in ["CSRR", "CSRW", "CSRC", "CSRS"]:
+        for csr_instr in ["csrr", "csrw", "csrc", "csrs"]:
             lines.extend(
                 [
                     f"csrc mstatus, x{mstatus_fs_mask_reg}",
@@ -381,10 +377,10 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
                     test_data.add_testcase(f"{csr_instr}_{csr}_00_{coverpoint[2:]}", coverpoint, covergroup),
                 ]
             )
-            if csr_instr == "CSRR":
-                lines.append(f"{csr_instr}(x{check_reg}, {csr})")
+            if csr_instr == "csrr":
+                lines.append(f"{csr_instr} x{check_reg}, {csr}")
             else:
-                lines.append(f"{csr_instr}({csr}, x{check_reg})")
+                lines.append(f"{csr_instr} {csr}, x{check_reg}")
             lines.extend(
                 [
                     "# Need to enable mstatus.FS so that the csrs can be accessed",
@@ -471,7 +467,6 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         [
             test_data.add_testcase("flw_fault", coverpoint, covergroup),
             f"flw f{check_reg}, 0(x{addr_reg})",
-            "nop",
         ]
     )
 
@@ -480,7 +475,6 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef D_SUPPORTED",
             test_data.add_testcase("fld_fault", coverpoint, covergroup),
             f"fld f{check_reg}, 0(x{addr_reg})",
-            "nop",
             "",
             "#endif",
             "",
@@ -492,7 +486,6 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("flh_fault", coverpoint, covergroup),
             f"flh f{check_reg}, 0(x{addr_reg})",
-            "nop",
             "#endif",
             "",
         ]
@@ -572,7 +565,6 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         [
             test_data.add_testcase("fsw_fault", coverpoint, covergroup),
             f"fsw f{data_reg}, 0(x{addr_reg})",
-            "nop",
         ]
     )
 
@@ -582,7 +574,6 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef D_SUPPORTED",
             test_data.add_testcase("fsd_fault", coverpoint, covergroup),
             f"fsd f{data_reg}, 0(x{addr_reg})",
-            "nop",
             "#endif",
         ]
     )
@@ -592,7 +583,6 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
             "#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("fsh_fault", coverpoint, covergroup),
             f"fsh f{data_reg}, 0(x{addr_reg})",
-            "nop",
             "#endif",
         ]
     )

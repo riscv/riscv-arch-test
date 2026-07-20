@@ -1797,113 +1797,110 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
         for sie_val in [0, 1]:
             for mideleg_val in [0, 1]:
                 for mtie_val in [0, 1]:
-                    for mode in ["Smode", "Umode"]:
-                        mideleg_name = ["zeros", "ones"][mideleg_val]
-                        mode_short = mode[0].lower()  # 's' or 'u'
+                    mideleg_name = ["zeros", "ones"][mideleg_val]
 
-                        lines.append("# Select coverpoint based on mode")
-                        coverpoint = "cp_wfi_timeout_s" if mode == "Smode" else "cp_wfi_timeout_u_tw"
+                    coverpoint = "cp_wfi_timeout_s"
 
-                        binname = f"mie{mie_val}_sie{sie_val}_{mideleg_name}_mtie{mtie_val}_{mode_short}"
+                    binname = f"mie{mie_val}_sie{sie_val}_{mideleg_name}_mtie{mtie_val}"
 
+                    lines.extend(
+                        [
+                            "",
+                            f"# Test: MIE={mie_val}, SIE={sie_val}, mideleg={mideleg_name}, MTIE={mtie_val}",
+                            "RVTEST_GOTO_MMODE",
+                            "CSRW(mie, zero)",
+                            "csrci mstatus, 8 # MIE=0",
+                            "csrci mstatus, 2 # SIE=0",
+                        ]
+                    )
+
+                    lines.extend(
+                        [
+                            "# Clear all interrupts",
+                            f"LI(x{r_scratch}, 0x2)",
+                            f"CSRC(mip, x{r_scratch})",
+                            "RVTEST_CLR_MSW_INT",
+                        ]
+                    )
+                    lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+                    lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+
+                    lines.append("# Write mideleg value based on bins")
+                    if mideleg_val == 1:
                         lines.extend(
                             [
-                                "",
-                                f"# Test: MIE={mie_val}, SIE={sie_val}, mideleg={mideleg_name}, MTIE={mtie_val}, mode={mode}",
-                                "RVTEST_GOTO_MMODE",
-                                "CSRW(mie, zero)",
-                                "csrci mstatus, 8 # MIE=0",
-                                "csrci mstatus, 2 # SIE=0",
+                                f"LI(x{r_scratch}, 0x222)",
+                                f"CSRW(mideleg, x{r_scratch})",
                             ]
                         )
+                    else:
+                        lines.append("CSRW(mideleg, zero)")
 
+                    lines.extend(
+                        [
+                            "# Set TW=1 (timeout enabled)",
+                            f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
+                            f"CSRS(mstatus, x{r_scratch})",
+                        ]
+                    )
+
+                    lines.append("# Write MTIE value based on bins")
+                    if mtie_val:
                         lines.extend(
                             [
-                                "# Clear all interrupts",
-                                f"LI(x{r_scratch}, 0x2)",
-                                f"CSRC(mip, x{r_scratch})",
-                                "RVTEST_CLR_MSW_INT",
+                                f"LI(x{r_scratch}, 0x80) # MTIE",
+                                f"CSRW(mie, x{r_scratch})",
                             ]
                         )
-                        lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
-                        lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+                    else:
+                        lines.append("CSRW(mie, zero)")
 
-                        lines.append("# Write mideleg value based on bins")
-                        if mideleg_val == 1:
-                            lines.extend(
-                                [
-                                    f"LI(x{r_scratch}, 0x222)",
-                                    f"CSRW(mideleg, x{r_scratch})",
-                                ]
-                            )
-                        else:
-                            lines.append("CSRW(mideleg, zero)")
+                    lines.extend(
+                        [
+                            "# Set MTIMECMP to max (no interrupt)",
+                            f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
+                            f"LI(x{r_scratch}, -1)",
+                            f"SREG x{r_scratch}, 0(x{r_temp})",
+                        ]
+                    )
 
+                    if mie_val:
                         lines.extend(
                             [
-                                "# Set TW=1 (timeout enabled)",
-                                f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
+                                "# Set MIE+MPIE so MIE=1 persists through MRET into lower-mode",
+                                f"LI(x{r_scratch}, 0x88)",
                                 f"CSRS(mstatus, x{r_scratch})",
                             ]
                         )
 
-                        lines.append("# Write MTIE value based on bins")
-                        if mtie_val:
-                            lines.extend(
-                                [
-                                    f"LI(x{r_scratch}, 0x80) # MTIE",
-                                    f"CSRW(mie, x{r_scratch})",
-                                ]
-                            )
-                        else:
-                            lines.append("CSRW(mie, zero)")
+                    if sie_val:
+                        lines.append("# Set SIE")
+                        lines.append("csrsi mstatus, 2")
 
-                        lines.extend(
-                            [
-                                "# Set MTIMECMP to max (no interrupt)",
-                                f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
-                                f"LI(x{r_scratch}, -1)",
-                                f"SREG x{r_scratch}, 0(x{r_temp})",
-                            ]
-                        )
+                    lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
-                        if mie_val:
-                            lines.extend(
-                                [
-                                    "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
-                                    f"LI(x{r_scratch}, 0x88)",
-                                    f"CSRS(mstatus, x{r_scratch})",
-                                ]
-                            )
+                    lines.extend(
+                        [
+                            "# Enter target mode and execute WFI",
+                            "RVTEST_GOTO_LOWER_MODE Smode",
+                            "    wfi # TW=1 → illegal instruction",
+                            "    nop",
+                        ]
+                    )
 
-                        if sie_val:
-                            lines.append("# Set SIE")
-                            lines.append("csrsi mstatus, 2")
-
-                        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-
-                        lines.extend(
-                            [
-                                "# Enter target mode and execute WFI",
-                                f"RVTEST_GOTO_LOWER_MODE {mode}",
-                                "    wfi # TW=1 → illegal instruction",
-                                "    nop",
-                            ]
-                        )
-
-                        lines.extend(
-                            [
-                                "# Cleanup",
-                                "RVTEST_GOTO_MMODE",
-                                "csrci mstatus, 8",
-                                "csrci mstatus, 2",
-                                f"LI(x{r_scratch}, 0x200000)",
-                                f"CSRC(mstatus, x{r_scratch}) # Clear TW",
-                                "CSRW(mideleg, zero)",
-                                "CSRW(mie, zero)",
-                            ]
-                        )
-                        lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+                    lines.extend(
+                        [
+                            "# Cleanup",
+                            "RVTEST_GOTO_MMODE",
+                            "csrci mstatus, 8",
+                            "csrci mstatus, 2",
+                            f"LI(x{r_scratch}, 0x200000)",
+                            f"CSRC(mstatus, x{r_scratch}) # Clear TW",
+                            "CSRW(mideleg, zero)",
+                            "CSRW(mie, zero)",
+                        ]
+                    )
+                    lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_temp, r_stimecmp, r_scratch])
     return lines
@@ -2531,7 +2528,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     Test WFI timeout from U-mode with TW=1.
     Cross: MIE={0,1} × SIE={0,1}
     - mideleg = ones
-    - TW = 1
+    - TW = 0/1
     - MTIE = 1 (fixed - required for timeout mechanism)
     - MTIMECMP = max (no interrupt fires)
     - WFI times out → illegal instruction → M-mode trap
@@ -2550,102 +2547,103 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     ]
 
     # Cross: MIE × SIE (MTIE=1 fixed)
-    for mie_val in [0, 1]:
-        for sie_val in [0, 1]:
-            binname = f"mie{mie_val}_sie{sie_val}"
+    for tw_val in [0, 1]:
+        for mie_val in [0, 1]:
+            for sie_val in [0, 1]:
+                binname = f"mie{mie_val}_sie{sie_val}_tw{tw_val}"
 
-            lines.extend(
-                [
-                    "",
-                    f"# Test: MIE={mie_val}, SIE={sie_val}",
-                    "RVTEST_GOTO_MMODE",
-                    "CSRW(mie, zero)",
-                    "csrci mstatus, 8 # MIE=0",
-                    "csrci mstatus, 2 # SIE=0",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "# Clear all interrupts",
-                    f"LI(x{r_scratch}, 0x2)",
-                    f"CSRC(mip, x{r_scratch})",
-                    "RVTEST_CLR_MSW_INT",
-                ]
-            )
-            lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
-            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
-
-            lines.extend(
-                [
-                    "# Set mideleg = ones",
-                    f"LI(x{r_scratch}, 0x222)",
-                    f"CSRW(mideleg, x{r_scratch})",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "# Set TW=1 (timeout enabled)",
-                    f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
-                    f"CSRS(mstatus, x{r_scratch})",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "# Enable MTIE=1 (required for timeout to work)",
-                    f"LI(x{r_scratch}, 0x80) # MTIE",
-                    f"CSRW(mie, x{r_scratch})",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "# Set MTIMECMP to max (no interrupt fires)",
-                    f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
-                    f"LI(x{r_scratch}, -1)",
-                    f"SREG x{r_scratch}, 0(x{r_temp})",
-                ]
-            )
-
-            if mie_val:
                 lines.extend(
                     [
-                        "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
-                        f"LI(x{r_scratch}, 0x88)",
-                        f"CSRS(mstatus, x{r_scratch})",
+                        "",
+                        f"# Test: MIE={mie_val}, SIE={sie_val}",
+                        "RVTEST_GOTO_MMODE",
+                        "CSRW(mie, zero)",
+                        "csrci mstatus, 8 # MIE=0",
+                        "csrci mstatus, 2 # SIE=0",
                     ]
                 )
 
-            if sie_val:
-                lines.append("# Set SIE")
-                lines.append("csrsi mstatus, 2")
+                lines.extend(
+                    [
+                        "# Clear all interrupts",
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
+                        "RVTEST_CLR_MSW_INT",
+                    ]
+                )
+                lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+                lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
-            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+                lines.extend(
+                    [
+                        "# Set mideleg = ones",
+                        f"LI(x{r_scratch}, 0x222)",
+                        f"CSRW(mideleg, x{r_scratch})",
+                    ]
+                )
 
-            lines.extend(
-                [
-                    "# Enter U-mode and execute WFI",
-                    "RVTEST_GOTO_LOWER_MODE Umode",
-                    "    wfi # Times out → illegal instruction → trap to M-mode",
-                    "    nop",
-                ]
-            )
+                lines.extend(
+                    [
+                        f"# Write TW={tw_val}",
+                        f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
+                        f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    ]
+                )
 
-            lines.extend(
-                [
-                    "# Cleanup",
-                    "RVTEST_GOTO_MMODE",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
-                    f"LI(x{r_scratch}, 0x200000)",
-                    f"CSRC(mstatus, x{r_scratch}) # Clear TW",
-                    "CSRW(mideleg, zero)",
-                    "CSRW(mie, zero)",
-                ]
-            )
-            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+                lines.extend(
+                    [
+                        "# Enable MTIE=1 (required for timeout to work)",
+                        f"LI(x{r_scratch}, 0x80) # MTIE",
+                        f"CSRW(mie, x{r_scratch})",
+                    ]
+                )
+
+                lines.extend(
+                    [
+                        "# Set MTIMECMP to max (no interrupt fires)",
+                        f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
+                        f"LI(x{r_scratch}, -1)",
+                        f"SREG x{r_scratch}, 0(x{r_temp})",
+                    ]
+                )
+
+                if mie_val:
+                    lines.extend(
+                        [
+                            "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
+                            f"LI(x{r_scratch}, 0x88)",
+                            f"CSRS(mstatus, x{r_scratch})",
+                        ]
+                    )
+
+                if sie_val:
+                    lines.append("# Set SIE")
+                    lines.append("csrsi mstatus, 2")
+
+                lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+
+                lines.extend(
+                    [
+                        "# Enter U-mode and execute WFI",
+                        "RVTEST_GOTO_LOWER_MODE Umode",
+                        "    wfi # Times out → illegal instruction → trap to M-mode",
+                        "    nop",
+                    ]
+                )
+
+                lines.extend(
+                    [
+                        "# Cleanup",
+                        "RVTEST_GOTO_MMODE",
+                        "csrci mstatus, 8",
+                        "csrci mstatus, 2",
+                        f"LI(x{r_scratch}, 0x200000)",
+                        f"CSRC(mstatus, x{r_scratch}) # Clear TW",
+                        "CSRW(mideleg, zero)",
+                        "CSRW(mie, zero)",
+                    ]
+                )
+                lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_temp, r_stimecmp, r_scratch])
     return lines

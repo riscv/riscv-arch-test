@@ -50,7 +50,7 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
         //bins zeros = {16'b0000000000000000}; // zeros in every field that is not tied to zero
     }
     mideleg_ones_zeros_real: coverpoint ins.current.csr[CSR_MIDELEG][15:0] {
-        bins ones  = {16'b0000001000100010}; //  ones in every field that is not tied to zero (only supervisor delegable)
+        bins ones  = {16'b0000101010101010}; //  ones in every field that is not tied to zero (both machine and supervisor delegable)
         bins zeros = {16'b0000000000000000}; // zeros in every field that is not tied to zero
     }
     mie_mtie: coverpoint ins.current.csr[CSR_MIE][7] {

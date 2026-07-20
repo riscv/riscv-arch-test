@@ -160,7 +160,7 @@
 
 #define TEST_FILE "sv57_zicbom_exceptions_Smode.S"
 #define SIGUPD_COUNT 220
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -1172,7 +1172,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2, 3 and 4
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -1186,7 +1186,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

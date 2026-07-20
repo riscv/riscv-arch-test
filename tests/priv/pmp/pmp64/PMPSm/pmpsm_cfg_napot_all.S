@@ -22,12 +22,13 @@
 //                 Grain Index value will increase.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -348,10 +349,12 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_napot_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_napot_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (SIZE/4)

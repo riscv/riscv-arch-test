@@ -142,6 +142,10 @@
         `cover_info("//      InterruptsS - Enabled");
         `include "InterruptsS_coverage_init.svh"
     `endif
+    `ifdef COVER_INTERRUPTSSSM
+        `cover_info("//      InterruptsSSm - Enabled");
+        `include "InterruptsSSm_coverage_init.svh"
+    `endif
     `ifdef COVER_INTERRUPTSSM
         `cover_info("//      InterruptsSm - Enabled");
         `include "InterruptsSm_coverage_init.svh"
@@ -170,13 +174,13 @@
         `cover_info("//      MisalignF - Enabled");
         `include "MisalignF_coverage_init.svh"
     `endif
+    `ifdef COVER_MISALIGNV
+        `cover_info("//      MisalignV - Enabled");
+        `include "MisalignV_coverage_init.svh"
+    `endif
     `ifdef COVER_MISALIGNZCA
         `cover_info("//      MisalignZca - Enabled");
         `include "MisalignZca_coverage_init.svh"
-    `endif
-    `ifdef COVER_MISALIGNEDV
-        `cover_info("//      MisalignedV - Enabled");
-        `include "MisalignedV_coverage_init.svh"
     `endif
     `ifdef COVER_PMPF
         `cover_info("//      PMPF - Enabled");

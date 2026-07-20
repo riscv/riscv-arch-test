@@ -26,6 +26,9 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -34,7 +37,7 @@
 #define SIGUPD_COUNT 100
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -339,7 +342,7 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1; cp: cp_cfg_A_all_test_1\""
@@ -407,9 +410,9 @@ test_62_str: .string "\"test: 62; cp: cp_cfg_A_all_test_62\""
 test_63_str: .string "\"test: 63; cp: cp_cfg_A_all_test_63\""
 test_64_str: .string "\"test: 64; cp: cp_cfg_A_all_test_64\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

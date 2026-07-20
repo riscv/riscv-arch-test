@@ -65,7 +65,7 @@
 #define TEST_FILE "sv57_upage_mstatus_sum_unset_Smode.S"
 #define SIGUPD_COUNT 80
 #define TRAP_SIGUPD_COUNT 310
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -87,7 +87,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -473,7 +472,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2, 3 and 4
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -487,7 +486,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

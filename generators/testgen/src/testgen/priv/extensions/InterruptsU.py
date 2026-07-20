@@ -12,6 +12,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -193,7 +194,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -226,13 +227,19 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
         )
 
         lines.append("# Enable MTIE")
-        lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
+        lines.extend(
+            [
+                f"LI(x{r_scratch}, 0x80)",
+                f"CSRW(mie, x{r_scratch})",
+                "RVTEST_GOTO_LOWER_MODE Umode",
+            ]
+        )
 
         # WFI - label right before
         lines.extend(
             [
                 "# Set timer to fire soon",
-                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),
+                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    wfi",
                 "    nop",
@@ -241,7 +248,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch])
     return lines
 
 
@@ -311,26 +318,27 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("InterruptsU", required_extensions=["U"])
-def make_interruptsu(test_data: TestData) -> list[str]:
+def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
-
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
-    lines.append("CSRW(mideleg, zero)")
-    lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
-    lines.append("")
+    tc.code.append("CSRW(mideleg, zero)")
+    tc.code.extend(clr_mtimer_int(r_temp, r_mtimecmp))
+    tc.code.append("")
 
     # Return the temporary registers
     test_data.int_regs.return_registers([r_temp, r_mtimecmp])
 
     # Generate all test sections
-    lines.extend(_generate_user_mti_tests(test_data))
-    lines.extend(_generate_user_msi_tests(test_data))
-    lines.extend(_generate_user_mei_tests(test_data))
-    lines.extend(_generate_user_wfi_tests(test_data))
-    lines.extend(_generate_user_wfi_timeout_tests(test_data))
+    tc.code.extend(_generate_user_mti_tests(test_data))
+    tc.code.extend(_generate_user_msi_tests(test_data))
+    tc.code.extend(_generate_user_mei_tests(test_data))
+    tc.code.extend(_generate_user_wfi_tests(test_data))
+    tc.code.extend(_generate_user_wfi_timeout_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

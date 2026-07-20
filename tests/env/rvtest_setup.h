@@ -30,7 +30,7 @@
   // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
   .option rvc
-  .align UNROLLSZ
+  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -38,9 +38,9 @@
   LA(ra, rvmodel_boot)
   jalr ra
 
-  // Create new section so that .align directives in the test code don't affect the
+  // Create new section so that .{b/p2}align directives in the test code don't affect the
   // entry point address. The assembler increases a section's overall alignment to
-  // the largest .align in that section, so any large .align used in a test would
+  // the largest .{b/p2}align in that section, so any large .{b/p2}align used in a test would
   // increase .text.init's alignment, shifting rvtest_entry_point to an unexpected
   // address. Placing test code in its own section avoids that because the .text.rvtest
   // section will have its own alignment. This requires .text.init and .text.rvtest
@@ -73,18 +73,19 @@
   .global cleanup_epilogs       // ****ALERT: tests must populate x1 with a point to the end of regular sig area TODO: Is this still true?
   /**** MPRV must be clear here !!! ****/
 
-  // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
   // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
   rvtest_code_end:
-    #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_GOTO_MMODE
-    #endif
 
-  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
+  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
+  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
+  // because cleanup_epilogs is also reached from abort_test and from the default
+  // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
+  // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
+      RVTEST_GOTO_MMODE
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -121,7 +122,7 @@
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
-    j       cleanup_epilogs
+    j       rvtest_code_end // switch to M-mode and clean up and terminate
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
@@ -154,7 +155,10 @@
     #ifdef RVMODEL_IO_INIT
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
+
+    // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
     // always boot to at least M-mode
+    // TODO: RVTEST_BOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
       // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
@@ -169,6 +173,14 @@
           RVTEST_BOOT_TO_UMODE
         #endif
       #endif
+    #endif
+
+    // Temporary workaround to boot to correct mode in Ssstrict tests until
+    // full boot flow with mode selection is working. TODO: Remove this
+    #ifdef RVTEST_TEMP_BOOT_TO_S
+      RVTEST_GOTO_LOWER_MODE Smode
+    #elif defined(RVTEST_TEMP_BOOT_TO_U)
+      RVTEST_GOTO_LOWER_MODE Umode
     #endif
 
     #ifdef S_SUPPORTED
@@ -209,6 +221,7 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
+    // safe to use T1-T3 because this is only invoked in termination code
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
     ret
 
@@ -223,41 +236,41 @@
   // ***DH 4/8/26 check this is proper gating
   #ifdef STANDARD_SM_SUPPORTED
     rvtest_set_msw_int:
-      RVMODEL_SET_MSW_INT(T2, T5)
+      RVMODEL_SET_MSW_INT(a0, a1)
       ret
 
     rvtest_clr_msw_int:
-      RVMODEL_CLR_MSW_INT(T2, T5)
+      RVMODEL_CLR_MSW_INT(a0, a1)
       ret
 
     rvtest_set_mext_int:
-      RVMODEL_SET_MEXT_INT(T2, T5)
+      RVMODEL_SET_MEXT_INT(a0, a1)
       ret
 
     rvtest_clr_mext_int:
-      RVMODEL_CLR_MEXT_INT(T2, T5)
+      RVMODEL_CLR_MEXT_INT(a0, a1)
       ret
   #endif
 
   #ifdef S_SUPPORTED
     rvtest_set_ssw_int:
-      RVMODEL_SET_SSW_INT(T2, T5)
+      RVMODEL_SET_SSW_INT(a0, a1)
       ret
 
     rvtest_clr_ssw_int:
-      RVMODEL_CLR_SSW_INT(T2, T5)
-      li T2, 2
-      csrc mip, T2              /* Always called from M-mode; mip.SSIP must be cleared via mip */
+      RVMODEL_CLR_SSW_INT(a0, a1)
+      li a0, 2
+      csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
       ret
 
     rvtest_set_sext_int:
-      RVMODEL_SET_SEXT_INT(T2, T5)
+      RVMODEL_SET_SEXT_INT(a0, a1)
       ret
 
     rvtest_clr_sext_int:
-      RVMODEL_CLR_SEXT_INT(T2, T5)
-      LI(T3, 512)
-      csrc sip, T3 // clear sip.SEIP
+      RVMODEL_CLR_SEXT_INT(a0, a1)
+      LI(a0, 512)
+      csrc sip, a0 // clear sip.SEIP
       ret
   #endif
 
@@ -285,7 +298,7 @@
   // while remaining obviously recognizable as uninitialized scratch defaults.
   // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
   .data
-  .align 8
+  .p2align 8
   scratch:
     .dword 0xDEAD0001FFFEBEEF, 0xDEAD0002FFFDBEEF
     .dword 0xDEAD0003FFFCBEEF, 0xDEAD0004FFFBBEEF
@@ -305,7 +318,7 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
-  .align 4
+  .p2align 4
 
   // Create separate save areas for each priv mode trap handler
   // Guard matches RVTEST_TRAP_HANDLER guard: RVTEST_TRAP_SAVEAREA references
@@ -316,7 +329,7 @@
   #endif
 
   // Data for use in test
-  .align 4
+  .p2align 4
   .global rvtest_data_begin
   rvtest_data_begin:
 .endm
@@ -332,14 +345,14 @@
 
   // Root page tables
   #ifdef S_SUPPORTED
-    .align 12
+    .p2align 12
     rvtest_Sroot_pg_tbl:
       .zero(4096)                // 4KB page table
     #ifdef H_SUPPORTED
-      .align 14
+      .p2align 14
       rvtest_Hroot_pg_tbl:
         .zero(16384)               // 16KB page table
-      .align 12
+      .p2align 12
       rvtest_Vroot_pg_tbl:
         .zero(4096)              // 4KB page table
     #endif
@@ -362,7 +375,7 @@
 /**** - Trap handler signature region                                                   ****/
 /*******************************************************************************************/
 .macro RVTEST_SIG_SETUP
-  .align 4
+  .p2align 4
   .global begin_signature
   begin_signature:
   .global rvtest_sig_begin
@@ -394,7 +407,7 @@
         CANARY
     #endif
 
-  .align 4
+  .p2align 4
   .global rvtest_sig_end
   rvtest_sig_end:
   .global end_signature
@@ -759,7 +772,12 @@
     csrw senvcfg, t0
 
     // Boot into S-mode
-    # RVMODEL_GOTO_LOWER_MODE SMODE
+    // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
+    // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    // Also this avoids going to S-mode when the goal is to get to U-mode
+    #ifdef BOOT_TO_SMODE
+      RVTEST_GOTO_LOWER_MODE Smode
+    #endif
   #endif
 .endm
 
@@ -768,6 +786,7 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
+  // dh 7/1/26 temporarily arriving here in M-mode if the goal is to go to U-mode
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_UMODE
@@ -775,12 +794,22 @@
   #else
     rvtest_boot_to_umode:
     // Boot into U-mode
-    #ifdef S_SUPPORTED
-      // RVTEST_GOTO_LOWER_MODE UMODE // *** need a version that works from S-mode
-    #else
-      // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
-      // RVTEST_GOTO_LOWER_MODE UMODE
+    #ifdef BOOT_TO_UMODE
+      RVTEST_GOTO_LOWER_MODE Umode
     #endif
+
+    // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
+    // #ifdef S_SUPPORTED
+    //   // RVTEST_GOTO_LOWER_MODE Umode // *** need a version that works from S-mode
+    // #else
+    //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
+
+    //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
+    //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    //   #ifdef BOOT_TO_UMODE
+    //     RVTEST_GOTO_LOWER_MODE Umode
+    //   #endif
+    // #endif
   #endif
   nop
 .endm
@@ -820,11 +849,44 @@
 /************************************ RVTEST_INIT_REGS ********************************/
 /**** Initialize registers and signature/data pointers                             ****/
 /**************************************************************************************/
+
+// Absolute .option arch strings used to bracket the FP/vector register init below.
+// An absolute arch string resets the arch for the block (rather than adding to the
+// test's -march), so it drops any mutually-exclusive extension the test declared
+// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
+// restores the test's real march. Supersets are harmless: only the init instructions
+// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
+#if __riscv_xlen == 64
+  #define RVTEST_FP_INIT_ARCH  rv64if
+  #define RVTEST_VEC_INIT_ARCH rv64imfv
+#else
+  #define RVTEST_FP_INIT_ARCH  rv32if
+  #define RVTEST_VEC_INIT_ARCH rv32imfv
+#endif
+
 .macro RVTEST_INIT_REGS
   /* init regs, to ensure you catch any errors */
   rvtest_init_regs:
 
+  // initialize GPRS 1-15
+  LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
+  DBLSHIFTR x2,  x1,  x15, 7
+  DBLSHIFTR x3,  x2,  x15, 7
+  DBLSHIFTR x4,  x3,  x15, 7
+  DBLSHIFTR x5,  x4,  x15, 7
+  DBLSHIFTR x6,  x5,  x15, 7
+  DBLSHIFTR x7,  x6,  x15, 7
+  DBLSHIFTR x8,  x7,  x15, 7
+  DBLSHIFTR x9,  x8,  x15, 7
+  DBLSHIFTR x10, x9,  x15, 7
+  DBLSHIFTR x11, x10, x15, 7
+  DBLSHIFTR x12, x11, x15, 7
+  DBLSHIFTR x13, x12, x15, 7
+  DBLSHIFTR x14, x13, x15, 7
+  LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
+
   #ifndef E_SUPPORTED
+    // Initialize GPRs 16-31
     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
     DBLSHIFTR x17, x16, x15, 7
     DBLSHIFTR x18, x17, x15, 7
@@ -842,47 +904,113 @@
     DBLSHIFTR x30, x29, x15, 7
     DBLSHIFTR x31, x30, x15, 7
   #endif
-    LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
-    DBLSHIFTR x2,  x1,  x15, 7
-    DBLSHIFTR x3,  x2,  x15, 7
-    DBLSHIFTR x4,  x3,  x15, 7
-    DBLSHIFTR x5,  x4,  x15, 7
-    DBLSHIFTR x6,  x5,  x15, 7
-    DBLSHIFTR x7,  x6,  x15, 7
-    DBLSHIFTR x8,  x7,  x15, 7
-    DBLSHIFTR x9,  x8,  x15, 7
-    DBLSHIFTR x10, x9,  x15, 7
-    DBLSHIFTR x11, x10, x15, 7
-    DBLSHIFTR x12, x11, x15, 7
-    DBLSHIFTR x13, x12, x15, 7
-    DBLSHIFTR x14, x13, x15, 7
-    LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
 
-    // Initialize signature pointer
-    LA(DEFAULT_SIG_REG, signature_base)
+  // Initialize FPRs if they exist
+  #ifdef F_SUPPORTED
+    .option push
+    .option arch, RVTEST_FP_INIT_ARCH
+    fmv.w.x f0, x1 // x1 instead of x0 to avoid initializing f0 with zero value
+    fmv.w.x f1, x1
+    fmv.w.x f2, x2
+    fmv.w.x f3, x3
+    fmv.w.x f4, x4
+    fmv.w.x f5, x5
+    fmv.w.x f6, x6
+    fmv.w.x f7, x7
+    fmv.w.x f8, x8
+    fmv.w.x f9, x9
+    fmv.w.x f10, x10
+    fmv.w.x f11, x11
+    fmv.w.x f12, x12
+    fmv.w.x f13, x13
+    fmv.w.x f14, x14
+    fmv.w.x f15, x15
+    fmv.w.x f16, x0 // what the heck, make this zero :)
+    fmv.w.x f17, x1
+    fmv.w.x f18, x2
+    fmv.w.x f19, x3
+    fmv.w.x f20, x4
+    fmv.w.x f21, x5
+    fmv.w.x f22, x6
+    fmv.w.x f23, x7
+    fmv.w.x f24, x8
+    fmv.w.x f25, x9
+    fmv.w.x f26, x10
+    fmv.w.x f27, x11
+    fmv.w.x f28, x12
+    fmv.w.x f29, x13
+    fmv.w.x f30, x14
+    fmv.w.x f31, x15
+    .option pop
+  #endif
 
-    // Initial signature check to confirm self-checking is working
-    canary_check:
-    LI(T1, CANARY_VALUE)
-    #ifdef RVTEST_SELFCHECK
-      // Can't use DEFAULT_*_REG macros here because of macro expansion order
-      // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-      RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
-    #else
-      // Increment sig pointer to skip the CANARY
-      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
-      // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
-      // used in self-check mode (including its embedded pointer words/dwords).
+  // initialize Vector Registers if they exist
+  #ifdef ZVL32B_SUPPORTED
+    .option push
+    .option arch, RVTEST_VEC_INIT_ARCH
+    // splat integer registers into all of vector registers
+    vsetvli x1, x0, e32, m1, ta, ma // configure vector to vl = VLMAX
+    LI (x1,  (0xFEEDBEADFEEDBEAD & MASK)) // restore x1 after vsetvli clobbers it
+    vmv.v.x v0, x1 // x1 instead of x0 to avoid initializing v0 with zero value
+    vmv.v.x v1, x1
+    vmv.v.x v2, x2
+    vmv.v.x v3, x3
+    vmv.v.x v4, x4
+    vmv.v.x v5, x5
+    vmv.v.x v6, x6
+    vmv.v.x v7, x7
+    vmv.v.x v8, x8
+    vmv.v.x v9, x9
+    vmv.v.x v10, x10
+    vmv.v.x v11, x11
+    vmv.v.x v12, x12
+    vmv.v.x v13, x13
+    vmv.v.x v14, x14
+    vmv.v.x v15, x15
+    vmv.v.x v16, x0 // what the heck, make this zero :)
+    vmv.v.x v17, x1
+    vmv.v.x v18, x2
+    vmv.v.x v19, x3
+    vmv.v.x v20, x4
+    vmv.v.x v21, x5
+    vmv.v.x v22, x6
+    vmv.v.x v23, x7
+    vmv.v.x v24, x8
+    vmv.v.x v25, x9
+    vmv.v.x v26, x10
+    vmv.v.x v27, x11
+    vmv.v.x v28, x12
+    vmv.v.x v29, x13
+    vmv.v.x v30, x14
+    vmv.v.x v31, x15
+    .option pop
+  #endif
+
+  // Initialize signature pointer
+  LA(DEFAULT_SIG_REG, signature_base)
+
+  // Initial signature check to confirm self-checking is working
+  canary_check:
+  LI(T1, CANARY_VALUE)
+  #ifdef RVTEST_SELFCHECK
+    // Can't use DEFAULT_*_REG macros here because of macro expansion order
+    // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
+    RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
+  #else
+    // Increment sig pointer to skip the CANARY
+    addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+    // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
+    // used in self-check mode (including its embedded pointer words/dwords).
+    nop
+    nop
+    nop
+    nop
+    nop
+    #if __riscv_xlen == 64
       nop
       nop
-      nop
-      nop
-      nop
-      #if __riscv_xlen == 64
-        nop
-        nop
-      #endif
     #endif
-    // Initialize test data pointer
-    LA(DEFAULT_DATA_REG, rvtest_data_begin)
+  #endif
+  // Initialize test data pointer
+  LA(DEFAULT_DATA_REG, rvtest_data_begin)
 .endm

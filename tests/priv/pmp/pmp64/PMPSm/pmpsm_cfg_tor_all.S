@@ -23,12 +23,14 @@
 //                 and all others should trap.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -182,7 +184,7 @@ main:
 #endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 
@@ -190,82 +192,84 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
 #if UDB_PMP_GRANULARITY == 2
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_X:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION_0:                        // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
-    .rept (1<<(UDB_PMP_GRANULARITY))
+    .rept ((1<<(UDB_PMP_GRANULARITY))/4)
     nop
     .endr
 
 TEST_FOR_EXECUTION_1:                        // Adding nops in TOR Region from 0x80001000 + g to 0x80001000 + 3g
-    .rept (2*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (2*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_2:                        // Adding nops in TOR Region from 0x80001000 + 3g to 0x80001000 + 6g
-    .rept (3*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (3*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_3:                        // Adding nops in TOR Region from 0x80001000 + 6g to 0x80001000 + 10g
-    .rept (4*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (4*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_4:                        // Adding nops in TOR Region from 0x80001000 + 10g to 0x80001000 + 15g
-    .rept (5*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (5*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_5:                        // Adding nops in TOR Region from 0x80001000 + 15g to 0x80001000 + 21g
-    .rept (6*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (6*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_6:                        // Adding nops in TOR Region from 0x80001000 + 21g to 0x80001000 + 28g
-    .rept (7*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (7*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_7:                        // Adding nops in TOR Region from 0x80001000 + 28g to 0x80001000 + 36g
-    .rept (8*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (8*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_8:                        // Adding nops in TOR Region from 0x80001000 + 36g to 0x80001000 + 45g
-    .rept (9*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (9*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_9:                        // Adding nops in TOR Region from 0x80001000 + 45g to 0x80001000 + 55g
-    .rept (10*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (10*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_10:                        // Adding nops in TOR Region from 0x80001000 + 55g to 0x80001000 + 66g
-    .rept (11*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (11*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_11:                        // Adding nops in TOR Region from 0x80001000 + 66g to 0x80001000 + 78g
-    .rept (12*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (12*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_12:                        // Adding nops in TOR Region from 0x80001000 + 78g to 0x80001000 + 91g
-    .rept (13*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (13*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_13:                        // Adding nops in TOR Region from 0x80001000 + 91g to 0x80001000 + 105g
-    .rept (14*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (14*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_14:                        // Adding nops in TOR Region from 0x80001000 + 105g to 0x80001000 + 120g
-    .rept (15*(1<<(UDB_PMP_GRANULARITY)))
+    .rept (15*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 

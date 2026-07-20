@@ -27,12 +27,14 @@
 //
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -51,10 +53,10 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_3:
     jalr ra, 0(a4)
     nop
@@ -127,12 +129,13 @@ main:
     .set pmpaddri, pmpaddri+2
     .endr
 
-    // REGIONSTART + i*g in odd PMPADDR
+    // REGIONSTART + i*g in odd PMPADDR. Uses t2 (not t0, which aliases x5 the
+    // accumulator) so the per-iteration LI doesn't clobber the running total.
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    LI(t0, g)
-    add x5, x5, t0
+    LI(t2, g)
+    add x5, x5, t2
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2
@@ -185,7 +188,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_priority_sw\""
@@ -193,9 +196,9 @@ test_2_str: .string "\"test: 2; cp: pmpm_priority_lw\""
 test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
 
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

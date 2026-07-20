@@ -24,6 +24,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
@@ -31,7 +32,7 @@
 #define SIGUPD_COUNT 100
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -65,6 +66,38 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_4, test_4_str)
 
+
+.endm
+
+.macro VERIFICATION_RWX_SUCCESS ADDRESS TEST_CASE
+
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(t2, 100)                                              // Retry counter for constrained LR/SC loop
+\TEST_CASE\()_w_retry:
+    \TEST_CASE\()_1:
+    lr.w a3, (a5)
+    \TEST_CASE\()_2:
+    sc.w a2, a3, (a5)
+    beqz a2, \TEST_CASE\()_w_success                        // SC succeeded, skip retry
+    addi t2, t2, -1                                          // Decrement retry count
+    bnez t2, \TEST_CASE\()_w_retry                           // Retry LR/SC if not exhausted
+\TEST_CASE\()_w_success:
+    RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_1, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_2, test_2_str)
+
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(t2, 100)                                              // Retry counter for constrained LR/SC loop
+\TEST_CASE\()_d_retry:
+    \TEST_CASE\()_3:
+    lr.d a3, (a5)
+    \TEST_CASE\()_4:
+    sc.d a2, a3, (a5)
+    beqz a2, \TEST_CASE\()_d_success                        // SC succeeded, skip retry
+    addi t2, t2, -1                                          // Decrement retry count
+    bnez t2, \TEST_CASE\()_d_retry                           // Retry LR/SC if not exhausted
+\TEST_CASE\()_d_success:
+    RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_3, test_3_str)
+    RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_4, test_4_str)
 
 .endm
 
@@ -156,7 +189,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
@@ -201,7 +234,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_6
 
 
     j exit                                                        // Verification Complete, exit the test
@@ -210,7 +243,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpzalrc_cfg_wr_lr_w\""
@@ -218,10 +251,12 @@ test_2_str:  .string "\"test: 2;  cp: pmpzalrc_cfg_wr_sc_w\""
 test_3_str:  .string "\"test: 3;  cp: pmpzalrc_cfg_wr_lr_f\""
 test_4_str:  .string "\"test: 4;  cp: pmpzalrc_cfg_wr_sc_d\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

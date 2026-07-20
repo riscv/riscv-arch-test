@@ -37,21 +37,21 @@ Additional details on what each section contains and why each section is needed 
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `rvtest_entry_point` | Entry point. Calls `rvmodel_boot` (in the `.text.rvmodel` section) then falls through to `.text.rvtest`. |
 
-`.text.init` is intentionally kept in a separate output section so that `.align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`. = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.align` directives (`.align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
+`.text.init` is intentionally kept in a separate output section so that `.balign`/`.p2align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`. = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.p2align` directives (`.p2align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
 
 ## `.text.rvtest` Section Layout
 
-| Symbol / Region               | Purpose                                                                                                        |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization. **_ This is going to change with the new boot macros _** |
-| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                                                   |
-| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`.                                  |
-| `rvtest_code_end`             | End of the test body. Switches back to M-mode.                                                                 |
-| `cleanup_epilogs`             | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).                                        |
-| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).                                     |
-| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                                                        |
-| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).                                            |
-| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.                                               |
+| Symbol / Region               | Purpose                                                                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `rvtest_init`                 | Trap prologs, PMP setup, and register initialization. **\_ This is going to change with the new boot macros _** |
+| `rvtest_code_begin`           | Start of the test body (signature pointer initialized here).                                                    |
+| _(test code)_                 | The actual test, generated between `RVTEST_CODE_BEGIN` and `RVTEST_CODE_END`.                                   |
+| `rvtest_code_end`             | End of the test body. Switches back to M-mode.                                                                  |
+| `cleanup_epilogs`             | Trap epilogs (restore xTVEC, trampoline, and saved registers per mode).                                         |
+| `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).                                      |
+| Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                                                         |
+| Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).                                             |
+| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.                                                |
 
 `.text.rvtest` contains all of the actual test code that is common across all DUTs. For any DUT-specific operations, the DUT jumps to a function in the `.text.rvmodel` section to ensure the `.text.rvtest` section remains constant length.
 

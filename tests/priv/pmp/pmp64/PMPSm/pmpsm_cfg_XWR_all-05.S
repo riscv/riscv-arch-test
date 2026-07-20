@@ -27,6 +27,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -35,7 +36,7 @@
 #define SIGUPD_COUNT 400
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -43,69 +44,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_12:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
-    \TEST_CASE\()_1:
-    sb a4, 0(a5)                                             // Byte-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-    \TEST_CASE\()_2:
-    sh a4, 0(a5)                                             // Half-word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-    \TEST_CASE\()_4:
-    sd a4, 0(a5)                                             // Doubleword store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-    // Load Access Check
-    \TEST_CASE\()_5:
-    lb a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                   // Signature update
-    \TEST_CASE\()_6:
-    lbu a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                  // Signature update
-    \TEST_CASE\()_7:
-    lh a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                   // Signature update
-    \TEST_CASE\()_8:
-    lhu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                  // Signature update
-    \TEST_CASE\()_9:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
-    \TEST_CASE\()_10:
-    lwu a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)                                   // Signature update
-    \TEST_CASE\()_11:
-    ld a4, 0(a5)                                             // Doubleword load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)                                   // Signature update
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -171,7 +109,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_1
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_1
 
     RVTEST_GOTO_MMODE
 
@@ -180,7 +118,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_2
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_2
 
     RVTEST_GOTO_MMODE
 
@@ -189,7 +127,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_3
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_3
 
     RVTEST_GOTO_MMODE
 
@@ -198,7 +136,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_4
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_4
 
     RVTEST_GOTO_MMODE
 
@@ -207,7 +145,7 @@ main:
     LI(x4, (PMPREGION_XWR_100 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_5
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_5
 
     RVTEST_GOTO_MMODE
 
@@ -216,7 +154,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_6
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_6
 
     RVTEST_GOTO_MMODE
 
@@ -225,7 +163,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_7
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_7
 
     RVTEST_GOTO_MMODE
 
@@ -234,7 +172,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_8
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_8
 
     RVTEST_GOTO_MMODE
 
@@ -261,12 +199,14 @@ test_10_str: .string "\"test: 10; cp: pmpm_cfg_XWR_all_lwu\""
 test_11_str: .string "\"test: 11; cp: pmpm_cfg_XWR_all_ld\""
 test_12_str: .string "\"test: 12; cp: pmpm_cfg_XWR_all_jalr\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
+    .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

@@ -36,6 +36,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -44,7 +45,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -164,7 +165,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1; cp: cp_cfg_L_modify_1\""
@@ -183,10 +184,12 @@ test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify_13\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_14\""
 
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

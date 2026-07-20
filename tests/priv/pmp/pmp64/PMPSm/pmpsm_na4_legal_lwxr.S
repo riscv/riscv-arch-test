@@ -25,13 +25,15 @@
 
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -48,10 +50,10 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                            // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -59,7 +61,6 @@ RVTEST_BEGIN
     nop
     nop
 
-    LI(x4, 0xACCE)
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -69,7 +70,6 @@ RVTEST_BEGIN
     nop
     nop
 
-    LI(x4, 0xACCE)
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -228,7 +228,7 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_6
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_cfg_A_na4_sw_address\""
@@ -240,10 +240,12 @@ test_4_str: .string "\"test: 4; cp: cp_cfg_A_na4_lw_address-4\""
 test_5_str: .string "\"test: 5; cp: cp_cfg_A_na4_sw_address+4\""
 test_6_str: .string "\"test: 6; cp: cp_cfg_A_na4_lw_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

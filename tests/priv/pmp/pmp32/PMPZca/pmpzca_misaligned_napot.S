@@ -29,6 +29,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -37,7 +38,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -51,13 +52,6 @@ RVTEST_BEGIN
     #define REGION_SIZE 8
 #endif
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -137,10 +131,16 @@ main:
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1
 
     // Test Case 2: Uncompressed return straddling the end of 2nd region
-    VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
+
+    // Test Case 3: Uncompressed return exactly at the start of the 1st region (inside_first_region)
+    PMP_VERIFICATION_X_C NEWREGION1, test_3
+
+    // Test Case 4: Uncompressed return exactly at the start of the 2nd region (inside_second_region)
+    PMP_VERIFICATION_X_C NEWREGION2, test_4
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -153,32 +153,33 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
+    nop                                                          // NAPOT-safe filler: shifts REGIONSTART to PMP_NAPOT_REGION_START (matches STANDARD_REGION)
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept ((REGION_SIZE / 2) -1)
-    nop
+    c.nop                                                        // 2-byte fillers: precise offsets so _2/_4's uncompressed jalr genuinely straddle the region boundary
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+// No .p2align here (and none before _3/_4 below): the c.nop offsets above must survive
+// unrounded so these uncompressed jalr instructions land mid-word, genuinely straddling the
+// region boundary, instead of being pushed back onto the next grain-aligned boundary.
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept ((REGION_SIZE / 2) -2)
-    nop
+    c.nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_5:
     .rept REGION_SIZE
     nop

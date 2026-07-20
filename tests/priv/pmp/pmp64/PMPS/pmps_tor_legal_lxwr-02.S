@@ -25,6 +25,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -33,7 +35,7 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -43,9 +45,8 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
@@ -58,7 +59,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA (a4, \ADDRESS)
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
@@ -71,7 +71,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA (a4, \ADDRESS)
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
@@ -294,7 +293,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_tor_sw_address\""
@@ -315,14 +314,14 @@ test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_jalr_address+4\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
 test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra

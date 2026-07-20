@@ -27,6 +27,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -35,7 +36,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -43,13 +44,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -103,16 +97,16 @@ main:
     csrw pmpcfg0, x4
 
     //Test case1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_0, test1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test3
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -125,8 +119,8 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
-.align 11
-.skip (0x802)
+.p2align 11
+.skip (0x806)                                                  // shifted +4B so REGIONSTART lands at PMP_NAPOT_REGION_START, not PMP_REGION_START
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

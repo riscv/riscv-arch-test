@@ -144,3 +144,7 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
+    test_data.vec_regs.deallocate_operands()
+    assert len(test_data.vec_regs.reg_list) == 32, (
+        f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are {test_data.vec_regs.reg_list}"
+    )

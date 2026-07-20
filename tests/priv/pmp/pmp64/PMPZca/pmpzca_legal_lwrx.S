@@ -27,6 +27,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -35,7 +36,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -48,9 +49,9 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA (x15, \ADDRESS)
     LA(x1, 1f)                            // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_3:
     c.jalr x15
     c.nop
@@ -278,7 +279,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
@@ -287,12 +288,12 @@ test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
 test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
 test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<UDB_PMP_GRANULARITY)
     c.nop

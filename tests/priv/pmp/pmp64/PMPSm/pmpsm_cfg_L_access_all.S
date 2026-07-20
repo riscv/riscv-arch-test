@@ -28,6 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -36,7 +37,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -47,8 +48,8 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -342,17 +343,19 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_access_all_lw and cp_none_lw\""
 test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all_sw and cp_none_sw\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

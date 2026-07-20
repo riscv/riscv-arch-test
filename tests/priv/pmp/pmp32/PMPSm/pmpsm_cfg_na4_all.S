@@ -27,6 +27,8 @@
 #   MXLEN: 32
 #   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -35,7 +37,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -274,10 +276,10 @@ test_2_str: .string "\"test: 2; cp: pmpm_cfg_na4_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
 
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

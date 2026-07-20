@@ -24,6 +24,8 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -32,7 +34,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 #define SKIP_MTVAL
 
 // Include framework macros
@@ -57,7 +59,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
-    LI(x4, 0xACCE)
+    LI(a4, 0x00008067)                                       // ret (jalr x0, 0(ra)): on cores where addr 0 is mapped RAM the store lands and the later execute probe at 0 must return
     LI(a5, 0)
     LA(x1, 4f)                                               // Address to be verified
     sw a4, 0(a5)                                             // word-level store test
@@ -78,7 +80,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_4,test_4_str)               // Signature update
 
-    LI(x4, 0xACCE)
     LA(x1, 5f)
     LI(a5, 0)                                                   // Address to be verified
     lw a4, 0(a5)                                             // word-level store test
@@ -88,15 +89,14 @@ RVTEST_BEGIN
     nop
 
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS))
     LA(x1, 1f)                                                // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
 1:
     nop
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS-4))
     LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -104,7 +104,6 @@ RVTEST_BEGIN
 2:
     nop
 
-    LI(x4, 0xACCE)
     LI(a5, 0)
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a5)
@@ -164,14 +163,14 @@ test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_tor_zero_store_access_at_pmpaddr0
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0\""
 test_4_str: .string "\"test: 4; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0-4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

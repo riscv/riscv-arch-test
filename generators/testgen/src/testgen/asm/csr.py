@@ -231,7 +231,7 @@ def csr_walk_test(
     else:
         save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
         mask_reg = None
-    warl_mask_reg = test_data.int_regs.get_registers(1)[0] if warl_fields else None
+    warl_mask_reg = test_data.int_regs.get_register() if warl_fields else None
 
     def field_value_written(field: tuple[str, int, int, int], i: int, *, walking_ones: bool) -> int:
         """Value the walk writes to the WARL field when setting/clearing bit i."""

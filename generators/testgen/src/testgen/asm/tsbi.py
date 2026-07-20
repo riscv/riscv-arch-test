@@ -47,7 +47,7 @@ def tsbi_call(instr: str) -> str:
         [
             f"{INDENT}# T-SBI call to execute instruction: {instr}",
             *preamble,
-            f"{INDENT}LI(a0, {add_opcode(instr, rs1, rs2, rd)}) # {instr}",
+            f"{INDENT}LI(a0, {add_opcode(normalized_instr, rs1, rs2, rd)}) # {instr}",
             f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
             *postscript,
         ]

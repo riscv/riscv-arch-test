@@ -34,6 +34,56 @@
   #define PMP_NAPOT_REGION_PAD_WORDS (1 << (UDB_PMP_GRANULARITY - 1))
 #endif
 
+// Background region helpers. The catch-all PMP entry must be the lowest-priority
+// usable entry (highest usable PMP index). These macros compute the address CSR,
+// config CSR, and config-byte shift from the UDB NUM_USABLE_PMP_ENTRIES parameter.
+#define RVTEST_PMP_BACKGROUND_ENTRY (UDB_NUM_USABLE_PMP_ENTRIES - 1)
+#define RVTEST_PMP_BACKGROUND_ADDR_CSR (CSR_PMPADDR0 + RVTEST_PMP_BACKGROUND_ENTRY)
+#if UDB_MXLEN == 64
+  #define RVTEST_PMP_BACKGROUND_CFG_CSR (CSR_PMPCFG0 + (2 * (RVTEST_PMP_BACKGROUND_ENTRY / 8)))
+  #define RVTEST_PMP_BACKGROUND_CFG_SHIFT ((RVTEST_PMP_BACKGROUND_ENTRY % 8) * 8)
+#else
+  #define RVTEST_PMP_BACKGROUND_CFG_CSR (CSR_PMPCFG0 + (RVTEST_PMP_BACKGROUND_ENTRY / 4))
+  #define RVTEST_PMP_BACKGROUND_CFG_SHIFT ((RVTEST_PMP_BACKGROUND_ENTRY % 4) * 8)
+#endif
+#define RVTEST_PMP_BACKGROUND_NAPOT_CFG \
+  (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << RVTEST_PMP_BACKGROUND_CFG_SHIFT)
+#define RVTEST_PMP_BACKGROUND_TOR_CFG \
+  (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << RVTEST_PMP_BACKGROUND_CFG_SHIFT)
+
+.macro RVTEST_PMP_SET_BACKGROUND_NAPOT TMP_REG
+    LI(\TMP_REG, -1)
+    .set rvtest_pmp_background_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR
+    csrw rvtest_pmp_background_addr_csr, \TMP_REG
+    LI(\TMP_REG, RVTEST_PMP_BACKGROUND_NAPOT_CFG)
+    .set rvtest_pmp_background_cfg_csr, RVTEST_PMP_BACKGROUND_CFG_CSR
+    csrw rvtest_pmp_background_cfg_csr, \TMP_REG
+.endm
+
+.macro RVTEST_PMP_SET_BACKGROUND_TOR TMP_REG
+    .if RVTEST_PMP_BACKGROUND_ENTRY > 0
+      LI(\TMP_REG, 0)
+      .set rvtest_pmp_background_prev_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR - 1
+      csrw rvtest_pmp_background_prev_addr_csr, \TMP_REG
+    .endif
+    LI(\TMP_REG, -1)
+    .set rvtest_pmp_background_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR
+    csrw rvtest_pmp_background_addr_csr, \TMP_REG
+    LI(\TMP_REG, RVTEST_PMP_BACKGROUND_TOR_CFG)
+    .set rvtest_pmp_background_cfg_csr, RVTEST_PMP_BACKGROUND_CFG_CSR
+    csrw rvtest_pmp_background_cfg_csr, \TMP_REG
+.endm
+
+.macro RVTEST_PMP_SET_BACKGROUND TMP_REG
+  #ifdef UDB_PMP_NAPOT_SUPPORTED
+    RVTEST_PMP_SET_BACKGROUND_NAPOT \TMP_REG
+  #elif defined(UDB_PMP_TOR_SUPPORTED)
+    RVTEST_PMP_SET_BACKGROUND_TOR \TMP_REG
+  #else
+    #error "PMP background region requires NAPOT or TOR support"
+  #endif
+.endm
+
 // PMP_VERIFICATION_X_C: compressed execute-only check.
 // Jumps (c.jalr) to ADDRESS and records whether execution was permitted.
 // No store occurs, so no RVTEST_FENCEI is required.

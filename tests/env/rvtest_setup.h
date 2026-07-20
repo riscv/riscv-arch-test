@@ -644,10 +644,16 @@
       #endif
 
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
-        // set up PMP so user and supervisor mode can access full address space
-        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+        // Set up PMP so lower privilege modes can access the full address space.
         LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        CSRW(pmpaddr0, t0)   // all-ones address gives the largest TOR/NAPOT range
+        #ifdef UDB_PMP_TOR_SUPPORTED
+          CSRW(pmpcfg0, 0x0F)   // configure PMP0 to TOR RWX
+        #elif defined(UDB_PMP_NAPOT_SUPPORTED)
+          CSRW(pmpcfg0, 0x1F)   // configure PMP0 to NAPOT RWX
+        #else
+          #error "PMP initialization requires TOR or NAPOT support"
+        #endif
         // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
         // memory system and any PMP or address translation caches. sfence.vma should not be
         // performed in a system that does not support virtual memory because it might raise

@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-RVA23S64
-description: RVA23S64 with only required extensions
+name: sail-RVA23S64-optional
+description: RVA23S64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }

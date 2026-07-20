@@ -18,7 +18,7 @@ _CSR_INSTR_RE = re.compile(r"(?i)(csrr|csrw|csrs|csrc)\s+([^,\s]+)\s*,\s*([^,\s]
 _MEM_INSTR_RE = re.compile(r"(?i)(lw|ld|sw|sd)\s+([^,\s]+)\s*,\s*([-+]?(?:0x[0-9a-f]+|\d+))\s*\(\s*([^\)\s]+)\s*\)")
 
 
-def add_tsbi(instr: str) -> str:
+def tsbi_call(instr: str) -> str:
     """
     Generate assembly for a T-SBI call
 
@@ -29,9 +29,10 @@ def add_tsbi(instr: str) -> str:
       A string containing the assembly code for the T-SBI call
     """
 
-    rs1 = get_rs1(instr)
-    rs2 = get_rs2(instr)
-    rd = get_rd(instr)
+    normalized_instr = _normalize_instr(instr)
+    rs1 = get_rs1(normalized_instr)
+    rs2 = get_rs2(normalized_instr)
+    rd = get_rd(normalized_instr)
 
     preamble = []
     postscript = []
@@ -46,9 +47,8 @@ def add_tsbi(instr: str) -> str:
         [
             f"{INDENT}# T-SBI call to execute instruction: {instr}",
             *preamble,
-            f"{INDENT}LI(a0, {add_opcode(instr)}) # {instr}",
-            f"{INDENT}ecall",
-            f"{INDENT}nop # next instruction after ecall is skipped; TODO remove this skipping when trap handler is updated, remove nops more widely after traps",
+            f"{INDENT}LI(a0, {add_opcode(normalized_instr, rs1, rs2, rd)}) # {instr}",
+            f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
             *postscript,
         ]
     )
@@ -91,15 +91,6 @@ _REGISTER_ALIASES = {
 }
 
 _CSR_ALIASES = {
-    "fflags": 0x001,
-    "frm": 0x002,
-    "fcsr": 0x003,
-    "cycle": 0xC00,
-    "time": 0xC01,
-    "instret": 0xC02,
-    "cycleh": 0xC80,
-    "timeh": 0xC81,
-    "instreth": 0xC82,
     "sstatus": 0x100,
     "sie": 0x104,
     "stvec": 0x105,
@@ -125,16 +116,6 @@ _CSR_ALIASES = {
     "menvcfgh": 0x31A,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
-    "tselect": 0x7A0,
-    "tdata1": 0x7A1,
-    "tdata2": 0x7A2,
-    "tdata3": 0x7A3,
-    "tinfo": 0x7A4,
-    "tcontrol": 0x7A5,
-    "scontext": 0x5A8,
-    "mcontext": 0x7A8,
-    "hcontext": 0x6A8,
-    "mscontext": 0x7AA,
 }
 
 
@@ -174,54 +155,48 @@ def _normalize_instr(instr: str) -> str:
     return instr.split("#", 1)[0].strip()
 
 
-def get_rd(instr: str) -> int:
-    normalized = _normalize_instr(instr)
-
-    if csr_match := _CSR_INSTR_RE.fullmatch(normalized):
+def get_rd(normalized_instr: str) -> int:
+    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = csr_match.group(1).lower()
         if mnemonic == "csrr":
             return _parse_register(csr_match.group(2))
         return 0
 
-    if mem_match := _MEM_INSTR_RE.fullmatch(normalized):
+    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = mem_match.group(1).lower()
         if mnemonic in {"lw", "ld"}:
             return _parse_register(mem_match.group(2))
         return 0
 
-    raise ValueError(f"Unsupported instruction format for register extraction: {instr}")
+    raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
 
 
-def get_rs1(instr: str) -> int:
-    normalized = _normalize_instr(instr)
-
-    if csr_match := _CSR_INSTR_RE.fullmatch(normalized):
+def get_rs1(normalized_instr: str) -> int:
+    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = csr_match.group(1).lower()
         if mnemonic == "csrr":
             return 0
         return _parse_register(csr_match.group(3))
 
-    if mem_match := _MEM_INSTR_RE.fullmatch(normalized):
+    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
         return _parse_register(mem_match.group(4))
 
-    raise ValueError(f"Unsupported instruction format for register extraction: {instr}")
+    raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
 
 
-def get_rs2(instr: str) -> int:
-    normalized = _normalize_instr(instr)
-
-    if csr_match := _CSR_INSTR_RE.fullmatch(normalized):
+def get_rs2(normalized_instr: str) -> int:
+    if csr_match := _CSR_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = csr_match.group(1).lower()
         if mnemonic in {"csrr", "csrw", "csrs", "csrc"}:
             return 0
 
-    if mem_match := _MEM_INSTR_RE.fullmatch(normalized):
+    if mem_match := _MEM_INSTR_RE.fullmatch(normalized_instr):
         mnemonic = mem_match.group(1).lower()
         if mnemonic in {"sw", "sd"}:
             return _parse_register(mem_match.group(2))
         return 0
 
-    raise ValueError(f"Unsupported instruction format for register extraction: {instr}")
+    raise ValueError(f"Unsupported instruction format for register extraction: {normalized_instr}")
 
 
 def _tsbi_rd_reg(rd: int) -> int:
@@ -253,14 +228,9 @@ def _encode_s_type(opcode: int, funct3: int, rs1: int, rs2: int, imm12: int) -> 
     )
 
 
-def add_opcode(instr: str) -> str:
+def add_opcode(normalized_instr: str, rs1: int, rs2: int, rd: int) -> str:
     """Return the 32-bit opcode encoding for a supported assembly instruction."""
-    normalized = _normalize_instr(instr)
-    rd = get_rd(instr)
-    rs1 = get_rs1(instr)
-    rs2 = get_rs2(instr)
-
-    csr_match = _CSR_INSTR_RE.fullmatch(normalized)
+    csr_match = _CSR_INSTR_RE.fullmatch(normalized_instr)
     if csr_match:
         mnemonic = csr_match.group(1).lower()
         first_arg = csr_match.group(2)
@@ -279,7 +249,7 @@ def add_opcode(instr: str) -> str:
 
         return f"0x{encoded:08x}"
 
-    mem_match = _MEM_INSTR_RE.fullmatch(normalized)
+    mem_match = _MEM_INSTR_RE.fullmatch(normalized_instr)
     if mem_match:
         mnemonic = mem_match.group(1).lower()
         imm12 = _parse_imm12(mem_match.group(3))
@@ -296,4 +266,4 @@ def add_opcode(instr: str) -> str:
 
         return f"0x{encoded:08x}"
 
-    raise ValueError(f"Unsupported instruction format for opcode conversion: {instr}")
+    raise ValueError(f"Unsupported instruction format for opcode conversion: {normalized_instr}")

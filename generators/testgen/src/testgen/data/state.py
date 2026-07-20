@@ -11,7 +11,8 @@ import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
-from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
+from testgen.data.random import random_int
+from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
 
 # Pre-compiled regex patterns for label normalization in add_testcase()
@@ -48,10 +49,12 @@ class TestData:
         self._instr_name = instr_name
         self._int_regs = IntegerRegisterFile(test_config.E_ext)
         self._float_regs = FloatRegisterFile()
+        self._vec_regs = VectorRegisterFile()
         self._test_count = 0
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
         self.test_chunk: TestChunk | None = None
+        self._vector_labels: dict[str, tuple[list[int], int]] = {}
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
@@ -100,6 +103,10 @@ class TestData:
         return self._float_regs
 
     @property
+    def vec_regs(self) -> VectorRegisterFile:
+        return self._vec_regs
+
+    @property
     def current_testcase_label(self) -> str:
         """Get the current testcase label."""
         return self._current_testcase_label
@@ -139,6 +146,10 @@ class TestData:
     def test_count(self) -> int:
         """Get the current test count."""
         return self._test_count
+
+    @property
+    def vector_labels(self) -> dict[str, tuple[list[int], int]]:
+        return self._vector_labels
 
     def increment_test_count(self) -> None:
         """Increment the test count by 1."""
@@ -218,3 +229,33 @@ class TestData:
         """Clean up resources used by TestData."""
         self._int_regs.destroy()
         self._float_regs.destroy()
+        self._vec_regs.destroy()
+
+    def register_vector_data(
+        self, label: str, sew: int, *, elements: list[int] | None = None, random_elements: int | None = None
+    ) -> None:
+        """
+        Registers a label and sew pair to be emitted in the data section. Used in vector tests to not be wasteful
+        by incrementing the data pointer in every test.
+
+        Exactly one of two optional arguments must be passed:
+            elements: List of SEW-wide elements to be emitted in that order in the data section
+            random_elements: Integer number of random elements to be emitted in the data section
+        """
+        assert (elements is None) ^ (random_elements is None), (
+            "Exactly one of elements and random_elements must be set for register_vector_data"
+        )
+
+        if random_elements is not None:
+            elements = []
+            for _ in range(random_elements):
+                elements.append(random_int(sew))
+
+        assert elements is not None, "Unreachable Case: Bytes is guaranteed to be set at this point"
+
+        if label in self._vector_labels and self._vector_labels[label] != (elements, sew):
+            raise ValueError(
+                f"Cannot overwrite data for label {label}, previous was {(self._vector_labels[label])}, attempted to write {(elements, sew)}"
+            )
+
+        self._vector_labels[label] = (elements, sew)

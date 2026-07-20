@@ -87,6 +87,10 @@ params:
   PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
   NUM_PMP_ENTRIES: 16 # PMP_NUM_REGIONS=16; 16 PMP regions with full CSR access
   PMP_GRANULARITY: 2 # VERIFIED — G=0 → minimum 4-byte granularity (User Manual, Physical Memory Protection); UDB PMP_GRANULARITY = G+2 = 2
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   CONFIG_PTR_ADDRESS: 0 # VERIFIED — mconfigptr hardwired to 0x0 (User Manual, Control and Status Registers)
 
   # Zcmt params (VERIFIED — User Manual, Control and Status Registers)

@@ -271,13 +271,14 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
 
-        # Ecall
+        # Ecall (uses the T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
+        # misinterpreted by the trap handler as a T-SBI instruction-table request)
         lines.extend(
             [
                 test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
-                "ecall",
-                "nop",
-                "nop",
+                "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                write_sigupd(10, test_data),
             ]
         )
 
@@ -395,8 +396,11 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
                 lines.extend(
                     [
                         test_data.add_testcase(tag, coverpoint, covergroup),
-                        "ecall",
-                        "nop",
+                        # T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
+                        # misinterpreted by the trap handler as a T-SBI instruction-table request
+                        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                        write_sigupd(10, test_data),
                         "RVTEST_GOTO_MMODE",
                     ]
                 )

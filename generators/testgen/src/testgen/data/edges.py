@@ -446,7 +446,7 @@ class FLOAT_EDGES:
 
 
 class VECTOR_EDGES:
-    vx_corners = (
+    vx_edges = (
         "zero",
         "one",
         "two",
@@ -461,29 +461,29 @@ class VECTOR_EDGES:
         "random",
     )
 
-    vls_corners = ("zero_emul8", "random_within_2vlmax")
+    vls_edges = ("zero_emul8", "random_within_2vlmax")
 
-    vf_corners = (
-        "vs_corner_f_pos0",
-        "vs_corner_f_neg0",
-        "vs_corner_f_pos1",
-        "vs_corner_f_neg1",
-        "vs_corner_f_posminnorm",
-        "vs_corner_f_negmaxnorm",
-        "vs_corner_f_posinfinity",
-        "vs_corner_f_neginfinity",
-        "vs_corner_f_pos0p5",
-        "vs_corner_f_pos1p5",
-        "vs_corner_f_neg2",
-        "vs_corner_f_pi",
-        "vs_corner_f_twoToEmax",
-        "vs_corner_f_onePulp",
-        "vs_corner_f_largestsubnorm",
-        "vs_corner_f_negSubnormLeadingOne",
-        "vs_corner_f_min_subnorm",
-        "vs_corner_f_canonicalQNaN",
-        "vs_corner_f_negNoncanonicalQNaN",
-        "vs_corner_f_sNaN_payload1",
+    vf_edges = (
+        "vs_edge_f_pos0",
+        "vs_edge_f_neg0",
+        "vs_edge_f_pos1",
+        "vs_edge_f_neg1",
+        "vs_edge_f_posminnorm",
+        "vs_edge_f_negmaxnorm",
+        "vs_edge_f_posinfinity",
+        "vs_edge_f_neginfinity",
+        "vs_edge_f_pos0p5",
+        "vs_edge_f_pos1p5",
+        "vs_edge_f_neg2",
+        "vs_edge_f_pi",
+        "vs_edge_f_twoToEmax",
+        "vs_edge_f_onePulp",
+        "vs_edge_f_largestsubnorm",
+        "vs_edge_f_negSubnormLeadingOne",
+        "vs_edge_f_min_subnorm",
+        "vs_edge_f_canonicalQNaN",
+        "vs_edge_f_negNoncanonicalQNaN",
+        "vs_edge_f_sNaN_payload1",
     )
 
     f32: ClassVar = {
@@ -579,56 +579,56 @@ class VECTOR_EDGES:
     }
 
     @staticmethod
-    def corner_value(corner: str, eew: int) -> int:
-        if corner == "zero" or corner == "zero_emul8":
+    def edge_value(edge: str, eew: int) -> int:
+        if edge == "zero" or edge == "zero_emul8":
             return 0
-        if corner == "one":
+        if edge == "one":
             return 1
-        if corner == "two":
+        if edge == "two":
             return 2
-        if corner == "ones":
+        if edge == "ones":
             return (1 << eew) - 1
-        if corner == "onesm1":
+        if edge == "onesm1":
             return (1 << eew) - 2
-        if corner == "min":
+        if edge == "min":
             return 1 << (eew - 1)
-        if corner == "minm1":
+        if edge == "minm1":
             return (1 << (eew - 1)) + 1
-        if corner == "max":
+        if edge == "max":
             return (1 << (eew - 1)) - 1
-        if corner == "maxm1":
+        if edge == "maxm1":
             return (1 << (eew - 1)) - 2
-        if corner == "walkeven":
+        if edge == "walkeven":
             return sum(1 << i for i in range(eew) if i % 2 == 0)
-        if corner == "walkodd":
+        if edge == "walkodd":
             return sum(1 << i for i in range(eew) if i % 2 == 1)
-        if corner == "random":
+        if edge == "random":
             random_val = 0
             conflict = True
             while conflict:
                 random_val = random_int(eew, signed=False)
                 conflict = False
-                for corner2 in VECTOR_EDGES.vx_corners:
-                    if "random" in corner2:
+                for edge2 in VECTOR_EDGES.vx_edges:
+                    if "random" in edge2:
                         continue
-                    if random_val == VECTOR_EDGES.corner_value(corner2, eew) or random_val == 0x81:
+                    if random_val == VECTOR_EDGES.edge_value(edge2, eew) or random_val == 0x81:
                         conflict = True
                         break
             return random_val
-        if corner == "random_within_2vlmax":
+        if edge == "random_within_2vlmax":
             random_val = 0
             conflict = True
             while conflict:
                 conflict = False
                 random_val = random_range(3, 2 ** (eew - 1 - 3))
-                for corner2 in VECTOR_EDGES.vls_corners:
-                    if "random" in corner2:
+                for edge2 in VECTOR_EDGES.vls_edges:
+                    if "random" in edge2:
                         continue
-                    if random_val == VECTOR_EDGES.corner_value(corner2, eew):
+                    if random_val == VECTOR_EDGES.edge_value(edge2, eew):
                         conflict = True
                         break
             return random_val
-        raise ValueError(f"Unknown corner: {corner}")
+        raise ValueError(f"Unknown edge: {edge}")
 
 
 # ==============================================================================
@@ -687,33 +687,33 @@ def get_orcb_edges(xlen: int) -> tuple[int, ...]:
     return base
 
 
-def get_vector_corner(corner: str, suffix: str, sew: int) -> int:
+def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
     """
-    Look up the value of a vector corner for a given name, suffix, and sew
+    Look up the value of a vector edge for a given name, suffix, and sew
     """
     if suffix == "f":
         if sew == 16:
-            return VECTOR_EDGES.f16[corner]
+            return VECTOR_EDGES.f16[edge]
         elif sew == 32:
-            return VECTOR_EDGES.f32[corner]
+            return VECTOR_EDGES.f32[edge]
         elif sew == 64:
-            return VECTOR_EDGES.f64[corner]
+            return VECTOR_EDGES.f64[edge]
         else:
             raise ValueError(f"Unsupported Floating Point SEW={sew}")
 
     if suffix == "f_emul2":
         if sew == 16:
-            return VECTOR_EDGES.f32[corner]
+            return VECTOR_EDGES.f32[edge]
         elif sew == 32:
-            return VECTOR_EDGES.f64[corner]
+            return VECTOR_EDGES.f64[edge]
         else:
             raise ValueError(f"Unsupported EMUL2 Floating Point SEW={sew}")
 
     if suffix == "f_bf16":
-        return VECTOR_EDGES.bf16[corner]
+        return VECTOR_EDGES.bf16[edge]
 
     if suffix == "eew1":
-        return VECTOR_EDGES.corner_value(corner, 8)
+        return VECTOR_EDGES.edge_value(edge, 8)
 
     emul: int | float = 1
     if suffix.startswith("emulf"):
@@ -722,4 +722,4 @@ def get_vector_corner(corner: str, suffix: str, sew: int) -> int:
     elif suffix.startswith("emul"):
         emul = int(suffix[len("emul") :])
 
-    return VECTOR_EDGES.corner_value(corner, int(sew * emul))
+    return VECTOR_EDGES.edge_value(edge, int(sew * emul))

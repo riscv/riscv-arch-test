@@ -9,7 +9,7 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import make_and_register_corner_label
+from testgen.coverpoints.vector.vector_helpers import make_and_register_edge_label
 from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -36,11 +36,11 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
     test_chunks = []
     for vxrm_mode in _VXRM_MODES:
-        for vs2_corner in VECTOR_EDGES.vx_corners:
-            vs2_label = make_and_register_corner_label("vs2", vs2_corner, vs2_suffix, test_data)
+        for vs2_edge in VECTOR_EDGES.vx_edges:
+            vs2_label = make_and_register_edge_label("vs2", vs2_edge, vs2_suffix, test_data)
 
-            for vs1_corner in VECTOR_EDGES.vx_corners:
-                vs1_label = make_and_register_corner_label("vs1", vs1_corner, vs1_suffix, test_data)
+            for vs1_edge in VECTOR_EDGES.vx_edges:
+                vs1_label = make_and_register_edge_label("vs1", vs1_edge, vs1_suffix, test_data)
 
                 params = generate_random_vector_params(
                     test_data,
@@ -55,8 +55,8 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
                     vxrm=vxrm_mode,
                 )
 
-                desc = f"cr_vxrm_vs2_vs1_edges (vxrm={vxrm_mode}, vs2={vs2_corner}, vs1={vs1_corner})"
-                bin_name = f"cp_vxrm_vs2_vs1_edges_b{vxrm_mode}_{vs2_corner}_{vs1_corner}"
+                desc = f"cr_vxrm_vs2_vs1_edges (vxrm={vxrm_mode}, vs2={vs2_edge}, vs1={vs1_edge})"
+                bin_name = f"cp_vxrm_vs2_vs1_edges_b{vxrm_mode}_{vs2_edge}_{vs1_edge}"
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
@@ -80,8 +80,8 @@ def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
     test_chunks = []
     for vxrm_mode in _VXRM_MODES:
-        for vs2_corner in VECTOR_EDGES.vx_corners:
-            vs2_label = make_and_register_corner_label("vs2", vs2_corner, suffix, test_data)
+        for vs2_edge in VECTOR_EDGES.vx_edges:
+            vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
 
             for rs1_edge in rs1_edges:
                 params = generate_random_vector_params(
@@ -95,8 +95,8 @@ def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
                 # rs1val is overwritten by generate_random_vector_params; override here.
                 params.rs1val = rs1_edge
 
-                desc = f"cr_vxrm_vs2_rs1_edges (vxrm={vxrm_mode}, vs2={vs2_corner}, rs1={rs1_edge})"
-                bin_name = f"cp_vxrm_vs2_rs1_edges_b{vxrm_mode}_{vs2_corner}_{rs1_edge}"
+                desc = f"cr_vxrm_vs2_rs1_edges (vxrm={vxrm_mode}, vs2={vs2_edge}, rs1={rs1_edge})"
+                bin_name = f"cp_vxrm_vs2_rs1_edges_b{vxrm_mode}_{vs2_edge}_{rs1_edge}"
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
@@ -121,8 +121,8 @@ def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
     test_chunks = []
     for vxrm_mode in _VXRM_MODES:
-        for vs2_corner in VECTOR_EDGES.vx_corners:
-            vs2_label = make_and_register_corner_label("vs2", vs2_corner, suffix, test_data)
+        for vs2_edge in VECTOR_EDGES.vx_edges:
+            vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
 
             for imm in imm_edges:
                 params = generate_random_vector_params(
@@ -135,8 +135,8 @@ def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, t
                     immval=imm,
                 )
 
-                desc = f"cr_vxrm_vs2_imm_edges (vxrm={vxrm_mode}, vs2={vs2_corner}, imm={imm})"
-                bin_name = f"cp_vxrm_vs2_imm_edges_b{vxrm_mode}_{vs2_corner}_{imm}"
+                desc = f"cr_vxrm_vs2_imm_edges (vxrm={vxrm_mode}, vs2={vs2_edge}, imm={imm})"
+                bin_name = f"cp_vxrm_vs2_imm_edges_b{vxrm_mode}_{vs2_edge}_{imm}"
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)

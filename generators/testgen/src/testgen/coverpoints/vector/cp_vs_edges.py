@@ -8,7 +8,7 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import get_base_lmul, make_and_register_corner_label
+from testgen.coverpoints.vector.vector_helpers import get_base_lmul, make_and_register_edge_label
 from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -29,7 +29,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 
-    corners = VECTOR_EDGES.vx_corners
+    edges = VECTOR_EDGES.vx_edges
     suffix = ""
     vl = 1
     lmul = get_base_lmul(instr_name, instr_type, sew)
@@ -38,17 +38,17 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     if coverpoint.startswith(f"cp_{register}_edges_"):
         suffix = coverpoint[len(f"cp_{register}_edges_") :]
         if suffix.startswith("f"):
-            corners = VECTOR_EDGES.vf_corners
+            edges = VECTOR_EDGES.vf_edges
         elif suffix.startswith("ls"):
-            corners = VECTOR_EDGES.vls_corners
+            edges = VECTOR_EDGES.vls_edges
         elif suffix == "eew1":
             vl = 8
         elif suffix.startswith("egs"):
             raise NotImplementedError("Crypto Edges are not yet Supported")
 
     test_chunks = []
-    for corner in corners:
-        label = make_and_register_corner_label(register, corner, suffix, test_data)
+    for edge in edges:
+        label = make_and_register_edge_label(register, edge, suffix, test_data)
 
         presets = {f"{register}_val_pointer": label}
 
@@ -64,8 +64,8 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             **presets,
         )
 
-        desc = f"cp_{register}_edges (Test source {register} value = {corner})"
-        bin_name = f"cp_{register}_edges_b{corner}"
+        desc = f"cp_{register}_edges (Test source {register} value = {edge})"
+        bin_name = f"cp_{register}_edges_b{edge}"
 
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

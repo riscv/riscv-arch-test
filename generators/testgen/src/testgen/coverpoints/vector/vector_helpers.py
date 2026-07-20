@@ -9,16 +9,16 @@ import re
 from dataclasses import dataclass
 
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
-from testgen.data.edges import get_vector_corner
+from testgen.data.edges import get_vector_edge
 from testgen.data.state import TestData
 from testgen.formatters.registry import get_instr_type_config
 
 
-def make_and_register_corner_label(reg_name: str, corner_name: str, suffix: str, test_data: TestData) -> str:
+def make_and_register_edge_label(reg_name: str, edge_name: str, suffix: str, test_data: TestData) -> str:
     """
-    Makes a corner data label out of the reg_name, corner_name, and suffix in the form of
-    (reg_name)_corner_(corner_name)_(suffix). Then it registers the appropriate data for the emul found in the
-    suffix, the sew in test_data, and the corner_name.
+    Makes an edge data label out of the reg_name, edge_name, and suffix in the form of
+    (reg_name)_edge_(edge_name)_(suffix). Then it registers the appropriate data for the emul found in the
+    suffix, the sew in test_data, and the edge_name.
     """
     assert test_data.config.sew is not None, "SEW must be set for vector operations"
     sew = test_data.config.sew
@@ -33,13 +33,13 @@ def make_and_register_corner_label(reg_name: str, corner_name: str, suffix: str,
     if emul_match is not None:
         emul = int(emul_match.group(1))
 
-    label = f"{reg_name}_corner_{corner_name}_{suffix}"
-    # Don't overwrite random corners, other corner overwrites are allowed as a correctness check:
+    label = f"{reg_name}_edge_{edge_name}_{suffix}"
+    # Don't overwrite the random edge, other edge overwrites are allowed as a correctness check:
     # register_vector_data will check that the value doesn't change when we reregister a label. This
     # ensures that the data we expect is present at the label we generate
     if not ("random" in label and label in test_data.vector_labels):
         eew = int(sew * emul)
-        test_data.register_vector_data(label, eew, elements=[get_vector_corner(corner_name, suffix, sew)])
+        test_data.register_vector_data(label, eew, elements=[get_vector_edge(edge_name, suffix, sew)])
 
     return label
 

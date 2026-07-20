@@ -93,7 +93,7 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    lines.append(f"\nCSRW(scause, x{save_reg})       # restore CSR")
+    lines.append(f"\ncsrw scause, x{save_reg}       # restore CSR")
 
     test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
     return lines
@@ -148,7 +148,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-    lines.append(f"\nCSRW(sstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw sstatus, x{save_reg}    # restore CSR")
 
     coverpoint = "cp_sxlen_ge_uxlen"  # For SS1P13 extension.
     lines.extend(
@@ -184,7 +184,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
+            f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
             "#endif // UDB_MXLEN_64",
             "#endif // S1P13P0_SUPPORTED",
         ]
@@ -273,8 +273,8 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                             f"LI(x{check_reg}, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}",
                             f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             f"LA(x{reg3}, 1f)             # return address after mret",
-                            f"CSRW(mepc, x{reg3})          # set mepc to return address",
-                            f"CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
+                            f"csrw mepc, x{reg3}          # set mepc to return address",
+                            f"csrw mstatus, x{check_reg}       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "mret                   # test mret instruction",
                             f"addi x{check_reg}, zero, -1              # should not be executed",
@@ -286,7 +286,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -310,7 +310,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
         f"LI(x{reg1}, 1 << 2)",
-        f"CSRC(medeleg, x{reg1})          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
+        f"csrc medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
@@ -333,8 +333,8 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 f"LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
                                 f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"LA(x{reg3}, 1f)             # return address after sret",
-                                f"CSRW(sepc, x{reg3})          # set sepc to return address (if S mode exists).",
-                                f"CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
+                                f"csrw sepc, x{reg3}          # set sepc to return address (if S mode exists).",
+                                f"csrw mstatus, x{check_reg}       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "sret                   # test sret instruction, expect illegal instruction if S mode is not supported",
                                 f"addi x{check_reg}, zero, -1              # should not be executed",
@@ -349,7 +349,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "# leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
-            f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
+            f"\ncsrw mstatus, x{save_reg}    # restore CSR",
         ]
     )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -392,9 +392,9 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
         )
 
         if tsr == 1:
-            lines.append(f"CSRS(mstatus, x{check_reg})          # set TSR bit")
+            lines.append(f"csrs mstatus, x{check_reg}          # set TSR bit")
         else:
-            lines.append(f"CSRC(mstatus, x{check_reg})          # clear TSR bit")
+            lines.append(f"csrc mstatus, x{check_reg}          # clear TSR bit")
         lines.append("RVTEST_GOTO_LOWER_MODE Smode # return to supervisor mode to execute sret tests")
 
         for spp in (0, 1):
@@ -411,8 +411,8 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             f"LI(x{check_reg}, 0x{fields:08x}) # spp = {spp} spie = {spie} sie = {sie}",
                             f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to sstatus with SPP/SPIE/SIE bits set/clear",
                             f"LA(x{reg3}, 1f)             # return address after sret",
-                            f"CSRW(sepc, x{reg3})          # set sepc to return address.",
-                            f"CSRW(sstatus, x{check_reg})       # write sstatus with SPP/SPIE/SIE bits set/clear",
+                            f"csrw sepc, x{reg3}          # set sepc to return address.",
+                            f"csrw sstatus, x{check_reg}       # write sstatus with SPP/SPIE/SIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "sret                   # test sret instruction",
                             f"addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
@@ -427,10 +427,10 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
+            f"\ncsrw sstatus, x{save_reg}    # restore CSR",
             "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
             f"LI(x{reg1}, 1 << 2)",
-            f"CSRS(medeleg, x{reg1})           # restore delegating illegal instructions",
+            f"csrs medeleg, x{reg1}           # restore delegating illegal instructions",
         ]
     )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -615,7 +615,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRW(0x{csr:03x}, x{r1})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
     test_data.int_regs.return_register(r1)

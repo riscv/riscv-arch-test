@@ -6,6 +6,8 @@
 
 """Smstateen privileged extension test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
@@ -360,7 +362,7 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
             "",
             f"{INDENT}# Clear mstateen0.fcsr so fcsr reads zero",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRC(mstateen0, x{temp_reg})",
+            f"csrc mstateen0, x{temp_reg}",
         ]
     )
 
@@ -404,7 +406,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             f"{INDENT}# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRS(mstateen0, x{temp_reg})",
+            f"csrs mstateen0, x{temp_reg}",
         ]
     )
     for op in CSR_OPS:
@@ -422,7 +424,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             f"{INDENT}# mstateen0.fcsr = 0",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRC(mstateen0, x{temp_reg})",
+            f"csrc mstateen0, x{temp_reg}",
         ]
     )
     for op in CSR_OPS:

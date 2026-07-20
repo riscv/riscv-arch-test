@@ -38,8 +38,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
@@ -86,8 +86,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
@@ -149,8 +149,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
             ]
         )
         if i < 3:
@@ -195,8 +195,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
             ]
         )
         if i < 3:
@@ -249,7 +249,7 @@ def make_zicntru(test_data: TestData) -> list[TestChunk]:
             "#ifdef S_SUPPORTED",
             "# Initialize scounteren if S-mode is supported (the boot logic should do this but isn't implemented yet)",
             f"LI(x{tmpreg}, -1)",
-            f"CSRW(scounteren, x{tmpreg})",
+            f"csrw scounteren, x{tmpreg}",
             "#endif",
             "",
         ]

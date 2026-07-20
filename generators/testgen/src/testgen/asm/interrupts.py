@@ -286,7 +286,7 @@ def set_stimer_mmode(r_scratch: int) -> list[str]:
     return [
         f"{INDENT}# Set supervisor timer interrupt (M-mode direct)",
         f"LI(x{r_scratch}, 0x20) # STIP bit (bit 5)",
-        f"CSRS(mip, x{r_scratch})",
+        f"csrs mip, x{r_scratch}",
         "nop",
     ]
 
@@ -306,7 +306,7 @@ def clr_stimer_mmode(r_scratch: int) -> list[str]:
     return [
         f"{INDENT}# Clear supervisor timer interrupt (M-mode direct)",
         f"LI(x{r_scratch}, 0x20) # STIP bit (bit 5)",
-        f"CSRC(mip, x{r_scratch})",
+        f"csrc mip, x{r_scratch}",
         "nop",
     ]
 
@@ -340,9 +340,9 @@ def set_stimecmp_max(r_scratch: int) -> list[str]:
         f"{INDENT}# Disable Sstc timer: stimecmp = -1",
         f"LI(x{r_scratch}, -1)",
         "#if __riscv_xlen == 32",
-        f"    CSRW(stimecmph, x{r_scratch})",
+        f"    csrw stimecmph, x{r_scratch}",
         "#endif",
-        f"CSRW(stimecmp, x{r_scratch})",
+        f"csrw stimecmp, x{r_scratch}",
     ]
 
 
@@ -356,9 +356,9 @@ def set_stimecmp_zero() -> list[str]:
     """
     return [
         f"{INDENT}# Assert Sstc timer: stimecmp = 0  (interrupt fires at next boundary)",
-        "CSRW(stimecmp, zero)",
+        "csrw stimecmp, zero",
         "#if __riscv_xlen == 32",
-        "    CSRW(stimecmph, zero)",
+        "    csrw stimecmph, zero",
         "#endif",
     ]
 
@@ -388,7 +388,7 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, delay: int | None 
         f"        LREG x{r_scratch}, 0(x{r_time})",
         f"        LI(x{r_time}, {time_val})",
         f"        add x{r_scratch}, x{r_scratch}, x{r_time}",
-        f"        CSRW(stimecmp, x{r_scratch})",
+        f"        csrw stimecmp, x{r_scratch}",
         "    #else",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
         f"        lw x{r_scratch}, 0(x{r_time}) # old_lo",
@@ -397,8 +397,8 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, delay: int | None 
         f"        add x{r_time}, x{r_scratch}, x{r_time} # new_lo; r_scratch still = old_lo for carry",
         f"        sltu x{r_scratch}, x{r_time}, x{r_scratch} # carry = (new_lo < old_lo)",
         f"        add x{r_hi}, x{r_hi}, x{r_scratch} # new_hi",
-        f"        CSRW(stimecmph, x{r_hi})",
-        f"        CSRW(stimecmp, x{r_time})",
+        f"        csrw stimecmph, x{r_hi}",
+        f"        csrw stimecmp, x{r_time}",
         "    #endif",
         "#else",
         *set_stimecmp_zero(),
@@ -439,11 +439,11 @@ def mmode_sti_setup(r_scratch: int, r_stce: int, mideleg_sti: int, mie_stie: int
     """
     lines = [
         "RVTEST_GOTO_MMODE",
-        "CSRW(mie, zero)",
+        "csrw mie, zero",
         "csrci mstatus, 8 # MIE=0",
         "csrci mstatus, 2 # SIE=0",
         f"LI(x{r_scratch}, 0x20)",
-        f"CSRC(mip, x{r_scratch}) # clear any pending STIP",
+        f"csrc mip, x{r_scratch} # clear any pending STIP",
         *set_stimecmp_max(r_scratch),
         "# STCE=1",
         *set_menvcfg_stce(r_stce, True),
@@ -451,15 +451,15 @@ def mmode_sti_setup(r_scratch: int, r_stce: int, mideleg_sti: int, mie_stie: int
     # mideleg
     if mideleg_sti:
         lines.append(f"LI(x{r_scratch}, 0x20)")
-        lines.append(f"CSRW(mideleg, x{r_scratch})")
+        lines.append(f"csrw mideleg, x{r_scratch}")
     else:
-        lines.append("CSRW(mideleg, zero)")
+        lines.append("csrw mideleg, zero")
     # mie.STIE
     if mie_stie:
         lines.append(f"LI(x{r_scratch}, 0x20)")
-        lines.append(f"CSRW(mie, x{r_scratch})")
+        lines.append(f"csrw mie, x{r_scratch}")
     else:
-        lines.append("CSRW(mie, zero)")
+        lines.append("csrw mie, zero")
     return lines
 
 
@@ -469,11 +469,11 @@ def mmode_sti_cleanup(r_scratch: int, r_stce: int) -> list[str]:
         "RVTEST_GOTO_MMODE",
         "csrci mstatus, 8",
         "csrci mstatus, 2",
-        "CSRW(mideleg, zero)",
-        "CSRW(mie, zero)",
+        "csrw mideleg, zero",
+        "csrw mie, zero",
         *set_stimecmp_max(r_scratch),
         f"LI(x{r_scratch}, 0x20)",
-        f"CSRC(mip, x{r_scratch})",
+        f"csrc mip, x{r_scratch}",
         "# STCE=0",
         *set_menvcfg_stce(r_stce, False),
     ]

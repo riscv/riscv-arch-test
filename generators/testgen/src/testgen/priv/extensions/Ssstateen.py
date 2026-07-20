@@ -62,9 +62,9 @@ def _save_mstateen(save_reg: int, save_regh: int) -> list[str]:
 def _restore_mstateen(save_reg: int, save_regh: int) -> list[str]:
     """Restore mstateen0 (and mstateen0h on RV32) from separate registers."""
     return [
-        f"CSRW(mstateen0, x{save_reg})  # restore mstateen0",
+        f"csrw mstateen0, x{save_reg}  # restore mstateen0",
         "#if __riscv_xlen == 32",
-        f"CSRW(mstateen0h, x{save_regh})  # restore mstateen0h on RV32",
+        f"csrw mstateen0h, x{save_regh}  # restore mstateen0h on RV32",
         "#endif",
     ]
 
@@ -111,7 +111,7 @@ def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[s
         )
 
     lines.append(GOTO_MMODE)
-    lines.extend(["", f"CSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
+    lines.extend(["", f"csrw sstateen0, x{save_sstateen}  # restore sstateen0"])
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg])
@@ -216,9 +216,9 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "#if __riscv_xlen == 64",
-            f"CSRW(mstateen0, x{save_mstateen_se0})  # restore mstateen0 on RV64",
+            f"csrw mstateen0, x{save_mstateen_se0}  # restore mstateen0 on RV64",
             "#elif __riscv_xlen == 32",
-            f"CSRW(mstateen0h, x{save_mstateen_se0})  # restore mstateen0h on RV32",
+            f"csrw mstateen0h, x{save_mstateen_se0}  # restore mstateen0h on RV32",
             "#endif",
         ]
     )
@@ -290,8 +290,8 @@ def _generate_jvt(test_data: TestData) -> list[str]:
             lines.append(GOTO_MMODE)
             lines.extend(
                 [
-                    f"CSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
-                    f"CSRW(jvt, x{save_jvt})  # restore jvt",
+                    f"csrw sstateen0, x{save_sstateen}  # restore sstateen0",
+                    f"csrw jvt, x{save_jvt}  # restore jvt",
                 ]
             )
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
@@ -362,7 +362,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                         ]
                     )
             lines.append(GOTO_MMODE)
-            lines.append(f"CSRW(sstateen0, x{save_sstateen})  # restore sstateen0")
+            lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")
@@ -435,7 +435,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     ]
                 )
             lines.append(GOTO_MMODE)
-            lines.append(f"CSRW(sstateen0, x{save_sstateen})  # restore sstateen0")
+            lines.append(f"csrw sstateen0, x{save_sstateen}  # restore sstateen0")
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")

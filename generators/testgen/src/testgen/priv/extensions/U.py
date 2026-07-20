@@ -86,7 +86,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRW(0x{csr:03x}, x{temp_reg})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
                 "",
             ]
         )

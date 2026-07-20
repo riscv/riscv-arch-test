@@ -22,9 +22,9 @@ def _set_vs(vs: int, temp_reg: int) -> list[str]:
     """Force mstatus.VS=vs (0..3)."""
     return [
         f"LI(x{temp_reg}, {_VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear VS",
+        f"csrc mstatus, x{temp_reg}  # clear VS",
         f"LI(x{temp_reg}, {vs << 9})",
-        f"CSRS(mstatus, x{temp_reg})  # VS={vs}",
+        f"csrs mstatus, x{temp_reg}  # VS={vs}",
     ]
 
 
@@ -98,15 +98,15 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
         lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
         lines.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
         for i in range(32):
-            lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
+            lines.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
-            lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            lines.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#if __riscv_xlen == 64")
         for i in range(32, 64):
-            lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
+            lines.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
-            lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            lines.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#endif")
     test_data.int_regs.return_registers([walk_reg, mask_reg])
@@ -156,7 +156,7 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append("vmv.v.i v2, 2")
     # Ensure misa.V set (best effort)
     lines.append(f"LI(x{temp_reg}, 0x200000)  # misa.V mask")
-    lines.append(f"CSRS(misa, x{temp_reg})    # set misa.V if writable")
+    lines.append(f"csrs misa, x{temp_reg}    # set misa.V if writable")
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vadd_vs_off", "cp_mstatus_vs_off_arithmetic", _CG))
     lines.append("vadd.vv v3, v1, v2  # traps: VS=Off")
@@ -167,7 +167,7 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     lines.extend(_vector_setup(temp_reg))
     lines.append(f"LI(x{temp_reg}, 0x200000)")
-    lines.append(f"CSRS(misa, x{temp_reg})")
+    lines.append(f"csrs misa, x{temp_reg}")
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
     lines.append(test_data.add_testcase("vsetvli_vs_off", "cp_mstatus_vs_off_csr", _CG))
     lines.append(f"vsetvli x{temp_reg}, x0, e8, m1, tu, mu  # traps: VS=Off")
@@ -184,9 +184,9 @@ def _gen_misa_v(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     lines.append(f"LI(x{temp_reg}, 0x200000)  # misa.V")
     lines.append(test_data.add_testcase("misa_v_csrrc", coverpoint, _CG))
-    lines.append(f"CSRC(misa, x{temp_reg})")
+    lines.append(f"csrc misa, x{temp_reg}")
     lines.append(test_data.add_testcase("misa_v_csrrs", coverpoint, _CG))
-    lines.append(f"CSRS(misa, x{temp_reg})")
+    lines.append(f"csrs misa, x{temp_reg}")
     lines.append("nop")
     return lines
 
@@ -499,7 +499,7 @@ def _gen_vstart_oob(test_data: TestData, temp_reg: int) -> list[str]:
     rs1_reg = test_data.int_regs.get_register()
     lines.append(f"LI(x{rs1_reg}, 0x10000)  # 2^16")
     lines.append(test_data.add_testcase("vstart_oob", coverpoint, _CG))
-    lines.append(f"CSRW(vstart, x{rs1_reg})")
+    lines.append(f"csrw vstart, x{rs1_reg}")
     test_data.int_regs.return_registers([rs1_reg])
     return lines
 
@@ -519,13 +519,13 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
                 # so that ins.prev.insn == vsetivli at sample time.
                 lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
                 lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
-                lines.append(f"CSRW(vl, x{walk_reg})  # bit {i}")
+                lines.append(f"csrw vl, x{walk_reg}  # bit {i}")
                 lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
             lines.append("#if __riscv_xlen == 64")
             for i in range(32, 64):
                 lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
                 lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
-                lines.append(f"CSRW(vl, x{walk_reg})  # bit {i}")
+                lines.append(f"csrw vl, x{walk_reg}  # bit {i}")
                 lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
             lines.append("#endif")
     test_data.int_regs.return_registers([walk_reg])

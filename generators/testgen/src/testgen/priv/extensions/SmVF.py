@@ -22,9 +22,9 @@ _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
 def _set_fs_vs(fs: int, vs: int, temp_reg: int) -> list[str]:
     return [
         f"LI(x{temp_reg}, {_FS_MASK | _VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear FS and VS",
+        f"csrc mstatus, x{temp_reg}  # clear FS and VS",
         f"LI(x{temp_reg}, {(fs << 13) | (vs << 9)})",
-        f"CSRS(mstatus, x{temp_reg})  # FS={fs}, VS={vs}",
+        f"csrs mstatus, x{temp_reg}  # FS={fs}, VS={vs}",
     ]
 
 

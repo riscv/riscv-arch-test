@@ -26,7 +26,7 @@ def _helper_scounteren_access(
     lines.extend(
         [
             f"LI(x{ones_reg}, -1)",
-            f"CSRW(mcounteren, x{ones_reg})  # enable all counters in M-mode",
+            f"csrw mcounteren, x{ones_reg}  # enable all counters in M-mode",
             f"LI(x{walk_reg}, 1)",
         ]
     )
@@ -34,8 +34,8 @@ def _helper_scounteren_access(
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(scounteren, zero)  # clear all bits",
-                f"CSRS(scounteren, x{walk_reg})  # set current bit",
+                "csrw scounteren, zero  # clear all bits",
+                f"csrs scounteren, x{walk_reg}  # set current bit",
             ]
         )
         if mode != "Mmode":
@@ -73,15 +73,15 @@ def _helper_scounteren_access(
     lines.extend(
         [
             f"LI(x{walk_reg}, 1)",
-            f"CSRW(mcounteren, x{ones_reg})  # enable all counters in M-mode",
+            f"csrw mcounteren, x{ones_reg}  # enable all counters in M-mode",
         ]
     )
     for i in range(32):
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(scounteren, x{ones_reg})  # set all bits",
-                f"CSRC(scounteren, x{walk_reg})  # clear current bit",
+                f"csrs scounteren, x{ones_reg}  # set all bits",
+                f"csrc scounteren, x{walk_reg}  # clear current bit",
             ]
         )
         if mode != "Mmode":
@@ -140,8 +140,8 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Smode",
             ]
         )
@@ -188,8 +188,8 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Smode",
             ]
         )
@@ -295,10 +295,10 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
-                "CSRW(scounteren, zero)  # clear all bits",
-                f"CSRS(scounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
+                "csrw scounteren, zero  # clear all bits",
+                f"csrs scounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
@@ -345,10 +345,10 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
-                f"CSRS(scounteren, x{ones_reg})  # set all bits",
-                f"CSRC(scounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
+                f"csrs scounteren, x{ones_reg}  # set all bits",
+                f"csrc scounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )

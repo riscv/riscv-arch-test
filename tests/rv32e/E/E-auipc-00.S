@@ -46,97 +46,97 @@ E_auipc_cg_cp_rd_b1:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, E_auipc_cg_cp_rd_b1, E_auipc_cg_cp_rd_b1_str)
 
-  mv x14, x2 # switch signature pointer register to avoid conflict with test
+  mv x12, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x2)
 E_auipc_cg_cp_rd_b2:
   auipc x2, 208381 # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, E_auipc_cg_cp_rd_b2, E_auipc_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x2, E_auipc_cg_cp_rd_b2, E_auipc_cg_cp_rd_b2_str)
 
   mv x15, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x3)
 E_auipc_cg_cp_rd_b3:
   auipc x3, 14279 # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, E_auipc_cg_cp_rd_b3, E_auipc_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x3, E_auipc_cg_cp_rd_b3, E_auipc_cg_cp_rd_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
 E_auipc_cg_cp_rd_b4:
   auipc x4, 135100 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x4, E_auipc_cg_cp_rd_b4, E_auipc_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x4, E_auipc_cg_cp_rd_b4, E_auipc_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
 E_auipc_cg_cp_rd_b5:
   auipc x5, 417882 # perform operation
-  # Check if x5 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x5, E_auipc_cg_cp_rd_b5, E_auipc_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x5, E_auipc_cg_cp_rd_b5, E_auipc_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
 E_auipc_cg_cp_rd_b6:
   auipc x6, 30755 # perform operation
-  # Check if x6 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x6, E_auipc_cg_cp_rd_b6, E_auipc_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x6, E_auipc_cg_cp_rd_b6, E_auipc_cg_cp_rd_b6_str)
 
 # Testcase cp_rd (Test destination rd = x7)
 E_auipc_cg_cp_rd_b7:
   auipc x7, 220323 # perform operation
-  # Check if x7 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x7, E_auipc_cg_cp_rd_b7, E_auipc_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, E_auipc_cg_cp_rd_b7, E_auipc_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
 E_auipc_cg_cp_rd_b8:
   auipc x8, 175105 # perform operation
-  # Check if x8 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x8, E_auipc_cg_cp_rd_b8, E_auipc_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x8, E_auipc_cg_cp_rd_b8, E_auipc_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
 E_auipc_cg_cp_rd_b9:
   auipc x9, 952449 # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x9, E_auipc_cg_cp_rd_b9, E_auipc_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x9, E_auipc_cg_cp_rd_b9, E_auipc_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
 E_auipc_cg_cp_rd_b10:
   auipc x10, 558358 # perform operation
-  # Check if x10 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x10, E_auipc_cg_cp_rd_b10, E_auipc_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, E_auipc_cg_cp_rd_b10, E_auipc_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
 E_auipc_cg_cp_rd_b11:
   auipc x11, 58984 # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x11, E_auipc_cg_cp_rd_b11, E_auipc_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x11, E_auipc_cg_cp_rd_b11, E_auipc_cg_cp_rd_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
+  mv x3, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
 E_auipc_cg_cp_rd_b12:
   auipc x12, 629933 # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x12, E_auipc_cg_cp_rd_b12, E_auipc_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x3 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x3, x14, x13, x12, E_auipc_cg_cp_rd_b12, E_auipc_cg_cp_rd_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
 E_auipc_cg_cp_rd_b13:
-  auipc x13, 1027578 # perform operation
-  # Check if x13 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x13, E_auipc_cg_cp_rd_b13, E_auipc_cg_cp_rd_b13_str)
+  auipc x13, 398447 # perform operation
+  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x13, E_auipc_cg_cp_rd_b13, E_auipc_cg_cp_rd_b13_str)
 
-  mv x9, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x14)
 E_auipc_cg_cp_rd_b14:
-  auipc x14, 398447 # perform operation
-  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x14, E_auipc_cg_cp_rd_b14, E_auipc_cg_cp_rd_b14_str)
+  auipc x14, 519030 # perform operation
+  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x14, E_auipc_cg_cp_rd_b14, E_auipc_cg_cp_rd_b14_str)
 
-  mv x2, x15 # switch data pointer register to avoid conflict with test
+  mv x1, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
 E_auipc_cg_cp_rd_b15:
-  auipc x15, 188031 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_rd_b15, E_auipc_cg_cp_rd_b15_str)
+  auipc x15, 169969 # perform operation
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_rd_b15, E_auipc_cg_cp_rd_b15_str)
 
 /////////////////////////////////
 // cp_imm_edges_20bit
@@ -144,167 +144,167 @@ E_auipc_cg_cp_rd_b15:
 
 # Testcase cp_imm_edges_20bit (imm = 0)
 E_auipc_cg_cp_imm_edges_20bit_0x0:
-  auipc x6, 0 # perform operation
-  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x6, E_auipc_cg_cp_imm_edges_20bit_0x0, E_auipc_cg_cp_imm_edges_20bit_0x0_str)
+  auipc x9, 0 # perform operation
+  # Check if x9 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x9, E_auipc_cg_cp_imm_edges_20bit_0x0, E_auipc_cg_cp_imm_edges_20bit_0x0_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1)
 E_auipc_cg_cp_imm_edges_20bit_0x1:
   auipc x10, 1 # perform operation
-  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x10, E_auipc_cg_cp_imm_edges_20bit_0x1, E_auipc_cg_cp_imm_edges_20bit_0x1_str)
+  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x10, E_auipc_cg_cp_imm_edges_20bit_0x1, E_auipc_cg_cp_imm_edges_20bit_0x1_str)
 
 # Testcase cp_imm_edges_20bit (imm = 2)
 E_auipc_cg_cp_imm_edges_20bit_0x2:
-  auipc x3, 2 # perform operation
-  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x3, E_auipc_cg_cp_imm_edges_20bit_0x2, E_auipc_cg_cp_imm_edges_20bit_0x2_str)
+  auipc x4, 2 # perform operation
+  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0x2, E_auipc_cg_cp_imm_edges_20bit_0x2_str)
 
 # Testcase cp_imm_edges_20bit (imm = 3)
 E_auipc_cg_cp_imm_edges_20bit_0x3:
   auipc x14, 3 # perform operation
-  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x3, E_auipc_cg_cp_imm_edges_20bit_0x3_str)
+  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x3, E_auipc_cg_cp_imm_edges_20bit_0x3_str)
 
 # Testcase cp_imm_edges_20bit (imm = 4)
 E_auipc_cg_cp_imm_edges_20bit_0x4:
   auipc x15, 4 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x4, E_auipc_cg_cp_imm_edges_20bit_0x4_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x4, E_auipc_cg_cp_imm_edges_20bit_0x4_str)
 
 # Testcase cp_imm_edges_20bit (imm = 8)
 E_auipc_cg_cp_imm_edges_20bit_0x8:
   auipc x10, 8 # perform operation
-  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x10, E_auipc_cg_cp_imm_edges_20bit_0x8, E_auipc_cg_cp_imm_edges_20bit_0x8_str)
+  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x10, E_auipc_cg_cp_imm_edges_20bit_0x8, E_auipc_cg_cp_imm_edges_20bit_0x8_str)
 
 # Testcase cp_imm_edges_20bit (imm = 16)
 E_auipc_cg_cp_imm_edges_20bit_0x10:
-  auipc x4, 16 # perform operation
-  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0x10, E_auipc_cg_cp_imm_edges_20bit_0x10_str)
+  auipc x5, 16 # perform operation
+  # Check if x5 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x5, E_auipc_cg_cp_imm_edges_20bit_0x10, E_auipc_cg_cp_imm_edges_20bit_0x10_str)
 
 # Testcase cp_imm_edges_20bit (imm = 32)
 E_auipc_cg_cp_imm_edges_20bit_0x20:
-  auipc x3, 32 # perform operation
-  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x3, E_auipc_cg_cp_imm_edges_20bit_0x20, E_auipc_cg_cp_imm_edges_20bit_0x20_str)
+  auipc x4, 32 # perform operation
+  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0x20, E_auipc_cg_cp_imm_edges_20bit_0x20_str)
 
 # Testcase cp_imm_edges_20bit (imm = 64)
 E_auipc_cg_cp_imm_edges_20bit_0x40:
-  auipc x5, 64 # perform operation
-  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x5, E_auipc_cg_cp_imm_edges_20bit_0x40, E_auipc_cg_cp_imm_edges_20bit_0x40_str)
+  auipc x6, 64 # perform operation
+  # Check if x6 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x6, E_auipc_cg_cp_imm_edges_20bit_0x40, E_auipc_cg_cp_imm_edges_20bit_0x40_str)
 
 # Testcase cp_imm_edges_20bit (imm = 128)
 E_auipc_cg_cp_imm_edges_20bit_0x80:
   auipc x11, 128 # perform operation
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x80, E_auipc_cg_cp_imm_edges_20bit_0x80_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x80, E_auipc_cg_cp_imm_edges_20bit_0x80_str)
 
 # Testcase cp_imm_edges_20bit (imm = 256)
 E_auipc_cg_cp_imm_edges_20bit_0x100:
   auipc x12, 256 # perform operation
-  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x12, E_auipc_cg_cp_imm_edges_20bit_0x100, E_auipc_cg_cp_imm_edges_20bit_0x100_str)
+  # Check if x12 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x12, E_auipc_cg_cp_imm_edges_20bit_0x100, E_auipc_cg_cp_imm_edges_20bit_0x100_str)
 
 # Testcase cp_imm_edges_20bit (imm = 512)
 E_auipc_cg_cp_imm_edges_20bit_0x200:
   auipc x11, 512 # perform operation
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x200, E_auipc_cg_cp_imm_edges_20bit_0x200_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x200, E_auipc_cg_cp_imm_edges_20bit_0x200_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1024)
 E_auipc_cg_cp_imm_edges_20bit_0x400:
   auipc x15, 1024 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x400, E_auipc_cg_cp_imm_edges_20bit_0x400_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x400, E_auipc_cg_cp_imm_edges_20bit_0x400_str)
 
 # Testcase cp_imm_edges_20bit (imm = 2048)
 E_auipc_cg_cp_imm_edges_20bit_0x800:
   auipc x11, 2048 # perform operation
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x800, E_auipc_cg_cp_imm_edges_20bit_0x800_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x800, E_auipc_cg_cp_imm_edges_20bit_0x800_str)
 
 # Testcase cp_imm_edges_20bit (imm = 4096)
 E_auipc_cg_cp_imm_edges_20bit_0x1000:
   auipc x14, 4096 # perform operation
-  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x1000, E_auipc_cg_cp_imm_edges_20bit_0x1000_str)
+  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x1000, E_auipc_cg_cp_imm_edges_20bit_0x1000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 8192)
 E_auipc_cg_cp_imm_edges_20bit_0x2000:
   auipc x15, 8192 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x2000, E_auipc_cg_cp_imm_edges_20bit_0x2000_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x2000, E_auipc_cg_cp_imm_edges_20bit_0x2000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 16384)
 E_auipc_cg_cp_imm_edges_20bit_0x4000:
-  auipc x3, 16384 # perform operation
-  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x3, E_auipc_cg_cp_imm_edges_20bit_0x4000, E_auipc_cg_cp_imm_edges_20bit_0x4000_str)
+  auipc x4, 16384 # perform operation
+  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0x4000, E_auipc_cg_cp_imm_edges_20bit_0x4000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 32768)
 E_auipc_cg_cp_imm_edges_20bit_0x8000:
   auipc x15, 32768 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x8000, E_auipc_cg_cp_imm_edges_20bit_0x8000_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x8000, E_auipc_cg_cp_imm_edges_20bit_0x8000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 65536)
 E_auipc_cg_cp_imm_edges_20bit_0x10000:
   auipc x15, 65536 # perform operation
-  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x10000, E_auipc_cg_cp_imm_edges_20bit_0x10000_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x15, E_auipc_cg_cp_imm_edges_20bit_0x10000, E_auipc_cg_cp_imm_edges_20bit_0x10000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 131072)
 E_auipc_cg_cp_imm_edges_20bit_0x20000:
   auipc x13, 131072 # perform operation
-  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x13, E_auipc_cg_cp_imm_edges_20bit_0x20000, E_auipc_cg_cp_imm_edges_20bit_0x20000_str)
+  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x13, E_auipc_cg_cp_imm_edges_20bit_0x20000, E_auipc_cg_cp_imm_edges_20bit_0x20000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 262144)
 E_auipc_cg_cp_imm_edges_20bit_0x40000:
-  auipc x4, 262144 # perform operation
-  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0x40000, E_auipc_cg_cp_imm_edges_20bit_0x40000_str)
+  auipc x5, 262144 # perform operation
+  # Check if x5 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x5, E_auipc_cg_cp_imm_edges_20bit_0x40000, E_auipc_cg_cp_imm_edges_20bit_0x40000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524286)
 E_auipc_cg_cp_imm_edges_20bit_0x7fffe:
   auipc x11, 524286 # perform operation
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x7fffe, E_auipc_cg_cp_imm_edges_20bit_0x7fffe_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x7fffe, E_auipc_cg_cp_imm_edges_20bit_0x7fffe_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524287)
 E_auipc_cg_cp_imm_edges_20bit_0x7ffff:
   auipc x11, 524287 # perform operation
-  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x7ffff, E_auipc_cg_cp_imm_edges_20bit_0x7ffff_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x11, E_auipc_cg_cp_imm_edges_20bit_0x7ffff, E_auipc_cg_cp_imm_edges_20bit_0x7ffff_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524288)
 E_auipc_cg_cp_imm_edges_20bit_0x80000:
   auipc x14, 524288 # perform operation
-  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x80000, E_auipc_cg_cp_imm_edges_20bit_0x80000_str)
+  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x14, E_auipc_cg_cp_imm_edges_20bit_0x80000, E_auipc_cg_cp_imm_edges_20bit_0x80000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524289)
 E_auipc_cg_cp_imm_edges_20bit_0x80001:
-  auipc x6, 524289 # perform operation
-  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x6, E_auipc_cg_cp_imm_edges_20bit_0x80001, E_auipc_cg_cp_imm_edges_20bit_0x80001_str)
+  auipc x9, 524289 # perform operation
+  # Check if x9 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x9, E_auipc_cg_cp_imm_edges_20bit_0x80001, E_auipc_cg_cp_imm_edges_20bit_0x80001_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1048574)
 E_auipc_cg_cp_imm_edges_20bit_0xffffe:
-  auipc x3, 1048574 # perform operation
-  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x3, E_auipc_cg_cp_imm_edges_20bit_0xffffe, E_auipc_cg_cp_imm_edges_20bit_0xffffe_str)
+  auipc x4, 1048574 # perform operation
+  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x4, E_auipc_cg_cp_imm_edges_20bit_0xffffe, E_auipc_cg_cp_imm_edges_20bit_0xffffe_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1048575)
 E_auipc_cg_cp_imm_edges_20bit_0xfffff:
-  auipc x5, 1048575 # perform operation
-  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x5, E_auipc_cg_cp_imm_edges_20bit_0xfffff, E_auipc_cg_cp_imm_edges_20bit_0xfffff_str)
+  auipc x6, 1048575 # perform operation
+  # Check if x6 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x6, E_auipc_cg_cp_imm_edges_20bit_0xfffff, E_auipc_cg_cp_imm_edges_20bit_0xfffff_str)
 
-  mv x2, x9 # restore signature pointer to default register for teardown
+  mv x2, x3 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

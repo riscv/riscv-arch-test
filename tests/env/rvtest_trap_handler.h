@@ -1215,9 +1215,9 @@ spcl_\__MODE__\()chk4ecall:                      // Step 2: Check if cause is an
         // Step 4: T-SBI DISPATCH — a0-based operation dispatch (M-mode)
         //
         // We've confirmed: this IS an ecall, and a0 IS NOT 0.
-        // So this is a T-SBI call. The caller's a0/a1 are still live in
+        // So this is a T-SBI call. The caller's a0/a1/a2 are still live in
         // their registers (the handler's temporaries are x6..x9/x14/x15,
-        // so a0/a1 were never overwritten).
+        // so a0/a1/a2 were never overwritten).
         //
         // Available registers: T2, T3, T4 (T5 = xcause, T1/T6 saved)
         //==============================================================
@@ -1236,27 +1236,8 @@ tsbi_\__MODE__\()dispatch:
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73 (ECALL_TEST operation code)
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // if caller_a0 == 0x73 -> ECALL_TEST handler
 
-        // --- Check for CSR_ACCESS: opcode[6:0] == 0x73 AND funct3[14:12] != 0 ---
-        andi    T2, a0, 0x7F                       // T2 = caller_a0[6:0] (extract opcode field)
-        LI(     T4, 0x73)                           // T4 = 0x73 (SYSTEM opcode)
-        bne     T2, T4, tsbi_\__MODE__\()reserved   // opcode != SYSTEM -> not a CSR instruction -> reserved
-
-        srli    T2, a0, 12                          // T2 = caller_a0 >> 12 (shift funct3 to LSBs)
-        andi    T2, T2, 0x7                         // T2 = funct3 field (bits 14:12)
-        beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> ecall/ebreak/etc, not CSR -> reserved
-        j       tsbi_\__MODE__\()csr_access         // funct3!=0 -> valid CSR instruction -> CSR_ACCESS handler
-
-        //--------------------------------------------------------------
-        // T-SBI RESERVED handler
-        // Reached when a0 doesn't match any known operation.
-        // Returns -1 in a0 and advances mepc past the ecall.
-        //--------------------------------------------------------------
-tsbi_\__MODE__\()reserved:
-        li      a0, TSBI_RESERVED_RET             // a0 = -1 (error: unrecognized operation)
-        csrr    T3, CSR_XEPC                       // T3 = mepc (address of the ecall instruction)
-        addi    T3, T3, 4                           // T3 = mepc + 4 (skip past the 4-byte ecall)
-        csrw    CSR_XEPC, T3                        // mepc = mepc + 4 (so mret returns after ecall)
-        j       resto_\__MODE__\()rtn              // restore regs and mret
+        // Otherwise consult dispatch table
+        j tsbi_instr_table_dispatch
 
         //--------------------------------------------------------------
         // T-SBI ECALL_TEST handler (M-mode)
@@ -1269,8 +1250,7 @@ tsbi_\__MODE__\()reserved:
         //--------------------------------------------------------------
 tsbi_\__MODE__\()ecall_test:
         csrr    a0, CSR_XEPC                       // a0 = mepc = address of the ecall instruction
-        csrr    T3, CSR_XEPC                        // T3 = mepc (read again for bump calculation)
-        addi    T3, T3, 4                            // T3 = mepc + 4 (skip past ecall)
+        addi    T3, a0, 4                            // T3 = mepc + 4 (skip past ecall)
         csrw    CSR_XEPC, T3                         // mepc = mepc + 4
         j       resto_\__MODE__\()rtn               // restore regs and mret (a0 carries the return value)
 
@@ -1397,71 +1377,6 @@ tsbi_\__MODE__\()goto_vu:
     #endif
         j       resto_\__MODE__\()rtn               // mret -> returns in VU-mode (MPP=U + MPV=1) at mepc
   #endif // H_SUPPORTED
-
-        //--------------------------------------------------------------
-        // T-SBI CSR_ACCESS handler (M-mode)
-        //
-        // Purpose: Execute an arbitrary CSR instruction on behalf of a
-        //   lower-privilege caller. This enables S/U-mode tests to read/write
-        //   M-mode CSRs without direct access.
-        //
-        // Mechanism:
-        //   1. The caller's a0 contains the 32-bit CSR instruction encoding
-        //      (copied into T3 at dispatch entry; a0 itself is untouched)
-        //   2. Write this encoding to scratch memory (rvmodel_sv area in save area)
-        //   3. Write a "ret" (jalr x0, x1, 0 = 0x00008067) immediately after it
-        //   4. fence.i to sync the instruction cache with the new code
-        //   5. The caller's a1 (rs1 value) is still live in a1 — nothing to restore
-        //   6. Save ra (the CALLER's ra — the handler must not clobber it; the
-        //      Sv/PMP fetch-fault logic resumes at ra), jalr ra into the scratch
-        //      location to execute the CSR instruction, then restore ra
-        //   7. a0 now contains the CSR read result (if rd==a0 in the encoding)
-        //   8. Bump xEPC+4, restore handler regs, mret
-        //
-        // CONSTRAINTS:
-        //   - The CSR encoding's rd field MUST be a0 (x10) for reads, so the
-        //     result lands in a0 for return to the caller
-        //   - The CSR encoding's rs1 field SHOULD be a1 (x11) for writes
-        //   - The scratch area must be executable (it's in .data — assumes no W^X)
-        //   - The scratch area is 8 bytes at rvmodel_sv_off in the save area
-        //
-        // EXAMPLE: Read mstatus (CSR 0x300) using csrrs a0, mstatus, x0
-        //   Instruction encoding: 0x30002573
-        //     imm[31:20] = 0x300 (CSR address: mstatus)
-        //     rs1[19:15] = 00000 (x0: read-only, no side effects)
-        //     funct3[14:12] = 010 (CSRRS)
-        //     rd[11:7] = 01010 (a0 = x10: result goes here)
-        //     opcode[6:0] = 1110011 (SYSTEM)
-        //--------------------------------------------------------------
-tsbi_\__MODE__\()csr_access:
-        // a0 still holds the caller's CSR instruction encoding (untouched since the ecall)
-        addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch location in save area's rvmodel_sv
-
-        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
-
-        LI(     T3, 0x00008067)                    // T3 = encoding of "ret" (jalr x0, ra, 0)
-        sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
-
-        RVTEST_FENCEI                              // sync icache: we just wrote executable code to data memory
-
-        // The caller's a1 is still live in a1 (the handler never touches it),
-        // so the CSR instruction's rs1=a1 sees the caller's argument directly.
-
-        // Execute the CSR instruction by calling into scratch memory.
-        // jalr with ra: the ret in scratch returns to the instruction after this jalr.
-        // a0 will be overwritten with the CSR read result (if rd==a0 in the encoding).
-        // ra belongs to the interrupted test (the Sv/PMP fetch-fault logic resumes
-        // at ra), so preserve it across the call using the spare trapreg_sv slot 0.
-        SREG    ra, trap_sv_off+0*REGWIDTH(sp)     // save caller's ra (slot 0 = spare)
-        jalr    ra, T2, 0                          // call scratch: execute CSR instr, ret back here
-        LREG    ra, trap_sv_off+0*REGWIDTH(sp)     // restore caller's ra
-
-        // a0 now holds the CSR read result (if rd was a0 in the encoding)
-        csrr    T3, CSR_XEPC                        // T3 = mepc (ecall address)
-        addi    T3, T3, 4                            // T3 = mepc + 4 (skip past ecall)
-        csrw    CSR_XEPC, T3                         // update mepc for return
-        j       resto_\__MODE__\()rtn               // restore handler regs, mret to caller with result in a0
-
 .endif  // --------- END M-MODE T-SBI DISPATCH ---------
 
 //==============================================================================
@@ -1479,8 +1394,8 @@ tsbi_\__MODE__\()csr_access:
 //
 // FORWARDED TO M-MODE (requires M-mode privileges):
 //   - GOTO_MMODE:  needs M-mode to set MPP
-//   - GOTO_VSMODE: needs M-mode to set MPV
-//   - GOTO_VUMODE: needs M-mode to set MPV
+//   - GOTO_VSMODE: needs M-mode to set MPV  TODO: can do with SPV
+//   - GOTO_VUMODE: needs M-mode to set MPV  TODO: can do with SPV
 //   - CSR_ACCESS for M-mode CSRs: needs M-mode privilege (CSR addr[9:8] == 11)
 //
 // FORWARDING MECHANISM:
@@ -1540,8 +1455,7 @@ tsbi_\__MODE__\()reserved:                        // Unrecognized SBI operation
         //--- S-mode ECALL_TEST ---
 tsbi_\__MODE__\()ecall_test:
         csrr    a0, CSR_XEPC                       // a0 = sepc = U-mode ecall address
-        csrr    T3, CSR_XEPC                        // T3 = sepc (for bump)
-        addi    T3, T3, 4                            // skip ecall
+        addi    T3, a0, 4                            // skip ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
 
@@ -1608,6 +1522,7 @@ tsbi_\__MODE__\()csr_access:
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
+        // TODO: Replace this with dispatch table, remove code below
 
         // S-mode or U-mode CSR: can handle locally using scratch execution
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch memory in rvmodel_sv area
@@ -1624,6 +1539,10 @@ tsbi_\__MODE__\()csr_access:
         j       resto_\__MODE__\()rtn              // sret to caller with CSR result in a0
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
+
+//==============================================================================
+// T-SBI DISPATCH — VS-MODE
+// TODO DH 7/7/26: is another T-SBI required for VS-mode trap handler?
 
 //==============================================================================
 // M-MODE FORWARDED ECALL HANDLING (TODO)
@@ -1648,6 +1567,115 @@ tsbi_\__MODE__\()csr_access:
 tsbi_\__MODE__\()handle_forwarded:
         nop                                        // placeholder for future forwarded ecall handling
 .endif
+
+//==============================================================================
+// TSBI Instruction Dispatch
+//
+// The T-SBI dispatch mechanism uses a table of known instructions to avoid self-modifying code.
+// It searches the table and jumps to a matching instruction, which is followed by a ret to return to the caller.
+// It expects the intended instruction to be in a0.  The instruction may use arguments in a1 and a2, and return results in a0.
+//==============================================================================
+
+.ifc \__MODE__ , M                              // dispatch runs in M-mode; assemble once
+
+// tsbi_instr_table_dispatch
+tsbi_instr_table_dispatch:
+        LA(T2, tsbi_instr_table)                // initialize T2 = base address of instruction table
+tsbi_instr_table_search_loop:
+        #if (UDB_MXLEN==32)
+            lw      T3, 0(T2)                   // fetch current instruction (32-bit)
+        #else
+            lwu      T3, 0(T2)                  // fetch current instruction (64-bit); zero extend to 64 bits for comparison
+        #endif
+        beq     T3, a0, found_instr             // if it matches tsbi request, handle it
+        beqz    T3, tsbi_instr_not_found        // if we hit the end of the table (0 sentinel), not found
+        addi    T2, T2, 8                       // advance to next entry (4 bytes for instruction, 4 bytes for return)
+        j       tsbi_instr_table_search_loop    // repeat search
+found_instr:
+        mv      T4, ra                          // preserve caller's ra (T4's live value is already saved; restored by resto)
+        LA(     ra, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
+        jr      T2                                   // jump to the matching instruction in the table
+tsbi_instr_rtn:
+        mv      ra, T4                          // restore caller's ra
+        csrr    T3, CSR_XEPC                    // T3 = xepc (ecall address)
+        addi    T3, T3, 4                       // T3 = xepc + 4 (skip past ecall)
+        csrw    CSR_XEPC, T3                    // update xepc for return
+        j       resto_\__MODE__\()rtn           // restore handler regs, xret to caller with result in a0
+tsbi_instr_not_found:
+        // Requested instruction is not in the table: print the offending encoding and
+        // terminate the simulation. Registers may be clobbered freely: this never returns.
+        mv      T4, a0                             // save unmatched encoding (io_write_str clobbers T1-T3)
+        LA(a0, tsbi_instr_not_found_str)
+        call    rvmodel_io_write_str
+        mv      a0, T4                             // restore TSBI call code to a0
+        li      a1, 32                             // print encoding as 32-bit hex
+        jal     failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call    rvmodel_io_write_str
+        LA(a0, newlinestr)
+        call    rvmodel_io_write_str
+        LA(a0, failstr)                         // RVCP-SUMMARY: TEST FAILED line so the harness classifies this run
+        call    rvmodel_io_write_str
+        call    rvmodel_halt_fail
+
+.macro TSBI_CSR_INSTR_TABLE csr_addr
+        .word (\csr_addr << 20) | (0x02573) // csrr a0, csr_addr
+        ret
+        .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a1
+        ret
+        .word (\csr_addr << 20) | (0x5a073) // csrs csr_addr, a1
+        ret
+        .word (\csr_addr << 20) | (0x5b073) // csrc csr_addr, a1
+        ret
+.endm
+
+// T-SBI Instruction Table
+// This table contains all instructions that the T-SBI knows how to run.
+// The dispatcher searches through the table for the matching instruction, runs it, and returns.
+// This avoids the need for self-modifying code.
+// Only CSRs that lower-privilege code might be interested in accessing are needed here.
+// Each instruction must be followed by a ret to return to the caller
+tsbi_instr_table:
+
+        TSBI_CSR_INSTR_TABLE(0x300) // mstatus
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        TSBI_CSR_INSTR_TABLE(0x304) // mie
+        //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
+        TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
+        TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x344) // mip
+        TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
+        TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
+        TSBI_CSR_INSTR_TABLE(0xB00) // mcycle
+        TSBI_CSR_INSTR_TABLE(0xB02) // minstret
+        // TODO: Move the following to the S-mode dispatch when it is implemented
+        TSBI_CSR_INSTR_TABLE(0x100) // sstatus
+        TSBI_CSR_INSTR_TABLE(0x104) // sie
+        //TSBI_CSR_INSTR_TABLE(0x105) // stvec
+        TSBI_CSR_INSTR_TABLE(0x106) // scounteren
+        TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
+        TSBI_CSR_INSTR_TABLE(0x144) // sip
+        TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        TSBI_CSR_INSTR_TABLE(0x180) // satp
+        // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
+        lw a0, 0(a1)
+        ret
+        lw a0, 4(a1)
+        ret
+        sw a2, 0(a1)
+        ret
+        sw a2, 4(a1)
+        ret
+        #if (UDB_MXLEN==64) // additional calls for RV64 only
+                ld a0, 0(a1)
+                ret
+                sd a2, 0(a1)
+                ret
+        #endif  // RV64
+        .word 0 // sentinel to mark end of table
+
+.endif  // end of M-mode-only T-SBI instruction dispatch and table
 
 //==============================================================================
 // NORMAL TRAP HANDLING
@@ -2316,13 +2344,24 @@ from_hs_u:
 rtn_fm_mmode:
         add     T2, T4, T2                             // T2 = M-mode code_begin + relative offset = return addr
 
+  #ifdef SMDBLTRP_SUPPORTED
+        # clear MDT bit in mstatus/h (if it was set) before returning without mret
+        #if (UDB_MXLEN==64)
+                LI(T3, MSTATUS_MDT)
+                csrc   CSR_MSTATUS, T3
+        #else // RV32
+                LI(T3, MSTATUSH_MDT)
+                csrc   CSR_MSTATUSH, T3
+        #endif // MXLEN
+  #endif // SMDBLTRP_SUPPORTED
+
         LREG    T1, trap_sv_off+1*REGWIDTH(sp)        // restore T1
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)        // restore T3
         LREG    T4, trap_sv_off+4*REGWIDTH(sp)        // restore T4
         LREG    T5, trap_sv_off+5*REGWIDTH(sp)        // restore T5/a0
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)        // restore T6/a1
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)        // restore original sp
-        jr      4(T2)                                  // jump to ecall+4 in M-mode address space
+        jr      4(T2)                                 // jump to ecall+4 in M-mode address space
 
 .endif  // end of M-mode rtn2mmode
 

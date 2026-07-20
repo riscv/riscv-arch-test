@@ -47,7 +47,7 @@ main:
 // Test case 2: Access sfence.vma in M-mode | mstatus.TVM set | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  SFENCE_VMA
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 3: Access satp in S-mode | mstatus.TVM set | Expected: 3 Illegal instruction exceptions
@@ -69,7 +69,7 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  SFENCE_VMA
+  sfence.vma
 
   RVTEST_GOTO_MMODE
 

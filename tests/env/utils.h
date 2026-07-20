@@ -387,14 +387,6 @@
     .option pop     ;\
   .endif
 
-// Macros for instructions that can trap
-// each instruction is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define SFENCE_VMA \
-    sfence.vma         ;\
-    nop
-
 // Utility Macros
 
 // Place 1 in msb

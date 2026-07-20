@@ -272,9 +272,10 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_MHPMEVENT   mhpmevent3
-#define RVMODEL_MHPMCOUNTER mhpmcounter3
-#define RVMODEL_MHPMEVENT_VAL
-#define RVMODEL_MHPMEVENT_CODE
+#define RVMODEL_MHPMCOUNTER    mhpmcounter3
+#define RVMODEL_MHPMEVENT      mhpmevent3
+#define RVMODEL_MHPMEVENT_VAL  0x02   // RISCV_PMU_EVENT_HW_INSTRUCTIONS
+#define RVMODEL_MHPMEVENT_CODE \
+    nop
 
 #endif // _RVMODEL_MACROS_H

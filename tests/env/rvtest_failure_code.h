@@ -2394,4 +2394,7 @@
         .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"
         .asciz  "RVCP:       configuration (mtime/mtimecmp), and delegation settings.\n"
 
+    tsbi_instr_not_found_str:
+        .string "\nT-SBI ERROR: requested instruction not found in tsbi_instr_table: "
+
 .endm

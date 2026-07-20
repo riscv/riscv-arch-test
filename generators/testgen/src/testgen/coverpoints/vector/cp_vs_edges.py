@@ -8,13 +8,8 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import (
-    VF_CORNER_NAMES,
-    VLS_CORNER_NAMES,
-    VX_CORNER_NAMES,
-    get_base_lmul,
-    get_corner_value,
-)
+from testgen.coverpoints.vector.vector_helpers import get_base_lmul, make_and_register_corner_label
+from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -34,7 +29,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 
-    corners = VX_CORNER_NAMES
+    corners = VECTOR_EDGES.vx_corners
     suffix = ""
     vl = 1
     lmul = get_base_lmul(instr_name, instr_type, sew)
@@ -43,24 +38,17 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     if coverpoint.startswith(f"cp_{register}_edges_"):
         suffix = coverpoint[len(f"cp_{register}_edges_") :]
         if suffix.startswith("f"):
-            corners = VF_CORNER_NAMES
+            corners = VECTOR_EDGES.vf_corners
         elif suffix.startswith("ls"):
-            corners = VLS_CORNER_NAMES
+            corners = VECTOR_EDGES.vls_corners
         elif suffix == "eew1":
             vl = 8
         elif suffix.startswith("egs"):
             raise NotImplementedError("Crypto Edges are not yet Supported")
 
-    emul = 1
-    if "emulf" in suffix:
-        emul = 1 / int(suffix[-1])
-    elif "emul" in suffix:
-        emul = int(suffix[-1])
-
     test_chunks = []
     for corner in corners:
-        label = f"{register}_corner_{corner}_{suffix}"
-        test_data.register_vector_data(label, int(sew * emul), elements=[get_corner_value(corner, suffix, sew)])
+        label = make_and_register_corner_label(register, corner, suffix, test_data)
 
         presets = {f"{register}_val_pointer": label}
 

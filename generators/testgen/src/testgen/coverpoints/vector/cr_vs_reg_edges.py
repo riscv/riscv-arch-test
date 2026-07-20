@@ -11,8 +11,8 @@ import re
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import VF_CORNER_NAMES, VX_CORNER_NAMES, get_corner_value
-from testgen.data.edges import IMMEDIATE_EDGES, get_general_edges
+from testgen.coverpoints.vector.vector_helpers import make_and_register_corner_label
+from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -48,7 +48,7 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     r1_name, r2_name = _parse_cross_regs(coverpoint)
 
-    corners1 = corners2 = VX_CORNER_NAMES
+    corners1 = corners2 = VECTOR_EDGES.vx_corners
     suffix1 = suffix2 = "emul1"
     if coverpoint.endswith("wv"):
         suffix1 = "emul2"
@@ -58,35 +58,27 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
         suffix1 = suffix2 = "eew1"
     elif coverpoint.endswith("f"):
         suffix1 = suffix2 = "f"
-        corners1 = corners2 = VF_CORNER_NAMES
+        corners1 = corners2 = VECTOR_EDGES.vf_corners
     elif coverpoint.endswith("f_bf16"):
         suffix1 = suffix2 = "f_bf16"
-        corners1 = corners2 = VF_CORNER_NAMES
+        corners1 = corners2 = VECTOR_EDGES.vf_corners
     elif coverpoint.endswith("fwv"):
         suffix1 = "f_emul2"
         suffix2 = "f"
-        corners1 = corners2 = VF_CORNER_NAMES
+        corners1 = corners2 = VECTOR_EDGES.vf_corners
     elif coverpoint.endswith("fwred"):
         suffix1 = "f"
         suffix2 = "f_emul2"
-        corners1 = corners2 = VF_CORNER_NAMES
+        corners1 = corners2 = VECTOR_EDGES.vf_corners
     elif coverpoint.endswith("egs"):
         raise ValueError("Vector Crypto Edges are not yet implemented")
 
     test_chunks = []
     for c1 in corners1:
-        r1_label = f"{r1_name}_corner_{c1}_{suffix1}"
-        # Don't overwrite random corners
-        if not ("random" in r1_label and r1_label in test_data.vector_labels):
-            eew = sew * (2 if "emul2" in suffix1 else 1)
-            test_data.register_vector_data(r1_label, eew, elements=[get_corner_value(c1, suffix1, sew)])
+        r1_label = make_and_register_corner_label(r1_name, c1, suffix1, test_data)
 
         for c2 in corners2:
-            r2_label = f"{r2_name}_corner_{c2}_{suffix2}"
-            # Don't overwrite random corners
-            if not ("random" in r2_label and r2_label in test_data.vector_labels):
-                eew = sew * (2 if "emul2" in suffix2 else 1)
-                test_data.register_vector_data(r2_label, eew, elements=[get_corner_value(c2, suffix2, sew)])
+            r2_label = make_and_register_corner_label(r2_name, c2, suffix2, test_data)
 
             params = generate_random_vector_params(
                 test_data,
@@ -119,17 +111,13 @@ def make_vs2_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
 
-    vs2_edges = VX_CORNER_NAMES
+    vs2_edges = VECTOR_EDGES.vx_corners
     suffix = "emul2" if coverpoint.endswith("wx") else "emul1"
     rs1_edges = get_general_edges(test_data.xlen)
 
     test_chunks = []
     for vs2_corner in vs2_edges:
-        vs2_label = f"vs2_corner_{vs2_corner}_{suffix}"
-        # Don't overwrite random corners
-        if not ("random" in vs2_label and vs2_label in test_data.vector_labels):
-            eew = sew * (2 if "emul2" in suffix else 1)
-            test_data.register_vector_data(vs2_label, eew, elements=[get_corner_value(vs2_corner, suffix, sew)])
+        vs2_label = make_and_register_corner_label("vs2", vs2_corner, suffix, test_data)
 
         for rs1_corner in rs1_edges:
             params = generate_random_vector_params(
@@ -155,7 +143,7 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
 
-    vs2_edges = VX_CORNER_NAMES
+    vs2_edges = VECTOR_EDGES.vx_corners
     suffix = "emul2" if coverpoint.endswith(("wi", "wiu")) else "emul1"
 
     config = get_instr_type_config(instr_type)
@@ -163,11 +151,7 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
     test_chunks = []
     for vs2_corner in vs2_edges:
-        vs2_label = f"vs2_corner_{vs2_corner}_{suffix}"
-        # Don't overwrite random corners
-        if not ("random" in vs2_label and vs2_label in test_data.vector_labels):
-            eew = sew * (2 if "emul2" in suffix else 1)
-            test_data.register_vector_data(vs2_label, eew, elements=[get_corner_value(vs2_corner, suffix, sew)])
+        vs2_label = make_and_register_corner_label("vs2", vs2_corner, suffix, test_data)
 
         for imm in imm_edges:
             params = generate_random_vector_params(

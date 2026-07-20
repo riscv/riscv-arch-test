@@ -10,7 +10,7 @@
 
 `define COVER_PMPSM
 
-covergroup PMPSM_cg with function sample(
+covergroup PMPSm_cg with function sample(
                     ins_t ins,
                     logic [7:0] pmpcfg [63:0],        // Per region config registers
                     logic [`UDB_MXLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
@@ -1810,5 +1810,5 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][7]
           };
   `endif
-  PMPSM_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  PMPSm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
 endfunction

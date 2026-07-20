@@ -202,6 +202,14 @@
       "len": 64,
       "value": "0x1000"
     },
+    // SPMP: S-level Physical Memory Protection (Sspmp extension).
+    "spmp": {
+      "grain": 0,
+      "count": 64,
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
+    },
     // The locations and sizes of memory regions and their PMAs.  These regions
     // are required to be aligned to 4K (page) boundaries.  To specify
     // the `misaligned` PMA attribute for a region, see the comments for
@@ -686,6 +694,12 @@
     "Sscounterenw": {
       "supported": true
     },
+    "Sspmp": {
+      "supported": true
+    },
+    "Sspmpen": {
+      "supported": true
+    },
     "Sstc": {
       "supported": true
     },
@@ -725,6 +739,9 @@
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
+      "supported": true
+    },
+    "Smpmpdeleg": {
       "supported": true
     },
     "Svbare": {

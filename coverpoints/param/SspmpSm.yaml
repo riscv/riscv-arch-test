@@ -1,0 +1,30 @@
+# Parameter mappings for the SspmpSm test suite
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint:
+      [
+        "cp_{spmp_indirect_access, spmpaddr_write, spmpcfg_write, spmp_oob_read_zero, spmp_oob_write_ignored, mpmpdeleg_pmpnum_field}",
+      ]
+    effect:
+      [
+        "Sets the number of writable entries within the mandatory 64-entry architectural PMP space. mpmpdeleg.pmpnum partitions those implemented entries between PMP and SPMP; this suite requires at least eight.",
+      ]
+
+  - name: PMP_GRANULARITY
+    coverpoint: ["cp_addr_match_{na4, napot}"]
+    effect:
+      [
+        "Determines the matching granularity inherited by shared PMP/SPMP address registers. This suite requires four-byte granularity because it exercises NA4 and eight-byte NAPOT regions.",
+      ]
+
+  - name: MXLEN
+    coverpoint: ["cp_spmpen_{readwrite, activation, locked_readonly}"]
+    effect:
+      [
+        "Determines the spmpen width. RV32 additionally exposes spmpenh as the upper-half alias, which is covered separately.",
+      ]
+
+  - name: SXLEN
+    coverpoint: ["cp_{spmpaddr_write, spmpcfg_write}"]
+    effect: ["Determines width of spmpcfg and spmpaddr registers."]

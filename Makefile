@@ -236,8 +236,6 @@ coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
 
-
-
 ########### Regression ###########
 # Clean, run coverage, then run all configs that have a run_cmd.txt, continuing through failures.
 .PHONY: regression

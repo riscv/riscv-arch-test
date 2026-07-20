@@ -116,6 +116,10 @@
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
     "update_whole_mask": false
   },
+  "mmode_perf_event_map": {
+    "Load": 14,
+    "Store": 15
+  },
 
   "wfi_timeout": 200
 }

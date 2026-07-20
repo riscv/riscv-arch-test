@@ -217,7 +217,11 @@
 
 #define RVMODEL_MHPMEVENT   mhpmevent3
 #define RVMODEL_MHPMCOUNTER mhpmcounter3
-#define RVMODEL_MHPMEVENT_VAL
-#define RVMODEL_MHPMEVENT_CODE
+#define RVMODEL_MHPMEVENT_VAL  14   // use 15 when testing the Store event
+#define RVMODEL_MHPMEVENT_CODE \
+    sw x31, 0(sp); \
+    lw x31, 0(sp); \
+    sw x31, 0(sp); \
+    lw x31, 0(sp);
 
 #endif // _RVMODEL_MACROS_H

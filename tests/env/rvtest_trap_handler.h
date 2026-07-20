@@ -1587,7 +1587,6 @@ tsbi_instr_table_search_loop:
         #else
             lwu      T3, 0(T2)                  // fetch current instruction (64-bit); zero extend to 64 bits for comparison
         #endif
-        lw      T3, 0(T2)                       // fetch current instruction
         beq     T3, a0, found_instr             // if it matches tsbi request, handle it
         beqz    T3, tsbi_instr_not_found        // if we hit the end of the table (0 sentinel), not found
         addi    T2, T2, 8                       // advance to next entry (4 bytes for instruction, 4 bytes for return)

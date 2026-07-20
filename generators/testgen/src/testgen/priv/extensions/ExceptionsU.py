@@ -9,7 +9,7 @@
 """ExceptionsU test generator."""
 
 from testgen.asm.helpers import comment_banner
-from testgen.asm.tsbi import add_tsbi
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -42,27 +42,23 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint, "ecall from user mode with MIE=0 vs MIE=1"),
         # "RVTEST_GOTO_MMODE",
         # f"csrr x{save_reg}, mstatus",
-        add_tsbi(f"csrr x{save_reg}, mstatus"),
+        tsbi_call(f"csrr x{save_reg}, mstatus"),
         f"LI(x{mask_reg}, 0x88) # mstatus.MIE=0, mstatus.MPIE=0",
         # f"csrc mstatus, x{mask_reg}",
-        add_tsbi(f"csrc mstatus, x{mask_reg}"),
+        tsbi_call(f"csrc mstatus, x{mask_reg}"),
         # RVTEST_GOTO_LOWER_MODE Umode",
         test_data.add_testcase("ecall_mie_0", coverpoint, covergroup),
-        "LI(a0, 0x00000073) # test ecall to execution environment that just returns",
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST",
         # "RVTEST_GOTO_MMODE",
         f"LI(x{mask_reg}, 0x80) # mstatus.MIE=0, mstatus.MPIE=1, then when returning from SBI call, mstatus.MIE becomes 1",
-        add_tsbi(f"csrs mstatus, x{mask_reg}"),
+        tsbi_call(f"csrs mstatus, x{mask_reg}"),
         # f"csrrs x0, mstatus, x{mask_reg}",
         # "RVTEST_GOTO_LOWER_MODE Umode",
         test_data.add_testcase("ecall_mie_1", coverpoint, covergroup),
-        "LI(a0, 0x00000073) # test ecall to execution environment that just returns",
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST",
         # "RVTEST_GOTO_MMODE",
         # f"csrw mstatus, x{save_reg}",
-        add_tsbi(f"csrw mstatus, x{save_reg}"),
+        tsbi_call(f"csrw mstatus, x{save_reg}"),
     ]
 
     test_data.int_regs.return_registers([save_reg, mask_reg])

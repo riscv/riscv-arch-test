@@ -122,7 +122,6 @@
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
-//    j       cleanup_epilogs
     j       rvtest_code_end // switch to M-mode and clean up and terminate
 
   // Instantiate trap handlers for each priv mode
@@ -159,7 +158,7 @@
 
     // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
     // always boot to at least M-mode
-    // TODO: RVTEST_bOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
+    // TODO: RVTEST_BOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
       // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
@@ -270,8 +269,8 @@
 
     rvtest_clr_sext_int:
       RVMODEL_CLR_SEXT_INT(a0, a1)
-      LI(a1, 512)
-      csrc sip, a1 // clear sip.SEIP
+      LI(a0, 512)
+      csrc sip, a0 // clear sip.SEIP
       ret
   #endif
 

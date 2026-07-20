@@ -1250,8 +1250,7 @@ tsbi_\__MODE__\()dispatch:
         //--------------------------------------------------------------
 tsbi_\__MODE__\()ecall_test:
         csrr    a0, CSR_XEPC                       // a0 = mepc = address of the ecall instruction
-        csrr    T3, CSR_XEPC                        // T3 = mepc (read again for bump calculation)
-        addi    T3, T3, 4                            // T3 = mepc + 4 (skip past ecall)
+        addi    T3, a0, 4                            // T3 = mepc + 4 (skip past ecall)
         csrw    CSR_XEPC, T3                         // mepc = mepc + 4
         j       resto_\__MODE__\()rtn               // restore regs and mret (a0 carries the return value)
 
@@ -1378,71 +1377,6 @@ tsbi_\__MODE__\()goto_vu:
     #endif
         j       resto_\__MODE__\()rtn               // mret -> returns in VU-mode (MPP=U + MPV=1) at mepc
   #endif // H_SUPPORTED
-
-        //--------------------------------------------------------------
-        // T-SBI CSR_ACCESS handler (M-mode)
-        //
-        // Purpose: Execute an arbitrary CSR instruction on behalf of a
-        //   lower-privilege caller. This enables S/U-mode tests to read/write
-        //   M-mode CSRs without direct access.
-        //
-        // Mechanism:
-        //   1. The caller's a0 contains the 32-bit CSR instruction encoding
-        //      (copied into T3 at dispatch entry; a0 itself is untouched)
-        //   2. Write this encoding to scratch memory (rvmodel_sv area in save area)
-        //   3. Write a "ret" (jalr x0, x1, 0 = 0x00008067) immediately after it
-        //   4. fence.i to sync the instruction cache with the new code
-        //   5. The caller's a1 (rs1 value) is still live in a1 — nothing to restore
-        //   6. Save ra (the CALLER's ra — the handler must not clobber it; the
-        //      Sv/PMP fetch-fault logic resumes at ra), jalr ra into the scratch
-        //      location to execute the CSR instruction, then restore ra
-        //   7. a0 now contains the CSR read result (if rd==a0 in the encoding)
-        //   8. Bump xEPC+4, restore handler regs, mret
-        //
-        // CONSTRAINTS:
-        //   - The CSR encoding's rd field MUST be a0 (x10) for reads, so the
-        //     result lands in a0 for return to the caller
-        //   - The CSR encoding's rs1 field SHOULD be a1 (x11) for writes
-        //   - The scratch area must be executable (it's in .data — assumes no W^X)
-        //   - The scratch area is 8 bytes at rvmodel_sv_off in the save area
-        //
-        // EXAMPLE: Read mstatus (CSR 0x300) using csrrs a0, mstatus, x0
-        //   Instruction encoding: 0x30002573
-        //     imm[31:20] = 0x300 (CSR address: mstatus)
-        //     rs1[19:15] = 00000 (x0: read-only, no side effects)
-        //     funct3[14:12] = 010 (CSRRS)
-        //     rd[11:7] = 01010 (a0 = x10: result goes here)
-        //     opcode[6:0] = 1110011 (SYSTEM)
-        //--------------------------------------------------------------
-tsbi_\__MODE__\()csr_access:
-        // a0 still holds the caller's CSR instruction encoding (untouched since the ecall)
-        addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch location in save area's rvmodel_sv
-
-        sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
-
-        LI(     T3, 0x00008067)                    // T3 = encoding of "ret" (jalr x0, ra, 0)
-        sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
-
-        RVTEST_FENCEI                              // sync icache: we just wrote executable code to data memory
-
-        // The caller's a1 is still live in a1 (the handler never touches it),
-        // so the CSR instruction's rs1=a1 sees the caller's argument directly.
-
-        // Execute the CSR instruction by calling into scratch memory.
-        // jalr with ra: the ret in scratch returns to the instruction after this jalr.
-        // a0 will be overwritten with the CSR read result (if rd==a0 in the encoding).
-        // ra belongs to the interrupted test (the Sv/PMP fetch-fault logic resumes
-        // at ra), so preserve it across the call using the spare trapreg_sv slot 0.
-        SREG    ra, trap_sv_off+0*REGWIDTH(sp)     // save caller's ra (slot 0 = spare)
-        jalr    ra, T2, 0                          // call scratch: execute CSR instr, ret back here
-        LREG    ra, trap_sv_off+0*REGWIDTH(sp)     // restore caller's ra
-
-        // a0 now holds the CSR read result (if rd was a0 in the encoding)
-        csrr    T3, CSR_XEPC                        // T3 = mepc (ecall address)
-        addi    T3, T3, 4                            // T3 = mepc + 4 (skip past ecall)
-        csrw    CSR_XEPC, T3                         // update mepc for return
-        j       resto_\__MODE__\()rtn               // restore handler regs, mret to caller with result in a0
-
 .endif  // --------- END M-MODE T-SBI DISPATCH ---------
 
 //==============================================================================
@@ -1521,8 +1455,7 @@ tsbi_\__MODE__\()reserved:                        // Unrecognized SBI operation
         //--- S-mode ECALL_TEST ---
 tsbi_\__MODE__\()ecall_test:
         csrr    a0, CSR_XEPC                       // a0 = sepc = U-mode ecall address
-        csrr    T3, CSR_XEPC                        // T3 = sepc (for bump)
-        addi    T3, T3, 4                            // skip ecall
+        addi    T3, a0, 4                            // skip ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
 
@@ -1589,6 +1522,7 @@ tsbi_\__MODE__\()csr_access:
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
+        // TODO: Replace this with dispatch table, remove code below
 
         // S-mode or U-mode CSR: can handle locally using scratch execution
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch memory in rvmodel_sv area
@@ -1654,11 +1588,11 @@ tsbi_instr_table_search_loop:
         addi    T2, T2, 8                          // advance to next entry (4 bytes for instruction, 4 bytes for return)
         j       tsbi_instr_table_search_loop          // repeat search
 found_instr:
-        mv      T4, x1                          // preserve caller's ra (T4's live value is already saved; restored by resto)
-        LA(     x1, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
+        mv      T4, ra                          // preserve caller's ra (T4's live value is already saved; restored by resto)
+        LA(     ra, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
         jr      T2                                   // jump to the matching instruction in the table
 tsbi_instr_rtn:
-        mv      x1, T4                          // restore caller's ra
+        mv      ra, T4                          // restore caller's ra
         csrr    T3, CSR_XEPC                    // T3 = xepc (ecall address)
         addi    T3, T3, 4                       // T3 = xepc + 4 (skip past ecall)
         csrw    CSR_XEPC, T3                    // update xepc for return
@@ -1680,11 +1614,7 @@ tsbi_instr_not_found:
         call    rvmodel_io_write_str
         call    rvmodel_halt_fail
 
-tsbi_instr_not_found_str:
-        .string "\nT-SBI ERROR: requested instruction not found in tsbi_instr_table: "
-.balign 4
-
-.macro TSBI_INSTR_TABLE csr_addr
+.macro TSBI_CSR_INSTR_TABLE csr_addr
         .word (\csr_addr << 20) | (0x02573) // csrr a0, csr_addr
         ret
         .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a1
@@ -1703,26 +1633,27 @@ tsbi_instr_not_found_str:
 // Each instruction must be followed by a ret to return to the caller
 tsbi_instr_table:
 
-        TSBI_INSTR_TABLE(0x300) // mstatus
-        TSBI_INSTR_TABLE(0x302) // medeleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
-        TSBI_INSTR_TABLE(0x303) // mideleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
-        TSBI_INSTR_TABLE(0x304) // mie
-        //TSBI_INSTR_TABLE(0x305) // mtvec
-        TSBI_INSTR_TABLE(0x306) // mcounteren
-        TSBI_INSTR_TABLE(0x30A) // menvcfg
-        TSBI_INSTR_TABLE(0x344) // mip
-        TSBI_INSTR_TABLE(0x747) // mseccfg
-        TSBI_INSTR_TABLE(0x320) // mcountinhibit
-        TSBI_INSTR_TABLE(0xB00) // mcycle
-        TSBI_INSTR_TABLE(0xB02) // minstret
-        TSBI_INSTR_TABLE(0x100) // sstatus
-        TSBI_INSTR_TABLE(0x104) // sie
-        //TSBI_INSTR_TABLE(0x105) // stvec
-        TSBI_INSTR_TABLE(0x106) // scounteren
-        TSBI_INSTR_TABLE(0x10A) // senvcfg
-        TSBI_INSTR_TABLE(0x144) // sip
-        TSBI_INSTR_TABLE(0x14D) // stimecmp
-        TSBI_INSTR_TABLE(0x180) // satp
+        TSBI_CSR_INSTR_TABLE(0x300) // mstatus
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        TSBI_CSR_INSTR_TABLE(0x304) // mie
+        //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
+        TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
+        TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x344) // mip
+        TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
+        TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
+        TSBI_CSR_INSTR_TABLE(0xB00) // mcycle
+        TSBI_CSR_INSTR_TABLE(0xB02) // minstret
+        // TODO: Move the following to the S-mode dispatch when it is implemented
+        TSBI_CSR_INSTR_TABLE(0x100) // sstatus
+        TSBI_CSR_INSTR_TABLE(0x104) // sie
+        //TSBI_CSR_INSTR_TABLE(0x105) // stvec
+        TSBI_CSR_INSTR_TABLE(0x106) // scounteren
+        TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
+        TSBI_CSR_INSTR_TABLE(0x144) // sip
+        TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        TSBI_CSR_INSTR_TABLE(0x180) // satp
         // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
         lw a0, 0(a1)
         ret

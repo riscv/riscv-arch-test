@@ -115,6 +115,11 @@ normative_rule_definitions:
   - name: mip_stip_stimecmp_op
     coverpoint: ["InterruptsSSm_cg/cp_interrupts_m"]
 
+  # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is
+  # read-only in mip
+  - name: mip_stip_stimecmp_acc
+    coverpoint: ["InterruptsSSm_cg/cp_stip_write_stimecmp"]
+
   # This timer interrupt signal is cleared by writing stimecmp with a value greater
   # than the current time value.
   - name: mip_stip_stimecmp_clr

@@ -159,11 +159,6 @@ normative_rule_definitions:
   - name: mip_stip_no_stimecmp_op
     coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
-  # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is
-  # read-only in mip
-  - name: mip_stip_stimecmp_acc
-    coverpoint: ["TODO: attempt writing to mip.STIP with stimecmp implemented"]
-
   # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level timer
   # interrupts. If the stimecmp (supervisor-mode timer compare) register is
@@ -196,7 +191,10 @@ normative_rule_definitions:
   # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt
   # controller.
   - name: mip_ssip_intr_ctrl
-    coverpoint: ["InterruptsS_cg/cp_trigger_ssi_{mip_m, sip}"]
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_ssi_{mip_m, sip}, Platform specific interrupt controller not tested",
+      ]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
   # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap

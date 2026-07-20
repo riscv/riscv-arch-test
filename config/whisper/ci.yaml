@@ -20,3 +20,6 @@ ci_enabled: true
 exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
+shards: 1
+config_shards:
+  whisper-rv64-max: 2

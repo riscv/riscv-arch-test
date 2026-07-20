@@ -386,10 +386,6 @@ covergroup PMPSm_cg with function sample(
     bins pmp_cfg_tor1 =  {16'b10001101_10000000}; //L=1 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
   }
 
-  pmp_addr_for_tor: coverpoint {pmpaddr[1],pmpaddr[0]} {
-    bins range = {`NON_STANDARD_REGION+`g_tor,`NON_STANDARD_REGION};
-  }
-
   pmp_addr_for_tor_bot: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK)) &&
                                     ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) {
     bins range = {1};

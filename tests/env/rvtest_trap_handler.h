@@ -2409,13 +2409,24 @@ from_hs_u:
 rtn_fm_mmode:
         add     T2, T4, T2                             // T2 = M-mode code_begin + relative offset = return addr
 
+  #ifdef SMDBLTRP_SUPPORTED
+        # clear MDT bit in mstatus/h (if it was set) before returning without mret
+        #if (UDB_MXLEN==64)
+                LI(T3, MSTATUS_MDT)
+                csrc   CSR_MSTATUS, T3
+        #else // RV32
+                LI(T3, MSTATUSH_MDT)
+                csrc   CSR_MSTATUSH, T3
+        #endif // MXLEN
+  #endif // SMDBLTRP_SUPPORTED
+
         LREG    T1, trap_sv_off+1*REGWIDTH(sp)        // restore T1
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)        // restore T3
         LREG    T4, trap_sv_off+4*REGWIDTH(sp)        // restore T4
         LREG    T5, trap_sv_off+5*REGWIDTH(sp)        // restore T5/a0
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)        // restore T6/a1
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)        // restore original sp
-        jr      4(T2)                                  // jump to ecall+4 in M-mode address space
+        jr      4(T2)                                 // jump to ecall+4 in M-mode address space
 
 .endif  // end of M-mode rtn2mmode
 

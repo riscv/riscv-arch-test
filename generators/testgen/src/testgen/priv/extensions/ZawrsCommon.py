@@ -201,7 +201,8 @@ def _wrs_resume_helper(
 
                     lines.extend(
                         [
-                            "",
+                            f"# the test could hang if timer fires before x{r_cause} is initialized",
+                            # TODO: implement with trap counter after added to trap handler
                             f"LI(x{r_cause}, 0)                 # nonzero means the trap was taken",
                             "# lr.w to set up reservation",
                             f"LA(x{r_temp}, scratch)",

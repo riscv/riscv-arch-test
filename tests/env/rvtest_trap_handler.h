@@ -1687,11 +1687,11 @@ tsbi_instr_not_found_str:
 .macro TSBI_INSTR_TABLE csr_addr
         .word (\csr_addr << 20) | (0x02573) // csrr a0, csr_addr
         ret
-        .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a0
+        .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a1
         ret
-        .word (\csr_addr << 20) | (0x5a073) // csrs csr_addr, a0
+        .word (\csr_addr << 20) | (0x5a073) // csrs csr_addr, a1
         ret
-        .word (\csr_addr << 20) | (0x5b073) // csrc csr_addr, a0
+        .word (\csr_addr << 20) | (0x5b073) // csrc csr_addr, a1
         ret
 .endm
 

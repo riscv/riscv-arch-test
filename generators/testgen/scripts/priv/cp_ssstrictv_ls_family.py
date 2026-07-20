@@ -34,6 +34,7 @@ def _emit_vsetvli_str(scratch: int, vl: int, sew: int, lmul_flag: str) -> None:
 
 def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
              vl: int = 1,
+             vstart: int | None = None,
              override_vd: int | None = None,
              addr_offset: int = 0,
              if_guard: str = "") -> None:
@@ -78,6 +79,10 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     if addr_offset:
         common.writeLine(f"addi x{rs1_reg}, x{rs1_reg}, {addr_offset}",
                           f"# misalign rs1 by {addr_offset} bytes")
+
+    if vstart is not None:
+        common.writeLine(f"LI (x{scratch}, {vstart})")
+        common.writeLine(f"csrw vstart, x{scratch}", f"# Set vstart={vstart}")
 
     sig_lmul = 1
     sig_wr = True
@@ -276,3 +281,5 @@ def make_eew_lt_sewmin(instruction: str) -> None:
     for possible_sew_min in (8, 16, 32, 64):
         if width_encoded_eew < possible_sew_min:
             _ls_test(instruction, cp, possible_sew_min, "m1", if_guard=f"UDB_SEW_MIN == {possible_sew_min}")
+            _ls_test(instruction, cp, possible_sew_min, "m1", vl=0, if_guard=f"UDB_SEW_MIN == {possible_sew_min}")
+            _ls_test(instruction, cp, possible_sew_min, "m1", vl=1, vstart=1, if_guard=f"UDB_SEW_MIN == {possible_sew_min}")

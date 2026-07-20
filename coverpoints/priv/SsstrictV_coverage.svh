@@ -600,7 +600,7 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
 
 
     // vcompress: destination register group cannot overlap source register group (vs2)
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vcompress_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -641,16 +641,6 @@ endgroup
 covergroup SsstrictV_vcpop_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup SsstrictV_vdiv_vv_cg with function sample(ins_t ins);
@@ -1071,16 +1061,6 @@ endgroup
 covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup SsstrictV_vfmacc_vf_cg with function sample(ins_t ins);
@@ -2523,7 +2503,7 @@ covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
 
 
     // vslide1up: destination register group cannot overlap source register group
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vslide1up_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -3711,16 +3691,6 @@ covergroup SsstrictV_viota_m_cg with function sample(ins_t ins);
     cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
 
 //// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -22481,16 +22451,6 @@ covergroup SsstrictV_vmsbf_m_cg with function sample(ins_t ins);
 
 //// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup SsstrictV_vmseq_vi_cg with function sample(ins_t ins);
@@ -22702,16 +22662,6 @@ covergroup SsstrictV_vmsif_m_cg with function sample(ins_t ins);
     cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
 
 //// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -23114,16 +23064,6 @@ covergroup SsstrictV_vmsof_m_cg with function sample(ins_t ins);
     cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
 
 //// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vs2_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vs2=v0 at LMUL=1: vs2 group overlaps mask v0, reserved
-    vs2_is_v0_meqv0 : coverpoint ins.current.insn[24:20] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -24811,7 +24751,7 @@ covergroup SsstrictV_vrgather_vi_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -24878,7 +24818,7 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 
 
     // vrgather.vv: destination register group cannot overlap vs1 register group
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_overlap: cross std_trap_vec, vd_eq_vs1;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -24910,7 +24850,7 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -24967,7 +24907,7 @@ covergroup SsstrictV_vrgather_vx_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -25034,7 +24974,7 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 
     // vrgather.vv: destination register group cannot overlap vs1 register group
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_overlap: cross std_trap_vec, vd_eq_vs1;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -25066,7 +25006,7 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.
@@ -26184,7 +26124,7 @@ covergroup SsstrictV_vslide1up_vx_cg with function sample(ins_t ins);
 
 
     // vslide1up: destination register group cannot overlap source register group
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vslide1up_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.

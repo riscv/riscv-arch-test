@@ -1,5 +1,8 @@
 """cp_ssstrictv_masking_vd_eq_v0: vd=v0 with mask enabled (vm=0) at LMUL=1.
 
+In these cases, vd=v0 is disallowed because the destination eew is not equal to the source eew
+and vs1,vs2 = v0 is disallowed because a source register is being read at two different eews
+
 Cross: ``std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0(=v0), mask_enabled(vm=0)``.
 The instruction need not actually trap; the cross only requires the encoding
 bits and the trap-eligible vtype/vstart/vl/mstatus pre-state.

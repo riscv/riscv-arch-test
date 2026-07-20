@@ -4,7 +4,7 @@
 
 
     // vcompress: destination register group cannot overlap source register group (vs2)
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
+    cp_ssstrictv_vcompress_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
     // We cannot test anything dependent on csr state in Ssstrict, potentially there will be another test suite
     // where all reserved encodings are tested, so the dependence on lmul is left as a comment.

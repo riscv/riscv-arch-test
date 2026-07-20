@@ -7,13 +7,15 @@
 ##################################
 
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import (
     clr_mtimer_int,
     clr_stimer_int,
     clr_stimer_mmode,
+    set_menvcfg_stce,
     set_mtimer_int,
     set_mtimer_int_soon,
+    set_stimecmp_max,
     set_stimer_mmode,
 )
 from testgen.data.state import TestData
@@ -1553,6 +1555,44 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
+    """Generate stip write test with STIMECMP implemented
+
+    Attempt to write to mip.STIP with STIMECMP implemented
+    1 bin
+    """
+    covergroup = "InterruptsSSm_cg"
+    coverpoint = "cp_stip_write_stimecmp"
+
+    r_temp = test_data.int_regs.get_register()
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            _generate_stip_write_stimecmp_tests.__doc__,
+        ),
+        "",
+    ]
+    lines.extend(
+        [
+            "#ifdef SSTC_SUPPORTED",
+            "# set menvcfg.STCE",
+            *set_menvcfg_stce(r_temp, True),
+            "# clear STIP through STIMECMP",
+            *set_stimecmp_max(r_temp),
+            "",
+            test_data.add_testcase("STIP", coverpoint, covergroup),
+            "# attempt to write mip.STIP",
+            f"LI(x{r_temp}, 0x20)",
+            f"CSRS(mip, x{r_temp})",
+            write_sigupd(r_temp, test_data),
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp])
+    return lines
+
+
 @add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S", "Zicsr"])
 def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests running in M mode.
@@ -1598,6 +1638,7 @@ def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_trigger_sei_m_tests(test_data))
     tc.code.extend(_generate_sei_interaction_tests(test_data))
     tc.code.extend(_generate_global_ie_tests(test_data))
+    tc.code.extend(_generate_stip_write_stimecmp_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

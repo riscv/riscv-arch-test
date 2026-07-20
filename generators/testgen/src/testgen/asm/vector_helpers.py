@@ -241,8 +241,8 @@ def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> st
     lmul_flag = "m" + _lmul_flag(params.lmul)
 
     mask_flags = ""
-    mask_flags += ", ta" if params.ta or params.ta is None else ", tu"
-    mask_flags += ", ma" if params.ma or params.ma is None else ", mu"
+    mask_flags += ", ta" if params.ta and params.ta is not None else ", tu"
+    mask_flags += ", ma" if params.ma and params.ma is not None else ", mu"
     flags = lmul_flag + mask_flags
 
     if isinstance(vl_register_or_imm, str):
@@ -270,12 +270,8 @@ def prep_base_v(
         lmul_flag = "m" + _lmul_flag(lmul_override)
 
     mask_flags = ""
-    if params.ta is not None:
-        mask_flags += ", ta" if params.ta else ", tu"
-    if params.ma is not None:
-        mask_flags += ", ma" if params.ma else ", mu"
-    else:
-        mask_flags = ", tu, mu"
+    mask_flags += ", ta" if params.ta and params.ta is not None else ", tu"
+    mask_flags += ", ma" if params.ma and params.ma is not None else ", mu"
 
     flags = lmul_flag + mask_flags
     vl_register_or_imm: str | int = 0
@@ -395,24 +391,21 @@ def prep_mask_v(
     if mask_val == PresetMask.ZEROS:
         lines = [
             f"# Set mask value to zero, x{params.temp_reg} = VLMAX",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
             "vmv.v.i v0, 0",
         ]
     elif mask_val == PresetMask.ONES:
+        # Note that an approach using temp_reg is flawed because vmsltu can be tail agnostic regardless of vtype
         lines = [
-            f"# x{params.temp_reg} = VLMAX",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
-            f"# v{vtmp} = [0,1,2,...]",
-            f"vid.v v{vtmp}",
-            "# Reset mask value to 0",
-            "vmv.v.i v0, 0",
-            "# v0[i] = (i < VLMAX) ? 1 : 0",
-            f"vmsltu.vx v0, v{vtmp}, x{params.temp_reg}",
+            f"# Set mask value to one, x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
+            "# Sign extension makes the vector all ones",
+            "vmv.v.i v0, -1",
         ]
     elif mask_val == PresetMask.VLMAX_M1_ONES:
         lines = [
             f"# x{params.temp_reg} = VLMAX",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
             f"# x{params.temp_reg} = VLMAX - 1",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
             f"# v{vtmp} = [0,1,2,...]",
@@ -425,7 +418,7 @@ def prep_mask_v(
     elif mask_val == PresetMask.VLMAX_D2_P1_ONES:
         lines = [
             f"# x{params.temp_reg} = VLMAX",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
             f"# x{params.temp_reg} = VLMAX / 2",
             f"srli x{params.temp_reg}, x{params.temp_reg}, 1",
             f"# x{params.temp_reg} = VLMAX / 2 + 1",
@@ -440,7 +433,7 @@ def prep_mask_v(
     else:  # random mask
         lines = [
             f"# x{params.temp_reg} = VLMAX",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, tu, mu",
             f"LA(x{params.temp_reg}, {mask_val})",
             "# Load mask value into v0",
             f"vlm.v v0, (x{params.temp_reg})",

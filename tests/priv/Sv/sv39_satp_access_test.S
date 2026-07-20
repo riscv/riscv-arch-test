@@ -44,7 +44,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrs, test1_csrs_str)
 
   li a0, 1
-  csrc satp, t0
+  csrc satp, a0
   test1_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_csrc, test1_csrc_str)
 
@@ -66,7 +66,7 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrs, test2_csrs_str)
 
   li a0, 4
-  csrc satp, t0
+  csrc satp, a0
   test2_csrc:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_csrc, test2_csrc_str)
 
@@ -86,7 +86,7 @@ main:
   csrs satp, a0
 
   li a0, 6
-  csrc satp, t0
+  csrc satp, a0
 
   RVTEST_GOTO_MMODE
 

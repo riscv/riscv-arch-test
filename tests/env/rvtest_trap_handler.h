@@ -1648,16 +1648,11 @@ tsbi_\__MODE__\()handle_forwarded:
 tsbi_instr_table_dispatch:
         LA(T2, tsbi_instr_table)                // initialize T2 = base address of instruction table
 tsbi_instr_table_search_loop:
-        #if (UDB_MXLEN==32)
-            lw      T3, 0(T2)                   // fetch current instruction (32-bit)
-        #else
-            lwu      T3, 0(T2)                  // fetch current instruction (64-bit); zero extend to 64 bits for comparison
-        #endif
-        lw      T3, 0(T2)                       // fetch current instruction
-        beq     T3, a0, found_instr             // if it matches tsbi request, handle it
-        beqz    T3, tsbi_instr_not_found        // if we hit the end of the table (0 sentinel), not found
-        addi    T2, T2, 8                       // advance to next entry (4 bytes for instruction, 4 bytes for return)
-        j       tsbi_instr_table_search_loop    // repeat search
+        lw      T3, 0(T2)                            // fetch current instruction
+        beq     T3, a0, found_instr                 // if it matches tsbi request, handle it
+        beqz    T3, tsbi_instr_not_found           // if we hit the end of the table (0 sentinel), not found
+        addi    T2, T2, 8                          // advance to next entry (4 bytes for instruction, 4 bytes for return)
+        j       tsbi_instr_table_search_loop          // repeat search
 found_instr:
         mv      T4, x1                          // preserve caller's ra (T4's live value is already saved; restored by resto)
         LA(     x1, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below

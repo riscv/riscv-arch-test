@@ -29,7 +29,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
     and mie = 1s (all interrupt enables), trigger STIP and change to supervisor mode.
     Cross: mideleg x SIE (2x2 = 4 bins)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_sti"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -145,7 +145,7 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
     and mie = 1s (all interrupt enables), trigger SSIP and change to supervisor mode.
     Cross: mideleg x SIE/MIE (2x2 = 4 bins)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -266,7 +266,7 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
     write sip.SSIP and change to supervisor mode.
     Cross: mideleg x SIE (2x2 = 4 bins)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_ssi_sip"
 
     r_scratch = test_data.int_regs.get_register()
@@ -340,7 +340,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
     and mie = 1s, trigger SEIP via PLIC/EIC and change to supervisor mode.
     Cross: mideleg x SIE (2x2 = 4 bins)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_sei"
 
     r_scratch, r_temp, r_stimecmp = test_data.int_regs.get_registers(3)
@@ -458,7 +458,7 @@ def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
     and mie = 1s, write mip.SEIP and change to supervisor mode.
     Cross: SIE (2 bins - only delegated case)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_sei_seip"
 
     r_scratch = test_data.int_regs.get_register()
@@ -545,7 +545,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
     With mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s,
     set STIP, enter S-mode, then write sstatus.SIE=1 to trigger interrupt.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_changingtos_sti"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -640,7 +640,7 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     With mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s,
     set SSIP, enter S-mode, then write sstatus.SIE=1 to trigger interrupt.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_changingtos_ssi"
 
     r_scratch = test_data.int_regs.get_register()
@@ -726,7 +726,7 @@ def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
     with mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s, set mip.SEIP,
     then change to supervisor mode, then write sstatus.SIE=1
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_trigger_changingtos_sei"
 
     r_scratch = test_data.int_regs.get_register()
@@ -776,7 +776,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
     6 walking 1s in mie, 6 walking 1s in mip, change to supervisor mode
     Tests: mideleg={0, 0x222} × 6 mip × 6 mie = 72 combinations
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_interrupts_s"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -945,7 +945,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
     Cross of stvec.MODE = 00/01, mstatus.MIE=0, mstatus.SIE = 1, mie = 1s,
     mideleg = {STI+SEI+SSI}, 6 different interrupts walking in mip, change to supervisor mode
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_vectored_s"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -1106,7 +1106,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
     cp_priority_mip_s_m (M-mode MRET, mideleg=zeros): 7 bins for {MEIP,MTIP,MSIP} patterns 001-111.
     Only the bins each coverpoint actually needs — not all 64 combinations.
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -1238,7 +1238,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
     Set up with mstatus.MIE = 0, mstatus.SIE=1, and change to supervisor
     15 cases: 8 S-mode + 7 M-mode
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
     lines = [comment_banner("cp_priority_mie_s / cp_priority_mie_s_m", _generate_priority_mie_s_tests.__doc__), ""]
 
@@ -1344,7 +1344,7 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
     Cross of 2^6 permutations of mie, mip=mie, mideleg ={0/STI+SEI+SSI}.
     Set up with mstatus.MIE = 0, mstatus.SIE=1, and change to supervisor
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
     lines = [comment_banner("cp_priority_both_s / cp_priority_both_m", _generate_priority_both_s_tests.__doc__), ""]
 
@@ -1452,7 +1452,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
     - M-mode priority vs delegation (all 8 patterns)
     - S-mode priority within delegated interrupts (patterns 1–7, mie=mideleg)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -1656,7 +1656,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
 
     - cp_wfi_s: TW=0, WFI executes in S-mode
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -1774,13 +1774,13 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
-    """Generate S-mode and U-mode WFI timeout tests.
+    """Generate S-mode WFI timeout tests.
 
     Test WFI timeout with TW=1, MTIMECMP=max.
     Cross: MIE={0,1} × SIE={0,1} × mideleg={0,0x222} × MTIE={0,1} × mode={S,U}
     Total: 2×2×2×2×2 = 32 bins
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
@@ -1913,7 +1913,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     Cross: MIE={0,1} × SIE={0,1} × mtvec.MODE={0,1} × MTIP={0,1}
     2 × 2 × 2 × 2 = 16 bins
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_user_mti"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
@@ -2021,7 +2021,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
     Cross: MIE={0,1} × SIE={0,1} × stvec.MODE={0,1} × MSIP={0,1}
     2 × 2 × 2 × 2 = 16 bins
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_user_msi"
 
     r_scratch = test_data.int_regs.get_register()
@@ -2133,7 +2133,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
     Cross: MIE={0,1} × SIE={0,1} × stvec.MODE={0,1} × MEIP={0,1}
     2 × 2 × 2 × 2 = 16 bins
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_user_mei"
 
     r_scratch = test_data.int_regs.get_register()
@@ -2246,7 +2246,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
     Part 2: S-mode entry with SIE=1 before SEIP fires covers cp_sei_handled_s
             SIE=1+SEIP=0 bins (sampled while in S-mode before the trap arrives).
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_scratch = test_data.int_regs.get_register()
 
@@ -2414,7 +2414,7 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
     Cross: MIE={0,1} × SIE={0,1} × mideleg={0,0x222} × TW=0
     TW=0 (WFI works)
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -2533,7 +2533,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     - MTIMECMP = max (no interrupt fires)
     - WFI times out → illegal instruction → M-mode trap
     """
-    covergroup = "InterruptsS_S_cg"
+    covergroup = "InterruptsS_cg"
     coverpoint = "cp_wfi_timeout_u"
 
     r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)

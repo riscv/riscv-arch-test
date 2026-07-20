@@ -241,8 +241,8 @@ def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> st
     lmul_flag = "m" + _lmul_flag(params.lmul)
 
     mask_flags = ""
-    mask_flags += ", ta" if params.ta and params.ta is not None else ", tu"
-    mask_flags += ", ma" if params.ma and params.ma is not None else ", mu"
+    mask_flags += ", ta" if params.ta else ", tu"
+    mask_flags += ", ma" if params.ma else ", mu"
     flags = lmul_flag + mask_flags
 
     if isinstance(vl_register_or_imm, str):
@@ -270,8 +270,8 @@ def prep_base_v(
         lmul_flag = "m" + _lmul_flag(lmul_override)
 
     mask_flags = ""
-    mask_flags += ", ta" if params.ta and params.ta is not None else ", tu"
-    mask_flags += ", ma" if params.ma and params.ma is not None else ", mu"
+    mask_flags += ", ta" if params.ta else ", tu"
+    mask_flags += ", ma" if params.ma else ", mu"
 
     flags = lmul_flag + mask_flags
     vl_register_or_imm: str | int = 0

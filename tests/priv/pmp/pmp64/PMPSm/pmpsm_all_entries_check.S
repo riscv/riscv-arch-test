@@ -76,7 +76,6 @@ RVTEST_BEGIN
 // Test regions all use L=1, R=1, X=1, W=0 (NAPOT) — read+execute, no write.
 // ---------------------------------------------------------------------------
 
-#define PMP_REGION_GLOBAL  ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT
 
 // Slots 0-14 (used by both 16-PMP and 64-PMP systems)
 #define PMP_REGION_14   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP6_CFG_SHIFT
@@ -149,7 +148,6 @@ RVTEST_BEGIN
 // ---------------------------------------------------------------------------
 // Address helpers
 // ---------------------------------------------------------------------------
-#define PMPADDRESS_TOP_GLOBAL   -1              // Covers entire address space
 #define REGIONSTART     TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
 
 #if UDB_PMP_GRANULARITY != 2
@@ -195,25 +193,9 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-    // -----------------------------------------------------------------------
-    // Background (catch-all) region — must be the highest-numbered entry so
-    // that all lower entries take priority over it.
-    //   16-PMP : last entry = pmpaddr15, config byte lives in pmpcfg2[PMP7]
-    //   64-PMP : last entry = pmpaddr63, config byte lives in pmpcfg14[PMP7]
-    // -----------------------------------------------------------------------
-#if UDB_NUM_PMP_ENTRIES == 64
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr63, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg14, x4
-#elif UDB_NUM_PMP_ENTRIES == 16
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr15, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
-#else
-    #error "Unsupported UDB_NUM_PMP_ENTRIES value; only 16 and 64 are supported."
-#endif
+    // Background (catch-all) region: use the highest-numbered usable PMP entry
+    // so that all lower entries take priority over it.
+    RVTEST_PMP_SET_BACKGROUND x4
 
 // ===========================================================================
 // TEST CASES — 64-PMP ONLY (slots 16-62, test cases 1-47)

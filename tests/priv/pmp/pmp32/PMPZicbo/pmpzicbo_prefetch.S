@@ -74,7 +74,6 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL                ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000             ((((PMP_L|                  PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
 #define PMPREGION_LXWR_1001             ((((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1011             ((((PMP_L|PMP_R|PMP_W       |PMP_TOR)&0xFF) << PMP0_CFG_SHIFT))
@@ -83,21 +82,12 @@ main:
 #define PMPREGION_LXWR_1111             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
 
 #define MENVCFG                            0xF0                                                             // menvcfg.CBIE, CBCFE, CBZE = 1
-#define PMPADDRESS_TOP_GLOBAL            -1            // All memory region
 
 #define REGIONSTART                TEST_FOR_EXECUTION_1
 #define REGIONEND                TEST_FOR_EXECUTION_2
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     li t0, MENVCFG
     csrrs zero, menvcfg, t0

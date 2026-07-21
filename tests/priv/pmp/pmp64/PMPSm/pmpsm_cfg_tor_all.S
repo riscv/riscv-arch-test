@@ -70,7 +70,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT)  // Background region with RWX enable.
 #define DEFAULT_TOR_REGION  (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION0_XWR_000  (((PMP_L|                  PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION1_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
@@ -82,12 +81,7 @@ main:
 #define PMPREGION7_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP7_CFG_SHIFT)
 
 
-    LA(x4, -1)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL))
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 // For larger UDB_PMP_GRANUMARITY, it is raising
 // relocation truncation error to fit: R_RISCV_JAL
 // Regions get so large, trap handler, RVMODEL macros,
@@ -158,7 +152,7 @@ main:
 
     LI(x4, (PMPREGION7_XWR_001|PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|DEFAULT_TOR_REGION))
     csrw pmpcfg0, x4
-    LI(x4, (PMP_REGION_GLOBAL |PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
+    LI(x4, (PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
     csrw pmpcfg2, x4
 
     VERIFICATION_RWX    (TEST_FOR_EXECUTION_0 - 4) , test_1     // Access at the end of default region

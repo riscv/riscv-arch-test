@@ -239,7 +239,7 @@ def _generate_seed_entropy_zero_non_es16_tests(test_data: TestData) -> list[str]
             f"LI(x{cmp_reg}, 0x2)",
             f"bne x{opst_reg}, x{cmp_reg}, 1f",
             "# SIGUPD 0x0BADBEEF if OPST is ES16",
-            f"LI(x{cmp_reg}, 0xBOBA)",
+            f"LI(x{cmp_reg}, 0xB0BA)",
             write_sigupd(cmp_reg, test_data),
             "j 2f",
             "1:",

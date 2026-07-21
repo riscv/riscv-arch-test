@@ -106,4 +106,7 @@
   #ifndef UDB_PMP_NAPOT_SUPPORTED
     #error "DUTs with PMP but without NAPOT support are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
+  #if UDB_NUM_USABLE_PMP_ENTRIES < 8
+    #error "DUTs with fewer than 8 usable PMP entries are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
+  #endif
 #endif

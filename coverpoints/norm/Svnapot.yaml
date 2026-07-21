@@ -20,7 +20,7 @@ normative_rule_definitions:
 
   # If the encoding in pte is reserved, a page-fault exception must be raised
   - name: Svnapot_reserved_encoding_fault
-    coverpoint: ["Svnapot_reserved_enc_exec_{s, u}"]
+    coverpoint: ["Svnapot_cg/Svnapot_reserved_enc_exec_{s, u}"]
 
   # If the encoding in pte is valid, implicit reads of a NAPOT PTE return a copy of pte
   # in which pte.ppn[i][pte.napot_bits-1:0] is replaced by vpn[i][pte.napot_bits-1:0].

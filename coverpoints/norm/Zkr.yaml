@@ -47,7 +47,7 @@ normative_rule_definitions:
 
   # A BIST alarm must be latched until polled at least once.
   - name: seed_bist_latch
-    coverpoint: ["Not Tested"]
+    coverpoint: ["Not tested"]
 
   # An implementation that limits security strength shall not reduce it below
   # 256 bits.

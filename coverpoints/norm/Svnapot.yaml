@@ -3,7 +3,7 @@
 normative_rule_definitions:
   # The Svnapot extension depends on the Sv39 extension.
   - name: Svnapot_depends_Sv39
-    coverpoint: ["Not tested"]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   - name: Svnapot_pte_N
     coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
@@ -23,9 +23,9 @@ normative_rule_definitions:
     coverpoint: ["Svnapot_reserved_enc_exec_{s, u}"]
 
   # If the encoding in pte is valid, implicit reads of a NAPOT PTE return a copy of pte
-  # in chich pte.ppn[i][pte.napot_bits-1:0] is replaced by vpn[i][pte.napot_bits-1:0].
+  # in which pte.ppn[i][pte.napot_bits-1:0] is replaced by vpn[i][pte.napot_bits-1:0].
   - name: Svnapot_implicit_read_ppn_subst
-    coverpoint: ["TODO"]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   # Implicit reads of NAPOT page table entries may create address-translation cache entries
   # mapping a + j×PTESIZE to a copy of pte in which pte.ppn[i][pte.napot_bits-1:0] is replaced

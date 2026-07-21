@@ -43,11 +43,11 @@ normative_rule_definitions:
   # changing the state to WAIT (unless there is entropy immediately
   # available for ES16). Other states (BIST, WAIT, and DEAD) may be unaffected by polling.
   - name: seed_wipe_on_read
-    coverpoint: ["TODO"]
+    coverpoint: ["Not tested"]
 
   # A BIST alarm must be latched until polled at least once.
   - name: seed_bist_latch
-    coverpoint: ["TODO"]
+    coverpoint: ["Not Tested"]
 
   # An implementation that limits security strength shall not reduce it below
   # 256 bits.

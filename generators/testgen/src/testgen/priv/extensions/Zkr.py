@@ -209,6 +209,43 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# def _generate_seed_entropy_zero_non_es16_tests(test_data: TestData) -> list[str]:
+#     """Read seed twice in a row using csrrw,
+#     check entropy = 0 if OPST is not ES16
+#     """
+
+#     covergroup = "Zkr_cg"
+#     coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
+
+#     read_reg, opst_reg, entropy_reg = test_data.int_regs.get_registers(4)
+
+#     lines = [
+#         comment_banner(
+#             coverpoint,
+#             _generate_seed_entropy_zero_non_es16_tests.__doc__,
+#         )
+#     ]
+
+#     lines.extend(
+#         [
+#             test_data.add_testcase("es16", coverpoint, covergroup),
+#             f"csrrw x{read_reg}, seed, zero",
+#             f"csrrw x{read_reg}, seed, zero",
+#             "# OPST bits",
+#             f"srai x{opst_reg}, x{opst_reg}, 0xLI(x{opst_reg}, 0xC0000000)",
+#             "# entropy bits",
+#             f"LI(x{entropy_reg}, 0xFFFF)",
+#             "# Check OPST value",
+#             f"and x{opst_reg}, x{opst_reg}, x{read_reg}",
+#             "# SIGUPD 0x0BADBEEF if OPST is ES16",
+#             "beq ",
+#             "1:",
+#         ]
+#     )
+
+#     return lines
+
+
 @add_priv_test_generator(
     "Zkr",
     required_extensions=["Zkr"],

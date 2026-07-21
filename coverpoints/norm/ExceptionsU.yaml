@@ -28,7 +28,7 @@ normative_rule_definitions:
   # the target of a jump or taken branch, the exception is reported on the target
   # instruction, not on the jump or branch instruction.
   - name: ia_fault_exc_on_target
-    coverpoint: ["ExceptionsU_cg/cp_instr_access_fault, TODO for page fault"]
+    coverpoint: ["ExceptionsU_cg/cp_instr_access_fault"]
 
   # The EBREAK instruction is used to return control to a debugging environment.
   - name: ebreak_op

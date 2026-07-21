@@ -8,7 +8,7 @@
 
 """ZicntrU extension test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -233,6 +233,45 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
+    """In M mode:
+    read from instret, cycle, time. write mcounteren = 0s
+    go down to S mode
+    RVTEST_IDLE_FOR_INTERRUPT
+    go up to M mode
+    read from each counter, sigupd 0xBADBEEF if it is the same before and after
+    """
+    covergroup, coverpoint = "ZicntrU_cg", "cp_mcounter_inc_inaccessible"
+
+    old_reg, read_reg = test_data.int_regs.get_registers(2)
+
+    reg_list = ["cycle", "time", "instret"]
+    lines = [
+        comment_banner(coverpoint, _generate_mcounter_inc_inaccessible_tests.__doc__),
+        "",
+    ]
+    for counter in reg_list:
+        lines.extend(
+            [
+                test_data.add_testcase(f"{counter}", coverpoint, covergroup),
+                "CSRW(mcounteren, 0)",
+                f"CSRR(x{old_reg}, {counter})",
+                # counter is inaccessible in U mode
+                "RVTEST_GOTO_LOWER_MODE Umode",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{read_reg})",
+                "RVTEST_GOTO_MMODE",
+                f"CSRR(x{read_reg}, {counter})",
+                f"bne x{read_reg}, x{old_reg}, 1f",
+                # if test got to here something was wrong
+                f"LI(x{read_reg}, 0xBAD1BEEF)",
+                write_sigupd(read_reg, test_data),
+                "1:",
+            ]
+        )
+    test_data.int_regs.return_registers([old_reg, read_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "ZicntrU",
     required_extensions=["U", "Zicntr"],
@@ -257,7 +296,7 @@ def make_zicntru(test_data: TestData) -> list[TestChunk]:
 
     tc.code.extend(_generate_mcounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mcounteren_access_m_tests(test_data))
-
+    tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))
     test_data.int_regs.return_register(tmpreg)
 
     test_chunks.append(test_data.end_test_chunk())

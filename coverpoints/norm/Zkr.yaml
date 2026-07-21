@@ -35,7 +35,7 @@ normative_rule_definitions:
 
   # When OPST is not ES16, entropy must be 0.
   - name: seed_entropy_zero_non_es16
-    coverpoint: ["TODO"]
+    coverpoint: ["Zkr_cg/cp_zkr_seed_entropy_zero_non_es16"]
 
   # For security reasons, the interface guarantees that secret entropy
   # words are not made available multiple times. Hence polling (reading) must

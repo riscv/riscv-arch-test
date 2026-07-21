@@ -12,9 +12,9 @@
 
 import csv
 import re
-from pathlib import Path
 
 from testgen.asm.helpers import return_test_regs
+from testgen.constants import COVERFLOAT_GENERATION_DIR
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -23,7 +23,7 @@ from testgen.formatters.params import generate_random_params
 from testgen.formatters.registry import get_instr_type_config
 
 # IBM testcase data files live alongside this generator inside the testgen package.
-IBM_DATA_DIR = Path(__file__).resolve().parent.parent / "cover-float" / "tests" / "processed"
+IBM_DATA_DIR = COVERFLOAT_GENERATION_DIR / "processed"
 
 # Valid rounding mode names accepted in the frm column of IBM CSV files.
 VALID_FRM_NAMES = frozenset({"rne", "rtz", "rdn", "rup", "rmm"})

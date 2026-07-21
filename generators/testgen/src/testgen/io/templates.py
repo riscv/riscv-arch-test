@@ -61,6 +61,9 @@ def insert_header_template(
         march = generate_march_string(ext_components, xlen)
         all_extensions = ext_components
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
+    if testsuite == "Zicsr":
+        # marker for the Zicsr CSR selection in utils.h
+        all_defines.append("#define RVTEST_ZICSR")
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")

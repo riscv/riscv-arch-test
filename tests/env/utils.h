@@ -3,6 +3,39 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Zicsr test CSR selection. Gated on ZICSR_SUPPORTED: a DUT that implements Zicsr runs the
+// Zicsr tests and so must have a valid CSR to pick. RVTEST_READ_ONLY_TEST_CSR marks a
+// non-writable choice; a privileged choice records the mode it must run in for the boot
+// group below.
+#if !defined(ZICSR_SUPPORTED)
+  // DUT does not implement Zicsr; no CSR selection needed
+#elif defined(F_SUPPORTED)
+  #define RVTEST_TEST_CSR fflags
+#elif defined(ZVE32X_SUPPORTED)
+  #define RVTEST_TEST_CSR vxsat
+#elif !defined(U_SUPPORTED)
+  #define RVTEST_TEST_CSR mepc
+#elif defined(ZICNTR_SUPPORTED)
+  #define RVTEST_TEST_CSR instret
+  #define RVTEST_READ_ONLY_TEST_CSR
+#elif defined(S_SUPPORTED)
+  #define RVTEST_TEST_CSR sepc
+  #define RVTEST_TEST_CSR_NEEDS_SMODE
+#elif defined(STANDARD_SM_SUPPORTED)
+  #define RVTEST_TEST_CSR mepc
+  #define RVTEST_TEST_CSR_NEEDS_MMODE
+#elif defined(RVTEST_ZICSR)
+  #error no CSR known for testing. Zicsr testing requires F, V, Zicntr, S, or STANDARD_SM_SUPPORTED. A DUT with no standard CSR should not declare ZICSR_SUPPORTED.
+#endif
+
+// Pin the boot privilege when the chosen CSR needs a higher mode than the default.
+// RVTEST_ZICSR limits the pinning to the Zicsr tests.
+#if defined(RVTEST_ZICSR) && defined(RVTEST_TEST_CSR_NEEDS_SMODE)
+  #define BOOT_TO_SMODE
+#elif defined(RVTEST_ZICSR) && defined(RVTEST_TEST_CSR_NEEDS_MMODE)
+  #define BOOT_TO_MMODE
+#endif
+
 // General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

@@ -44,7 +44,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE         (1<<(UDB_PMP_GRANULARITY))
+#if UDB_PMP_GRANULARITY > 3
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY))
+#else
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY + 1))
+#endif
 
 
 main:
@@ -67,35 +71,28 @@ main:
 #define PMP2CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X         )&0xFF) << PMP2_CFG_SHIFT))
 
 #define REGIONSTART         TEST_FOR_EXECUTION_1
+#define NEWREGION1          (REGIONSTART)
+#define NEWREGION2          (REGIONSTART+NAPOT_REGION_SIZE)
+#define NEWREGION3          (REGIONSTART+(2*NAPOT_REGION_SIZE))
 
     RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: Setting up 3 OFF regions with LWXR = 1111
 
-    LA(x5, REGIONSTART)
+    LA(x5, NEWREGION1)
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
     csrw pmpaddr0, x5
 
-    LA(x4, PMP0CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, REGION_SIZE)
-    add x5, x5, x4
+    LA(x5, NEWREGION2)
     srl  x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, 2*REGION_SIZE)
-    add x5, x5, x4
+    LA(x5, NEWREGION3)
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
@@ -117,13 +114,13 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 .p2align 12
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS                    // NAPOT-safe return fillers: puts TEST_FOR_EXECUTION_1 at PMP_NAPOT_REGION_START
     jalr x0, x1, 0
+    .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
-    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
+    .rept ((NAPOT_REGION_SIZE / 2) -1)
     c.nop                                                        // 2-byte fillers: precise offsets so _2/_4's uncompressed jalr genuinely straddle the region boundary
     .endr
 
@@ -134,7 +131,7 @@ TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
 TEST_FOR_EXECUTION_3:
-    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
+    .rept ((NAPOT_REGION_SIZE / 2) -2)
     c.nop
     .endr
 

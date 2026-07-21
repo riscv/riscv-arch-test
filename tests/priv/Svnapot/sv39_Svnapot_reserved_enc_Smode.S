@@ -26,7 +26,7 @@
 
 #define TEST_FILE "sv39_Svnapot_reserved_enc_Smode.S"
 #define SIGUPD_COUNT 25
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

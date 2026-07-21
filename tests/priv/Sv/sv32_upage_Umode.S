@@ -46,7 +46,7 @@
 #define TEST_FILE "sv32_upage_Umode.S"
 #define SIGUPD_COUNT 35
 #define TRAP_SIGUPD_COUNT 60
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

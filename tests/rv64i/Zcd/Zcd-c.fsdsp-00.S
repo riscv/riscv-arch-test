@@ -92,8 +92,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b4:
   c.fsdsp f4, 80(sp) # perform store
   addi sp, sp, 80 # remove offset from sp
   FLREG f24, 0(sp) # load stored value for checking
-  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f24, Zcd_c_fsdsp_cg_cp_fs2_b4, Zcd_c_fsdsp_cg_cp_fs2_b4_str)
+  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f24, Zcd_c_fsdsp_cg_cp_fs2_b4, Zcd_c_fsdsp_cg_cp_fs2_b4_str)
 
 # Testcase cp_fs2 (Test source fs2 = f5)
   fsflagsi 0b00000 # clear all fflags
@@ -104,8 +104,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b5:
   c.fsdsp f5, 48(sp) # perform store
   addi sp, sp, 48 # remove offset from sp
   FLREG f23, 0(sp) # load stored value for checking
-  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f23, Zcd_c_fsdsp_cg_cp_fs2_b5, Zcd_c_fsdsp_cg_cp_fs2_b5_str)
+  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f23, Zcd_c_fsdsp_cg_cp_fs2_b5, Zcd_c_fsdsp_cg_cp_fs2_b5_str)
 
 # Testcase cp_fs2 (Test source fs2 = f6)
   fsflagsi 0b00000 # clear all fflags
@@ -116,8 +116,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b6:
   c.fsdsp f6, 240(sp) # perform store
   addi sp, sp, 240 # remove offset from sp
   FLREG f27, 0(sp) # load stored value for checking
-  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f27, Zcd_c_fsdsp_cg_cp_fs2_b6, Zcd_c_fsdsp_cg_cp_fs2_b6_str)
+  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f27, Zcd_c_fsdsp_cg_cp_fs2_b6, Zcd_c_fsdsp_cg_cp_fs2_b6_str)
 
 # Testcase cp_fs2 (Test source fs2 = f7)
   fsflagsi 0b00000 # clear all fflags
@@ -128,8 +128,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b7:
   c.fsdsp f7, 208(sp) # perform store
   addi sp, sp, 208 # remove offset from sp
   FLREG f29, 0(sp) # load stored value for checking
-  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f29, Zcd_c_fsdsp_cg_cp_fs2_b7, Zcd_c_fsdsp_cg_cp_fs2_b7_str)
+  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f29, Zcd_c_fsdsp_cg_cp_fs2_b7, Zcd_c_fsdsp_cg_cp_fs2_b7_str)
 
 # Testcase cp_fs2 (Test source fs2 = f8)
   fsflagsi 0b00000 # clear all fflags
@@ -140,8 +140,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b8:
   c.fsdsp f8, 0(sp) # perform store
   addi sp, sp, 0 # remove offset from sp
   FLREG f26, 0(sp) # load stored value for checking
-  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f26, Zcd_c_fsdsp_cg_cp_fs2_b8, Zcd_c_fsdsp_cg_cp_fs2_b8_str)
+  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f26, Zcd_c_fsdsp_cg_cp_fs2_b8, Zcd_c_fsdsp_cg_cp_fs2_b8_str)
 
 # Testcase cp_fs2 (Test source fs2 = f9)
   fsflagsi 0b00000 # clear all fflags
@@ -152,8 +152,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b9:
   c.fsdsp f9, 184(sp) # perform store
   addi sp, sp, 184 # remove offset from sp
   FLREG f26, 0(sp) # load stored value for checking
-  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f26, Zcd_c_fsdsp_cg_cp_fs2_b9, Zcd_c_fsdsp_cg_cp_fs2_b9_str)
+  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f26, Zcd_c_fsdsp_cg_cp_fs2_b9, Zcd_c_fsdsp_cg_cp_fs2_b9_str)
 
 # Testcase cp_fs2 (Test source fs2 = f10)
   fsflagsi 0b00000 # clear all fflags
@@ -164,8 +164,8 @@ Zcd_c_fsdsp_cg_cp_fs2_b10:
   c.fsdsp f10, 88(sp) # perform store
   addi sp, sp, 88 # remove offset from sp
   FLREG f5, 0(sp) # load stored value for checking
-  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f5, Zcd_c_fsdsp_cg_cp_fs2_b10, Zcd_c_fsdsp_cg_cp_fs2_b10_str)
+  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f5, Zcd_c_fsdsp_cg_cp_fs2_b10, Zcd_c_fsdsp_cg_cp_fs2_b10_str)
 
 # Testcase cp_fs2 (Test source fs2 = f11)
   fsflagsi 0b00000 # clear all fflags
@@ -176,248 +176,248 @@ Zcd_c_fsdsp_cg_cp_fs2_b11:
   c.fsdsp f11, 32(sp) # perform store
   addi sp, sp, 32 # remove offset from sp
   FLREG f18, 0(sp) # load stored value for checking
-  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f12, f18, Zcd_c_fsdsp_cg_cp_fs2_b11, Zcd_c_fsdsp_cg_cp_fs2_b11_str)
+  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f18, Zcd_c_fsdsp_cg_cp_fs2_b11, Zcd_c_fsdsp_cg_cp_fs2_b11_str)
 
 # Testcase cp_fs2 (Test source fs2 = f12)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xcacab0351be5490a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x7ebd7d9fbc04cf6c
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -24  # adjust for offset
+  addi sp, sp, -104  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b12:
-  c.fsdsp f12, 24(sp) # perform store
-  addi sp, sp, 24 # remove offset from sp
-  FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_fs2_b12, Zcd_c_fsdsp_cg_cp_fs2_b12_str)
+  c.fsdsp f12, 104(sp) # perform store
+  addi sp, sp, 104 # remove offset from sp
+  FLREG f29, 0(sp) # load stored value for checking
+  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f13, f29, Zcd_c_fsdsp_cg_cp_fs2_b12, Zcd_c_fsdsp_cg_cp_fs2_b12_str)
 
 # Testcase cp_fs2 (Test source fs2 = f13)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x201de7f4429602a2
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x34dbe2d0bcfda189
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -120  # adjust for offset
+  addi sp, sp, -56  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b13:
-  c.fsdsp f13, 120(sp) # perform store
-  addi sp, sp, 120 # remove offset from sp
-  FLREG f12, 0(sp) # load stored value for checking
-  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f12, Zcd_c_fsdsp_cg_cp_fs2_b13, Zcd_c_fsdsp_cg_cp_fs2_b13_str)
+  c.fsdsp f13, 56(sp) # perform store
+  addi sp, sp, 56 # remove offset from sp
+  FLREG f10, 0(sp) # load stored value for checking
+  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f10, Zcd_c_fsdsp_cg_cp_fs2_b13, Zcd_c_fsdsp_cg_cp_fs2_b13_str)
 
 # Testcase cp_fs2 (Test source fs2 = f14)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xa637946dd9bdea43
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x968ecc9db693154e
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -240  # adjust for offset
+  addi sp, sp, -344  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b14:
-  c.fsdsp f14, 240(sp) # perform store
-  addi sp, sp, 240 # remove offset from sp
-  FLREG f30, 0(sp) # load stored value for checking
-  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f30, Zcd_c_fsdsp_cg_cp_fs2_b14, Zcd_c_fsdsp_cg_cp_fs2_b14_str)
+  c.fsdsp f14, 344(sp) # perform store
+  addi sp, sp, 344 # remove offset from sp
+  FLREG f24, 0(sp) # load stored value for checking
+  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f24, Zcd_c_fsdsp_cg_cp_fs2_b14, Zcd_c_fsdsp_cg_cp_fs2_b14_str)
 
 # Testcase cp_fs2 (Test source fs2 = f15)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x5d1fad72d1754bd7
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xb0e39294cc29fb1f
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -88  # adjust for offset
+  addi sp, sp, -472  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b15:
-  c.fsdsp f15, 88(sp) # perform store
-  addi sp, sp, 88 # remove offset from sp
-  FLREG f9, 0(sp) # load stored value for checking
-  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f9, Zcd_c_fsdsp_cg_cp_fs2_b15, Zcd_c_fsdsp_cg_cp_fs2_b15_str)
+  c.fsdsp f15, 472(sp) # perform store
+  addi sp, sp, 472 # remove offset from sp
+  FLREG f10, 0(sp) # load stored value for checking
+  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f10, Zcd_c_fsdsp_cg_cp_fs2_b15, Zcd_c_fsdsp_cg_cp_fs2_b15_str)
 
 # Testcase cp_fs2 (Test source fs2 = f16)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0xf69b7f8d4ac7f493
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f16) # load fs2: f16 = 0x6ecc113d22c5d297
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -504  # adjust for offset
+  addi sp, sp, -408  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b16:
-  c.fsdsp f16, 504(sp) # perform store
-  addi sp, sp, 504 # remove offset from sp
-  FLREG f17, 0(sp) # load stored value for checking
-  # Check if f17 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f17, Zcd_c_fsdsp_cg_cp_fs2_b16, Zcd_c_fsdsp_cg_cp_fs2_b16_str)
+  c.fsdsp f16, 408(sp) # perform store
+  addi sp, sp, 408 # remove offset from sp
+  FLREG f25, 0(sp) # load stored value for checking
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_fs2_b16, Zcd_c_fsdsp_cg_cp_fs2_b16_str)
 
 # Testcase cp_fs2 (Test source fs2 = f17)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x3cdbbd752a601f14
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0x5023cb38b73a0546
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -168  # adjust for offset
+  addi sp, sp, -336  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b17:
-  c.fsdsp f17, 168(sp) # perform store
-  addi sp, sp, 168 # remove offset from sp
-  FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_fs2_b17, Zcd_c_fsdsp_cg_cp_fs2_b17_str)
+  c.fsdsp f17, 336(sp) # perform store
+  addi sp, sp, 336 # remove offset from sp
+  FLREG f22, 0(sp) # load stored value for checking
+  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f22, Zcd_c_fsdsp_cg_cp_fs2_b17, Zcd_c_fsdsp_cg_cp_fs2_b17_str)
 
 # Testcase cp_fs2 (Test source fs2 = f18)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x2b58c620f4c73575
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x0a6187c7c8fe9e9e
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -424  # adjust for offset
+  addi sp, sp, -304  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b18:
-  c.fsdsp f18, 424(sp) # perform store
-  addi sp, sp, 424 # remove offset from sp
-  FLREG f14, 0(sp) # load stored value for checking
-  # Check if f14 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f14, Zcd_c_fsdsp_cg_cp_fs2_b18, Zcd_c_fsdsp_cg_cp_fs2_b18_str)
+  c.fsdsp f18, 304(sp) # perform store
+  addi sp, sp, 304 # remove offset from sp
+  FLREG f26, 0(sp) # load stored value for checking
+  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f26, Zcd_c_fsdsp_cg_cp_fs2_b18, Zcd_c_fsdsp_cg_cp_fs2_b18_str)
 
 # Testcase cp_fs2 (Test source fs2 = f19)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0x4ad8bae0e3336da3
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xfab45e99b995290a
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -368  # adjust for offset
+  addi sp, sp, -64  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b19:
-  c.fsdsp f19, 368(sp) # perform store
-  addi sp, sp, 368 # remove offset from sp
-  FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_fs2_b19, Zcd_c_fsdsp_cg_cp_fs2_b19_str)
+  c.fsdsp f19, 64(sp) # perform store
+  addi sp, sp, 64 # remove offset from sp
+  FLREG f30, 0(sp) # load stored value for checking
+  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f30, Zcd_c_fsdsp_cg_cp_fs2_b19, Zcd_c_fsdsp_cg_cp_fs2_b19_str)
 
 # Testcase cp_fs2 (Test source fs2 = f20)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x204d2ff88bbba84a
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0x4ad8bae0e3336da3
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -176  # adjust for offset
+  addi sp, sp, -368  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b20:
-  c.fsdsp f20, 176(sp) # perform store
-  addi sp, sp, 176 # remove offset from sp
-  FLREG f11, 0(sp) # load stored value for checking
-  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f11, Zcd_c_fsdsp_cg_cp_fs2_b20, Zcd_c_fsdsp_cg_cp_fs2_b20_str)
+  c.fsdsp f20, 368(sp) # perform store
+  addi sp, sp, 368 # remove offset from sp
+  FLREG f2, 0(sp) # load stored value for checking
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_fs2_b20, Zcd_c_fsdsp_cg_cp_fs2_b20_str)
 
 # Testcase cp_fs2 (Test source fs2 = f21)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x40b3191b28a7fecf
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x204d2ff88bbba84a
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -344  # adjust for offset
+  addi sp, sp, -176  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b21:
-  c.fsdsp f21, 344(sp) # perform store
-  addi sp, sp, 344 # remove offset from sp
-  FLREG f23, 0(sp) # load stored value for checking
-  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f23, Zcd_c_fsdsp_cg_cp_fs2_b21, Zcd_c_fsdsp_cg_cp_fs2_b21_str)
+  c.fsdsp f21, 176(sp) # perform store
+  addi sp, sp, 176 # remove offset from sp
+  FLREG f11, 0(sp) # load stored value for checking
+  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f11, Zcd_c_fsdsp_cg_cp_fs2_b21, Zcd_c_fsdsp_cg_cp_fs2_b21_str)
 
 # Testcase cp_fs2 (Test source fs2 = f22)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0xad37b014381b3a0c
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0x40b3191b28a7fecf
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -440  # adjust for offset
+  addi sp, sp, -344  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b22:
-  c.fsdsp f22, 440(sp) # perform store
-  addi sp, sp, 440 # remove offset from sp
-  FLREG f24, 0(sp) # load stored value for checking
-  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f24, Zcd_c_fsdsp_cg_cp_fs2_b22, Zcd_c_fsdsp_cg_cp_fs2_b22_str)
+  c.fsdsp f22, 344(sp) # perform store
+  addi sp, sp, 344 # remove offset from sp
+  FLREG f23, 0(sp) # load stored value for checking
+  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f23, Zcd_c_fsdsp_cg_cp_fs2_b22, Zcd_c_fsdsp_cg_cp_fs2_b22_str)
 
 # Testcase cp_fs2 (Test source fs2 = f23)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xe160023f53f35402
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs2: f23 = 0xad37b014381b3a0c
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -64  # adjust for offset
+  addi sp, sp, -440  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b23:
-  c.fsdsp f23, 64(sp) # perform store
-  addi sp, sp, 64 # remove offset from sp
-  FLREG f22, 0(sp) # load stored value for checking
-  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f22, Zcd_c_fsdsp_cg_cp_fs2_b23, Zcd_c_fsdsp_cg_cp_fs2_b23_str)
+  c.fsdsp f23, 440(sp) # perform store
+  addi sp, sp, 440 # remove offset from sp
+  FLREG f24, 0(sp) # load stored value for checking
+  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f24, Zcd_c_fsdsp_cg_cp_fs2_b23, Zcd_c_fsdsp_cg_cp_fs2_b23_str)
 
 # Testcase cp_fs2 (Test source fs2 = f24)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0x7fe15b5d05e17b8e
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xe160023f53f35402
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -240  # adjust for offset
+  addi sp, sp, -64  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b24:
-  c.fsdsp f24, 240(sp) # perform store
-  addi sp, sp, 240 # remove offset from sp
-  FLREG f9, 0(sp) # load stored value for checking
-  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f9, Zcd_c_fsdsp_cg_cp_fs2_b24, Zcd_c_fsdsp_cg_cp_fs2_b24_str)
+  c.fsdsp f24, 64(sp) # perform store
+  addi sp, sp, 64 # remove offset from sp
+  FLREG f22, 0(sp) # load stored value for checking
+  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f22, Zcd_c_fsdsp_cg_cp_fs2_b24, Zcd_c_fsdsp_cg_cp_fs2_b24_str)
 
 # Testcase cp_fs2 (Test source fs2 = f25)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x313106ef6a8e48bc
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x7fe15b5d05e17b8e
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -232  # adjust for offset
+  addi sp, sp, -240  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b25:
-  c.fsdsp f25, 232(sp) # perform store
-  addi sp, sp, 232 # remove offset from sp
-  FLREG f3, 0(sp) # load stored value for checking
-  # Check if f3 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f3, Zcd_c_fsdsp_cg_cp_fs2_b25, Zcd_c_fsdsp_cg_cp_fs2_b25_str)
+  c.fsdsp f25, 240(sp) # perform store
+  addi sp, sp, 240 # remove offset from sp
+  FLREG f9, 0(sp) # load stored value for checking
+  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f9, Zcd_c_fsdsp_cg_cp_fs2_b25, Zcd_c_fsdsp_cg_cp_fs2_b25_str)
 
 # Testcase cp_fs2 (Test source fs2 = f26)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0xb4445bb13776a370
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f26) # load fs2: f26 = 0x313106ef6a8e48bc
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -328  # adjust for offset
+  addi sp, sp, -232  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b26:
-  c.fsdsp f26, 328(sp) # perform store
-  addi sp, sp, 328 # remove offset from sp
-  FLREG f23, 0(sp) # load stored value for checking
-  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f23, Zcd_c_fsdsp_cg_cp_fs2_b26, Zcd_c_fsdsp_cg_cp_fs2_b26_str)
+  c.fsdsp f26, 232(sp) # perform store
+  addi sp, sp, 232 # remove offset from sp
+  FLREG f3, 0(sp) # load stored value for checking
+  # Check if f3 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f3, Zcd_c_fsdsp_cg_cp_fs2_b26, Zcd_c_fsdsp_cg_cp_fs2_b26_str)
 
 # Testcase cp_fs2 (Test source fs2 = f27)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xf5f8295061129883
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xb4445bb13776a370
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -40  # adjust for offset
+  addi sp, sp, -328  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b27:
-  c.fsdsp f27, 40(sp) # perform store
-  addi sp, sp, 40 # remove offset from sp
-  FLREG f8, 0(sp) # load stored value for checking
-  # Check if f8 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f8, Zcd_c_fsdsp_cg_cp_fs2_b27, Zcd_c_fsdsp_cg_cp_fs2_b27_str)
+  c.fsdsp f27, 328(sp) # perform store
+  addi sp, sp, 328 # remove offset from sp
+  FLREG f23, 0(sp) # load stored value for checking
+  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f23, Zcd_c_fsdsp_cg_cp_fs2_b27, Zcd_c_fsdsp_cg_cp_fs2_b27_str)
 
 # Testcase cp_fs2 (Test source fs2 = f28)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0x4976c0375cc24a85
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs2: f28 = 0xf5f8295061129883
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -224  # adjust for offset
+  addi sp, sp, -40  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b28:
-  c.fsdsp f28, 224(sp) # perform store
-  addi sp, sp, 224 # remove offset from sp
-  FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_fs2_b28, Zcd_c_fsdsp_cg_cp_fs2_b28_str)
+  c.fsdsp f28, 40(sp) # perform store
+  addi sp, sp, 40 # remove offset from sp
+  FLREG f8, 0(sp) # load stored value for checking
+  # Check if f8 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f8, Zcd_c_fsdsp_cg_cp_fs2_b28, Zcd_c_fsdsp_cg_cp_fs2_b28_str)
 
 # Testcase cp_fs2 (Test source fs2 = f29)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0xaa7ba5380cc38f11
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f29) # load fs2: f29 = 0x4976c0375cc24a85
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -432  # adjust for offset
+  addi sp, sp, -224  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b29:
-  c.fsdsp f29, 432(sp) # perform store
-  addi sp, sp, 432 # remove offset from sp
-  FLREG f28, 0(sp) # load stored value for checking
-  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f28, Zcd_c_fsdsp_cg_cp_fs2_b29, Zcd_c_fsdsp_cg_cp_fs2_b29_str)
+  c.fsdsp f29, 224(sp) # perform store
+  addi sp, sp, 224 # remove offset from sp
+  FLREG f2, 0(sp) # load stored value for checking
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_fs2_b29, Zcd_c_fsdsp_cg_cp_fs2_b29_str)
 
 # Testcase cp_fs2 (Test source fs2 = f30)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0x8da7e6254d124e06
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xaa7ba5380cc38f11
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -376  # adjust for offset
+  addi sp, sp, -432  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b30:
-  c.fsdsp f30, 376(sp) # perform store
-  addi sp, sp, 376 # remove offset from sp
-  FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_fs2_b30, Zcd_c_fsdsp_cg_cp_fs2_b30_str)
+  c.fsdsp f30, 432(sp) # perform store
+  addi sp, sp, 432 # remove offset from sp
+  FLREG f28, 0(sp) # load stored value for checking
+  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f28, Zcd_c_fsdsp_cg_cp_fs2_b30, Zcd_c_fsdsp_cg_cp_fs2_b30_str)
 
 # Testcase cp_fs2 (Test source fs2 = f31)
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs2: f31 = 0x10f4f5db53f8ca4b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f31) # load fs2: f31 = 0x8da7e6254d124e06
   LA(sp, scratch) # set sp to scratch space
-  addi sp, sp, -496  # adjust for offset
+  addi sp, sp, -376  # adjust for offset
 Zcd_c_fsdsp_cg_cp_fs2_b31:
-  c.fsdsp f31, 496(sp) # perform store
-  addi sp, sp, 496 # remove offset from sp
-  FLREG f12, 0(sp) # load stored value for checking
-  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f12, Zcd_c_fsdsp_cg_cp_fs2_b31, Zcd_c_fsdsp_cg_cp_fs2_b31_str)
+  c.fsdsp f31, 376(sp) # perform store
+  addi sp, sp, 376 # remove offset from sp
+  FLREG f21, 0(sp) # load stored value for checking
+  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f21, Zcd_c_fsdsp_cg_cp_fs2_b31, Zcd_c_fsdsp_cg_cp_fs2_b31_str)
 
 /////////////////////////////////
 // cp_imm_mul_8sp
@@ -432,8 +432,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x0:
   c.fsdsp f10, 0(sp) # perform store
   addi sp, sp, 0 # remove offset from sp
   FLREG f23, 0(sp) # load stored value for checking
-  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f23, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x0_str)
+  # Check if f23 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f23, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x0_str)
 
 # Testcase cp_imm_mul_8sp: imm=8
   fsflagsi 0b00000 # clear all fflags
@@ -444,8 +444,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x8:
   c.fsdsp f18, 8(sp) # perform store
   addi sp, sp, 8 # remove offset from sp
   FLREG f28, 0(sp) # load stored value for checking
-  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x8_str)
+  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x8_str)
 
 # Testcase cp_imm_mul_8sp: imm=16
   fsflagsi 0b00000 # clear all fflags
@@ -456,8 +456,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x10:
   c.fsdsp f18, 16(sp) # perform store
   addi sp, sp, 16 # remove offset from sp
   FLREG f14, 0(sp) # load stored value for checking
-  # Check if f14 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f14, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x10_str)
+  # Check if f14 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f14, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x10_str)
 
 # Testcase cp_imm_mul_8sp: imm=24
   fsflagsi 0b00000 # clear all fflags
@@ -468,8 +468,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x18:
   c.fsdsp f29, 24(sp) # perform store
   addi sp, sp, 24 # remove offset from sp
   FLREG f24, 0(sp) # load stored value for checking
-  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f24, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x18_str)
+  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f24, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x18_str)
 
 # Testcase cp_imm_mul_8sp: imm=32
   fsflagsi 0b00000 # clear all fflags
@@ -480,8 +480,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x20:
   c.fsdsp f17, 32(sp) # perform store
   addi sp, sp, 32 # remove offset from sp
   FLREG f16, 0(sp) # load stored value for checking
-  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x20_str)
+  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x20_str)
 
 # Testcase cp_imm_mul_8sp: imm=40
   fsflagsi 0b00000 # clear all fflags
@@ -492,8 +492,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x28:
   c.fsdsp f8, 40(sp) # perform store
   addi sp, sp, 40 # remove offset from sp
   FLREG f29, 0(sp) # load stored value for checking
-  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f29, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x28_str)
+  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f29, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x28_str)
 
 # Testcase cp_imm_mul_8sp: imm=48
   fsflagsi 0b00000 # clear all fflags
@@ -504,8 +504,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30:
   c.fsdsp f2, 48(sp) # perform store
   addi sp, sp, 48 # remove offset from sp
   FLREG f10, 0(sp) # load stored value for checking
-  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30_str)
+  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30_str)
 
 # Testcase cp_imm_mul_8sp: imm=56
   fsflagsi 0b00000 # clear all fflags
@@ -515,9 +515,9 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x30:
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x38:
   c.fsdsp f20, 56(sp) # perform store
   addi sp, sp, 56 # remove offset from sp
-  FLREG f6, 0(sp) # load stored value for checking
-  # Check if f6 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f6, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x38, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x38_str)
+  FLREG f5, 0(sp) # load stored value for checking
+  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f5, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x38, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x38_str)
 
 # Testcase cp_imm_mul_8sp: imm=64
   fsflagsi 0b00000 # clear all fflags
@@ -528,8 +528,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x40:
   c.fsdsp f15, 64(sp) # perform store
   addi sp, sp, 64 # remove offset from sp
   FLREG f9, 0(sp) # load stored value for checking
-  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f9, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x40, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x40_str)
+  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f9, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x40, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x40_str)
 
 # Testcase cp_imm_mul_8sp: imm=72
   fsflagsi 0b00000 # clear all fflags
@@ -540,8 +540,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x48:
   c.fsdsp f16, 72(sp) # perform store
   addi sp, sp, 72 # remove offset from sp
   FLREG f1, 0(sp) # load stored value for checking
-  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x48, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x48_str)
+  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x48, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x48_str)
 
 # Testcase cp_imm_mul_8sp: imm=80
   fsflagsi 0b00000 # clear all fflags
@@ -552,8 +552,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x50:
   c.fsdsp f1, 80(sp) # perform store
   addi sp, sp, 80 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x50, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x50_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x50, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x50_str)
 
 # Testcase cp_imm_mul_8sp: imm=88
   fsflagsi 0b00000 # clear all fflags
@@ -564,8 +564,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x58:
   c.fsdsp f14, 88(sp) # perform store
   addi sp, sp, 88 # remove offset from sp
   FLREG f30, 0(sp) # load stored value for checking
-  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x58, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x58_str)
+  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x58, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x58_str)
 
 # Testcase cp_imm_mul_8sp: imm=96
   fsflagsi 0b00000 # clear all fflags
@@ -576,8 +576,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x60:
   c.fsdsp f12, 96(sp) # perform store
   addi sp, sp, 96 # remove offset from sp
   FLREG f30, 0(sp) # load stored value for checking
-  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x60, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x60_str)
+  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x60, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x60_str)
 
 # Testcase cp_imm_mul_8sp: imm=104
   fsflagsi 0b00000 # clear all fflags
@@ -588,8 +588,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x68:
   c.fsdsp f23, 104(sp) # perform store
   addi sp, sp, 104 # remove offset from sp
   FLREG f12, 0(sp) # load stored value for checking
-  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x68, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x68_str)
+  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x68, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x68_str)
 
 # Testcase cp_imm_mul_8sp: imm=112
   fsflagsi 0b00000 # clear all fflags
@@ -600,8 +600,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x70:
   c.fsdsp f21, 112(sp) # perform store
   addi sp, sp, 112 # remove offset from sp
   FLREG f9, 0(sp) # load stored value for checking
-  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f9, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x70, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x70_str)
+  # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f9, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x70, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x70_str)
 
 # Testcase cp_imm_mul_8sp: imm=120
   fsflagsi 0b00000 # clear all fflags
@@ -612,8 +612,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x78:
   c.fsdsp f15, 120(sp) # perform store
   addi sp, sp, 120 # remove offset from sp
   FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x78, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x78_str)
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x78, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x78_str)
 
 # Testcase cp_imm_mul_8sp: imm=128
   fsflagsi 0b00000 # clear all fflags
@@ -624,8 +624,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x80:
   c.fsdsp f29, 128(sp) # perform store
   addi sp, sp, 128 # remove offset from sp
   FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x80, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x80_str)
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x80, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x80_str)
 
 # Testcase cp_imm_mul_8sp: imm=136
   fsflagsi 0b00000 # clear all fflags
@@ -636,8 +636,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x88:
   c.fsdsp f20, 136(sp) # perform store
   addi sp, sp, 136 # remove offset from sp
   FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x88, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x88_str)
+  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x88, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x88_str)
 
 # Testcase cp_imm_mul_8sp: imm=144
   fsflagsi 0b00000 # clear all fflags
@@ -648,8 +648,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x90:
   c.fsdsp f15, 144(sp) # perform store
   addi sp, sp, 144 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x90, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x90_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x90, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x90_str)
 
 # Testcase cp_imm_mul_8sp: imm=152
   fsflagsi 0b00000 # clear all fflags
@@ -660,8 +660,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x98:
   c.fsdsp f10, 152(sp) # perform store
   addi sp, sp, 152 # remove offset from sp
   FLREG f12, 0(sp) # load stored value for checking
-  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x98, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x98_str)
+  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x98, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x98_str)
 
 # Testcase cp_imm_mul_8sp: imm=160
   fsflagsi 0b00000 # clear all fflags
@@ -672,8 +672,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa0:
   c.fsdsp f26, 160(sp) # perform store
   addi sp, sp, 160 # remove offset from sp
   FLREG f22, 0(sp) # load stored value for checking
-  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f22, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa0_str)
+  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f22, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa0_str)
 
 # Testcase cp_imm_mul_8sp: imm=168
   fsflagsi 0b00000 # clear all fflags
@@ -684,8 +684,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa8:
   c.fsdsp f13, 168(sp) # perform store
   addi sp, sp, 168 # remove offset from sp
   FLREG f27, 0(sp) # load stored value for checking
-  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f27, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa8_str)
+  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f27, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xa8_str)
 
 # Testcase cp_imm_mul_8sp: imm=176
   fsflagsi 0b00000 # clear all fflags
@@ -696,8 +696,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb0:
   c.fsdsp f2, 176(sp) # perform store
   addi sp, sp, 176 # remove offset from sp
   FLREG f3, 0(sp) # load stored value for checking
-  # Check if f3 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f3, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb0_str)
+  # Check if f3 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f3, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb0_str)
 
 # Testcase cp_imm_mul_8sp: imm=184
   fsflagsi 0b00000 # clear all fflags
@@ -708,8 +708,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb8:
   c.fsdsp f21, 184(sp) # perform store
   addi sp, sp, 184 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb8_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xb8_str)
 
 # Testcase cp_imm_mul_8sp: imm=192
   fsflagsi 0b00000 # clear all fflags
@@ -720,20 +720,20 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc0:
   c.fsdsp f31, 192(sp) # perform store
   addi sp, sp, 192 # remove offset from sp
   FLREG f13, 0(sp) # load stored value for checking
-  # Check if f13 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f13, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc0_str)
+  # Check if f13 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f13, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc0_str)
 
 # Testcase cp_imm_mul_8sp: imm=200
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xb0b5c7083b6c5495
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xb0b5c7083b6c5495
   LA(sp, scratch) # set sp to scratch space
   addi sp, sp, -200  # adjust for offset
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc8:
-  c.fsdsp f6, 200(sp) # perform store
+  c.fsdsp f5, 200(sp) # perform store
   addi sp, sp, 200 # remove offset from sp
   FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc8_str)
+  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xc8_str)
 
 # Testcase cp_imm_mul_8sp: imm=208
   fsflagsi 0b00000 # clear all fflags
@@ -744,8 +744,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd0:
   c.fsdsp f8, 208(sp) # perform store
   addi sp, sp, 208 # remove offset from sp
   FLREG f19, 0(sp) # load stored value for checking
-  # Check if f19 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f19, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd0_str)
+  # Check if f19 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f19, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd0_str)
 
 # Testcase cp_imm_mul_8sp: imm=216
   fsflagsi 0b00000 # clear all fflags
@@ -756,20 +756,20 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd8:
   c.fsdsp f27, 216(sp) # perform store
   addi sp, sp, 216 # remove offset from sp
   FLREG f12, 0(sp) # load stored value for checking
-  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd8_str)
+  # Check if f12 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f12, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xd8_str)
 
 # Testcase cp_imm_mul_8sp: imm=224
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0xd89c6e0879c0ba53
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xd89c6e0879c0ba53
   LA(sp, scratch) # set sp to scratch space
   addi sp, sp, -224  # adjust for offset
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe0:
-  c.fsdsp f6, 224(sp) # perform store
+  c.fsdsp f5, 224(sp) # perform store
   addi sp, sp, 224 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe0_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe0_str)
 
 # Testcase cp_imm_mul_8sp: imm=232
   fsflagsi 0b00000 # clear all fflags
@@ -780,8 +780,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe8:
   c.fsdsp f17, 232(sp) # perform store
   addi sp, sp, 232 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe8_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xe8_str)
 
 # Testcase cp_imm_mul_8sp: imm=240
   fsflagsi 0b00000 # clear all fflags
@@ -792,8 +792,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf0:
   c.fsdsp f27, 240(sp) # perform store
   addi sp, sp, 240 # remove offset from sp
   FLREG f1, 0(sp) # load stored value for checking
-  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf0_str)
+  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf0_str)
 
 # Testcase cp_imm_mul_8sp: imm=248
   fsflagsi 0b00000 # clear all fflags
@@ -804,8 +804,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8:
   c.fsdsp f23, 248(sp) # perform store
   addi sp, sp, 248 # remove offset from sp
   FLREG f14, 0(sp) # load stored value for checking
-  # Check if f14 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f14, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8_str)
+  # Check if f14 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f14, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8_str)
 
 # Testcase cp_imm_mul_8sp: imm=256
   fsflagsi 0b00000 # clear all fflags
@@ -815,9 +815,9 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0xf8:
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x100:
   c.fsdsp f17, 256(sp) # perform store
   addi sp, sp, 256 # remove offset from sp
-  FLREG f5, 0(sp) # load stored value for checking
-  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f5, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x100, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x100_str)
+  FLREG f4, 0(sp) # load stored value for checking
+  # Check if f4 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f4, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x100, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x100_str)
 
 # Testcase cp_imm_mul_8sp: imm=264
   fsflagsi 0b00000 # clear all fflags
@@ -828,8 +828,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x108:
   c.fsdsp f15, 264(sp) # perform store
   addi sp, sp, 264 # remove offset from sp
   FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x108, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x108_str)
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x108, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x108_str)
 
 # Testcase cp_imm_mul_8sp: imm=272
   fsflagsi 0b00000 # clear all fflags
@@ -840,8 +840,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x110:
   c.fsdsp f8, 272(sp) # perform store
   addi sp, sp, 272 # remove offset from sp
   FLREG f20, 0(sp) # load stored value for checking
-  # Check if f20 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x110, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x110_str)
+  # Check if f20 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x110, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x110_str)
 
 # Testcase cp_imm_mul_8sp: imm=280
   fsflagsi 0b00000 # clear all fflags
@@ -852,8 +852,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x118:
   c.fsdsp f14, 280(sp) # perform store
   addi sp, sp, 280 # remove offset from sp
   FLREG f16, 0(sp) # load stored value for checking
-  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x118, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x118_str)
+  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x118, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x118_str)
 
 # Testcase cp_imm_mul_8sp: imm=288
   fsflagsi 0b00000 # clear all fflags
@@ -864,8 +864,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x120:
   c.fsdsp f25, 288(sp) # perform store
   addi sp, sp, 288 # remove offset from sp
   FLREG f11, 0(sp) # load stored value for checking
-  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f11, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x120, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x120_str)
+  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f11, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x120, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x120_str)
 
 # Testcase cp_imm_mul_8sp: imm=296
   fsflagsi 0b00000 # clear all fflags
@@ -876,8 +876,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x128:
   c.fsdsp f0, 296(sp) # perform store
   addi sp, sp, 296 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x128, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x128_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x128, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x128_str)
 
 # Testcase cp_imm_mul_8sp: imm=304
   fsflagsi 0b00000 # clear all fflags
@@ -888,8 +888,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x130:
   c.fsdsp f22, 304(sp) # perform store
   addi sp, sp, 304 # remove offset from sp
   FLREG f26, 0(sp) # load stored value for checking
-  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f26, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x130, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x130_str)
+  # Check if f26 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f26, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x130, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x130_str)
 
 # Testcase cp_imm_mul_8sp: imm=312
   fsflagsi 0b00000 # clear all fflags
@@ -900,8 +900,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x138:
   c.fsdsp f9, 312(sp) # perform store
   addi sp, sp, 312 # remove offset from sp
   FLREG f11, 0(sp) # load stored value for checking
-  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f11, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x138, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x138_str)
+  # Check if f11 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f11, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x138, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x138_str)
 
 # Testcase cp_imm_mul_8sp: imm=320
   fsflagsi 0b00000 # clear all fflags
@@ -912,8 +912,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x140:
   c.fsdsp f3, 320(sp) # perform store
   addi sp, sp, 320 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x140, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x140_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x140, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x140_str)
 
 # Testcase cp_imm_mul_8sp: imm=328
   fsflagsi 0b00000 # clear all fflags
@@ -924,8 +924,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x148:
   c.fsdsp f19, 328(sp) # perform store
   addi sp, sp, 328 # remove offset from sp
   FLREG f2, 0(sp) # load stored value for checking
-  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x148, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x148_str)
+  # Check if f2 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f2, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x148, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x148_str)
 
 # Testcase cp_imm_mul_8sp: imm=336
   fsflagsi 0b00000 # clear all fflags
@@ -936,8 +936,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150:
   c.fsdsp f22, 336(sp) # perform store
   addi sp, sp, 336 # remove offset from sp
   FLREG f27, 0(sp) # load stored value for checking
-  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f27, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150_str)
+  # Check if f27 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f27, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150_str)
 
 # Testcase cp_imm_mul_8sp: imm=344
   fsflagsi 0b00000 # clear all fflags
@@ -947,9 +947,9 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x150:
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x158:
   c.fsdsp f30, 344(sp) # perform store
   addi sp, sp, 344 # remove offset from sp
-  FLREG f6, 0(sp) # load stored value for checking
-  # Check if f6 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f6, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x158, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x158_str)
+  FLREG f5, 0(sp) # load stored value for checking
+  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f5, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x158, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x158_str)
 
 # Testcase cp_imm_mul_8sp: imm=352
   fsflagsi 0b00000 # clear all fflags
@@ -960,8 +960,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x160:
   c.fsdsp f26, 352(sp) # perform store
   addi sp, sp, 352 # remove offset from sp
   FLREG f16, 0(sp) # load stored value for checking
-  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x160, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x160_str)
+  # Check if f16 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f16, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x160, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x160_str)
 
 # Testcase cp_imm_mul_8sp: imm=360
   fsflagsi 0b00000 # clear all fflags
@@ -972,8 +972,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x168:
   c.fsdsp f16, 360(sp) # perform store
   addi sp, sp, 360 # remove offset from sp
   FLREG f30, 0(sp) # load stored value for checking
-  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x168, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x168_str)
+  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x168, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x168_str)
 
 # Testcase cp_imm_mul_8sp: imm=368
   fsflagsi 0b00000 # clear all fflags
@@ -984,8 +984,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x170:
   c.fsdsp f25, 368(sp) # perform store
   addi sp, sp, 368 # remove offset from sp
   FLREG f30, 0(sp) # load stored value for checking
-  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x170, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x170_str)
+  # Check if f30 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f30, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x170, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x170_str)
 
 # Testcase cp_imm_mul_8sp: imm=376
   fsflagsi 0b00000 # clear all fflags
@@ -996,8 +996,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x178:
   c.fsdsp f24, 376(sp) # perform store
   addi sp, sp, 376 # remove offset from sp
   FLREG f10, 0(sp) # load stored value for checking
-  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x178, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x178_str)
+  # Check if f10 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f10, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x178, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x178_str)
 
 # Testcase cp_imm_mul_8sp: imm=384
   fsflagsi 0b00000 # clear all fflags
@@ -1008,8 +1008,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x180:
   c.fsdsp f15, 384(sp) # perform store
   addi sp, sp, 384 # remove offset from sp
   FLREG f18, 0(sp) # load stored value for checking
-  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x180, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x180_str)
+  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x180, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x180_str)
 
 # Testcase cp_imm_mul_8sp: imm=392
   fsflagsi 0b00000 # clear all fflags
@@ -1020,20 +1020,20 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x188:
   c.fsdsp f0, 392(sp) # perform store
   addi sp, sp, 392 # remove offset from sp
   FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x188, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x188_str)
+  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x188, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x188_str)
 
 # Testcase cp_imm_mul_8sp: imm=400
   fsflagsi 0b00000 # clear all fflags
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs2: f6 = 0x586e5d387be1fa57
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x586e5d387be1fa57
   LA(sp, scratch) # set sp to scratch space
   addi sp, sp, -400  # adjust for offset
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190:
-  c.fsdsp f6, 400(sp) # perform store
+  c.fsdsp f5, 400(sp) # perform store
   addi sp, sp, 400 # remove offset from sp
-  FLREG f5, 0(sp) # load stored value for checking
-  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f5, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190_str)
+  FLREG f4, 0(sp) # load stored value for checking
+  # Check if f4 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f4, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190_str)
 
 # Testcase cp_imm_mul_8sp: imm=408
   fsflagsi 0b00000 # clear all fflags
@@ -1043,9 +1043,9 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x190:
 Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x198:
   c.fsdsp f11, 408(sp) # perform store
   addi sp, sp, 408 # remove offset from sp
-  FLREG f5, 0(sp) # load stored value for checking
-  # Check if f5 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f5, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x198, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x198_str)
+  FLREG f4, 0(sp) # load stored value for checking
+  # Check if f4 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f4, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x198, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x198_str)
 
 # Testcase cp_imm_mul_8sp: imm=416
   fsflagsi 0b00000 # clear all fflags
@@ -1056,8 +1056,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a0:
   c.fsdsp f21, 416(sp) # perform store
   addi sp, sp, 416 # remove offset from sp
   FLREG f25, 0(sp) # load stored value for checking
-  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a0_str)
+  # Check if f25 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f25, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a0_str)
 
 # Testcase cp_imm_mul_8sp: imm=424
   fsflagsi 0b00000 # clear all fflags
@@ -1068,8 +1068,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a8:
   c.fsdsp f10, 424(sp) # perform store
   addi sp, sp, 424 # remove offset from sp
   FLREG f31, 0(sp) # load stored value for checking
-  # Check if f31 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f31, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a8_str)
+  # Check if f31 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f31, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1a8_str)
 
 # Testcase cp_imm_mul_8sp: imm=432
   fsflagsi 0b00000 # clear all fflags
@@ -1080,8 +1080,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b0:
   c.fsdsp f3, 432(sp) # perform store
   addi sp, sp, 432 # remove offset from sp
   FLREG f22, 0(sp) # load stored value for checking
-  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f22, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b0_str)
+  # Check if f22 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f22, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b0_str)
 
 # Testcase cp_imm_mul_8sp: imm=440
   fsflagsi 0b00000 # clear all fflags
@@ -1092,8 +1092,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b8:
   c.fsdsp f25, 440(sp) # perform store
   addi sp, sp, 440 # remove offset from sp
   FLREG f1, 0(sp) # load stored value for checking
-  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b8_str)
+  # Check if f1 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f1, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1b8_str)
 
 # Testcase cp_imm_mul_8sp: imm=448
   fsflagsi 0b00000 # clear all fflags
@@ -1104,8 +1104,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c0:
   c.fsdsp f25, 448(sp) # perform store
   addi sp, sp, 448 # remove offset from sp
   FLREG f29, 0(sp) # load stored value for checking
-  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f29, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c0_str)
+  # Check if f29 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f29, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c0_str)
 
 # Testcase cp_imm_mul_8sp: imm=456
   fsflagsi 0b00000 # clear all fflags
@@ -1116,8 +1116,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c8:
   c.fsdsp f20, 456(sp) # perform store
   addi sp, sp, 456 # remove offset from sp
   FLREG f24, 0(sp) # load stored value for checking
-  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f24, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c8_str)
+  # Check if f24 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f24, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1c8_str)
 
 # Testcase cp_imm_mul_8sp: imm=464
   fsflagsi 0b00000 # clear all fflags
@@ -1128,8 +1128,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d0:
   c.fsdsp f14, 464(sp) # perform store
   addi sp, sp, 464 # remove offset from sp
   FLREG f21, 0(sp) # load stored value for checking
-  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d0_str)
+  # Check if f21 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f21, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d0_str)
 
 # Testcase cp_imm_mul_8sp: imm=472
   fsflagsi 0b00000 # clear all fflags
@@ -1140,8 +1140,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d8:
   c.fsdsp f31, 472(sp) # perform store
   addi sp, sp, 472 # remove offset from sp
   FLREG f18, 0(sp) # load stored value for checking
-  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d8_str)
+  # Check if f18 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f18, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1d8_str)
 
 # Testcase cp_imm_mul_8sp: imm=480
   fsflagsi 0b00000 # clear all fflags
@@ -1152,8 +1152,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e0:
   c.fsdsp f19, 480(sp) # perform store
   addi sp, sp, 480 # remove offset from sp
   FLREG f17, 0(sp) # load stored value for checking
-  # Check if f17 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f17, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e0_str)
+  # Check if f17 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f17, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e0_str)
 
 # Testcase cp_imm_mul_8sp: imm=488
   fsflagsi 0b00000 # clear all fflags
@@ -1164,8 +1164,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e8:
   c.fsdsp f3, 488(sp) # perform store
   addi sp, sp, 488 # remove offset from sp
   FLREG f28, 0(sp) # load stored value for checking
-  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e8_str)
+  # Check if f28 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f28, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1e8_str)
 
 # Testcase cp_imm_mul_8sp: imm=496
   fsflagsi 0b00000 # clear all fflags
@@ -1176,8 +1176,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f0:
   c.fsdsp f22, 496(sp) # perform store
   addi sp, sp, 496 # remove offset from sp
   FLREG f31, 0(sp) # load stored value for checking
-  # Check if f31 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f31, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f0_str)
+  # Check if f31 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f31, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f0, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f0_str)
 
 # Testcase cp_imm_mul_8sp: imm=504
   fsflagsi 0b00000 # clear all fflags
@@ -1188,8 +1188,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8:
   c.fsdsp f16, 504(sp) # perform store
   addi sp, sp, 504 # remove offset from sp
   FLREG f20, 0(sp) # load stored value for checking
-  # Check if f20 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x21, x5, x4, f4, f20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8_str)
+  # Check if f20 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x21, x5, x4, f7, f20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8_str)
 
   mv x2, x21 # restore signature pointer to default register for teardown
 
@@ -1212,13 +1212,14 @@ RVTEST_DATA_BEGIN
 .dword 0xf607a55f26881723
 .dword 0xe5a771b60b4a0636
 .dword 0xadc6ddf7fdba20fb
-.dword 0xcacab0351be5490a
-.dword 0x201de7f4429602a2
-.dword 0xa637946dd9bdea43
-.dword 0x5d1fad72d1754bd7
-.dword 0xf69b7f8d4ac7f493
-.dword 0x3cdbbd752a601f14
-.dword 0x2b58c620f4c73575
+.dword 0x7ebd7d9fbc04cf6c
+.dword 0x34dbe2d0bcfda189
+.dword 0x968ecc9db693154e
+.dword 0xb0e39294cc29fb1f
+.dword 0x6ecc113d22c5d297
+.dword 0x5023cb38b73a0546
+.dword 0x0a6187c7c8fe9e9e
+.dword 0xfab45e99b995290a
 .dword 0x4ad8bae0e3336da3
 .dword 0x204d2ff88bbba84a
 .dword 0x40b3191b28a7fecf
@@ -1231,7 +1232,6 @@ RVTEST_DATA_BEGIN
 .dword 0x4976c0375cc24a85
 .dword 0xaa7ba5380cc38f11
 .dword 0x8da7e6254d124e06
-.dword 0x10f4f5db53f8ca4b
 .dword 0xf8ef2f1884929a36
 .dword 0x6159b828c3b269a4
 .dword 0x2ad76f892ead5395

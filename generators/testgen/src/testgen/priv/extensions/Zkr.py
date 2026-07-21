@@ -212,13 +212,6 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Zkr",
     required_extensions=["Zkr"],
-    extra_defines=[
-        '#include "rvtest_config.h"',
-        "#define rvtest_mtrap_routine",
-        "#ifdef S_SUPPORTED",
-        "#define rvtest_strap_routine",
-        "#endif",
-    ],
 )
 def make_zkr(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zkr"""

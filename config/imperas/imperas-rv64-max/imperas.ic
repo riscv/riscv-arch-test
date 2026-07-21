@@ -103,8 +103,8 @@
 --override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
-#--override cpu*/Smdbltrp=T
-#--override cpu*/Ssdbltrp=T
+--override cpu*/Smdbltrp=T
+--override cpu*/Ssdbltrp=T
 
 # PMA Settings
 # 'r': read access allowed

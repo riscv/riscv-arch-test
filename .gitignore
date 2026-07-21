@@ -1,6 +1,3 @@
-# Ignore Claude file
-CLAUDE.md
-
 # Ignore editor backup files
 *~
 *.swp

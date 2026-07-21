@@ -66,25 +66,32 @@
   "reset_vec": "0x80000000",
 
   "trigger_use_tcontrol": false,
-  "trigger_types": ["none", "disabled", "mcontrol6"],
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
   "triggers": [
     {
-      "reset": [0, 0, 0, "0x8040"],
+      "reset": [0, 0, 0, "0x8078"],
       "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
       "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
     },
     {
-      "reset": [0, 0, 0, "0x8040"],
+      "reset": [0, 0, 0, "0x8078"],
       "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
       "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
     },
     {
-      "reset": [0, 0, 0, "0x8040"],
+      "reset": [0, 0, 0, "0x8078"],
       "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
       "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
     },
     {
-      "reset": [0, 0, 0, "0x8040"],
+      "reset": [0, 0, 0, "0x8078"],
       "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
       "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
     }

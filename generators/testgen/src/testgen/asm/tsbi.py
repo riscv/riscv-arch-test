@@ -116,6 +116,16 @@ _CSR_ALIASES = {
     "menvcfgh": 0x31A,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
+    "tselect": 0x7A0,
+    "tdata1": 0x7A1,
+    "tdata2": 0x7A2,
+    "tdata3": 0x7A3,
+    "tinfo": 0x7A4,
+    "tcontrol": 0x7A5,
+    "mcontext": 0x7A8,
+    "mscontext": 0x7AA,
+    "scontext": 0x5A8,
+    "hcontext": 0x6A8,
 }
 
 

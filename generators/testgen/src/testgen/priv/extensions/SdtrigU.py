@@ -11,8 +11,6 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SdtrigCommon import UDB_DEFINES, generate_sdtrig_suite
 from testgen.priv.registry import add_priv_test_generator
 
-MODE = "U"
-
 
 @add_priv_test_generator(
     "SdtrigU",

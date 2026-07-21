@@ -27,10 +27,7 @@ normative_rule_definitions:
   # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
   # while accesses to the stimecmph CSR access the high 32 bits of stimecmp.
   - name: stimecmp_stimecmph_sz_acc
-    coverpoint:
-      [
-        "TODO: InterruptsSstc test currently only reads stimecmp, not stimecmph even for RV32",
-      ]
+    coverpoint: ["InterruptsSstc_cg/cp_machine_tm"]
 
   # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in
   # the mip and sip registers whenever time contains a value greater than or equal

@@ -58,6 +58,9 @@ class RawSweep:
 SetupFn = Callable[[list[str], TestData, int], None]
 
 
+# CSRs guarded by a UDB parameter define; compiled out when the CSR is absent.
+PARAM_GUARDED_CSRS = {0xC01: "UDB_TIME_CSR_IMPLEMENTED", 0xC81: "UDB_TIME_CSR_IMPLEMENTED"}
+
 USER_CUSTOM_CSR_RANGES = (range(0x800, 0x900), range(0xCC0, 0xD00))
 S_CUSTOM_CSR_RANGES = (range(0x5C0, 0x600), range(0x9C0, 0xA00), range(0xDC0, 0xE00))
 H_CUSTOM_CSR_RANGES = (range(0x6C0, 0x700), range(0xAC0, 0xB00), range(0xEC0, 0xF00))
@@ -286,6 +289,9 @@ def _generate_csr_sweep_body(
             r1, r2, r3 = test_data.int_regs.get_registers(3)
 
             ih = hex(csr_addr)
+            guard = PARAM_GUARDED_CSRS.get(csr_addr)
+            if guard is not None:
+                lines.append(f"#ifdef {guard}")
             lines.extend(
                 [
                     f"# CSR {ih}",
@@ -304,6 +310,8 @@ def _generate_csr_sweep_body(
                     "",
                 ]
             )
+            if guard is not None:
+                lines.append("#endif")
             test_data.int_regs.return_registers([r1, r2, r3])
         _finalize_chunk(test_data, lines, test_chunks)
     return test_chunks

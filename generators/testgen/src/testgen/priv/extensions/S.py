@@ -210,8 +210,9 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         # ecall test
         "# Testcase: ecall instruction",
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        "ecall               # test ecall instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
         "",
         # ebreak test
         "# Testcase: ebreak instruction",

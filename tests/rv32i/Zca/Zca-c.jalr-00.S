@@ -110,19 +110,19 @@ Zca_c_jalr_cg_cp_rs1_nx0_b6:
   # Check if x1 contains the expected result. x29 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x29, x8, x7, x1, Zca_c_jalr_cg_cp_rs1_nx0_b6, Zca_c_jalr_cg_cp_rs1_nx0_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x23, x14) # load value to check if jump is taken: x14 = 0x605bd8b9
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value to check if jump is taken: x12 = 0x605bd8b9
   LA(x7, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b7:
   c.jalr x7 # perform operation
-  LI(x14, 0) # jump is not taken
+  LI(x12, 0) # jump is not taken
 1: # jump target
-  # Check if x14 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x14, Zca_c_jalr_cg_cp_rs1_nx0_b7, Zca_c_jalr_cg_cp_rs1_nx0_b7_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x1, Zca_c_jalr_cg_cp_rs1_nx0_b7, Zca_c_jalr_cg_cp_rs1_nx0_b7_str)
+  # Check if x12 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x12, Zca_c_jalr_cg_cp_rs1_nx0_b7, Zca_c_jalr_cg_cp_rs1_nx0_b7_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b7, Zca_c_jalr_cg_cp_rs1_nx0_b7_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x23, x10) # load value to check if jump is taken: x10 = 0x7593bc43
@@ -131,10 +131,10 @@ Zca_c_jalr_cg_cp_rs1_nx0_b8:
   c.jalr x8 # perform operation
   LI(x10, 0) # jump is not taken
 1: # jump target
-  # Check if x10 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x10, Zca_c_jalr_cg_cp_rs1_nx0_b8, Zca_c_jalr_cg_cp_rs1_nx0_b8_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x1, Zca_c_jalr_cg_cp_rs1_nx0_b8, Zca_c_jalr_cg_cp_rs1_nx0_b8_str)
+  # Check if x10 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x10, Zca_c_jalr_cg_cp_rs1_nx0_b8, Zca_c_jalr_cg_cp_rs1_nx0_b8_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b8, Zca_c_jalr_cg_cp_rs1_nx0_b8_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x23, x4) # load value to check if jump is taken: x4 = 0xb08bd0e3
@@ -143,22 +143,22 @@ Zca_c_jalr_cg_cp_rs1_nx0_b9:
   c.jalr x9 # perform operation
   LI(x4, 0) # jump is not taken
 1: # jump target
-  # Check if x4 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x4, Zca_c_jalr_cg_cp_rs1_nx0_b9, Zca_c_jalr_cg_cp_rs1_nx0_b9_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x1, Zca_c_jalr_cg_cp_rs1_nx0_b9, Zca_c_jalr_cg_cp_rs1_nx0_b9_str)
+  # Check if x4 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x4, Zca_c_jalr_cg_cp_rs1_nx0_b9, Zca_c_jalr_cg_cp_rs1_nx0_b9_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b9, Zca_c_jalr_cg_cp_rs1_nx0_b9_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x23, x14) # load value to check if jump is taken: x14 = 0xf8485a43
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value to check if jump is taken: x12 = 0xf8485a43
   LA(x10, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b10:
   c.jalr x10 # perform operation
-  LI(x14, 0) # jump is not taken
+  LI(x12, 0) # jump is not taken
 1: # jump target
-  # Check if x14 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x14, Zca_c_jalr_cg_cp_rs1_nx0_b10, Zca_c_jalr_cg_cp_rs1_nx0_b10_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x1, Zca_c_jalr_cg_cp_rs1_nx0_b10, Zca_c_jalr_cg_cp_rs1_nx0_b10_str)
+  # Check if x12 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x12, Zca_c_jalr_cg_cp_rs1_nx0_b10, Zca_c_jalr_cg_cp_rs1_nx0_b10_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b10, Zca_c_jalr_cg_cp_rs1_nx0_b10_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x23, x16) # load value to check if jump is taken: x16 = 0xa401f21e
@@ -167,99 +167,99 @@ Zca_c_jalr_cg_cp_rs1_nx0_b11:
   c.jalr x11 # perform operation
   LI(x16, 0) # jump is not taken
 1: # jump target
-  # Check if x16 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x16, Zca_c_jalr_cg_cp_rs1_nx0_b11, Zca_c_jalr_cg_cp_rs1_nx0_b11_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x29, x13, x12, x1, Zca_c_jalr_cg_cp_rs1_nx0_b11, Zca_c_jalr_cg_cp_rs1_nx0_b11_str)
+  # Check if x16 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x16, Zca_c_jalr_cg_cp_rs1_nx0_b11, Zca_c_jalr_cg_cp_rs1_nx0_b11_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b11, Zca_c_jalr_cg_cp_rs1_nx0_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load value to check if jump is taken: x13 = 0x9986cce2
+  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load value to check if jump is taken: x21 = 0xb8a9658b
   LA(x12, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b12:
   c.jalr x12 # perform operation
-  LI(x13, 0) # jump is not taken
+  LI(x21, 0) # jump is not taken
 1: # jump target
-  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x13, Zca_c_jalr_cg_cp_rs1_nx0_b12, Zca_c_jalr_cg_cp_rs1_nx0_b12_str)
-  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b12, Zca_c_jalr_cg_cp_rs1_nx0_b12_str)
+  # Check if x21 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x21, Zca_c_jalr_cg_cp_rs1_nx0_b12, Zca_c_jalr_cg_cp_rs1_nx0_b12_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x1, Zca_c_jalr_cg_cp_rs1_nx0_b12, Zca_c_jalr_cg_cp_rs1_nx0_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load value to check if jump is taken: x21 = 0x5351e76a
+  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load value to check if jump is taken: x9 = 0xea94bde2
   LA(x13, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b13:
   c.jalr x13 # perform operation
-  LI(x21, 0) # jump is not taken
+  LI(x9, 0) # jump is not taken
 1: # jump target
-  # Check if x21 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x21, Zca_c_jalr_cg_cp_rs1_nx0_b13, Zca_c_jalr_cg_cp_rs1_nx0_b13_str)
+  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x9, Zca_c_jalr_cg_cp_rs1_nx0_b13, Zca_c_jalr_cg_cp_rs1_nx0_b13_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b13, Zca_c_jalr_cg_cp_rs1_nx0_b13_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load value to check if jump is taken: x28 = 0xea94bde2
+  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value to check if jump is taken: x12 = 0xf5ca39f1
   LA(x14, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b14:
   c.jalr x14 # perform operation
-  LI(x28, 0) # jump is not taken
+  LI(x12, 0) # jump is not taken
 1: # jump target
-  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x28, Zca_c_jalr_cg_cp_rs1_nx0_b14, Zca_c_jalr_cg_cp_rs1_nx0_b14_str)
+  # Check if x12 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x12, Zca_c_jalr_cg_cp_rs1_nx0_b14, Zca_c_jalr_cg_cp_rs1_nx0_b14_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b14, Zca_c_jalr_cg_cp_rs1_nx0_b14_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load value to check if jump is taken: x12 = 0xf5ca39f1
+  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load value to check if jump is taken: x16 = 0x50321af5
   LA(x15, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b15:
   c.jalr x15 # perform operation
-  LI(x12, 0) # jump is not taken
+  LI(x16, 0) # jump is not taken
 1: # jump target
-  # Check if x12 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x12, Zca_c_jalr_cg_cp_rs1_nx0_b15, Zca_c_jalr_cg_cp_rs1_nx0_b15_str)
+  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x16, Zca_c_jalr_cg_cp_rs1_nx0_b15, Zca_c_jalr_cg_cp_rs1_nx0_b15_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b15, Zca_c_jalr_cg_cp_rs1_nx0_b15_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x23, x15) # load value to check if jump is taken: x15 = 0x50321af5
+  RVTEST_TESTDATA_LOAD_INT(x23, x8) # load value to check if jump is taken: x8 = 0x9c3c00b3
   LA(x16, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b16:
   c.jalr x16 # perform operation
-  LI(x15, 0) # jump is not taken
+  LI(x8, 0) # jump is not taken
 1: # jump target
-  # Check if x15 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x15, Zca_c_jalr_cg_cp_rs1_nx0_b16, Zca_c_jalr_cg_cp_rs1_nx0_b16_str)
+  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x8, Zca_c_jalr_cg_cp_rs1_nx0_b16, Zca_c_jalr_cg_cp_rs1_nx0_b16_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b16, Zca_c_jalr_cg_cp_rs1_nx0_b16_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x23, x8) # load value to check if jump is taken: x8 = 0x9c3c00b3
+  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load value to check if jump is taken: x26 = 0xf8f98e5f
   LA(x17, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b17:
   c.jalr x17 # perform operation
-  LI(x8, 0) # jump is not taken
+  LI(x26, 0) # jump is not taken
 1: # jump target
-  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x8, Zca_c_jalr_cg_cp_rs1_nx0_b17, Zca_c_jalr_cg_cp_rs1_nx0_b17_str)
+  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x26, Zca_c_jalr_cg_cp_rs1_nx0_b17, Zca_c_jalr_cg_cp_rs1_nx0_b17_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b17, Zca_c_jalr_cg_cp_rs1_nx0_b17_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load value to check if jump is taken: x26 = 0xf8f98e5f
+  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load value to check if jump is taken: x9 = 0x95d685c2
   LA(x18, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b18:
   c.jalr x18 # perform operation
-  LI(x26, 0) # jump is not taken
+  LI(x9, 0) # jump is not taken
 1: # jump target
-  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x26, Zca_c_jalr_cg_cp_rs1_nx0_b18, Zca_c_jalr_cg_cp_rs1_nx0_b18_str)
+  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x9, Zca_c_jalr_cg_cp_rs1_nx0_b18, Zca_c_jalr_cg_cp_rs1_nx0_b18_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b18, Zca_c_jalr_cg_cp_rs1_nx0_b18_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load value to check if jump is taken: x9 = 0x95d685c2
+  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load value to check if jump is taken: x9 = 0xd60d8ba0
   LA(x19, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b19:
   c.jalr x19 # perform operation
@@ -271,158 +271,157 @@ Zca_c_jalr_cg_cp_rs1_nx0_b19:
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b19, Zca_c_jalr_cg_cp_rs1_nx0_b19_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load value to check if jump is taken: x9 = 0xd60d8ba0
+  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load value to check if jump is taken: x1 = 0x23e4d2bf
   LA(x20, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b20:
   c.jalr x20 # perform operation
-  LI(x9, 0) # jump is not taken
+  LI(x1, 0) # jump is not taken
 1: # jump target
-  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x9, Zca_c_jalr_cg_cp_rs1_nx0_b20, Zca_c_jalr_cg_cp_rs1_nx0_b20_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b20, Zca_c_jalr_cg_cp_rs1_nx0_b20_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b20, Zca_c_jalr_cg_cp_rs1_nx0_b20_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load value to check if jump is taken: x1 = 0x23e4d2bf
+  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load value to check if jump is taken: x16 = 0xe0e12fb3
   LA(x21, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b21:
   c.jalr x21 # perform operation
-  LI(x1, 0) # jump is not taken
+  LI(x16, 0) # jump is not taken
 1: # jump target
-  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b21, Zca_c_jalr_cg_cp_rs1_nx0_b21_str)
+  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x16, Zca_c_jalr_cg_cp_rs1_nx0_b21, Zca_c_jalr_cg_cp_rs1_nx0_b21_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b21, Zca_c_jalr_cg_cp_rs1_nx0_b21_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load value to check if jump is taken: x16 = 0xe0e12fb3
+  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load value to check if jump is taken: x30 = 0xea9f6224
   LA(x22, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b22:
   c.jalr x22 # perform operation
-  LI(x16, 0) # jump is not taken
+  LI(x30, 0) # jump is not taken
 1: # jump target
-  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x16, Zca_c_jalr_cg_cp_rs1_nx0_b22, Zca_c_jalr_cg_cp_rs1_nx0_b22_str)
+  # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x30, Zca_c_jalr_cg_cp_rs1_nx0_b22, Zca_c_jalr_cg_cp_rs1_nx0_b22_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b22, Zca_c_jalr_cg_cp_rs1_nx0_b22_str)
 
-  mv x31, x23 # switch data pointer register to avoid conflict with test
+  mv x16, x23 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x31, x21) # load value to check if jump is taken: x21 = 0xea9f6224
+  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load value to check if jump is taken: x28 = 0xfd21e5b5
   LA(x23, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b23:
   c.jalr x23 # perform operation
-  LI(x21, 0) # jump is not taken
+  LI(x28, 0) # jump is not taken
 1: # jump target
-  # Check if x21 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x21, Zca_c_jalr_cg_cp_rs1_nx0_b23, Zca_c_jalr_cg_cp_rs1_nx0_b23_str)
+  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x28, Zca_c_jalr_cg_cp_rs1_nx0_b23, Zca_c_jalr_cg_cp_rs1_nx0_b23_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b23, Zca_c_jalr_cg_cp_rs1_nx0_b23_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x31, x13) # load value to check if jump is taken: x13 = 0xfd21e5b5
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load value to check if jump is taken: x9 = 0x60ee707b
   LA(x24, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b24:
   c.jalr x24 # perform operation
-  LI(x13, 0) # jump is not taken
+  LI(x9, 0) # jump is not taken
 1: # jump target
-  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x13, Zca_c_jalr_cg_cp_rs1_nx0_b24, Zca_c_jalr_cg_cp_rs1_nx0_b24_str)
+  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x9, Zca_c_jalr_cg_cp_rs1_nx0_b24, Zca_c_jalr_cg_cp_rs1_nx0_b24_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b24, Zca_c_jalr_cg_cp_rs1_nx0_b24_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x31, x9) # load value to check if jump is taken: x9 = 0x60ee707b
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load value to check if jump is taken: x27 = 0x25416ff4
   LA(x25, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b25:
   c.jalr x25 # perform operation
-  LI(x9, 0) # jump is not taken
+  LI(x27, 0) # jump is not taken
 1: # jump target
-  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x9, Zca_c_jalr_cg_cp_rs1_nx0_b25, Zca_c_jalr_cg_cp_rs1_nx0_b25_str)
+  # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x27, Zca_c_jalr_cg_cp_rs1_nx0_b25, Zca_c_jalr_cg_cp_rs1_nx0_b25_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b25, Zca_c_jalr_cg_cp_rs1_nx0_b25_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x31, x25) # load value to check if jump is taken: x25 = 0x25416ff4
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load value to check if jump is taken: x1 = 0xd75cfde1
   LA(x26, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b26:
   c.jalr x26 # perform operation
-  LI(x25, 0) # jump is not taken
+  LI(x1, 0) # jump is not taken
 1: # jump target
-  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x25, Zca_c_jalr_cg_cp_rs1_nx0_b26, Zca_c_jalr_cg_cp_rs1_nx0_b26_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b26, Zca_c_jalr_cg_cp_rs1_nx0_b26_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b26, Zca_c_jalr_cg_cp_rs1_nx0_b26_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x31, x1) # load value to check if jump is taken: x1 = 0xd75cfde1
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load value to check if jump is taken: x8 = 0x8e74339a
   LA(x27, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b27:
   c.jalr x27 # perform operation
-  LI(x1, 0) # jump is not taken
+  LI(x8, 0) # jump is not taken
 1: # jump target
-  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b27, Zca_c_jalr_cg_cp_rs1_nx0_b27_str)
+  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x8, Zca_c_jalr_cg_cp_rs1_nx0_b27, Zca_c_jalr_cg_cp_rs1_nx0_b27_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b27, Zca_c_jalr_cg_cp_rs1_nx0_b27_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x31, x8) # load value to check if jump is taken: x8 = 0x8e74339a
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load value to check if jump is taken: x25 = 0xdddf1fad
   LA(x28, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b28:
   c.jalr x28 # perform operation
-  LI(x8, 0) # jump is not taken
+  LI(x25, 0) # jump is not taken
 1: # jump target
-  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x8, Zca_c_jalr_cg_cp_rs1_nx0_b28, Zca_c_jalr_cg_cp_rs1_nx0_b28_str)
+  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x25, Zca_c_jalr_cg_cp_rs1_nx0_b28, Zca_c_jalr_cg_cp_rs1_nx0_b28_str)
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b28, Zca_c_jalr_cg_cp_rs1_nx0_b28_str)
 
-  mv x27, x29 # switch signature pointer register to avoid conflict with test
+  mv x24, x29 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x31, x13) # load value to check if jump is taken: x13 = 0x027aa3c0
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load value to check if jump is taken: x20 = 0x3f17d2bc
   LA(x29, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b29:
   c.jalr x29 # perform operation
-  LI(x13, 0) # jump is not taken
+  LI(x20, 0) # jump is not taken
 1: # jump target
-  # Check if x13 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x13, Zca_c_jalr_cg_cp_rs1_nx0_b29, Zca_c_jalr_cg_cp_rs1_nx0_b29_str)
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b29, Zca_c_jalr_cg_cp_rs1_nx0_b29_str)
+  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x20, Zca_c_jalr_cg_cp_rs1_nx0_b29, Zca_c_jalr_cg_cp_rs1_nx0_b29_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b29, Zca_c_jalr_cg_cp_rs1_nx0_b29_str)
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x31, x8) # load value to check if jump is taken: x8 = 0x023c4f3a
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load value to check if jump is taken: x3 = 0xd2ba21cd
   LA(x30, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b30:
   c.jalr x30 # perform operation
-  LI(x8, 0) # jump is not taken
+  LI(x3, 0) # jump is not taken
 1: # jump target
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, Zca_c_jalr_cg_cp_rs1_nx0_b30, Zca_c_jalr_cg_cp_rs1_nx0_b30_str)
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b30, Zca_c_jalr_cg_cp_rs1_nx0_b30_str)
+  # Check if x3 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x3, Zca_c_jalr_cg_cp_rs1_nx0_b30, Zca_c_jalr_cg_cp_rs1_nx0_b30_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b30, Zca_c_jalr_cg_cp_rs1_nx0_b30_str)
 
-  mv x22, x31 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load value to check if jump is taken: x23 = 0x3f17d2bc
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load value to check if jump is taken: x19 = 0x1187f26b
   LA(x31, 1f) # set up jump target
 Zca_c_jalr_cg_cp_rs1_nx0_b31:
   c.jalr x31 # perform operation
-  LI(x23, 0) # jump is not taken
+  LI(x19, 0) # jump is not taken
 1: # jump target
-  # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x23, Zca_c_jalr_cg_cp_rs1_nx0_b31, Zca_c_jalr_cg_cp_rs1_nx0_b31_str)
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b31, Zca_c_jalr_cg_cp_rs1_nx0_b31_str)
+  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x19, Zca_c_jalr_cg_cp_rs1_nx0_b31, Zca_c_jalr_cg_cp_rs1_nx0_b31_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_rs1_nx0_b31, Zca_c_jalr_cg_cp_rs1_nx0_b31_str)
 
 /////////////////////////////////
 // cp_offset_c_jr
 /////////////////////////////////
 
 # Testcase cp_offset negative bin (positive bin is covered by other coverpoints)
-  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load jump check value: x23 = 0xe4c321ce
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load jump check value: x23 = 0xe4c321ce
   j 2f # jump past backward jump target
 1: addi x23, x23, 4 # backward jump target, increment check value
   j 3f # jump past backward jump
@@ -431,54 +430,54 @@ Zca_c_jalr_cg_cp_offset_c_jr_neg:
   c.jalr x29 # backward jump
   addi x23, x23, -2 # jump not taken, decrement check value
 3:  # done with sequence
-  # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x23, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
+  # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x23, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
   # check return address from c.jalr
   auipc x23, 0 # get current PC
   sub x1, x1, x23 # subtract PC to make position-independent
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_offset_c_jr_neg, Zca_c_jalr_cg_cp_offset_c_jr_neg_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=0)
-  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load jump check value: x10 = 0x66c42274
-  LA(x17, jalrlsb_0) # load address of label
-  addi x17, x17, 0 # set rs1 LSB to 0
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load jump check value: x10 = 0x66c42274
+  LA(x18, jalrlsb_0) # load address of label
+  addi x18, x18, 0 # set rs1 LSB to 0
 Zca_c_jalr_cg_cp_offset_lsbs_00:
-  c.jalr x17 # jump
+  c.jalr x18 # jump
   addi x10, x10, -4  # should not execute; branch not taken
   .p2align 2
 jalrlsb_0:
   addi x10, x10, 2 # should execute; branch taken
   # check jump taken
-  # Check if x10 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x10, Zca_c_jalr_cg_cp_offset_lsbs_00, Zca_c_jalr_cg_cp_offset_lsbs_00_str)
+  # Check if x10 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x10, Zca_c_jalr_cg_cp_offset_lsbs_00, Zca_c_jalr_cg_cp_offset_lsbs_00_str)
   # check return address from c.jalr
   auipc x10, 0 # get current PC
   sub x1, x1, x10 # subtract PC to make position-independent
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_00, Zca_c_jalr_cg_cp_offset_lsbs_00_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_00, Zca_c_jalr_cg_cp_offset_lsbs_00_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=1)
-  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load jump check value: x18 = 0xe4baeeb6
-  LA(x19, jalrlsb_1) # load address of label
-  addi x19, x19, 1 # set rs1 LSB to 1
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load jump check value: x19 = 0xe4baeeb6
+  LA(x20, jalrlsb_1) # load address of label
+  addi x20, x20, 1 # set rs1 LSB to 1
 Zca_c_jalr_cg_cp_offset_lsbs_01:
-  c.jalr x19 # jump
-  addi x18, x18, -4  # should not execute; branch not taken
+  c.jalr x20 # jump
+  addi x19, x19, -4  # should not execute; branch not taken
   .p2align 2
 jalrlsb_1:
-  addi x18, x18, 2 # should execute; branch taken
+  addi x19, x19, 2 # should execute; branch taken
   # check jump taken
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, Zca_c_jalr_cg_cp_offset_lsbs_01, Zca_c_jalr_cg_cp_offset_lsbs_01_str)
+  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x19, Zca_c_jalr_cg_cp_offset_lsbs_01, Zca_c_jalr_cg_cp_offset_lsbs_01_str)
   # check return address from c.jalr
-  auipc x18, 0 # get current PC
-  sub x1, x1, x18 # subtract PC to make position-independent
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_01, Zca_c_jalr_cg_cp_offset_lsbs_01_str)
+  auipc x19, 0 # get current PC
+  sub x1, x1, x19 # subtract PC to make position-independent
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_01, Zca_c_jalr_cg_cp_offset_lsbs_01_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=2)
-  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load jump check value: x15 = 0x21e4d3fa
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load jump check value: x15 = 0x21e4d3fa
   LA(x8, jalrlsb_2) # load address of label
   addi x8, x8, 2 # set rs1 LSB to 2
 Zca_c_jalr_cg_cp_offset_lsbs_10:
@@ -488,16 +487,16 @@ Zca_c_jalr_cg_cp_offset_lsbs_10:
 jalrlsb_2: c.nop
   addi x15, x15, 2 # should execute; branch taken
   # check jump taken
-  # Check if x15 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x15, Zca_c_jalr_cg_cp_offset_lsbs_10, Zca_c_jalr_cg_cp_offset_lsbs_10_str)
+  # Check if x15 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x15, Zca_c_jalr_cg_cp_offset_lsbs_10, Zca_c_jalr_cg_cp_offset_lsbs_10_str)
   # check return address from c.jalr
   auipc x15, 0 # get current PC
   sub x1, x1, x15 # subtract PC to make position-independent
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_10, Zca_c_jalr_cg_cp_offset_lsbs_10_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_10, Zca_c_jalr_cg_cp_offset_lsbs_10_str)
 
 # Testcase cp_offset_lsbs (rs1 LSB=3)
-  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load jump check value: x7 = 0x4aaffe9f
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load jump check value: x7 = 0x4aaffe9f
   LA(x6, jalrlsb_3) # load address of label
   addi x6, x6, 3 # set rs1 LSB to 3
 Zca_c_jalr_cg_cp_offset_lsbs_11:
@@ -507,15 +506,15 @@ Zca_c_jalr_cg_cp_offset_lsbs_11:
 jalrlsb_3: c.nop
   addi x7, x7, 2 # should execute; branch taken
   # check jump taken
-  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x7, Zca_c_jalr_cg_cp_offset_lsbs_11, Zca_c_jalr_cg_cp_offset_lsbs_11_str)
+  # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x7, Zca_c_jalr_cg_cp_offset_lsbs_11, Zca_c_jalr_cg_cp_offset_lsbs_11_str)
   # check return address from c.jalr
   auipc x7, 0 # get current PC
   sub x1, x1, x7 # subtract PC to make position-independent
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_11, Zca_c_jalr_cg_cp_offset_lsbs_11_str)
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_11, Zca_c_jalr_cg_cp_offset_lsbs_11_str)
 
-  mv x2, x27 # restore signature pointer to default register for teardown
+  mv x2, x24 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -535,8 +534,7 @@ RVTEST_DATA_BEGIN
 .word 0xb08bd0e3
 .word 0xf8485a43
 .word 0xa401f21e
-.word 0x9986cce2
-.word 0x5351e76a
+.word 0xb8a9658b
 .word 0xea94bde2
 .word 0xf5ca39f1
 .word 0x50321af5
@@ -552,9 +550,10 @@ RVTEST_DATA_BEGIN
 .word 0x25416ff4
 .word 0xd75cfde1
 .word 0x8e74339a
-.word 0x027aa3c0
-.word 0x023c4f3a
+.word 0xdddf1fad
 .word 0x3f17d2bc
+.word 0xd2ba21cd
+.word 0x1187f26b
 .word 0xe4c321ce
 .word 0x66c42274
 .word 0xe4baeeb6

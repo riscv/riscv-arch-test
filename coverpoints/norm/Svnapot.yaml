@@ -1,6 +1,7 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The Svnapot extension depends on the Sv39 extension.
   - name: Svnapot_depends_Sv39
     coverpoint: [""]
 
@@ -22,5 +23,6 @@ normative_rule_definitions:
   - name: Svnapot_cache_entries
     coverpoint: [""]
 
+  # If H extension is implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage
     coverpoint: [""]

@@ -160,8 +160,9 @@ def generate_ecall_tests(
     lines = [
         comment_banner(coverpoint, description),
         test_data.add_testcase(testcase_name, coverpoint, covergroup),
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns mepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
     ]
     return lines
 

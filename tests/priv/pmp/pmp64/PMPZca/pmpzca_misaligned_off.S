@@ -27,6 +27,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -130,20 +131,20 @@ TEST_FOR_EXECUTION_0:
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
-    nop
+    c.nop                                                        // 2-byte fillers: precise offsets so _2/_4's uncompressed jalr genuinely straddle the region boundary
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
+// No .p2align here (and none before _3/_4 below): the c.nop offsets above must survive
+// unrounded so these uncompressed jalr instructions land mid-word, genuinely straddling the
+// region boundary, instead of being pushed back onto the next grain-aligned boundary.
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
-    nop
+    c.nop
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 

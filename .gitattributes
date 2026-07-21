@@ -1,0 +1,3 @@
+# Treat Sail and Whisper model configs as JSON with Comments on GitHub.
+**/sail.json linguist-language=JSON-with-Comments
+**/whisper.json linguist-language=JSON-with-Comments

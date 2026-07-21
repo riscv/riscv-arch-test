@@ -8,7 +8,15 @@
 #include "derived_config.h"
 #include "encoding.h"
 #include "utils.h"
-#include "rvmodel_macros.h"
+// A certification-kit build never sees the DUT's private rvmodel_macros.h: the
+// implementations live in the separately assembled rvmodel_shim.S, and the
+// values come from the config's dut_environment block instead. Normal builds
+// include the DUT header as before, and dut_environment.h then cross-checks the
+// two against each other.
+#ifndef RVMODEL_SHIM_EXTERN
+  #include "rvmodel_macros.h"
+#endif
+#include "dut_environment.h"
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"
 #endif

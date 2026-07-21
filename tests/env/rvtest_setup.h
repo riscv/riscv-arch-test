@@ -149,11 +149,20 @@
   .pushsection .text.rvmodel,"ax",@progbits
   // Model specific boot code
   rvmodel_boot:
-    #ifdef RVMODEL_BOOT
-      RVMODEL_BOOT
-    #endif
-    #ifdef RVMODEL_IO_INIT
-      RVMODEL_IO_INIT(T1, T2, T3)
+    #ifdef RVMODEL_SHIM_EXTERN
+      // Certification-kit build: the DUT's boot and IO-init macros are expanded
+      // in the separately assembled rvmodel_shim.S, not here. ra is dead at this
+      // point (rvmodel_boot never returns; it ends with `jr T1` to
+      // rvtest_code_begin), so `call` is free to clobber it.
+      call rvmodel_dut_boot
+      call rvmodel_dut_io_init
+    #else
+      #ifdef RVMODEL_BOOT
+        RVMODEL_BOOT
+      #endif
+      #ifdef RVMODEL_IO_INIT
+        RVMODEL_IO_INIT(T1, T2, T3)
+      #endif
     #endif
 
     // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
@@ -219,6 +228,11 @@
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test
 
+  // Everything below expands DUT-private RVMODEL_* macros. In a certification-kit
+  // build these are provided by the separately assembled rvmodel_shim.S instead,
+  // so the test object never contains DUT implementation code.
+  #ifndef RVMODEL_SHIM_EXTERN
+
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
     // safe to use T1-T3 because this is only invoked in termination code
@@ -273,6 +287,8 @@
       csrc sip, a0 // clear sip.SEIP
       ret
   #endif
+
+  #endif // RVMODEL_SHIM_EXTERN
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -415,8 +431,11 @@
 
   // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
   // Placed after the signature so variable-size DUT data does not affect any
-  // test-visible symbol addresses.
-  RVMODEL_DATA_SECTION
+  // test-visible symbol addresses. In a certification-kit build this comes from
+  // rvmodel_shim.S instead.
+  #ifndef RVMODEL_SHIM_EXTERN
+    RVMODEL_DATA_SECTION
+  #endif
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 

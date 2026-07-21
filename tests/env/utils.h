@@ -50,7 +50,23 @@
 // I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
 // (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
 // (or a JAL) so code size is constant.
-#ifdef   RVMODEL_FENCEI
+//
+// Certification-kit builds (RVMODEL_SHIM_EXTERN) deliberately do NOT honour a
+// custom RVMODEL_FENCEI. This is a semantic limit, not a packaging one: the kit's
+// guarantee is that the DUT executes the same instruction stream the reference
+// model executed when it produced the golden signature. RVTEST_FENCEI expands
+// inside .text.rvtest -- certified code -- so a private sync sequence the
+// reference model never ran would invalidate the signature. Unlike the other
+// RVMODEL_* hooks it also cannot be moved behind a call, because a JAL must write
+// a link register and no register is reserved at these sites.
+#if defined(RVMODEL_FENCEI) && defined(RVMODEL_SHIM_EXTERN)
+  #error "RVMODEL_FENCEI is not supported in a certification-kit build. The reference \
+model must execute the same instruction stream as the DUT, so the instruction-stream \
+sync must be the architectural one (fence.i, via Zifencei) or unnecessary (coherent \
+I-cache). Declare Zifencei support in the config instead of supplying a private mechanism."
+#endif
+
+#if defined(RVMODEL_FENCEI) && !defined(RVMODEL_SHIM_EXTERN)
   #define RVTEST_FENCEI RVMODEL_FENCEI
 #else
   #ifdef ZIFENCEI_SUPPORTED

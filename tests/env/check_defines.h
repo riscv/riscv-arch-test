@@ -22,6 +22,18 @@
 #endif
 
 ########## rvmodel_macros.h CHECKS ##########
+// Two kinds of RVMODEL_* definition are checked in this file:
+//
+//   implementations - code the DUT supplies (halt, IO, interrupt set/clear).
+//                     A certification-kit build gets these from the separately
+//                     assembled rvmodel_shim.S, so they are NOT required here.
+//   values          - device addresses and timings baked into certified test
+//                     code. Required in every build; a kit build gets them from
+//                     the config's dut_environment block via dut_environment.h.
+//
+// Only the implementation checks are skipped under RVMODEL_SHIM_EXTERN.
+#ifndef RVMODEL_SHIM_EXTERN
+
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -39,6 +51,8 @@
 #ifndef RVMODEL_IO_WRITE_STR
   #error "RVMODEL_IO_WRITE_STR not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+#endif // RVMODEL_SHIM_EXTERN (implementation checks)
 
 ##### ADDRESSES #####
 // If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
@@ -68,6 +82,9 @@
 #endif
 
 ##### Machine Interrupts #####
+// Implementations again: supplied by rvmodel_shim.S in a kit build.
+#ifndef RVMODEL_SHIM_EXTERN
+
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -100,3 +117,5 @@
 #ifndef RVMODEL_CLR_SSW_INT
   #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+#endif // RVMODEL_SHIM_EXTERN (interrupt implementation checks)

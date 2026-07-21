@@ -8,7 +8,7 @@
 
 """Exceptions Sm test generator (refactored, calls ExceptionsCommon)."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -36,7 +36,7 @@ _CG = "ExceptionsSm_cg"
 
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_mstatus_ie"
-    save_reg, mask_reg, arg_reg = test_data.int_regs.get_registers(3)
+    save_reg, mask_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(coverpoint, "Mstatus Interrupt Enable"),
@@ -45,21 +45,21 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
         "",
         "# Test ecall with mstatus.MIE = 0",
         f"csrrc x0, mstatus, x{mask_reg}",
-        f"LI(x{arg_reg}, 3)",
         test_data.add_testcase("ecall_mie_0", coverpoint, covergroup),
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns mepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
         "",
         "# Test ecall with mstatus.MIE = 1",
         f"csrrs x0, mstatus, x{mask_reg}",
-        f"LI(x{arg_reg}, 3)",
         test_data.add_testcase("ecall_mie_1", coverpoint, covergroup),
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns mepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
         f"csrw mstatus, x{save_reg}",
     ]
 
-    test_data.int_regs.return_registers([save_reg, mask_reg, arg_reg])
+    test_data.int_regs.return_registers([save_reg, mask_reg])
     return lines
 
 

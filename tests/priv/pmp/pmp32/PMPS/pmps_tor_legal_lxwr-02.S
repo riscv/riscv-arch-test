@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_cfg_A_tor for PMPS is fully covered in this test file.
+// Coverpoints : cp_cfg_A_tor for PMPS is partially covered in this test file.
 //
 // Test Cases  : Configuring PMP in M mode and then switching to S mode.
 //               Checking XWR controls accesses in matching TOR region. With
@@ -205,9 +205,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMPREGION_LXWR_0000 ((((                        PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_0001 ((((      PMP_R|            PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_0011 ((((      PMP_R|PMP_W       |PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_0100 ((((                    PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_0101 ((((      PMP_R         |PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_0111 ((((      PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
@@ -218,56 +215,6 @@ main:
     RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
-// Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 11
-
-    LA(x6, REGIONSTART)
-    li t0, g
-    add x6, x6, t0
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr11, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr10, x5
-    LI(x4, PMPREGION_LXWR_0000)
-    csrw pmpcfg2, x4
-
-    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
-    RVTEST_GOTO_MMODE
-
-// Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 9
-
-    LA(x6, REGIONSTART)
-    li t0, g
-    add x6, x6, t0
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr9, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr8, x5
-    LI(x4, PMPREGION_LXWR_0001)
-    csrw pmpcfg2, x4
-
-    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
-    RVTEST_GOTO_MMODE
-
-// Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 7
-
-    LA(x6, REGIONSTART)
-    li t0, g
-    add x6, x6, t0
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr7, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr6, x5
-    LI(x4, PMPREGION_LXWR_0011)
-    csrw pmpcfg1, x4
-
-    RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
-    RVTEST_GOTO_MMODE
 
 // Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
 

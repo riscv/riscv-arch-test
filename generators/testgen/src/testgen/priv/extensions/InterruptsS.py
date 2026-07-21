@@ -1777,8 +1777,8 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
     """Generate S-mode WFI timeout tests.
 
     Test WFI timeout with TW=1, MTIMECMP=max.
-    Cross: MIE={0,1} × SIE={0,1} × mideleg={0,0x222} × MTIE={0,1} × mode={S,U}
-    Total: 2×2×2×2×2 = 32 bins
+    Cross: MIE={0,1} × SIE={0,1} × mideleg={0,0x222} × MTIE={0,1}
+    Total: 2×2×2×2 = 16 bins
     """
     covergroup = "InterruptsS_cg"
 
@@ -2525,10 +2525,9 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
 def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     """Generate U-mode WFI timeout tests.
 
-    Test WFI timeout from U-mode with TW=1.
+    Test WFI timeout from U-mode with TW={0/1}.
     Cross: MIE={0,1} × SIE={0,1}
     - mideleg = ones
-    - TW = 0/1
     - MTIE = 1 (fixed - required for timeout mechanism)
     - MTIMECMP = max (no interrupt fires)
     - WFI times out → illegal instruction → M-mode trap

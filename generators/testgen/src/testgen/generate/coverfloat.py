@@ -6,27 +6,29 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import os
-import subprocess
 from pathlib import Path
 
+import cover_float
 
-def generate_coverfloat() -> None:
+
+def generate_coverfloat(output_dir: Path, jobs: int) -> bool:
     """
-    Build the cover-float test vectors in a subprocess.
-
-    Builds with AGGRESSIVENESS=0 to prevent the fused multiply-add crosses from growing too big.
+    Builds the coverfloat testvectors into a work directory.
     """
 
-    # Cover-Float runs with its own uv context. So, we need to unset the current virtual
-    # environment.
-    env = os.environ.copy()
-    if "VIRTUAL_ENV" in env:
-        del env["VIRTUAL_ENV"]
+    testvectors_dir = output_dir / "testvectors"
+    processed_vectors_dir = output_dir / "processed"
 
-    cover_float_dir = Path(__file__).parent.parent / "cover-float"
-    subprocess.run(
-        ["make", "--silent", "--directory", str(cover_float_dir), "AGGRESSIVENESS=0", "processed-tests-only"],
-        check=True,
-        env=env,
+    testvectors_dir.mkdir(parents=True, exist_ok=True)
+    processed_vectors_dir.mkdir(parents=True, exist_ok=True)
+
+    config = cover_float.Config(
+        output_dir=output_dir,
+        full_coverage_testgen=False,  # This generates too many tests otherwise,
+        quiet=True,
+        silent=False,  # Still display 1 progress bar,
+        release=True,
+        jobs=jobs,
     )
+
+    return cover_float.generate(config)

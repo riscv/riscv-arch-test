@@ -90,10 +90,16 @@ $(STAMP_DIR):
 MISE := $(shell command -v mise 2> /dev/null)
 UV   := $(shell command -v uv 2> /dev/null)
 
+ifneq ($(COVER_FLOAT),)
+  UV_FLAGS := --group cover-float
+else
+  UV_FLAGS :=
+endif
+
 ifneq ($(MISE),)
-  UV_RUN := $(MISE) exec -- uv run
+  UV_RUN := $(MISE) exec -- uv run $(UV_FLAGS)
 else ifneq ($(UV),)
-  UV_RUN := $(UV) run
+  UV_RUN := $(UV) run $(UV_FLAGS)
 else ifneq ($(VIRTUAL_ENV),)
   # Activated venv without uv/mise: require the three CLIs on PATH.
   MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\
@@ -188,6 +194,9 @@ clean:
 	@if [ -d $(WORKDIR) ]; then \
 		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' ! -name '.validated' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
+	fi
+	@if [ -d generators/testgen/.coverfloat-work ]; then \
+		rm -rf generators/testgen/.coverfloat-work; \
 	fi
 
 

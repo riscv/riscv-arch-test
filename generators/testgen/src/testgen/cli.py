@@ -30,7 +30,7 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from testgen.constants import E_EXTENSION_TESTS
+from testgen.constants import COVERFLOAT_GENERATION_DIR, E_EXTENSION_TESTS
 from testgen.generate import generate_coverfloat, generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_extensions
@@ -136,7 +136,9 @@ def generate_all_tests(
     # calls because we lose all benefits of parallelization, and we run into dangers with multiple calls
     # to cover-float attempting to generate tests at the same time due to ACT4 parallelization
     if with_cover_float:
-        generate_coverfloat()
+        success = generate_coverfloat(COVERFLOAT_GENERATION_DIR, jobs)
+        if not success:
+            raise RuntimeError("Failed To Generate Cover-Float")
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:

@@ -53,8 +53,16 @@ main:
     .endr
 
 
-#define PMPCFG_1                         ((((PMP_L|PMP_R|PMP_W       |PMP_TOR)&0xFF)   << PMP1_CFG_SHIFT))
-#define PMPCFG_0                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)   << PMP0_CFG_SHIFT))
+#define PMPCFG_0                         ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF)   << PMP0_CFG_SHIFT))
+
+#define REGIONSTART                       TEST_FOR_EXECUTION_1
+#if UDB_PMP_GRANULARITY > 12
+    #define PMPZICBO_REGION_SHIFT         UDB_PMP_GRANULARITY
+#else
+    #define PMPZICBO_REGION_SHIFT         12
+#endif
+#define PMP_MASK                          ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)
+#define PMP_REGION_SIZE                   ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)
 
 #define MENVCFG                            0xF0                                                             // menvcfg.CBIE, CBCFE, CBZE = 1
 
@@ -68,15 +76,15 @@ main:
 //                                                Verification Section
 // Test Case: 3 : {cbo.zero, cbo.flush, cbo.clean, cbo.inval} for XWR-011
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr0, x4
 
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr1, x4
-
-    LI(x4, PMPCFG_1|PMPCFG_0)
+    LI(x4, PMPCFG_0)
     csrw pmpcfg0, x4
 
     PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1

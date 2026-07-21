@@ -74,17 +74,24 @@ main:
     .endr
 
 
-#define PMPREGION_LXWR_1000             ((((PMP_L|                  PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGION_LXWR_1001             ((((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1011             ((((PMP_L|PMP_R|PMP_W       |PMP_TOR)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGION_LXWR_1100             ((((PMP_L|              PMP_X|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_1101             ((((PMP_L|PMP_R         |PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGION_LXWR_1111             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1000             ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1001             ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LXWR_1011             ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_1100             ((((PMP_L|              PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGION_LXWR_1101             ((((PMP_L|PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1111             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define MENVCFG                            0xF0                                                             // menvcfg.CBIE, CBCFE, CBZE = 1
 
 #define REGIONSTART                TEST_FOR_EXECUTION_1
-#define REGIONEND                TEST_FOR_EXECUTION_2
+#if UDB_PMP_GRANULARITY > 12
+    #define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY
+#else
+    #define PMPZICBO_REGION_SHIFT  12
+#endif
+#define PMP_MASK                   ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)
+#define PMP_REGION_SIZE            ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)
+
 
 
     RVTEST_PMP_SET_BACKGROUND x4
@@ -95,13 +102,13 @@ main:
 //                                                Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr5, x4
-
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr6, x4
 
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg1, x4
@@ -110,13 +117,13 @@ main:
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr4, x4
-
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr5, x4
 
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg1, x4
@@ -125,28 +132,28 @@ main:
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr3, x4
 
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr4, x4
-
     LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg1, x4
+    csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr2, x4
-
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr3, x4
 
     LI(x4, PMPREGION_LXWR_1100)
     csrw pmpcfg0, x4
@@ -155,13 +162,13 @@ main:
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr1, x4
-
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr2, x4
 
     LI(x4, PMPREGION_LXWR_1101)
     csrw pmpcfg0, x4
@@ -170,13 +177,13 @@ main:
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr0, x4
-
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr1, x4
 
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4

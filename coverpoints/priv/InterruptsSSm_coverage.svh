@@ -50,7 +50,7 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
         //bins zeros = {16'b0000000000000000}; // zeros in every field that is not tied to zero
     }
     mideleg_ones_zeros_real: coverpoint ins.current.csr[CSR_MIDELEG][15:0] {
-        bins ones  = {16'b0000001000100010}; //  ones in every field that is not tied to zero (only supervisor delegable)
+        bins ones  = {16'b0000101010101010}; //  ones in every field that is not tied to zero (both machine and supervisor delegable)
         bins zeros = {16'b0000000000000000}; // zeros in every field that is not tied to zero
     }
     mie_mtie: coverpoint ins.current.csr[CSR_MIE][7] {
@@ -89,6 +89,20 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
     mip_stip_one: coverpoint ins.current.csr[CSR_MIP][5] {
         bins one = {1};
     }
+    `ifdef SSTC_SUPPORTED
+        prev_mip_stip_zero: coverpoint ins.prev.csr[CSR_MIP][5] {
+            bins zero = {0};
+    }
+        prev_mip_stip_one: coverpoint ins.prev.csr[CSR_MIP][5] {
+            bins one = {1};
+    }
+        write_mip: coverpoint ins.current.insn[31:20] {
+            bins write_STIP = {CSR_MIP};
+    }
+        rs1_STIP: coverpoint ins.current.rs1_val {
+            bins stip = {'h20};
+    }
+    `endif
     mip_mtip_one: coverpoint ins.current.csr[CSR_MIP][7] {
         bins one = {1};
     }
@@ -227,6 +241,10 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
     cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip_one, csrrc, write_mip_seip;
     cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip;
     cp_global_ie:               cross priv_mode_m, mstatus_mie, mstatus_sie, mip_walking_m, mip_mie_eq;
+    `ifdef SSTC_SUPPORTED
+        cp_stip_write_stimecmp_one: cross priv_mode_m, prev_mip_stip_zero, csrrs, write_mip, rs1_STIP;
+        cp_stip_write_stimecmp_zero: cross priv_mode_m, prev_mip_stip_one, csrrc, write_mip, rs1_STIP;
+    `endif
 
 
 endgroup

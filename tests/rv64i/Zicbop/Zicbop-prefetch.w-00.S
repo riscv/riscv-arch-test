@@ -56,8 +56,8 @@ Zicbop_prefetch_w_cg_cp_rs1_b2:
 Zicbop_prefetch_w_cg_cp_rs1_b3:
   prefetch.w 416(x3) # align to multiple of 32
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs1: x4 = 0x1aa6d33ab649feb6
 Zicbop_prefetch_w_cg_cp_rs1_b4:
@@ -98,13 +98,13 @@ Zicbop_prefetch_w_cg_cp_rs1_b10:
 Zicbop_prefetch_w_cg_cp_rs1_b11:
   prefetch.w -352(x11) # align to multiple of 32
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0xc5a77fbe4b684b24
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0xcb684b242c9ccdc8
 Zicbop_prefetch_w_cg_cp_rs1_b12:
-  prefetch.w -896(x12) # align to multiple of 32
+  prefetch.w 800(x12) # align to multiple of 32
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs1: x13 = 0x8ee4df3953f37dfc
 Zicbop_prefetch_w_cg_cp_rs1_b13:
@@ -686,7 +686,7 @@ RVTEST_DATA_BEGIN
 .dword 0x074c7e1b82288559
 .dword 0xed9533204673a2a3
 .dword 0x7ab46def14da1d2d
-.dword 0xc5a77fbe4b684b24
+.dword 0xcb684b242c9ccdc8
 .dword 0x8ee4df3953f37dfc
 .dword 0xed9d73d509a36a3c
 .dword 0x6c2825d6c12b2001

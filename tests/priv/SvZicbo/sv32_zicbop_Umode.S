@@ -19,7 +19,7 @@
 #define TEST_FILE "sv32_zicbop_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

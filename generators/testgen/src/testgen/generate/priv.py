@@ -54,9 +54,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Reserve registers for priv tests:
     #   - x0: avoid so desired values are actually loaded into registers
     #   - x1/ra: used as the return address for function calls
-    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
+    #   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
+    #   - x10, x11, x12 (a0/a1/a2): Used by T-SBI.
     #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
+
+    priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

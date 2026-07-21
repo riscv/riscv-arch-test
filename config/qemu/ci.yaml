@@ -18,6 +18,8 @@ ci_enabled: true
 # S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
 # PMPSm: pmpcfg bits [6:5] writable (https://gitlab.com/qemu-project/qemu/-/work_items/3531);
+#        causes pmpsm_csr_walk-* to fail on real QEMU (10/54 pmp64/PMPSm tests,
+#        4/36 pmp32/PMPSm tests).
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, closed upstream but not in v11.0.2)
 # ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501);
@@ -32,3 +34,5 @@ exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1
+config_shards:
+  qemu-rv64-max: 2

@@ -28,5163 +28,5163 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-  LA(x3, signature_base) # restore signature pointer base
-  addi x3, x3, SIG_STRIDE # advance past canary
-  LA(x19, rvtest_data_begin) # restore data pointer
+  LA(x19, signature_base) # restore signature pointer base
+  addi x19, x19, SIG_STRIDE # advance past canary
+  LA(x24, rvtest_data_begin) # restore data pointer
 
 # Testcase cp_ibm_b1 (B1.csv:66 Test source fs1val = 0xbf800000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_66:
-  fle.s x18, f10, f21 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_66, F_fle_s_cg_cp_ibm_b1_66_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_66, F_fle_s_cg_cp_ibm_b1_66_str)
+  fle.s x17, f10, f21 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_66, F_fle_s_cg_cp_ibm_b1_66_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_66, F_fle_s_cg_cp_ibm_b1_66_str)
 
 # Testcase cp_ibm_b1 (B1.csv:67 Test source fs1val = 0xbf800000 fs2val = 0x80800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_67:
   fle.s x26, f27, f20 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_67, F_fle_s_cg_cp_ibm_b1_67_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_67, F_fle_s_cg_cp_ibm_b1_67_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_67, F_fle_s_cg_cp_ibm_b1_67_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_67, F_fle_s_cg_cp_ibm_b1_67_str)
 
 # Testcase cp_ibm_b1 (B1.csv:68 Test source fs1val = 0xbf800000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_68:
-  fle.s x7, f31, f14 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_68, F_fle_s_cg_cp_ibm_b1_68_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_68, F_fle_s_cg_cp_ibm_b1_68_str)
+  fle.s x6, f31, f14 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_68, F_fle_s_cg_cp_ibm_b1_68_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_68, F_fle_s_cg_cp_ibm_b1_68_str)
 
 # Testcase cp_ibm_b1 (B1.csv:69 Test source fs1val = 0xbf800000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_69:
-  fle.s x22, f1, f17 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_69, F_fle_s_cg_cp_ibm_b1_69_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_69, F_fle_s_cg_cp_ibm_b1_69_str)
+  fle.s x21, f1, f17 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_69, F_fle_s_cg_cp_ibm_b1_69_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_69, F_fle_s_cg_cp_ibm_b1_69_str)
 
 # Testcase cp_ibm_b1 (B1.csv:70 Test source fs1val = 0xbf800000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_70:
-  fle.s x15, f16, f7 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_70, F_fle_s_cg_cp_ibm_b1_70_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_70, F_fle_s_cg_cp_ibm_b1_70_str)
+  fle.s x14, f16, f7 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_70, F_fle_s_cg_cp_ibm_b1_70_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_70, F_fle_s_cg_cp_ibm_b1_70_str)
 
 # Testcase cp_ibm_b1 (B1.csv:71 Test source fs1val = 0xbf800000 fs2val = 0x807fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_71:
   fle.s x27, f2, f11 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_71, F_fle_s_cg_cp_ibm_b1_71_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_71, F_fle_s_cg_cp_ibm_b1_71_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_71, F_fle_s_cg_cp_ibm_b1_71_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_71, F_fle_s_cg_cp_ibm_b1_71_str)
 
 # Testcase cp_ibm_b1 (B1.csv:72 Test source fs1val = 0xbf800000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_72:
   fle.s x30, f6, f13 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_72, F_fle_s_cg_cp_ibm_b1_72_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_72, F_fle_s_cg_cp_ibm_b1_72_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_72, F_fle_s_cg_cp_ibm_b1_72_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_72, F_fle_s_cg_cp_ibm_b1_72_str)
 
 # Testcase cp_ibm_b1 (B1.csv:73 Test source fs1val = 0xbf800000 fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_73:
-  fle.s x7, f15, f29 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_73, F_fle_s_cg_cp_ibm_b1_73_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_73, F_fle_s_cg_cp_ibm_b1_73_str)
+  fle.s x6, f15, f29 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_73, F_fle_s_cg_cp_ibm_b1_73_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_73, F_fle_s_cg_cp_ibm_b1_73_str)
 
 # Testcase cp_ibm_b1 (B1.csv:74 Test source fs1val = 0xbf800000 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_74:
-  fle.s x24, f12, f16 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_74, F_fle_s_cg_cp_ibm_b1_74_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_74, F_fle_s_cg_cp_ibm_b1_74_str)
+  fle.s x23, f12, f16 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_74, F_fle_s_cg_cp_ibm_b1_74_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_74, F_fle_s_cg_cp_ibm_b1_74_str)
 
 # Testcase cp_ibm_b1 (B1.csv:75 Test source fs1val = 0xbf800000 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_75:
-  fle.s x6, f1, f2 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_75, F_fle_s_cg_cp_ibm_b1_75_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_75, F_fle_s_cg_cp_ibm_b1_75_str)
+  fle.s x3, f1, f2 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_75, F_fle_s_cg_cp_ibm_b1_75_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_75, F_fle_s_cg_cp_ibm_b1_75_str)
 
 # Testcase cp_ibm_b1 (B1.csv:76 Test source fs1val = 0xbf800000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_76:
   fle.s x31, f6, f11 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_76, F_fle_s_cg_cp_ibm_b1_76_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_76, F_fle_s_cg_cp_ibm_b1_76_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_76, F_fle_s_cg_cp_ibm_b1_76_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_76, F_fle_s_cg_cp_ibm_b1_76_str)
 
 # Testcase cp_ibm_b1 (B1.csv:77 Test source fs1val = 0xbf800000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_77:
-  fle.s x15, f7, f15 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_77, F_fle_s_cg_cp_ibm_b1_77_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_77, F_fle_s_cg_cp_ibm_b1_77_str)
+  fle.s x14, f7, f15 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_77, F_fle_s_cg_cp_ibm_b1_77_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_77, F_fle_s_cg_cp_ibm_b1_77_str)
 
 # Testcase cp_ibm_b1 (B1.csv:78 Test source fs1val = 0xbf800000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_78:
   fle.s x25, f18, f6 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_78, F_fle_s_cg_cp_ibm_b1_78_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_78, F_fle_s_cg_cp_ibm_b1_78_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_78, F_fle_s_cg_cp_ibm_b1_78_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_78, F_fle_s_cg_cp_ibm_b1_78_str)
 
 # Testcase cp_ibm_b1 (B1.csv:79 Test source fs1val = 0xbf800000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_79:
   fle.s x2, f17, f7 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_79, F_fle_s_cg_cp_ibm_b1_79_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_79, F_fle_s_cg_cp_ibm_b1_79_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_79, F_fle_s_cg_cp_ibm_b1_79_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_79, F_fle_s_cg_cp_ibm_b1_79_str)
 
 # Testcase cp_ibm_b1 (B1.csv:80 Test source fs1val = 0xbf800000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_80:
   fle.s x2, f2, f26 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_80, F_fle_s_cg_cp_ibm_b1_80_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_80, F_fle_s_cg_cp_ibm_b1_80_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_80, F_fle_s_cg_cp_ibm_b1_80_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_80, F_fle_s_cg_cp_ibm_b1_80_str)
 
 # Testcase cp_ibm_b1 (B1.csv:81 Test source fs1val = 0xbf800000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_81:
-  fle.s x20, f31, f1 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_81, F_fle_s_cg_cp_ibm_b1_81_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_81, F_fle_s_cg_cp_ibm_b1_81_str)
+  fle.s x18, f31, f1 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_81, F_fle_s_cg_cp_ibm_b1_81_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_81, F_fle_s_cg_cp_ibm_b1_81_str)
 
 # Testcase cp_ibm_b1 (B1.csv:82 Test source fs1val = 0x00800000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_82:
   fle.s x31, f24, f17 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_82, F_fle_s_cg_cp_ibm_b1_82_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_82, F_fle_s_cg_cp_ibm_b1_82_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_82, F_fle_s_cg_cp_ibm_b1_82_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_82, F_fle_s_cg_cp_ibm_b1_82_str)
 
 # Testcase cp_ibm_b1 (B1.csv:83 Test source fs1val = 0x00800000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_83:
-  fle.s x23, f5, f27 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_83, F_fle_s_cg_cp_ibm_b1_83_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_83, F_fle_s_cg_cp_ibm_b1_83_str)
+  fle.s x22, f5, f27 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_83, F_fle_s_cg_cp_ibm_b1_83_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_83, F_fle_s_cg_cp_ibm_b1_83_str)
 
 # Testcase cp_ibm_b1 (B1.csv:84 Test source fs1val = 0x00800000 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_84:
-  fle.s x15, f22, f1 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_84, F_fle_s_cg_cp_ibm_b1_84_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_84, F_fle_s_cg_cp_ibm_b1_84_str)
+  fle.s x14, f22, f1 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_84, F_fle_s_cg_cp_ibm_b1_84_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_84, F_fle_s_cg_cp_ibm_b1_84_str)
 
 # Testcase cp_ibm_b1 (B1.csv:85 Test source fs1val = 0x00800000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_85:
-  fle.s x21, f3, f24 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_85, F_fle_s_cg_cp_ibm_b1_85_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_85, F_fle_s_cg_cp_ibm_b1_85_str)
+  fle.s x20, f3, f24 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_85, F_fle_s_cg_cp_ibm_b1_85_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_85, F_fle_s_cg_cp_ibm_b1_85_str)
 
 # Testcase cp_ibm_b1 (B1.csv:86 Test source fs1val = 0x00800000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_86:
-  fle.s x18, f19, f18 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_86, F_fle_s_cg_cp_ibm_b1_86_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_86, F_fle_s_cg_cp_ibm_b1_86_str)
+  fle.s x17, f19, f18 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_86, F_fle_s_cg_cp_ibm_b1_86_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_86, F_fle_s_cg_cp_ibm_b1_86_str)
 
 # Testcase cp_ibm_b1 (B1.csv:87 Test source fs1val = 0x00800000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_87:
-  fle.s x16, f31, f9 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_87, F_fle_s_cg_cp_ibm_b1_87_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_87, F_fle_s_cg_cp_ibm_b1_87_str)
+  fle.s x15, f31, f9 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_87, F_fle_s_cg_cp_ibm_b1_87_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_87, F_fle_s_cg_cp_ibm_b1_87_str)
 
 # Testcase cp_ibm_b1 (B1.csv:88 Test source fs1val = 0x00800000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_88:
-  fle.s x16, f24, f10 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_88, F_fle_s_cg_cp_ibm_b1_88_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_88, F_fle_s_cg_cp_ibm_b1_88_str)
+  fle.s x15, f24, f10 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_88, F_fle_s_cg_cp_ibm_b1_88_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_88, F_fle_s_cg_cp_ibm_b1_88_str)
 
 # Testcase cp_ibm_b1 (B1.csv:89 Test source fs1val = 0x00800000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_89:
-  fle.s x10, f9, f23 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_89, F_fle_s_cg_cp_ibm_b1_89_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_89, F_fle_s_cg_cp_ibm_b1_89_str)
+  fle.s x9, f9, f23 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_89, F_fle_s_cg_cp_ibm_b1_89_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_89, F_fle_s_cg_cp_ibm_b1_89_str)
 
 # Testcase cp_ibm_b1 (B1.csv:90 Test source fs1val = 0x00800000 fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_90:
-  fle.s x7, f1, f20 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_90, F_fle_s_cg_cp_ibm_b1_90_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_90, F_fle_s_cg_cp_ibm_b1_90_str)
+  fle.s x6, f1, f20 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_90, F_fle_s_cg_cp_ibm_b1_90_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_90, F_fle_s_cg_cp_ibm_b1_90_str)
 
 # Testcase cp_ibm_b1 (B1.csv:91 Test source fs1val = 0x00800000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_91:
   fle.s x26, f8, f17 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_91, F_fle_s_cg_cp_ibm_b1_91_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_91, F_fle_s_cg_cp_ibm_b1_91_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_91, F_fle_s_cg_cp_ibm_b1_91_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_91, F_fle_s_cg_cp_ibm_b1_91_str)
 
 # Testcase cp_ibm_b1 (B1.csv:92 Test source fs1val = 0x00800000 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_92:
   fle.s x27, f12, f16 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_92, F_fle_s_cg_cp_ibm_b1_92_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_92, F_fle_s_cg_cp_ibm_b1_92_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_92, F_fle_s_cg_cp_ibm_b1_92_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_92, F_fle_s_cg_cp_ibm_b1_92_str)
 
 # Testcase cp_ibm_b1 (B1.csv:93 Test source fs1val = 0x00800000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_93:
   fle.s x29, f16, f17 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_93, F_fle_s_cg_cp_ibm_b1_93_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_93, F_fle_s_cg_cp_ibm_b1_93_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_93, F_fle_s_cg_cp_ibm_b1_93_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_93, F_fle_s_cg_cp_ibm_b1_93_str)
 
 # Testcase cp_ibm_b1 (B1.csv:94 Test source fs1val = 0x00800000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_94:
-  fle.s x11, f25, f1 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_94, F_fle_s_cg_cp_ibm_b1_94_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_94, F_fle_s_cg_cp_ibm_b1_94_str)
+  fle.s x10, f25, f1 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_94, F_fle_s_cg_cp_ibm_b1_94_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_94, F_fle_s_cg_cp_ibm_b1_94_str)
 
 # Testcase cp_ibm_b1 (B1.csv:95 Test source fs1val = 0x00800000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_95:
-  fle.s x18, f21, f18 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_95, F_fle_s_cg_cp_ibm_b1_95_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_95, F_fle_s_cg_cp_ibm_b1_95_str)
+  fle.s x17, f21, f18 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_95, F_fle_s_cg_cp_ibm_b1_95_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_95, F_fle_s_cg_cp_ibm_b1_95_str)
 
 # Testcase cp_ibm_b1 (B1.csv:96 Test source fs1val = 0x00800000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_96:
   fle.s x2, f26, f28 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_96, F_fle_s_cg_cp_ibm_b1_96_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_96, F_fle_s_cg_cp_ibm_b1_96_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_96, F_fle_s_cg_cp_ibm_b1_96_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_96, F_fle_s_cg_cp_ibm_b1_96_str)
 
 # Testcase cp_ibm_b1 (B1.csv:97 Test source fs1val = 0x00800000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_97:
-  fle.s x14, f17, f16 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_97, F_fle_s_cg_cp_ibm_b1_97_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_97, F_fle_s_cg_cp_ibm_b1_97_str)
+  fle.s x13, f17, f16 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_97, F_fle_s_cg_cp_ibm_b1_97_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_97, F_fle_s_cg_cp_ibm_b1_97_str)
 
 # Testcase cp_ibm_b1 (B1.csv:98 Test source fs1val = 0x00800000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_98:
-  fle.s x14, f31, f29 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_98, F_fle_s_cg_cp_ibm_b1_98_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_98, F_fle_s_cg_cp_ibm_b1_98_str)
+  fle.s x13, f31, f29 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_98, F_fle_s_cg_cp_ibm_b1_98_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_98, F_fle_s_cg_cp_ibm_b1_98_str)
 
 # Testcase cp_ibm_b1 (B1.csv:99 Test source fs1val = 0x00800000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_99:
   fle.s x25, f7, f10 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_99, F_fle_s_cg_cp_ibm_b1_99_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_99, F_fle_s_cg_cp_ibm_b1_99_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_99, F_fle_s_cg_cp_ibm_b1_99_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_99, F_fle_s_cg_cp_ibm_b1_99_str)
 
 # Testcase cp_ibm_b1 (B1.csv:100 Test source fs1val = 0x00800000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_100:
   fle.s x26, f9, f7 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_100, F_fle_s_cg_cp_ibm_b1_100_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_100, F_fle_s_cg_cp_ibm_b1_100_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_100, F_fle_s_cg_cp_ibm_b1_100_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_100, F_fle_s_cg_cp_ibm_b1_100_str)
 
 # Testcase cp_ibm_b1 (B1.csv:101 Test source fs1val = 0x00800000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_101:
-  fle.s x24, f24, f16 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_101, F_fle_s_cg_cp_ibm_b1_101_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_101, F_fle_s_cg_cp_ibm_b1_101_str)
+  fle.s x23, f24, f16 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_101, F_fle_s_cg_cp_ibm_b1_101_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_101, F_fle_s_cg_cp_ibm_b1_101_str)
 
 # Testcase cp_ibm_b1 (B1.csv:102 Test source fs1val = 0x80800000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_102:
-  fle.s x6, f25, f2 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_102, F_fle_s_cg_cp_ibm_b1_102_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_102, F_fle_s_cg_cp_ibm_b1_102_str)
+  fle.s x3, f25, f2 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_102, F_fle_s_cg_cp_ibm_b1_102_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_102, F_fle_s_cg_cp_ibm_b1_102_str)
 
 # Testcase cp_ibm_b1 (B1.csv:103 Test source fs1val = 0x80800000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_103:
   fle.s x25, f9, f19 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_103, F_fle_s_cg_cp_ibm_b1_103_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_103, F_fle_s_cg_cp_ibm_b1_103_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_103, F_fle_s_cg_cp_ibm_b1_103_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_103, F_fle_s_cg_cp_ibm_b1_103_str)
 
 # Testcase cp_ibm_b1 (B1.csv:104 Test source fs1val = 0x80800000 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_104:
-  fle.s x6, f5, f29 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_104, F_fle_s_cg_cp_ibm_b1_104_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_104, F_fle_s_cg_cp_ibm_b1_104_str)
+  fle.s x3, f5, f29 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_104, F_fle_s_cg_cp_ibm_b1_104_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_104, F_fle_s_cg_cp_ibm_b1_104_str)
 
 # Testcase cp_ibm_b1 (B1.csv:105 Test source fs1val = 0x80800000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_105:
-  fle.s x9, f19, f10 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_105, F_fle_s_cg_cp_ibm_b1_105_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_105, F_fle_s_cg_cp_ibm_b1_105_str)
+  fle.s x8, f19, f10 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_105, F_fle_s_cg_cp_ibm_b1_105_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_105, F_fle_s_cg_cp_ibm_b1_105_str)
 
 # Testcase cp_ibm_b1 (B1.csv:106 Test source fs1val = 0x80800000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_106:
-  fle.s x24, f3, f29 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_106, F_fle_s_cg_cp_ibm_b1_106_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_106, F_fle_s_cg_cp_ibm_b1_106_str)
+  fle.s x23, f3, f29 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_106, F_fle_s_cg_cp_ibm_b1_106_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_106, F_fle_s_cg_cp_ibm_b1_106_str)
 
 # Testcase cp_ibm_b1 (B1.csv:107 Test source fs1val = 0x80800000 fs2val = 0x80800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_107:
   fle.s x26, f10, f1 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_107, F_fle_s_cg_cp_ibm_b1_107_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_107, F_fle_s_cg_cp_ibm_b1_107_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_107, F_fle_s_cg_cp_ibm_b1_107_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_107, F_fle_s_cg_cp_ibm_b1_107_str)
 
 # Testcase cp_ibm_b1 (B1.csv:108 Test source fs1val = 0x80800000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_108:
-  fle.s x23, f29, f24 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_108, F_fle_s_cg_cp_ibm_b1_108_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_108, F_fle_s_cg_cp_ibm_b1_108_str)
+  fle.s x22, f29, f24 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_108, F_fle_s_cg_cp_ibm_b1_108_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_108, F_fle_s_cg_cp_ibm_b1_108_str)
 
 # Testcase cp_ibm_b1 (B1.csv:109 Test source fs1val = 0x80800000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_109:
   fle.s x27, f31, f12 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_109, F_fle_s_cg_cp_ibm_b1_109_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_109, F_fle_s_cg_cp_ibm_b1_109_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_109, F_fle_s_cg_cp_ibm_b1_109_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_109, F_fle_s_cg_cp_ibm_b1_109_str)
 
 # Testcase cp_ibm_b1 (B1.csv:110 Test source fs1val = 0x80800000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_110:
   fle.s x29, f13, f27 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_110, F_fle_s_cg_cp_ibm_b1_110_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_110, F_fle_s_cg_cp_ibm_b1_110_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_110, F_fle_s_cg_cp_ibm_b1_110_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_110, F_fle_s_cg_cp_ibm_b1_110_str)
 
 # Testcase cp_ibm_b1 (B1.csv:111 Test source fs1val = 0x80800000 fs2val = 0x807fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_111:
-  fle.s x8, f19, f25 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_111, F_fle_s_cg_cp_ibm_b1_111_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_111, F_fle_s_cg_cp_ibm_b1_111_str)
+  fle.s x7, f19, f25 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_111, F_fle_s_cg_cp_ibm_b1_111_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_111, F_fle_s_cg_cp_ibm_b1_111_str)
 
 # Testcase cp_ibm_b1 (B1.csv:112 Test source fs1val = 0x80800000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_112:
-  fle.s x13, f6, f11 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_112, F_fle_s_cg_cp_ibm_b1_112_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_112, F_fle_s_cg_cp_ibm_b1_112_str)
+  fle.s x12, f6, f11 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_112, F_fle_s_cg_cp_ibm_b1_112_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_112, F_fle_s_cg_cp_ibm_b1_112_str)
 
 # Testcase cp_ibm_b1 (B1.csv:113 Test source fs1val = 0x80800000 fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_113:
-  fle.s x11, f11, f30 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_113, F_fle_s_cg_cp_ibm_b1_113_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_113, F_fle_s_cg_cp_ibm_b1_113_str)
+  fle.s x10, f11, f30 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_113, F_fle_s_cg_cp_ibm_b1_113_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_113, F_fle_s_cg_cp_ibm_b1_113_str)
 
 # Testcase cp_ibm_b1 (B1.csv:114 Test source fs1val = 0x80800000 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_114:
   fle.s x31, f2, f14 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_114, F_fle_s_cg_cp_ibm_b1_114_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_114, F_fle_s_cg_cp_ibm_b1_114_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_114, F_fle_s_cg_cp_ibm_b1_114_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_114, F_fle_s_cg_cp_ibm_b1_114_str)
 
 # Testcase cp_ibm_b1 (B1.csv:115 Test source fs1val = 0x80800000 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_115:
-  fle.s x11, f19, f11 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_115, F_fle_s_cg_cp_ibm_b1_115_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_115, F_fle_s_cg_cp_ibm_b1_115_str)
+  fle.s x10, f19, f11 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_115, F_fle_s_cg_cp_ibm_b1_115_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_115, F_fle_s_cg_cp_ibm_b1_115_str)
 
 # Testcase cp_ibm_b1 (B1.csv:116 Test source fs1val = 0x80800000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_116:
-  fle.s x7, f2, f9 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_116, F_fle_s_cg_cp_ibm_b1_116_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_116, F_fle_s_cg_cp_ibm_b1_116_str)
+  fle.s x6, f2, f9 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_116, F_fle_s_cg_cp_ibm_b1_116_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_116, F_fle_s_cg_cp_ibm_b1_116_str)
 
 # Testcase cp_ibm_b1 (B1.csv:117 Test source fs1val = 0x80800000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_117:
-  fle.s x22, f20, f2 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_117, F_fle_s_cg_cp_ibm_b1_117_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_117, F_fle_s_cg_cp_ibm_b1_117_str)
+  fle.s x21, f20, f2 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_117, F_fle_s_cg_cp_ibm_b1_117_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_117, F_fle_s_cg_cp_ibm_b1_117_str)
 
 # Testcase cp_ibm_b1 (B1.csv:118 Test source fs1val = 0x80800000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_118:
   fle.s x28, f16, f24 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_118, F_fle_s_cg_cp_ibm_b1_118_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_118, F_fle_s_cg_cp_ibm_b1_118_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_118, F_fle_s_cg_cp_ibm_b1_118_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_118, F_fle_s_cg_cp_ibm_b1_118_str)
 
 # Testcase cp_ibm_b1 (B1.csv:119 Test source fs1val = 0x80800000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_119:
   fle.s x30, f12, f22 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_119, F_fle_s_cg_cp_ibm_b1_119_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_119, F_fle_s_cg_cp_ibm_b1_119_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_119, F_fle_s_cg_cp_ibm_b1_119_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_119, F_fle_s_cg_cp_ibm_b1_119_str)
 
 # Testcase cp_ibm_b1 (B1.csv:120 Test source fs1val = 0x80800000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_120:
   fle.s x29, f15, f12 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_120, F_fle_s_cg_cp_ibm_b1_120_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_120, F_fle_s_cg_cp_ibm_b1_120_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_120, F_fle_s_cg_cp_ibm_b1_120_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_120, F_fle_s_cg_cp_ibm_b1_120_str)
 
 # Testcase cp_ibm_b1 (B1.csv:121 Test source fs1val = 0x80800000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_121:
-  fle.s x9, f18, f22 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_121, F_fle_s_cg_cp_ibm_b1_121_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_121, F_fle_s_cg_cp_ibm_b1_121_str)
+  fle.s x8, f18, f22 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_121, F_fle_s_cg_cp_ibm_b1_121_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_121, F_fle_s_cg_cp_ibm_b1_121_str)
 
 # Testcase cp_ibm_b1 (B1.csv:122 Test source fs1val = 0x7f7fffff fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_122:
-  fle.s x20, f24, f11 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_122, F_fle_s_cg_cp_ibm_b1_122_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_122, F_fle_s_cg_cp_ibm_b1_122_str)
+  fle.s x18, f24, f11 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_122, F_fle_s_cg_cp_ibm_b1_122_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_122, F_fle_s_cg_cp_ibm_b1_122_str)
 
 # Testcase cp_ibm_b1 (B1.csv:123 Test source fs1val = 0x7f7fffff fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_123:
-  fle.s x8, f28, f13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_123, F_fle_s_cg_cp_ibm_b1_123_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_123, F_fle_s_cg_cp_ibm_b1_123_str)
+  fle.s x7, f28, f13 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_123, F_fle_s_cg_cp_ibm_b1_123_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_123, F_fle_s_cg_cp_ibm_b1_123_str)
 
 # Testcase cp_ibm_b1 (B1.csv:124 Test source fs1val = 0x7f7fffff fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_124:
   fle.s x27, f26, f30 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_124, F_fle_s_cg_cp_ibm_b1_124_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_124, F_fle_s_cg_cp_ibm_b1_124_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_124, F_fle_s_cg_cp_ibm_b1_124_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_124, F_fle_s_cg_cp_ibm_b1_124_str)
 
 # Testcase cp_ibm_b1 (B1.csv:125 Test source fs1val = 0x7f7fffff fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_125:
-  fle.s x10, f22, f23 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_125, F_fle_s_cg_cp_ibm_b1_125_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_125, F_fle_s_cg_cp_ibm_b1_125_str)
+  fle.s x9, f22, f23 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_125, F_fle_s_cg_cp_ibm_b1_125_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_125, F_fle_s_cg_cp_ibm_b1_125_str)
 
 # Testcase cp_ibm_b1 (B1.csv:126 Test source fs1val = 0x7f7fffff fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_126:
   fle.s x31, f28, f31 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_126, F_fle_s_cg_cp_ibm_b1_126_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_126, F_fle_s_cg_cp_ibm_b1_126_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_126, F_fle_s_cg_cp_ibm_b1_126_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_126, F_fle_s_cg_cp_ibm_b1_126_str)
 
 # Testcase cp_ibm_b1 (B1.csv:127 Test source fs1val = 0x7f7fffff fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_127:
   fle.s x1, f7, f16 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_127, F_fle_s_cg_cp_ibm_b1_127_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_127, F_fle_s_cg_cp_ibm_b1_127_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_127, F_fle_s_cg_cp_ibm_b1_127_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_127, F_fle_s_cg_cp_ibm_b1_127_str)
 
 # Testcase cp_ibm_b1 (B1.csv:128 Test source fs1val = 0x7f7fffff fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_128:
-  fle.s x22, f6, f10 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_128, F_fle_s_cg_cp_ibm_b1_128_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_128, F_fle_s_cg_cp_ibm_b1_128_str)
+  fle.s x21, f6, f10 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_128, F_fle_s_cg_cp_ibm_b1_128_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_128, F_fle_s_cg_cp_ibm_b1_128_str)
 
 # Testcase cp_ibm_b1 (B1.csv:129 Test source fs1val = 0x7f7fffff fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_129:
-  fle.s x13, f20, f10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_129, F_fle_s_cg_cp_ibm_b1_129_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_129, F_fle_s_cg_cp_ibm_b1_129_str)
+  fle.s x12, f20, f10 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_129, F_fle_s_cg_cp_ibm_b1_129_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_129, F_fle_s_cg_cp_ibm_b1_129_str)
 
 # Testcase cp_ibm_b1 (B1.csv:130 Test source fs1val = 0x7f7fffff fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_130:
-  fle.s x6, f24, f20 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_130, F_fle_s_cg_cp_ibm_b1_130_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_130, F_fle_s_cg_cp_ibm_b1_130_str)
+  fle.s x3, f24, f20 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_130, F_fle_s_cg_cp_ibm_b1_130_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_130, F_fle_s_cg_cp_ibm_b1_130_str)
 
 # Testcase cp_ibm_b1 (B1.csv:131 Test source fs1val = 0x7f7fffff fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_131:
-  fle.s x21, f7, f2 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_131, F_fle_s_cg_cp_ibm_b1_131_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_131, F_fle_s_cg_cp_ibm_b1_131_str)
+  fle.s x20, f7, f2 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_131, F_fle_s_cg_cp_ibm_b1_131_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_131, F_fle_s_cg_cp_ibm_b1_131_str)
 
 # Testcase cp_ibm_b1 (B1.csv:132 Test source fs1val = 0x7f7fffff fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_132:
-  fle.s x11, f3, f23 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_132, F_fle_s_cg_cp_ibm_b1_132_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_132, F_fle_s_cg_cp_ibm_b1_132_str)
+  fle.s x10, f3, f23 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_132, F_fle_s_cg_cp_ibm_b1_132_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_132, F_fle_s_cg_cp_ibm_b1_132_str)
 
 # Testcase cp_ibm_b1 (B1.csv:133 Test source fs1val = 0x7f7fffff fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_133:
   fle.s x2, f26, f9 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_133, F_fle_s_cg_cp_ibm_b1_133_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_133, F_fle_s_cg_cp_ibm_b1_133_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_133, F_fle_s_cg_cp_ibm_b1_133_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_133, F_fle_s_cg_cp_ibm_b1_133_str)
 
 # Testcase cp_ibm_b1 (B1.csv:134 Test source fs1val = 0x7f7fffff fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_134:
-  fle.s x8, f20, f13 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_134, F_fle_s_cg_cp_ibm_b1_134_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_134, F_fle_s_cg_cp_ibm_b1_134_str)
+  fle.s x7, f20, f13 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_134, F_fle_s_cg_cp_ibm_b1_134_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_134, F_fle_s_cg_cp_ibm_b1_134_str)
 
 # Testcase cp_ibm_b1 (B1.csv:135 Test source fs1val = 0x7f7fffff fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_135:
   fle.s x28, f13, f21 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_135, F_fle_s_cg_cp_ibm_b1_135_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_135, F_fle_s_cg_cp_ibm_b1_135_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_135, F_fle_s_cg_cp_ibm_b1_135_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_135, F_fle_s_cg_cp_ibm_b1_135_str)
 
 # Testcase cp_ibm_b1 (B1.csv:136 Test source fs1val = 0x7f7fffff fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_136:
   fle.s x28, f8, f25 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_136, F_fle_s_cg_cp_ibm_b1_136_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_136, F_fle_s_cg_cp_ibm_b1_136_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_136, F_fle_s_cg_cp_ibm_b1_136_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_136, F_fle_s_cg_cp_ibm_b1_136_str)
 
 # Testcase cp_ibm_b1 (B1.csv:137 Test source fs1val = 0x7f7fffff fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_137:
-  fle.s x14, f15, f9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_137, F_fle_s_cg_cp_ibm_b1_137_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_137, F_fle_s_cg_cp_ibm_b1_137_str)
+  fle.s x13, f15, f9 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_137, F_fle_s_cg_cp_ibm_b1_137_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_137, F_fle_s_cg_cp_ibm_b1_137_str)
 
 # Testcase cp_ibm_b1 (B1.csv:138 Test source fs1val = 0x7f7fffff fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_138:
   fle.s x31, f9, f20 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_138, F_fle_s_cg_cp_ibm_b1_138_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_138, F_fle_s_cg_cp_ibm_b1_138_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_138, F_fle_s_cg_cp_ibm_b1_138_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_138, F_fle_s_cg_cp_ibm_b1_138_str)
 
 # Testcase cp_ibm_b1 (B1.csv:139 Test source fs1val = 0x7f7fffff fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_139:
-  fle.s x14, f3, f29 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_139, F_fle_s_cg_cp_ibm_b1_139_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_139, F_fle_s_cg_cp_ibm_b1_139_str)
+  fle.s x13, f3, f29 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_139, F_fle_s_cg_cp_ibm_b1_139_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_139, F_fle_s_cg_cp_ibm_b1_139_str)
 
 # Testcase cp_ibm_b1 (B1.csv:140 Test source fs1val = 0x7f7fffff fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_140:
-  fle.s x21, f2, f10 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_140, F_fle_s_cg_cp_ibm_b1_140_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_140, F_fle_s_cg_cp_ibm_b1_140_str)
+  fle.s x20, f2, f10 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_140, F_fle_s_cg_cp_ibm_b1_140_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_140, F_fle_s_cg_cp_ibm_b1_140_str)
 
 # Testcase cp_ibm_b1 (B1.csv:141 Test source fs1val = 0x7f7fffff fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_141:
   fle.s x1, f29, f13 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_141, F_fle_s_cg_cp_ibm_b1_141_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_141, F_fle_s_cg_cp_ibm_b1_141_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_141, F_fle_s_cg_cp_ibm_b1_141_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_141, F_fle_s_cg_cp_ibm_b1_141_str)
 
 # Testcase cp_ibm_b1 (B1.csv:142 Test source fs1val = 0xff7fffff fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_142:
-  fle.s x13, f6, f12 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_142, F_fle_s_cg_cp_ibm_b1_142_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_142, F_fle_s_cg_cp_ibm_b1_142_str)
+  fle.s x12, f6, f12 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_142, F_fle_s_cg_cp_ibm_b1_142_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_142, F_fle_s_cg_cp_ibm_b1_142_str)
 
 # Testcase cp_ibm_b1 (B1.csv:143 Test source fs1val = 0xff7fffff fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_143:
-  fle.s x11, f31, f1 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_143, F_fle_s_cg_cp_ibm_b1_143_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_143, F_fle_s_cg_cp_ibm_b1_143_str)
+  fle.s x10, f31, f1 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_143, F_fle_s_cg_cp_ibm_b1_143_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_143, F_fle_s_cg_cp_ibm_b1_143_str)
 
 # Testcase cp_ibm_b1 (B1.csv:144 Test source fs1val = 0xff7fffff fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_144:
-  fle.s x6, f21, f17 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_144, F_fle_s_cg_cp_ibm_b1_144_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_144, F_fle_s_cg_cp_ibm_b1_144_str)
+  fle.s x3, f21, f17 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_144, F_fle_s_cg_cp_ibm_b1_144_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_144, F_fle_s_cg_cp_ibm_b1_144_str)
 
 # Testcase cp_ibm_b1 (B1.csv:145 Test source fs1val = 0xff7fffff fs2val = 0xbf800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_145:
-  fle.s x24, f15, f27 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_145, F_fle_s_cg_cp_ibm_b1_145_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_145, F_fle_s_cg_cp_ibm_b1_145_str)
+  fle.s x23, f15, f27 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_145, F_fle_s_cg_cp_ibm_b1_145_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_145, F_fle_s_cg_cp_ibm_b1_145_str)
 
 # Testcase cp_ibm_b1 (B1.csv:146 Test source fs1val = 0xff7fffff fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_146:
-  fle.s x20, f30, f27 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_146, F_fle_s_cg_cp_ibm_b1_146_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_146, F_fle_s_cg_cp_ibm_b1_146_str)
+  fle.s x18, f30, f27 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_146, F_fle_s_cg_cp_ibm_b1_146_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_146, F_fle_s_cg_cp_ibm_b1_146_str)
 
 # Testcase cp_ibm_b1 (B1.csv:147 Test source fs1val = 0xff7fffff fs2val = 0x80800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_147:
-  fle.s x22, f18, f3 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_147, F_fle_s_cg_cp_ibm_b1_147_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_147, F_fle_s_cg_cp_ibm_b1_147_str)
+  fle.s x21, f18, f3 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_147, F_fle_s_cg_cp_ibm_b1_147_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_147, F_fle_s_cg_cp_ibm_b1_147_str)
 
 # Testcase cp_ibm_b1 (B1.csv:148 Test source fs1val = 0xff7fffff fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_148:
-  fle.s x7, f9, f3 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_148, F_fle_s_cg_cp_ibm_b1_148_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_148, F_fle_s_cg_cp_ibm_b1_148_str)
+  fle.s x6, f9, f3 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_148, F_fle_s_cg_cp_ibm_b1_148_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_148, F_fle_s_cg_cp_ibm_b1_148_str)
 
 # Testcase cp_ibm_b1 (B1.csv:149 Test source fs1val = 0xff7fffff fs2val = 0xff7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_149:
   fle.s x31, f25, f1 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_149, F_fle_s_cg_cp_ibm_b1_149_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_149, F_fle_s_cg_cp_ibm_b1_149_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_149, F_fle_s_cg_cp_ibm_b1_149_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_149, F_fle_s_cg_cp_ibm_b1_149_str)
 
 # Testcase cp_ibm_b1 (B1.csv:150 Test source fs1val = 0xff7fffff fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_150:
-  fle.s x11, f15, f23 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_150, F_fle_s_cg_cp_ibm_b1_150_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_150, F_fle_s_cg_cp_ibm_b1_150_str)
+  fle.s x10, f15, f23 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_150, F_fle_s_cg_cp_ibm_b1_150_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_150, F_fle_s_cg_cp_ibm_b1_150_str)
 
 # Testcase cp_ibm_b1 (B1.csv:151 Test source fs1val = 0xff7fffff fs2val = 0x807fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_151:
   fle.s x25, f9, f29 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_151, F_fle_s_cg_cp_ibm_b1_151_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_151, F_fle_s_cg_cp_ibm_b1_151_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_151, F_fle_s_cg_cp_ibm_b1_151_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_151, F_fle_s_cg_cp_ibm_b1_151_str)
 
 # Testcase cp_ibm_b1 (B1.csv:152 Test source fs1val = 0xff7fffff fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_152:
   fle.s x2, f16, f11 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_152, F_fle_s_cg_cp_ibm_b1_152_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_152, F_fle_s_cg_cp_ibm_b1_152_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_152, F_fle_s_cg_cp_ibm_b1_152_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_152, F_fle_s_cg_cp_ibm_b1_152_str)
 
 # Testcase cp_ibm_b1 (B1.csv:153 Test source fs1val = 0xff7fffff fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_153:
-  fle.s x11, f24, f5 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_153, F_fle_s_cg_cp_ibm_b1_153_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_153, F_fle_s_cg_cp_ibm_b1_153_str)
+  fle.s x10, f24, f5 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_153, F_fle_s_cg_cp_ibm_b1_153_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_153, F_fle_s_cg_cp_ibm_b1_153_str)
 
 # Testcase cp_ibm_b1 (B1.csv:154 Test source fs1val = 0xff7fffff fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_154:
-  fle.s x11, f22, f7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_154, F_fle_s_cg_cp_ibm_b1_154_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_154, F_fle_s_cg_cp_ibm_b1_154_str)
+  fle.s x10, f22, f7 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_154, F_fle_s_cg_cp_ibm_b1_154_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_154, F_fle_s_cg_cp_ibm_b1_154_str)
 
 # Testcase cp_ibm_b1 (B1.csv:155 Test source fs1val = 0xff7fffff fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_155:
   fle.s x26, f13, f5 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_155, F_fle_s_cg_cp_ibm_b1_155_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_155, F_fle_s_cg_cp_ibm_b1_155_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_155, F_fle_s_cg_cp_ibm_b1_155_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_155, F_fle_s_cg_cp_ibm_b1_155_str)
 
 # Testcase cp_ibm_b1 (B1.csv:156 Test source fs1val = 0xff7fffff fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_156:
   fle.s x28, f15, f6 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_156, F_fle_s_cg_cp_ibm_b1_156_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_156, F_fle_s_cg_cp_ibm_b1_156_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_156, F_fle_s_cg_cp_ibm_b1_156_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_156, F_fle_s_cg_cp_ibm_b1_156_str)
 
 # Testcase cp_ibm_b1 (B1.csv:157 Test source fs1val = 0xff7fffff fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_157:
-  fle.s x17, f10, f15 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_157, F_fle_s_cg_cp_ibm_b1_157_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_157, F_fle_s_cg_cp_ibm_b1_157_str)
+  fle.s x16, f10, f15 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_157, F_fle_s_cg_cp_ibm_b1_157_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_157, F_fle_s_cg_cp_ibm_b1_157_str)
 
 # Testcase cp_ibm_b1 (B1.csv:158 Test source fs1val = 0xff7fffff fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_158:
-  fle.s x18, f28, f30 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_158, F_fle_s_cg_cp_ibm_b1_158_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_158, F_fle_s_cg_cp_ibm_b1_158_str)
+  fle.s x17, f28, f30 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_158, F_fle_s_cg_cp_ibm_b1_158_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_158, F_fle_s_cg_cp_ibm_b1_158_str)
 
 # Testcase cp_ibm_b1 (B1.csv:159 Test source fs1val = 0xff7fffff fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_159:
-  fle.s x22, f6, f1 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_159, F_fle_s_cg_cp_ibm_b1_159_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_159, F_fle_s_cg_cp_ibm_b1_159_str)
+  fle.s x21, f6, f1 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_159, F_fle_s_cg_cp_ibm_b1_159_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_159, F_fle_s_cg_cp_ibm_b1_159_str)
 
 # Testcase cp_ibm_b1 (B1.csv:160 Test source fs1val = 0xff7fffff fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_160:
   fle.s x29, f5, f1 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_160, F_fle_s_cg_cp_ibm_b1_160_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_160, F_fle_s_cg_cp_ibm_b1_160_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_160, F_fle_s_cg_cp_ibm_b1_160_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_160, F_fle_s_cg_cp_ibm_b1_160_str)
 
 # Testcase cp_ibm_b1 (B1.csv:161 Test source fs1val = 0xff7fffff fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_161:
-  fle.s x13, f14, f15 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_161, F_fle_s_cg_cp_ibm_b1_161_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_161, F_fle_s_cg_cp_ibm_b1_161_str)
+  fle.s x12, f14, f15 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_161, F_fle_s_cg_cp_ibm_b1_161_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_161, F_fle_s_cg_cp_ibm_b1_161_str)
 
 # Testcase cp_ibm_b1 (B1.csv:162 Test source fs1val = 0x007fffff fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_162:
   fle.s x2, f1, f21 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_162, F_fle_s_cg_cp_ibm_b1_162_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_162, F_fle_s_cg_cp_ibm_b1_162_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_162, F_fle_s_cg_cp_ibm_b1_162_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_162, F_fle_s_cg_cp_ibm_b1_162_str)
 
 # Testcase cp_ibm_b1 (B1.csv:163 Test source fs1val = 0x007fffff fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_163:
   fle.s x28, f3, f24 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_163, F_fle_s_cg_cp_ibm_b1_163_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_163, F_fle_s_cg_cp_ibm_b1_163_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_163, F_fle_s_cg_cp_ibm_b1_163_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_163, F_fle_s_cg_cp_ibm_b1_163_str)
 
 # Testcase cp_ibm_b1 (B1.csv:164 Test source fs1val = 0x007fffff fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_164:
-  fle.s x14, f9, f26 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_164, F_fle_s_cg_cp_ibm_b1_164_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_164, F_fle_s_cg_cp_ibm_b1_164_str)
+  fle.s x13, f9, f26 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_164, F_fle_s_cg_cp_ibm_b1_164_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_164, F_fle_s_cg_cp_ibm_b1_164_str)
 
 # Testcase cp_ibm_b1 (B1.csv:165 Test source fs1val = 0x007fffff fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_165:
   fle.s x31, f8, f11 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_165, F_fle_s_cg_cp_ibm_b1_165_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_165, F_fle_s_cg_cp_ibm_b1_165_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_165, F_fle_s_cg_cp_ibm_b1_165_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_165, F_fle_s_cg_cp_ibm_b1_165_str)
 
 # Testcase cp_ibm_b1 (B1.csv:166 Test source fs1val = 0x007fffff fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_166:
-  fle.s x8, f23, f25 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_166, F_fle_s_cg_cp_ibm_b1_166_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_166, F_fle_s_cg_cp_ibm_b1_166_str)
+  fle.s x7, f23, f25 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_166, F_fle_s_cg_cp_ibm_b1_166_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_166, F_fle_s_cg_cp_ibm_b1_166_str)
 
 # Testcase cp_ibm_b1 (B1.csv:167 Test source fs1val = 0x007fffff fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_167:
   fle.s x2, f30, f31 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_167, F_fle_s_cg_cp_ibm_b1_167_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_167, F_fle_s_cg_cp_ibm_b1_167_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_167, F_fle_s_cg_cp_ibm_b1_167_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_167, F_fle_s_cg_cp_ibm_b1_167_str)
 
 # Testcase cp_ibm_b1 (B1.csv:168 Test source fs1val = 0x007fffff fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_168:
-  fle.s x23, f5, f6 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_168, F_fle_s_cg_cp_ibm_b1_168_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_168, F_fle_s_cg_cp_ibm_b1_168_str)
+  fle.s x22, f5, f6 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_168, F_fle_s_cg_cp_ibm_b1_168_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_168, F_fle_s_cg_cp_ibm_b1_168_str)
 
 # Testcase cp_ibm_b1 (B1.csv:169 Test source fs1val = 0x007fffff fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_169:
   fle.s x28, f19, f8 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_169, F_fle_s_cg_cp_ibm_b1_169_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_169, F_fle_s_cg_cp_ibm_b1_169_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_169, F_fle_s_cg_cp_ibm_b1_169_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_169, F_fle_s_cg_cp_ibm_b1_169_str)
 
 # Testcase cp_ibm_b1 (B1.csv:170 Test source fs1val = 0x007fffff fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_170:
-  fle.s x23, f12, f27 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_170, F_fle_s_cg_cp_ibm_b1_170_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_170, F_fle_s_cg_cp_ibm_b1_170_str)
+  fle.s x22, f12, f27 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_170, F_fle_s_cg_cp_ibm_b1_170_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_170, F_fle_s_cg_cp_ibm_b1_170_str)
 
 # Testcase cp_ibm_b1 (B1.csv:171 Test source fs1val = 0x007fffff fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_171:
-  fle.s x15, f16, f29 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_171, F_fle_s_cg_cp_ibm_b1_171_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_171, F_fle_s_cg_cp_ibm_b1_171_str)
+  fle.s x14, f16, f29 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_171, F_fle_s_cg_cp_ibm_b1_171_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_171, F_fle_s_cg_cp_ibm_b1_171_str)
 
 # Testcase cp_ibm_b1 (B1.csv:172 Test source fs1val = 0x007fffff fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_172:
   fle.s x30, f23, f2 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_172, F_fle_s_cg_cp_ibm_b1_172_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_172, F_fle_s_cg_cp_ibm_b1_172_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_172, F_fle_s_cg_cp_ibm_b1_172_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_172, F_fle_s_cg_cp_ibm_b1_172_str)
 
 # Testcase cp_ibm_b1 (B1.csv:173 Test source fs1val = 0x007fffff fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_173:
-  fle.s x14, f8, f19 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_173, F_fle_s_cg_cp_ibm_b1_173_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_173, F_fle_s_cg_cp_ibm_b1_173_str)
+  fle.s x13, f8, f19 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_173, F_fle_s_cg_cp_ibm_b1_173_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_173, F_fle_s_cg_cp_ibm_b1_173_str)
 
 # Testcase cp_ibm_b1 (B1.csv:174 Test source fs1val = 0x007fffff fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_174:
-  fle.s x16, f23, f26 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_174, F_fle_s_cg_cp_ibm_b1_174_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_174, F_fle_s_cg_cp_ibm_b1_174_str)
+  fle.s x15, f23, f26 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_174, F_fle_s_cg_cp_ibm_b1_174_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_174, F_fle_s_cg_cp_ibm_b1_174_str)
 
 # Testcase cp_ibm_b1 (B1.csv:175 Test source fs1val = 0x007fffff fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_175:
-  fle.s x6, f2, f30 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_175, F_fle_s_cg_cp_ibm_b1_175_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_175, F_fle_s_cg_cp_ibm_b1_175_str)
+  fle.s x3, f2, f30 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_175, F_fle_s_cg_cp_ibm_b1_175_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_175, F_fle_s_cg_cp_ibm_b1_175_str)
 
 # Testcase cp_ibm_b1 (B1.csv:176 Test source fs1val = 0x007fffff fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_176:
-  fle.s x20, f19, f18 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_176, F_fle_s_cg_cp_ibm_b1_176_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_176, F_fle_s_cg_cp_ibm_b1_176_str)
+  fle.s x18, f19, f18 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_176, F_fle_s_cg_cp_ibm_b1_176_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_176, F_fle_s_cg_cp_ibm_b1_176_str)
 
 # Testcase cp_ibm_b1 (B1.csv:177 Test source fs1val = 0x007fffff fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_177:
-  fle.s x6, f26, f16 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_177, F_fle_s_cg_cp_ibm_b1_177_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_177, F_fle_s_cg_cp_ibm_b1_177_str)
+  fle.s x3, f26, f16 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_177, F_fle_s_cg_cp_ibm_b1_177_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_177, F_fle_s_cg_cp_ibm_b1_177_str)
 
 # Testcase cp_ibm_b1 (B1.csv:178 Test source fs1val = 0x007fffff fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_178:
-  fle.s x18, f21, f24 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_178, F_fle_s_cg_cp_ibm_b1_178_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_178, F_fle_s_cg_cp_ibm_b1_178_str)
+  fle.s x17, f21, f24 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_178, F_fle_s_cg_cp_ibm_b1_178_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_178, F_fle_s_cg_cp_ibm_b1_178_str)
 
 # Testcase cp_ibm_b1 (B1.csv:179 Test source fs1val = 0x007fffff fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_179:
   fle.s x26, f31, f23 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_179, F_fle_s_cg_cp_ibm_b1_179_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_179, F_fle_s_cg_cp_ibm_b1_179_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_179, F_fle_s_cg_cp_ibm_b1_179_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_179, F_fle_s_cg_cp_ibm_b1_179_str)
 
 # Testcase cp_ibm_b1 (B1.csv:180 Test source fs1val = 0x007fffff fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_180:
-  fle.s x9, f7, f12 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_180, F_fle_s_cg_cp_ibm_b1_180_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_180, F_fle_s_cg_cp_ibm_b1_180_str)
+  fle.s x8, f7, f12 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_180, F_fle_s_cg_cp_ibm_b1_180_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_180, F_fle_s_cg_cp_ibm_b1_180_str)
 
 # Testcase cp_ibm_b1 (B1.csv:181 Test source fs1val = 0x007fffff fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_181:
   fle.s x2, f15, f10 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_181, F_fle_s_cg_cp_ibm_b1_181_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_181, F_fle_s_cg_cp_ibm_b1_181_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_181, F_fle_s_cg_cp_ibm_b1_181_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_181, F_fle_s_cg_cp_ibm_b1_181_str)
 
 # Testcase cp_ibm_b1 (B1.csv:182 Test source fs1val = 0x807fffff fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_182:
-  fle.s x23, f8, f6 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_182, F_fle_s_cg_cp_ibm_b1_182_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_182, F_fle_s_cg_cp_ibm_b1_182_str)
+  fle.s x22, f8, f6 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_182, F_fle_s_cg_cp_ibm_b1_182_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_182, F_fle_s_cg_cp_ibm_b1_182_str)
 
 # Testcase cp_ibm_b1 (B1.csv:183 Test source fs1val = 0x807fffff fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_183:
-  fle.s x20, f9, f18 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_183, F_fle_s_cg_cp_ibm_b1_183_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_183, F_fle_s_cg_cp_ibm_b1_183_str)
+  fle.s x18, f9, f18 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_183, F_fle_s_cg_cp_ibm_b1_183_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_183, F_fle_s_cg_cp_ibm_b1_183_str)
 
 # Testcase cp_ibm_b1 (B1.csv:184 Test source fs1val = 0x807fffff fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_184:
-  fle.s x15, f20, f29 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_184, F_fle_s_cg_cp_ibm_b1_184_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_184, F_fle_s_cg_cp_ibm_b1_184_str)
+  fle.s x14, f20, f29 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_184, F_fle_s_cg_cp_ibm_b1_184_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_184, F_fle_s_cg_cp_ibm_b1_184_str)
 
 # Testcase cp_ibm_b1 (B1.csv:185 Test source fs1val = 0x807fffff fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_185:
-  fle.s x13, f3, f7 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_185, F_fle_s_cg_cp_ibm_b1_185_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_185, F_fle_s_cg_cp_ibm_b1_185_str)
+  fle.s x12, f3, f7 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_185, F_fle_s_cg_cp_ibm_b1_185_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_185, F_fle_s_cg_cp_ibm_b1_185_str)
 
 # Testcase cp_ibm_b1 (B1.csv:186 Test source fs1val = 0x807fffff fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_186:
   fle.s x28, f1, f23 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_186, F_fle_s_cg_cp_ibm_b1_186_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_186, F_fle_s_cg_cp_ibm_b1_186_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_186, F_fle_s_cg_cp_ibm_b1_186_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_186, F_fle_s_cg_cp_ibm_b1_186_str)
 
 # Testcase cp_ibm_b1 (B1.csv:187 Test source fs1val = 0x807fffff fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_187:
-  fle.s x8, f11, f3 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_187, F_fle_s_cg_cp_ibm_b1_187_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_187, F_fle_s_cg_cp_ibm_b1_187_str)
+  fle.s x7, f11, f3 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_187, F_fle_s_cg_cp_ibm_b1_187_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_187, F_fle_s_cg_cp_ibm_b1_187_str)
 
 # Testcase cp_ibm_b1 (B1.csv:188 Test source fs1val = 0x807fffff fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_188:
-  fle.s x10, f31, f27 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_188, F_fle_s_cg_cp_ibm_b1_188_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_188, F_fle_s_cg_cp_ibm_b1_188_str)
+  fle.s x9, f31, f27 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_188, F_fle_s_cg_cp_ibm_b1_188_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_188, F_fle_s_cg_cp_ibm_b1_188_str)
 
 # Testcase cp_ibm_b1 (B1.csv:189 Test source fs1val = 0x807fffff fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_189:
-  fle.s x13, f9, f23 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_189, F_fle_s_cg_cp_ibm_b1_189_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_189, F_fle_s_cg_cp_ibm_b1_189_str)
+  fle.s x12, f9, f23 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_189, F_fle_s_cg_cp_ibm_b1_189_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_189, F_fle_s_cg_cp_ibm_b1_189_str)
 
 # Testcase cp_ibm_b1 (B1.csv:190 Test source fs1val = 0x807fffff fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_190:
   fle.s x29, f7, f6 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_190, F_fle_s_cg_cp_ibm_b1_190_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_190, F_fle_s_cg_cp_ibm_b1_190_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_190, F_fle_s_cg_cp_ibm_b1_190_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_190, F_fle_s_cg_cp_ibm_b1_190_str)
 
 # Testcase cp_ibm_b1 (B1.csv:191 Test source fs1val = 0x807fffff fs2val = 0x807fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_191:
-  fle.s x13, f17, f26 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_191, F_fle_s_cg_cp_ibm_b1_191_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_191, F_fle_s_cg_cp_ibm_b1_191_str)
+  fle.s x12, f17, f26 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_191, F_fle_s_cg_cp_ibm_b1_191_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_191, F_fle_s_cg_cp_ibm_b1_191_str)
 
 # Testcase cp_ibm_b1 (B1.csv:192 Test source fs1val = 0x807fffff fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_192:
-  fle.s x17, f24, f13 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_192, F_fle_s_cg_cp_ibm_b1_192_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_192, F_fle_s_cg_cp_ibm_b1_192_str)
+  fle.s x16, f24, f13 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_192, F_fle_s_cg_cp_ibm_b1_192_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_192, F_fle_s_cg_cp_ibm_b1_192_str)
 
 # Testcase cp_ibm_b1 (B1.csv:193 Test source fs1val = 0x807fffff fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_193:
-  fle.s x21, f5, f23 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_193, F_fle_s_cg_cp_ibm_b1_193_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_193, F_fle_s_cg_cp_ibm_b1_193_str)
+  fle.s x20, f5, f23 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_193, F_fle_s_cg_cp_ibm_b1_193_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_193, F_fle_s_cg_cp_ibm_b1_193_str)
 
 # Testcase cp_ibm_b1 (B1.csv:194 Test source fs1val = 0x807fffff fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_194:
-  fle.s x16, f11, f7 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_194, F_fle_s_cg_cp_ibm_b1_194_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_194, F_fle_s_cg_cp_ibm_b1_194_str)
+  fle.s x15, f11, f7 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_194, F_fle_s_cg_cp_ibm_b1_194_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_194, F_fle_s_cg_cp_ibm_b1_194_str)
 
 # Testcase cp_ibm_b1 (B1.csv:195 Test source fs1val = 0x807fffff fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_195:
   fle.s x2, f27, f9 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_195, F_fle_s_cg_cp_ibm_b1_195_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_195, F_fle_s_cg_cp_ibm_b1_195_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_195, F_fle_s_cg_cp_ibm_b1_195_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_195, F_fle_s_cg_cp_ibm_b1_195_str)
 
 # Testcase cp_ibm_b1 (B1.csv:196 Test source fs1val = 0x807fffff fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_196:
   fle.s x31, f28, f16 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_196, F_fle_s_cg_cp_ibm_b1_196_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_196, F_fle_s_cg_cp_ibm_b1_196_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_196, F_fle_s_cg_cp_ibm_b1_196_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_196, F_fle_s_cg_cp_ibm_b1_196_str)
 
 # Testcase cp_ibm_b1 (B1.csv:197 Test source fs1val = 0x807fffff fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_197:
-  fle.s x6, f14, f17 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_197, F_fle_s_cg_cp_ibm_b1_197_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_197, F_fle_s_cg_cp_ibm_b1_197_str)
+  fle.s x3, f14, f17 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_197, F_fle_s_cg_cp_ibm_b1_197_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_197, F_fle_s_cg_cp_ibm_b1_197_str)
 
 # Testcase cp_ibm_b1 (B1.csv:198 Test source fs1val = 0x807fffff fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_198:
-  fle.s x13, f18, f16 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_198, F_fle_s_cg_cp_ibm_b1_198_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_198, F_fle_s_cg_cp_ibm_b1_198_str)
+  fle.s x12, f18, f16 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_198, F_fle_s_cg_cp_ibm_b1_198_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_198, F_fle_s_cg_cp_ibm_b1_198_str)
 
 # Testcase cp_ibm_b1 (B1.csv:199 Test source fs1val = 0x807fffff fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_199:
-  fle.s x6, f2, f12 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_199, F_fle_s_cg_cp_ibm_b1_199_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_199, F_fle_s_cg_cp_ibm_b1_199_str)
+  fle.s x3, f2, f12 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_199, F_fle_s_cg_cp_ibm_b1_199_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_199, F_fle_s_cg_cp_ibm_b1_199_str)
 
 # Testcase cp_ibm_b1 (B1.csv:200 Test source fs1val = 0x807fffff fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_200:
   fle.s x30, f15, f18 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_200, F_fle_s_cg_cp_ibm_b1_200_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_200, F_fle_s_cg_cp_ibm_b1_200_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_200, F_fle_s_cg_cp_ibm_b1_200_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_200, F_fle_s_cg_cp_ibm_b1_200_str)
 
 # Testcase cp_ibm_b1 (B1.csv:201 Test source fs1val = 0x807fffff fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_201:
-  fle.s x8, f1, f31 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_201, F_fle_s_cg_cp_ibm_b1_201_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_201, F_fle_s_cg_cp_ibm_b1_201_str)
+  fle.s x7, f1, f31 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_201, F_fle_s_cg_cp_ibm_b1_201_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_201, F_fle_s_cg_cp_ibm_b1_201_str)
 
 # Testcase cp_ibm_b1 (B1.csv:202 Test source fs1val = 0x00400000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_202:
-  fle.s x14, f12, f16 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_202, F_fle_s_cg_cp_ibm_b1_202_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_202, F_fle_s_cg_cp_ibm_b1_202_str)
+  fle.s x13, f12, f16 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_202, F_fle_s_cg_cp_ibm_b1_202_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_202, F_fle_s_cg_cp_ibm_b1_202_str)
 
 # Testcase cp_ibm_b1 (B1.csv:203 Test source fs1val = 0x00400000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_203:
-  fle.s x24, f26, f19 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_203, F_fle_s_cg_cp_ibm_b1_203_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_203, F_fle_s_cg_cp_ibm_b1_203_str)
+  fle.s x23, f26, f19 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_203, F_fle_s_cg_cp_ibm_b1_203_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_203, F_fle_s_cg_cp_ibm_b1_203_str)
 
 # Testcase cp_ibm_b1 (B1.csv:204 Test source fs1val = 0x00400000 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_204:
   fle.s x31, f19, f30 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_204, F_fle_s_cg_cp_ibm_b1_204_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_204, F_fle_s_cg_cp_ibm_b1_204_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_204, F_fle_s_cg_cp_ibm_b1_204_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_204, F_fle_s_cg_cp_ibm_b1_204_str)
 
 # Testcase cp_ibm_b1 (B1.csv:205 Test source fs1val = 0x00400000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_205:
   fle.s x25, f11, f10 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_205, F_fle_s_cg_cp_ibm_b1_205_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_205, F_fle_s_cg_cp_ibm_b1_205_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_205, F_fle_s_cg_cp_ibm_b1_205_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_205, F_fle_s_cg_cp_ibm_b1_205_str)
 
 # Testcase cp_ibm_b1 (B1.csv:206 Test source fs1val = 0x00400000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_206:
-  fle.s x8, f17, f11 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_206, F_fle_s_cg_cp_ibm_b1_206_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_206, F_fle_s_cg_cp_ibm_b1_206_str)
+  fle.s x7, f17, f11 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_206, F_fle_s_cg_cp_ibm_b1_206_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_206, F_fle_s_cg_cp_ibm_b1_206_str)
 
 # Testcase cp_ibm_b1 (B1.csv:207 Test source fs1val = 0x00400000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_207:
-  fle.s x11, f26, f17 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_207, F_fle_s_cg_cp_ibm_b1_207_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_207, F_fle_s_cg_cp_ibm_b1_207_str)
+  fle.s x10, f26, f17 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_207, F_fle_s_cg_cp_ibm_b1_207_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_207, F_fle_s_cg_cp_ibm_b1_207_str)
 
 # Testcase cp_ibm_b1 (B1.csv:208 Test source fs1val = 0x00400000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_208:
   fle.s x25, f30, f21 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_208, F_fle_s_cg_cp_ibm_b1_208_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_208, F_fle_s_cg_cp_ibm_b1_208_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_208, F_fle_s_cg_cp_ibm_b1_208_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_208, F_fle_s_cg_cp_ibm_b1_208_str)
 
 # Testcase cp_ibm_b1 (B1.csv:209 Test source fs1val = 0x00400000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_209:
-  fle.s x20, f22, f7 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_209, F_fle_s_cg_cp_ibm_b1_209_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_209, F_fle_s_cg_cp_ibm_b1_209_str)
+  fle.s x18, f22, f7 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_209, F_fle_s_cg_cp_ibm_b1_209_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_209, F_fle_s_cg_cp_ibm_b1_209_str)
 
 # Testcase cp_ibm_b1 (B1.csv:210 Test source fs1val = 0x00400000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_210:
   fle.s x25, f5, f12 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_210, F_fle_s_cg_cp_ibm_b1_210_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_210, F_fle_s_cg_cp_ibm_b1_210_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_210, F_fle_s_cg_cp_ibm_b1_210_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_210, F_fle_s_cg_cp_ibm_b1_210_str)
 
 # Testcase cp_ibm_b1 (B1.csv:211 Test source fs1val = 0x00400000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_211:
-  fle.s x24, f19, f17 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_211, F_fle_s_cg_cp_ibm_b1_211_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_211, F_fle_s_cg_cp_ibm_b1_211_str)
+  fle.s x23, f19, f17 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_211, F_fle_s_cg_cp_ibm_b1_211_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_211, F_fle_s_cg_cp_ibm_b1_211_str)
 
 # Testcase cp_ibm_b1 (B1.csv:212 Test source fs1val = 0x00400000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_212:
-  fle.s x24, f29, f13 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_212, F_fle_s_cg_cp_ibm_b1_212_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_212, F_fle_s_cg_cp_ibm_b1_212_str)
+  fle.s x23, f29, f13 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_212, F_fle_s_cg_cp_ibm_b1_212_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_212, F_fle_s_cg_cp_ibm_b1_212_str)
 
 # Testcase cp_ibm_b1 (B1.csv:213 Test source fs1val = 0x00400000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_213:
   fle.s x30, f13, f15 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_213, F_fle_s_cg_cp_ibm_b1_213_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_213, F_fle_s_cg_cp_ibm_b1_213_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_213, F_fle_s_cg_cp_ibm_b1_213_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_213, F_fle_s_cg_cp_ibm_b1_213_str)
 
 # Testcase cp_ibm_b1 (B1.csv:214 Test source fs1val = 0x00400000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_214:
   fle.s x29, f15, f29 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_214, F_fle_s_cg_cp_ibm_b1_214_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_214, F_fle_s_cg_cp_ibm_b1_214_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_214, F_fle_s_cg_cp_ibm_b1_214_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_214, F_fle_s_cg_cp_ibm_b1_214_str)
 
 # Testcase cp_ibm_b1 (B1.csv:215 Test source fs1val = 0x00400000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_215:
   fle.s x29, f21, f14 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_215, F_fle_s_cg_cp_ibm_b1_215_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_215, F_fle_s_cg_cp_ibm_b1_215_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_215, F_fle_s_cg_cp_ibm_b1_215_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_215, F_fle_s_cg_cp_ibm_b1_215_str)
 
 # Testcase cp_ibm_b1 (B1.csv:216 Test source fs1val = 0x00400000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_216:
   fle.s x27, f5, f9 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_216, F_fle_s_cg_cp_ibm_b1_216_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_216, F_fle_s_cg_cp_ibm_b1_216_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_216, F_fle_s_cg_cp_ibm_b1_216_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_216, F_fle_s_cg_cp_ibm_b1_216_str)
 
 # Testcase cp_ibm_b1 (B1.csv:217 Test source fs1val = 0x00400000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_217:
-  fle.s x21, f19, f29 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_217, F_fle_s_cg_cp_ibm_b1_217_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_217, F_fle_s_cg_cp_ibm_b1_217_str)
+  fle.s x20, f19, f29 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_217, F_fle_s_cg_cp_ibm_b1_217_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_217, F_fle_s_cg_cp_ibm_b1_217_str)
 
 # Testcase cp_ibm_b1 (B1.csv:218 Test source fs1val = 0x00400000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_218:
-  fle.s x15, f29, f28 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_218, F_fle_s_cg_cp_ibm_b1_218_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_218, F_fle_s_cg_cp_ibm_b1_218_str)
+  fle.s x14, f29, f28 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_218, F_fle_s_cg_cp_ibm_b1_218_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_218, F_fle_s_cg_cp_ibm_b1_218_str)
 
 # Testcase cp_ibm_b1 (B1.csv:219 Test source fs1val = 0x00400000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_219:
-  fle.s x9, f26, f29 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_219, F_fle_s_cg_cp_ibm_b1_219_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_219, F_fle_s_cg_cp_ibm_b1_219_str)
+  fle.s x8, f26, f29 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_219, F_fle_s_cg_cp_ibm_b1_219_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_219, F_fle_s_cg_cp_ibm_b1_219_str)
 
 # Testcase cp_ibm_b1 (B1.csv:220 Test source fs1val = 0x00400000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_220:
-  fle.s x24, f21, f6 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_220, F_fle_s_cg_cp_ibm_b1_220_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_220, F_fle_s_cg_cp_ibm_b1_220_str)
+  fle.s x23, f21, f6 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_220, F_fle_s_cg_cp_ibm_b1_220_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_220, F_fle_s_cg_cp_ibm_b1_220_str)
 
 # Testcase cp_ibm_b1 (B1.csv:221 Test source fs1val = 0x00400000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_221:
-  fle.s x11, f14, f15 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_221, F_fle_s_cg_cp_ibm_b1_221_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_221, F_fle_s_cg_cp_ibm_b1_221_str)
+  fle.s x10, f14, f15 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_221, F_fle_s_cg_cp_ibm_b1_221_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_221, F_fle_s_cg_cp_ibm_b1_221_str)
 
 # Testcase cp_ibm_b1 (B1.csv:222 Test source fs1val = 0x80400000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_222:
   fle.s x1, f28, f3 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_222, F_fle_s_cg_cp_ibm_b1_222_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_222, F_fle_s_cg_cp_ibm_b1_222_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_222, F_fle_s_cg_cp_ibm_b1_222_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_222, F_fle_s_cg_cp_ibm_b1_222_str)
 
 # Testcase cp_ibm_b1 (B1.csv:223 Test source fs1val = 0x80400000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_223:
   fle.s x30, f12, f16 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_223, F_fle_s_cg_cp_ibm_b1_223_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_223, F_fle_s_cg_cp_ibm_b1_223_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_223, F_fle_s_cg_cp_ibm_b1_223_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_223, F_fle_s_cg_cp_ibm_b1_223_str)
 
 # Testcase cp_ibm_b1 (B1.csv:224 Test source fs1val = 0x80400000 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_224:
-  fle.s x20, f1, f12 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_224, F_fle_s_cg_cp_ibm_b1_224_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_224, F_fle_s_cg_cp_ibm_b1_224_str)
+  fle.s x18, f1, f12 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_224, F_fle_s_cg_cp_ibm_b1_224_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_224, F_fle_s_cg_cp_ibm_b1_224_str)
 
 # Testcase cp_ibm_b1 (B1.csv:225 Test source fs1val = 0x80400000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_225:
   fle.s x31, f5, f3 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_225, F_fle_s_cg_cp_ibm_b1_225_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_225, F_fle_s_cg_cp_ibm_b1_225_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_225, F_fle_s_cg_cp_ibm_b1_225_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_225, F_fle_s_cg_cp_ibm_b1_225_str)
 
 # Testcase cp_ibm_b1 (B1.csv:226 Test source fs1val = 0x80400000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_226:
-  fle.s x11, f9, f7 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_226, F_fle_s_cg_cp_ibm_b1_226_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_226, F_fle_s_cg_cp_ibm_b1_226_str)
+  fle.s x10, f9, f7 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_226, F_fle_s_cg_cp_ibm_b1_226_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_226, F_fle_s_cg_cp_ibm_b1_226_str)
 
 # Testcase cp_ibm_b1 (B1.csv:227 Test source fs1val = 0x80400000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_227:
-  fle.s x11, f10, f14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_227, F_fle_s_cg_cp_ibm_b1_227_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_227, F_fle_s_cg_cp_ibm_b1_227_str)
+  fle.s x10, f10, f14 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_227, F_fle_s_cg_cp_ibm_b1_227_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_227, F_fle_s_cg_cp_ibm_b1_227_str)
 
 # Testcase cp_ibm_b1 (B1.csv:228 Test source fs1val = 0x80400000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_228:
-  fle.s x10, f14, f18 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_228, F_fle_s_cg_cp_ibm_b1_228_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_228, F_fle_s_cg_cp_ibm_b1_228_str)
+  fle.s x9, f14, f18 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_228, F_fle_s_cg_cp_ibm_b1_228_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_228, F_fle_s_cg_cp_ibm_b1_228_str)
 
 # Testcase cp_ibm_b1 (B1.csv:229 Test source fs1val = 0x80400000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_229:
   fle.s x31, f31, f17 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_229, F_fle_s_cg_cp_ibm_b1_229_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_229, F_fle_s_cg_cp_ibm_b1_229_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_229, F_fle_s_cg_cp_ibm_b1_229_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_229, F_fle_s_cg_cp_ibm_b1_229_str)
 
 # Testcase cp_ibm_b1 (B1.csv:230 Test source fs1val = 0x80400000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_230:
-  fle.s x22, f25, f5 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_230, F_fle_s_cg_cp_ibm_b1_230_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_230, F_fle_s_cg_cp_ibm_b1_230_str)
+  fle.s x21, f25, f5 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_230, F_fle_s_cg_cp_ibm_b1_230_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_230, F_fle_s_cg_cp_ibm_b1_230_str)
 
 # Testcase cp_ibm_b1 (B1.csv:231 Test source fs1val = 0x80400000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_231:
   fle.s x25, f17, f18 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_231, F_fle_s_cg_cp_ibm_b1_231_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_231, F_fle_s_cg_cp_ibm_b1_231_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_231, F_fle_s_cg_cp_ibm_b1_231_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_231, F_fle_s_cg_cp_ibm_b1_231_str)
 
 # Testcase cp_ibm_b1 (B1.csv:232 Test source fs1val = 0x80400000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_232:
   fle.s x26, f29, f18 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_232, F_fle_s_cg_cp_ibm_b1_232_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_232, F_fle_s_cg_cp_ibm_b1_232_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_232, F_fle_s_cg_cp_ibm_b1_232_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_232, F_fle_s_cg_cp_ibm_b1_232_str)
 
 # Testcase cp_ibm_b1 (B1.csv:233 Test source fs1val = 0x80400000 fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_233:
-  fle.s x7, f10, f25 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_233, F_fle_s_cg_cp_ibm_b1_233_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_233, F_fle_s_cg_cp_ibm_b1_233_str)
+  fle.s x6, f10, f25 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_233, F_fle_s_cg_cp_ibm_b1_233_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_233, F_fle_s_cg_cp_ibm_b1_233_str)
 
 # Testcase cp_ibm_b1 (B1.csv:234 Test source fs1val = 0x80400000 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_234:
-  fle.s x21, f21, f14 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_234, F_fle_s_cg_cp_ibm_b1_234_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_234, F_fle_s_cg_cp_ibm_b1_234_str)
+  fle.s x20, f21, f14 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_234, F_fle_s_cg_cp_ibm_b1_234_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_234, F_fle_s_cg_cp_ibm_b1_234_str)
 
 # Testcase cp_ibm_b1 (B1.csv:235 Test source fs1val = 0x80400000 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_235:
   fle.s x29, f5, f3 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_235, F_fle_s_cg_cp_ibm_b1_235_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_235, F_fle_s_cg_cp_ibm_b1_235_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_235, F_fle_s_cg_cp_ibm_b1_235_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_235, F_fle_s_cg_cp_ibm_b1_235_str)
 
 # Testcase cp_ibm_b1 (B1.csv:236 Test source fs1val = 0x80400000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_236:
-  fle.s x11, f2, f8 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_236, F_fle_s_cg_cp_ibm_b1_236_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_236, F_fle_s_cg_cp_ibm_b1_236_str)
+  fle.s x10, f2, f8 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_236, F_fle_s_cg_cp_ibm_b1_236_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_236, F_fle_s_cg_cp_ibm_b1_236_str)
 
 # Testcase cp_ibm_b1 (B1.csv:237 Test source fs1val = 0x80400000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_237:
-  fle.s x10, f17, f13 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_237, F_fle_s_cg_cp_ibm_b1_237_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_237, F_fle_s_cg_cp_ibm_b1_237_str)
+  fle.s x9, f17, f13 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_237, F_fle_s_cg_cp_ibm_b1_237_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_237, F_fle_s_cg_cp_ibm_b1_237_str)
 
 # Testcase cp_ibm_b1 (B1.csv:238 Test source fs1val = 0x80400000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_238:
-  fle.s x23, f8, f27 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_238, F_fle_s_cg_cp_ibm_b1_238_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_238, F_fle_s_cg_cp_ibm_b1_238_str)
+  fle.s x22, f8, f27 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_238, F_fle_s_cg_cp_ibm_b1_238_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_238, F_fle_s_cg_cp_ibm_b1_238_str)
 
 # Testcase cp_ibm_b1 (B1.csv:239 Test source fs1val = 0x80400000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_239:
   fle.s x31, f10, f6 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_239, F_fle_s_cg_cp_ibm_b1_239_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_239, F_fle_s_cg_cp_ibm_b1_239_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_239, F_fle_s_cg_cp_ibm_b1_239_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_239, F_fle_s_cg_cp_ibm_b1_239_str)
 
 # Testcase cp_ibm_b1 (B1.csv:240 Test source fs1val = 0x80400000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_240:
-  fle.s x14, f12, f18 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_240, F_fle_s_cg_cp_ibm_b1_240_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_240, F_fle_s_cg_cp_ibm_b1_240_str)
+  fle.s x13, f12, f18 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_240, F_fle_s_cg_cp_ibm_b1_240_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_240, F_fle_s_cg_cp_ibm_b1_240_str)
 
 # Testcase cp_ibm_b1 (B1.csv:241 Test source fs1val = 0x80400000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_241:
-  fle.s x23, f23, f5 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_241, F_fle_s_cg_cp_ibm_b1_241_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_241, F_fle_s_cg_cp_ibm_b1_241_str)
+  fle.s x22, f23, f5 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_241, F_fle_s_cg_cp_ibm_b1_241_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_241, F_fle_s_cg_cp_ibm_b1_241_str)
 
 # Testcase cp_ibm_b1 (B1.csv:242 Test source fs1val = 0x00000001 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_242:
   fle.s x26, f24, f28 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_242, F_fle_s_cg_cp_ibm_b1_242_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_242, F_fle_s_cg_cp_ibm_b1_242_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_242, F_fle_s_cg_cp_ibm_b1_242_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_242, F_fle_s_cg_cp_ibm_b1_242_str)
 
 # Testcase cp_ibm_b1 (B1.csv:243 Test source fs1val = 0x00000001 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_243:
-  fle.s x9, f23, f17 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_243, F_fle_s_cg_cp_ibm_b1_243_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_243, F_fle_s_cg_cp_ibm_b1_243_str)
+  fle.s x8, f23, f17 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_243, F_fle_s_cg_cp_ibm_b1_243_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_243, F_fle_s_cg_cp_ibm_b1_243_str)
 
 # Testcase cp_ibm_b1 (B1.csv:244 Test source fs1val = 0x00000001 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_244:
-  fle.s x17, f26, f28 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_244, F_fle_s_cg_cp_ibm_b1_244_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_244, F_fle_s_cg_cp_ibm_b1_244_str)
+  fle.s x16, f26, f28 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_244, F_fle_s_cg_cp_ibm_b1_244_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_244, F_fle_s_cg_cp_ibm_b1_244_str)
 
 # Testcase cp_ibm_b1 (B1.csv:245 Test source fs1val = 0x00000001 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_245:
-  fle.s x21, f18, f30 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_245, F_fle_s_cg_cp_ibm_b1_245_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_245, F_fle_s_cg_cp_ibm_b1_245_str)
+  fle.s x20, f18, f30 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_245, F_fle_s_cg_cp_ibm_b1_245_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_245, F_fle_s_cg_cp_ibm_b1_245_str)
 
 # Testcase cp_ibm_b1 (B1.csv:246 Test source fs1val = 0x00000001 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_246:
-  fle.s x21, f26, f11 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_246, F_fle_s_cg_cp_ibm_b1_246_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_246, F_fle_s_cg_cp_ibm_b1_246_str)
+  fle.s x20, f26, f11 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_246, F_fle_s_cg_cp_ibm_b1_246_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_246, F_fle_s_cg_cp_ibm_b1_246_str)
 
 # Testcase cp_ibm_b1 (B1.csv:247 Test source fs1val = 0x00000001 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_247:
   fle.s x28, f15, f26 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_247, F_fle_s_cg_cp_ibm_b1_247_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_247, F_fle_s_cg_cp_ibm_b1_247_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_247, F_fle_s_cg_cp_ibm_b1_247_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_247, F_fle_s_cg_cp_ibm_b1_247_str)
 
 # Testcase cp_ibm_b1 (B1.csv:248 Test source fs1val = 0x00000001 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_248:
-  fle.s x14, f29, f20 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_248, F_fle_s_cg_cp_ibm_b1_248_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_248, F_fle_s_cg_cp_ibm_b1_248_str)
+  fle.s x13, f29, f20 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_248, F_fle_s_cg_cp_ibm_b1_248_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_248, F_fle_s_cg_cp_ibm_b1_248_str)
 
 # Testcase cp_ibm_b1 (B1.csv:249 Test source fs1val = 0x00000001 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_249:
   fle.s x26, f13, f8 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_249, F_fle_s_cg_cp_ibm_b1_249_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_249, F_fle_s_cg_cp_ibm_b1_249_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_249, F_fle_s_cg_cp_ibm_b1_249_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_249, F_fle_s_cg_cp_ibm_b1_249_str)
 
 # Testcase cp_ibm_b1 (B1.csv:250 Test source fs1val = 0x00000001 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_250:
-  fle.s x13, f20, f21 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_250, F_fle_s_cg_cp_ibm_b1_250_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_250, F_fle_s_cg_cp_ibm_b1_250_str)
+  fle.s x12, f20, f21 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_250, F_fle_s_cg_cp_ibm_b1_250_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_250, F_fle_s_cg_cp_ibm_b1_250_str)
 
 # Testcase cp_ibm_b1 (B1.csv:251 Test source fs1val = 0x00000001 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_251:
-  fle.s x6, f27, f9 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_251, F_fle_s_cg_cp_ibm_b1_251_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_251, F_fle_s_cg_cp_ibm_b1_251_str)
+  fle.s x3, f27, f9 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_251, F_fle_s_cg_cp_ibm_b1_251_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_251, F_fle_s_cg_cp_ibm_b1_251_str)
 
 # Testcase cp_ibm_b1 (B1.csv:252 Test source fs1val = 0x00000001 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_252:
-  fle.s x7, f16, f2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_252, F_fle_s_cg_cp_ibm_b1_252_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_252, F_fle_s_cg_cp_ibm_b1_252_str)
+  fle.s x6, f16, f2 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_252, F_fle_s_cg_cp_ibm_b1_252_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_252, F_fle_s_cg_cp_ibm_b1_252_str)
 
 # Testcase cp_ibm_b1 (B1.csv:253 Test source fs1val = 0x00000001 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_253:
-  fle.s x8, f29, f24 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_253, F_fle_s_cg_cp_ibm_b1_253_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_253, F_fle_s_cg_cp_ibm_b1_253_str)
+  fle.s x7, f29, f24 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_253, F_fle_s_cg_cp_ibm_b1_253_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_253, F_fle_s_cg_cp_ibm_b1_253_str)
 
 # Testcase cp_ibm_b1 (B1.csv:254 Test source fs1val = 0x00000001 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_254:
   fle.s x2, f13, f5 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_254, F_fle_s_cg_cp_ibm_b1_254_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_254, F_fle_s_cg_cp_ibm_b1_254_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_254, F_fle_s_cg_cp_ibm_b1_254_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_254, F_fle_s_cg_cp_ibm_b1_254_str)
 
 # Testcase cp_ibm_b1 (B1.csv:255 Test source fs1val = 0x00000001 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_255:
-  fle.s x24, f18, f24 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_255, F_fle_s_cg_cp_ibm_b1_255_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_255, F_fle_s_cg_cp_ibm_b1_255_str)
+  fle.s x23, f18, f24 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_255, F_fle_s_cg_cp_ibm_b1_255_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_255, F_fle_s_cg_cp_ibm_b1_255_str)
 
 # Testcase cp_ibm_b1 (B1.csv:256 Test source fs1val = 0x00000001 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_256:
-  fle.s x22, f7, f8 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_256, F_fle_s_cg_cp_ibm_b1_256_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_256, F_fle_s_cg_cp_ibm_b1_256_str)
+  fle.s x21, f7, f8 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_256, F_fle_s_cg_cp_ibm_b1_256_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_256, F_fle_s_cg_cp_ibm_b1_256_str)
 
 # Testcase cp_ibm_b1 (B1.csv:257 Test source fs1val = 0x00000001 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_257:
   fle.s x2, f18, f12 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_257, F_fle_s_cg_cp_ibm_b1_257_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_257, F_fle_s_cg_cp_ibm_b1_257_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_257, F_fle_s_cg_cp_ibm_b1_257_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_257, F_fle_s_cg_cp_ibm_b1_257_str)
 
 # Testcase cp_ibm_b1 (B1.csv:258 Test source fs1val = 0x00000001 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_258:
   fle.s x1, f6, f10 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_258, F_fle_s_cg_cp_ibm_b1_258_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_258, F_fle_s_cg_cp_ibm_b1_258_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_258, F_fle_s_cg_cp_ibm_b1_258_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_258, F_fle_s_cg_cp_ibm_b1_258_str)
 
 # Testcase cp_ibm_b1 (B1.csv:259 Test source fs1val = 0x00000001 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_259:
-  fle.s x21, f26, f11 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_259, F_fle_s_cg_cp_ibm_b1_259_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_259, F_fle_s_cg_cp_ibm_b1_259_str)
+  fle.s x20, f26, f11 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_259, F_fle_s_cg_cp_ibm_b1_259_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_259, F_fle_s_cg_cp_ibm_b1_259_str)
 
 # Testcase cp_ibm_b1 (B1.csv:260 Test source fs1val = 0x00000001 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_260:
-  fle.s x11, f5, f22 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_260, F_fle_s_cg_cp_ibm_b1_260_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_260, F_fle_s_cg_cp_ibm_b1_260_str)
+  fle.s x10, f5, f22 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_260, F_fle_s_cg_cp_ibm_b1_260_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_260, F_fle_s_cg_cp_ibm_b1_260_str)
 
 # Testcase cp_ibm_b1 (B1.csv:261 Test source fs1val = 0x00000001 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_261:
-  fle.s x11, f31, f17 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_261, F_fle_s_cg_cp_ibm_b1_261_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_261, F_fle_s_cg_cp_ibm_b1_261_str)
+  fle.s x10, f31, f17 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_261, F_fle_s_cg_cp_ibm_b1_261_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_261, F_fle_s_cg_cp_ibm_b1_261_str)
 
 # Testcase cp_ibm_b1 (B1.csv:262 Test source fs1val = 0x80000001 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_262:
   fle.s x25, f29, f16 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_262, F_fle_s_cg_cp_ibm_b1_262_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_262, F_fle_s_cg_cp_ibm_b1_262_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_262, F_fle_s_cg_cp_ibm_b1_262_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_262, F_fle_s_cg_cp_ibm_b1_262_str)
 
 # Testcase cp_ibm_b1 (B1.csv:263 Test source fs1val = 0x80000001 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_263:
-  fle.s x10, f21, f22 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_263, F_fle_s_cg_cp_ibm_b1_263_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_263, F_fle_s_cg_cp_ibm_b1_263_str)
+  fle.s x9, f21, f22 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_263, F_fle_s_cg_cp_ibm_b1_263_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_263, F_fle_s_cg_cp_ibm_b1_263_str)
 
 # Testcase cp_ibm_b1 (B1.csv:264 Test source fs1val = 0x80000001 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_264:
   fle.s x31, f23, f11 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_264, F_fle_s_cg_cp_ibm_b1_264_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_264, F_fle_s_cg_cp_ibm_b1_264_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_264, F_fle_s_cg_cp_ibm_b1_264_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_264, F_fle_s_cg_cp_ibm_b1_264_str)
 
 # Testcase cp_ibm_b1 (B1.csv:265 Test source fs1val = 0x80000001 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_265:
-  fle.s x15, f20, f19 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_265, F_fle_s_cg_cp_ibm_b1_265_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_265, F_fle_s_cg_cp_ibm_b1_265_str)
+  fle.s x14, f20, f19 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_265, F_fle_s_cg_cp_ibm_b1_265_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_265, F_fle_s_cg_cp_ibm_b1_265_str)
 
 # Testcase cp_ibm_b1 (B1.csv:266 Test source fs1val = 0x80000001 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_266:
-  fle.s x12, f22, f3 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_266, F_fle_s_cg_cp_ibm_b1_266_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_266, F_fle_s_cg_cp_ibm_b1_266_str)
+  fle.s x11, f22, f3 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_266, F_fle_s_cg_cp_ibm_b1_266_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_266, F_fle_s_cg_cp_ibm_b1_266_str)
 
 # Testcase cp_ibm_b1 (B1.csv:267 Test source fs1val = 0x80000001 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_267:
-  fle.s x12, f28, f14 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_267, F_fle_s_cg_cp_ibm_b1_267_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_267, F_fle_s_cg_cp_ibm_b1_267_str)
+  fle.s x11, f28, f14 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_267, F_fle_s_cg_cp_ibm_b1_267_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_267, F_fle_s_cg_cp_ibm_b1_267_str)
 
 # Testcase cp_ibm_b1 (B1.csv:268 Test source fs1val = 0x80000001 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_268:
-  fle.s x10, f30, f26 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_268, F_fle_s_cg_cp_ibm_b1_268_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_268, F_fle_s_cg_cp_ibm_b1_268_str)
+  fle.s x9, f30, f26 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_268, F_fle_s_cg_cp_ibm_b1_268_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_268, F_fle_s_cg_cp_ibm_b1_268_str)
 
 # Testcase cp_ibm_b1 (B1.csv:269 Test source fs1val = 0x80000001 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_269:
-  fle.s x22, f19, f16 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_269, F_fle_s_cg_cp_ibm_b1_269_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_269, F_fle_s_cg_cp_ibm_b1_269_str)
+  fle.s x21, f19, f16 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_269, F_fle_s_cg_cp_ibm_b1_269_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_269, F_fle_s_cg_cp_ibm_b1_269_str)
 
 # Testcase cp_ibm_b1 (B1.csv:270 Test source fs1val = 0x80000001 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_270:
   fle.s x31, f10, f16 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_270, F_fle_s_cg_cp_ibm_b1_270_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_270, F_fle_s_cg_cp_ibm_b1_270_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_270, F_fle_s_cg_cp_ibm_b1_270_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_270, F_fle_s_cg_cp_ibm_b1_270_str)
 
 # Testcase cp_ibm_b1 (B1.csv:271 Test source fs1val = 0x80000001 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_271:
-  fle.s x16, f7, f6 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_271, F_fle_s_cg_cp_ibm_b1_271_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_271, F_fle_s_cg_cp_ibm_b1_271_str)
+  fle.s x15, f7, f6 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_271, F_fle_s_cg_cp_ibm_b1_271_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_271, F_fle_s_cg_cp_ibm_b1_271_str)
 
 # Testcase cp_ibm_b1 (B1.csv:272 Test source fs1val = 0x80000001 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_272:
   fle.s x1, f26, f9 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_272, F_fle_s_cg_cp_ibm_b1_272_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_272, F_fle_s_cg_cp_ibm_b1_272_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_272, F_fle_s_cg_cp_ibm_b1_272_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_272, F_fle_s_cg_cp_ibm_b1_272_str)
 
 # Testcase cp_ibm_b1 (B1.csv:273 Test source fs1val = 0x80000001 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_273:
   fle.s x31, f21, f19 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_273, F_fle_s_cg_cp_ibm_b1_273_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_273, F_fle_s_cg_cp_ibm_b1_273_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_273, F_fle_s_cg_cp_ibm_b1_273_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_273, F_fle_s_cg_cp_ibm_b1_273_str)
 
 # Testcase cp_ibm_b1 (B1.csv:274 Test source fs1val = 0x80000001 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_274:
-  fle.s x7, f20, f10 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_274, F_fle_s_cg_cp_ibm_b1_274_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_274, F_fle_s_cg_cp_ibm_b1_274_str)
+  fle.s x6, f20, f10 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_274, F_fle_s_cg_cp_ibm_b1_274_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_274, F_fle_s_cg_cp_ibm_b1_274_str)
 
 # Testcase cp_ibm_b1 (B1.csv:275 Test source fs1val = 0x80000001 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_275:
   fle.s x26, f18, f29 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_275, F_fle_s_cg_cp_ibm_b1_275_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_275, F_fle_s_cg_cp_ibm_b1_275_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_275, F_fle_s_cg_cp_ibm_b1_275_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_275, F_fle_s_cg_cp_ibm_b1_275_str)
 
 # Testcase cp_ibm_b1 (B1.csv:276 Test source fs1val = 0x80000001 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_276:
-  fle.s x11, f12, f5 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_276, F_fle_s_cg_cp_ibm_b1_276_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_276, F_fle_s_cg_cp_ibm_b1_276_str)
+  fle.s x10, f12, f5 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_276, F_fle_s_cg_cp_ibm_b1_276_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_276, F_fle_s_cg_cp_ibm_b1_276_str)
 
 # Testcase cp_ibm_b1 (B1.csv:277 Test source fs1val = 0x80000001 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_277:
-  fle.s x20, f27, f24 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_277, F_fle_s_cg_cp_ibm_b1_277_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_277, F_fle_s_cg_cp_ibm_b1_277_str)
+  fle.s x18, f27, f24 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_277, F_fle_s_cg_cp_ibm_b1_277_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_277, F_fle_s_cg_cp_ibm_b1_277_str)
 
 # Testcase cp_ibm_b1 (B1.csv:278 Test source fs1val = 0x80000001 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_278:
-  fle.s x11, f26, f1 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_278, F_fle_s_cg_cp_ibm_b1_278_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_278, F_fle_s_cg_cp_ibm_b1_278_str)
+  fle.s x10, f26, f1 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_278, F_fle_s_cg_cp_ibm_b1_278_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_278, F_fle_s_cg_cp_ibm_b1_278_str)
 
 # Testcase cp_ibm_b1 (B1.csv:279 Test source fs1val = 0x80000001 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_279:
-  fle.s x15, f11, f24 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_279, F_fle_s_cg_cp_ibm_b1_279_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_279, F_fle_s_cg_cp_ibm_b1_279_str)
+  fle.s x14, f11, f24 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_279, F_fle_s_cg_cp_ibm_b1_279_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_279, F_fle_s_cg_cp_ibm_b1_279_str)
 
 # Testcase cp_ibm_b1 (B1.csv:280 Test source fs1val = 0x80000001 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_280:
   fle.s x27, f2, f9 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_280, F_fle_s_cg_cp_ibm_b1_280_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_280, F_fle_s_cg_cp_ibm_b1_280_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_280, F_fle_s_cg_cp_ibm_b1_280_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_280, F_fle_s_cg_cp_ibm_b1_280_str)
 
 # Testcase cp_ibm_b1 (B1.csv:281 Test source fs1val = 0x80000001 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_281:
-  fle.s x9, f27, f5 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_281, F_fle_s_cg_cp_ibm_b1_281_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_281, F_fle_s_cg_cp_ibm_b1_281_str)
+  fle.s x8, f27, f5 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_281, F_fle_s_cg_cp_ibm_b1_281_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_281, F_fle_s_cg_cp_ibm_b1_281_str)
 
 # Testcase cp_ibm_b1 (B1.csv:282 Test source fs1val = 0x7f800000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_282:
-  fle.s x11, f31, f28 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_282, F_fle_s_cg_cp_ibm_b1_282_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_282, F_fle_s_cg_cp_ibm_b1_282_str)
+  fle.s x10, f31, f28 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_282, F_fle_s_cg_cp_ibm_b1_282_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_282, F_fle_s_cg_cp_ibm_b1_282_str)
 
 # Testcase cp_ibm_b1 (B1.csv:283 Test source fs1val = 0x7f800000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_283:
-  fle.s x12, f29, f22 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_283, F_fle_s_cg_cp_ibm_b1_283_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_283, F_fle_s_cg_cp_ibm_b1_283_str)
+  fle.s x11, f29, f22 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_283, F_fle_s_cg_cp_ibm_b1_283_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_283, F_fle_s_cg_cp_ibm_b1_283_str)
 
 # Testcase cp_ibm_b1 (B1.csv:284 Test source fs1val = 0x7f800000 fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_284:
-  fle.s x8, f21, f16 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_284, F_fle_s_cg_cp_ibm_b1_284_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_284, F_fle_s_cg_cp_ibm_b1_284_str)
+  fle.s x7, f21, f16 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_284, F_fle_s_cg_cp_ibm_b1_284_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_284, F_fle_s_cg_cp_ibm_b1_284_str)
 
 # Testcase cp_ibm_b1 (B1.csv:285 Test source fs1val = 0x7f800000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_285:
   fle.s x31, f19, f21 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_285, F_fle_s_cg_cp_ibm_b1_285_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_285, F_fle_s_cg_cp_ibm_b1_285_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_285, F_fle_s_cg_cp_ibm_b1_285_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_285, F_fle_s_cg_cp_ibm_b1_285_str)
 
 # Testcase cp_ibm_b1 (B1.csv:286 Test source fs1val = 0x7f800000 fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_286:
-  fle.s x8, f19, f26 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_286, F_fle_s_cg_cp_ibm_b1_286_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_286, F_fle_s_cg_cp_ibm_b1_286_str)
+  fle.s x7, f19, f26 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_286, F_fle_s_cg_cp_ibm_b1_286_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_286, F_fle_s_cg_cp_ibm_b1_286_str)
 
 # Testcase cp_ibm_b1 (B1.csv:287 Test source fs1val = 0x7f800000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_287:
-  fle.s x22, f30, f16 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_287, F_fle_s_cg_cp_ibm_b1_287_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_287, F_fle_s_cg_cp_ibm_b1_287_str)
+  fle.s x21, f30, f16 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_287, F_fle_s_cg_cp_ibm_b1_287_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_287, F_fle_s_cg_cp_ibm_b1_287_str)
 
 # Testcase cp_ibm_b1 (B1.csv:288 Test source fs1val = 0x7f800000 fs2val = 0x7f7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_288:
-  fle.s x24, f14, f12 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_288, F_fle_s_cg_cp_ibm_b1_288_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_288, F_fle_s_cg_cp_ibm_b1_288_str)
+  fle.s x23, f14, f12 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_288, F_fle_s_cg_cp_ibm_b1_288_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_288, F_fle_s_cg_cp_ibm_b1_288_str)
 
 # Testcase cp_ibm_b1 (B1.csv:289 Test source fs1val = 0x7f800000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_289:
   fle.s x29, f22, f20 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_289, F_fle_s_cg_cp_ibm_b1_289_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_289, F_fle_s_cg_cp_ibm_b1_289_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_289, F_fle_s_cg_cp_ibm_b1_289_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_289, F_fle_s_cg_cp_ibm_b1_289_str)
 
 # Testcase cp_ibm_b1 (B1.csv:290 Test source fs1val = 0x7f800000 fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_290:
-  fle.s x23, f9, f21 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_290, F_fle_s_cg_cp_ibm_b1_290_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_290, F_fle_s_cg_cp_ibm_b1_290_str)
+  fle.s x22, f9, f21 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_290, F_fle_s_cg_cp_ibm_b1_290_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_290, F_fle_s_cg_cp_ibm_b1_290_str)
 
 # Testcase cp_ibm_b1 (B1.csv:291 Test source fs1val = 0x7f800000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_291:
-  fle.s x10, f22, f20 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_291, F_fle_s_cg_cp_ibm_b1_291_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_291, F_fle_s_cg_cp_ibm_b1_291_str)
+  fle.s x9, f22, f20 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_291, F_fle_s_cg_cp_ibm_b1_291_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_291, F_fle_s_cg_cp_ibm_b1_291_str)
 
 # Testcase cp_ibm_b1 (B1.csv:292 Test source fs1val = 0x7f800000 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_292:
   fle.s x30, f9, f28 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_292, F_fle_s_cg_cp_ibm_b1_292_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_292, F_fle_s_cg_cp_ibm_b1_292_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_292, F_fle_s_cg_cp_ibm_b1_292_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_292, F_fle_s_cg_cp_ibm_b1_292_str)
 
 # Testcase cp_ibm_b1 (B1.csv:293 Test source fs1val = 0x7f800000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_293:
   fle.s x2, f21, f25 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_293, F_fle_s_cg_cp_ibm_b1_293_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_293, F_fle_s_cg_cp_ibm_b1_293_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_293, F_fle_s_cg_cp_ibm_b1_293_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_293, F_fle_s_cg_cp_ibm_b1_293_str)
 
 # Testcase cp_ibm_b1 (B1.csv:294 Test source fs1val = 0x7f800000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_294:
   fle.s x26, f31, f30 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_294, F_fle_s_cg_cp_ibm_b1_294_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_294, F_fle_s_cg_cp_ibm_b1_294_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_294, F_fle_s_cg_cp_ibm_b1_294_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_294, F_fle_s_cg_cp_ibm_b1_294_str)
 
 # Testcase cp_ibm_b1 (B1.csv:295 Test source fs1val = 0x7f800000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_295:
   fle.s x25, f9, f18 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_295, F_fle_s_cg_cp_ibm_b1_295_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_295, F_fle_s_cg_cp_ibm_b1_295_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_295, F_fle_s_cg_cp_ibm_b1_295_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_295, F_fle_s_cg_cp_ibm_b1_295_str)
 
 # Testcase cp_ibm_b1 (B1.csv:296 Test source fs1val = 0x7f800000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_296:
   fle.s x2, f27, f28 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_296, F_fle_s_cg_cp_ibm_b1_296_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_296, F_fle_s_cg_cp_ibm_b1_296_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_296, F_fle_s_cg_cp_ibm_b1_296_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_296, F_fle_s_cg_cp_ibm_b1_296_str)
 
 # Testcase cp_ibm_b1 (B1.csv:297 Test source fs1val = 0x7f800000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_297:
-  fle.s x20, f3, f18 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_297, F_fle_s_cg_cp_ibm_b1_297_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_297, F_fle_s_cg_cp_ibm_b1_297_str)
+  fle.s x18, f3, f18 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_297, F_fle_s_cg_cp_ibm_b1_297_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_297, F_fle_s_cg_cp_ibm_b1_297_str)
 
 # Testcase cp_ibm_b1 (B1.csv:298 Test source fs1val = 0x7f800000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_298:
   fle.s x1, f1, f6 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_298, F_fle_s_cg_cp_ibm_b1_298_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_298, F_fle_s_cg_cp_ibm_b1_298_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_298, F_fle_s_cg_cp_ibm_b1_298_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_298, F_fle_s_cg_cp_ibm_b1_298_str)
 
 # Testcase cp_ibm_b1 (B1.csv:299 Test source fs1val = 0x7f800000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_299:
   fle.s x31, f15, f23 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_299, F_fle_s_cg_cp_ibm_b1_299_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_299, F_fle_s_cg_cp_ibm_b1_299_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_299, F_fle_s_cg_cp_ibm_b1_299_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_299, F_fle_s_cg_cp_ibm_b1_299_str)
 
 # Testcase cp_ibm_b1 (B1.csv:300 Test source fs1val = 0x7f800000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_300:
-  fle.s x7, f14, f12 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_300, F_fle_s_cg_cp_ibm_b1_300_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_300, F_fle_s_cg_cp_ibm_b1_300_str)
+  fle.s x6, f14, f12 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_300, F_fle_s_cg_cp_ibm_b1_300_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_300, F_fle_s_cg_cp_ibm_b1_300_str)
 
 # Testcase cp_ibm_b1 (B1.csv:301 Test source fs1val = 0x7f800000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_301:
-  fle.s x10, f15, f17 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_301, F_fle_s_cg_cp_ibm_b1_301_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_301, F_fle_s_cg_cp_ibm_b1_301_str)
+  fle.s x9, f15, f17 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_301, F_fle_s_cg_cp_ibm_b1_301_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_301, F_fle_s_cg_cp_ibm_b1_301_str)
 
 # Testcase cp_ibm_b1 (B1.csv:302 Test source fs1val = 0xff800000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_302:
-  fle.s x10, f8, f2 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_302, F_fle_s_cg_cp_ibm_b1_302_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_302, F_fle_s_cg_cp_ibm_b1_302_str)
+  fle.s x9, f8, f2 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_302, F_fle_s_cg_cp_ibm_b1_302_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_302, F_fle_s_cg_cp_ibm_b1_302_str)
 
 # Testcase cp_ibm_b1 (B1.csv:303 Test source fs1val = 0xff800000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_303:
-  fle.s x13, f17, f10 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_303, F_fle_s_cg_cp_ibm_b1_303_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_303, F_fle_s_cg_cp_ibm_b1_303_str)
+  fle.s x12, f17, f10 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_303, F_fle_s_cg_cp_ibm_b1_303_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_303, F_fle_s_cg_cp_ibm_b1_303_str)
 
 # Testcase cp_ibm_b1 (B1.csv:304 Test source fs1val = 0xff800000 fs2val = 0x3f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_304:
   fle.s x29, f27, f2 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_304, F_fle_s_cg_cp_ibm_b1_304_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_304, F_fle_s_cg_cp_ibm_b1_304_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_304, F_fle_s_cg_cp_ibm_b1_304_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_304, F_fle_s_cg_cp_ibm_b1_304_str)
 
 # Testcase cp_ibm_b1 (B1.csv:305 Test source fs1val = 0xff800000 fs2val = 0xbf800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_305:
   fle.s x30, f19, f21 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_305, F_fle_s_cg_cp_ibm_b1_305_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_305, F_fle_s_cg_cp_ibm_b1_305_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_305, F_fle_s_cg_cp_ibm_b1_305_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_305, F_fle_s_cg_cp_ibm_b1_305_str)
 
 # Testcase cp_ibm_b1 (B1.csv:306 Test source fs1val = 0xff800000 fs2val = 0x00800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_306:
   fle.s x26, f16, f31 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_306, F_fle_s_cg_cp_ibm_b1_306_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_306, F_fle_s_cg_cp_ibm_b1_306_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_306, F_fle_s_cg_cp_ibm_b1_306_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_306, F_fle_s_cg_cp_ibm_b1_306_str)
 
 # Testcase cp_ibm_b1 (B1.csv:307 Test source fs1val = 0xff800000 fs2val = 0x80800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_307:
   fle.s x27, f12, f24 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_307, F_fle_s_cg_cp_ibm_b1_307_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_307, F_fle_s_cg_cp_ibm_b1_307_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_307, F_fle_s_cg_cp_ibm_b1_307_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_307, F_fle_s_cg_cp_ibm_b1_307_str)
 
 # Testcase cp_ibm_b1 (B1.csv:308 Test source fs1val = 0xff800000 fs2val = 0x7f7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_308:
-  fle.s x8, f25, f17 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_308, F_fle_s_cg_cp_ibm_b1_308_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_308, F_fle_s_cg_cp_ibm_b1_308_str)
+  fle.s x7, f25, f17 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_308, F_fle_s_cg_cp_ibm_b1_308_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_308, F_fle_s_cg_cp_ibm_b1_308_str)
 
 # Testcase cp_ibm_b1 (B1.csv:309 Test source fs1val = 0xff800000 fs2val = 0xff7fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_309:
-  fle.s x15, f17, f12 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_309, F_fle_s_cg_cp_ibm_b1_309_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_309, F_fle_s_cg_cp_ibm_b1_309_str)
+  fle.s x14, f17, f12 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_309, F_fle_s_cg_cp_ibm_b1_309_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_309, F_fle_s_cg_cp_ibm_b1_309_str)
 
 # Testcase cp_ibm_b1 (B1.csv:310 Test source fs1val = 0xff800000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_310:
   fle.s x27, f11, f6 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_310, F_fle_s_cg_cp_ibm_b1_310_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_310, F_fle_s_cg_cp_ibm_b1_310_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_310, F_fle_s_cg_cp_ibm_b1_310_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_310, F_fle_s_cg_cp_ibm_b1_310_str)
 
 # Testcase cp_ibm_b1 (B1.csv:311 Test source fs1val = 0xff800000 fs2val = 0x807fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_311:
-  fle.s x12, f8, f10 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_311, F_fle_s_cg_cp_ibm_b1_311_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_311, F_fle_s_cg_cp_ibm_b1_311_str)
+  fle.s x11, f8, f10 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_311, F_fle_s_cg_cp_ibm_b1_311_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_311, F_fle_s_cg_cp_ibm_b1_311_str)
 
 # Testcase cp_ibm_b1 (B1.csv:312 Test source fs1val = 0xff800000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_312:
-  fle.s x24, f30, f19 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_312, F_fle_s_cg_cp_ibm_b1_312_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_312, F_fle_s_cg_cp_ibm_b1_312_str)
+  fle.s x23, f30, f19 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_312, F_fle_s_cg_cp_ibm_b1_312_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_312, F_fle_s_cg_cp_ibm_b1_312_str)
 
 # Testcase cp_ibm_b1 (B1.csv:313 Test source fs1val = 0xff800000 fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_313:
   fle.s x31, f26, f23 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_313, F_fle_s_cg_cp_ibm_b1_313_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_313, F_fle_s_cg_cp_ibm_b1_313_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_313, F_fle_s_cg_cp_ibm_b1_313_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_313, F_fle_s_cg_cp_ibm_b1_313_str)
 
 # Testcase cp_ibm_b1 (B1.csv:314 Test source fs1val = 0xff800000 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_314:
-  fle.s x23, f21, f14 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_314, F_fle_s_cg_cp_ibm_b1_314_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_314, F_fle_s_cg_cp_ibm_b1_314_str)
+  fle.s x22, f21, f14 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_314, F_fle_s_cg_cp_ibm_b1_314_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_314, F_fle_s_cg_cp_ibm_b1_314_str)
 
 # Testcase cp_ibm_b1 (B1.csv:315 Test source fs1val = 0xff800000 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_315:
-  fle.s x10, f17, f20 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_315, F_fle_s_cg_cp_ibm_b1_315_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_315, F_fle_s_cg_cp_ibm_b1_315_str)
+  fle.s x9, f17, f20 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_315, F_fle_s_cg_cp_ibm_b1_315_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_315, F_fle_s_cg_cp_ibm_b1_315_str)
 
 # Testcase cp_ibm_b1 (B1.csv:316 Test source fs1val = 0xff800000 fs2val = 0x7f800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_316:
-  fle.s x8, f13, f14 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_316, F_fle_s_cg_cp_ibm_b1_316_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_316, F_fle_s_cg_cp_ibm_b1_316_str)
+  fle.s x7, f13, f14 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_316, F_fle_s_cg_cp_ibm_b1_316_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_316, F_fle_s_cg_cp_ibm_b1_316_str)
 
 # Testcase cp_ibm_b1 (B1.csv:317 Test source fs1val = 0xff800000 fs2val = 0xff800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_317:
-  fle.s x11, f28, f30 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_317, F_fle_s_cg_cp_ibm_b1_317_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_317, F_fle_s_cg_cp_ibm_b1_317_str)
+  fle.s x10, f28, f30 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_317, F_fle_s_cg_cp_ibm_b1_317_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_317, F_fle_s_cg_cp_ibm_b1_317_str)
 
 # Testcase cp_ibm_b1 (B1.csv:318 Test source fs1val = 0xff800000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_318:
   fle.s x30, f28, f26 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_318, F_fle_s_cg_cp_ibm_b1_318_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_318, F_fle_s_cg_cp_ibm_b1_318_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_318, F_fle_s_cg_cp_ibm_b1_318_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_318, F_fle_s_cg_cp_ibm_b1_318_str)
 
 # Testcase cp_ibm_b1 (B1.csv:319 Test source fs1val = 0xff800000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_319:
-  fle.s x15, f3, f27 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_319, F_fle_s_cg_cp_ibm_b1_319_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_319, F_fle_s_cg_cp_ibm_b1_319_str)
+  fle.s x14, f3, f27 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_319, F_fle_s_cg_cp_ibm_b1_319_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_319, F_fle_s_cg_cp_ibm_b1_319_str)
 
 # Testcase cp_ibm_b1 (B1.csv:320 Test source fs1val = 0xff800000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_320:
-  fle.s x9, f15, f31 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_320, F_fle_s_cg_cp_ibm_b1_320_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_320, F_fle_s_cg_cp_ibm_b1_320_str)
+  fle.s x8, f15, f31 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_320, F_fle_s_cg_cp_ibm_b1_320_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_320, F_fle_s_cg_cp_ibm_b1_320_str)
 
 # Testcase cp_ibm_b1 (B1.csv:321 Test source fs1val = 0xff800000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0xff800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_321:
-  fle.s x12, f24, f27 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_321, F_fle_s_cg_cp_ibm_b1_321_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_321, F_fle_s_cg_cp_ibm_b1_321_str)
+  fle.s x11, f24, f27 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_321, F_fle_s_cg_cp_ibm_b1_321_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_321, F_fle_s_cg_cp_ibm_b1_321_str)
 
 # Testcase cp_ibm_b1 (B1.csv:322 Test source fs1val = 0x7fc00000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_322:
   fle.s x26, f3, f27 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_322, F_fle_s_cg_cp_ibm_b1_322_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_322, F_fle_s_cg_cp_ibm_b1_322_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_322, F_fle_s_cg_cp_ibm_b1_322_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_322, F_fle_s_cg_cp_ibm_b1_322_str)
 
 # Testcase cp_ibm_b1 (B1.csv:323 Test source fs1val = 0x7fc00000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_323:
   fle.s x26, f2, f19 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_323, F_fle_s_cg_cp_ibm_b1_323_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_323, F_fle_s_cg_cp_ibm_b1_323_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_323, F_fle_s_cg_cp_ibm_b1_323_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_323, F_fle_s_cg_cp_ibm_b1_323_str)
 
 # Testcase cp_ibm_b1 (B1.csv:324 Test source fs1val = 0x7fc00000 fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_324:
   fle.s x27, f13, f16 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_324, F_fle_s_cg_cp_ibm_b1_324_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_324, F_fle_s_cg_cp_ibm_b1_324_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_324, F_fle_s_cg_cp_ibm_b1_324_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_324, F_fle_s_cg_cp_ibm_b1_324_str)
 
 # Testcase cp_ibm_b1 (B1.csv:325 Test source fs1val = 0x7fc00000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_325:
-  fle.s x23, f19, f23 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_325, F_fle_s_cg_cp_ibm_b1_325_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_325, F_fle_s_cg_cp_ibm_b1_325_str)
+  fle.s x22, f19, f23 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_325, F_fle_s_cg_cp_ibm_b1_325_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_325, F_fle_s_cg_cp_ibm_b1_325_str)
 
 # Testcase cp_ibm_b1 (B1.csv:326 Test source fs1val = 0x7fc00000 fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_326:
-  fle.s x7, f14, f2 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_326, F_fle_s_cg_cp_ibm_b1_326_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_326, F_fle_s_cg_cp_ibm_b1_326_str)
+  fle.s x6, f14, f2 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_326, F_fle_s_cg_cp_ibm_b1_326_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_326, F_fle_s_cg_cp_ibm_b1_326_str)
 
 # Testcase cp_ibm_b1 (B1.csv:327 Test source fs1val = 0x7fc00000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_327:
   fle.s x25, f5, f14 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_327, F_fle_s_cg_cp_ibm_b1_327_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_327, F_fle_s_cg_cp_ibm_b1_327_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_327, F_fle_s_cg_cp_ibm_b1_327_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_327, F_fle_s_cg_cp_ibm_b1_327_str)
 
 # Testcase cp_ibm_b1 (B1.csv:328 Test source fs1val = 0x7fc00000 fs2val = 0x7f7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_328:
-  fle.s x23, f27, f10 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_328, F_fle_s_cg_cp_ibm_b1_328_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_328, F_fle_s_cg_cp_ibm_b1_328_str)
+  fle.s x22, f27, f10 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_328, F_fle_s_cg_cp_ibm_b1_328_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_328, F_fle_s_cg_cp_ibm_b1_328_str)
 
 # Testcase cp_ibm_b1 (B1.csv:329 Test source fs1val = 0x7fc00000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_329:
   fle.s x1, f11, f21 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_329, F_fle_s_cg_cp_ibm_b1_329_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_329, F_fle_s_cg_cp_ibm_b1_329_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_329, F_fle_s_cg_cp_ibm_b1_329_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_329, F_fle_s_cg_cp_ibm_b1_329_str)
 
 # Testcase cp_ibm_b1 (B1.csv:330 Test source fs1val = 0x7fc00000 fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_330:
-  fle.s x18, f8, f17 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_330, F_fle_s_cg_cp_ibm_b1_330_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_330, F_fle_s_cg_cp_ibm_b1_330_str)
+  fle.s x17, f8, f17 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_330, F_fle_s_cg_cp_ibm_b1_330_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_330, F_fle_s_cg_cp_ibm_b1_330_str)
 
 # Testcase cp_ibm_b1 (B1.csv:331 Test source fs1val = 0x7fc00000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_331:
-  fle.s x20, f17, f28 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_331, F_fle_s_cg_cp_ibm_b1_331_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_331, F_fle_s_cg_cp_ibm_b1_331_str)
+  fle.s x18, f17, f28 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_331, F_fle_s_cg_cp_ibm_b1_331_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_331, F_fle_s_cg_cp_ibm_b1_331_str)
 
 # Testcase cp_ibm_b1 (B1.csv:332 Test source fs1val = 0x7fc00000 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_332:
-  fle.s x14, f1, f9 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_332, F_fle_s_cg_cp_ibm_b1_332_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_332, F_fle_s_cg_cp_ibm_b1_332_str)
+  fle.s x13, f1, f9 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_332, F_fle_s_cg_cp_ibm_b1_332_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_332, F_fle_s_cg_cp_ibm_b1_332_str)
 
 # Testcase cp_ibm_b1 (B1.csv:333 Test source fs1val = 0x7fc00000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_333:
   fle.s x28, f20, f18 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_333, F_fle_s_cg_cp_ibm_b1_333_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_333, F_fle_s_cg_cp_ibm_b1_333_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_333, F_fle_s_cg_cp_ibm_b1_333_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_333, F_fle_s_cg_cp_ibm_b1_333_str)
 
 # Testcase cp_ibm_b1 (B1.csv:334 Test source fs1val = 0x7fc00000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_334:
-  fle.s x21, f28, f21 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_334, F_fle_s_cg_cp_ibm_b1_334_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_334, F_fle_s_cg_cp_ibm_b1_334_str)
+  fle.s x20, f28, f21 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_334, F_fle_s_cg_cp_ibm_b1_334_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_334, F_fle_s_cg_cp_ibm_b1_334_str)
 
 # Testcase cp_ibm_b1 (B1.csv:335 Test source fs1val = 0x7fc00000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_335:
-  fle.s x16, f14, f5 # perform operation
-  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_335, F_fle_s_cg_cp_ibm_b1_335_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_335, F_fle_s_cg_cp_ibm_b1_335_str)
+  fle.s x15, f14, f5 # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_335, F_fle_s_cg_cp_ibm_b1_335_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_335, F_fle_s_cg_cp_ibm_b1_335_str)
 
 # Testcase cp_ibm_b1 (B1.csv:336 Test source fs1val = 0x7fc00000 fs2val = 0x7f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_336:
-  fle.s x21, f16, f21 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_336, F_fle_s_cg_cp_ibm_b1_336_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_336, F_fle_s_cg_cp_ibm_b1_336_str)
+  fle.s x20, f16, f21 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_336, F_fle_s_cg_cp_ibm_b1_336_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_336, F_fle_s_cg_cp_ibm_b1_336_str)
 
 # Testcase cp_ibm_b1 (B1.csv:337 Test source fs1val = 0x7fc00000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_337:
-  fle.s x24, f22, f1 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_337, F_fle_s_cg_cp_ibm_b1_337_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_337, F_fle_s_cg_cp_ibm_b1_337_str)
+  fle.s x23, f22, f1 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_337, F_fle_s_cg_cp_ibm_b1_337_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_337, F_fle_s_cg_cp_ibm_b1_337_str)
 
 # Testcase cp_ibm_b1 (B1.csv:338 Test source fs1val = 0x7fc00000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_338:
   fle.s x27, f10, f15 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_338, F_fle_s_cg_cp_ibm_b1_338_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_338, F_fle_s_cg_cp_ibm_b1_338_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_338, F_fle_s_cg_cp_ibm_b1_338_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_338, F_fle_s_cg_cp_ibm_b1_338_str)
 
 # Testcase cp_ibm_b1 (B1.csv:339 Test source fs1val = 0x7fc00000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_339:
-  fle.s x12, f28, f20 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_339, F_fle_s_cg_cp_ibm_b1_339_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_339, F_fle_s_cg_cp_ibm_b1_339_str)
+  fle.s x11, f28, f20 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_339, F_fle_s_cg_cp_ibm_b1_339_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_339, F_fle_s_cg_cp_ibm_b1_339_str)
 
 # Testcase cp_ibm_b1 (B1.csv:340 Test source fs1val = 0x7fc00000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_340:
-  fle.s x24, f13, f14 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_340, F_fle_s_cg_cp_ibm_b1_340_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_340, F_fle_s_cg_cp_ibm_b1_340_str)
+  fle.s x23, f13, f14 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_340, F_fle_s_cg_cp_ibm_b1_340_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_340, F_fle_s_cg_cp_ibm_b1_340_str)
 
 # Testcase cp_ibm_b1 (B1.csv:341 Test source fs1val = 0x7fc00000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_341:
-  fle.s x9, f28, f7 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_341, F_fle_s_cg_cp_ibm_b1_341_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_341, F_fle_s_cg_cp_ibm_b1_341_str)
+  fle.s x8, f28, f7 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_341, F_fle_s_cg_cp_ibm_b1_341_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_341, F_fle_s_cg_cp_ibm_b1_341_str)
 
 # Testcase cp_ibm_b1 (B1.csv:342 Test source fs1val = 0x7fffffff fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_342:
-  fle.s x11, f2, f11 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_342, F_fle_s_cg_cp_ibm_b1_342_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_342, F_fle_s_cg_cp_ibm_b1_342_str)
+  fle.s x10, f2, f11 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_342, F_fle_s_cg_cp_ibm_b1_342_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_342, F_fle_s_cg_cp_ibm_b1_342_str)
 
 # Testcase cp_ibm_b1 (B1.csv:343 Test source fs1val = 0x7fffffff fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_343:
-  fle.s x21, f5, f13 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_343, F_fle_s_cg_cp_ibm_b1_343_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_343, F_fle_s_cg_cp_ibm_b1_343_str)
+  fle.s x20, f5, f13 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_343, F_fle_s_cg_cp_ibm_b1_343_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_343, F_fle_s_cg_cp_ibm_b1_343_str)
 
 # Testcase cp_ibm_b1 (B1.csv:344 Test source fs1val = 0x7fffffff fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_344:
   fle.s x2, f18, f23 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_344, F_fle_s_cg_cp_ibm_b1_344_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_344, F_fle_s_cg_cp_ibm_b1_344_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_344, F_fle_s_cg_cp_ibm_b1_344_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_344, F_fle_s_cg_cp_ibm_b1_344_str)
 
 # Testcase cp_ibm_b1 (B1.csv:345 Test source fs1val = 0x7fffffff fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_345:
-  fle.s x22, f1, f27 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_345, F_fle_s_cg_cp_ibm_b1_345_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_345, F_fle_s_cg_cp_ibm_b1_345_str)
+  fle.s x21, f1, f27 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_345, F_fle_s_cg_cp_ibm_b1_345_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_345, F_fle_s_cg_cp_ibm_b1_345_str)
 
 # Testcase cp_ibm_b1 (B1.csv:346 Test source fs1val = 0x7fffffff fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_346:
   fle.s x28, f30, f13 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_346, F_fle_s_cg_cp_ibm_b1_346_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_346, F_fle_s_cg_cp_ibm_b1_346_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_346, F_fle_s_cg_cp_ibm_b1_346_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_346, F_fle_s_cg_cp_ibm_b1_346_str)
 
 # Testcase cp_ibm_b1 (B1.csv:347 Test source fs1val = 0x7fffffff fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_347:
   fle.s x29, f29, f23 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_347, F_fle_s_cg_cp_ibm_b1_347_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_347, F_fle_s_cg_cp_ibm_b1_347_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_347, F_fle_s_cg_cp_ibm_b1_347_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_347, F_fle_s_cg_cp_ibm_b1_347_str)
 
 # Testcase cp_ibm_b1 (B1.csv:348 Test source fs1val = 0x7fffffff fs2val = 0x7f7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_348:
-  fle.s x23, f14, f11 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_348, F_fle_s_cg_cp_ibm_b1_348_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_348, F_fle_s_cg_cp_ibm_b1_348_str)
+  fle.s x22, f14, f11 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_348, F_fle_s_cg_cp_ibm_b1_348_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_348, F_fle_s_cg_cp_ibm_b1_348_str)
 
 # Testcase cp_ibm_b1 (B1.csv:349 Test source fs1val = 0x7fffffff fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_349:
-  fle.s x13, f24, f12 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_349, F_fle_s_cg_cp_ibm_b1_349_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_349, F_fle_s_cg_cp_ibm_b1_349_str)
+  fle.s x12, f24, f12 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_349, F_fle_s_cg_cp_ibm_b1_349_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_349, F_fle_s_cg_cp_ibm_b1_349_str)
 
 # Testcase cp_ibm_b1 (B1.csv:350 Test source fs1val = 0x7fffffff fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_350:
   fle.s x29, f3, f28 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_350, F_fle_s_cg_cp_ibm_b1_350_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_350, F_fle_s_cg_cp_ibm_b1_350_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_350, F_fle_s_cg_cp_ibm_b1_350_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_350, F_fle_s_cg_cp_ibm_b1_350_str)
 
 # Testcase cp_ibm_b1 (B1.csv:351 Test source fs1val = 0x7fffffff fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_351:
   fle.s x1, f21, f31 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_351, F_fle_s_cg_cp_ibm_b1_351_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_351, F_fle_s_cg_cp_ibm_b1_351_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_351, F_fle_s_cg_cp_ibm_b1_351_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_351, F_fle_s_cg_cp_ibm_b1_351_str)
 
 # Testcase cp_ibm_b1 (B1.csv:352 Test source fs1val = 0x7fffffff fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_352:
   fle.s x29, f27, f1 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_352, F_fle_s_cg_cp_ibm_b1_352_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_352, F_fle_s_cg_cp_ibm_b1_352_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_352, F_fle_s_cg_cp_ibm_b1_352_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_352, F_fle_s_cg_cp_ibm_b1_352_str)
 
 # Testcase cp_ibm_b1 (B1.csv:353 Test source fs1val = 0x7fffffff fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_353:
   fle.s x25, f2, f31 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_353, F_fle_s_cg_cp_ibm_b1_353_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_353, F_fle_s_cg_cp_ibm_b1_353_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_353, F_fle_s_cg_cp_ibm_b1_353_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_353, F_fle_s_cg_cp_ibm_b1_353_str)
 
 # Testcase cp_ibm_b1 (B1.csv:354 Test source fs1val = 0x7fffffff fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_354:
   fle.s x2, f21, f29 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_354, F_fle_s_cg_cp_ibm_b1_354_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_354, F_fle_s_cg_cp_ibm_b1_354_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_354, F_fle_s_cg_cp_ibm_b1_354_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_354, F_fle_s_cg_cp_ibm_b1_354_str)
 
 # Testcase cp_ibm_b1 (B1.csv:355 Test source fs1val = 0x7fffffff fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_355:
   fle.s x28, f5, f6 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_355, F_fle_s_cg_cp_ibm_b1_355_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_355, F_fle_s_cg_cp_ibm_b1_355_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_355, F_fle_s_cg_cp_ibm_b1_355_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_355, F_fle_s_cg_cp_ibm_b1_355_str)
 
 # Testcase cp_ibm_b1 (B1.csv:356 Test source fs1val = 0x7fffffff fs2val = 0x7f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_356:
   fle.s x2, f13, f3 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_356, F_fle_s_cg_cp_ibm_b1_356_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_356, F_fle_s_cg_cp_ibm_b1_356_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b1_356, F_fle_s_cg_cp_ibm_b1_356_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_356, F_fle_s_cg_cp_ibm_b1_356_str)
 
 # Testcase cp_ibm_b1 (B1.csv:357 Test source fs1val = 0x7fffffff fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_357:
-  fle.s x7, f5, f23 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_357, F_fle_s_cg_cp_ibm_b1_357_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_357, F_fle_s_cg_cp_ibm_b1_357_str)
+  fle.s x6, f5, f23 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_357, F_fle_s_cg_cp_ibm_b1_357_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_357, F_fle_s_cg_cp_ibm_b1_357_str)
 
 # Testcase cp_ibm_b1 (B1.csv:358 Test source fs1val = 0x7fffffff fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_358:
   fle.s x31, f6, f25 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_358, F_fle_s_cg_cp_ibm_b1_358_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_358, F_fle_s_cg_cp_ibm_b1_358_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b1_358, F_fle_s_cg_cp_ibm_b1_358_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_358, F_fle_s_cg_cp_ibm_b1_358_str)
 
 # Testcase cp_ibm_b1 (B1.csv:359 Test source fs1val = 0x7fffffff fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_359:
-  fle.s x6, f3, f30 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_359, F_fle_s_cg_cp_ibm_b1_359_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_359, F_fle_s_cg_cp_ibm_b1_359_str)
+  fle.s x3, f3, f30 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_359, F_fle_s_cg_cp_ibm_b1_359_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_359, F_fle_s_cg_cp_ibm_b1_359_str)
 
 # Testcase cp_ibm_b1 (B1.csv:360 Test source fs1val = 0x7fffffff fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_360:
-  fle.s x6, f31, f27 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_360, F_fle_s_cg_cp_ibm_b1_360_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_360, F_fle_s_cg_cp_ibm_b1_360_str)
+  fle.s x3, f31, f27 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_360, F_fle_s_cg_cp_ibm_b1_360_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_360, F_fle_s_cg_cp_ibm_b1_360_str)
 
 # Testcase cp_ibm_b1 (B1.csv:361 Test source fs1val = 0x7fffffff fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_361:
-  fle.s x8, f30, f5 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_361, F_fle_s_cg_cp_ibm_b1_361_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_361, F_fle_s_cg_cp_ibm_b1_361_str)
+  fle.s x7, f30, f5 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_361, F_fle_s_cg_cp_ibm_b1_361_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_361, F_fle_s_cg_cp_ibm_b1_361_str)
 
 # Testcase cp_ibm_b1 (B1.csv:362 Test source fs1val = 0x7f800001 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_362:
-  fle.s x15, f31, f20 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_362, F_fle_s_cg_cp_ibm_b1_362_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_362, F_fle_s_cg_cp_ibm_b1_362_str)
+  fle.s x14, f31, f20 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_362, F_fle_s_cg_cp_ibm_b1_362_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_362, F_fle_s_cg_cp_ibm_b1_362_str)
 
 # Testcase cp_ibm_b1 (B1.csv:363 Test source fs1val = 0x7f800001 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_363:
-  fle.s x10, f15, f22 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_363, F_fle_s_cg_cp_ibm_b1_363_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_363, F_fle_s_cg_cp_ibm_b1_363_str)
+  fle.s x9, f15, f22 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_363, F_fle_s_cg_cp_ibm_b1_363_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_363, F_fle_s_cg_cp_ibm_b1_363_str)
 
 # Testcase cp_ibm_b1 (B1.csv:364 Test source fs1val = 0x7f800001 fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_364:
-  fle.s x9, f23, f11 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_364, F_fle_s_cg_cp_ibm_b1_364_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_364, F_fle_s_cg_cp_ibm_b1_364_str)
+  fle.s x8, f23, f11 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_364, F_fle_s_cg_cp_ibm_b1_364_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_364, F_fle_s_cg_cp_ibm_b1_364_str)
 
 # Testcase cp_ibm_b1 (B1.csv:365 Test source fs1val = 0x7f800001 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_365:
   fle.s x28, f15, f10 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_365, F_fle_s_cg_cp_ibm_b1_365_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_365, F_fle_s_cg_cp_ibm_b1_365_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b1_365, F_fle_s_cg_cp_ibm_b1_365_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_365, F_fle_s_cg_cp_ibm_b1_365_str)
 
 # Testcase cp_ibm_b1 (B1.csv:366 Test source fs1val = 0x7f800001 fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_366:
   fle.s x27, f3, f24 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_366, F_fle_s_cg_cp_ibm_b1_366_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_366, F_fle_s_cg_cp_ibm_b1_366_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_366, F_fle_s_cg_cp_ibm_b1_366_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_366, F_fle_s_cg_cp_ibm_b1_366_str)
 
 # Testcase cp_ibm_b1 (B1.csv:367 Test source fs1val = 0x7f800001 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_367:
-  fle.s x8, f24, f21 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_367, F_fle_s_cg_cp_ibm_b1_367_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_367, F_fle_s_cg_cp_ibm_b1_367_str)
+  fle.s x7, f24, f21 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_367, F_fle_s_cg_cp_ibm_b1_367_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_367, F_fle_s_cg_cp_ibm_b1_367_str)
 
 # Testcase cp_ibm_b1 (B1.csv:368 Test source fs1val = 0x7f800001 fs2val = 0x7f7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs1: f5 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs1: f5 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_368:
-  fle.s x11, f5, f28 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_368, F_fle_s_cg_cp_ibm_b1_368_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_368, F_fle_s_cg_cp_ibm_b1_368_str)
+  fle.s x10, f5, f28 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_368, F_fle_s_cg_cp_ibm_b1_368_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_368, F_fle_s_cg_cp_ibm_b1_368_str)
 
 # Testcase cp_ibm_b1 (B1.csv:369 Test source fs1val = 0x7f800001 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_369:
   fle.s x1, f27, f25 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_369, F_fle_s_cg_cp_ibm_b1_369_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_369, F_fle_s_cg_cp_ibm_b1_369_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_369, F_fle_s_cg_cp_ibm_b1_369_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_369, F_fle_s_cg_cp_ibm_b1_369_str)
 
 # Testcase cp_ibm_b1 (B1.csv:370 Test source fs1val = 0x7f800001 fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_370:
   fle.s x29, f31, f19 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_370, F_fle_s_cg_cp_ibm_b1_370_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_370, F_fle_s_cg_cp_ibm_b1_370_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b1_370, F_fle_s_cg_cp_ibm_b1_370_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_370, F_fle_s_cg_cp_ibm_b1_370_str)
 
 # Testcase cp_ibm_b1 (B1.csv:371 Test source fs1val = 0x7f800001 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_371:
-  fle.s x15, f11, f21 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_371, F_fle_s_cg_cp_ibm_b1_371_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_371, F_fle_s_cg_cp_ibm_b1_371_str)
+  fle.s x14, f11, f21 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_371, F_fle_s_cg_cp_ibm_b1_371_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_371, F_fle_s_cg_cp_ibm_b1_371_str)
 
 # Testcase cp_ibm_b1 (B1.csv:372 Test source fs1val = 0x7f800001 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_372:
-  fle.s x24, f30, f1 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_372, F_fle_s_cg_cp_ibm_b1_372_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_372, F_fle_s_cg_cp_ibm_b1_372_str)
+  fle.s x23, f30, f1 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_372, F_fle_s_cg_cp_ibm_b1_372_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_372, F_fle_s_cg_cp_ibm_b1_372_str)
 
 # Testcase cp_ibm_b1 (B1.csv:373 Test source fs1val = 0x7f800001 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_373:
   fle.s x26, f19, f25 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_373, F_fle_s_cg_cp_ibm_b1_373_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_373, F_fle_s_cg_cp_ibm_b1_373_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b1_373, F_fle_s_cg_cp_ibm_b1_373_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_373, F_fle_s_cg_cp_ibm_b1_373_str)
 
 # Testcase cp_ibm_b1 (B1.csv:374 Test source fs1val = 0x7f800001 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_374:
-  fle.s x13, f6, f21 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_374, F_fle_s_cg_cp_ibm_b1_374_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_374, F_fle_s_cg_cp_ibm_b1_374_str)
+  fle.s x12, f6, f21 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b1_374, F_fle_s_cg_cp_ibm_b1_374_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_374, F_fle_s_cg_cp_ibm_b1_374_str)
 
 # Testcase cp_ibm_b1 (B1.csv:375 Test source fs1val = 0x7f800001 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_375:
-  fle.s x15, f9, f24 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_375, F_fle_s_cg_cp_ibm_b1_375_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_375, F_fle_s_cg_cp_ibm_b1_375_str)
+  fle.s x14, f9, f24 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_375, F_fle_s_cg_cp_ibm_b1_375_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_375, F_fle_s_cg_cp_ibm_b1_375_str)
 
 # Testcase cp_ibm_b1 (B1.csv:376 Test source fs1val = 0x7f800001 fs2val = 0x7f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_376:
   fle.s x30, f14, f1 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_376, F_fle_s_cg_cp_ibm_b1_376_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_376, F_fle_s_cg_cp_ibm_b1_376_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_376, F_fle_s_cg_cp_ibm_b1_376_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_376, F_fle_s_cg_cp_ibm_b1_376_str)
 
 # Testcase cp_ibm_b1 (B1.csv:377 Test source fs1val = 0x7f800001 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_377:
-  fle.s x8, f7, f12 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_377, F_fle_s_cg_cp_ibm_b1_377_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_377, F_fle_s_cg_cp_ibm_b1_377_str)
+  fle.s x7, f7, f12 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_377, F_fle_s_cg_cp_ibm_b1_377_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_377, F_fle_s_cg_cp_ibm_b1_377_str)
 
 # Testcase cp_ibm_b1 (B1.csv:378 Test source fs1val = 0x7f800001 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_378:
-  fle.s x15, f26, f14 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_378, F_fle_s_cg_cp_ibm_b1_378_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_378, F_fle_s_cg_cp_ibm_b1_378_str)
+  fle.s x14, f26, f14 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_378, F_fle_s_cg_cp_ibm_b1_378_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_378, F_fle_s_cg_cp_ibm_b1_378_str)
 
 # Testcase cp_ibm_b1 (B1.csv:379 Test source fs1val = 0x7f800001 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_379:
   fle.s x1, f10, f25 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_379, F_fle_s_cg_cp_ibm_b1_379_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_379, F_fle_s_cg_cp_ibm_b1_379_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_379, F_fle_s_cg_cp_ibm_b1_379_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_379, F_fle_s_cg_cp_ibm_b1_379_str)
 
 # Testcase cp_ibm_b1 (B1.csv:380 Test source fs1val = 0x7f800001 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_380:
-  fle.s x22, f24, f7 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_380, F_fle_s_cg_cp_ibm_b1_380_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_380, F_fle_s_cg_cp_ibm_b1_380_str)
+  fle.s x21, f24, f7 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_380, F_fle_s_cg_cp_ibm_b1_380_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_380, F_fle_s_cg_cp_ibm_b1_380_str)
 
 # Testcase cp_ibm_b1 (B1.csv:381 Test source fs1val = 0x7f800001 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_381:
-  fle.s x8, f3, f7 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_381, F_fle_s_cg_cp_ibm_b1_381_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_381, F_fle_s_cg_cp_ibm_b1_381_str)
+  fle.s x7, f3, f7 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_381, F_fle_s_cg_cp_ibm_b1_381_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_381, F_fle_s_cg_cp_ibm_b1_381_str)
 
 # Testcase cp_ibm_b1 (B1.csv:382 Test source fs1val = 0xffc00000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_382:
-  fle.s x7, f16, f29 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_382, F_fle_s_cg_cp_ibm_b1_382_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_382, F_fle_s_cg_cp_ibm_b1_382_str)
+  fle.s x6, f16, f29 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_382, F_fle_s_cg_cp_ibm_b1_382_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_382, F_fle_s_cg_cp_ibm_b1_382_str)
 
 # Testcase cp_ibm_b1 (B1.csv:383 Test source fs1val = 0xffc00000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_383:
-  fle.s x14, f16, f17 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_383, F_fle_s_cg_cp_ibm_b1_383_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_383, F_fle_s_cg_cp_ibm_b1_383_str)
+  fle.s x13, f16, f17 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b1_383, F_fle_s_cg_cp_ibm_b1_383_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_383, F_fle_s_cg_cp_ibm_b1_383_str)
 
 # Testcase cp_ibm_b1 (B1.csv:384 Test source fs1val = 0xffc00000 fs2val = 0x3f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_384:
-  fle.s x6, f20, f26 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_384, F_fle_s_cg_cp_ibm_b1_384_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_384, F_fle_s_cg_cp_ibm_b1_384_str)
+  fle.s x3, f20, f26 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_384, F_fle_s_cg_cp_ibm_b1_384_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_384, F_fle_s_cg_cp_ibm_b1_384_str)
 
 # Testcase cp_ibm_b1 (B1.csv:385 Test source fs1val = 0xffc00000 fs2val = 0xbf800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_385:
-  fle.s x24, f29, f20 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b1_385, F_fle_s_cg_cp_ibm_b1_385_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_385, F_fle_s_cg_cp_ibm_b1_385_str)
+  fle.s x23, f29, f20 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_385, F_fle_s_cg_cp_ibm_b1_385_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_385, F_fle_s_cg_cp_ibm_b1_385_str)
 
 # Testcase cp_ibm_b1 (B1.csv:386 Test source fs1val = 0xffc00000 fs2val = 0x00800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_386:
-  fle.s x23, f10, f27 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b1_386, F_fle_s_cg_cp_ibm_b1_386_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_386, F_fle_s_cg_cp_ibm_b1_386_str)
+  fle.s x22, f10, f27 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_386, F_fle_s_cg_cp_ibm_b1_386_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_386, F_fle_s_cg_cp_ibm_b1_386_str)
 
 # Testcase cp_ibm_b1 (B1.csv:387 Test source fs1val = 0xffc00000 fs2val = 0x80800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_387:
-  fle.s x20, f12, f11 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_387, F_fle_s_cg_cp_ibm_b1_387_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_387, F_fle_s_cg_cp_ibm_b1_387_str)
+  fle.s x18, f12, f11 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_387, F_fle_s_cg_cp_ibm_b1_387_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_387, F_fle_s_cg_cp_ibm_b1_387_str)
 
 # Testcase cp_ibm_b1 (B1.csv:388 Test source fs1val = 0xffc00000 fs2val = 0x7f7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_388:
-  fle.s x22, f28, f12 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b1_388, F_fle_s_cg_cp_ibm_b1_388_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_388, F_fle_s_cg_cp_ibm_b1_388_str)
+  fle.s x21, f28, f12 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b1_388, F_fle_s_cg_cp_ibm_b1_388_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_388, F_fle_s_cg_cp_ibm_b1_388_str)
 
 # Testcase cp_ibm_b1 (B1.csv:389 Test source fs1val = 0xffc00000 fs2val = 0xff7fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0xff7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_389:
-  fle.s x20, f12, f1 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b1_389, F_fle_s_cg_cp_ibm_b1_389_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_389, F_fle_s_cg_cp_ibm_b1_389_str)
+  fle.s x18, f12, f1 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b1_389, F_fle_s_cg_cp_ibm_b1_389_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_389, F_fle_s_cg_cp_ibm_b1_389_str)
 
 # Testcase cp_ibm_b1 (B1.csv:390 Test source fs1val = 0xffc00000 fs2val = 0x007fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_390:
-  fle.s x8, f6, f30 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_390, F_fle_s_cg_cp_ibm_b1_390_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_390, F_fle_s_cg_cp_ibm_b1_390_str)
+  fle.s x7, f6, f30 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_390, F_fle_s_cg_cp_ibm_b1_390_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_390, F_fle_s_cg_cp_ibm_b1_390_str)
 
 # Testcase cp_ibm_b1 (B1.csv:391 Test source fs1val = 0xffc00000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_391:
   fle.s x1, f17, f10 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_391, F_fle_s_cg_cp_ibm_b1_391_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_391, F_fle_s_cg_cp_ibm_b1_391_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b1_391, F_fle_s_cg_cp_ibm_b1_391_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_391, F_fle_s_cg_cp_ibm_b1_391_str)
 
 # Testcase cp_ibm_b1 (B1.csv:392 Test source fs1val = 0xffc00000 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_392:
   fle.s x30, f20, f9 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_392, F_fle_s_cg_cp_ibm_b1_392_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_392, F_fle_s_cg_cp_ibm_b1_392_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b1_392, F_fle_s_cg_cp_ibm_b1_392_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_392, F_fle_s_cg_cp_ibm_b1_392_str)
 
 # Testcase cp_ibm_b1 (B1.csv:393 Test source fs1val = 0xffc00000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_393:
   fle.s x25, f8, f5 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_393, F_fle_s_cg_cp_ibm_b1_393_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_393, F_fle_s_cg_cp_ibm_b1_393_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b1_393, F_fle_s_cg_cp_ibm_b1_393_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_393, F_fle_s_cg_cp_ibm_b1_393_str)
 
 # Testcase cp_ibm_b1 (B1.csv:394 Test source fs1val = 0xffc00000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_394:
-  fle.s x8, f19, f11 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_394, F_fle_s_cg_cp_ibm_b1_394_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_394, F_fle_s_cg_cp_ibm_b1_394_str)
+  fle.s x7, f19, f11 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b1_394, F_fle_s_cg_cp_ibm_b1_394_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_394, F_fle_s_cg_cp_ibm_b1_394_str)
 
 # Testcase cp_ibm_b1 (B1.csv:395 Test source fs1val = 0xffc00000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_395:
-  fle.s x6, f26, f12 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b1_395, F_fle_s_cg_cp_ibm_b1_395_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_395, F_fle_s_cg_cp_ibm_b1_395_str)
+  fle.s x3, f26, f12 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b1_395, F_fle_s_cg_cp_ibm_b1_395_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_395, F_fle_s_cg_cp_ibm_b1_395_str)
 
 # Testcase cp_ibm_b1 (B1.csv:396 Test source fs1val = 0xffc00000 fs2val = 0x7f800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_396:
-  fle.s x15, f28, f31 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_396, F_fle_s_cg_cp_ibm_b1_396_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_396, F_fle_s_cg_cp_ibm_b1_396_str)
+  fle.s x14, f28, f31 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_396, F_fle_s_cg_cp_ibm_b1_396_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_396, F_fle_s_cg_cp_ibm_b1_396_str)
 
 # Testcase cp_ibm_b1 (B1.csv:397 Test source fs1val = 0xffc00000 fs2val = 0xff800000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_397:
-  fle.s x9, f19, f13 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b1_397, F_fle_s_cg_cp_ibm_b1_397_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_397, F_fle_s_cg_cp_ibm_b1_397_str)
+  fle.s x8, f19, f13 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b1_397, F_fle_s_cg_cp_ibm_b1_397_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_397, F_fle_s_cg_cp_ibm_b1_397_str)
 
 # Testcase cp_ibm_b1 (B1.csv:398 Test source fs1val = 0xffc00000 fs2val = 0x7fc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_398:
-  fle.s x17, f6, f14 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b1_398, F_fle_s_cg_cp_ibm_b1_398_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_398, F_fle_s_cg_cp_ibm_b1_398_str)
+  fle.s x16, f6, f14 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b1_398, F_fle_s_cg_cp_ibm_b1_398_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_398, F_fle_s_cg_cp_ibm_b1_398_str)
 
 # Testcase cp_ibm_b1 (B1.csv:399 Test source fs1val = 0xffc00000 fs2val = 0x7fffffff rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_399:
   fle.s x27, f20, f7 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_399, F_fle_s_cg_cp_ibm_b1_399_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_399, F_fle_s_cg_cp_ibm_b1_399_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b1_399, F_fle_s_cg_cp_ibm_b1_399_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_399, F_fle_s_cg_cp_ibm_b1_399_str)
 
 # Testcase cp_ibm_b1 (B1.csv:400 Test source fs1val = 0xffc00000 fs2val = 0x7f800001 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_400:
-  fle.s x11, f22, f25 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b1_400, F_fle_s_cg_cp_ibm_b1_400_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_400, F_fle_s_cg_cp_ibm_b1_400_str)
+  fle.s x10, f22, f25 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b1_400, F_fle_s_cg_cp_ibm_b1_400_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_400, F_fle_s_cg_cp_ibm_b1_400_str)
 
 # Testcase cp_ibm_b1 (B1.csv:401 Test source fs1val = 0xffc00000 fs2val = 0xffc00000 rdval = 0x00000000 fflags = 0x00000010, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0xffc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0xffc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xffc00000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b1_401:
-  fle.s x15, f20, f16 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b1_401, F_fle_s_cg_cp_ibm_b1_401_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b1_401, F_fle_s_cg_cp_ibm_b1_401_str)
+  fle.s x14, f20, f16 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b1_401, F_fle_s_cg_cp_ibm_b1_401_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b1_401, F_fle_s_cg_cp_ibm_b1_401_str)
 
 /////////////////////////////////
 // cp_ibm_b19
 /////////////////////////////////
 
 # Testcase cp_ibm_b19 (B19.csv:2 Test source fs1val = 0x7f2c2a69 fs2val = 0x14000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7f2c2a69
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x14000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7f2c2a69
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x14000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_2:
-  fle.s x21, f19, f12 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_2, F_fle_s_cg_cp_ibm_b19_2_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_2, F_fle_s_cg_cp_ibm_b19_2_str)
+  fle.s x20, f19, f12 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b19_2, F_fle_s_cg_cp_ibm_b19_2_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_2, F_fle_s_cg_cp_ibm_b19_2_str)
 
 # Testcase cp_ibm_b19 (B19.csv:3 Test source fs1val = 0x7f2c2a69 fs2val = 0x94000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x7f2c2a69
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x94000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x7f2c2a69
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x94000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_3:
   fle.s x2, f31, f13 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_3, F_fle_s_cg_cp_ibm_b19_3_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_3, F_fle_s_cg_cp_ibm_b19_3_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_3, F_fle_s_cg_cp_ibm_b19_3_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_3, F_fle_s_cg_cp_ibm_b19_3_str)
 
 # Testcase cp_ibm_b19 (B19.csv:4 Test source fs1val = 0xff2c2a69 fs2val = 0x14000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0xff2c2a69
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x14000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0xff2c2a69
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x14000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_4:
-  fle.s x14, f10, f29 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_4, F_fle_s_cg_cp_ibm_b19_4_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_4, F_fle_s_cg_cp_ibm_b19_4_str)
+  fle.s x13, f10, f29 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_4, F_fle_s_cg_cp_ibm_b19_4_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_4, F_fle_s_cg_cp_ibm_b19_4_str)
 
 # Testcase cp_ibm_b19 (B19.csv:5 Test source fs1val = 0xff2c2a69 fs2val = 0x94000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0xff2c2a69
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x94000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0xff2c2a69
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x94000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_5:
-  fle.s x24, f2, f31 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_5, F_fle_s_cg_cp_ibm_b19_5_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_5, F_fle_s_cg_cp_ibm_b19_5_str)
+  fle.s x23, f2, f31 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_5, F_fle_s_cg_cp_ibm_b19_5_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_5, F_fle_s_cg_cp_ibm_b19_5_str)
 
 # Testcase cp_ibm_b19 (B19.csv:6 Test source fs1val = 0x7f000000 fs2val = 0x7a0c6ccc rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x7a0c6ccc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x7a0c6ccc
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_6:
-  fle.s x9, f24, f18 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_6, F_fle_s_cg_cp_ibm_b19_6_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_6, F_fle_s_cg_cp_ibm_b19_6_str)
+  fle.s x8, f24, f18 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_6, F_fle_s_cg_cp_ibm_b19_6_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_6, F_fle_s_cg_cp_ibm_b19_6_str)
 
 # Testcase cp_ibm_b19 (B19.csv:7 Test source fs1val = 0x7f000000 fs2val = 0xfa0c6ccc rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x7f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0xfa0c6ccc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x7f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0xfa0c6ccc
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_7:
-  fle.s x11, f19, f14 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_7, F_fle_s_cg_cp_ibm_b19_7_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_7, F_fle_s_cg_cp_ibm_b19_7_str)
+  fle.s x10, f19, f14 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_7, F_fle_s_cg_cp_ibm_b19_7_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_7, F_fle_s_cg_cp_ibm_b19_7_str)
 
 # Testcase cp_ibm_b19 (B19.csv:8 Test source fs1val = 0xff000000 fs2val = 0x7a0c6ccc rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xff000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x7a0c6ccc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xff000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x7a0c6ccc
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_8:
-  fle.s x17, f16, f19 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_8, F_fle_s_cg_cp_ibm_b19_8_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_8, F_fle_s_cg_cp_ibm_b19_8_str)
+  fle.s x16, f16, f19 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_8, F_fle_s_cg_cp_ibm_b19_8_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_8, F_fle_s_cg_cp_ibm_b19_8_str)
 
 # Testcase cp_ibm_b19 (B19.csv:9 Test source fs1val = 0xff000000 fs2val = 0xfa0c6ccc rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0xff000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0xfa0c6ccc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0xff000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0xfa0c6ccc
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_9:
-  fle.s x6, f2, f5 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_9, F_fle_s_cg_cp_ibm_b19_9_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_9, F_fle_s_cg_cp_ibm_b19_9_str)
+  fle.s x3, f2, f5 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_9, F_fle_s_cg_cp_ibm_b19_9_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_9, F_fle_s_cg_cp_ibm_b19_9_str)
 
 # Testcase cp_ibm_b19 (B19.csv:10 Test source fs1val = 0x7f000000 fs2val = 0x1e800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x7f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x1e800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x7f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x1e800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_10:
   fle.s x28, f28, f25 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_10, F_fle_s_cg_cp_ibm_b19_10_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_10, F_fle_s_cg_cp_ibm_b19_10_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_10, F_fle_s_cg_cp_ibm_b19_10_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_10, F_fle_s_cg_cp_ibm_b19_10_str)
 
 # Testcase cp_ibm_b19 (B19.csv:11 Test source fs1val = 0x7f000000 fs2val = 0x9e800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x7f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x9e800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x7f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x9e800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_11:
-  fle.s x17, f24, f18 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_11, F_fle_s_cg_cp_ibm_b19_11_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_11, F_fle_s_cg_cp_ibm_b19_11_str)
+  fle.s x16, f24, f18 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_11, F_fle_s_cg_cp_ibm_b19_11_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_11, F_fle_s_cg_cp_ibm_b19_11_str)
 
 # Testcase cp_ibm_b19 (B19.csv:12 Test source fs1val = 0xff000000 fs2val = 0x1e800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0xff000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x1e800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0xff000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x1e800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_12:
-  fle.s x17, f19, f31 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_12, F_fle_s_cg_cp_ibm_b19_12_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_12, F_fle_s_cg_cp_ibm_b19_12_str)
+  fle.s x16, f19, f31 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_12, F_fle_s_cg_cp_ibm_b19_12_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_12, F_fle_s_cg_cp_ibm_b19_12_str)
 
 # Testcase cp_ibm_b19 (B19.csv:13 Test source fs1val = 0xff000000 fs2val = 0x9e800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0xff000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x9e800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0xff000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x9e800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_13:
-  fle.s x18, f3, f7 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_13, F_fle_s_cg_cp_ibm_b19_13_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_13, F_fle_s_cg_cp_ibm_b19_13_str)
+  fle.s x17, f3, f7 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_13, F_fle_s_cg_cp_ibm_b19_13_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_13, F_fle_s_cg_cp_ibm_b19_13_str)
 
 # Testcase cp_ibm_b19 (B19.csv:14 Test source fs1val = 0x00ffffff fs2val = 0x1d548971 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x00ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x1d548971
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x00ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x1d548971
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_14:
-  fle.s x15, f16, f26 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b19_14, F_fle_s_cg_cp_ibm_b19_14_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_14, F_fle_s_cg_cp_ibm_b19_14_str)
+  fle.s x14, f16, f26 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_14, F_fle_s_cg_cp_ibm_b19_14_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_14, F_fle_s_cg_cp_ibm_b19_14_str)
 
 # Testcase cp_ibm_b19 (B19.csv:15 Test source fs1val = 0x00ffffff fs2val = 0x9d548971 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x00ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x9d548971
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x00ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x9d548971
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_15:
-  fle.s x21, f25, f2 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_15, F_fle_s_cg_cp_ibm_b19_15_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_15, F_fle_s_cg_cp_ibm_b19_15_str)
+  fle.s x20, f25, f2 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b19_15, F_fle_s_cg_cp_ibm_b19_15_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_15, F_fle_s_cg_cp_ibm_b19_15_str)
 
 # Testcase cp_ibm_b19 (B19.csv:16 Test source fs1val = 0x80ffffff fs2val = 0x1d548971 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x1d548971
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x1d548971
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_16:
-  fle.s x7, f10, f5 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b19_16, F_fle_s_cg_cp_ibm_b19_16_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_16, F_fle_s_cg_cp_ibm_b19_16_str)
+  fle.s x6, f10, f5 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_16, F_fle_s_cg_cp_ibm_b19_16_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_16, F_fle_s_cg_cp_ibm_b19_16_str)
 
 # Testcase cp_ibm_b19 (B19.csv:17 Test source fs1val = 0x80ffffff fs2val = 0x9d548971 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x9d548971
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x9d548971
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_17:
-  fle.s x9, f10, f15 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_17, F_fle_s_cg_cp_ibm_b19_17_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_17, F_fle_s_cg_cp_ibm_b19_17_str)
+  fle.s x8, f10, f15 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_17, F_fle_s_cg_cp_ibm_b19_17_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_17, F_fle_s_cg_cp_ibm_b19_17_str)
 
 # Testcase cp_ibm_b19 (B19.csv:18 Test source fs1val = 0x00f408eb fs2val = 0x057fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs1: f13 = 0x00f408eb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x057fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs1: f13 = 0x00f408eb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x057fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_18:
-  fle.s x15, f13, f26 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b19_18, F_fle_s_cg_cp_ibm_b19_18_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_18, F_fle_s_cg_cp_ibm_b19_18_str)
+  fle.s x14, f13, f26 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_18, F_fle_s_cg_cp_ibm_b19_18_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_18, F_fle_s_cg_cp_ibm_b19_18_str)
 
 # Testcase cp_ibm_b19 (B19.csv:19 Test source fs1val = 0x00f408eb fs2val = 0x857fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x00f408eb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0x857fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x00f408eb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0x857fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_19:
-  fle.s x14, f11, f16 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_19, F_fle_s_cg_cp_ibm_b19_19_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_19, F_fle_s_cg_cp_ibm_b19_19_str)
+  fle.s x13, f11, f16 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_19, F_fle_s_cg_cp_ibm_b19_19_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_19, F_fle_s_cg_cp_ibm_b19_19_str)
 
 # Testcase cp_ibm_b19 (B19.csv:20 Test source fs1val = 0x80f408eb fs2val = 0x057fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x80f408eb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x057fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x80f408eb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x057fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_20:
   fle.s x29, f3, f19 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_20, F_fle_s_cg_cp_ibm_b19_20_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_20, F_fle_s_cg_cp_ibm_b19_20_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_20, F_fle_s_cg_cp_ibm_b19_20_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_20, F_fle_s_cg_cp_ibm_b19_20_str)
 
 # Testcase cp_ibm_b19 (B19.csv:21 Test source fs1val = 0x80f408eb fs2val = 0x857fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80f408eb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x857fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80f408eb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x857fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_21:
   fle.s x2, f10, f30 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_21, F_fle_s_cg_cp_ibm_b19_21_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_21, F_fle_s_cg_cp_ibm_b19_21_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_21, F_fle_s_cg_cp_ibm_b19_21_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_21, F_fle_s_cg_cp_ibm_b19_21_str)
 
 # Testcase cp_ibm_b19 (B19.csv:22 Test source fs1val = 0x00ffffff fs2val = 0x30ffffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x00ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x30ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x00ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x30ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_22:
   fle.s x1, f9, f19 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_22, F_fle_s_cg_cp_ibm_b19_22_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_22, F_fle_s_cg_cp_ibm_b19_22_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_22, F_fle_s_cg_cp_ibm_b19_22_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_22, F_fle_s_cg_cp_ibm_b19_22_str)
 
 # Testcase cp_ibm_b19 (B19.csv:23 Test source fs1val = 0x00ffffff fs2val = 0xb0ffffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs1: f15 = 0x00ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0xb0ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs1: f15 = 0x00ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0xb0ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_23:
-  fle.s x23, f15, f9 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_23, F_fle_s_cg_cp_ibm_b19_23_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_23, F_fle_s_cg_cp_ibm_b19_23_str)
+  fle.s x22, f15, f9 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_23, F_fle_s_cg_cp_ibm_b19_23_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_23, F_fle_s_cg_cp_ibm_b19_23_str)
 
 # Testcase cp_ibm_b19 (B19.csv:24 Test source fs1val = 0x80ffffff fs2val = 0x30ffffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x80ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x30ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x80ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x30ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_24:
-  fle.s x18, f8, f26 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_24, F_fle_s_cg_cp_ibm_b19_24_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_24, F_fle_s_cg_cp_ibm_b19_24_str)
+  fle.s x17, f8, f26 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_24, F_fle_s_cg_cp_ibm_b19_24_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_24, F_fle_s_cg_cp_ibm_b19_24_str)
 
 # Testcase cp_ibm_b19 (B19.csv:25 Test source fs1val = 0x80ffffff fs2val = 0xb0ffffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x80ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0xb0ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x80ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0xb0ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_25:
-  fle.s x9, f28, f13 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_25, F_fle_s_cg_cp_ibm_b19_25_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_25, F_fle_s_cg_cp_ibm_b19_25_str)
+  fle.s x8, f28, f13 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_25, F_fle_s_cg_cp_ibm_b19_25_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_25, F_fle_s_cg_cp_ibm_b19_25_str)
 
 # Testcase cp_ibm_b19 (B19.csv:26 Test source fs1val = 0x31ffffff fs2val = 0x31800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x31ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x31800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x31ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x31800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_26:
   fle.s x1, f19, f17 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_26, F_fle_s_cg_cp_ibm_b19_26_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_26, F_fle_s_cg_cp_ibm_b19_26_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_26, F_fle_s_cg_cp_ibm_b19_26_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_26, F_fle_s_cg_cp_ibm_b19_26_str)
 
 # Testcase cp_ibm_b19 (B19.csv:27 Test source fs1val = 0x31ffffff fs2val = 0xb1800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x31ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xb1800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x31ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xb1800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_27:
-  fle.s x22, f10, f17 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_27, F_fle_s_cg_cp_ibm_b19_27_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_27, F_fle_s_cg_cp_ibm_b19_27_str)
+  fle.s x21, f10, f17 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_27, F_fle_s_cg_cp_ibm_b19_27_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_27, F_fle_s_cg_cp_ibm_b19_27_str)
 
 # Testcase cp_ibm_b19 (B19.csv:28 Test source fs1val = 0xb1ffffff fs2val = 0x31800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0xb1ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x31800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0xb1ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x31800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_28:
-  fle.s x18, f24, f3 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_28, F_fle_s_cg_cp_ibm_b19_28_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_28, F_fle_s_cg_cp_ibm_b19_28_str)
+  fle.s x17, f24, f3 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_28, F_fle_s_cg_cp_ibm_b19_28_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_28, F_fle_s_cg_cp_ibm_b19_28_str)
 
 # Testcase cp_ibm_b19 (B19.csv:29 Test source fs1val = 0xb1ffffff fs2val = 0xb1800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0xb1ffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0xb1800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0xb1ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0xb1800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_29:
   fle.s x1, f29, f3 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_29, F_fle_s_cg_cp_ibm_b19_29_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_29, F_fle_s_cg_cp_ibm_b19_29_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_29, F_fle_s_cg_cp_ibm_b19_29_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_29, F_fle_s_cg_cp_ibm_b19_29_str)
 
 # Testcase cp_ibm_b19 (B19.csv:30 Test source fs1val = 0x30000000 fs2val = 0x307fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x30000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs2: f28 = 0x307fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x30000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs2: f28 = 0x307fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_30:
-  fle.s x18, f23, f28 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_30, F_fle_s_cg_cp_ibm_b19_30_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_30, F_fle_s_cg_cp_ibm_b19_30_str)
+  fle.s x17, f23, f28 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_30, F_fle_s_cg_cp_ibm_b19_30_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_30, F_fle_s_cg_cp_ibm_b19_30_str)
 
 # Testcase cp_ibm_b19 (B19.csv:31 Test source fs1val = 0x30000000 fs2val = 0xb07fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x30000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0xb07fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x30000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0xb07fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_31:
-  fle.s x9, f21, f30 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_31, F_fle_s_cg_cp_ibm_b19_31_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_31, F_fle_s_cg_cp_ibm_b19_31_str)
+  fle.s x8, f21, f30 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_31, F_fle_s_cg_cp_ibm_b19_31_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_31, F_fle_s_cg_cp_ibm_b19_31_str)
 
 # Testcase cp_ibm_b19 (B19.csv:32 Test source fs1val = 0xb0000000 fs2val = 0x307fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xb0000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x307fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xb0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x307fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_32:
-  fle.s x12, f16, f31 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_32, F_fle_s_cg_cp_ibm_b19_32_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_32, F_fle_s_cg_cp_ibm_b19_32_str)
+  fle.s x11, f16, f31 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_32, F_fle_s_cg_cp_ibm_b19_32_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_32, F_fle_s_cg_cp_ibm_b19_32_str)
 
 # Testcase cp_ibm_b19 (B19.csv:33 Test source fs1val = 0xb0000000 fs2val = 0xb07fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0xb0000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0xb07fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0xb0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0xb07fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_33:
   fle.s x2, f30, f14 # perform operation
-  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_33, F_fle_s_cg_cp_ibm_b19_33_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_33, F_fle_s_cg_cp_ibm_b19_33_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, F_fle_s_cg_cp_ibm_b19_33, F_fle_s_cg_cp_ibm_b19_33_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_33, F_fle_s_cg_cp_ibm_b19_33_str)
 
 # Testcase cp_ibm_b19 (B19.csv:34 Test source fs1val = 0x04000000 fs2val = 0x04000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x04000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x04000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x04000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x04000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_34:
   fle.s x26, f20, f15 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_34, F_fle_s_cg_cp_ibm_b19_34_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_34, F_fle_s_cg_cp_ibm_b19_34_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_34, F_fle_s_cg_cp_ibm_b19_34_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_34, F_fle_s_cg_cp_ibm_b19_34_str)
 
 # Testcase cp_ibm_b19 (B19.csv:35 Test source fs1val = 0x04000000 fs2val = 0x84000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x04000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x84000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x04000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x84000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_35:
   fle.s x29, f31, f17 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_35, F_fle_s_cg_cp_ibm_b19_35_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_35, F_fle_s_cg_cp_ibm_b19_35_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_35, F_fle_s_cg_cp_ibm_b19_35_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_35, F_fle_s_cg_cp_ibm_b19_35_str)
 
 # Testcase cp_ibm_b19 (B19.csv:36 Test source fs1val = 0x84000000 fs2val = 0x04000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x84000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x04000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x84000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x04000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_36:
-  fle.s x11, f25, f2 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_36, F_fle_s_cg_cp_ibm_b19_36_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_36, F_fle_s_cg_cp_ibm_b19_36_str)
+  fle.s x10, f25, f2 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_36, F_fle_s_cg_cp_ibm_b19_36_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_36, F_fle_s_cg_cp_ibm_b19_36_str)
 
 # Testcase cp_ibm_b19 (B19.csv:37 Test source fs1val = 0x84000000 fs2val = 0x84000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x84000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x84000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x84000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x84000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_37:
-  fle.s x12, f28, f18 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_37, F_fle_s_cg_cp_ibm_b19_37_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_37, F_fle_s_cg_cp_ibm_b19_37_str)
+  fle.s x11, f28, f18 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_37, F_fle_s_cg_cp_ibm_b19_37_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_37, F_fle_s_cg_cp_ibm_b19_37_str)
 
 # Testcase cp_ibm_b19 (B19.csv:38 Test source fs1val = 0x3f320827 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x3f320827
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x3f320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_38:
-  fle.s x15, f17, f1 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b19_38, F_fle_s_cg_cp_ibm_b19_38_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_38, F_fle_s_cg_cp_ibm_b19_38_str)
+  fle.s x14, f17, f1 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_38, F_fle_s_cg_cp_ibm_b19_38_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_38, F_fle_s_cg_cp_ibm_b19_38_str)
 
 # Testcase cp_ibm_b19 (B19.csv:39 Test source fs1val = 0x3f320827 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x3f320827
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x3f320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_39:
-  fle.s x24, f22, f30 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_39, F_fle_s_cg_cp_ibm_b19_39_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_39, F_fle_s_cg_cp_ibm_b19_39_str)
+  fle.s x23, f22, f30 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_39, F_fle_s_cg_cp_ibm_b19_39_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_39, F_fle_s_cg_cp_ibm_b19_39_str)
 
 # Testcase cp_ibm_b19 (B19.csv:40 Test source fs1val = 0xbf320827 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0xbf320827
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0xbf320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_40:
-  fle.s x11, f18, f19 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_40, F_fle_s_cg_cp_ibm_b19_40_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_40, F_fle_s_cg_cp_ibm_b19_40_str)
+  fle.s x10, f18, f19 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_40, F_fle_s_cg_cp_ibm_b19_40_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_40, F_fle_s_cg_cp_ibm_b19_40_str)
 
 # Testcase cp_ibm_b19 (B19.csv:41 Test source fs1val = 0xbf320827 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0xbf320827
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0xbf320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_41:
-  fle.s x13, f8, f26 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_41, F_fle_s_cg_cp_ibm_b19_41_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_41, F_fle_s_cg_cp_ibm_b19_41_str)
+  fle.s x12, f8, f26 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_41, F_fle_s_cg_cp_ibm_b19_41_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_41, F_fle_s_cg_cp_ibm_b19_41_str)
 
 # Testcase cp_ibm_b19 (B19.csv:42 Test source fs1val = 0x3f000001 fs2val = 0x00320827 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x3f000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x3f000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00320827
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_42:
-  fle.s x6, f7, f19 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_42, F_fle_s_cg_cp_ibm_b19_42_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_42, F_fle_s_cg_cp_ibm_b19_42_str)
+  fle.s x3, f7, f19 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_42, F_fle_s_cg_cp_ibm_b19_42_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_42, F_fle_s_cg_cp_ibm_b19_42_str)
 
 # Testcase cp_ibm_b19 (B19.csv:43 Test source fs1val = 0x3f000001 fs2val = 0x80320827 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x3f000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x80320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x3f000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x80320827
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_43:
-  fle.s x18, f14, f22 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_43, F_fle_s_cg_cp_ibm_b19_43_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_43, F_fle_s_cg_cp_ibm_b19_43_str)
+  fle.s x17, f14, f22 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_43, F_fle_s_cg_cp_ibm_b19_43_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_43, F_fle_s_cg_cp_ibm_b19_43_str)
 
 # Testcase cp_ibm_b19 (B19.csv:44 Test source fs1val = 0xbf000001 fs2val = 0x00320827 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0xbf000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x00320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0xbf000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x00320827
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_44:
   fle.s x1, f27, f31 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_44, F_fle_s_cg_cp_ibm_b19_44_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_44, F_fle_s_cg_cp_ibm_b19_44_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_44, F_fle_s_cg_cp_ibm_b19_44_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_44, F_fle_s_cg_cp_ibm_b19_44_str)
 
 # Testcase cp_ibm_b19 (B19.csv:45 Test source fs1val = 0xbf000001 fs2val = 0x80320827 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0xbf000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x80320827
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0xbf000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x80320827
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_45:
-  fle.s x6, f21, f5 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_45, F_fle_s_cg_cp_ibm_b19_45_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_45, F_fle_s_cg_cp_ibm_b19_45_str)
+  fle.s x3, f21, f5 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_45, F_fle_s_cg_cp_ibm_b19_45_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_45, F_fle_s_cg_cp_ibm_b19_45_str)
 
 # Testcase cp_ibm_b19 (B19.csv:46 Test source fs1val = 0x3f000000 fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x3f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x3f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_46:
   fle.s x30, f2, f18 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_46, F_fle_s_cg_cp_ibm_b19_46_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_46, F_fle_s_cg_cp_ibm_b19_46_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_46, F_fle_s_cg_cp_ibm_b19_46_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_46, F_fle_s_cg_cp_ibm_b19_46_str)
 
 # Testcase cp_ibm_b19 (B19.csv:47 Test source fs1val = 0x3f000000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x3f000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x3f000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_47:
-  fle.s x23, f14, f17 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_47, F_fle_s_cg_cp_ibm_b19_47_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_47, F_fle_s_cg_cp_ibm_b19_47_str)
+  fle.s x22, f14, f17 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_47, F_fle_s_cg_cp_ibm_b19_47_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_47, F_fle_s_cg_cp_ibm_b19_47_str)
 
 # Testcase cp_ibm_b19 (B19.csv:48 Test source fs1val = 0xbf000000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0xbf000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs2: f31 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0xbf000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs2: f31 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_48:
-  fle.s x7, f18, f31 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b19_48, F_fle_s_cg_cp_ibm_b19_48_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_48, F_fle_s_cg_cp_ibm_b19_48_str)
+  fle.s x6, f18, f31 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_48, F_fle_s_cg_cp_ibm_b19_48_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_48, F_fle_s_cg_cp_ibm_b19_48_str)
 
 # Testcase cp_ibm_b19 (B19.csv:49 Test source fs1val = 0xbf000000 fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0xbf000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0xbf000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_49:
   fle.s x25, f21, f10 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_49, F_fle_s_cg_cp_ibm_b19_49_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_49, F_fle_s_cg_cp_ibm_b19_49_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_49, F_fle_s_cg_cp_ibm_b19_49_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_49, F_fle_s_cg_cp_ibm_b19_49_str)
 
 # Testcase cp_ibm_b19 (B19.csv:50 Test source fs1val = 0x007fffff fs2val = 0x75800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0x75800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0x75800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_50:
   fle.s x25, f20, f8 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_50, F_fle_s_cg_cp_ibm_b19_50_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_50, F_fle_s_cg_cp_ibm_b19_50_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_50, F_fle_s_cg_cp_ibm_b19_50_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_50, F_fle_s_cg_cp_ibm_b19_50_str)
 
 # Testcase cp_ibm_b19 (B19.csv:51 Test source fs1val = 0x007fffff fs2val = 0xf5800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs2: f16 = 0xf5800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs2: f16 = 0xf5800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_51:
-  fle.s x15, f1, f16 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b19_51, F_fle_s_cg_cp_ibm_b19_51_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_51, F_fle_s_cg_cp_ibm_b19_51_str)
+  fle.s x14, f1, f16 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_51, F_fle_s_cg_cp_ibm_b19_51_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_51, F_fle_s_cg_cp_ibm_b19_51_str)
 
 # Testcase cp_ibm_b19 (B19.csv:52 Test source fs1val = 0x807fffff fs2val = 0x75800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x75800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x75800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_52:
-  fle.s x17, f11, f13 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_52, F_fle_s_cg_cp_ibm_b19_52_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_52, F_fle_s_cg_cp_ibm_b19_52_str)
+  fle.s x16, f11, f13 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_52, F_fle_s_cg_cp_ibm_b19_52_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_52, F_fle_s_cg_cp_ibm_b19_52_str)
 
 # Testcase cp_ibm_b19 (B19.csv:53 Test source fs1val = 0x807fffff fs2val = 0xf5800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0xf5800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0xf5800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_53:
   fle.s x28, f8, f10 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_53, F_fle_s_cg_cp_ibm_b19_53_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_53, F_fle_s_cg_cp_ibm_b19_53_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_53, F_fle_s_cg_cp_ibm_b19_53_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_53, F_fle_s_cg_cp_ibm_b19_53_str)
 
 # Testcase cp_ibm_b19 (B19.csv:54 Test source fs1val = 0x0021bbac fs2val = 0x75ffffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x0021bbac
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x75ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x0021bbac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x75ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_54:
   fle.s x27, f26, f17 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_54, F_fle_s_cg_cp_ibm_b19_54_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_54, F_fle_s_cg_cp_ibm_b19_54_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_54, F_fle_s_cg_cp_ibm_b19_54_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_54, F_fle_s_cg_cp_ibm_b19_54_str)
 
 # Testcase cp_ibm_b19 (B19.csv:55 Test source fs1val = 0x0021bbac fs2val = 0xf5ffffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x0021bbac
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0xf5ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x0021bbac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0xf5ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_55:
   fle.s x31, f31, f15 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_55, F_fle_s_cg_cp_ibm_b19_55_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_55, F_fle_s_cg_cp_ibm_b19_55_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_55, F_fle_s_cg_cp_ibm_b19_55_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_55, F_fle_s_cg_cp_ibm_b19_55_str)
 
 # Testcase cp_ibm_b19 (B19.csv:56 Test source fs1val = 0x8021bbac fs2val = 0x75ffffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x8021bbac
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x75ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x8021bbac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x75ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_56:
   fle.s x31, f22, f17 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_56, F_fle_s_cg_cp_ibm_b19_56_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_56, F_fle_s_cg_cp_ibm_b19_56_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_56, F_fle_s_cg_cp_ibm_b19_56_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_56, F_fle_s_cg_cp_ibm_b19_56_str)
 
 # Testcase cp_ibm_b19 (B19.csv:57 Test source fs1val = 0x8021bbac fs2val = 0xf5ffffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x8021bbac
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0xf5ffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x8021bbac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0xf5ffffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_57:
   fle.s x25, f21, f23 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_57, F_fle_s_cg_cp_ibm_b19_57_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_57, F_fle_s_cg_cp_ibm_b19_57_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_57, F_fle_s_cg_cp_ibm_b19_57_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_57, F_fle_s_cg_cp_ibm_b19_57_str)
 
 # Testcase cp_ibm_b19 (B19.csv:58 Test source fs1val = 0x00400000 fs2val = 0x75800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x75800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x75800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_58:
-  fle.s x21, f20, f9 # perform operation
-  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_58, F_fle_s_cg_cp_ibm_b19_58_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_58, F_fle_s_cg_cp_ibm_b19_58_str)
+  fle.s x20, f20, f9 # perform operation
+  # Check if x20 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x20, F_fle_s_cg_cp_ibm_b19_58, F_fle_s_cg_cp_ibm_b19_58_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_58, F_fle_s_cg_cp_ibm_b19_58_str)
 
 # Testcase cp_ibm_b19 (B19.csv:59 Test source fs1val = 0x00400000 fs2val = 0xf5800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs1: f1 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0xf5800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs1: f1 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0xf5800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_59:
   fle.s x31, f1, f17 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_59, F_fle_s_cg_cp_ibm_b19_59_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_59, F_fle_s_cg_cp_ibm_b19_59_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_59, F_fle_s_cg_cp_ibm_b19_59_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_59, F_fle_s_cg_cp_ibm_b19_59_str)
 
 # Testcase cp_ibm_b19 (B19.csv:60 Test source fs1val = 0x80400000 fs2val = 0x75800000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x75800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x75800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_60:
   fle.s x31, f14, f11 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_60, F_fle_s_cg_cp_ibm_b19_60_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_60, F_fle_s_cg_cp_ibm_b19_60_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_60, F_fle_s_cg_cp_ibm_b19_60_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_60, F_fle_s_cg_cp_ibm_b19_60_str)
 
 # Testcase cp_ibm_b19 (B19.csv:61 Test source fs1val = 0x80400000 fs2val = 0xf5800000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0xf5800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0xf5800000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_61:
-  fle.s x22, f29, f13 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_61, F_fle_s_cg_cp_ibm_b19_61_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_61, F_fle_s_cg_cp_ibm_b19_61_str)
+  fle.s x21, f29, f13 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_61, F_fle_s_cg_cp_ibm_b19_61_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_61, F_fle_s_cg_cp_ibm_b19_61_str)
 
 # Testcase cp_ibm_b19 (B19.csv:62 Test source fs1val = 0x0022f89d fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x0022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_62:
   fle.s x30, f3, f24 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_62, F_fle_s_cg_cp_ibm_b19_62_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_62, F_fle_s_cg_cp_ibm_b19_62_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_62, F_fle_s_cg_cp_ibm_b19_62_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_62, F_fle_s_cg_cp_ibm_b19_62_str)
 
 # Testcase cp_ibm_b19 (B19.csv:63 Test source fs1val = 0x0022f89d fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x0022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_63:
-  fle.s x10, f27, f29 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_63, F_fle_s_cg_cp_ibm_b19_63_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_63, F_fle_s_cg_cp_ibm_b19_63_str)
+  fle.s x9, f27, f29 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_63, F_fle_s_cg_cp_ibm_b19_63_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_63, F_fle_s_cg_cp_ibm_b19_63_str)
 
 # Testcase cp_ibm_b19 (B19.csv:64 Test source fs1val = 0x8022f89d fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x8022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_64:
-  fle.s x13, f11, f6 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_64, F_fle_s_cg_cp_ibm_b19_64_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_64, F_fle_s_cg_cp_ibm_b19_64_str)
+  fle.s x12, f11, f6 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_64, F_fle_s_cg_cp_ibm_b19_64_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_64, F_fle_s_cg_cp_ibm_b19_64_str)
 
 # Testcase cp_ibm_b19 (B19.csv:65 Test source fs1val = 0x8022f89d fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x8022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_65:
-  fle.s x18, f3, f23 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_65, F_fle_s_cg_cp_ibm_b19_65_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_65, F_fle_s_cg_cp_ibm_b19_65_str)
+  fle.s x17, f3, f23 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_65, F_fle_s_cg_cp_ibm_b19_65_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_65, F_fle_s_cg_cp_ibm_b19_65_str)
 
 # Testcase cp_ibm_b19 (B19.csv:66 Test source fs1val = 0x00400000 fs2val = 0x00117c4e rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x00117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x00117c4e
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_66:
   fle.s x29, f16, f15 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_66, F_fle_s_cg_cp_ibm_b19_66_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_66, F_fle_s_cg_cp_ibm_b19_66_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_66, F_fle_s_cg_cp_ibm_b19_66_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_66, F_fle_s_cg_cp_ibm_b19_66_str)
 
 # Testcase cp_ibm_b19 (B19.csv:67 Test source fs1val = 0x00400000 fs2val = 0x80117c4e rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x80117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x80117c4e
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_67:
   fle.s x29, f31, f26 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_67, F_fle_s_cg_cp_ibm_b19_67_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_67, F_fle_s_cg_cp_ibm_b19_67_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_67, F_fle_s_cg_cp_ibm_b19_67_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_67, F_fle_s_cg_cp_ibm_b19_67_str)
 
 # Testcase cp_ibm_b19 (B19.csv:68 Test source fs1val = 0x80400000 fs2val = 0x00117c4e rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x00117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x00117c4e
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_68:
-  fle.s x24, f14, f2 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_68, F_fle_s_cg_cp_ibm_b19_68_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_68, F_fle_s_cg_cp_ibm_b19_68_str)
+  fle.s x23, f14, f2 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_68, F_fle_s_cg_cp_ibm_b19_68_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_68, F_fle_s_cg_cp_ibm_b19_68_str)
 
 # Testcase cp_ibm_b19 (B19.csv:69 Test source fs1val = 0x80400000 fs2val = 0x80117c4e rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x80117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x80117c4e
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_69:
-  fle.s x24, f19, f25 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_69, F_fle_s_cg_cp_ibm_b19_69_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_69, F_fle_s_cg_cp_ibm_b19_69_str)
+  fle.s x23, f19, f25 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_69, F_fle_s_cg_cp_ibm_b19_69_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_69, F_fle_s_cg_cp_ibm_b19_69_str)
 
 # Testcase cp_ibm_b19 (B19.csv:70 Test source fs1val = 0x00400000 fs2val = 0x00000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs1: f12 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs1: f12 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_70:
-  fle.s x18, f12, f14 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_70, F_fle_s_cg_cp_ibm_b19_70_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_70, F_fle_s_cg_cp_ibm_b19_70_str)
+  fle.s x17, f12, f14 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_70, F_fle_s_cg_cp_ibm_b19_70_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_70, F_fle_s_cg_cp_ibm_b19_70_str)
 
 # Testcase cp_ibm_b19 (B19.csv:71 Test source fs1val = 0x00400000 fs2val = 0x80000001 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs2: f7 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs2: f7 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_71:
   fle.s x28, f30, f7 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_71, F_fle_s_cg_cp_ibm_b19_71_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_71, F_fle_s_cg_cp_ibm_b19_71_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_71, F_fle_s_cg_cp_ibm_b19_71_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_71, F_fle_s_cg_cp_ibm_b19_71_str)
 
 # Testcase cp_ibm_b19 (B19.csv:72 Test source fs1val = 0x80400000 fs2val = 0x00000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_72:
-  fle.s x6, f21, f19 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_72, F_fle_s_cg_cp_ibm_b19_72_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_72, F_fle_s_cg_cp_ibm_b19_72_str)
+  fle.s x3, f21, f19 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_72, F_fle_s_cg_cp_ibm_b19_72_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_72, F_fle_s_cg_cp_ibm_b19_72_str)
 
 # Testcase cp_ibm_b19 (B19.csv:73 Test source fs1val = 0x80400000 fs2val = 0x80000001 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_73:
   fle.s x29, f6, f19 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_73, F_fle_s_cg_cp_ibm_b19_73_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_73, F_fle_s_cg_cp_ibm_b19_73_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_73, F_fle_s_cg_cp_ibm_b19_73_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_73, F_fle_s_cg_cp_ibm_b19_73_str)
 
 # Testcase cp_ibm_b19 (B19.csv:74 Test source fs1val = 0x00000001 fs2val = 0x0022f89d rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x0022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_74:
   fle.s x29, f31, f5 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_74, F_fle_s_cg_cp_ibm_b19_74_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_74, F_fle_s_cg_cp_ibm_b19_74_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_74, F_fle_s_cg_cp_ibm_b19_74_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_74, F_fle_s_cg_cp_ibm_b19_74_str)
 
 # Testcase cp_ibm_b19 (B19.csv:75 Test source fs1val = 0x00000001 fs2val = 0x8022f89d rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x8022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_75:
   fle.s x1, f7, f2 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_75, F_fle_s_cg_cp_ibm_b19_75_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_75, F_fle_s_cg_cp_ibm_b19_75_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_75, F_fle_s_cg_cp_ibm_b19_75_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_75, F_fle_s_cg_cp_ibm_b19_75_str)
 
 # Testcase cp_ibm_b19 (B19.csv:76 Test source fs1val = 0x80000001 fs2val = 0x0022f89d rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x0022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_76:
-  fle.s x13, f10, f30 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_76, F_fle_s_cg_cp_ibm_b19_76_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_76, F_fle_s_cg_cp_ibm_b19_76_str)
+  fle.s x12, f10, f30 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_76, F_fle_s_cg_cp_ibm_b19_76_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_76, F_fle_s_cg_cp_ibm_b19_76_str)
 
 # Testcase cp_ibm_b19 (B19.csv:77 Test source fs1val = 0x80000001 fs2val = 0x8022f89d rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x8022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_77:
   fle.s x29, f11, f17 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_77, F_fle_s_cg_cp_ibm_b19_77_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_77, F_fle_s_cg_cp_ibm_b19_77_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_77, F_fle_s_cg_cp_ibm_b19_77_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_77, F_fle_s_cg_cp_ibm_b19_77_str)
 
 # Testcase cp_ibm_b19 (B19.csv:78 Test source fs1val = 0x00117c4e fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x00117c4e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x00117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_78:
-  fle.s x24, f23, f19 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_78, F_fle_s_cg_cp_ibm_b19_78_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_78, F_fle_s_cg_cp_ibm_b19_78_str)
+  fle.s x23, f23, f19 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_78, F_fle_s_cg_cp_ibm_b19_78_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_78, F_fle_s_cg_cp_ibm_b19_78_str)
 
 # Testcase cp_ibm_b19 (B19.csv:79 Test source fs1val = 0x00117c4e fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x00117c4e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x00117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_79:
   fle.s x26, f23, f26 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_79, F_fle_s_cg_cp_ibm_b19_79_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_79, F_fle_s_cg_cp_ibm_b19_79_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_79, F_fle_s_cg_cp_ibm_b19_79_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_79, F_fle_s_cg_cp_ibm_b19_79_str)
 
 # Testcase cp_ibm_b19 (B19.csv:80 Test source fs1val = 0x80117c4e fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x80117c4e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x80117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_80:
-  fle.s x13, f22, f26 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_80, F_fle_s_cg_cp_ibm_b19_80_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_80, F_fle_s_cg_cp_ibm_b19_80_str)
+  fle.s x12, f22, f26 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_80, F_fle_s_cg_cp_ibm_b19_80_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_80, F_fle_s_cg_cp_ibm_b19_80_str)
 
 # Testcase cp_ibm_b19 (B19.csv:81 Test source fs1val = 0x80117c4e fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x80117c4e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x80117c4e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_81:
   fle.s x26, f26, f9 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_81, F_fle_s_cg_cp_ibm_b19_81_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_81, F_fle_s_cg_cp_ibm_b19_81_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_81, F_fle_s_cg_cp_ibm_b19_81_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_81, F_fle_s_cg_cp_ibm_b19_81_str)
 
 # Testcase cp_ibm_b19 (B19.csv:82 Test source fs1val = 0x00000001 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_82:
-  fle.s x6, f20, f3 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_82, F_fle_s_cg_cp_ibm_b19_82_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_82, F_fle_s_cg_cp_ibm_b19_82_str)
+  fle.s x3, f20, f3 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_82, F_fle_s_cg_cp_ibm_b19_82_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_82, F_fle_s_cg_cp_ibm_b19_82_str)
 
 # Testcase cp_ibm_b19 (B19.csv:83 Test source fs1val = 0x00000001 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_83:
   fle.s x25, f19, f26 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_83, F_fle_s_cg_cp_ibm_b19_83_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_83, F_fle_s_cg_cp_ibm_b19_83_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_83, F_fle_s_cg_cp_ibm_b19_83_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_83, F_fle_s_cg_cp_ibm_b19_83_str)
 
 # Testcase cp_ibm_b19 (B19.csv:84 Test source fs1val = 0x80000001 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_84:
   fle.s x30, f29, f12 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_84, F_fle_s_cg_cp_ibm_b19_84_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_84, F_fle_s_cg_cp_ibm_b19_84_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_84, F_fle_s_cg_cp_ibm_b19_84_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_84, F_fle_s_cg_cp_ibm_b19_84_str)
 
 # Testcase cp_ibm_b19 (B19.csv:85 Test source fs1val = 0x80000001 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x80000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_85:
   fle.s x27, f22, f13 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_85, F_fle_s_cg_cp_ibm_b19_85_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_85, F_fle_s_cg_cp_ibm_b19_85_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_85, F_fle_s_cg_cp_ibm_b19_85_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_85, F_fle_s_cg_cp_ibm_b19_85_str)
 
 # Testcase cp_ibm_b19 (B19.csv:86 Test source fs1val = 0x007fffff fs2val = 0x00400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f1) # load fs2: f1 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f1) # load fs2: f1 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_86:
-  fle.s x22, f27, f1 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_86, F_fle_s_cg_cp_ibm_b19_86_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_86, F_fle_s_cg_cp_ibm_b19_86_str)
+  fle.s x21, f27, f1 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_86, F_fle_s_cg_cp_ibm_b19_86_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_86, F_fle_s_cg_cp_ibm_b19_86_str)
 
 # Testcase cp_ibm_b19 (B19.csv:87 Test source fs1val = 0x007fffff fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs1: f10 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs1: f10 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_87:
-  fle.s x12, f10, f3 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_87, F_fle_s_cg_cp_ibm_b19_87_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_87, F_fle_s_cg_cp_ibm_b19_87_str)
+  fle.s x11, f10, f3 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_87, F_fle_s_cg_cp_ibm_b19_87_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_87, F_fle_s_cg_cp_ibm_b19_87_str)
 
 # Testcase cp_ibm_b19 (B19.csv:88 Test source fs1val = 0x807fffff fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs2: f19 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs2: f19 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_88:
-  fle.s x24, f31, f19 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_88, F_fle_s_cg_cp_ibm_b19_88_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_88, F_fle_s_cg_cp_ibm_b19_88_str)
+  fle.s x23, f31, f19 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_88, F_fle_s_cg_cp_ibm_b19_88_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_88, F_fle_s_cg_cp_ibm_b19_88_str)
 
 # Testcase cp_ibm_b19 (B19.csv:89 Test source fs1val = 0x807fffff fs2val = 0x80400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_89:
-  fle.s x12, f7, f6 # perform operation
-  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_89, F_fle_s_cg_cp_ibm_b19_89_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_89, F_fle_s_cg_cp_ibm_b19_89_str)
+  fle.s x11, f7, f6 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_89, F_fle_s_cg_cp_ibm_b19_89_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_89, F_fle_s_cg_cp_ibm_b19_89_str)
 
 # Testcase cp_ibm_b19 (B19.csv:90 Test source fs1val = 0x00400000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs1: f25 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs1: f25 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_90:
   fle.s x29, f25, f21 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_90, F_fle_s_cg_cp_ibm_b19_90_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_90, F_fle_s_cg_cp_ibm_b19_90_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_90, F_fle_s_cg_cp_ibm_b19_90_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_90, F_fle_s_cg_cp_ibm_b19_90_str)
 
 # Testcase cp_ibm_b19 (B19.csv:91 Test source fs1val = 0x00400000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs2: f26 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs2: f26 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_91:
-  fle.s x6, f11, f26 # perform operation
-  # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_91, F_fle_s_cg_cp_ibm_b19_91_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_91, F_fle_s_cg_cp_ibm_b19_91_str)
+  fle.s x3, f11, f26 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, F_fle_s_cg_cp_ibm_b19_91, F_fle_s_cg_cp_ibm_b19_91_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_91, F_fle_s_cg_cp_ibm_b19_91_str)
 
 # Testcase cp_ibm_b19 (B19.csv:92 Test source fs1val = 0x80400000 fs2val = 0x007fffff rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_92:
   fle.s x1, f24, f8 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_92, F_fle_s_cg_cp_ibm_b19_92_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_92, F_fle_s_cg_cp_ibm_b19_92_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_92, F_fle_s_cg_cp_ibm_b19_92_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_92, F_fle_s_cg_cp_ibm_b19_92_str)
 
 # Testcase cp_ibm_b19 (B19.csv:93 Test source fs1val = 0x80400000 fs2val = 0x807fffff rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs1: f2 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs2: f11 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs1: f2 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs2: f11 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_93:
-  fle.s x14, f2, f11 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_93, F_fle_s_cg_cp_ibm_b19_93_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_93, F_fle_s_cg_cp_ibm_b19_93_str)
+  fle.s x13, f2, f11 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_93, F_fle_s_cg_cp_ibm_b19_93_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_93, F_fle_s_cg_cp_ibm_b19_93_str)
 
 # Testcase cp_ibm_b19 (B19.csv:94 Test source fs1val = 0x0022f89d fs2val = 0x0022f89d rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x0022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x0022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_94:
-  fle.s x23, f3, f10 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_94, F_fle_s_cg_cp_ibm_b19_94_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_94, F_fle_s_cg_cp_ibm_b19_94_str)
+  fle.s x22, f3, f10 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_94, F_fle_s_cg_cp_ibm_b19_94_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_94, F_fle_s_cg_cp_ibm_b19_94_str)
 
 # Testcase cp_ibm_b19 (B19.csv:95 Test source fs1val = 0x0022f89d fs2val = 0x8022f89d rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs1: f22 = 0x0022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs1: f22 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x8022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_95:
   fle.s x29, f22, f15 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_95, F_fle_s_cg_cp_ibm_b19_95_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_95, F_fle_s_cg_cp_ibm_b19_95_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_95, F_fle_s_cg_cp_ibm_b19_95_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_95, F_fle_s_cg_cp_ibm_b19_95_str)
 
 # Testcase cp_ibm_b19 (B19.csv:96 Test source fs1val = 0x8022f89d fs2val = 0x0022f89d rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x8022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x0022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x0022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_96:
-  fle.s x24, f23, f12 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_96, F_fle_s_cg_cp_ibm_b19_96_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_96, F_fle_s_cg_cp_ibm_b19_96_str)
+  fle.s x23, f23, f12 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_96, F_fle_s_cg_cp_ibm_b19_96_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_96, F_fle_s_cg_cp_ibm_b19_96_str)
 
 # Testcase cp_ibm_b19 (B19.csv:97 Test source fs1val = 0x8022f89d fs2val = 0x8022f89d rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x8022f89d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x8022f89d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x8022f89d
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_97:
   fle.s x29, f8, f14 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_97, F_fle_s_cg_cp_ibm_b19_97_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_97, F_fle_s_cg_cp_ibm_b19_97_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_97, F_fle_s_cg_cp_ibm_b19_97_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_97, F_fle_s_cg_cp_ibm_b19_97_str)
 
 # Testcase cp_ibm_b19 (B19.csv:98 Test source fs1val = 0x00000000 fs2val = 0x0160800a rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs1: f3 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x0160800a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs1: f3 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x0160800a
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_98:
-  fle.s x24, f3, f14 # perform operation
-  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x24, F_fle_s_cg_cp_ibm_b19_98, F_fle_s_cg_cp_ibm_b19_98_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_98, F_fle_s_cg_cp_ibm_b19_98_str)
+  fle.s x23, f3, f14 # perform operation
+  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_98, F_fle_s_cg_cp_ibm_b19_98_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_98, F_fle_s_cg_cp_ibm_b19_98_str)
 
 # Testcase cp_ibm_b19 (B19.csv:99 Test source fs1val = 0x00000000 fs2val = 0x8160800a rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x8160800a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x8160800a
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_99:
-  fle.s x10, f6, f12 # perform operation
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_99, F_fle_s_cg_cp_ibm_b19_99_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_99, F_fle_s_cg_cp_ibm_b19_99_str)
+  fle.s x9, f6, f12 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_99, F_fle_s_cg_cp_ibm_b19_99_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_99, F_fle_s_cg_cp_ibm_b19_99_str)
 
 # Testcase cp_ibm_b19 (B19.csv:100 Test source fs1val = 0x80000000 fs2val = 0x0160800a rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f5) # load fs2: f5 = 0x0160800a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f5) # load fs2: f5 = 0x0160800a
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_100:
-  fle.s x20, f24, f5 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b19_100, F_fle_s_cg_cp_ibm_b19_100_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_100, F_fle_s_cg_cp_ibm_b19_100_str)
+  fle.s x18, f24, f5 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_100, F_fle_s_cg_cp_ibm_b19_100_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_100, F_fle_s_cg_cp_ibm_b19_100_str)
 
 # Testcase cp_ibm_b19 (B19.csv:101 Test source fs1val = 0x80000000 fs2val = 0x8160800a rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f19) # load fs1: f19 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x8160800a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f19) # load fs1: f19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x8160800a
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_101:
-  fle.s x11, f19, f25 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_101, F_fle_s_cg_cp_ibm_b19_101_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_101, F_fle_s_cg_cp_ibm_b19_101_str)
+  fle.s x10, f19, f25 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_101, F_fle_s_cg_cp_ibm_b19_101_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_101, F_fle_s_cg_cp_ibm_b19_101_str)
 
 # Testcase cp_ibm_b19 (B19.csv:102 Test source fs1val = 0x00000000 fs2val = 0x01000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs2: f29 = 0x01000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs2: f29 = 0x01000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_102:
   fle.s x27, f24, f29 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_102, F_fle_s_cg_cp_ibm_b19_102_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_102, F_fle_s_cg_cp_ibm_b19_102_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_102, F_fle_s_cg_cp_ibm_b19_102_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_102, F_fle_s_cg_cp_ibm_b19_102_str)
 
 # Testcase cp_ibm_b19 (B19.csv:103 Test source fs1val = 0x00000000 fs2val = 0x81000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs2: f8 = 0x81000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs2: f8 = 0x81000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_103:
-  fle.s x13, f11, f8 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_103, F_fle_s_cg_cp_ibm_b19_103_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_103, F_fle_s_cg_cp_ibm_b19_103_str)
+  fle.s x12, f11, f8 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_103, F_fle_s_cg_cp_ibm_b19_103_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_103, F_fle_s_cg_cp_ibm_b19_103_str)
 
 # Testcase cp_ibm_b19 (B19.csv:104 Test source fs1val = 0x80000000 fs2val = 0x01000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs1: f14 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x01000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs1: f14 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x01000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_104:
-  fle.s x17, f14, f9 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_104, F_fle_s_cg_cp_ibm_b19_104_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_104, F_fle_s_cg_cp_ibm_b19_104_str)
+  fle.s x16, f14, f9 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_104, F_fle_s_cg_cp_ibm_b19_104_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_104, F_fle_s_cg_cp_ibm_b19_104_str)
 
 # Testcase cp_ibm_b19 (B19.csv:105 Test source fs1val = 0x80000000 fs2val = 0x81000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs1: f18 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x81000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs1: f18 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x81000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_105:
-  fle.s x14, f18, f10 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_105, F_fle_s_cg_cp_ibm_b19_105_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_105, F_fle_s_cg_cp_ibm_b19_105_str)
+  fle.s x13, f18, f10 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_105, F_fle_s_cg_cp_ibm_b19_105_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_105, F_fle_s_cg_cp_ibm_b19_105_str)
 
 # Testcase cp_ibm_b19 (B19.csv:106 Test source fs1val = 0x745d179b fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x745d179b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f25) # load fs2: f25 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x745d179b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f25) # load fs2: f25 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_106:
-  fle.s x20, f24, f25 # perform operation
-  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x20, F_fle_s_cg_cp_ibm_b19_106, F_fle_s_cg_cp_ibm_b19_106_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_106, F_fle_s_cg_cp_ibm_b19_106_str)
+  fle.s x18, f24, f25 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_106, F_fle_s_cg_cp_ibm_b19_106_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_106, F_fle_s_cg_cp_ibm_b19_106_str)
 
 # Testcase cp_ibm_b19 (B19.csv:107 Test source fs1val = 0x745d179b fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0x745d179b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs2: f20 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0x745d179b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs2: f20 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_107:
-  fle.s x18, f23, f20 # perform operation
-  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x18, F_fle_s_cg_cp_ibm_b19_107, F_fle_s_cg_cp_ibm_b19_107_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_107, F_fle_s_cg_cp_ibm_b19_107_str)
+  fle.s x17, f23, f20 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_107, F_fle_s_cg_cp_ibm_b19_107_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_107, F_fle_s_cg_cp_ibm_b19_107_str)
 
 # Testcase cp_ibm_b19 (B19.csv:108 Test source fs1val = 0xf45d179b fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xf45d179b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xf45d179b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_108:
-  fle.s x7, f28, f24 # perform operation
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, F_fle_s_cg_cp_ibm_b19_108, F_fle_s_cg_cp_ibm_b19_108_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_108, F_fle_s_cg_cp_ibm_b19_108_str)
+  fle.s x6, f28, f24 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, F_fle_s_cg_cp_ibm_b19_108, F_fle_s_cg_cp_ibm_b19_108_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_108, F_fle_s_cg_cp_ibm_b19_108_str)
 
 # Testcase cp_ibm_b19 (B19.csv:109 Test source fs1val = 0xf45d179b fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0xf45d179b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs2: f23 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0xf45d179b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs2: f23 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_109:
   fle.s x25, f28, f23 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_109, F_fle_s_cg_cp_ibm_b19_109_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_109, F_fle_s_cg_cp_ibm_b19_109_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_109, F_fle_s_cg_cp_ibm_b19_109_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_109, F_fle_s_cg_cp_ibm_b19_109_str)
 
 # Testcase cp_ibm_b19 (B19.csv:110 Test source fs1val = 0x74000000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs1: f21 = 0x74000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs2: f27 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs1: f21 = 0x74000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs2: f27 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_110:
-  fle.s x23, f21, f27 # perform operation
-  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x23, F_fle_s_cg_cp_ibm_b19_110, F_fle_s_cg_cp_ibm_b19_110_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_110, F_fle_s_cg_cp_ibm_b19_110_str)
+  fle.s x22, f21, f27 # perform operation
+  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_110, F_fle_s_cg_cp_ibm_b19_110_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_110, F_fle_s_cg_cp_ibm_b19_110_str)
 
 # Testcase cp_ibm_b19 (B19.csv:111 Test source fs1val = 0x74000000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f20) # load fs1: f20 = 0x74000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f20) # load fs1: f20 = 0x74000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_111:
   fle.s x25, f20, f9 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_111, F_fle_s_cg_cp_ibm_b19_111_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_111, F_fle_s_cg_cp_ibm_b19_111_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_111, F_fle_s_cg_cp_ibm_b19_111_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_111, F_fle_s_cg_cp_ibm_b19_111_str)
 
 # Testcase cp_ibm_b19 (B19.csv:112 Test source fs1val = 0xf4000000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0xf4000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0xf4000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_112:
   fle.s x30, f16, f24 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_112, F_fle_s_cg_cp_ibm_b19_112_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_112, F_fle_s_cg_cp_ibm_b19_112_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_112, F_fle_s_cg_cp_ibm_b19_112_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_112, F_fle_s_cg_cp_ibm_b19_112_str)
 
 # Testcase cp_ibm_b19 (B19.csv:113 Test source fs1val = 0xf4000000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f23) # load fs1: f23 = 0xf4000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f13) # load fs2: f13 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f23) # load fs1: f23 = 0xf4000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f13) # load fs2: f13 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_113:
   fle.s x28, f23, f13 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_113, F_fle_s_cg_cp_ibm_b19_113_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_113, F_fle_s_cg_cp_ibm_b19_113_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_113, F_fle_s_cg_cp_ibm_b19_113_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_113, F_fle_s_cg_cp_ibm_b19_113_str)
 
 # Testcase cp_ibm_b19 (B19.csv:114 Test source fs1val = 0x00000000 fs2val = 0x0052d6ea rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f12) # load fs2: f12 = 0x0052d6ea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f12) # load fs2: f12 = 0x0052d6ea
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_114:
-  fle.s x22, f6, f12 # perform operation
-  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x22, F_fle_s_cg_cp_ibm_b19_114, F_fle_s_cg_cp_ibm_b19_114_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_114, F_fle_s_cg_cp_ibm_b19_114_str)
+  fle.s x21, f6, f12 # perform operation
+  # Check if x21 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x21, F_fle_s_cg_cp_ibm_b19_114, F_fle_s_cg_cp_ibm_b19_114_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_114, F_fle_s_cg_cp_ibm_b19_114_str)
 
 # Testcase cp_ibm_b19 (B19.csv:115 Test source fs1val = 0x00000000 fs2val = 0x8052d6ea rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x8052d6ea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x8052d6ea
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_115:
   fle.s x31, f17, f2 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_115, F_fle_s_cg_cp_ibm_b19_115_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_115, F_fle_s_cg_cp_ibm_b19_115_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_115, F_fle_s_cg_cp_ibm_b19_115_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_115, F_fle_s_cg_cp_ibm_b19_115_str)
 
 # Testcase cp_ibm_b19 (B19.csv:116 Test source fs1val = 0x80000000 fs2val = 0x0052d6ea rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f31) # load fs1: f31 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs2: f24 = 0x0052d6ea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f31) # load fs1: f31 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs2: f24 = 0x0052d6ea
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_116:
-  fle.s x11, f31, f24 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_116, F_fle_s_cg_cp_ibm_b19_116_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_116, F_fle_s_cg_cp_ibm_b19_116_str)
+  fle.s x10, f31, f24 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_116, F_fle_s_cg_cp_ibm_b19_116_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_116, F_fle_s_cg_cp_ibm_b19_116_str)
 
 # Testcase cp_ibm_b19 (B19.csv:117 Test source fs1val = 0x80000000 fs2val = 0x8052d6ea rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f28) # load fs1: f28 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x8052d6ea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f28) # load fs1: f28 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x8052d6ea
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_117:
   fle.s x30, f28, f9 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_117, F_fle_s_cg_cp_ibm_b19_117_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_117, F_fle_s_cg_cp_ibm_b19_117_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_117, F_fle_s_cg_cp_ibm_b19_117_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_117, F_fle_s_cg_cp_ibm_b19_117_str)
 
 # Testcase cp_ibm_b19 (B19.csv:118 Test source fs1val = 0x00000000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f29) # load fs1: f29 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f29) # load fs1: f29 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_118:
   fle.s x28, f29, f22 # perform operation
-  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_118, F_fle_s_cg_cp_ibm_b19_118_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_118, F_fle_s_cg_cp_ibm_b19_118_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, F_fle_s_cg_cp_ibm_b19_118, F_fle_s_cg_cp_ibm_b19_118_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_118, F_fle_s_cg_cp_ibm_b19_118_str)
 
 # Testcase cp_ibm_b19 (B19.csv:119 Test source fs1val = 0x00000000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f11) # load fs1: f11 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f11) # load fs1: f11 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_119:
   fle.s x1, f11, f6 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_119, F_fle_s_cg_cp_ibm_b19_119_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_119, F_fle_s_cg_cp_ibm_b19_119_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_119, F_fle_s_cg_cp_ibm_b19_119_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_119, F_fle_s_cg_cp_ibm_b19_119_str)
 
 # Testcase cp_ibm_b19 (B19.csv:120 Test source fs1val = 0x80000000 fs2val = 0x00400000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs2: f6 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs2: f6 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_120:
-  fle.s x9, f17, f6 # perform operation
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, F_fle_s_cg_cp_ibm_b19_120, F_fle_s_cg_cp_ibm_b19_120_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_120, F_fle_s_cg_cp_ibm_b19_120_str)
+  fle.s x8, f17, f6 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_120, F_fle_s_cg_cp_ibm_b19_120_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_120, F_fle_s_cg_cp_ibm_b19_120_str)
 
 # Testcase cp_ibm_b19 (B19.csv:121 Test source fs1val = 0x80000000 fs2val = 0x80400000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f2) # load fs2: f2 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f2) # load fs2: f2 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_121:
-  fle.s x17, f24, f2 # perform operation
-  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x17, F_fle_s_cg_cp_ibm_b19_121, F_fle_s_cg_cp_ibm_b19_121_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_121, F_fle_s_cg_cp_ibm_b19_121_str)
+  fle.s x16, f24, f2 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x16, F_fle_s_cg_cp_ibm_b19_121, F_fle_s_cg_cp_ibm_b19_121_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_121, F_fle_s_cg_cp_ibm_b19_121_str)
 
 # Testcase cp_ibm_b19 (B19.csv:122 Test source fs1val = 0x00406fd5 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f27) # load fs1: f27 = 0x00406fd5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs2: f9 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f27) # load fs1: f27 = 0x00406fd5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs2: f9 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_122:
   fle.s x31, f27, f9 # perform operation
-  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_122, F_fle_s_cg_cp_ibm_b19_122_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_122, F_fle_s_cg_cp_ibm_b19_122_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, F_fle_s_cg_cp_ibm_b19_122, F_fle_s_cg_cp_ibm_b19_122_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_122, F_fle_s_cg_cp_ibm_b19_122_str)
 
 # Testcase cp_ibm_b19 (B19.csv:123 Test source fs1val = 0x00406fd5 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f26) # load fs1: f26 = 0x00406fd5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f21) # load fs2: f21 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f26) # load fs1: f26 = 0x00406fd5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f21) # load fs2: f21 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_123:
-  fle.s x11, f26, f21 # perform operation
-  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x11, F_fle_s_cg_cp_ibm_b19_123, F_fle_s_cg_cp_ibm_b19_123_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_123, F_fle_s_cg_cp_ibm_b19_123_str)
+  fle.s x10, f26, f21 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x10, F_fle_s_cg_cp_ibm_b19_123, F_fle_s_cg_cp_ibm_b19_123_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_123, F_fle_s_cg_cp_ibm_b19_123_str)
 
 # Testcase cp_ibm_b19 (B19.csv:124 Test source fs1val = 0x80406fd5 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs1: f17 = 0x80406fd5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f15) # load fs2: f15 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs1: f17 = 0x80406fd5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f15) # load fs2: f15 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_124:
-  fle.s x8, f17, f15 # perform operation
-  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x8, F_fle_s_cg_cp_ibm_b19_124, F_fle_s_cg_cp_ibm_b19_124_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_124, F_fle_s_cg_cp_ibm_b19_124_str)
+  fle.s x7, f17, f15 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x7, F_fle_s_cg_cp_ibm_b19_124, F_fle_s_cg_cp_ibm_b19_124_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_124, F_fle_s_cg_cp_ibm_b19_124_str)
 
 # Testcase cp_ibm_b19 (B19.csv:125 Test source fs1val = 0x80406fd5 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x80406fd5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x80406fd5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_125:
-  fle.s x13, f7, f17 # perform operation
-  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_125, F_fle_s_cg_cp_ibm_b19_125_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_125, F_fle_s_cg_cp_ibm_b19_125_str)
+  fle.s x12, f7, f17 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x12, F_fle_s_cg_cp_ibm_b19_125, F_fle_s_cg_cp_ibm_b19_125_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_125, F_fle_s_cg_cp_ibm_b19_125_str)
 
 # Testcase cp_ibm_b19 (B19.csv:126 Test source fs1val = 0x00400000 fs2val = 0x00000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f16) # load fs1: f16 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f16) # load fs1: f16 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_126:
   fle.s x27, f16, f14 # perform operation
-  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_126, F_fle_s_cg_cp_ibm_b19_126_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_126, F_fle_s_cg_cp_ibm_b19_126_str)
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, F_fle_s_cg_cp_ibm_b19_126, F_fle_s_cg_cp_ibm_b19_126_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_126, F_fle_s_cg_cp_ibm_b19_126_str)
 
 # Testcase cp_ibm_b19 (B19.csv:127 Test source fs1val = 0x00400000 fs2val = 0x80000000 rdval = 0x00000000 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f17) # load fs2: f17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f17) # load fs2: f17 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_127:
   fle.s x25, f30, f17 # perform operation
-  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_127, F_fle_s_cg_cp_ibm_b19_127_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_127, F_fle_s_cg_cp_ibm_b19_127_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, F_fle_s_cg_cp_ibm_b19_127, F_fle_s_cg_cp_ibm_b19_127_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_127, F_fle_s_cg_cp_ibm_b19_127_str)
 
 # Testcase cp_ibm_b19 (B19.csv:128 Test source fs1val = 0x80400000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f9) # load fs1: f9 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f3) # load fs2: f3 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f9) # load fs1: f9 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f3) # load fs2: f3 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_128:
-  fle.s x15, f9, f3 # perform operation
-  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x15, F_fle_s_cg_cp_ibm_b19_128, F_fle_s_cg_cp_ibm_b19_128_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_128, F_fle_s_cg_cp_ibm_b19_128_str)
+  fle.s x14, f9, f3 # perform operation
+  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_128, F_fle_s_cg_cp_ibm_b19_128_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_128, F_fle_s_cg_cp_ibm_b19_128_str)
 
 # Testcase cp_ibm_b19 (B19.csv:129 Test source fs1val = 0x80400000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f6) # load fs1: f6 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f10) # load fs2: f10 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f6) # load fs1: f6 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f10) # load fs2: f10 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_129:
   fle.s x30, f6, f10 # perform operation
-  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_129, F_fle_s_cg_cp_ibm_b19_129_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_129, F_fle_s_cg_cp_ibm_b19_129_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, F_fle_s_cg_cp_ibm_b19_129, F_fle_s_cg_cp_ibm_b19_129_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_129, F_fle_s_cg_cp_ibm_b19_129_str)
 
 # Testcase cp_ibm_b19 (B19.csv:130 Test source fs1val = 0x00000000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f7) # load fs1: f7 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f18) # load fs2: f18 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f7) # load fs1: f7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f18) # load fs2: f18 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_130:
   fle.s x29, f7, f18 # perform operation
-  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_130, F_fle_s_cg_cp_ibm_b19_130_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_130, F_fle_s_cg_cp_ibm_b19_130_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, F_fle_s_cg_cp_ibm_b19_130, F_fle_s_cg_cp_ibm_b19_130_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_130, F_fle_s_cg_cp_ibm_b19_130_str)
 
 # Testcase cp_ibm_b19 (B19.csv:131 Test source fs1val = 0x00000000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f24) # load fs1: f24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f14) # load fs2: f14 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f24) # load fs1: f24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f14) # load fs2: f14 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_131:
-  fle.s x14, f24, f14 # perform operation
-  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x14, F_fle_s_cg_cp_ibm_b19_131, F_fle_s_cg_cp_ibm_b19_131_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_131, F_fle_s_cg_cp_ibm_b19_131_str)
+  fle.s x13, f24, f14 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x13, F_fle_s_cg_cp_ibm_b19_131, F_fle_s_cg_cp_ibm_b19_131_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_131, F_fle_s_cg_cp_ibm_b19_131_str)
 
 # Testcase cp_ibm_b19 (B19.csv:132 Test source fs1val = 0x80000000 fs2val = 0x00000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs1: f30 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f22) # load fs2: f22 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs1: f30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f22) # load fs2: f22 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_132:
   fle.s x26, f30, f22 # perform operation
-  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_132, F_fle_s_cg_cp_ibm_b19_132_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_132, F_fle_s_cg_cp_ibm_b19_132_str)
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, F_fle_s_cg_cp_ibm_b19_132, F_fle_s_cg_cp_ibm_b19_132_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_132, F_fle_s_cg_cp_ibm_b19_132_str)
 
 # Testcase cp_ibm_b19 (B19.csv:133 Test source fs1val = 0x80000000 fs2val = 0x80000000 rdval = 0x00000001 fflags = 0x00000000, frm = None)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f8) # load fs1: f8 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x19, f30) # load fs2: f30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f8) # load fs1: f8 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x24, f30) # load fs2: f30 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
 F_fle_s_cg_cp_ibm_b19_133:
   fle.s x1, f8, f30 # perform operation
-  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_133, F_fle_s_cg_cp_ibm_b19_133_str)
-  # Check fflags. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD_FFLAGS(x3, x5, x4, F_fle_s_cg_cp_ibm_b19_133, F_fle_s_cg_cp_ibm_b19_133_str)
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, F_fle_s_cg_cp_ibm_b19_133, F_fle_s_cg_cp_ibm_b19_133_str)
+  # Check fflags. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x19, x5, x4, F_fle_s_cg_cp_ibm_b19_133, F_fle_s_cg_cp_ibm_b19_133_str)
 
-  mv x2, x3 # restore signature pointer to default register for teardown
+  mv x2, x19 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

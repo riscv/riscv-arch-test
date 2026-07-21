@@ -7,13 +7,16 @@
 ##################################
 
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import (
     clr_mtimer_int,
     clr_stimer_int,
     clr_stimer_mmode,
+    set_menvcfg_stce,
     set_mtimer_int,
     set_mtimer_int_soon,
+    set_stimecmp_max,
+    set_stimecmp_zero,
     set_stimer_mmode,
 )
 from testgen.data.state import TestData
@@ -29,7 +32,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
 
     Routes to:
     - cp_interrupts_m: Non-delegated (mideleg=0) OR M-interrupts (always M-mode)
-    - cp_interrupts_m_deleg: Delegated S-interrupts (mideleg=0x222 + SSIP/STIP/SEIP)
+    - cp_interrupts_m_deleg: Delegated interrupts (mideleg=0xAAA + MSIP/MTIP/MEIP/SSIP/STIP/SEIP)
     """
     covergroup = "InterruptsSSm_cg"
 
@@ -54,18 +57,15 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
     ]
 
     # S-interrupts that can be delegated
-    s_interrupts = {"ssip", "stip", "seip"}
+    # deleg_interrupts = {"ssip", "stip", "seip", "msip", "mtip", "meip"}
 
     # Loop: MIE × mideleg × mip × mie
     for mie_val in [0, 1]:
-        for mideleg_val in [0, 1]:  # 0 = none, 1 = 0x222
+        for mideleg_val in [0, 1]:  # 0 = none, 1 = 0xAAA
             for mip_name, mip_bit, mie_bit, set_fn, clr_fn, is_timer in interrupts:
                 for mie_name in ["ssie", "msie", "stie", "mtie", "seie", "meie"]:
-                    # Determine if delegated
-                    is_delegated = (mideleg_val == 1) and (mip_name in s_interrupts)
-
                     # Select coverpoint
-                    coverpoint = "cp_interrupts_m_deleg" if is_delegated else "cp_interrupts_m"
+                    coverpoint = "cp_interrupts_m_deleg" if mideleg_val else "cp_interrupts_m"
 
                     mideleg_name = ["zeros", "ones"][mideleg_val]
                     binname = f"mie{mie_val}_{mideleg_name}_{mip_name}_{mie_name}"
@@ -107,7 +107,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                     if mideleg_val == 1:
                         lines.extend(
                             [
-                                f"LI(x{r_scratch}, 0x222) # STI+SEI+SSI",
+                                f"LI(x{r_scratch}, 0xAAA) # MTI+MEI+MSI+STI+SEI+SSI",
                                 f"CSRW(mideleg, x{r_scratch})",
                             ]
                         )
@@ -130,7 +130,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-                    if is_delegated:
+                    if mideleg_val:
                         lines.append("# Set SIE=1 for delegated")
                         lines.append("csrsi mstatus, 2")
 
@@ -161,7 +161,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                             lines.extend([set_fn, "nop"])
 
                     lines.append("# === WAIT FOR INTERRUPT ===")
-                    if is_delegated:
+                    if mideleg_val:
                         lines.extend(
                             [
                                 "# Enter S-mode for delegated interrupts",
@@ -1556,6 +1556,60 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
+    """Generate stip write test with STIMECMP implemented
+
+    Attempt to write to mip.STIP with STIMECMP implemented
+    1 bin
+    """
+    covergroup = "InterruptsSSm_cg"
+    coverpoint = "cp_stip_write_stimecmp"
+
+    r_temp = test_data.int_regs.get_register()
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            _generate_stip_write_stimecmp_tests.__doc__,
+        ),
+        "",
+    ]
+    lines.extend(
+        [
+            "#ifdef SSTC_SUPPORTED",
+            "# set menvcfg.STCE",
+            *set_menvcfg_stce(r_temp, True),
+            "# clear mstatus.MIE",
+            f"LI(x{r_temp}, 0x8)",
+            f"CSRS(mstatus, x{r_temp})",
+            "# clear STIP through STIMECMP",
+            *set_stimecmp_max(r_temp),
+            "",
+            test_data.add_testcase("Write_1", coverpoint, covergroup),
+            "# attempt to write mip.STIP",
+            f"LI(x{r_temp}, 0x20)",
+            f"CSRS(mip, x{r_temp})",
+            f"CSRR(x{r_temp}, mip)",
+            write_sigupd(r_temp, test_data),
+            "",
+            "# set STIP through STIMECMP",
+            *set_stimecmp_zero(),
+            test_data.add_testcase("Write_0", coverpoint, covergroup),
+            "# attempt to write 0 to mip.STIP",
+            f"LI(x{r_temp}, 0x20)",
+            f"CSRC(mip, x{r_temp})",
+            f"CSRR(x{r_temp}, mip)",
+            write_sigupd(r_temp, test_data),
+            "",
+            "# Clean up: clear Supervisor timer interrupt",
+            *set_stimecmp_max(r_temp),
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp])
+    return lines
+
+
 @add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S", "Zicsr"])
 def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests running in M mode.
@@ -1601,6 +1655,7 @@ def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_trigger_sei_m_tests(test_data))
     tc.code.extend(_generate_sei_interaction_tests(test_data))
     tc.code.extend(_generate_global_ie_tests(test_data))
+    tc.code.extend(_generate_stip_write_stimecmp_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

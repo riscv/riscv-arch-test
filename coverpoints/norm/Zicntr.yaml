@@ -1,14 +1,39 @@
 # Mapping of normative rules to coverpoints for a test suite
-
 normative_rule_definitions:
-  - name: zihpm_op_sz_mode_acc
+  # RISC-V ISAs provide a set of up to thirty-two 64-bit performance counters and timers
+  - name: zihpm_op_sz_mode_acc_count
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
 
+  # when XLEN=32, the upper 32 bits are accessed via CSR registers 0xC80–0xC9F
+  - name: zihpm_op_sz_mode_acc_xlen32
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  # These counters are divided between the ext:zicntr[] and extlink:zihpm[] extensions.
+  - name: zihpm_op_sz_mode_acc_partition
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  # accessible via unprivileged XLEN-bit read-only CSR registers 0xC00–0xC1F
+  - name: zihpm_op_sz_mode_acc_priv
+    coverpoint:
+      ["Zicntr_csrrs_cg/{cp_cntr}", "ZicntrU_cg/cp_mcounteren_access_u"]
+
   - name: zicntr_rdcycle_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_rdcycleh_op
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
 
   - name: zicntr_rdtime_op
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
 
+  - name: zicntr_rdtimeh_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
   - name: zicntr_rdinstret_op
     coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_rdinstreth_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_time_hart_sync
+    coverpoint: ["Out of scope for single hart"]

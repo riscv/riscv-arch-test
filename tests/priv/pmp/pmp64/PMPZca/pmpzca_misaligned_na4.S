@@ -29,12 +29,12 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_GRANULARITY: 2
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_aligned_na4.S"
+#define TEST_FILE "pmpzca_misaligned_na4.S"
 #define SIGUPD_COUNT 50
 
 
@@ -116,7 +116,7 @@ RVTEST_DATA_BEGIN
 .p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_na4_region_execute\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)

@@ -26,8 +26,8 @@
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 32
-#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 

@@ -82,7 +82,6 @@ def _generate_machine_tm_tests(test_data: TestData) -> list[str]:
         lines += [
             "",
             f"# {coverpoint}: TM={tm_val}",
-            "RVTEST_GOTO_MMODE",
             # set or clear mcounteren.TM to control stimecmp visibility
         ]
         if tm_val:
@@ -91,7 +90,14 @@ def _generate_machine_tm_tests(test_data: TestData) -> list[str]:
             lines += [f"LI(x{r_scratch}, 0x2)", f"CSRC(mcounteren, x{r_scratch})"]
 
         lines.append(test_data.add_testcase(f"tm{tm_val}", coverpoint, covergroup))
-        lines += [f"CSRR x{r_scratch}, stimecmp", "nop"]
+        lines += [f"CSRR x{r_scratch}, stimecmp"]
+        lines.extend(
+            [
+                "#if __riscv_xlen == 32",
+                f"CSRR x{r_scratch}, stimecmph",
+                "#endif",
+            ]
+        )
         # restore: clear mcounteren.TM
         lines += [f"LI(x{r_scratch}, 0x2)", f"CSRC(mcounteren, x{r_scratch})"]
 
@@ -118,7 +124,14 @@ def _generate_machine_stce_tests(test_data: TestData) -> list[str]:
             *set_menvcfg_stce(r_scratch, bool(stce_val)),
         ]
         lines.append(test_data.add_testcase(f"stce{stce_val}", coverpoint, covergroup))
-        lines += [f"CSRR x{r_scratch}, stimecmp", "nop"]
+        lines += [f"CSRR x{r_scratch}, stimecmp"]
+        lines.extend(
+            [
+                "#if __riscv_xlen == 32",
+                f"CSRR x{r_scratch}, stimecmph",
+                "#endif",
+            ]
+        )
         # restore STCE=1 for subsequent tests
         lines += set_menvcfg_stce(r_scratch, True)
 
@@ -246,7 +259,9 @@ def _generate_supervisor_tm_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"    {test_data.add_testcase(f'tm{tm_val}', coverpoint, covergroup)}",
             f"    CSRR x{r_scratch}, stimecmp",
-            "    nop",
+            "#if __riscv_xlen == 32",
+            f"CSRR x{r_scratch}, stimecmph",
+            "#endif",
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",
@@ -281,7 +296,9 @@ def _generate_supervisor_stce_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"    {test_data.add_testcase(f'stce{stce_val}', coverpoint, covergroup)}",
             f"    CSRR x{r_scratch}, stimecmp",
-            "    nop",
+            "#if __riscv_xlen == 32",
+            f"CSRR x{r_scratch}, stimecmph",
+            "#endif",
             # --- return to M-mode and restore STCE=0 ---
             "RVTEST_GOTO_MMODE",
             *set_menvcfg_stce(r_scratch, False),
@@ -432,7 +449,9 @@ def _generate_user_tm_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Umode",
             f"    {test_data.add_testcase(f'tm{tm_val}', coverpoint, covergroup)}",
             f"    CSRR x{r_scratch}, stimecmp",
-            "    nop",
+            "#if __riscv_xlen == 32",
+            f"CSRR x{r_scratch}, stimecmph",
+            "#endif",
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",
@@ -475,7 +494,9 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Umode",
             f"    {test_data.add_testcase(f'stce{stce_val}', coverpoint, covergroup)}",
             f"    CSRR x{r_scratch}, stimecmp",
-            "    nop",
+            "#if __riscv_xlen == 32",
+            f"CSRR x{r_scratch}, stimecmph",
+            "#endif",
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",

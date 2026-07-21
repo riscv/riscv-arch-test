@@ -17,7 +17,7 @@
 #define TEST_FILE "sv57_VA_all_zeros_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -55,7 +55,6 @@ RVTEST_BEGIN
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
   LI(  a5, \VA)
-  LI(  x4, 0xACCE)          // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -87,7 +86,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here
@@ -136,7 +135,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // This region will be used to Store and then Load back from the first word
-.align 12
+.p2align 12
 rvtest_data_1_l0_rw:
   .word 0xbeefcaf1          // Random word
   .word 0xbeefcaf2          // Random word
@@ -144,7 +143,7 @@ rvtest_data_1_l0_rw:
   .word 0xbeefcaf3
 
 // This region will be used to execute its first instruction
-.align 12
+.p2align 12
 rvtest_data_1_l0_x:
   nop
   addi a4, a2, REGWIDTH
@@ -158,7 +157,7 @@ rvtest_data_1_l0_x:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

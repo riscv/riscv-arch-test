@@ -22,12 +22,14 @@
 //               access faults for restricted regions.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -46,7 +48,8 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
+    RVTEST_FENCEI
+
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
@@ -75,7 +78,10 @@ RVTEST_BEGIN
     nop
     nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    LA (a4, \ADDRESS)
+    LI(t0, g)
+    add    a4, a4, t0
+    addi a4, a4, -4                     // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     jalr ra, 0(a4)
     nop
@@ -119,7 +125,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)
@@ -159,7 +168,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
     lw a4, 0(a5)
@@ -167,7 +179,9 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
 
-    addi a5, a5, 4                                          // REGIONSTART + g
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0                     // REGIONSTART + g
 
     \TEST_CASE\()_10:
     lw a4, 0(a5)
@@ -211,7 +225,8 @@ main:
     csrw pmpcfg3, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-    addi x5, x4, g
+    LI(t0, g)
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 
@@ -226,7 +241,8 @@ main:
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 11
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr11, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -241,7 +257,8 @@ main:
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 9
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr9, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -256,7 +273,8 @@ main:
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 7
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr7, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -271,7 +289,8 @@ main:
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 5
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr5, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -286,7 +305,8 @@ main:
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 3
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr3, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -301,7 +321,8 @@ main:
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 1
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr1, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -316,7 +337,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_aligned_sw_address\""
@@ -331,13 +352,17 @@ test_8_str:  .string "\"test: 8;  cp: pmpm_aligned_lw_address+4\""
 test_9_str:  .string "\"test: 9;  cp: pmpm_aligned_lw_address+g-4\""
 test_10_str: .string "\"test: 10; cp: pmpm_aligned_lw_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
+
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

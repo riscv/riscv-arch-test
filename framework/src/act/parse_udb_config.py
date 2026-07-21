@@ -10,7 +10,9 @@
 from __future__ import annotations
 
 import importlib.resources
+import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -21,7 +23,8 @@ from typing import TYPE_CHECKING
 from rich import print as rprint
 from ruamel.yaml import YAML
 
-from act.build import BuildTask, PythonAction, build
+from act.build import build
+from act.build_types import BuildTask, PythonAction
 from act.dut_macros import generate_rvmodel_svh
 
 if TYPE_CHECKING:
@@ -115,7 +118,7 @@ def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
     marker.touch()
 
 
-def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None:
+def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose: bool) -> None:
     """Generate every DUT-derived file (extensions.txt, rvtest_config.{h,svh},
     rvmodel_macros.svh) for every config, in parallel, using the same
     `build()` DAG executor as the main pipeline.
@@ -180,7 +183,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
         )
 
     start = time.monotonic()
-    result = build(tasks, jobs=jobs, phase_label="Preparing DUT configs")
+    result = build(tasks, jobs=jobs, cache_root=workdir, verbose=verbose, phase_label="Preparing DUT configs")
     elapsed = time.monotonic() - start
 
     if result.errors:
@@ -197,6 +200,43 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
     udb_config = yaml.load(udb_config_file.read_text())
     config_params = udb_config["params"]
     return config_params
+
+
+# PMP addressing-mode support parameters and the sail.json fields they mirror.
+# UDB does not (yet) define parameters for PMP TOR/NA4/NAPOT addressing-mode
+# support, but every ACT config carries a sail.json whose memory.pmp block
+# declares them, and both the DUT and the reference model must implement the
+# same choice.
+_PMP_MODE_PARAMS = {
+    "tor_supported": "PMP_TOR_SUPPORTED",
+    "na4_supported": "PMP_NA4_SUPPORTED",
+    "napot_supported": "PMP_NAPOT_SUPPORTED",
+}
+
+
+def get_ref_model_pmp_params(dut_include_dir: Path) -> dict[str, bool]:
+    """Read PMP addressing-mode support from the config's sail.json.
+
+    Returns {PMP_TOR_SUPPORTED, PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED} for use
+    as test-selection parameters. A missing sail.json, unparsable content, or
+    absent fields default to supported=true so configs that predate these
+    fields keep their previous selection behavior.
+    """
+    params = {name: True for name in _PMP_MODE_PARAMS.values()}
+    sail_json = dut_include_dir / "sail.json"
+    if not sail_json.exists():
+        return params
+    # sail.json is JSONC: strip whole-line // comments before parsing.
+    content = re.sub(r"^\s*//.*$", "", sail_json.read_text(), flags=re.MULTILINE)
+    try:
+        pmp_config = json.loads(content).get("memory", {}).get("pmp", {})
+    except json.JSONDecodeError:
+        return params
+    for json_field, param_name in _PMP_MODE_PARAMS.items():
+        value = pmp_config.get(json_field)
+        if isinstance(value, bool):
+            params[param_name] = value
+    return params
 
 
 def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:

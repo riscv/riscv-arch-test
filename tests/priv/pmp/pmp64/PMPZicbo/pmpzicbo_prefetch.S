@@ -23,6 +23,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
@@ -30,7 +32,7 @@
 #define SIGUPD_COUNT 100
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -199,21 +201,21 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpzicbo_prefetch_i\""
 test_2_str:  .string "\"test: 2;  cp: pmpzicbo_prefetch_r\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_prefetch_w\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
-
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

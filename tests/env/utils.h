@@ -43,6 +43,23 @@
     #define LREG lq
 #endif
 
+// RVTEST_FENCEI: instruction that synchronizes the instruction stream after code
+// has been written to memory (relocating the trampoline, writing a dynamic
+// instruction to scratch, or storing into an executable PMP region before jumping
+// into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
+// I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
+// (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
+// (or a JAL) so code size is constant.
+#ifdef   RVMODEL_FENCEI
+  #define RVTEST_FENCEI RVMODEL_FENCEI
+#else
+  #ifdef ZIFENCEI_SUPPORTED
+    #define RVTEST_FENCEI fence.i
+  #else
+    #define RVTEST_FENCEI nop
+  #endif
+#endif
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only
@@ -363,10 +380,10 @@
   .ifnc(reg, X0)    ;\
     .option push    ;\
     .option rvc     ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option norvc   ;\
     la reg,val      ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
 
@@ -423,17 +440,19 @@
 
 // Interrupt Macros
 // Idle for interrupt latency
+// using LA to ensure that the tests have consistent code length across different simulators
 #define RVTEST_IDLE_FOR_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 
-#ifndef RVTEST_IDLE_FOR_TIMER_INTERRUPT
+// For the models that have timer running slower than the core clock, converts from timer ticks to cycles
+#define RVTEST_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * RVMODEL_MAX_CYCLES_PER_TIMER_TICK)
+
 #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY); \
+    LI(_R1, RVTEST_TIMER_INT_SOON_DELAY_CYCLES); \
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
-#endif
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
 // This allows tests to be portable across different platforms with different interrupt implementations.

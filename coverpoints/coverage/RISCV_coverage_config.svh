@@ -110,6 +110,9 @@
 `ifdef INTERRUPTSS_COVERAGE
   `include "InterruptsS_coverage.svh"
 `endif
+`ifdef INTERRUPTSSSM_COVERAGE
+  `include "InterruptsSSm_coverage.svh"
+`endif
 `ifdef INTERRUPTSSM_COVERAGE
   `include "InterruptsSm_coverage.svh"
 `endif
@@ -131,11 +134,11 @@
 `ifdef MISALIGNF_COVERAGE
   `include "MisalignF_coverage.svh"
 `endif
+`ifdef MISALIGNV_COVERAGE
+  `include "MisalignV_coverage.svh"
+`endif
 `ifdef MISALIGNZCA_COVERAGE
   `include "MisalignZca_coverage.svh"
-`endif
-`ifdef MISALIGNEDV_COVERAGE
-  `include "MisalignedV_coverage.svh"
 `endif
 `ifdef PMPF_COVERAGE
   `include "PMPF_coverage.svh"
@@ -176,6 +179,15 @@
 `ifdef SMVF_COVERAGE
   `include "SmVF_coverage.svh"
 `endif
+`ifdef SMMPM_COVERAGE
+  `include "Smmpm_coverage.svh"
+`endif
+`ifdef SMNPMS_COVERAGE
+  `include "SmnpmS_coverage.svh"
+`endif
+`ifdef SMNPMU_COVERAGE
+  `include "SmnpmU_coverage.svh"
+`endif
 `ifdef SMSTATEEN_COVERAGE
   `include "Smstateen_coverage.svh"
 `endif
@@ -184,6 +196,9 @@
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSNPM_COVERAGE
+  `include "Ssnpm_coverage.svh"
 `endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
@@ -310,6 +325,12 @@
 `endif
 `ifdef ZAMA16B_COVERAGE
   `include "Zama16b_coverage.svh"
+`endif
+`ifdef ZAWRSSU_COVERAGE
+  `include "ZawrsSU_coverage.svh"
+`endif
+`ifdef ZAWRSSM_COVERAGE
+  `include "ZawrsSm_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"
@@ -493,4 +514,25 @@
 `endif
 `ifdef ZVKB8_COVERAGE
   `include "Zvkb8_coverage.svh"
+`endif
+`ifdef ZVKG_COVERAGE
+  `include "Zvkg_coverage.svh"
+`endif
+`ifdef ZVKNED_COVERAGE
+  `include "Zvkned_coverage.svh"
+`endif
+`ifdef ZVKNHA_COVERAGE
+  `include "Zvknha_coverage.svh"
+`endif
+`ifdef ZVKNHB32_COVERAGE
+  `include "Zvknhb32_coverage.svh"
+`endif
+`ifdef ZVKNHB64_COVERAGE
+  `include "Zvknhb64_coverage.svh"
+`endif
+`ifdef ZVKSED_COVERAGE
+  `include "Zvksed_coverage.svh"
+`endif
+`ifdef ZVKSH_COVERAGE
+  `include "Zvksh_coverage.svh"
 `endif

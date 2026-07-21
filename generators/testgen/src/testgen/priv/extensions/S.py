@@ -12,6 +12,7 @@ from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd,
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -156,7 +157,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             "#ifdef S1P13P0_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
-                f"{coverpoint}",
+                coverpoint,
                 "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
                 "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
             ),
@@ -452,8 +453,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("stvec", 0b10),
         ("scounteren", None),
-        # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
-        ("senvcfg", 0xFFFFFFFFFFFFFFCF),
+        # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
+        ("senvcfg", None),
         ("sscratch", None),
         ("sepc", None),
         ("stval", None),
@@ -516,7 +517,15 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     for csr in csrs:
-        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        if csr[0] == "senvcfg":
+            # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
+            # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
+            # legalize to any legal value, so those iterations check that the field is legal
+            # instead of exact-matching the reference model.
+            warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
+            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, warl_fields=warl_fields))
+        else:
+            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -683,15 +692,16 @@ def _add_shadow(
 
 
 @add_priv_test_generator("S", required_extensions=["S"])
-def make_s(test_data: TestData) -> list[str]:
+def make_s(test_data: TestData) -> list[TestChunk]:
     """Generate tests for S supervisor-mode testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.append("### Run some tests in machine mode")
-    lines.extend(_generate_mretm_tests(test_data))
-    lines.extend(_generate_sretm_tests(test_data))
-    lines.extend(_generate_srets_tests(test_data))
-    lines.extend(
+    tc.code.append("### Run some tests in machine mode")
+    tc.code.extend(_generate_mretm_tests(test_data))
+    tc.code.extend(_generate_sretm_tests(test_data))
+    tc.code.extend(_generate_srets_tests(test_data))
+    tc.code.extend(
         [
             "",
             "",
@@ -699,9 +709,10 @@ def make_s(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Smode  # Run remaining tests in supervisor mode",
         ]
     )
-    lines.extend(_generate_scause_tests(test_data))
-    lines.extend(_generate_sstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_scsr_tests(test_data))
+    tc.code.extend(_generate_scause_tests(test_data))
+    tc.code.extend(_generate_sstatus_sd_tests(test_data))
+    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_scsr_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

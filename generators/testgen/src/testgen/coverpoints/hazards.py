@@ -324,5 +324,5 @@ def make_cp_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data:
     if "w" in haz_class and has_dest:
         test_lines.extend(make_hazard(instr_name, instr_type, coverpoint, test_data, "waw", None, "waw"))
 
-    tc.code = "\n".join(test_lines)
+    tc.code = test_lines
     return [test_data.end_test_chunk()]

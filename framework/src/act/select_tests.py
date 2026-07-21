@@ -10,8 +10,17 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
+from pathlib import Path
 
+from act.config import Config, load_config
 from act.parse_test_constraints import TestMetadata
+from act.parse_udb_config import (
+    get_config_params,
+    get_implemented_extensions,
+    get_ref_model_pmp_params,
+    prepare_dut_outputs,
+)
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
 
@@ -81,3 +90,43 @@ def select_tests(
             if check_test_params(test_params, config_params):
                 selected_tests[test_name] = test_metadata
     return selected_tests
+
+
+def prepare_configs_and_select_tests(
+    config_files: Sequence[Path],
+    full_test_dict: dict[str, TestMetadata],
+    workdir: Path,
+    *,
+    jobs: int = 1,
+    verbose: bool = False,
+    validate_tools: bool = True,
+) -> list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]]:
+    """Load configs, generate their UDB outputs, and select tests for each.
+
+    Loads each config, prepares all DUT-derived files (including
+    extensions.txt) in one parallel UDB pass, then runs select_tests per
+    config. Returns a (config, config_params, selected_tests) tuple per
+    config file, in input order.
+
+    Args:
+        config_files: ACT test config files to load.
+        full_test_dict: Candidate tests, usually from ``generate_test_dict``.
+        workdir: Directory for generated UDB outputs (one subdir per config).
+        jobs: Parallelism for DUT output generation.
+        verbose: Verbose output during DUT output generation.
+        validate_tools: Validate configured compiler and simulator executables
+            when true. Set false for callers that only need test selection and
+            may run before those tools are installed.
+    """
+    configs = [load_config(config_file, validate_tools=validate_tools) for config_file in config_files]
+    prepare_dut_outputs(configs, workdir, jobs, verbose)
+
+    results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
+    for config in configs:
+        implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
+        config_params = get_config_params(config.udb_config) | get_ref_model_pmp_params(config.dut_include_dir)
+        selected_tests = select_tests(
+            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+        )
+        results.append((config, config_params, selected_tests))
+    return results

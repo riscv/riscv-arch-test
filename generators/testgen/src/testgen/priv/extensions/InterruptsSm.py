@@ -12,6 +12,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -22,9 +23,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mti"
     ######################################
 
-    # Exclude: x2 (sp), x5 (t0-used by macros),
-    # x7 (t2-consumed by interrupt macros), x30 (t5-consumed by interrupt macros)
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -71,7 +70,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_msi"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -118,7 +117,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mei"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -166,9 +165,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_interrupts"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -176,7 +173,10 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
             "Cross of mstatus.MIE = {0/1}, mtvec.MODE = 00, 3 walking 1s in mip.MTIP/MSIP/MEIP,\n"
             "3 walking 1s in mie.MTIE/MSIE/MEIE (2 x 3 x 3 bins)",
         ),
+        # Direct mode (MODE=00) only where supported; vectored-only cores run this cross in vectored mode.
+        "#ifdef UDB_MTVEC_MODES_0",
         "csrci mtvec, 3     # Clear MODE bits (set to 00=direct)",
+        "#endif",
         "",
     ]
 
@@ -234,7 +234,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
 
                 lines.append("")
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save])
     return lines
 
 
@@ -245,9 +245,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_vectored"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -257,8 +255,10 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         )
     ]
 
-    # Test both mtvec modes
+    # Test both mtvec modes; gate each mode on its own MTVEC_MODES parameter so single-mode
+    # cores (direct-only or vectored-only) only exercise the mode they implement.
     for mode, mode_name in [(0, "direct"), (1, "vectored")]:
+        lines.append(f"#ifdef UDB_MTVEC_MODES_{mode}")
         lines.extend(
             [
                 f"# Set mtvec.MODE = {mode:02b} ({mode_name})",
@@ -307,9 +307,14 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
             lines.append("")
 
-    lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+        lines.append("#endif")
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
+    # Restore direct mode only where supported; vectored-only cores stay vectored.
+    lines.append("#ifdef UDB_MTVEC_MODES_0")
+    lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+    lines.append("#endif")
+
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
     return lines
 
 
@@ -320,9 +325,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_priority"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -373,7 +376,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch])
     return lines
 
 
@@ -382,7 +385,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -420,7 +423,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     "# Enable MTIE, spin with MIE=0 until timer fires (mip.MTIP=1)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRW(mie, x{r_scratch})",
-                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
                     f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
                 ]
             )
@@ -434,7 +437,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                         *clr_mtimer_int(r_t0, r_mtimecmp),
                         f"LI(x{r_scratch}, 0x8)",
                         f"CSRS(mstatus, x{r_scratch})",
-                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
                     ]
                 )
 
@@ -448,22 +451,23 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch])
     return lines
 
 
 @add_priv_test_generator("InterruptsSm", required_extensions=["Sm"])
-def make_interruptssm(test_data: TestData) -> list[str]:
+def make_interruptssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines: list[str] = []
+    tc.code.extend(_generate_trigger_mti_tests(test_data))
+    tc.code.extend(_generate_trigger_msi_tests(test_data))
+    tc.code.extend(_generate_trigger_mei_tests(test_data))
+    tc.code.extend(_generate_interrupt_cross_tests(test_data))
+    tc.code.extend(_generate_vectored_tests(test_data))
+    tc.code.extend(_generate_priority_tests(test_data))
+    tc.code.extend(_generate_wfi_tests(test_data))
 
-    lines.extend(_generate_trigger_mti_tests(test_data))
-    lines.extend(_generate_trigger_msi_tests(test_data))
-    lines.extend(_generate_trigger_mei_tests(test_data))
-    lines.extend(_generate_interrupt_cross_tests(test_data))
-    lines.extend(_generate_vectored_tests(test_data))
-    lines.extend(_generate_priority_tests(test_data))
-    lines.extend(_generate_wfi_tests(test_data))
-
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

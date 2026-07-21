@@ -26,7 +26,10 @@
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 32
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -34,80 +37,12 @@
 #define SIGUPD_COUNT 100
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_1:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                            // Store the return Address in x1
-    \TEST_CASE\()_2:
-    jalr ra, 0(a4)
-    nop
-2:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                            // Store the return Address in x1
-    \TEST_CASE\()_3:
-    jalr ra, 0(a4)
-    nop
-3:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    LI(a4, NOP)                                              // Value to write (NOP)
-    // Load & Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-
-    \TEST_CASE\()_4:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-    \TEST_CASE\()_5:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                  // Signature update
-
-    addi a5, a5, -4                                         // REGIONSTART - 4
-    \TEST_CASE\()_6:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
-
-    \TEST_CASE\()_7:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
-
-    addi a5, a5, 8                                          // REGIONSTART + 4                                            // Address to be verified
-    \TEST_CASE\()_8:
-    sw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
-
-    \TEST_CASE\()_9:
-    lw a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -156,7 +91,7 @@ main:
     csrw pmpcfg1, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
 // Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 4
@@ -168,7 +103,7 @@ main:
     csrw pmpcfg1, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
 
 // Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 3
@@ -180,7 +115,7 @@ main:
     csrw pmpcfg0, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
 
 // Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 2
@@ -192,7 +127,7 @@ main:
     csrw pmpcfg0, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
 
 // Test Case: 5 : L -> 0 and XR Permissions given to the PMP Region 1
@@ -204,7 +139,7 @@ main:
     csrw pmpcfg0, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
 
 // Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 0
@@ -216,16 +151,12 @@ main:
     csrw pmpcfg0, x5
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-    RVTEST_GOTO_MMODE
-
-    j exit                                                        // Verification Complete, exit the test
-
+    PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_6
 exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr_address\""
@@ -238,13 +169,17 @@ test_7_str: .string "\"test: 7; cp: pmpm_cfg_A_off_all_lw_address-4\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_off_all_sw_address+4\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_A_off_all_lw_address+4\""
 
-.align 12
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

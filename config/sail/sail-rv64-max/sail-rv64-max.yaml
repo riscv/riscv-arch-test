@@ -14,10 +14,10 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 1.0.0" }
+  #  - { name: Q, version: "= 1.0.0" } # sail does not yet support this
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
-  - { name: Sdtrig, version: "= 1.0.0" }
+  # - { name: Sdtrig, version: "= 1.0.0" } # sail does not yet support this
   - { name: Sha, version: "= 1.0.0" }
   - { name: Shcounterenw, version: "= 1.0.0" }
   - { name: Shgatpa, version: "= 1.0.0" }
@@ -35,7 +35,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smrnmi, version: "= 1.0.0" }
+  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -173,7 +173,7 @@ params:
   # D params
   MUTABLE_MISA_D: false
   # Q params
-  MUTABLE_MISA_Q: false
+  #  MUTABLE_MISA_Q: false # depends on Q extension which sail does not yet support
   # C params
   MUTABLE_MISA_C: false
   # B params
@@ -251,7 +251,6 @@ params:
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
@@ -292,6 +291,10 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 2
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -525,15 +528,15 @@ params:
   REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   # Sdtrig params
-  DBG_HCONTEXT_WIDTH: 14
-  DBG_SCONTEXT_WIDTH: 32
-  DCSR_MPRVEN_TYPE: rw
-  DCSR_STEPIE_TYPE: rw
-  DCSR_STOPCOUNT_TYPE: rw
-  DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: true
-  HSTATEEN_CONTEXT_TYPE: rw
-  MCONTEXT_AVAILABLE: true
+  # DBG_HCONTEXT_WIDTH: 14
+  # DBG_SCONTEXT_WIDTH: 32
+  # DCSR_MPRVEN_TYPE: rw
+  # DCSR_STEPIE_TYPE: rw
+  # DCSR_STOPCOUNT_TYPE: rw
+  # DCSR_STOPTIME_TYPE: rw
+  # HCONTEXT_AVAILABLE: true
+  # HSTATEEN_CONTEXT_TYPE: rw
+  # MCONTEXT_AVAILABLE: true
   # Pointer masking params
   PMLEN: 17
   # Ssqosid params
@@ -541,7 +544,7 @@ params:
   RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
-  MSTATEEN_CONTEXT_TYPE: rw
+  # MSTATEEN_CONTEXT_TYPE: rw
   # Csrind params
   HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
@@ -568,3 +571,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

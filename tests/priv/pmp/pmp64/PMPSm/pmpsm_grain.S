@@ -23,12 +23,14 @@
 //                as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -85,7 +87,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -100,7 +102,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -114,7 +116,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in  TOR
@@ -130,7 +132,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -144,7 +146,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -158,7 +160,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -174,7 +176,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -188,7 +190,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -202,7 +204,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -219,7 +221,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -233,7 +235,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -247,7 +249,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -263,7 +265,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -277,7 +279,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -291,7 +293,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -308,7 +310,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -322,7 +324,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -336,7 +338,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -371,10 +373,12 @@ test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

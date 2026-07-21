@@ -98,8 +98,8 @@ E_sb_cg_cp_rs1_nx0_b3:
   nop
 #endif
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs2: x5 = 0x469f2490428cb3d7
   mv x4, x3 # move signature pointer register
@@ -109,9 +109,9 @@ E_sb_cg_cp_rs1_nx0_b4:
   addi x4, x4, 625 # restore base address
   addi x4, x4, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x4) # load stored value for checking
-  # Check if x14 contains the expected result. x4 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x4, x13, x12, x14, E_sb_cg_cp_rs1_nx0_b4, E_sb_cg_cp_rs1_nx0_b4_str)
+  LREG x12, -SIG_STRIDE(x4) # load stored value for checking
+  # Check if x12 contains the expected result. x4 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x4, x14, x13, x12, E_sb_cg_cp_rs1_nx0_b4, E_sb_cg_cp_rs1_nx0_b4_str)
 #else
   sb x5, 0(x4) # repeat store so it is available for checking
   addi x4, x4, SIG_STRIDE # adjust base address for offset
@@ -131,8 +131,8 @@ E_sb_cg_cp_rs1_nx0_b5:
   addi x5, x5, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x5) # load stored value for checking
-  # Check if x11 contains the expected result. x5 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x5, x13, x12, x11, E_sb_cg_cp_rs1_nx0_b5, E_sb_cg_cp_rs1_nx0_b5_str)
+  # Check if x11 contains the expected result. x5 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x5, x14, x13, x11, E_sb_cg_cp_rs1_nx0_b5, E_sb_cg_cp_rs1_nx0_b5_str)
 #else
   sb x9, 0(x5) # repeat store so it is available for checking
   addi x5, x5, SIG_STRIDE # adjust base address for offset
@@ -152,8 +152,8 @@ E_sb_cg_cp_rs1_nx0_b6:
   addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x7, -SIG_STRIDE(x6) # load stored value for checking
-  # Check if x7 contains the expected result. x6 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x6, x13, x12, x7, E_sb_cg_cp_rs1_nx0_b6, E_sb_cg_cp_rs1_nx0_b6_str)
+  # Check if x7 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x7, E_sb_cg_cp_rs1_nx0_b6, E_sb_cg_cp_rs1_nx0_b6_str)
 #else
   sb x15, 0(x6) # repeat store so it is available for checking
   addi x6, x6, SIG_STRIDE # adjust base address for offset
@@ -173,8 +173,8 @@ E_sb_cg_cp_rs1_nx0_b7:
   addi x7, x7, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x3, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x3 contains the expected result. x7 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x7, x13, x12, x3, E_sb_cg_cp_rs1_nx0_b7, E_sb_cg_cp_rs1_nx0_b7_str)
+  # Check if x3 contains the expected result. x7 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x7, x14, x13, x3, E_sb_cg_cp_rs1_nx0_b7, E_sb_cg_cp_rs1_nx0_b7_str)
 #else
   sb x11, 0(x7) # repeat store so it is available for checking
   addi x7, x7, SIG_STRIDE # adjust base address for offset
@@ -194,8 +194,8 @@ E_sb_cg_cp_rs1_nx0_b8:
   addi x8, x8, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x4, -SIG_STRIDE(x8) # load stored value for checking
-  # Check if x4 contains the expected result. x8 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x8, x13, x12, x4, E_sb_cg_cp_rs1_nx0_b8, E_sb_cg_cp_rs1_nx0_b8_str)
+  # Check if x4 contains the expected result. x8 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x8, x14, x13, x4, E_sb_cg_cp_rs1_nx0_b8, E_sb_cg_cp_rs1_nx0_b8_str)
 #else
   sb x9, 0(x8) # repeat store so it is available for checking
   addi x8, x8, SIG_STRIDE # adjust base address for offset
@@ -214,9 +214,9 @@ E_sb_cg_cp_rs1_nx0_b9:
   addi x9, x9, 520 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x9) # load stored value for checking
-  # Check if x14 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x14, E_sb_cg_cp_rs1_nx0_b9, E_sb_cg_cp_rs1_nx0_b9_str)
+  LREG x12, -SIG_STRIDE(x9) # load stored value for checking
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_sb_cg_cp_rs1_nx0_b9, E_sb_cg_cp_rs1_nx0_b9_str)
 #else
   sb x4, 0(x9) # repeat store so it is available for checking
   addi x9, x9, SIG_STRIDE # adjust base address for offset
@@ -227,19 +227,19 @@ E_sb_cg_cp_rs1_nx0_b9:
 #endif
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xb863213617fa703c
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0xb863213617fa703c
   mv x10, x9 # move signature pointer register
   addi x10, x10, 915 # adjust base address for offset
 E_sb_cg_cp_rs1_nx0_b10:
-  sb x14, -915(x10) # perform store
+  sb x12, -915(x10) # perform store
   addi x10, x10, -915 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x6, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x6 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x6, E_sb_cg_cp_rs1_nx0_b10, E_sb_cg_cp_rs1_nx0_b10_str)
+  # Check if x6 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x6, E_sb_cg_cp_rs1_nx0_b10, E_sb_cg_cp_rs1_nx0_b10_str)
 #else
-  sb x14, 0(x10) # repeat store so it is available for checking
+  sb x12, 0(x10) # repeat store so it is available for checking
   addi x10, x10, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -257,8 +257,8 @@ E_sb_cg_cp_rs1_nx0_b11:
   addi x11, x11, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x11) # load stored value for checking
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, E_sb_cg_cp_rs1_nx0_b11, E_sb_cg_cp_rs1_nx0_b11_str)
+  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x9, E_sb_cg_cp_rs1_nx0_b11, E_sb_cg_cp_rs1_nx0_b11_str)
 #else
   sb x5, 0(x11) # repeat store so it is available for checking
   addi x11, x11, SIG_STRIDE # adjust base address for offset
@@ -268,22 +268,20 @@ E_sb_cg_cp_rs1_nx0_b11:
   nop
 #endif
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x4161613cdf145d6d
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs2: x4 = 0x41a023c03e0196ad
   mv x12, x11 # move signature pointer register
-  addi x12, x12, 996 # adjust base address for offset
+  addi x12, x12, -1973 # adjust base address for offset
 E_sb_cg_cp_rs1_nx0_b12:
-  sb x9, -996(x12) # perform store
-  addi x12, x12, -996 # restore base address
+  sb x4, 1973(x12) # perform store
+  addi x12, x12, 1973 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x3, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x12, x8, x7, x3, E_sb_cg_cp_rs1_nx0_b12, E_sb_cg_cp_rs1_nx0_b12_str)
+  LREG x6, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x6 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x6, E_sb_cg_cp_rs1_nx0_b12, E_sb_cg_cp_rs1_nx0_b12_str)
 #else
-  sb x9, 0(x12) # repeat store so it is available for checking
+  sb x4, 0(x12) # repeat store so it is available for checking
   addi x12, x12, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -291,20 +289,22 @@ E_sb_cg_cp_rs1_nx0_b12:
   nop
 #endif
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x5f34635fe56ea137
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x471b3b0866b0d462
   mv x13, x12 # move signature pointer register
-  addi x13, x13, 940 # adjust base address for offset
+  addi x13, x13, -851 # adjust base address for offset
 E_sb_cg_cp_rs1_nx0_b13:
-  sb x2, -940(x13) # perform store
-  addi x13, x13, -940 # restore base address
+  sb x15, 851(x13) # perform store
+  addi x13, x13, 851 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x9 contains the expected result. x13 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x13, x8, x7, x9, E_sb_cg_cp_rs1_nx0_b13, E_sb_cg_cp_rs1_nx0_b13_str)
+  LREG x6, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x6 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x6, E_sb_cg_cp_rs1_nx0_b13, E_sb_cg_cp_rs1_nx0_b13_str)
 #else
-  sb x2, 0(x13) # repeat store so it is available for checking
+  sb x15, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -313,19 +313,19 @@ E_sb_cg_cp_rs1_nx0_b13:
 #endif
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xcd402e91ffacd4ef
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x16c21637f580af86
   mv x14, x13 # move signature pointer register
-  addi x14, x14, -1295 # adjust base address for offset
+  addi x14, x14, -197 # adjust base address for offset
 E_sb_cg_cp_rs1_nx0_b14:
-  sb x9, 1295(x14) # perform store
-  addi x14, x14, 1295 # restore base address
+  sb x8, 197(x14) # perform store
+  addi x14, x14, 197 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x15 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x15, E_sb_cg_cp_rs1_nx0_b14, E_sb_cg_cp_rs1_nx0_b14_str)
+  LREG x7, -SIG_STRIDE(x14) # load stored value for checking
+  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x7, E_sb_cg_cp_rs1_nx0_b14, E_sb_cg_cp_rs1_nx0_b14_str)
 #else
-  sb x9, 0(x14) # repeat store so it is available for checking
+  sb x8, 0(x14) # repeat store so it is available for checking
   addi x14, x14, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -334,19 +334,19 @@ E_sb_cg_cp_rs1_nx0_b14:
 #endif
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x7fbc3a0b0da576b0
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x9446ad834d402e91
   mv x15, x14 # move signature pointer register
-  addi x15, x15, -180 # adjust base address for offset
+  addi x15, x15, -1676 # adjust base address for offset
 E_sb_cg_cp_rs1_nx0_b15:
-  sb x12, 180(x15) # perform store
-  addi x15, x15, 180 # restore base address
+  sb x10, 1676(x15) # perform store
+  addi x15, x15, 1676 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x6, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x6, E_sb_cg_cp_rs1_nx0_b15, E_sb_cg_cp_rs1_nx0_b15_str)
+  LREG x12, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x12, E_sb_cg_cp_rs1_nx0_b15, E_sb_cg_cp_rs1_nx0_b15_str)
 #else
-  sb x12, 0(x15) # repeat store so it is available for checking
+  sb x10, 0(x15) # repeat store so it is available for checking
   addi x15, x15, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -368,8 +368,8 @@ E_sb_cg_cp_rs2_b0:
   addi x3, x3, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x3) # load stored value for checking
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, E_sb_cg_cp_rs2_b0, E_sb_cg_cp_rs2_b0_str)
+  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x13, E_sb_cg_cp_rs2_b0, E_sb_cg_cp_rs2_b0_str)
 #else
   sb x0, 0(x3) # repeat store so it is available for checking
   addi x3, x3, SIG_STRIDE # adjust base address for offset
@@ -390,8 +390,8 @@ E_sb_cg_cp_rs2_b1:
   addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x10, -SIG_STRIDE(x2) # load stored value for checking
-  # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x10, E_sb_cg_cp_rs2_b1, E_sb_cg_cp_rs2_b1_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, E_sb_cg_cp_rs2_b1, E_sb_cg_cp_rs2_b1_str)
 #else
   sb x1, 0(x2) # repeat store so it is available for checking
   addi x2, x2, SIG_STRIDE # adjust base address for offset
@@ -412,8 +412,8 @@ E_sb_cg_cp_rs2_b2:
   addi x15, x15, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x13, E_sb_cg_cp_rs2_b2, E_sb_cg_cp_rs2_b2_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, E_sb_cg_cp_rs2_b2, E_sb_cg_cp_rs2_b2_str)
 #else
   sb x2, 0(x15) # repeat store so it is available for checking
   addi x15, x15, SIG_STRIDE # adjust base address for offset
@@ -433,8 +433,8 @@ E_sb_cg_cp_rs2_b3:
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x10, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x10 contains the expected result. x13 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x13, x8, x7, x10, E_sb_cg_cp_rs2_b3, E_sb_cg_cp_rs2_b3_str)
+  # Check if x10 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x10, E_sb_cg_cp_rs2_b3, E_sb_cg_cp_rs2_b3_str)
 #else
   sb x3, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -444,21 +444,23 @@ E_sb_cg_cp_rs2_b3:
   nop
 #endif
 
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x65c06c0fd59ca80b
-  mv x1, x13 # move signature pointer register
-  addi x1, x1, 1342 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0xd7bc459eec561362
+  mv x12, x13 # move signature pointer register
+  addi x12, x12, 741 # adjust base address for offset
 E_sb_cg_cp_rs2_b4:
-  sb x4, -1342(x1) # perform store
-  addi x1, x1, -1342 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
+  sb x4, -741(x12) # perform store
+  addi x12, x12, -741 # restore base address
+  addi x12, x12, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x12, E_sb_cg_cp_rs2_b4, E_sb_cg_cp_rs2_b4_str)
+  LREG x15, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, E_sb_cg_cp_rs2_b4, E_sb_cg_cp_rs2_b4_str)
 #else
-  sb x4, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
+  sb x4, 0(x12) # repeat store so it is available for checking
+  addi x12, x12, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -466,41 +468,19 @@ E_sb_cg_cp_rs2_b4:
 #endif
 
 # Testcase cp_rs2 (Test source rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x6c561362bedb679a
-  mv x10, x1 # move signature pointer register
-  addi x10, x10, -1995 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x7fdb7dccf48b56ed
+  mv x15, x12 # move signature pointer register
+  addi x15, x15, 1178 # adjust base address for offset
 E_sb_cg_cp_rs2_b5:
-  sb x5, 1995(x10) # perform store
-  addi x10, x10, 1995 # restore base address
-  addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
-  LREG x3, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x3 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x3, E_sb_cg_cp_rs2_b5, E_sb_cg_cp_rs2_b5_str)
-#else
-  sb x5, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
-
-  mv x2, x6 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x7fdb7dccf48b56ed
-  mv x15, x10 # move signature pointer register
-  addi x15, x15, 1543 # adjust base address for offset
-E_sb_cg_cp_rs2_b6:
-  sb x6, -1543(x15) # perform store
-  addi x15, x15, -1543 # restore base address
+  sb x5, -1178(x15) # perform store
+  addi x15, x15, -1178 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x14, E_sb_cg_cp_rs2_b6, E_sb_cg_cp_rs2_b6_str)
+  LREG x1, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, E_sb_cg_cp_rs2_b5, E_sb_cg_cp_rs2_b5_str)
 #else
-  sb x6, 0(x15) # repeat store so it is available for checking
+  sb x5, 0(x15) # repeat store so it is available for checking
   addi x15, x15, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -508,23 +488,45 @@ E_sb_cg_cp_rs2_b6:
   nop
 #endif
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0xb28d6785e50d28c4
-  mv x10, x15 # move signature pointer register
-  addi x10, x10, 777 # adjust base address for offset
-E_sb_cg_cp_rs2_b7:
-  sb x7, -777(x10) # perform store
-  addi x10, x10, -777 # restore base address
-  addi x10, x10, SIG_STRIDE # increment signature pointer
+  mv x1, x6 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x6)
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xaa6b987dc4076961
+  mv x5, x15 # move signature pointer register
+  addi x5, x5, -645 # adjust base address for offset
+E_sb_cg_cp_rs2_b6:
+  sb x6, 645(x5) # perform store
+  addi x5, x5, 645 # restore base address
+  addi x5, x5, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x6, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, E_sb_cg_cp_rs2_b7, E_sb_cg_cp_rs2_b7_str)
+  LREG x4, -SIG_STRIDE(x5) # load stored value for checking
+  # Check if x4 contains the expected result. x5 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x5, x8, x7, x4, E_sb_cg_cp_rs2_b6, E_sb_cg_cp_rs2_b6_str)
 #else
-  sb x7, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
+  sb x6, 0(x5) # repeat store so it is available for checking
+  addi x5, x5, SIG_STRIDE # adjust base address for offset
+  # nops to ensure length matches SELFCHECK
+  nop
+  nop
+  nop
+#endif
+
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x7)
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0xa6f0b7228356e08c
+  mv x6, x5 # move signature pointer register
+  addi x6, x6, -1314 # adjust base address for offset
+E_sb_cg_cp_rs2_b7:
+  sb x7, 1314(x6) # perform store
+  addi x6, x6, 1314 # restore base address
+  addi x6, x6, SIG_STRIDE # increment signature pointer
+#ifdef RVTEST_SELFCHECK
+  LREG x3, -SIG_STRIDE(x6) # load stored value for checking
+  # Check if x3 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x3, E_sb_cg_cp_rs2_b7, E_sb_cg_cp_rs2_b7_str)
+#else
+  sb x7, 0(x6) # repeat store so it is available for checking
+  addi x6, x6, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -532,20 +534,20 @@ E_sb_cg_cp_rs2_b7:
 #endif
 
 # Testcase cp_rs2 (Test source rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xc24cf6896ca55013
-  mv x13, x10 # move signature pointer register
-  addi x13, x13, 802 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0xb7507451bee66570
+  mv x2, x6 # move signature pointer register
+  addi x2, x2, 1659 # adjust base address for offset
 E_sb_cg_cp_rs2_b8:
-  sb x8, -802(x13) # perform store
-  addi x13, x13, -802 # restore base address
-  addi x13, x13, SIG_STRIDE # increment signature pointer
+  sb x8, -1659(x2) # perform store
+  addi x2, x2, -1659 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x12 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x12, E_sb_cg_cp_rs2_b8, E_sb_cg_cp_rs2_b8_str)
+  LREG x9, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x9 contains the expected result. x2 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x2, x14, x13, x9, E_sb_cg_cp_rs2_b8, E_sb_cg_cp_rs2_b8_str)
 #else
-  sb x8, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
+  sb x8, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -553,42 +555,41 @@ E_sb_cg_cp_rs2_b8:
 #endif
 
 # Testcase cp_rs2 (Test source rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x8ebc750544db627d
-  mv x10, x13 # move signature pointer register
-  addi x10, x10, 278 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xe216f9467f0736ae
+  mv x4, x2 # move signature pointer register
+  addi x4, x4, 225 # adjust base address for offset
 E_sb_cg_cp_rs2_b9:
-  sb x9, -278(x10) # perform store
-  addi x10, x10, -278 # restore base address
-  addi x10, x10, SIG_STRIDE # increment signature pointer
+  sb x9, -225(x4) # perform store
+  addi x4, x4, -225 # restore base address
+  addi x4, x4, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x8, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, E_sb_cg_cp_rs2_b9, E_sb_cg_cp_rs2_b9_str)
+  LREG x10, -SIG_STRIDE(x4) # load stored value for checking
+  # Check if x10 contains the expected result. x4 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x4, x14, x13, x10, E_sb_cg_cp_rs2_b9, E_sb_cg_cp_rs2_b9_str)
 #else
-  sb x9, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
+  sb x9, 0(x4) # repeat store so it is available for checking
+  addi x4, x4, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
   nop
 #endif
 
-  mv x9, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x08d820b12ab7b66e
-  mv x7, x9 # move signature pointer register
-  addi x7, x7, -911 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x7a1da9e7690d3d3d
+  mv x8, x4 # move signature pointer register
+  addi x8, x8, 296 # adjust base address for offset
 E_sb_cg_cp_rs2_b10:
-  sb x10, 911(x7) # perform store
-  addi x7, x7, 911 # restore base address
-  addi x7, x7, SIG_STRIDE # increment signature pointer
+  sb x10, -296(x8) # perform store
+  addi x8, x8, -296 # restore base address
+  addi x8, x8, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x13 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x13, E_sb_cg_cp_rs2_b10, E_sb_cg_cp_rs2_b10_str)
+  LREG x12, -SIG_STRIDE(x8) # load stored value for checking
+  # Check if x12 contains the expected result. x8 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x8, x14, x13, x12, E_sb_cg_cp_rs2_b10, E_sb_cg_cp_rs2_b10_str)
 #else
-  sb x10, 0(x7) # repeat store so it is available for checking
-  addi x7, x7, SIG_STRIDE # adjust base address for offset
+  sb x10, 0(x8) # repeat store so it is available for checking
+  addi x8, x8, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -596,20 +597,20 @@ E_sb_cg_cp_rs2_b10:
 #endif
 
 # Testcase cp_rs2 (Test source rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x1f8b3ca26df7504d
-  mv x9, x7 # move signature pointer register
-  addi x9, x9, -922 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xf680a9fc2d516b8a
+  mv x6, x8 # move signature pointer register
+  addi x6, x6, 1123 # adjust base address for offset
 E_sb_cg_cp_rs2_b11:
-  sb x11, 922(x9) # perform store
-  addi x9, x9, 922 # restore base address
-  addi x9, x9, SIG_STRIDE # increment signature pointer
+  sb x11, -1123(x6) # perform store
+  addi x6, x6, -1123 # restore base address
+  addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x9) # load stored value for checking
-  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x12, E_sb_cg_cp_rs2_b11, E_sb_cg_cp_rs2_b11_str)
+  LREG x4, -SIG_STRIDE(x6) # load stored value for checking
+  # Check if x4 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x4, E_sb_cg_cp_rs2_b11, E_sb_cg_cp_rs2_b11_str)
 #else
-  sb x11, 0(x9) # repeat store so it is available for checking
-  addi x9, x9, SIG_STRIDE # adjust base address for offset
+  sb x11, 0(x6) # repeat store so it is available for checking
+  addi x6, x6, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -617,61 +618,19 @@ E_sb_cg_cp_rs2_b11:
 #endif
 
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x6eff8d6aff119e29
-  mv x1, x9 # move signature pointer register
-  addi x1, x1, -1489 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x24919fc8cc5394f0
+  mv x10, x6 # move signature pointer register
+  addi x10, x10, -1664 # adjust base address for offset
 E_sb_cg_cp_rs2_b12:
-  sb x12, 1489(x1) # perform store
-  addi x1, x1, 1489 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
-  LREG x6, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x6 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x6, E_sb_cg_cp_rs2_b12, E_sb_cg_cp_rs2_b12_str)
-#else
-  sb x12, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
-
-# Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x26f1dd580fc19f6c
-  mv x15, x1 # move signature pointer register
-  addi x15, x15, -1744 # adjust base address for offset
-E_sb_cg_cp_rs2_b13:
-  sb x13, 1744(x15) # perform store
-  addi x15, x15, 1744 # restore base address
-  addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
-  LREG x7, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x15, x5, x4, x7, E_sb_cg_cp_rs2_b13, E_sb_cg_cp_rs2_b13_str)
-#else
-  sb x13, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
-
-# Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x29734a95740278bb
-  mv x10, x15 # move signature pointer register
-  addi x10, x10, 1814 # adjust base address for offset
-E_sb_cg_cp_rs2_b14:
-  sb x14, -1814(x10) # perform store
-  addi x10, x10, -1814 # restore base address
+  sb x12, 1664(x10) # perform store
+  addi x10, x10, 1664 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x8, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, E_sb_cg_cp_rs2_b14, E_sb_cg_cp_rs2_b14_str)
+  LREG x3, -SIG_STRIDE(x10) # load stored value for checking
+  # Check if x3 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x3, E_sb_cg_cp_rs2_b12, E_sb_cg_cp_rs2_b12_str)
 #else
-  sb x14, 0(x10) # repeat store so it is available for checking
+  sb x12, 0(x10) # repeat store so it is available for checking
   addi x10, x10, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -679,21 +638,65 @@ E_sb_cg_cp_rs2_b14:
   nop
 #endif
 
-# Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x37f1e1fe81a9f4ff
-  mv x3, x10 # move signature pointer register
-  addi x3, x3, -176 # adjust base address for offset
-E_sb_cg_cp_rs2_b15:
-  sb x15, 176(x3) # perform store
-  addi x3, x3, 176 # restore base address
-  addi x3, x3, SIG_STRIDE # increment signature pointer
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x13)
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x0312e1de8eb692e5
+  mv x7, x10 # move signature pointer register
+  addi x7, x7, -542 # adjust base address for offset
+E_sb_cg_cp_rs2_b13:
+  sb x13, 542(x7) # perform store
+  addi x7, x7, 542 # restore base address
+  addi x7, x7, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x7, -SIG_STRIDE(x3) # load stored value for checking
-  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x7, E_sb_cg_cp_rs2_b15, E_sb_cg_cp_rs2_b15_str)
+  LREG x12, -SIG_STRIDE(x7) # load stored value for checking
+  # Check if x12 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x7, x5, x4, x12, E_sb_cg_cp_rs2_b13, E_sb_cg_cp_rs2_b13_str)
 #else
-  sb x15, 0(x3) # repeat store so it is available for checking
-  addi x3, x3, SIG_STRIDE # adjust base address for offset
+  sb x13, 0(x7) # repeat store so it is available for checking
+  addi x7, x7, SIG_STRIDE # adjust base address for offset
+  # nops to ensure length matches SELFCHECK
+  nop
+  nop
+  nop
+#endif
+
+# Testcase cp_rs2 (Test source rs2 = x14)
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x7fce0ad162a2523d
+  mv x8, x7 # move signature pointer register
+  addi x8, x8, 1740 # adjust base address for offset
+E_sb_cg_cp_rs2_b14:
+  sb x14, -1740(x8) # perform store
+  addi x8, x8, -1740 # restore base address
+  addi x8, x8, SIG_STRIDE # increment signature pointer
+#ifdef RVTEST_SELFCHECK
+  LREG x6, -SIG_STRIDE(x8) # load stored value for checking
+  # Check if x6 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x8, x5, x4, x6, E_sb_cg_cp_rs2_b14, E_sb_cg_cp_rs2_b14_str)
+#else
+  sb x14, 0(x8) # repeat store so it is available for checking
+  addi x8, x8, SIG_STRIDE # adjust base address for offset
+  # nops to ensure length matches SELFCHECK
+  nop
+  nop
+  nop
+#endif
+
+# Testcase cp_rs2 (Test source rs2 = x15)
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0xfda3fabe41ea1776
+  mv x14, x8 # move signature pointer register
+  addi x14, x14, 1374 # adjust base address for offset
+E_sb_cg_cp_rs2_b15:
+  sb x15, -1374(x14) # perform store
+  addi x14, x14, -1374 # restore base address
+  addi x14, x14, SIG_STRIDE # increment signature pointer
+#ifdef RVTEST_SELFCHECK
+  LREG x10, -SIG_STRIDE(x14) # load stored value for checking
+  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x10, E_sb_cg_cp_rs2_b15, E_sb_cg_cp_rs2_b15_str)
+#else
+  sb x15, 0(x14) # repeat store so it is available for checking
+  addi x14, x14, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -705,20 +708,20 @@ E_sb_cg_cp_rs2_b15:
 /////////////////////////////////
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x0000000000000000
-  mv x14, x3 # move signature pointer register
-  addi x14, x14, 89 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x0000000000000000
+  mv x13, x14 # move signature pointer register
+  addi x13, x13, 89 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x0:
-  sb x1, -89(x14) # perform store
-  addi x14, x14, -89 # restore base address
-  addi x14, x14, SIG_STRIDE # increment signature pointer
+  sb x2, -89(x13) # perform store
+  addi x13, x13, -89 # restore base address
+  addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x15 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x15, E_sb_cg_cp_rs2_edges_0x0, E_sb_cg_cp_rs2_edges_0x0_str)
+  LREG x15, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x15 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x15, E_sb_cg_cp_rs2_edges_0x0, E_sb_cg_cp_rs2_edges_0x0_str)
 #else
-  sb x1, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
+  sb x2, 0(x13) # repeat store so it is available for checking
+  addi x13, x13, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -726,20 +729,20 @@ E_sb_cg_cp_rs2_edges_0x0:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x0000000000000001
-  mv x1, x14 # move signature pointer register
-  addi x1, x1, -1105 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x0000000000000001
+  mv x2, x13 # move signature pointer register
+  addi x2, x2, -1105 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x1:
-  sb x10, 1105(x1) # perform store
-  addi x1, x1, 1105 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
+  sb x10, 1105(x2) # perform store
+  addi x2, x2, 1105 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x15, E_sb_cg_cp_rs2_edges_0x1, E_sb_cg_cp_rs2_edges_0x1_str)
+  LREG x15, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_sb_cg_cp_rs2_edges_0x1, E_sb_cg_cp_rs2_edges_0x1_str)
 #else
-  sb x10, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
+  sb x10, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -747,8 +750,8 @@ E_sb_cg_cp_rs2_edges_0x1:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x0000000000000002
-  mv x14, x1 # move signature pointer register
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x0000000000000002
+  mv x14, x2 # move signature pointer register
   addi x14, x14, 1022 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x2:
   sb x3, -1022(x14) # perform store
@@ -768,7 +771,7 @@ E_sb_cg_cp_rs2_edges_0x2:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x8000000000000000
   mv x8, x14 # move signature pointer register
   addi x8, x8, 178 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x8000000000000000:
@@ -776,9 +779,9 @@ E_sb_cg_cp_rs2_edges_0x8000000000000000:
   addi x8, x8, -178 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x8) # load stored value for checking
-  # Check if x13 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x8, x5, x4, x13, E_sb_cg_cp_rs2_edges_0x8000000000000000, E_sb_cg_cp_rs2_edges_0x8000000000000000_str)
+  LREG x15, -SIG_STRIDE(x8) # load stored value for checking
+  # Check if x15 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x8, x5, x4, x15, E_sb_cg_cp_rs2_edges_0x8000000000000000, E_sb_cg_cp_rs2_edges_0x8000000000000000_str)
 #else
   sb x3, 0(x8) # repeat store so it is available for checking
   addi x8, x8, SIG_STRIDE # adjust base address for offset
@@ -789,7 +792,7 @@ E_sb_cg_cp_rs2_edges_0x8000000000000000:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x8000000000000001
   mv x10, x8 # move signature pointer register
   addi x10, x10, 1297 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x8000000000000001:
@@ -797,9 +800,9 @@ E_sb_cg_cp_rs2_edges_0x8000000000000001:
   addi x10, x10, -1297 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, E_sb_cg_cp_rs2_edges_0x8000000000000001, E_sb_cg_cp_rs2_edges_0x8000000000000001_str)
+  LREG x14, -SIG_STRIDE(x10) # load stored value for checking
+  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x14, E_sb_cg_cp_rs2_edges_0x8000000000000001, E_sb_cg_cp_rs2_edges_0x8000000000000001_str)
 #else
   sb x12, 0(x10) # repeat store so it is available for checking
   addi x10, x10, SIG_STRIDE # adjust base address for offset
@@ -810,7 +813,7 @@ E_sb_cg_cp_rs2_edges_0x8000000000000001:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x7fffffffffffffff
   mv x11, x10 # move signature pointer register
   addi x11, x11, -1423 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x7fffffffffffffff:
@@ -818,9 +821,9 @@ E_sb_cg_cp_rs2_edges_0x7fffffffffffffff:
   addi x11, x11, 1423 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x11) # load stored value for checking
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, E_sb_cg_cp_rs2_edges_0x7fffffffffffffff, E_sb_cg_cp_rs2_edges_0x7fffffffffffffff_str)
+  LREG x13, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, E_sb_cg_cp_rs2_edges_0x7fffffffffffffff, E_sb_cg_cp_rs2_edges_0x7fffffffffffffff_str)
 #else
   sb x3, 0(x11) # repeat store so it is available for checking
   addi x11, x11, SIG_STRIDE # adjust base address for offset
@@ -831,7 +834,7 @@ E_sb_cg_cp_rs2_edges_0x7fffffffffffffff:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x7ffffffffffffffe
   mv x13, x11 # move signature pointer register
   addi x13, x13, -197 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe:
@@ -839,9 +842,9 @@ E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe:
   addi x13, x13, 197 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x8, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x8 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x8, E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe, E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
+  LREG x9, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x9 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x9, E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe, E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
 #else
   sb x14, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -852,7 +855,7 @@ E_sb_cg_cp_rs2_edges_0x7ffffffffffffffe:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0xffffffffffffffff
   mv x10, x13 # move signature pointer register
   addi x10, x10, 1907 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0xffffffffffffffff:
@@ -860,9 +863,9 @@ E_sb_cg_cp_rs2_edges_0xffffffffffffffff:
   addi x10, x10, -1907 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x11, -SIG_STRIDE(x10) # load stored value for checking
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, E_sb_cg_cp_rs2_edges_0xffffffffffffffff, E_sb_cg_cp_rs2_edges_0xffffffffffffffff_str)
+  LREG x12, -SIG_STRIDE(x10) # load stored value for checking
+  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x12, E_sb_cg_cp_rs2_edges_0xffffffffffffffff, E_sb_cg_cp_rs2_edges_0xffffffffffffffff_str)
 #else
   sb x8, 0(x10) # repeat store so it is available for checking
   addi x10, x10, SIG_STRIDE # adjust base address for offset
@@ -873,20 +876,20 @@ E_sb_cg_cp_rs2_edges_0xffffffffffffffff:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0xfffffffffffffffe
-  mv x1, x10 # move signature pointer register
-  addi x1, x1, 1920 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xfffffffffffffffe
+  mv x2, x10 # move signature pointer register
+  addi x2, x2, 1920 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0xfffffffffffffffe:
-  sb x6, -1920(x1) # perform store
-  addi x1, x1, -1920 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
+  sb x6, -1920(x2) # perform store
+  addi x2, x2, -1920 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x13, E_sb_cg_cp_rs2_edges_0xfffffffffffffffe, E_sb_cg_cp_rs2_edges_0xfffffffffffffffe_str)
+  LREG x13, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_sb_cg_cp_rs2_edges_0xfffffffffffffffe, E_sb_cg_cp_rs2_edges_0xfffffffffffffffe_str)
 #else
-  sb x6, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
+  sb x6, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -894,8 +897,8 @@ E_sb_cg_cp_rs2_edges_0xfffffffffffffffe:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x5bbc887763ae86f2
-  mv x15, x1 # move signature pointer register
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x5bbc887763ae86f2
+  mv x15, x2 # move signature pointer register
   addi x15, x15, 1348 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x5bbc887763ae86f2:
   sb x14, -1348(x15) # perform store
@@ -915,7 +918,7 @@ E_sb_cg_cp_rs2_edges_0x5bbc887763ae86f2:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0xaaaaaaaaaaaaaaaa
   mv x3, x15 # move signature pointer register
   addi x3, x3, -510 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
@@ -923,9 +926,9 @@ E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
   addi x3, x3, 510 # restore base address
   addi x3, x3, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x3) # load stored value for checking
-  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x10, E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
+  LREG x11, -SIG_STRIDE(x3) # load stored value for checking
+  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x11, E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
 #else
   sb x13, 0(x3) # repeat store so it is available for checking
   addi x3, x3, SIG_STRIDE # adjust base address for offset
@@ -936,7 +939,7 @@ E_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x5555555555555555
   mv x13, x3 # move signature pointer register
   addi x13, x13, 1833 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x5555555555555555:
@@ -944,9 +947,9 @@ E_sb_cg_cp_rs2_edges_0x5555555555555555:
   addi x13, x13, -1833 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x10 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x10, E_sb_cg_cp_rs2_edges_0x5555555555555555, E_sb_cg_cp_rs2_edges_0x5555555555555555_str)
+  LREG x12, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x12 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x12, E_sb_cg_cp_rs2_edges_0x5555555555555555, E_sb_cg_cp_rs2_edges_0x5555555555555555_str)
 #else
   sb x11, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -957,7 +960,7 @@ E_sb_cg_cp_rs2_edges_0x5555555555555555:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x00000000ffffffff
   mv x12, x13 # move signature pointer register
   addi x12, x12, -125 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0xffffffff:
@@ -965,9 +968,9 @@ E_sb_cg_cp_rs2_edges_0xffffffff:
   addi x12, x12, 125 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x10 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x10, E_sb_cg_cp_rs2_edges_0xffffffff, E_sb_cg_cp_rs2_edges_0xffffffff_str)
+  LREG x11, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x11 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x11, E_sb_cg_cp_rs2_edges_0xffffffff, E_sb_cg_cp_rs2_edges_0xffffffff_str)
 #else
   sb x3, 0(x12) # repeat store so it is available for checking
   addi x12, x12, SIG_STRIDE # adjust base address for offset
@@ -978,7 +981,7 @@ E_sb_cg_cp_rs2_edges_0xffffffff:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x00000000fffffffe
   mv x6, x12 # move signature pointer register
   addi x6, x6, -762 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0xfffffffe:
@@ -986,9 +989,9 @@ E_sb_cg_cp_rs2_edges_0xfffffffe:
   addi x6, x6, 762 # restore base address
   addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x6) # load stored value for checking
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, E_sb_cg_cp_rs2_edges_0xfffffffe, E_sb_cg_cp_rs2_edges_0xfffffffe_str)
+  LREG x14, -SIG_STRIDE(x6) # load stored value for checking
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, E_sb_cg_cp_rs2_edges_0xfffffffe, E_sb_cg_cp_rs2_edges_0xfffffffe_str)
 #else
   sb x8, 0(x6) # repeat store so it is available for checking
   addi x6, x6, SIG_STRIDE # adjust base address for offset
@@ -999,7 +1002,7 @@ E_sb_cg_cp_rs2_edges_0xfffffffe:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x0000000100000000
   mv x9, x6 # move signature pointer register
   addi x9, x9, -1985 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x100000000:
@@ -1007,9 +1010,9 @@ E_sb_cg_cp_rs2_edges_0x100000000:
   addi x9, x9, 1985 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x9) # load stored value for checking
-  # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x13, E_sb_cg_cp_rs2_edges_0x100000000, E_sb_cg_cp_rs2_edges_0x100000000_str)
+  LREG x14, -SIG_STRIDE(x9) # load stored value for checking
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, E_sb_cg_cp_rs2_edges_0x100000000, E_sb_cg_cp_rs2_edges_0x100000000_str)
 #else
   sb x15, 0(x9) # repeat store so it is available for checking
   addi x9, x9, SIG_STRIDE # adjust base address for offset
@@ -1020,11 +1023,11 @@ E_sb_cg_cp_rs2_edges_0x100000000:
 #endif
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x0000000100000001
   mv x15, x9 # move signature pointer register
   addi x15, x15, 116 # adjust base address for offset
 E_sb_cg_cp_rs2_edges_0x100000001:
-  sb x1, -116(x15) # perform store
+  sb x2, -116(x15) # perform store
   addi x15, x15, -116 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
@@ -1032,7 +1035,7 @@ E_sb_cg_cp_rs2_edges_0x100000001:
   # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x7, E_sb_cg_cp_rs2_edges_0x100000001, E_sb_cg_cp_rs2_edges_0x100000001_str)
 #else
-  sb x1, 0(x15) # repeat store so it is available for checking
+  sb x2, 0(x15) # repeat store so it is available for checking
   addi x15, x15, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -1046,17 +1049,17 @@ E_sb_cg_cp_rs2_edges_0x100000001:
 
 
 # Testcase cp_gpr_hazard_r raw_rs1_depth0
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x3350474674ff0062
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x3350474674ff0062
   mv x9, x15 # move signature pointer register
-  addi x9, x9, -487 # RAW producer: writes x9 with store base
+  addi x9, x9, 214 # RAW producer: writes x9 with store base
 E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0:
-  sb x6, 487(x9) # RAW consumer: reads rs1 store base - tests bypass forwarding
-  addi x9, x9, 487 # restore base address
+  sb x6, -214(x9) # RAW consumer: reads rs1 store base - tests bypass forwarding
+  addi x9, x9, -214 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x9) # load stored value for checking
-  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0, E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0_str)
+  LREG x11, -SIG_STRIDE(x9) # load stored value for checking
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0, E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0_str)
 #else
   sb x6, 0(x9) # repeat store so it is available for checking
   addi x9, x9, SIG_STRIDE # adjust base address for offset
@@ -1067,22 +1070,22 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs1_depth0:
 #endif
 
 # Testcase cp_gpr_hazard_r raw_rs2_depth0
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x23c530ef3fe820c0
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x5440aa4f2aafc565
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0xeb4bf05d1aea0f63
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x5995a5e05dd75e80
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x847324038841fb0a
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xeb4bf05d1aea0f63
   mv x15, x9 # move signature pointer register
   addi x15, x15, -1983 # adjust base address for offset
-  add x10, x6, x14 # RAW producer: writes x10
+  add x6, x11, x10 # RAW producer: writes x6
 E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0:
-  sb x10, 1983(x15) # RAW consumer: reads rs2 - tests bypass forwarding
+  sb x6, 1983(x15) # RAW consumer: reads rs2 - tests bypass forwarding
   addi x15, x15, 1983 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x7, -SIG_STRIDE(x15) # load stored value for checking
-  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x15, x5, x4, x7, E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0, E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0_str)
+  LREG x8, -SIG_STRIDE(x15) # load stored value for checking
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0, E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0_str)
 #else
-  sb x10, 0(x15) # repeat store so it is available for checking
+  sb x6, 0(x15) # repeat store so it is available for checking
   addi x15, x15, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -1091,21 +1094,21 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs2_depth0:
 #endif
 
 # Testcase cp_gpr_hazard_r raw_rs1_nop
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x1a10cb703f85323c
-  mv x1, x15 # move signature pointer register
-  addi x1, x1, -503 # RAW producer: writes x1 with store base
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x1a10cb703f85323c
+  mv x2, x15 # move signature pointer register
+  addi x2, x2, -503 # RAW producer: writes x2 with store base
   addi x0, x0, 0 # depth=1 filler: nop
 E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop:
-  sb x9, 503(x1) # RAW consumer: reads rs1 store base - tests bypass forwarding
-  addi x1, x1, 503 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
+  sb x9, 503(x2) # RAW consumer: reads rs1 store base - tests bypass forwarding
+  addi x2, x2, 503 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x7, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x7 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x7, E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop, E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop_str)
+  LREG x7, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop, E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop_str)
 #else
-  sb x9, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
+  sb x9, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1113,10 +1116,10 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs1_nop:
 #endif
 
 # Testcase cp_gpr_hazard_r raw_rs1_stressor
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xcf6df47ecc570663
-  mv x12, x1 # move signature pointer register
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xcf6df47ecc570663
+  mv x12, x2 # move signature pointer register
   addi x12, x12, 928 # RAW producer: writes x12 with store base
-  add x1, x3, x6 # depth=1 filler: stressor
+  add x2, x3, x6 # depth=1 filler: stressor
 E_sb_cg_cp_gpr_hazard_r_raw_rs1_stressor:
   sb x9, -928(x12) # RAW consumer: reads rs1 store base - tests bypass forwarding
   addi x12, x12, -928 # restore base address
@@ -1135,9 +1138,9 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs1_stressor:
 #endif
 
 # Testcase cp_gpr_hazard_r raw_rs2_nop
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x56a3b48a27f081dd
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x14450d05b83af8a7
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x9348958b584f3bb2
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x56a3b48a27f081dd
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x14450d05b83af8a7
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x9348958b584f3bb2
   mv x7, x12 # move signature pointer register
   addi x7, x7, 1265 # adjust base address for offset
   add x11, x9, x15 # RAW producer: writes x11
@@ -1147,9 +1150,9 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop:
   addi x7, x7, -1265 # restore base address
   addi x7, x7, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x10 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x10, E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop, E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop_str)
+  LREG x13, -SIG_STRIDE(x7) # load stored value for checking
+  # Check if x13 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x7, x5, x4, x13, E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop, E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop_str)
 #else
   sb x11, 0(x7) # repeat store so it is available for checking
   addi x7, x7, SIG_STRIDE # adjust base address for offset
@@ -1160,24 +1163,24 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs2_nop:
 #endif
 
 # Testcase cp_gpr_hazard_r raw_rs2_stressor
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x8e44b4f52fc23e1c
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0xc8e22f6e92e3c8d0
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x78771f1abc89d713
-  mv x1, x7 # move signature pointer register
-  addi x1, x1, 1720 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x8e44b4f52fc23e1c
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0xc8e22f6e92e3c8d0
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x78771f1abc89d713
+  mv x2, x7 # move signature pointer register
+  addi x2, x2, 1720 # adjust base address for offset
   add x6, x9, x10 # RAW producer: writes x6
   add x3, x7, x8 # depth=1 filler: stressor
 E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor:
-  sb x6, -1720(x1) # RAW consumer: reads rs2 - tests bypass forwarding
-  addi x1, x1, -1720 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
+  sb x6, -1720(x2) # RAW consumer: reads rs2 - tests bypass forwarding
+  addi x2, x2, -1720 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x15, E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor, E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor_str)
+  LREG x15, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor, E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor_str)
 #else
-  sb x6, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
+  sb x6, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1189,8 +1192,8 @@ E_sb_cg_cp_gpr_hazard_r_raw_rs2_stressor:
 /////////////////////////////////
 
 # Testcase cp_imm_edges (imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x0b36d9a2b2c87321
-  mv x11, x1 # move signature pointer register
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x0b36d9a2b2c87321
+  mv x11, x2 # move signature pointer register
   addi x11, x11, 0 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x0:
   sb x15, 0(x11) # perform store
@@ -1210,7 +1213,7 @@ E_sb_cg_cp_imm_edges_0x0:
 #endif
 
 # Testcase cp_imm_edges (imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0xba443fbd53d862b0
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xba443fbd53d862b0
   mv x7, x11 # move signature pointer register
   addi x7, x7, -1 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x1:
@@ -1218,9 +1221,9 @@ E_sb_cg_cp_imm_edges_0x1:
   addi x7, x7, 1 # restore base address
   addi x7, x7, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x9 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x9, E_sb_cg_cp_imm_edges_0x1, E_sb_cg_cp_imm_edges_0x1_str)
+  LREG x10, -SIG_STRIDE(x7) # load stored value for checking
+  # Check if x10 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x7, x5, x4, x10, E_sb_cg_cp_imm_edges_0x1, E_sb_cg_cp_imm_edges_0x1_str)
 #else
   sb x6, 0(x7) # repeat store so it is available for checking
   addi x7, x7, SIG_STRIDE # adjust base address for offset
@@ -1231,11 +1234,11 @@ E_sb_cg_cp_imm_edges_0x1:
 #endif
 
 # Testcase cp_imm_edges (imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x4a3217339988e780
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x4a3217339988e780
   mv x14, x7 # move signature pointer register
   addi x14, x14, -2 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x2:
-  sb x1, 2(x14) # perform store
+  sb x2, 2(x14) # perform store
   addi x14, x14, 2 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
@@ -1243,7 +1246,7 @@ E_sb_cg_cp_imm_edges_0x2:
   # Check if x6 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x6, E_sb_cg_cp_imm_edges_0x2, E_sb_cg_cp_imm_edges_0x2_str)
 #else
-  sb x1, 0(x14) # repeat store so it is available for checking
+  sb x2, 0(x14) # repeat store so it is available for checking
   addi x14, x14, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
@@ -1252,7 +1255,7 @@ E_sb_cg_cp_imm_edges_0x2:
 #endif
 
 # Testcase cp_imm_edges (imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0xb460d56db1caf10d
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0xb460d56db1caf10d
   mv x13, x14 # move signature pointer register
   addi x13, x13, -3 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x3:
@@ -1260,9 +1263,9 @@ E_sb_cg_cp_imm_edges_0x3:
   addi x13, x13, 3 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x6, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x6 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x6, E_sb_cg_cp_imm_edges_0x3, E_sb_cg_cp_imm_edges_0x3_str)
+  LREG x8, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x8 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x8, E_sb_cg_cp_imm_edges_0x3, E_sb_cg_cp_imm_edges_0x3_str)
 #else
   sb x7, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -1273,7 +1276,7 @@ E_sb_cg_cp_imm_edges_0x3:
 #endif
 
 # Testcase cp_imm_edges (imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x481ad3197bcd5c35
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x481ad3197bcd5c35
   mv x8, x13 # move signature pointer register
   addi x8, x8, -4 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x4:
@@ -1281,9 +1284,9 @@ E_sb_cg_cp_imm_edges_0x4:
   addi x8, x8, 4 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x8) # load stored value for checking
-  # Check if x10 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x8, x5, x4, x10, E_sb_cg_cp_imm_edges_0x4, E_sb_cg_cp_imm_edges_0x4_str)
+  LREG x11, -SIG_STRIDE(x8) # load stored value for checking
+  # Check if x11 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x8, x5, x4, x11, E_sb_cg_cp_imm_edges_0x4, E_sb_cg_cp_imm_edges_0x4_str)
 #else
   sb x15, 0(x8) # repeat store so it is available for checking
   addi x8, x8, SIG_STRIDE # adjust base address for offset
@@ -1294,7 +1297,7 @@ E_sb_cg_cp_imm_edges_0x4:
 #endif
 
 # Testcase cp_imm_edges (imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x363c83bf35c60242
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x363c83bf35c60242
   mv x13, x8 # move signature pointer register
   addi x13, x13, -8 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x8:
@@ -1302,9 +1305,9 @@ E_sb_cg_cp_imm_edges_0x8:
   addi x13, x13, 8 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x15 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x15, E_sb_cg_cp_imm_edges_0x8, E_sb_cg_cp_imm_edges_0x8_str)
+  LREG x11, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x11 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x11, E_sb_cg_cp_imm_edges_0x8, E_sb_cg_cp_imm_edges_0x8_str)
 #else
   sb x3, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -1315,20 +1318,20 @@ E_sb_cg_cp_imm_edges_0x8:
 #endif
 
 # Testcase cp_imm_edges (imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x25d8dbba4ea28646
-  mv x8, x13 # move signature pointer register
-  addi x8, x8, -16 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x14185bda173139a6
+  mv x6, x13 # move signature pointer register
+  addi x6, x6, -16 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x10:
-  sb x9, 16(x8) # perform store
-  addi x8, x8, 16 # restore base address
-  addi x8, x8, SIG_STRIDE # increment signature pointer
+  sb x10, 16(x6) # perform store
+  addi x6, x6, 16 # restore base address
+  addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x8) # load stored value for checking
-  # Check if x12 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x8, x5, x4, x12, E_sb_cg_cp_imm_edges_0x10, E_sb_cg_cp_imm_edges_0x10_str)
+  LREG x12, -SIG_STRIDE(x6) # load stored value for checking
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, E_sb_cg_cp_imm_edges_0x10, E_sb_cg_cp_imm_edges_0x10_str)
 #else
-  sb x9, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
+  sb x10, 0(x6) # repeat store so it is available for checking
+  addi x6, x6, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1336,20 +1339,20 @@ E_sb_cg_cp_imm_edges_0x10:
 #endif
 
 # Testcase cp_imm_edges (imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x828267b5dc84532d
-  mv x14, x8 # move signature pointer register
-  addi x14, x14, -32 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x5c84532d89b7fb11
+  mv x11, x6 # move signature pointer register
+  addi x11, x11, -32 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x20:
-  sb x10, 32(x14) # perform store
-  addi x14, x14, 32 # restore base address
-  addi x14, x14, SIG_STRIDE # increment signature pointer
+  sb x15, 32(x11) # perform store
+  addi x11, x11, 32 # restore base address
+  addi x11, x11, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x11, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, E_sb_cg_cp_imm_edges_0x20, E_sb_cg_cp_imm_edges_0x20_str)
+  LREG x12, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x12, E_sb_cg_cp_imm_edges_0x20, E_sb_cg_cp_imm_edges_0x20_str)
 #else
-  sb x10, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
+  sb x15, 0(x11) # repeat store so it is available for checking
+  addi x11, x11, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1357,20 +1360,20 @@ E_sb_cg_cp_imm_edges_0x20:
 #endif
 
 # Testcase cp_imm_edges (imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0xa720fa0df86501ca
-  mv x7, x14 # move signature pointer register
-  addi x7, x7, -64 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xce13ae93d129aadb
+  mv x9, x11 # move signature pointer register
+  addi x9, x9, -64 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x40:
-  sb x12, 64(x7) # perform store
-  addi x7, x7, 64 # restore base address
-  addi x7, x7, SIG_STRIDE # increment signature pointer
+  sb x6, 64(x9) # perform store
+  addi x9, x9, 64 # restore base address
+  addi x9, x9, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x15, -SIG_STRIDE(x7) # load stored value for checking
-  # Check if x15 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x15, E_sb_cg_cp_imm_edges_0x40, E_sb_cg_cp_imm_edges_0x40_str)
+  LREG x12, -SIG_STRIDE(x9) # load stored value for checking
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, E_sb_cg_cp_imm_edges_0x40, E_sb_cg_cp_imm_edges_0x40_str)
 #else
-  sb x12, 0(x7) # repeat store so it is available for checking
-  addi x7, x7, SIG_STRIDE # adjust base address for offset
+  sb x6, 0(x9) # repeat store so it is available for checking
+  addi x9, x9, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1378,20 +1381,20 @@ E_sb_cg_cp_imm_edges_0x40:
 #endif
 
 # Testcase cp_imm_edges (imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0xce13ae93d129aadb
-  mv x14, x7 # move signature pointer register
-  addi x14, x14, -128 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x6ee73b9da08fea6c
+  mv x2, x9 # move signature pointer register
+  addi x2, x2, -128 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x80:
-  sb x6, 128(x14) # perform store
-  addi x14, x14, 128 # restore base address
-  addi x14, x14, SIG_STRIDE # increment signature pointer
+  sb x14, 128(x2) # perform store
+  addi x2, x2, 128 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x10, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, E_sb_cg_cp_imm_edges_0x80, E_sb_cg_cp_imm_edges_0x80_str)
+  LREG x13, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_sb_cg_cp_imm_edges_0x80, E_sb_cg_cp_imm_edges_0x80_str)
 #else
-  sb x6, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
+  sb x14, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1399,38 +1402,17 @@ E_sb_cg_cp_imm_edges_0x80:
 #endif
 
 # Testcase cp_imm_edges (imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x6ee73b9da08fea6c
-  mv x1, x14 # move signature pointer register
-  addi x1, x1, -256 # adjust base address for offset
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x7892a737391a7979
+  mv x7, x2 # move signature pointer register
+  addi x7, x7, -256 # adjust base address for offset
 E_sb_cg_cp_imm_edges_0x100:
-  sb x13, 256(x1) # perform store
-  addi x1, x1, 256 # restore base address
-  addi x1, x1, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
-  LREG x12, -SIG_STRIDE(x1) # load stored value for checking
-  # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x12, E_sb_cg_cp_imm_edges_0x100, E_sb_cg_cp_imm_edges_0x100_str)
-#else
-  sb x13, 0(x1) # repeat store so it is available for checking
-  addi x1, x1, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
-
-# Testcase cp_imm_edges (imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x7892a737391a7979
-  mv x7, x1 # move signature pointer register
-  addi x7, x7, -512 # adjust base address for offset
-E_sb_cg_cp_imm_edges_0x200:
-  sb x10, 512(x7) # perform store
-  addi x7, x7, 512 # restore base address
+  sb x10, 256(x7) # perform store
+  addi x7, x7, 256 # restore base address
   addi x7, x7, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x7) # load stored value for checking
   # Check if x9 contains the expected result. x7 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x7, x5, x4, x9, E_sb_cg_cp_imm_edges_0x200, E_sb_cg_cp_imm_edges_0x200_str)
+  RVTEST_SIGUPD(x7, x5, x4, x9, E_sb_cg_cp_imm_edges_0x100, E_sb_cg_cp_imm_edges_0x100_str)
 #else
   sb x10, 0(x7) # repeat store so it is available for checking
   addi x7, x7, SIG_STRIDE # adjust base address for offset
@@ -1440,18 +1422,18 @@ E_sb_cg_cp_imm_edges_0x200:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x5a9b0f17e874c77a
+# Testcase cp_imm_edges (imm = 512)
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x5a9b0f17e874c77a
   mv x12, x7 # move signature pointer register
-  addi x12, x12, -1023 # adjust base address for offset
-E_sb_cg_cp_imm_edges_0x3ff:
-  sb x14, 1023(x12) # perform store
-  addi x12, x12, 1023 # restore base address
+  addi x12, x12, -512 # adjust base address for offset
+E_sb_cg_cp_imm_edges_0x200:
+  sb x14, 512(x12) # perform store
+  addi x12, x12, 512 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x13, E_sb_cg_cp_imm_edges_0x3ff, E_sb_cg_cp_imm_edges_0x3ff_str)
+  LREG x15, -SIG_STRIDE(x12) # load stored value for checking
+  # Check if x15 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x15, E_sb_cg_cp_imm_edges_0x200, E_sb_cg_cp_imm_edges_0x200_str)
 #else
   sb x14, 0(x12) # repeat store so it is available for checking
   addi x12, x12, SIG_STRIDE # adjust base address for offset
@@ -1461,18 +1443,18 @@ E_sb_cg_cp_imm_edges_0x3ff:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x18ab6bb3295d4898
+# Testcase cp_imm_edges (imm = 1023)
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x18ab6bb3295d4898
   mv x11, x12 # move signature pointer register
-  addi x11, x11, -1024 # adjust base address for offset
-E_sb_cg_cp_imm_edges_0x400:
-  sb x8, 1024(x11) # perform store
-  addi x11, x11, 1024 # restore base address
+  addi x11, x11, -1023 # adjust base address for offset
+E_sb_cg_cp_imm_edges_0x3ff:
+  sb x8, 1023(x11) # perform store
+  addi x11, x11, 1023 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x11) # load stored value for checking
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, E_sb_cg_cp_imm_edges_0x400, E_sb_cg_cp_imm_edges_0x400_str)
+  LREG x14, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x14, E_sb_cg_cp_imm_edges_0x3ff, E_sb_cg_cp_imm_edges_0x3ff_str)
 #else
   sb x8, 0(x11) # repeat store so it is available for checking
   addi x11, x11, SIG_STRIDE # adjust base address for offset
@@ -1482,18 +1464,18 @@ E_sb_cg_cp_imm_edges_0x400:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0xb87296f14807c17b
+# Testcase cp_imm_edges (imm = 1024)
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xb87296f14807c17b
   mv x6, x11 # move signature pointer register
-  addi x6, x6, -1795 # adjust base address for offset
-E_sb_cg_cp_imm_edges_0x703:
-  sb x3, 1795(x6) # perform store
-  addi x6, x6, 1795 # restore base address
+  addi x6, x6, -1024 # adjust base address for offset
+E_sb_cg_cp_imm_edges_0x400:
+  sb x3, 1024(x6) # perform store
+  addi x6, x6, 1024 # restore base address
   addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x6) # load stored value for checking
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, E_sb_cg_cp_imm_edges_0x703, E_sb_cg_cp_imm_edges_0x703_str)
+  LREG x15, -SIG_STRIDE(x6) # load stored value for checking
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, E_sb_cg_cp_imm_edges_0x400, E_sb_cg_cp_imm_edges_0x400_str)
 #else
   sb x3, 0(x6) # repeat store so it is available for checking
   addi x6, x6, SIG_STRIDE # adjust base address for offset
@@ -1503,18 +1485,18 @@ E_sb_cg_cp_imm_edges_0x703:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xfc115fa4a1e1a1db
+# Testcase cp_imm_edges (imm = 1795)
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0xfc115fa4a1e1a1db
   mv x13, x6 # move signature pointer register
-  addi x13, x13, -2047 # adjust base address for offset
-E_sb_cg_cp_imm_edges_0x7ff:
-  sb x8, 2047(x13) # perform store
-  addi x13, x13, 2047 # restore base address
+  addi x13, x13, -1795 # adjust base address for offset
+E_sb_cg_cp_imm_edges_0x703:
+  sb x8, 1795(x13) # perform store
+  addi x13, x13, 1795 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -SIG_STRIDE(x13) # load stored value for checking
-  # Check if x9 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x13, x5, x4, x9, E_sb_cg_cp_imm_edges_0x7ff, E_sb_cg_cp_imm_edges_0x7ff_str)
+  LREG x10, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x10 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x10, E_sb_cg_cp_imm_edges_0x703, E_sb_cg_cp_imm_edges_0x703_str)
 #else
   sb x8, 0(x13) # repeat store so it is available for checking
   addi x13, x13, SIG_STRIDE # adjust base address for offset
@@ -1524,19 +1506,18 @@ E_sb_cg_cp_imm_edges_0x7ff:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x2b353ffc8bc20452
+# Testcase cp_imm_edges (imm = 2047)
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x2b353ffc8bc20452
   mv x3, x13 # move signature pointer register
-  addi x3, x3, 2047 # increment by 2047
-  addi x3, x3, 1 # increment by 1 more for total +2048
-E_sb_cg_cp_imm_edges_m0x800:
-  sb x14, -2048(x3) # perform store
-  addi x3, x3, -2048 # restore base address
+  addi x3, x3, -2047 # adjust base address for offset
+E_sb_cg_cp_imm_edges_0x7ff:
+  sb x14, 2047(x3) # perform store
+  addi x3, x3, 2047 # restore base address
   addi x3, x3, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -SIG_STRIDE(x3) # load stored value for checking
-  # Check if x9 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x3, x5, x4, x9, E_sb_cg_cp_imm_edges_m0x800, E_sb_cg_cp_imm_edges_m0x800_str)
+  LREG x10, -SIG_STRIDE(x3) # load stored value for checking
+  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x10, E_sb_cg_cp_imm_edges_0x7ff, E_sb_cg_cp_imm_edges_0x7ff_str)
 #else
   sb x14, 0(x3) # repeat store so it is available for checking
   addi x3, x3, SIG_STRIDE # adjust base address for offset
@@ -1546,18 +1527,19 @@ E_sb_cg_cp_imm_edges_m0x800:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x8fa9421545d82f5a
+# Testcase cp_imm_edges (imm = -2048)
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x8fa9421545d82f5a
   mv x11, x3 # move signature pointer register
-  addi x11, x11, 2047 # adjust base address for offset
-E_sb_cg_cp_imm_edges_m0x7ff:
-  sb x9, -2047(x11) # perform store
-  addi x11, x11, -2047 # restore base address
+  addi x11, x11, 2047 # increment by 2047
+  addi x11, x11, 1 # increment by 1 more for total +2048
+E_sb_cg_cp_imm_edges_m0x800:
+  sb x9, -2048(x11) # perform store
+  addi x11, x11, -2048 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x14, -SIG_STRIDE(x11) # load stored value for checking
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, E_sb_cg_cp_imm_edges_m0x7ff, E_sb_cg_cp_imm_edges_m0x7ff_str)
+  LREG x15, -SIG_STRIDE(x11) # load stored value for checking
+  # Check if x15 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x15, E_sb_cg_cp_imm_edges_m0x800, E_sb_cg_cp_imm_edges_m0x800_str)
 #else
   sb x9, 0(x11) # repeat store so it is available for checking
   addi x11, x11, SIG_STRIDE # adjust base address for offset
@@ -1567,18 +1549,18 @@ E_sb_cg_cp_imm_edges_m0x7ff:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x7963cd1b10a71962
+# Testcase cp_imm_edges (imm = -2047)
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x7963cd1b10a71962
   mv x14, x11 # move signature pointer register
-  addi x14, x14, 2 # adjust base address for offset
-E_sb_cg_cp_imm_edges_m0x2:
-  sb x9, -2(x14) # perform store
-  addi x14, x14, -2 # restore base address
+  addi x14, x14, 2047 # adjust base address for offset
+E_sb_cg_cp_imm_edges_m0x7ff:
+  sb x9, -2047(x14) # perform store
+  addi x14, x14, -2047 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x8, -SIG_STRIDE(x14) # load stored value for checking
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, E_sb_cg_cp_imm_edges_m0x2, E_sb_cg_cp_imm_edges_m0x2_str)
+  LREG x10, -SIG_STRIDE(x14) # load stored value for checking
+  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x10, E_sb_cg_cp_imm_edges_m0x7ff, E_sb_cg_cp_imm_edges_m0x7ff_str)
 #else
   sb x9, 0(x14) # repeat store so it is available for checking
   addi x14, x14, SIG_STRIDE # adjust base address for offset
@@ -1588,21 +1570,42 @@ E_sb_cg_cp_imm_edges_m0x2:
   nop
 #endif
 
-# Testcase cp_imm_edges (imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xe02957524ca0bf40
+# Testcase cp_imm_edges (imm = -2)
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0xe02957524ca0bf40
   mv x6, x14 # move signature pointer register
-  addi x6, x6, 1 # adjust base address for offset
-E_sb_cg_cp_imm_edges_m0x1:
-  sb x1, -1(x6) # perform store
-  addi x6, x6, -1 # restore base address
+  addi x6, x6, 2 # adjust base address for offset
+E_sb_cg_cp_imm_edges_m0x2:
+  sb x2, -2(x6) # perform store
+  addi x6, x6, -2 # restore base address
   addi x6, x6, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x6) # load stored value for checking
   # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x9, E_sb_cg_cp_imm_edges_m0x1, E_sb_cg_cp_imm_edges_m0x1_str)
+  RVTEST_SIGUPD(x6, x5, x4, x9, E_sb_cg_cp_imm_edges_m0x2, E_sb_cg_cp_imm_edges_m0x2_str)
 #else
-  sb x1, 0(x6) # repeat store so it is available for checking
+  sb x2, 0(x6) # repeat store so it is available for checking
   addi x6, x6, SIG_STRIDE # adjust base address for offset
+  # nops to ensure length matches SELFCHECK
+  nop
+  nop
+  nop
+#endif
+
+# Testcase cp_imm_edges (imm = -1)
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0x3185c956dcb28645
+  mv x2, x6 # move signature pointer register
+  addi x2, x2, 1 # adjust base address for offset
+E_sb_cg_cp_imm_edges_m0x1:
+  sb x7, -1(x2) # perform store
+  addi x2, x2, -1 # restore base address
+  addi x2, x2, SIG_STRIDE # increment signature pointer
+#ifdef RVTEST_SELFCHECK
+  LREG x3, -SIG_STRIDE(x2) # load stored value for checking
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_sb_cg_cp_imm_edges_m0x1, E_sb_cg_cp_imm_edges_m0x1_str)
+#else
+  sb x7, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1614,17 +1617,17 @@ E_sb_cg_cp_imm_edges_m0x1:
 /////////////////////////////////
 
 # Testcase: cp_align_byte (imm[2:0] = 000)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x9968da669c0f51d1
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x9968da669c0f51d1
 E_sb_cg_cp_align_byte_b0:
-  sb x9, 0(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x9, 0(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x12, -8(x6) # load stored value for checking
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, E_sb_cg_cp_align_byte_b0, E_sb_cg_cp_align_byte_b0_str)
+  LREG x12, -8(x2) # load stored value for checking
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, E_sb_cg_cp_align_byte_b0, E_sb_cg_cp_align_byte_b0_str)
 #else
-  sb x9, 0(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x9, 0(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1632,17 +1635,17 @@ E_sb_cg_cp_align_byte_b0:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 001)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0xa56335ff3b5546ad
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0xa56335ff3b5546ad
 E_sb_cg_cp_align_byte_b1:
-  sb x15, 1(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x15, 1(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -8(x6) # load stored value for checking
-  # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x9, E_sb_cg_cp_align_byte_b1, E_sb_cg_cp_align_byte_b1_str)
+  LREG x9, -8(x2) # load stored value for checking
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_sb_cg_cp_align_byte_b1, E_sb_cg_cp_align_byte_b1_str)
 #else
-  sb x15, 1(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x15, 1(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1650,17 +1653,17 @@ E_sb_cg_cp_align_byte_b1:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 010)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0xbe9cc00c39646683
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xbe9cc00c39646683
 E_sb_cg_cp_align_byte_b2:
-  sb x14, 2(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x14, 2(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x3, -8(x6) # load stored value for checking
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, E_sb_cg_cp_align_byte_b2, E_sb_cg_cp_align_byte_b2_str)
+  LREG x6, -8(x2) # load stored value for checking
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, E_sb_cg_cp_align_byte_b2, E_sb_cg_cp_align_byte_b2_str)
 #else
-  sb x14, 2(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x14, 2(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1668,17 +1671,17 @@ E_sb_cg_cp_align_byte_b2:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 011)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x04cfe928ec9e800d
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x04cfe928ec9e800d
 E_sb_cg_cp_align_byte_b3:
-  sb x10, 3(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x10, 3(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -8(x6) # load stored value for checking
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, E_sb_cg_cp_align_byte_b3, E_sb_cg_cp_align_byte_b3_str)
+  LREG x13, -8(x2) # load stored value for checking
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, E_sb_cg_cp_align_byte_b3, E_sb_cg_cp_align_byte_b3_str)
 #else
-  sb x10, 3(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x10, 3(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1686,17 +1689,17 @@ E_sb_cg_cp_align_byte_b3:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 100)
-  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0xb48a672d6340d75a
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0xb48a672d6340d75a
 E_sb_cg_cp_align_byte_b4:
-  sb x12, 4(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x12, 4(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x1, -8(x6) # load stored value for checking
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, E_sb_cg_cp_align_byte_b4, E_sb_cg_cp_align_byte_b4_str)
+  LREG x3, -8(x2) # load stored value for checking
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, E_sb_cg_cp_align_byte_b4, E_sb_cg_cp_align_byte_b4_str)
 #else
-  sb x12, 4(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x12, 4(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1704,17 +1707,17 @@ E_sb_cg_cp_align_byte_b4:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 101)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0xed0718e33ae4887f
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xed0718e33ae4887f
 E_sb_cg_cp_align_byte_b5:
-  sb x3, 5(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x6, 5(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x7, -8(x6) # load stored value for checking
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, E_sb_cg_cp_align_byte_b5, E_sb_cg_cp_align_byte_b5_str)
+  LREG x7, -8(x2) # load stored value for checking
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, E_sb_cg_cp_align_byte_b5, E_sb_cg_cp_align_byte_b5_str)
 #else
-  sb x3, 5(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x6, 5(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1722,17 +1725,17 @@ E_sb_cg_cp_align_byte_b5:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 110)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x8089ee4bd55f2adc
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x8089ee4bd55f2adc
 E_sb_cg_cp_align_byte_b6:
-  sb x11, 6(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x11, 6(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x9, -8(x6) # load stored value for checking
-  # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x9, E_sb_cg_cp_align_byte_b6, E_sb_cg_cp_align_byte_b6_str)
+  LREG x9, -8(x2) # load stored value for checking
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, E_sb_cg_cp_align_byte_b6, E_sb_cg_cp_align_byte_b6_str)
 #else
-  sb x11, 6(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x11, 6(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -1740,25 +1743,23 @@ E_sb_cg_cp_align_byte_b6:
 #endif
 
 # Testcase: cp_align_byte (imm[2:0] = 111)
-  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x1bbe4fa404ac2c2f
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x1bbe4fa404ac2c2f
 E_sb_cg_cp_align_byte_b7:
-  sb x13, 7(x6) # perform store
-  addi x6, x6, 8 # increment signature pointer
+  sb x13, 7(x2) # perform store
+  addi x2, x2, 8 # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x8, -8(x6) # load stored value for checking
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, E_sb_cg_cp_align_byte_b7, E_sb_cg_cp_align_byte_b7_str)
+  LREG x8, -8(x2) # load stored value for checking
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, E_sb_cg_cp_align_byte_b7, E_sb_cg_cp_align_byte_b7_str)
 #else
-  sb x13, 7(x6) # repeat store so it is available for checking
-  addi x6, x6, 8 # adjust base address for offset
+  sb x13, 7(x2) # repeat store so it is available for checking
+  addi x2, x2, 8 # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
   nop
 #endif
 
-
-  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1778,26 +1779,26 @@ RVTEST_DATA_BEGIN
 .dword 0xa0a65cc143c6a0ea
 .dword 0xb863213617fa703c
 .dword 0x5335039579056ab8
-.dword 0x4161613cdf145d6d
-.dword 0x5f34635fe56ea137
-.dword 0xcd402e91ffacd4ef
-.dword 0x7fbc3a0b0da576b0
+.dword 0x41a023c03e0196ad
+.dword 0x471b3b0866b0d462
+.dword 0x16c21637f580af86
+.dword 0x9446ad834d402e91
 .dword 0x574de5d2cc094d42
 .dword 0x718b3425c1f372ce
 .dword 0x549a30e45950c823
 .dword 0x8b898a99dfe67374
-.dword 0x65c06c0fd59ca80b
-.dword 0x6c561362bedb679a
+.dword 0xd7bc459eec561362
 .dword 0x7fdb7dccf48b56ed
-.dword 0xb28d6785e50d28c4
-.dword 0xc24cf6896ca55013
-.dword 0x8ebc750544db627d
-.dword 0x08d820b12ab7b66e
-.dword 0x1f8b3ca26df7504d
-.dword 0x6eff8d6aff119e29
-.dword 0x26f1dd580fc19f6c
-.dword 0x29734a95740278bb
-.dword 0x37f1e1fe81a9f4ff
+.dword 0xaa6b987dc4076961
+.dword 0xa6f0b7228356e08c
+.dword 0xb7507451bee66570
+.dword 0xe216f9467f0736ae
+.dword 0x7a1da9e7690d3d3d
+.dword 0xf680a9fc2d516b8a
+.dword 0x24919fc8cc5394f0
+.dword 0x0312e1de8eb692e5
+.dword 0x7fce0ad162a2523d
+.dword 0xfda3fabe41ea1776
 .dword 0x0000000000000000
 .dword 0x0000000000000001
 .dword 0x0000000000000002
@@ -1815,8 +1816,8 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000000
 .dword 0x0000000100000001
 .dword 0x3350474674ff0062
-.dword 0x23c530ef3fe820c0
-.dword 0x5440aa4f2aafc565
+.dword 0x5995a5e05dd75e80
+.dword 0x847324038841fb0a
 .dword 0xeb4bf05d1aea0f63
 .dword 0x1a10cb703f85323c
 .dword 0xcf6df47ecc570663
@@ -1832,9 +1833,8 @@ RVTEST_DATA_BEGIN
 .dword 0xb460d56db1caf10d
 .dword 0x481ad3197bcd5c35
 .dword 0x363c83bf35c60242
-.dword 0x25d8dbba4ea28646
-.dword 0x828267b5dc84532d
-.dword 0xa720fa0df86501ca
+.dword 0x14185bda173139a6
+.dword 0x5c84532d89b7fb11
 .dword 0xce13ae93d129aadb
 .dword 0x6ee73b9da08fea6c
 .dword 0x7892a737391a7979
@@ -1846,6 +1846,7 @@ RVTEST_DATA_BEGIN
 .dword 0x8fa9421545d82f5a
 .dword 0x7963cd1b10a71962
 .dword 0xe02957524ca0bf40
+.dword 0x3185c956dcb28645
 .dword 0x9968da669c0f51d1
 .dword 0xa56335ff3b5546ad
 .dword 0xbe9cc00c39646683

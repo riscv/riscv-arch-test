@@ -100,3 +100,10 @@
 #ifndef RVMODEL_CLR_SSW_INT
   #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+##### Configuration Limitations #####
+#if UDB_NUM_PMP_ENTIRES > 0
+  #ifndef UDB_PMP_NAPOT_SUPPORTED
+    #error "DUTs with PMP but without NAPOT support are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
+  #endif
+#endif

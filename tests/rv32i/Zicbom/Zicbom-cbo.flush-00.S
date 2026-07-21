@@ -54,8 +54,8 @@ Zicbom_cbo_flush_cg_cp_rs1_nx0_b2:
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b3:
   cbo.flush (x3) # perform operation
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x4)
   LA(x4, scratch) # load address of scratch into rs1
   addi x4, x4, 61 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
@@ -105,127 +105,128 @@ Zicbom_cbo_flush_cg_cp_rs1_nx0_b10:
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b11:
   cbo.flush (x11) # perform operation
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
   LA(x12, scratch) # load address of scratch into rs1
-  addi x12, x12, 175 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x12, x12, 120 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b12:
   cbo.flush (x12) # perform operation
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
   LA(x13, scratch) # load address of scratch into rs1
-  addi x13, x13, 140 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x13, x13, 146 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b13:
   cbo.flush (x13) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
   LA(x14, scratch) # load address of scratch into rs1
-  addi x14, x14, 27 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x14, x14, 193 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b14:
   cbo.flush (x14) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
   LA(x15, scratch) # load address of scratch into rs1
-  addi x15, x15, 18 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x15, x15, 234 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b15:
   cbo.flush (x15) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x16)
   LA(x16, scratch) # load address of scratch into rs1
-  addi x16, x16, 147 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x16, x16, 92 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b16:
   cbo.flush (x16) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x17)
   LA(x17, scratch) # load address of scratch into rs1
-  addi x17, x17, 157 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x17, x17, 199 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b17:
   cbo.flush (x17) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x18)
   LA(x18, scratch) # load address of scratch into rs1
-  addi x18, x18, 31 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x18, x18, 212 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b18:
   cbo.flush (x18) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x19)
   LA(x19, scratch) # load address of scratch into rs1
-  addi x19, x19, 158 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x19, x19, 76 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b19:
   cbo.flush (x19) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x20)
   LA(x20, scratch) # load address of scratch into rs1
-  addi x20, x20, 88 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x20, x20, 190 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b20:
   cbo.flush (x20) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x21)
   LA(x21, scratch) # load address of scratch into rs1
-  addi x21, x21, 132 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x21, x21, 164 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b21:
   cbo.flush (x21) # perform operation
 
-  mv x25, x22 # switch data pointer register to avoid conflict with test
+  mv x24, x22 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x22)
   LA(x22, scratch) # load address of scratch into rs1
-  addi x22, x22, 81 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x22, x22, 132 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b22:
   cbo.flush (x22) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x23)
   LA(x23, scratch) # load address of scratch into rs1
-  addi x23, x23, 229 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x23, x23, 173 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b23:
   cbo.flush (x23) # perform operation
 
+  mv x31, x24 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x24)
   LA(x24, scratch) # load address of scratch into rs1
-  addi x24, x24, 108 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x24, x24, 168 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b24:
   cbo.flush (x24) # perform operation
 
-  mv x20, x25 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x25)
   LA(x25, scratch) # load address of scratch into rs1
-  addi x25, x25, 250 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x25, x25, 36 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b25:
   cbo.flush (x25) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x26)
   LA(x26, scratch) # load address of scratch into rs1
-  addi x26, x26, 198 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x26, x26, 76 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b26:
   cbo.flush (x26) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x27)
   LA(x27, scratch) # load address of scratch into rs1
-  addi x27, x27, 92 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x27, x27, 250 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b27:
   cbo.flush (x27) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x28)
   LA(x28, scratch) # load address of scratch into rs1
-  addi x28, x28, 1 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x28, x28, 198 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b28:
   cbo.flush (x28) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x29)
   LA(x29, scratch) # load address of scratch into rs1
-  addi x29, x29, 170 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x29, x29, 92 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b29:
   cbo.flush (x29) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x30)
   LA(x30, scratch) # load address of scratch into rs1
-  addi x30, x30, 236 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x30, x30, 1 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b30:
   cbo.flush (x30) # perform operation
 
+  mv x26, x31 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x31)
   LA(x31, scratch) # load address of scratch into rs1
-  addi x31, x31, 224 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x31, x31, 37 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_flush_cg_cp_rs1_nx0_b31:
   cbo.flush (x31) # perform operation
 
@@ -237,1049 +238,1049 @@ Zicbom_cbo_flush_cg_cp_rs1_nx0_b31:
   LA(x13, scratch)
 # Testing offset 0 to check behavior across cache line boundaries
   addi x9, x13, 0 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000001
   sw x11, 0(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000002
   sw x11, 4(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000003
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000003
   sw x11, 8(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000004
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000004
   sw x11, 12(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000005
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000005
   sw x11, 16(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000006
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000006
   sw x11, 20(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000007
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000007
   sw x11, 24(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000008
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000008
   sw x11, 28(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000009
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000009
   sw x11, 32(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000a
   sw x11, 36(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000b
   sw x11, 40(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000c
   sw x11, 44(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000d
   sw x11, 48(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000e
   sw x11, 52(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000f
   sw x11, 56(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000010
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000010
   sw x11, 60(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000011
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000011
   sw x11, 64(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000012
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000012
   sw x11, 68(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000013
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000013
   sw x11, 72(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000014
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000014
   sw x11, 76(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000015
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000015
   sw x11, 80(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000016
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000016
   sw x11, 84(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000017
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000017
   sw x11, 88(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000018
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000018
   sw x11, 92(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000019
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000019
   sw x11, 96(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001a
   sw x11, 100(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001b
   sw x11, 104(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001c
   sw x11, 108(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001d
   sw x11, 112(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001e
   sw x11, 116(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001f
   sw x11, 120(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000020
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000020
   sw x11, 124(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000021
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000021
   sw x11, 128(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000022
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000022
   sw x11, 132(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000023
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000023
   sw x11, 136(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000024
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000024
   sw x11, 140(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000025
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000025
   sw x11, 144(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000026
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000026
   sw x11, 148(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000027
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000027
   sw x11, 152(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000028
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000028
   sw x11, 156(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000029
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000029
   sw x11, 160(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002a
   sw x11, 164(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002b
   sw x11, 168(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002c
   sw x11, 172(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002d
   sw x11, 176(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002e
   sw x11, 180(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002f
   sw x11, 184(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000030
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000030
   sw x11, 188(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000031
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000031
   sw x11, 192(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000032
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000032
   sw x11, 196(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000033
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000033
   sw x11, 200(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000034
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000034
   sw x11, 204(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000035
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000035
   sw x11, 208(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000036
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000036
   sw x11, 212(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000037
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000037
   sw x11, 216(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000038
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000038
   sw x11, 220(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000039
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000039
   sw x11, 224(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003a
   sw x11, 228(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003b
   sw x11, 232(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003c
   sw x11, 236(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003d
   sw x11, 240(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003e
   sw x11, 244(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003f
   sw x11, 248(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000040
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000040
   sw x11, 252(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000041
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000041
   sw x11, 256(x13)
   cbo.flush (x9) # Issue cbo instruction on first line of scratch or at an offset
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_0:
   lw x11, 0(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_0:
   lw x11, 4(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_0:
   lw x11, 8(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_0:
   lw x11, 12(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_0:
   lw x11, 16(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_0:
   lw x11, 20(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_0:
   lw x11, 24(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_0:
   lw x11, 28(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_0:
   lw x11, 32(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_0:
   lw x11, 36(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_0:
   lw x11, 40(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_0:
   lw x11, 44(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_0:
   lw x11, 48(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_0:
   lw x11, 52(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_0:
   lw x11, 56(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_0:
   lw x11, 60(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_0:
   lw x11, 64(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_0:
   lw x11, 68(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_0:
   lw x11, 72(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_0:
   lw x11, 76(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_0:
   lw x11, 80(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_0:
   lw x11, 84(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_0:
   lw x11, 88(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_0:
   lw x11, 92(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_0:
   lw x11, 96(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_0:
   lw x11, 100(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_0:
   lw x11, 104(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_0:
   lw x11, 108(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_0:
   lw x11, 112(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_0:
   lw x11, 116(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_0:
   lw x11, 120(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_0:
   lw x11, 124(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_0:
   lw x11, 128(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_0:
   lw x11, 132(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_0:
   lw x11, 136(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_0:
   lw x11, 140(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_0:
   lw x11, 144(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_0:
   lw x11, 148(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_0:
   lw x11, 152(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_0:
   lw x11, 156(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_0:
   lw x11, 160(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_0:
   lw x11, 164(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_0:
   lw x11, 168(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_0:
   lw x11, 172(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_0:
   lw x11, 176(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_0:
   lw x11, 180(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_0:
   lw x11, 184(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_0:
   lw x11, 188(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_0:
   lw x11, 192(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_0:
   lw x11, 196(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_0:
   lw x11, 200(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_0:
   lw x11, 204(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_0:
   lw x11, 208(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_0:
   lw x11, 212(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_0:
   lw x11, 216(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_0:
   lw x11, 220(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_0:
   lw x11, 224(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_0:
   lw x11, 228(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_0:
   lw x11, 232(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_0:
   lw x11, 236(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_0:
   lw x11, 240(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_0:
   lw x11, 244(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_0:
   lw x11, 248(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_0:
   lw x11, 252(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_0_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_0:
   lw x11, 256(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_0_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_0, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_0_str)
 
 # Testing offset 255 to check behavior across cache line boundaries
   addi x9, x13, 255 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000001
   sw x11, 0(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000002
   sw x11, 4(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000003
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000003
   sw x11, 8(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000004
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000004
   sw x11, 12(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000005
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000005
   sw x11, 16(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000006
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000006
   sw x11, 20(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000007
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000007
   sw x11, 24(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000008
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000008
   sw x11, 28(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000009
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000009
   sw x11, 32(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000a
   sw x11, 36(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000b
   sw x11, 40(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000c
   sw x11, 44(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000d
   sw x11, 48(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000e
   sw x11, 52(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000000f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000000f
   sw x11, 56(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000010
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000010
   sw x11, 60(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000011
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000011
   sw x11, 64(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000012
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000012
   sw x11, 68(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000013
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000013
   sw x11, 72(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000014
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000014
   sw x11, 76(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000015
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000015
   sw x11, 80(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000016
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000016
   sw x11, 84(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000017
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000017
   sw x11, 88(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000018
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000018
   sw x11, 92(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000019
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000019
   sw x11, 96(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001a
   sw x11, 100(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001b
   sw x11, 104(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001c
   sw x11, 108(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001d
   sw x11, 112(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001e
   sw x11, 116(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000001f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000001f
   sw x11, 120(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000020
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000020
   sw x11, 124(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000021
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000021
   sw x11, 128(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000022
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000022
   sw x11, 132(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000023
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000023
   sw x11, 136(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000024
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000024
   sw x11, 140(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000025
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000025
   sw x11, 144(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000026
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000026
   sw x11, 148(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000027
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000027
   sw x11, 152(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000028
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000028
   sw x11, 156(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000029
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000029
   sw x11, 160(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002a
   sw x11, 164(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002b
   sw x11, 168(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002c
   sw x11, 172(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002d
   sw x11, 176(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002e
   sw x11, 180(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000002f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000002f
   sw x11, 184(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000030
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000030
   sw x11, 188(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000031
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000031
   sw x11, 192(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000032
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000032
   sw x11, 196(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000033
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000033
   sw x11, 200(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000034
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000034
   sw x11, 204(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000035
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000035
   sw x11, 208(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000036
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000036
   sw x11, 212(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000037
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000037
   sw x11, 216(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000038
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000038
   sw x11, 220(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000039
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000039
   sw x11, 224(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003a
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003a
   sw x11, 228(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003b
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003b
   sw x11, 232(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003c
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003c
   sw x11, 236(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003d
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003d
   sw x11, 240(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003e
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003e
   sw x11, 244(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x0000003f
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x0000003f
   sw x11, 248(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000040
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000040
   sw x11, 252(x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x00000041
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x00000041
   sw x11, 256(x13)
   cbo.flush (x9) # Issue cbo instruction on first line of scratch or at an offset
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_255:
   lw x11, 0(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_0_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_255:
   lw x11, 4(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_1_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_255:
   lw x11, 8(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_2_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_255:
   lw x11, 12(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_3_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_255:
   lw x11, 16(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_4_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_255:
   lw x11, 20(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_5_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_255:
   lw x11, 24(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_6_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_255:
   lw x11, 28(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_7_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_255:
   lw x11, 32(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_8_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_255:
   lw x11, 36(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_9_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_255:
   lw x11, 40(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_10_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_255:
   lw x11, 44(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_11_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_255:
   lw x11, 48(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_12_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_255:
   lw x11, 52(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_13_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_255:
   lw x11, 56(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_14_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_255:
   lw x11, 60(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_15_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_255:
   lw x11, 64(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_16_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_255:
   lw x11, 68(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_17_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_255:
   lw x11, 72(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_18_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_255:
   lw x11, 76(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_19_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_255:
   lw x11, 80(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_20_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_255:
   lw x11, 84(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_21_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_255:
   lw x11, 88(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_22_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_255:
   lw x11, 92(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_23_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_255:
   lw x11, 96(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_24_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_255:
   lw x11, 100(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_25_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_255:
   lw x11, 104(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_26_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_255:
   lw x11, 108(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_27_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_255:
   lw x11, 112(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_28_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_255:
   lw x11, 116(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_29_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_255:
   lw x11, 120(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_30_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_255:
   lw x11, 124(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_31_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_255:
   lw x11, 128(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_32_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_255:
   lw x11, 132(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_33_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_255:
   lw x11, 136(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_34_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_255:
   lw x11, 140(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_35_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_255:
   lw x11, 144(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_36_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_255:
   lw x11, 148(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_37_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_255:
   lw x11, 152(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_38_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_255:
   lw x11, 156(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_39_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_255:
   lw x11, 160(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_40_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_255:
   lw x11, 164(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_41_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_255:
   lw x11, 168(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_42_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_255:
   lw x11, 172(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_43_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_255:
   lw x11, 176(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_44_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_255:
   lw x11, 180(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_45_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_255:
   lw x11, 184(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_46_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_255:
   lw x11, 188(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_47_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_255:
   lw x11, 192(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_48_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_255:
   lw x11, 196(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_49_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_255:
   lw x11, 200(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_50_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_255:
   lw x11, 204(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_51_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_255:
   lw x11, 208(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_52_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_255:
   lw x11, 212(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_53_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_255:
   lw x11, 216(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_54_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_255:
   lw x11, 220(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_55_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_255:
   lw x11, 224(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_56_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_255:
   lw x11, 228(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_57_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_255:
   lw x11, 232(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_58_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_255:
   lw x11, 236(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_59_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_255:
   lw x11, 240(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_60_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_255:
   lw x11, 244(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_61_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_255:
   lw x11, 248(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_62_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_255:
   lw x11, 252(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_63_offset_255_str)
 
 Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255:
   lw x11, 256(x13) # Read back data
 
-  # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255_str)
 
 
   mv x2, x6 # restore signature pointer to default register for teardown

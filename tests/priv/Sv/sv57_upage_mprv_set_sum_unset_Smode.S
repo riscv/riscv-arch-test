@@ -26,7 +26,7 @@
 #define TEST_FILE "sv57_upage_mprv_set_sum_unset_Smode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 50
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -53,7 +53,6 @@ RVTEST_BEGIN
   LA(a5, rvtest_data_1)       // Using physical address for fetch
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop

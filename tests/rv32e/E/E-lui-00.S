@@ -46,98 +46,98 @@ E_lui_cg_cp_rd_b1:
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x1, E_lui_cg_cp_rd_b1, E_lui_cg_cp_rd_b1_str)
 
-  mv x14, x2 # switch signature pointer register to avoid conflict with test
+  mv x12, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x2)
 E_lui_cg_cp_rd_b2:
   lui x2, 394359 # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, E_lui_cg_cp_rd_b2, E_lui_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x2, E_lui_cg_cp_rd_b2, E_lui_cg_cp_rd_b2_str)
 
   mv x2, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x3)
 E_lui_cg_cp_rd_b3:
   lui x3, 350200 # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, E_lui_cg_cp_rd_b3, E_lui_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x3, E_lui_cg_cp_rd_b3, E_lui_cg_cp_rd_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
 E_lui_cg_cp_rd_b4:
   lui x4, 771053 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, E_lui_cg_cp_rd_b4, E_lui_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, E_lui_cg_cp_rd_b4, E_lui_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
 E_lui_cg_cp_rd_b5:
   lui x5, 867543 # perform operation
-  # Check if x5 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x5, E_lui_cg_cp_rd_b5, E_lui_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, E_lui_cg_cp_rd_b5, E_lui_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
 E_lui_cg_cp_rd_b6:
   lui x6, 29618 # perform operation
-  # Check if x6 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x6, E_lui_cg_cp_rd_b6, E_lui_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, E_lui_cg_cp_rd_b6, E_lui_cg_cp_rd_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
 E_lui_cg_cp_rd_b7:
   lui x7, 872419 # perform operation
-  # Check if x7 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x7, E_lui_cg_cp_rd_b7, E_lui_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x7, E_lui_cg_cp_rd_b7, E_lui_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
 E_lui_cg_cp_rd_b8:
   lui x8, 935840 # perform operation
-  # Check if x8 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x8, E_lui_cg_cp_rd_b8, E_lui_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x8, E_lui_cg_cp_rd_b8, E_lui_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
 E_lui_cg_cp_rd_b9:
   lui x9, 255126 # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x9, E_lui_cg_cp_rd_b9, E_lui_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x9, E_lui_cg_cp_rd_b9, E_lui_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
 E_lui_cg_cp_rd_b10:
   lui x10, 854105 # perform operation
-  # Check if x10 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x10, E_lui_cg_cp_rd_b10, E_lui_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, E_lui_cg_cp_rd_b10, E_lui_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
 E_lui_cg_cp_rd_b11:
   lui x11, 793941 # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x11, E_lui_cg_cp_rd_b11, E_lui_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x11, E_lui_cg_cp_rd_b11, E_lui_cg_cp_rd_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
+  mv x9, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
 E_lui_cg_cp_rd_b12:
   lui x12, 159994 # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x12, E_lui_cg_cp_rd_b12, E_lui_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_lui_cg_cp_rd_b12, E_lui_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
 E_lui_cg_cp_rd_b13:
-  lui x13, 33209 # perform operation
-  # Check if x13 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x13, E_lui_cg_cp_rd_b13, E_lui_cg_cp_rd_b13_str)
+  lui x13, 1010785 # perform operation
+  # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x13, E_lui_cg_cp_rd_b13, E_lui_cg_cp_rd_b13_str)
 
-  mv x10, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x14)
 E_lui_cg_cp_rd_b14:
-  lui x14, 1010785 # perform operation
-  # Check if x14 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x14, E_lui_cg_cp_rd_b14, E_lui_cg_cp_rd_b14_str)
+  lui x14, 511075 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, E_lui_cg_cp_rd_b14, E_lui_cg_cp_rd_b14_str)
 
 # Testcase cp_rd (Test destination rd = x15)
 E_lui_cg_cp_rd_b15:
-  lui x15, 511075 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_rd_b15, E_lui_cg_cp_rd_b15_str)
+  lui x15, 905905 # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_rd_b15, E_lui_cg_cp_rd_b15_str)
 
 /////////////////////////////////
 // cp_imm_edges_20bit
@@ -146,166 +146,166 @@ E_lui_cg_cp_rd_b15:
 # Testcase cp_imm_edges_20bit (imm = 0)
 E_lui_cg_cp_imm_edges_20bit_0x0:
   lui x11, 0 # perform operation
-  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x11, E_lui_cg_cp_imm_edges_20bit_0x0, E_lui_cg_cp_imm_edges_20bit_0x0_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_lui_cg_cp_imm_edges_20bit_0x0, E_lui_cg_cp_imm_edges_20bit_0x0_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1)
 E_lui_cg_cp_imm_edges_20bit_0x1:
-  lui x5, 1 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, E_lui_cg_cp_imm_edges_20bit_0x1, E_lui_cg_cp_imm_edges_20bit_0x1_str)
+  lui x7, 1 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x7, E_lui_cg_cp_imm_edges_20bit_0x1, E_lui_cg_cp_imm_edges_20bit_0x1_str)
 
 # Testcase cp_imm_edges_20bit (imm = 2)
 E_lui_cg_cp_imm_edges_20bit_0x2:
-  lui x5, 2 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, E_lui_cg_cp_imm_edges_20bit_0x2, E_lui_cg_cp_imm_edges_20bit_0x2_str)
+  lui x7, 2 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x7, E_lui_cg_cp_imm_edges_20bit_0x2, E_lui_cg_cp_imm_edges_20bit_0x2_str)
 
 # Testcase cp_imm_edges_20bit (imm = 3)
 E_lui_cg_cp_imm_edges_20bit_0x3:
-  lui x9, 3 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x9, E_lui_cg_cp_imm_edges_20bit_0x3, E_lui_cg_cp_imm_edges_20bit_0x3_str)
+  lui x10, 3 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x10, E_lui_cg_cp_imm_edges_20bit_0x3, E_lui_cg_cp_imm_edges_20bit_0x3_str)
 
 # Testcase cp_imm_edges_20bit (imm = 4)
 E_lui_cg_cp_imm_edges_20bit_0x4:
   lui x3, 4 # perform operation
-  # Check if x3 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x3, E_lui_cg_cp_imm_edges_20bit_0x4, E_lui_cg_cp_imm_edges_20bit_0x4_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, E_lui_cg_cp_imm_edges_20bit_0x4, E_lui_cg_cp_imm_edges_20bit_0x4_str)
 
 # Testcase cp_imm_edges_20bit (imm = 8)
 E_lui_cg_cp_imm_edges_20bit_0x8:
-  lui x5, 8 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, E_lui_cg_cp_imm_edges_20bit_0x8, E_lui_cg_cp_imm_edges_20bit_0x8_str)
+  lui x7, 8 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x7, E_lui_cg_cp_imm_edges_20bit_0x8, E_lui_cg_cp_imm_edges_20bit_0x8_str)
 
 # Testcase cp_imm_edges_20bit (imm = 16)
 E_lui_cg_cp_imm_edges_20bit_0x10:
-  lui x6, 16 # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, E_lui_cg_cp_imm_edges_20bit_0x10, E_lui_cg_cp_imm_edges_20bit_0x10_str)
+  lui x8, 16 # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x8, E_lui_cg_cp_imm_edges_20bit_0x10, E_lui_cg_cp_imm_edges_20bit_0x10_str)
 
 # Testcase cp_imm_edges_20bit (imm = 32)
 E_lui_cg_cp_imm_edges_20bit_0x20:
   lui x15, 32 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x20, E_lui_cg_cp_imm_edges_20bit_0x20_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x20, E_lui_cg_cp_imm_edges_20bit_0x20_str)
 
 # Testcase cp_imm_edges_20bit (imm = 64)
 E_lui_cg_cp_imm_edges_20bit_0x40:
   lui x11, 64 # perform operation
-  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x11, E_lui_cg_cp_imm_edges_20bit_0x40, E_lui_cg_cp_imm_edges_20bit_0x40_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_lui_cg_cp_imm_edges_20bit_0x40, E_lui_cg_cp_imm_edges_20bit_0x40_str)
 
 # Testcase cp_imm_edges_20bit (imm = 128)
 E_lui_cg_cp_imm_edges_20bit_0x80:
   lui x15, 128 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x80, E_lui_cg_cp_imm_edges_20bit_0x80_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x80, E_lui_cg_cp_imm_edges_20bit_0x80_str)
 
 # Testcase cp_imm_edges_20bit (imm = 256)
 E_lui_cg_cp_imm_edges_20bit_0x100:
   lui x15, 256 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x100, E_lui_cg_cp_imm_edges_20bit_0x100_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x100, E_lui_cg_cp_imm_edges_20bit_0x100_str)
 
 # Testcase cp_imm_edges_20bit (imm = 512)
 E_lui_cg_cp_imm_edges_20bit_0x200:
-  lui x5, 512 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, E_lui_cg_cp_imm_edges_20bit_0x200, E_lui_cg_cp_imm_edges_20bit_0x200_str)
+  lui x7, 512 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x7, E_lui_cg_cp_imm_edges_20bit_0x200, E_lui_cg_cp_imm_edges_20bit_0x200_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1024)
 E_lui_cg_cp_imm_edges_20bit_0x400:
   lui x15, 1024 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x400, E_lui_cg_cp_imm_edges_20bit_0x400_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x400, E_lui_cg_cp_imm_edges_20bit_0x400_str)
 
 # Testcase cp_imm_edges_20bit (imm = 2048)
 E_lui_cg_cp_imm_edges_20bit_0x800:
-  lui x9, 2048 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x9, E_lui_cg_cp_imm_edges_20bit_0x800, E_lui_cg_cp_imm_edges_20bit_0x800_str)
+  lui x10, 2048 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x10, E_lui_cg_cp_imm_edges_20bit_0x800, E_lui_cg_cp_imm_edges_20bit_0x800_str)
 
 # Testcase cp_imm_edges_20bit (imm = 4096)
 E_lui_cg_cp_imm_edges_20bit_0x1000:
   lui x15, 4096 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x1000, E_lui_cg_cp_imm_edges_20bit_0x1000_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x1000, E_lui_cg_cp_imm_edges_20bit_0x1000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 8192)
 E_lui_cg_cp_imm_edges_20bit_0x2000:
   lui x1, 8192 # perform operation
-  # Check if x1 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x1, E_lui_cg_cp_imm_edges_20bit_0x2000, E_lui_cg_cp_imm_edges_20bit_0x2000_str)
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, E_lui_cg_cp_imm_edges_20bit_0x2000, E_lui_cg_cp_imm_edges_20bit_0x2000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 16384)
 E_lui_cg_cp_imm_edges_20bit_0x4000:
   lui x13, 16384 # perform operation
-  # Check if x13 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x13, E_lui_cg_cp_imm_edges_20bit_0x4000, E_lui_cg_cp_imm_edges_20bit_0x4000_str)
+  # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x13, E_lui_cg_cp_imm_edges_20bit_0x4000, E_lui_cg_cp_imm_edges_20bit_0x4000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 32768)
 E_lui_cg_cp_imm_edges_20bit_0x8000:
-  lui x4, 32768 # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, E_lui_cg_cp_imm_edges_20bit_0x8000, E_lui_cg_cp_imm_edges_20bit_0x8000_str)
+  lui x6, 32768 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x6, E_lui_cg_cp_imm_edges_20bit_0x8000, E_lui_cg_cp_imm_edges_20bit_0x8000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 65536)
 E_lui_cg_cp_imm_edges_20bit_0x10000:
   lui x11, 65536 # perform operation
-  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x11, E_lui_cg_cp_imm_edges_20bit_0x10000, E_lui_cg_cp_imm_edges_20bit_0x10000_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_lui_cg_cp_imm_edges_20bit_0x10000, E_lui_cg_cp_imm_edges_20bit_0x10000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 131072)
 E_lui_cg_cp_imm_edges_20bit_0x20000:
   lui x3, 131072 # perform operation
-  # Check if x3 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x3, E_lui_cg_cp_imm_edges_20bit_0x20000, E_lui_cg_cp_imm_edges_20bit_0x20000_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, E_lui_cg_cp_imm_edges_20bit_0x20000, E_lui_cg_cp_imm_edges_20bit_0x20000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 262144)
 E_lui_cg_cp_imm_edges_20bit_0x40000:
   lui x1, 262144 # perform operation
-  # Check if x1 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x1, E_lui_cg_cp_imm_edges_20bit_0x40000, E_lui_cg_cp_imm_edges_20bit_0x40000_str)
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, E_lui_cg_cp_imm_edges_20bit_0x40000, E_lui_cg_cp_imm_edges_20bit_0x40000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524286)
 E_lui_cg_cp_imm_edges_20bit_0x7fffe:
   lui x15, 524286 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x7fffe, E_lui_cg_cp_imm_edges_20bit_0x7fffe_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x7fffe, E_lui_cg_cp_imm_edges_20bit_0x7fffe_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524287)
 E_lui_cg_cp_imm_edges_20bit_0x7ffff:
-  lui x4, 524287 # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, E_lui_cg_cp_imm_edges_20bit_0x7ffff, E_lui_cg_cp_imm_edges_20bit_0x7ffff_str)
+  lui x6, 524287 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x6, E_lui_cg_cp_imm_edges_20bit_0x7ffff, E_lui_cg_cp_imm_edges_20bit_0x7ffff_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524288)
 E_lui_cg_cp_imm_edges_20bit_0x80000:
   lui x15, 524288 # perform operation
-  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_lui_cg_cp_imm_edges_20bit_0x80000, E_lui_cg_cp_imm_edges_20bit_0x80000_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, E_lui_cg_cp_imm_edges_20bit_0x80000, E_lui_cg_cp_imm_edges_20bit_0x80000_str)
 
 # Testcase cp_imm_edges_20bit (imm = 524289)
 E_lui_cg_cp_imm_edges_20bit_0x80001:
   lui x11, 524289 # perform operation
-  # Check if x11 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x11, E_lui_cg_cp_imm_edges_20bit_0x80001, E_lui_cg_cp_imm_edges_20bit_0x80001_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, E_lui_cg_cp_imm_edges_20bit_0x80001, E_lui_cg_cp_imm_edges_20bit_0x80001_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1048574)
 E_lui_cg_cp_imm_edges_20bit_0xffffe:
   lui x14, 1048574 # perform operation
-  # Check if x14 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x14, E_lui_cg_cp_imm_edges_20bit_0xffffe, E_lui_cg_cp_imm_edges_20bit_0xffffe_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, E_lui_cg_cp_imm_edges_20bit_0xffffe, E_lui_cg_cp_imm_edges_20bit_0xffffe_str)
 
 # Testcase cp_imm_edges_20bit (imm = 1048575)
 E_lui_cg_cp_imm_edges_20bit_0xfffff:
-  lui x6, 1048575 # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, E_lui_cg_cp_imm_edges_20bit_0xfffff, E_lui_cg_cp_imm_edges_20bit_0xfffff_str)
+  lui x8, 1048575 # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x8, E_lui_cg_cp_imm_edges_20bit_0xfffff, E_lui_cg_cp_imm_edges_20bit_0xfffff_str)
 
-  mv x2, x10 # restore signature pointer to default register for teardown
+  mv x2, x9 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

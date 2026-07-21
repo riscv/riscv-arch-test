@@ -335,63 +335,63 @@ Zbb_rorw_cg_cp_rs2_b3:
   # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x1, Zbb_rorw_cg_cp_rs2_b3, Zbb_rorw_cg_cp_rs2_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0x1779b76547d48b95
   RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0xc22636e329f3fe06
 Zbb_rorw_cg_cp_rs2_b4:
   rorw x2, x18, x4 # perform operation
-  # Check if x2 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x2, Zbb_rorw_cg_cp_rs2_b4, Zbb_rorw_cg_cp_rs2_b4_str)
+  # Check if x2 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x2, Zbb_rorw_cg_cp_rs2_b4, Zbb_rorw_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
   RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs1: x3 = 0xd9322d146454abbf
   RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0xeb3fa907ad3863e5
 Zbb_rorw_cg_cp_rs2_b5:
   rorw x25, x3, x5 # perform operation
-  # Check if x25 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x25, Zbb_rorw_cg_cp_rs2_b5, Zbb_rorw_cg_cp_rs2_b5_str)
+  # Check if x25 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x25, Zbb_rorw_cg_cp_rs2_b5, Zbb_rorw_cg_cp_rs2_b5_str)
 
 # Testcase cp_rs2 (Test source rs2 = x6)
   RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs1: x5 = 0x6d27457c082bf7df
   RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0x057012297c31129c
 Zbb_rorw_cg_cp_rs2_b6:
   rorw x9, x5, x6 # perform operation
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zbb_rorw_cg_cp_rs2_b6, Zbb_rorw_cg_cp_rs2_b6_str)
+  # Check if x9 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x9, Zbb_rorw_cg_cp_rs2_b6, Zbb_rorw_cg_cp_rs2_b6_str)
 
 # Testcase cp_rs2 (Test source rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs1: x20 = 0xe5c7f426e8e24da3
   RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0xbf1473a0472bafdd
 Zbb_rorw_cg_cp_rs2_b7:
   rorw x6, x20, x7 # perform operation
-  # Check if x6 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x6, Zbb_rorw_cg_cp_rs2_b7, Zbb_rorw_cg_cp_rs2_b7_str)
+  # Check if x6 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x6, Zbb_rorw_cg_cp_rs2_b7, Zbb_rorw_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0x5bc6d9979f4e0f64
   RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0x930802ea939e8c74
 Zbb_rorw_cg_cp_rs2_b8:
   rorw x5, x18, x8 # perform operation
-  # Check if x5 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x5, Zbb_rorw_cg_cp_rs2_b8, Zbb_rorw_cg_cp_rs2_b8_str)
+  # Check if x5 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x5, Zbb_rorw_cg_cp_rs2_b8, Zbb_rorw_cg_cp_rs2_b8_str)
 
 # Testcase cp_rs2 (Test source rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs1: x7 = 0xfc979e3cdb6c0b55
   RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0x85a7188afd4a730f
 Zbb_rorw_cg_cp_rs2_b9:
   rorw x2, x7, x9 # perform operation
-  # Check if x2 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x2, Zbb_rorw_cg_cp_rs2_b9, Zbb_rorw_cg_cp_rs2_b9_str)
+  # Check if x2 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x2, Zbb_rorw_cg_cp_rs2_b9, Zbb_rorw_cg_cp_rs2_b9_str)
 
 # Testcase cp_rs2 (Test source rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs1: x25 = 0x33d221d219c86391
   RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x97e307f428330052
 Zbb_rorw_cg_cp_rs2_b10:
   rorw x29, x25, x10 # perform operation
-  # Check if x29 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x29, Zbb_rorw_cg_cp_rs2_b10, Zbb_rorw_cg_cp_rs2_b10_str)
+  # Check if x29 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x29, Zbb_rorw_cg_cp_rs2_b10, Zbb_rorw_cg_cp_rs2_b10_str)
 
   mv x23, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x11)
@@ -399,82 +399,82 @@ Zbb_rorw_cg_cp_rs2_b10:
   RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0xbeaedd2713c28ffe
 Zbb_rorw_cg_cp_rs2_b11:
   rorw x30, x17, x11 # perform operation
-  # Check if x30 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x30, Zbb_rorw_cg_cp_rs2_b11, Zbb_rorw_cg_cp_rs2_b11_str)
+  # Check if x30 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x30, Zbb_rorw_cg_cp_rs2_b11, Zbb_rorw_cg_cp_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs1: x2 = 0x3246b7d734255ab2
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x205a8e18b3f37b73
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs1: x24 = 0xe02239e52ce8ba60
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0xb2d56ba2e8e50b26
 Zbb_rorw_cg_cp_rs2_b12:
-  rorw x22, x2, x12 # perform operation
-  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x22, Zbb_rorw_cg_cp_rs2_b12, Zbb_rorw_cg_cp_rs2_b12_str)
+  rorw x20, x24, x12 # perform operation
+  # Check if x20 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x20, Zbb_rorw_cg_cp_rs2_b12, Zbb_rorw_cg_cp_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load rs1: x28 = 0xb2d56ba2e8e50b26
-  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0xcbc622de1ce08a20
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs1: x3 = 0xbee783c14bc622de
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0xd9851daf1e671471
 Zbb_rorw_cg_cp_rs2_b13:
-  rorw x9, x28, x13 # perform operation
-  # Check if x9 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x9, Zbb_rorw_cg_cp_rs2_b13, Zbb_rorw_cg_cp_rs2_b13_str)
+  rorw x29, x3, x13 # perform operation
+  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x29, Zbb_rorw_cg_cp_rs2_b13, Zbb_rorw_cg_cp_rs2_b13_str)
 
 # Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs1: x4 = 0x85fadd5359851daf
-  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0xa29827922b28c338
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0x64b5a3f8b8fa68af
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0xde26f744da1f148d
 Zbb_rorw_cg_cp_rs2_b14:
-  rorw x0, x4, x14 # perform operation
-  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x0, Zbb_rorw_cg_cp_rs2_b14, Zbb_rorw_cg_cp_rs2_b14_str)
+  rorw x0, x12, x14 # perform operation
+  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x0, Zbb_rorw_cg_cp_rs2_b14, Zbb_rorw_cg_cp_rs2_b14_str)
 
 # Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs1: x4 = 0xde20fa401dccc8b0
-  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0x2f24026fdad1c3f0
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs1: x6 = 0x932c119d781e32db
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0xde20fa401dccc8b0
 Zbb_rorw_cg_cp_rs2_b15:
-  rorw x2, x4, x15 # perform operation
-  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x2, Zbb_rorw_cg_cp_rs2_b15, Zbb_rorw_cg_cp_rs2_b15_str)
+  rorw x7, x6, x15 # perform operation
+  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x7, Zbb_rorw_cg_cp_rs2_b15, Zbb_rorw_cg_cp_rs2_b15_str)
 
 # Testcase cp_rs2 (Test source rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0x5cb873131b099466
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xb7d795c1156d6103
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs1: x17 = 0x7047d543d62e0977
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0x5cb873131b099466
 Zbb_rorw_cg_cp_rs2_b16:
-  rorw x31, x18, x16 # perform operation
-  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x31, Zbb_rorw_cg_cp_rs2_b16, Zbb_rorw_cg_cp_rs2_b16_str)
+  rorw x26, x17, x16 # perform operation
+  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x26, Zbb_rorw_cg_cp_rs2_b16, Zbb_rorw_cg_cp_rs2_b16_str)
 
 # Testcase cp_rs2 (Test source rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x21, x22) # load rs1: x22 = 0x4b01d4563217982e
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs1: x9 = 0x4b01d4563217982e
   RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0x089abcfbcb907d32
 Zbb_rorw_cg_cp_rs2_b17:
-  rorw x9, x22, x17 # perform operation
-  # Check if x9 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x9, Zbb_rorw_cg_cp_rs2_b17, Zbb_rorw_cg_cp_rs2_b17_str)
+  rorw x2, x9, x17 # perform operation
+  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x2, Zbb_rorw_cg_cp_rs2_b17, Zbb_rorw_cg_cp_rs2_b17_str)
 
 # Testcase cp_rs2 (Test source rs2 = x18)
   RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs1: x30 = 0x332542b3ee5db182
   RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0xb267b35b9f83cdde
 Zbb_rorw_cg_cp_rs2_b18:
   rorw x31, x30, x18 # perform operation
-  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x31, Zbb_rorw_cg_cp_rs2_b18, Zbb_rorw_cg_cp_rs2_b18_str)
+  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x31, Zbb_rorw_cg_cp_rs2_b18, Zbb_rorw_cg_cp_rs2_b18_str)
 
 # Testcase cp_rs2 (Test source rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs1: x6 = 0x9c08cbf43f1547eb
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs1: x8 = 0x9c08cbf43f1547eb
   RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0xab569c2e055a8807
 Zbb_rorw_cg_cp_rs2_b19:
-  rorw x16, x6, x19 # perform operation
-  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x16, Zbb_rorw_cg_cp_rs2_b19, Zbb_rorw_cg_cp_rs2_b19_str)
+  rorw x16, x8, x19 # perform operation
+  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x16, Zbb_rorw_cg_cp_rs2_b19, Zbb_rorw_cg_cp_rs2_b19_str)
 
 # Testcase cp_rs2 (Test source rs2 = x20)
   RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs1: x11 = 0x6bd99cf86f015a63
   RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x7b423d2e09b2cef2
 Zbb_rorw_cg_cp_rs2_b20:
   rorw x27, x11, x20 # perform operation
-  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x27, Zbb_rorw_cg_cp_rs2_b20, Zbb_rorw_cg_cp_rs2_b20_str)
+  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x27, Zbb_rorw_cg_cp_rs2_b20, Zbb_rorw_cg_cp_rs2_b20_str)
 
   mv x31, x21 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x21)
@@ -482,16 +482,16 @@ Zbb_rorw_cg_cp_rs2_b20:
   RVTEST_TESTDATA_LOAD_INT(x31, x21) # load rs2: x21 = 0xc84219bf85cec0a9
 Zbb_rorw_cg_cp_rs2_b21:
   rorw x27, x24, x21 # perform operation
-  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x27, Zbb_rorw_cg_cp_rs2_b21, Zbb_rorw_cg_cp_rs2_b21_str)
+  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x27, Zbb_rorw_cg_cp_rs2_b21, Zbb_rorw_cg_cp_rs2_b21_str)
 
 # Testcase cp_rs2 (Test source rs2 = x22)
   RVTEST_TESTDATA_LOAD_INT(x31, x20) # load rs1: x20 = 0x8d761059479c3151
   RVTEST_TESTDATA_LOAD_INT(x31, x22) # load rs2: x22 = 0xb5cb8cac78e123d3
 Zbb_rorw_cg_cp_rs2_b22:
   rorw x12, x20, x22 # perform operation
-  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x12, Zbb_rorw_cg_cp_rs2_b22, Zbb_rorw_cg_cp_rs2_b22_str)
+  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x12, Zbb_rorw_cg_cp_rs2_b22, Zbb_rorw_cg_cp_rs2_b22_str)
 
   mv x1, x23 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x23)
@@ -499,64 +499,64 @@ Zbb_rorw_cg_cp_rs2_b22:
   RVTEST_TESTDATA_LOAD_INT(x31, x23) # load rs2: x23 = 0xb885278f7c871c3e
 Zbb_rorw_cg_cp_rs2_b23:
   rorw x0, x24, x23 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, Zbb_rorw_cg_cp_rs2_b23, Zbb_rorw_cg_cp_rs2_b23_str)
+  # Check if x0 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x0, Zbb_rorw_cg_cp_rs2_b23, Zbb_rorw_cg_cp_rs2_b23_str)
 
 # Testcase cp_rs2 (Test source rs2 = x24)
   RVTEST_TESTDATA_LOAD_INT(x31, x28) # load rs1: x28 = 0x5352e89bb2e0b503
   RVTEST_TESTDATA_LOAD_INT(x31, x24) # load rs2: x24 = 0x3d959caa543a2bb6
 Zbb_rorw_cg_cp_rs2_b24:
   rorw x29, x28, x24 # perform operation
-  # Check if x29 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x29, Zbb_rorw_cg_cp_rs2_b24, Zbb_rorw_cg_cp_rs2_b24_str)
+  # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x29, Zbb_rorw_cg_cp_rs2_b24, Zbb_rorw_cg_cp_rs2_b24_str)
 
 # Testcase cp_rs2 (Test source rs2 = x25)
   RVTEST_TESTDATA_LOAD_INT(x31, x2) # load rs1: x2 = 0x459eef362ce999bc
   RVTEST_TESTDATA_LOAD_INT(x31, x25) # load rs2: x25 = 0xa849963168c0e122
 Zbb_rorw_cg_cp_rs2_b25:
   rorw x14, x2, x25 # perform operation
-  # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x14, Zbb_rorw_cg_cp_rs2_b25, Zbb_rorw_cg_cp_rs2_b25_str)
+  # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x14, Zbb_rorw_cg_cp_rs2_b25, Zbb_rorw_cg_cp_rs2_b25_str)
 
 # Testcase cp_rs2 (Test source rs2 = x26)
   RVTEST_TESTDATA_LOAD_INT(x31, x23) # load rs1: x23 = 0x3a3a739d961f87db
   RVTEST_TESTDATA_LOAD_INT(x31, x26) # load rs2: x26 = 0xd81a728ead7e61ab
 Zbb_rorw_cg_cp_rs2_b26:
   rorw x17, x23, x26 # perform operation
-  # Check if x17 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x17, Zbb_rorw_cg_cp_rs2_b26, Zbb_rorw_cg_cp_rs2_b26_str)
+  # Check if x17 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x17, Zbb_rorw_cg_cp_rs2_b26, Zbb_rorw_cg_cp_rs2_b26_str)
 
 # Testcase cp_rs2 (Test source rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x31, x10) # load rs1: x10 = 0x8bbfa852897c2dcd
   RVTEST_TESTDATA_LOAD_INT(x31, x27) # load rs2: x27 = 0x39b75967340ad94d
 Zbb_rorw_cg_cp_rs2_b27:
-  rorw x4, x10, x27 # perform operation
-  # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x4, Zbb_rorw_cg_cp_rs2_b27, Zbb_rorw_cg_cp_rs2_b27_str)
+  rorw x6, x10, x27 # perform operation
+  # Check if x6 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x6, Zbb_rorw_cg_cp_rs2_b27, Zbb_rorw_cg_cp_rs2_b27_str)
 
 # Testcase cp_rs2 (Test source rs2 = x28)
   RVTEST_TESTDATA_LOAD_INT(x31, x27) # load rs1: x27 = 0x0f5cc3fd26297c7e
   RVTEST_TESTDATA_LOAD_INT(x31, x28) # load rs2: x28 = 0xce60e6eb96676802
 Zbb_rorw_cg_cp_rs2_b28:
   rorw x13, x27, x28 # perform operation
-  # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x13, Zbb_rorw_cg_cp_rs2_b28, Zbb_rorw_cg_cp_rs2_b28_str)
+  # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x13, Zbb_rorw_cg_cp_rs2_b28, Zbb_rorw_cg_cp_rs2_b28_str)
 
 # Testcase cp_rs2 (Test source rs2 = x29)
   RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs1: x30 = 0x52958a1fd90df1bf
   RVTEST_TESTDATA_LOAD_INT(x31, x29) # load rs2: x29 = 0x9778a28790d047ec
 Zbb_rorw_cg_cp_rs2_b29:
   rorw x25, x30, x29 # perform operation
-  # Check if x25 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x25, Zbb_rorw_cg_cp_rs2_b29, Zbb_rorw_cg_cp_rs2_b29_str)
+  # Check if x25 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x25, Zbb_rorw_cg_cp_rs2_b29, Zbb_rorw_cg_cp_rs2_b29_str)
 
 # Testcase cp_rs2 (Test source rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x31, x27) # load rs1: x27 = 0x99c4d798d44818b3
   RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs2: x30 = 0xbcace090ea5e37f3
 Zbb_rorw_cg_cp_rs2_b30:
   rorw x26, x27, x30 # perform operation
-  # Check if x26 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x26, Zbb_rorw_cg_cp_rs2_b30, Zbb_rorw_cg_cp_rs2_b30_str)
+  # Check if x26 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x26, Zbb_rorw_cg_cp_rs2_b30, Zbb_rorw_cg_cp_rs2_b30_str)
 
   mv x24, x31 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x31)
@@ -564,8 +564,8 @@ Zbb_rorw_cg_cp_rs2_b30:
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x62de80c3c6201e7a
 Zbb_rorw_cg_cp_rs2_b31:
   rorw x28, x3, x31 # perform operation
-  # Check if x28 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x28, Zbb_rorw_cg_cp_rs2_b31, Zbb_rorw_cg_cp_rs2_b31_str)
+  # Check if x28 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x28, Zbb_rorw_cg_cp_rs2_b31, Zbb_rorw_cg_cp_rs2_b31_str)
 
 /////////////////////////////////
 // cp_rd
@@ -576,8 +576,8 @@ Zbb_rorw_cg_cp_rs2_b31:
   RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xfe16b71c67b160fb
 Zbb_rorw_cg_cp_rd_b0:
   rorw x0, x11, x15 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, Zbb_rorw_cg_cp_rd_b0, Zbb_rorw_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x0, Zbb_rorw_cg_cp_rd_b0, Zbb_rorw_cg_cp_rd_b0_str)
 
   mv x27, x1 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x1)
@@ -585,104 +585,106 @@ Zbb_rorw_cg_cp_rd_b0:
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs2: x31 = 0x50153c565ae47304
 Zbb_rorw_cg_cp_rd_b1:
   rorw x1, x25, x31 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x1, Zbb_rorw_cg_cp_rd_b1, Zbb_rorw_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x1, Zbb_rorw_cg_cp_rd_b1, Zbb_rorw_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
   RVTEST_TESTDATA_LOAD_INT(x24, x31) # load rs1: x31 = 0x7ba8672260b2bcc7
-  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x2c898d35654da1e6
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0x2c898d35654da1e6
 Zbb_rorw_cg_cp_rd_b2:
-  rorw x2, x31, x4 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zbb_rorw_cg_cp_rd_b2, Zbb_rorw_cg_cp_rd_b2_str)
+  rorw x2, x31, x6 # perform operation
+  # Check if x2 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x2, Zbb_rorw_cg_cp_rd_b2, Zbb_rorw_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
   RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x7bc5acbe3d697d45
   RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x02e71b463eab0163
 Zbb_rorw_cg_cp_rd_b3:
   rorw x3, x21, x10 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zbb_rorw_cg_cp_rd_b3, Zbb_rorw_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x27, x5, x4, x3, Zbb_rorw_cg_cp_rd_b3, Zbb_rorw_cg_cp_rd_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xcb50e3c0982361c9
-  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs2: x1 = 0x92d8bc3b26aeb198
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x50e3e991a25de823
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x8d1549664b50e3c0
 Zbb_rorw_cg_cp_rd_b4:
-  rorw x4, x22, x1 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zbb_rorw_cg_cp_rd_b4, Zbb_rorw_cg_cp_rd_b4_str)
+  rorw x4, x10, x23 # perform operation
+  # Check if x4 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x4, Zbb_rorw_cg_cp_rd_b4, Zbb_rorw_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xf4c4513877048249
+  RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs1: x4 = 0xf4c4513877048249
   RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x9bdc71d5aa32139a
 Zbb_rorw_cg_cp_rd_b5:
-  rorw x5, x22, x23 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x5, Zbb_rorw_cg_cp_rd_b5, Zbb_rorw_cg_cp_rd_b5_str)
+  rorw x5, x4, x23 # perform operation
+  # Check if x5 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x5, Zbb_rorw_cg_cp_rd_b5, Zbb_rorw_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
   RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x41b2b7c9b28aa9ab
   RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0xfcec64dfae4c4fac
 Zbb_rorw_cg_cp_rd_b6:
   rorw x6, x17, x20 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zbb_rorw_cg_cp_rd_b6, Zbb_rorw_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x6, Zbb_rorw_cg_cp_rd_b6, Zbb_rorw_cg_cp_rd_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0x6dcd8a511614f5e6
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xc0277de729dfb45e
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0xd27749990984e99b
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xa9dfb45e210dfe81
 Zbb_rorw_cg_cp_rd_b7:
-  rorw x7, x13, x6 # perform operation
-  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x7, Zbb_rorw_cg_cp_rd_b7, Zbb_rorw_cg_cp_rd_b7_str)
+  rorw x7, x22, x17 # perform operation
+  # Check if x7 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x7, Zbb_rorw_cg_cp_rd_b7, Zbb_rorw_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0xba6b59ac4fb78fca
-  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0xce72a3bcbf002bee
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xcfb78fca5a84dec9
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0x3f002bee61362c1d
 Zbb_rorw_cg_cp_rd_b8:
-  rorw x8, x14, x16 # perform operation
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, Zbb_rorw_cg_cp_rd_b8, Zbb_rorw_cg_cp_rd_b8_str)
+  rorw x8, x15, x18 # perform operation
+  # Check if x8 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x8, Zbb_rorw_cg_cp_rd_b8, Zbb_rorw_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs1: x29 = 0x29fcb994ef4afbad
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs2: x6 = 0xef773e2aca00a4c2
+  RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs1: x3 = 0xea60654f6f773e2a
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x127311ca9dcb1620
 Zbb_rorw_cg_cp_rd_b9:
-  rorw x9, x29, x6 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x9, Zbb_rorw_cg_cp_rd_b9, Zbb_rorw_cg_cp_rd_b9_str)
+  rorw x9, x3, x16 # perform operation
+  # Check if x9 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x9, Zbb_rorw_cg_cp_rd_b9, Zbb_rorw_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load rs1: x6 = 0x0932005344016e03
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x8d9ded030cc1f3fa
+  RVTEST_TESTDATA_LOAD_INT(x24, x8) # load rs1: x8 = 0x60771e93ecf61fec
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x793287d918abfa8c
 Zbb_rorw_cg_cp_rd_b10:
-  rorw x10, x6, x23 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x10, Zbb_rorw_cg_cp_rd_b10, Zbb_rorw_cg_cp_rd_b10_str)
+  rorw x10, x8, x21 # perform operation
+  # Check if x10 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x10, Zbb_rorw_cg_cp_rd_b10, Zbb_rorw_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0x619c07b758fa0773
-  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load rs2: x30 = 0x13e84c115ef21cfe
+  RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs1: x10 = 0x8cc1f3fac8839552
+  RVTEST_TESTDATA_LOAD_INT(x24, x7) # load rs2: x7 = 0x4498641c32805fbb
 Zbb_rorw_cg_cp_rd_b11:
-  rorw x11, x21, x30 # perform operation
-  # Check if x11 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x11, Zbb_rorw_cg_cp_rd_b11, Zbb_rorw_cg_cp_rd_b11_str)
+  rorw x11, x10, x7 # perform operation
+  # Check if x11 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x11, Zbb_rorw_cg_cp_rd_b11, Zbb_rorw_cg_cp_rd_b11_str)
 
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs1: x26 = 0xb9776a81321d8d5f
-  RVTEST_TESTDATA_LOAD_INT(x24, x8) # load rs2: x8 = 0x3059c6e498302fe8
+  RVTEST_TESTDATA_LOAD_INT(x24, x1) # load rs1: x1 = 0x60e12751dc6717f5
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x13e84c115ef21cfe
 Zbb_rorw_cg_cp_rd_b12:
-  rorw x12, x26, x8 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x12, Zbb_rorw_cg_cp_rd_b12, Zbb_rorw_cg_cp_rd_b12_str)
+  rorw x12, x1, x20 # perform operation
+  # Check if x12 contains the expected result. x27 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x27, x14, x13, x12, Zbb_rorw_cg_cp_rd_b12, Zbb_rorw_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs1: x25 = 0xa53eb7daf86341b6
-  RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x2d282a0fe0526bd2
+  RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs1: x9 = 0xb5f091ce2d50e744
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x2d282a0fe0526bd2
 Zbb_rorw_cg_cp_rd_b13:
-  rorw x13, x25, x29 # perform operation
+  rorw x13, x9, x14 # perform operation
   # Check if x13 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x13, Zbb_rorw_cg_cp_rd_b13, Zbb_rorw_cg_cp_rd_b13_str)
 
@@ -3185,63 +3187,63 @@ Zbb_rorw_cg_cmp_rs1_rs2_b3:
   # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x20, Zbb_rorw_cg_cmp_rs1_rs2_b3, Zbb_rorw_cg_cmp_rs1_rs2_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x4ba2135d65170cf4
   RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x8cc5154fb622c878
 Zbb_rorw_cg_cmp_rs1_rs2_b4:
   rorw x0, x4, x4 # perform operation
-  # Check if x0 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x0, Zbb_rorw_cg_cmp_rs1_rs2_b4, Zbb_rorw_cg_cmp_rs1_rs2_b4_str)
+  # Check if x0 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x0, Zbb_rorw_cg_cmp_rs1_rs2_b4, Zbb_rorw_cg_cmp_rs1_rs2_b4_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x5)
   RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0x9059259b1e4c4865
   RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0xbadaf364559a4a11
 Zbb_rorw_cg_cmp_rs1_rs2_b5:
   rorw x24, x5, x5 # perform operation
-  # Check if x24 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x24, Zbb_rorw_cg_cmp_rs1_rs2_b5, Zbb_rorw_cg_cmp_rs1_rs2_b5_str)
+  # Check if x24 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x24, Zbb_rorw_cg_cmp_rs1_rs2_b5, Zbb_rorw_cg_cmp_rs1_rs2_b5_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x6)
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0xd4c02ad502680514
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x6482d718d5d0650b
 Zbb_rorw_cg_cmp_rs1_rs2_b6:
   rorw x31, x6, x6 # perform operation
-  # Check if x31 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x31, Zbb_rorw_cg_cmp_rs1_rs2_b6, Zbb_rorw_cg_cmp_rs1_rs2_b6_str)
+  # Check if x31 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x31, Zbb_rorw_cg_cmp_rs1_rs2_b6, Zbb_rorw_cg_cmp_rs1_rs2_b6_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xf3368a4336389920
   RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0xf9bd1e2f6e8f4455
 Zbb_rorw_cg_cmp_rs1_rs2_b7:
   rorw x27, x7, x7 # perform operation
-  # Check if x27 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x27, Zbb_rorw_cg_cmp_rs1_rs2_b7, Zbb_rorw_cg_cmp_rs1_rs2_b7_str)
+  # Check if x27 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x27, Zbb_rorw_cg_cmp_rs1_rs2_b7, Zbb_rorw_cg_cmp_rs1_rs2_b7_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0x227cce6a63b0a1a5
   RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0xbbc72c5315367377
 Zbb_rorw_cg_cmp_rs1_rs2_b8:
   rorw x4, x8, x8 # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x4, Zbb_rorw_cg_cmp_rs1_rs2_b8, Zbb_rorw_cg_cmp_rs1_rs2_b8_str)
+  # Check if x4 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x4, Zbb_rorw_cg_cmp_rs1_rs2_b8, Zbb_rorw_cg_cmp_rs1_rs2_b8_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x9c9847faa9b43466
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0xd6e4c7ce767b64c4
 Zbb_rorw_cg_cmp_rs1_rs2_b9:
   rorw x4, x9, x9 # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x4, Zbb_rorw_cg_cmp_rs1_rs2_b9, Zbb_rorw_cg_cmp_rs1_rs2_b9_str)
+  # Check if x4 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x4, Zbb_rorw_cg_cmp_rs1_rs2_b9, Zbb_rorw_cg_cmp_rs1_rs2_b9_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x1afa885cce165280
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0xfb470ae8c212b790
 Zbb_rorw_cg_cmp_rs1_rs2_b10:
   rorw x31, x10, x10 # perform operation
-  # Check if x31 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x31, Zbb_rorw_cg_cmp_rs1_rs2_b10, Zbb_rorw_cg_cmp_rs1_rs2_b10_str)
+  # Check if x31 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x31, Zbb_rorw_cg_cmp_rs1_rs2_b10, Zbb_rorw_cg_cmp_rs1_rs2_b10_str)
 
   mv x20, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x11)
@@ -3249,172 +3251,173 @@ Zbb_rorw_cg_cmp_rs1_rs2_b10:
   RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs2: x11 = 0x21de8b34d801461c
 Zbb_rorw_cg_cmp_rs1_rs2_b11:
   rorw x7, x11, x11 # perform operation
-  # Check if x7 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x7, Zbb_rorw_cg_cmp_rs1_rs2_b11, Zbb_rorw_cg_cmp_rs1_rs2_b11_str)
+  # Check if x7 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x7, Zbb_rorw_cg_cmp_rs1_rs2_b11, Zbb_rorw_cg_cmp_rs1_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs1: x12 = 0x1f0a837ed41ef2e5
-  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs2: x12 = 0xdedc0b8910428b8c
+  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs1: x12 = 0x90428b8c05ddb4fb
+  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs2: x12 = 0x834297d1fa4b8aed
 Zbb_rorw_cg_cmp_rs1_rs2_b12:
-  rorw x10, x12, x12 # perform operation
-  # Check if x10 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x10, Zbb_rorw_cg_cmp_rs1_rs2_b12, Zbb_rorw_cg_cmp_rs1_rs2_b12_str)
+  rorw x8, x12, x12 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x8, Zbb_rorw_cg_cmp_rs1_rs2_b12, Zbb_rorw_cg_cmp_rs1_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs1: x13 = 0x7a4b8aedf94c5265
-  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs2: x13 = 0x5fb00488537f29d5
+  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs1: x13 = 0x402183d4a24a6fbf
+  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs2: x13 = 0xd0f638e0a9c01e2c
 Zbb_rorw_cg_cmp_rs1_rs2_b13:
-  rorw x31, x13, x13 # perform operation
-  # Check if x31 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x31, Zbb_rorw_cg_cmp_rs1_rs2_b13, Zbb_rorw_cg_cmp_rs1_rs2_b13_str)
+  rorw x17, x13, x13 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zbb_rorw_cg_cmp_rs1_rs2_b13, Zbb_rorw_cg_cmp_rs1_rs2_b13_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs1: x14 = 0x402183d4a24a6fbf
-  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs2: x14 = 0xd0f638e0a9c01e2c
+  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs1: x14 = 0xc6889a59bc1fe34f
+  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs2: x14 = 0xa5b982ab3f6670c0
 Zbb_rorw_cg_cmp_rs1_rs2_b14:
-  rorw x17, x14, x14 # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x17, Zbb_rorw_cg_cmp_rs1_rs2_b14, Zbb_rorw_cg_cmp_rs1_rs2_b14_str)
+  rorw x11, x14, x14 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zbb_rorw_cg_cmp_rs1_rs2_b14, Zbb_rorw_cg_cmp_rs1_rs2_b14_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs1: x15 = 0xc6889a59bc1fe34f
-  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs2: x15 = 0xa5b982ab3f6670c0
+  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs1: x15 = 0xdbcafffc2e1099dc
+  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs2: x15 = 0x026337c4aff33c0a
 Zbb_rorw_cg_cmp_rs1_rs2_b15:
-  rorw x11, x15, x15 # perform operation
-  # Check if x11 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x11, Zbb_rorw_cg_cmp_rs1_rs2_b15, Zbb_rorw_cg_cmp_rs1_rs2_b15_str)
+  rorw x8, x15, x15 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zbb_rorw_cg_cmp_rs1_rs2_b15, Zbb_rorw_cg_cmp_rs1_rs2_b15_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs1: x16 = 0xdbcafffc2e1099dc
-  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs2: x16 = 0x026337c4aff33c0a
+  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs1: x16 = 0x4f440c22106f0b47
+  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs2: x16 = 0x15873973c1f1d153
 Zbb_rorw_cg_cmp_rs1_rs2_b16:
-  rorw x6, x16, x16 # perform operation
-  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x6, Zbb_rorw_cg_cmp_rs1_rs2_b16, Zbb_rorw_cg_cmp_rs1_rs2_b16_str)
+  rorw x27, x16, x16 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zbb_rorw_cg_cmp_rs1_rs2_b16, Zbb_rorw_cg_cmp_rs1_rs2_b16_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs1: x17 = 0x4f440c22106f0b47
-  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs2: x17 = 0x15873973c1f1d153
+  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs1: x17 = 0xc68c057473c55588
+  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs2: x17 = 0x39670dac28fa55d6
 Zbb_rorw_cg_cmp_rs1_rs2_b17:
-  rorw x27, x17, x17 # perform operation
-  # Check if x27 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x27, Zbb_rorw_cg_cmp_rs1_rs2_b17, Zbb_rorw_cg_cmp_rs1_rs2_b17_str)
+  rorw x6, x17, x17 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zbb_rorw_cg_cmp_rs1_rs2_b17, Zbb_rorw_cg_cmp_rs1_rs2_b17_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs1: x18 = 0xc68c057473c55588
-  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs2: x18 = 0x39670dac28fa55d6
+  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs1: x18 = 0x948e83a1d9b00675
+  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs2: x18 = 0x85c014a4c15c68f3
 Zbb_rorw_cg_cmp_rs1_rs2_b18:
-  rorw x4, x18, x18 # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x4, Zbb_rorw_cg_cmp_rs1_rs2_b18, Zbb_rorw_cg_cmp_rs1_rs2_b18_str)
+  rorw x10, x18, x18 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zbb_rorw_cg_cmp_rs1_rs2_b18, Zbb_rorw_cg_cmp_rs1_rs2_b18_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs1: x19 = 0x948e83a1d9b00675
-  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs2: x19 = 0x85c014a4c15c68f3
+  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs1: x19 = 0xdb24d6320a6d1100
+  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs2: x19 = 0x304c6eae2b6e299c
 Zbb_rorw_cg_cmp_rs1_rs2_b19:
-  rorw x10, x19, x19 # perform operation
-  # Check if x10 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x10, Zbb_rorw_cg_cmp_rs1_rs2_b19, Zbb_rorw_cg_cmp_rs1_rs2_b19_str)
+  rorw x8, x19, x19 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zbb_rorw_cg_cmp_rs1_rs2_b19, Zbb_rorw_cg_cmp_rs1_rs2_b19_str)
 
-  mv x11, x20 # switch data pointer register to avoid conflict with test
+  mv x21, x20 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs1: x20 = 0x60306f4b274f2a86
-  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs2: x20 = 0xcac342525b24d632
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs1: x20 = 0x85a7de0fd0cfebcb
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x78fc0bdb61983d3e
 Zbb_rorw_cg_cmp_rs1_rs2_b20:
-  rorw x13, x20, x20 # perform operation
-  # Check if x13 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x13, Zbb_rorw_cg_cmp_rs1_rs2_b20, Zbb_rorw_cg_cmp_rs1_rs2_b20_str)
+  rorw x9, x20, x20 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zbb_rorw_cg_cmp_rs1_rs2_b20, Zbb_rorw_cg_cmp_rs1_rs2_b20_str)
 
+  mv x11, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs1: x21 = 0x72cb4b813c6ee602
-  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0x50cfebcbb95204b9
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs1: x21 = 0xbbcbb9c5a6a87de9
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0xdd89e91f4e63dd5c
 Zbb_rorw_cg_cmp_rs1_rs2_b21:
-  rorw x27, x21, x21 # perform operation
-  # Check if x27 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x27, Zbb_rorw_cg_cmp_rs1_rs2_b21, Zbb_rorw_cg_cmp_rs1_rs2_b21_str)
+  rorw x28, x21, x21 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zbb_rorw_cg_cmp_rs1_rs2_b21, Zbb_rorw_cg_cmp_rs1_rs2_b21_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs1: x22 = 0x78fc0bdb61983d3e
-  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0x87f5d17c3bcbb9c5
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs1: x22 = 0x6f3799bef827955a
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0xf3d536bdb7ddc29f
 Zbb_rorw_cg_cmp_rs1_rs2_b22:
-  rorw x17, x22, x22 # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x17, Zbb_rorw_cg_cmp_rs1_rs2_b22, Zbb_rorw_cg_cmp_rs1_rs2_b22_str)
+  rorw x8, x22, x22 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zbb_rorw_cg_cmp_rs1_rs2_b22, Zbb_rorw_cg_cmp_rs1_rs2_b22_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs1: x23 = 0xd5d4920e73d536bd
-  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0x5fcd6b0975d3c068
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs1: x23 = 0x5fcd6b0975d3c068
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0xf633d9897fe265a4
 Zbb_rorw_cg_cmp_rs1_rs2_b23:
-  rorw x14, x23, x23 # perform operation
-  # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x14, Zbb_rorw_cg_cmp_rs1_rs2_b23, Zbb_rorw_cg_cmp_rs1_rs2_b23_str)
+  rorw x8, x23, x23 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zbb_rorw_cg_cmp_rs1_rs2_b23, Zbb_rorw_cg_cmp_rs1_rs2_b23_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs1: x24 = 0xa43883b67633d989
-  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x5323d672b0f43dd5
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs1: x24 = 0x5323d672b0f43dd5
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x961855e163a88e3c
 Zbb_rorw_cg_cmp_rs1_rs2_b24:
-  rorw x18, x24, x24 # perform operation
-  # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x18, Zbb_rorw_cg_cmp_rs1_rs2_b24, Zbb_rorw_cg_cmp_rs1_rs2_b24_str)
+  rorw x12, x24, x24 # perform operation
+  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x12, Zbb_rorw_cg_cmp_rs1_rs2_b24, Zbb_rorw_cg_cmp_rs1_rs2_b24_str)
 
-  mv x22, x25 # switch signature pointer register to avoid conflict with test
+  mv x17, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0x961855e163a88e3c
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x09078e62c89748ff
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0x09078e62c89748ff
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x54a385b596766d00
 Zbb_rorw_cg_cmp_rs1_rs2_b25:
-  rorw x24, x25, x25 # perform operation
-  # Check if x24 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x24, Zbb_rorw_cg_cmp_rs1_rs2_b25, Zbb_rorw_cg_cmp_rs1_rs2_b25_str)
+  rorw x28, x25, x25 # perform operation
+  # Check if x28 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x28, Zbb_rorw_cg_cmp_rs1_rs2_b25, Zbb_rorw_cg_cmp_rs1_rs2_b25_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x26)
   RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs1: x26 = 0x669510468b8cbc5f
   RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0x0034ba7315fad403
 Zbb_rorw_cg_cmp_rs1_rs2_b26:
-  rorw x30, x26, x26 # perform operation
-  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x30, Zbb_rorw_cg_cmp_rs1_rs2_b26, Zbb_rorw_cg_cmp_rs1_rs2_b26_str)
+  rorw x23, x26, x26 # perform operation
+  # Check if x23 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x23, Zbb_rorw_cg_cmp_rs1_rs2_b26, Zbb_rorw_cg_cmp_rs1_rs2_b26_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs1: x27 = 0x44fa4a3b851591a9
   RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x1b3317179bb69137
 Zbb_rorw_cg_cmp_rs1_rs2_b27:
   rorw x1, x27, x27 # perform operation
-  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x1, Zbb_rorw_cg_cmp_rs1_rs2_b27, Zbb_rorw_cg_cmp_rs1_rs2_b27_str)
+  # Check if x1 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x1, Zbb_rorw_cg_cmp_rs1_rs2_b27, Zbb_rorw_cg_cmp_rs1_rs2_b27_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x28)
   RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs1: x28 = 0x392e076d85cbcfe2
   RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x69a001528524008f
 Zbb_rorw_cg_cmp_rs1_rs2_b28:
-  rorw x18, x28, x28 # perform operation
-  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x18, Zbb_rorw_cg_cmp_rs1_rs2_b28, Zbb_rorw_cg_cmp_rs1_rs2_b28_str)
+  rorw x19, x28, x28 # perform operation
+  # Check if x19 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x19, Zbb_rorw_cg_cmp_rs1_rs2_b28, Zbb_rorw_cg_cmp_rs1_rs2_b28_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x29)
   RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs1: x29 = 0x9107648c313c2424
   RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x6bb0492c54d7e057
 Zbb_rorw_cg_cmp_rs1_rs2_b29:
-  rorw x4, x29, x29 # perform operation
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zbb_rorw_cg_cmp_rs1_rs2_b29, Zbb_rorw_cg_cmp_rs1_rs2_b29_str)
+  rorw x6, x29, x29 # perform operation
+  # Check if x6 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x6, Zbb_rorw_cg_cmp_rs1_rs2_b29, Zbb_rorw_cg_cmp_rs1_rs2_b29_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs1: x30 = 0xb9e171674c22d36d
   RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0xdc3365db00d626e6
 Zbb_rorw_cg_cmp_rs1_rs2_b30:
-  rorw x20, x30, x30 # perform operation
-  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x20, Zbb_rorw_cg_cmp_rs1_rs2_b30, Zbb_rorw_cg_cmp_rs1_rs2_b30_str)
+  rorw x21, x30, x30 # perform operation
+  # Check if x21 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x21, Zbb_rorw_cg_cmp_rs1_rs2_b30, Zbb_rorw_cg_cmp_rs1_rs2_b30_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x31)
   RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x3fbc70dbefd19509
   RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x22c4ff9a215c36b3
 Zbb_rorw_cg_cmp_rs1_rs2_b31:
-  rorw x18, x31, x31 # perform operation
-  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x18, Zbb_rorw_cg_cmp_rs1_rs2_b31, Zbb_rorw_cg_cmp_rs1_rs2_b31_str)
+  rorw x19, x31, x31 # perform operation
+  # Check if x19 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x19, Zbb_rorw_cg_cmp_rs1_rs2_b31, Zbb_rorw_cg_cmp_rs1_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -3425,805 +3428,801 @@ Zbb_rorw_cg_cmp_rs1_rs2_b31:
   RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0xfd5276f61573bfc7
 Zbb_rorw_cg_cmp_rd_rs1_b0:
   rorw x0, x0, x25 # perform operation
-  # Check if x0 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x0, Zbb_rorw_cg_cmp_rd_rs1_b0, Zbb_rorw_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x0, Zbb_rorw_cg_cmp_rd_rs1_b0, Zbb_rorw_cg_cmp_rd_rs1_b0_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
   RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs1: x1 = 0xa50d86c8b12c3fd9
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0xdec2dac2f87f7438
 Zbb_rorw_cg_cmp_rd_rs1_b1:
   rorw x1, x1, x10 # perform operation
-  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x1, Zbb_rorw_cg_cmp_rd_rs1_b1, Zbb_rorw_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x1, Zbb_rorw_cg_cmp_rd_rs1_b1, Zbb_rorw_cg_cmp_rd_rs1_b1_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
   RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs1: x2 = 0x14eaf7095dcd7b72
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x0cd73b77f9f226fb
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x0cd73b77f9f226fb
 Zbb_rorw_cg_cmp_rd_rs1_b2:
-  rorw x2, x2, x4 # perform operation
-  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x2, Zbb_rorw_cg_cmp_rd_rs1_b2, Zbb_rorw_cg_cmp_rd_rs1_b2_str)
+  rorw x2, x2, x6 # perform operation
+  # Check if x2 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x2, Zbb_rorw_cg_cmp_rd_rs1_b2, Zbb_rorw_cg_cmp_rd_rs1_b2_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
   RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0x7f82db51421cde69
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x8b69eb4397a50be4
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x8b69eb4397a50be4
 Zbb_rorw_cg_cmp_rd_rs1_b3:
-  rorw x3, x3, x6 # perform operation
-  # Check if x3 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x3, Zbb_rorw_cg_cmp_rd_rs1_b3, Zbb_rorw_cg_cmp_rd_rs1_b3_str)
+  rorw x3, x3, x8 # perform operation
+  # Check if x3 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x17, x5, x4, x3, Zbb_rorw_cg_cmp_rd_rs1_b3, Zbb_rorw_cg_cmp_rd_rs1_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x4e719a256c14ed67
-  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xac1876f157dc4314
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x719907fbb40b0a8d
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0xc78fb29e75a117a2
 Zbb_rorw_cg_cmp_rd_rs1_b4:
-  rorw x4, x4, x12 # perform operation
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zbb_rorw_cg_cmp_rd_rs1_b4, Zbb_rorw_cg_cmp_rd_rs1_b4_str)
+  rorw x4, x4, x30 # perform operation
+  # Check if x4 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x4, Zbb_rorw_cg_cmp_rd_rs1_b4, Zbb_rorw_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0x6b09dab9315a4aa3
-  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0x75873913d3f56bbb
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0x127951eb1a77bddd
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0xbff202032583dca2
 Zbb_rorw_cg_cmp_rd_rs1_b5:
-  rorw x5, x5, x26 # perform operation
-  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x5, Zbb_rorw_cg_cmp_rd_rs1_b5, Zbb_rorw_cg_cmp_rd_rs1_b5_str)
+  rorw x5, x5, x6 # perform operation
+  # Check if x5 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x5, Zbb_rorw_cg_cmp_rd_rs1_b5, Zbb_rorw_cg_cmp_rd_rs1_b5_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x8f67940bb565379e
-  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0xbff202032583dca2
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0xdc729bdd66ad1b44
+  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0xb48003c6fda52ad3
 Zbb_rorw_cg_cmp_rd_rs1_b6:
-  rorw x6, x6, x23 # perform operation
-  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x6, Zbb_rorw_cg_cmp_rd_rs1_b6, Zbb_rorw_cg_cmp_rd_rs1_b6_str)
+  rorw x6, x6, x0 # perform operation
+  # Check if x6 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x6, Zbb_rorw_cg_cmp_rd_rs1_b6, Zbb_rorw_cg_cmp_rd_rs1_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xe6ad1b44871c70ba
-  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0x7da52ad30760224f
+  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xf078cb12562efed6
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0x085dd45a101f64fc
 Zbb_rorw_cg_cmp_rd_rs1_b7:
-  rorw x7, x7, x0 # perform operation
-  # Check if x7 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x7, Zbb_rorw_cg_cmp_rd_rs1_b7, Zbb_rorw_cg_cmp_rd_rs1_b7_str)
+  rorw x7, x7, x5 # perform operation
+  # Check if x7 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x7, Zbb_rorw_cg_cmp_rd_rs1_b7, Zbb_rorw_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xd62efed67f0a2f02
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0xa941c98ee1d2d149
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xdf1b6006ed050c12
+  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load rs2: x18 = 0x0026d1e50f128479
 Zbb_rorw_cg_cmp_rd_rs1_b8:
-  rorw x8, x8, x3 # perform operation
-  # Check if x8 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x8, Zbb_rorw_cg_cmp_rd_rs1_b8, Zbb_rorw_cg_cmp_rd_rs1_b8_str)
+  rorw x8, x8, x18 # perform operation
+  # Check if x8 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x8, Zbb_rorw_cg_cmp_rd_rs1_b8, Zbb_rorw_cg_cmp_rd_rs1_b8_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x1a3c6c858ca0803d
-  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0x085dd45a101f64fc
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0xce0d5072f16e0c7f
+  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0x262351ed10df5128
 Zbb_rorw_cg_cmp_rd_rs1_b9:
-  rorw x9, x9, x26 # perform operation
-  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x9, Zbb_rorw_cg_cmp_rd_rs1_b9, Zbb_rorw_cg_cmp_rd_rs1_b9_str)
+  rorw x9, x9, x2 # perform operation
+  # Check if x9 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x9, Zbb_rorw_cg_cmp_rd_rs1_b9, Zbb_rorw_cg_cmp_rd_rs1_b9_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0xdf1b6006ed050c12
-  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0x0026d1e50f128479
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0xc3bb0dc23acceee8
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0x9016dfc020c7a073
 Zbb_rorw_cg_cmp_rd_rs1_b10:
-  rorw x10, x10, x17 # perform operation
-  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x10, Zbb_rorw_cg_cmp_rd_rs1_b10, Zbb_rorw_cg_cmp_rd_rs1_b10_str)
+  rorw x10, x10, x12 # perform operation
+  # Check if x10 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x10, Zbb_rorw_cg_cmp_rd_rs1_b10, Zbb_rorw_cg_cmp_rd_rs1_b10_str)
 
-  mv x17, x11 # switch data pointer register to avoid conflict with test
+  mv x31, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs1: x11 = 0x4404e9804937e0e0
-  RVTEST_TESTDATA_LOAD_INT(x17, x25) # load rs2: x25 = 0xbacceee8028bde5f
+  RVTEST_TESTDATA_LOAD_INT(x31, x11) # load rs1: x11 = 0xd487b918bfc0f22b
+  RVTEST_TESTDATA_LOAD_INT(x31, x9) # load rs2: x9 = 0xcd04951fdedb2455
 Zbb_rorw_cg_cmp_rd_rs1_b11:
-  rorw x11, x11, x25 # perform operation
-  # Check if x11 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x11, Zbb_rorw_cg_cmp_rd_rs1_b11, Zbb_rorw_cg_cmp_rd_rs1_b11_str)
+  rorw x11, x11, x9 # perform operation
+  # Check if x11 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x11, Zbb_rorw_cg_cmp_rd_rs1_b11, Zbb_rorw_cg_cmp_rd_rs1_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs1: x12 = 0xa0c7a0735267ab61
-  RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs2: x2 = 0x3fc0f22bb072479a
+  RVTEST_TESTDATA_LOAD_INT(x31, x12) # load rs1: x12 = 0x9e5cff9bb28d2a61
+  RVTEST_TESTDATA_LOAD_INT(x31, x22) # load rs2: x22 = 0xf89575c474b59b53
 Zbb_rorw_cg_cmp_rd_rs1_b12:
-  rorw x12, x12, x2 # perform operation
-  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x12, Zbb_rorw_cg_cmp_rd_rs1_b12, Zbb_rorw_cg_cmp_rd_rs1_b12_str)
+  rorw x12, x12, x22 # perform operation
+  # Check if x12 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x12, Zbb_rorw_cg_cmp_rd_rs1_b12, Zbb_rorw_cg_cmp_rd_rs1_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs1: x13 = 0xcc3c796d2fb38599
-  RVTEST_TESTDATA_LOAD_INT(x17, x19) # load rs2: x19 = 0x5edb2455846094e5
+  RVTEST_TESTDATA_LOAD_INT(x31, x13) # load rs1: x13 = 0x1f48ea4aa4bba53e
+  RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs2: x30 = 0xac69c48350d7545e
 Zbb_rorw_cg_cmp_rd_rs1_b13:
-  rorw x13, x13, x19 # perform operation
-  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x13, Zbb_rorw_cg_cmp_rd_rs1_b13, Zbb_rorw_cg_cmp_rd_rs1_b13_str)
+  rorw x13, x13, x30 # perform operation
+  # Check if x13 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x13, Zbb_rorw_cg_cmp_rd_rs1_b13, Zbb_rorw_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs1: x14 = 0x328d2a61004008f5
-  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs2: x16 = 0x1313f70feb4d0365
+  RVTEST_TESTDATA_LOAD_INT(x31, x14) # load rs1: x14 = 0x3a8f587ee668a873
+  RVTEST_TESTDATA_LOAD_INT(x31, x23) # load rs2: x23 = 0x9a823d8a51462c4c
 Zbb_rorw_cg_cmp_rd_rs1_b14:
-  rorw x14, x14, x16 # perform operation
-  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x14, Zbb_rorw_cg_cmp_rd_rs1_b14, Zbb_rorw_cg_cmp_rd_rs1_b14_str)
+  rorw x14, x14, x23 # perform operation
+  # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x14, Zbb_rorw_cg_cmp_rd_rs1_b14, Zbb_rorw_cg_cmp_rd_rs1_b14_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs1: x15 = 0x17c8bd405426c289
-  RVTEST_TESTDATA_LOAD_INT(x17, x19) # load rs2: x19 = 0xd21b35445cfaec6d
+  RVTEST_TESTDATA_LOAD_INT(x31, x15) # load rs1: x15 = 0xc656db209eea6686
+  RVTEST_TESTDATA_LOAD_INT(x31, x13) # load rs2: x13 = 0x1fd01e522e25b946
 Zbb_rorw_cg_cmp_rd_rs1_b15:
-  rorw x15, x15, x19 # perform operation
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, Zbb_rorw_cg_cmp_rd_rs1_b15, Zbb_rorw_cg_cmp_rd_rs1_b15_str)
+  rorw x15, x15, x13 # perform operation
+  # Check if x15 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x15, Zbb_rorw_cg_cmp_rd_rs1_b15, Zbb_rorw_cg_cmp_rd_rs1_b15_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs1: x16 = 0xac69c48350d7545e
-  RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rs2: x28 = 0xd1462c4c9c8d5949
+  RVTEST_TESTDATA_LOAD_INT(x31, x16) # load rs1: x16 = 0x739980b6c7edc5a9
+  RVTEST_TESTDATA_LOAD_INT(x31, x1) # load rs2: x1 = 0xdb4e9684d0abaa0f
 Zbb_rorw_cg_cmp_rd_rs1_b16:
-  rorw x16, x16, x28 # perform operation
-  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x16, Zbb_rorw_cg_cmp_rd_rs1_b16, Zbb_rorw_cg_cmp_rd_rs1_b16_str)
+  rorw x16, x16, x1 # perform operation
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zbb_rorw_cg_cmp_rd_rs1_b16, Zbb_rorw_cg_cmp_rd_rs1_b16_str)
 
-  mv x23, x17 # switch data pointer register to avoid conflict with test
+  mv x20, x17 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x23, x17) # load rs1: x17 = 0xc656db209eea6686
-  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rs2: x13 = 0x1fd01e522e25b946
+  RVTEST_TESTDATA_LOAD_INT(x31, x17) # load rs1: x17 = 0xf24b3386266cb250
+  RVTEST_TESTDATA_LOAD_INT(x31, x24) # load rs2: x24 = 0x0c25219cdbd8bc0c
 Zbb_rorw_cg_cmp_rd_rs1_b17:
-  rorw x17, x17, x13 # perform operation
-  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x17, Zbb_rorw_cg_cmp_rd_rs1_b17, Zbb_rorw_cg_cmp_rd_rs1_b17_str)
+  rorw x17, x17, x24 # perform operation
+  # Check if x17 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x17, Zbb_rorw_cg_cmp_rd_rs1_b17, Zbb_rorw_cg_cmp_rd_rs1_b17_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x23, x18) # load rs1: x18 = 0x739980b6c7edc5a9
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0xdb4e9684d0abaa0f
+  RVTEST_TESTDATA_LOAD_INT(x31, x18) # load rs1: x18 = 0xba82536199f6e3b0
+  RVTEST_TESTDATA_LOAD_INT(x31, x26) # load rs2: x26 = 0xb0c66ca2a28ee741
 Zbb_rorw_cg_cmp_rd_rs1_b18:
-  rorw x18, x18, x1 # perform operation
-  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x18, Zbb_rorw_cg_cmp_rd_rs1_b18, Zbb_rorw_cg_cmp_rd_rs1_b18_str)
+  rorw x18, x18, x26 # perform operation
+  # Check if x18 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x18, Zbb_rorw_cg_cmp_rd_rs1_b18, Zbb_rorw_cg_cmp_rd_rs1_b18_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs1: x19 = 0xaa08bec56480447c
-  RVTEST_TESTDATA_LOAD_INT(x23, x24) # load rs2: x24 = 0xf24b3386266cb250
+  RVTEST_TESTDATA_LOAD_INT(x31, x19) # load rs1: x19 = 0xae215a522b54b712
+  RVTEST_TESTDATA_LOAD_INT(x31, x17) # load rs2: x17 = 0x1571b68795992ecb
 Zbb_rorw_cg_cmp_rd_rs1_b19:
-  rorw x19, x19, x24 # perform operation
-  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x19, Zbb_rorw_cg_cmp_rd_rs1_b19, Zbb_rorw_cg_cmp_rd_rs1_b19_str)
+  rorw x19, x19, x17 # perform operation
+  # Check if x19 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x19, Zbb_rorw_cg_cmp_rd_rs1_b19, Zbb_rorw_cg_cmp_rd_rs1_b19_str)
 
+  mv x25, x20 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x23, x20) # load rs1: x20 = 0x19f6e3b0c1487678
-  RVTEST_TESTDATA_LOAD_INT(x23, x2) # load rs2: x2 = 0x30c7544be7f1f5f2
+  RVTEST_TESTDATA_LOAD_INT(x31, x20) # load rs1: x20 = 0x3a9f20e51a0761ab
+  RVTEST_TESTDATA_LOAD_INT(x31, x21) # load rs2: x21 = 0xea805e537e96957b
 Zbb_rorw_cg_cmp_rd_rs1_b20:
-  rorw x20, x20, x2 # perform operation
-  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x20, Zbb_rorw_cg_cmp_rd_rs1_b20, Zbb_rorw_cg_cmp_rd_rs1_b20_str)
+  rorw x20, x20, x21 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x20, Zbb_rorw_cg_cmp_rd_rs1_b20, Zbb_rorw_cg_cmp_rd_rs1_b20_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs1: x21 = 0x4086f6e068a5bf20
-  RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs2: x11 = 0x228ee7418b04d393
+  RVTEST_TESTDATA_LOAD_INT(x31, x21) # load rs1: x21 = 0x73e7e8df07b6b435
+  RVTEST_TESTDATA_LOAD_INT(x31, x17) # load rs2: x17 = 0xff5e04d40eab1724
 Zbb_rorw_cg_cmp_rd_rs1_b21:
-  rorw x21, x21, x11 # perform operation
-  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x21, Zbb_rorw_cg_cmp_rd_rs1_b21, Zbb_rorw_cg_cmp_rd_rs1_b21_str)
+  rorw x21, x21, x17 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x21, Zbb_rorw_cg_cmp_rd_rs1_b21, Zbb_rorw_cg_cmp_rd_rs1_b21_str)
 
-  mv x10, x22 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs1: x22 = 0xae215a522b54b712
-  RVTEST_TESTDATA_LOAD_INT(x23, x18) # load rs2: x18 = 0x1571b68795992ecb
+  RVTEST_TESTDATA_LOAD_INT(x31, x22) # load rs1: x22 = 0xb3cb15906e714777
+  RVTEST_TESTDATA_LOAD_INT(x31, x9) # load rs2: x9 = 0x75c38d3b3179bf2e
 Zbb_rorw_cg_cmp_rd_rs1_b22:
-  rorw x22, x22, x18 # perform operation
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zbb_rorw_cg_cmp_rd_rs1_b22, Zbb_rorw_cg_cmp_rd_rs1_b22_str)
+  rorw x22, x22, x9 # perform operation
+  # Check if x22 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x22, Zbb_rorw_cg_cmp_rd_rs1_b22, Zbb_rorw_cg_cmp_rd_rs1_b22_str)
 
-  mv x26, x23 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs1: x23 = 0x3a9f20e51a0761ab
-  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0xea805e537e96957b
+  RVTEST_TESTDATA_LOAD_INT(x31, x23) # load rs1: x23 = 0x195febbe89c66c6c
+  RVTEST_TESTDATA_LOAD_INT(x31, x14) # load rs2: x14 = 0x825d1fe7ebd30934
 Zbb_rorw_cg_cmp_rd_rs1_b23:
-  rorw x23, x23, x21 # perform operation
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zbb_rorw_cg_cmp_rd_rs1_b23, Zbb_rorw_cg_cmp_rd_rs1_b23_str)
+  rorw x23, x23, x14 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x23, Zbb_rorw_cg_cmp_rd_rs1_b23, Zbb_rorw_cg_cmp_rd_rs1_b23_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x73e7e8df07b6b435
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs2: x18 = 0xff5e04d40eab1724
+  RVTEST_TESTDATA_LOAD_INT(x31, x24) # load rs1: x24 = 0xc207dbec4f064cf9
+  RVTEST_TESTDATA_LOAD_INT(x31, x29) # load rs2: x29 = 0xc8803263af624a3d
 Zbb_rorw_cg_cmp_rd_rs1_b24:
-  rorw x24, x24, x18 # perform operation
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zbb_rorw_cg_cmp_rd_rs1_b24, Zbb_rorw_cg_cmp_rd_rs1_b24_str)
+  rorw x24, x24, x29 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x24, Zbb_rorw_cg_cmp_rd_rs1_b24, Zbb_rorw_cg_cmp_rd_rs1_b24_str)
 
+  mv x18, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs1: x25 = 0xb3cb15906e714777
-  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs2: x9 = 0x75c38d3b3179bf2e
+  RVTEST_TESTDATA_LOAD_INT(x31, x25) # load rs1: x25 = 0x3e7d924f5f15913e
+  RVTEST_TESTDATA_LOAD_INT(x31, x6) # load rs2: x6 = 0xa162938024fcdb62
 Zbb_rorw_cg_cmp_rd_rs1_b25:
-  rorw x25, x25, x9 # perform operation
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zbb_rorw_cg_cmp_rd_rs1_b25, Zbb_rorw_cg_cmp_rd_rs1_b25_str)
+  rorw x25, x25, x6 # perform operation
+  # Check if x25 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x25, Zbb_rorw_cg_cmp_rd_rs1_b25, Zbb_rorw_cg_cmp_rd_rs1_b25_str)
 
-  mv x23, x26 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs1: x26 = 0x2a7a6efecc02f9dc
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs2: x29 = 0x06f545fe3190fba5
+  RVTEST_TESTDATA_LOAD_INT(x31, x26) # load rs1: x26 = 0x6e989e8c4474c6a2
+  RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs2: x30 = 0x077731c3dae2618c
 Zbb_rorw_cg_cmp_rd_rs1_b26:
-  rorw x26, x26, x29 # perform operation
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zbb_rorw_cg_cmp_rd_rs1_b26, Zbb_rorw_cg_cmp_rd_rs1_b26_str)
+  rorw x26, x26, x30 # perform operation
+  # Check if x26 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x26, Zbb_rorw_cg_cmp_rd_rs1_b26, Zbb_rorw_cg_cmp_rd_rs1_b26_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs1: x27 = 0x4a7df57e02ca297f
-  RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs2: x11 = 0xb4a7e483628a1ac1
+  RVTEST_TESTDATA_LOAD_INT(x31, x27) # load rs1: x27 = 0x20cdf12ce216c872
+  RVTEST_TESTDATA_LOAD_INT(x31, x28) # load rs2: x28 = 0xe19bf5e1aa6dddde
 Zbb_rorw_cg_cmp_rd_rs1_b27:
-  rorw x27, x27, x11 # perform operation
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zbb_rorw_cg_cmp_rd_rs1_b27, Zbb_rorw_cg_cmp_rd_rs1_b27_str)
+  rorw x27, x27, x28 # perform operation
+  # Check if x27 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x27, Zbb_rorw_cg_cmp_rd_rs1_b27, Zbb_rorw_cg_cmp_rd_rs1_b27_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs1: x28 = 0xb952400521629380
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x53053ab65ba1cc5a
+  RVTEST_TESTDATA_LOAD_INT(x31, x28) # load rs1: x28 = 0x708618a6d954a4ab
+  RVTEST_TESTDATA_LOAD_INT(x31, x12) # load rs2: x12 = 0x77de484a830e3f67
 Zbb_rorw_cg_cmp_rd_rs1_b28:
-  rorw x28, x28, x1 # perform operation
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zbb_rorw_cg_cmp_rd_rs1_b28, Zbb_rorw_cg_cmp_rd_rs1_b28_str)
+  rorw x28, x28, x12 # perform operation
+  # Check if x28 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x28, Zbb_rorw_cg_cmp_rd_rs1_b28, Zbb_rorw_cg_cmp_rd_rs1_b28_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs1: x29 = 0x8f4fc5bef08618a6
-  RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs2: x19 = 0xeecc139bcca9dab7
+  RVTEST_TESTDATA_LOAD_INT(x31, x29) # load rs1: x29 = 0x4ca9dab7f60cbe4a
+  RVTEST_TESTDATA_LOAD_INT(x31, x3) # load rs2: x3 = 0x04f976eab89f0fff
 Zbb_rorw_cg_cmp_rd_rs1_b29:
-  rorw x29, x29, x19 # perform operation
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zbb_rorw_cg_cmp_rd_rs1_b29, Zbb_rorw_cg_cmp_rd_rs1_b29_str)
+  rorw x29, x29, x3 # perform operation
+  # Check if x29 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x29, Zbb_rorw_cg_cmp_rd_rs1_b29, Zbb_rorw_cg_cmp_rd_rs1_b29_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rs1: x30 = 0x04f976eab89f0fff
-  RVTEST_TESTDATA_LOAD_INT(x23, x6) # load rs2: x6 = 0xaa93d1c00c86b149
+  RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs1: x30 = 0x42258be5f524d139
+  RVTEST_TESTDATA_LOAD_INT(x31, x5) # load rs2: x5 = 0x47b71f117ac157de
 Zbb_rorw_cg_cmp_rd_rs1_b30:
-  rorw x30, x30, x6 # perform operation
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zbb_rorw_cg_cmp_rd_rs1_b30, Zbb_rorw_cg_cmp_rd_rs1_b30_str)
+  rorw x30, x30, x5 # perform operation
+  # Check if x30 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x30, Zbb_rorw_cg_cmp_rd_rs1_b30, Zbb_rorw_cg_cmp_rd_rs1_b30_str)
 
+  mv x25, x31 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x2ec451ac15727b75
-  RVTEST_TESTDATA_LOAD_INT(x23, x24) # load rs2: x24 = 0x293ad50aac379666
+  RVTEST_TESTDATA_LOAD_INT(x25, x31) # load rs1: x31 = 0x2ec451ac15727b75
+  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x293ad50aac379666
 Zbb_rorw_cg_cmp_rd_rs1_b31:
-  rorw x31, x31, x24 # perform operation
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, Zbb_rorw_cg_cmp_rd_rs1_b31, Zbb_rorw_cg_cmp_rd_rs1_b31_str)
+  rorw x31, x31, x23 # perform operation
+  # Check if x31 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x31, Zbb_rorw_cg_cmp_rd_rs1_b31, Zbb_rorw_cg_cmp_rd_rs1_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load rs1: x16 = 0x154cb2d8edad343a
-  RVTEST_TESTDATA_LOAD_INT(x23, x0) # load rs2: x0 = 0xf114b0c8844dd8c3
+  RVTEST_TESTDATA_LOAD_INT(x25, x15) # load rs1: x15 = 0x154cb2d8edad343a
+  RVTEST_TESTDATA_LOAD_INT(x25, x0) # load rs2: x0 = 0xf114b0c8844dd8c3
 Zbb_rorw_cg_cmp_rd_rs2_b0:
-  rorw x0, x16, x0 # perform operation
-  # Check if x0 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x0, Zbb_rorw_cg_cmp_rd_rs2_b0, Zbb_rorw_cg_cmp_rd_rs2_b0_str)
+  rorw x0, x15, x0 # perform operation
+  # Check if x0 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x0, Zbb_rorw_cg_cmp_rd_rs2_b0, Zbb_rorw_cg_cmp_rd_rs2_b0_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs1: x12 = 0xa8a2be7db3d7689b
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x39afa649c2c1e06e
+  RVTEST_TESTDATA_LOAD_INT(x25, x11) # load rs1: x11 = 0xa8a2be7db3d7689b
+  RVTEST_TESTDATA_LOAD_INT(x25, x1) # load rs2: x1 = 0x39afa649c2c1e06e
 Zbb_rorw_cg_cmp_rd_rs2_b1:
-  rorw x1, x12, x1 # perform operation
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zbb_rorw_cg_cmp_rd_rs2_b1, Zbb_rorw_cg_cmp_rd_rs2_b1_str)
+  rorw x1, x11, x1 # perform operation
+  # Check if x1 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x1, Zbb_rorw_cg_cmp_rd_rs2_b1, Zbb_rorw_cg_cmp_rd_rs2_b1_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs1: x1 = 0x29033bb15ae0c8d4
-  RVTEST_TESTDATA_LOAD_INT(x23, x2) # load rs2: x2 = 0xdef8504a4d6d147a
+  RVTEST_TESTDATA_LOAD_INT(x25, x1) # load rs1: x1 = 0x29033bb15ae0c8d4
+  RVTEST_TESTDATA_LOAD_INT(x25, x2) # load rs2: x2 = 0xdef8504a4d6d147a
 Zbb_rorw_cg_cmp_rd_rs2_b2:
   rorw x2, x1, x2 # perform operation
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zbb_rorw_cg_cmp_rd_rs2_b2, Zbb_rorw_cg_cmp_rd_rs2_b2_str)
+  # Check if x2 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x2, Zbb_rorw_cg_cmp_rd_rs2_b2, Zbb_rorw_cg_cmp_rd_rs2_b2_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs1: x26 = 0xf610a3a22c6c9975
-  RVTEST_TESTDATA_LOAD_INT(x23, x3) # load rs2: x3 = 0x42c22059b9ef80ac
+  RVTEST_TESTDATA_LOAD_INT(x25, x26) # load rs1: x26 = 0xf610a3a22c6c9975
+  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs2: x3 = 0x42c22059b9ef80ac
 Zbb_rorw_cg_cmp_rd_rs2_b3:
   rorw x3, x26, x3 # perform operation
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zbb_rorw_cg_cmp_rd_rs2_b3, Zbb_rorw_cg_cmp_rd_rs2_b3_str)
+  # Check if x3 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x3, Zbb_rorw_cg_cmp_rd_rs2_b3, Zbb_rorw_cg_cmp_rd_rs2_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs1: x29 = 0x51f5d5f36dffefa8
-  RVTEST_TESTDATA_LOAD_INT(x23, x4) # load rs2: x4 = 0x1c76da1cc425f1a8
+  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs1: x22 = 0x51f5d5f36dffefa8
+  RVTEST_TESTDATA_LOAD_INT(x25, x4) # load rs2: x4 = 0x1c76da1cc425f1a8
 Zbb_rorw_cg_cmp_rd_rs2_b4:
-  rorw x4, x29, x4 # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, Zbb_rorw_cg_cmp_rd_rs2_b4, Zbb_rorw_cg_cmp_rd_rs2_b4_str)
+  rorw x4, x22, x4 # perform operation
+  # Check if x4 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x4, Zbb_rorw_cg_cmp_rd_rs2_b4, Zbb_rorw_cg_cmp_rd_rs2_b4_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs1: x1 = 0x966890dde5cebd54
-  RVTEST_TESTDATA_LOAD_INT(x23, x5) # load rs2: x5 = 0x86754fc6fd9b4ee1
+  RVTEST_TESTDATA_LOAD_INT(x25, x1) # load rs1: x1 = 0x966890dde5cebd54
+  RVTEST_TESTDATA_LOAD_INT(x25, x5) # load rs2: x5 = 0x86754fc6fd9b4ee1
 Zbb_rorw_cg_cmp_rd_rs2_b5:
   rorw x5, x1, x5 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, Zbb_rorw_cg_cmp_rd_rs2_b5, Zbb_rorw_cg_cmp_rd_rs2_b5_str)
+  # Check if x5 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x5, Zbb_rorw_cg_cmp_rd_rs2_b5, Zbb_rorw_cg_cmp_rd_rs2_b5_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rs1: x13 = 0x0ca2e9fafddb2dcd
-  RVTEST_TESTDATA_LOAD_INT(x23, x6) # load rs2: x6 = 0xd894ece82a8253a3
+  RVTEST_TESTDATA_LOAD_INT(x25, x12) # load rs1: x12 = 0x0ca2e9fafddb2dcd
+  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs2: x6 = 0xd894ece82a8253a3
 Zbb_rorw_cg_cmp_rd_rs2_b6:
-  rorw x6, x13, x6 # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, Zbb_rorw_cg_cmp_rd_rs2_b6, Zbb_rorw_cg_cmp_rd_rs2_b6_str)
+  rorw x6, x12, x6 # perform operation
+  # Check if x6 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x18, x8, x7, x6, Zbb_rorw_cg_cmp_rd_rs2_b6, Zbb_rorw_cg_cmp_rd_rs2_b6_str)
 
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs1: x1 = 0x980776a8ff1d3ce4
-  RVTEST_TESTDATA_LOAD_INT(x23, x7) # load rs2: x7 = 0x0081c73a24fb04ce
+  RVTEST_TESTDATA_LOAD_INT(x25, x1) # load rs1: x1 = 0x980776a8ff1d3ce4
+  RVTEST_TESTDATA_LOAD_INT(x25, x7) # load rs2: x7 = 0x0081c73a24fb04ce
 Zbb_rorw_cg_cmp_rd_rs2_b7:
   rorw x7, x1, x7 # perform operation
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zbb_rorw_cg_cmp_rd_rs2_b7, Zbb_rorw_cg_cmp_rd_rs2_b7_str)
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zbb_rorw_cg_cmp_rd_rs2_b7, Zbb_rorw_cg_cmp_rd_rs2_b7_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs1: x26 = 0x32aa16ccb01ea569
-  RVTEST_TESTDATA_LOAD_INT(x23, x8) # load rs2: x8 = 0x445dc7e9ea4f9d10
+  RVTEST_TESTDATA_LOAD_INT(x25, x26) # load rs1: x26 = 0x32aa16ccb01ea569
+  RVTEST_TESTDATA_LOAD_INT(x25, x8) # load rs2: x8 = 0x445dc7e9ea4f9d10
 Zbb_rorw_cg_cmp_rd_rs2_b8:
   rorw x8, x26, x8 # perform operation
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, Zbb_rorw_cg_cmp_rd_rs2_b8, Zbb_rorw_cg_cmp_rd_rs2_b8_str)
+  # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x8, Zbb_rorw_cg_cmp_rd_rs2_b8, Zbb_rorw_cg_cmp_rd_rs2_b8_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x23, x25) # load rs1: x25 = 0x0a8e8c7972c006e2
-  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load rs2: x9 = 0x4f70f4cef51aa594
+  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs1: x24 = 0x0a8e8c7972c006e2
+  RVTEST_TESTDATA_LOAD_INT(x25, x9) # load rs2: x9 = 0x4f70f4cef51aa594
 Zbb_rorw_cg_cmp_rd_rs2_b9:
-  rorw x9, x25, x9 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zbb_rorw_cg_cmp_rd_rs2_b9, Zbb_rorw_cg_cmp_rd_rs2_b9_str)
+  rorw x9, x24, x9 # perform operation
+  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x9, Zbb_rorw_cg_cmp_rd_rs2_b9, Zbb_rorw_cg_cmp_rd_rs2_b9_str)
 
-  mv x17, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x23, x25) # load rs1: x25 = 0x34c97a82be2eca9e
-  RVTEST_TESTDATA_LOAD_INT(x23, x10) # load rs2: x10 = 0x0c807409aa08c892
+  RVTEST_TESTDATA_LOAD_INT(x25, x31) # load rs1: x31 = 0x227eb8364a1f626d
+  RVTEST_TESTDATA_LOAD_INT(x25, x10) # load rs2: x10 = 0xf4adbb238c807409
 Zbb_rorw_cg_cmp_rd_rs2_b10:
-  rorw x10, x25, x10 # perform operation
-  # Check if x10 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x10, Zbb_rorw_cg_cmp_rd_rs2_b10, Zbb_rorw_cg_cmp_rd_rs2_b10_str)
+  rorw x10, x31, x10 # perform operation
+  # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x10, Zbb_rorw_cg_cmp_rd_rs2_b10, Zbb_rorw_cg_cmp_rd_rs2_b10_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x23, x0) # load rs1: x0 = 0xf30f3e885f0fb188
-  RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs2: x11 = 0x20d7d26fea34ee98
+  RVTEST_TESTDATA_LOAD_INT(x25, x0) # load rs1: x0 = 0x08ea4f07f8dfba4e
+  RVTEST_TESTDATA_LOAD_INT(x25, x11) # load rs2: x11 = 0x9c15b044730f3e88
 Zbb_rorw_cg_cmp_rd_rs2_b11:
   rorw x11, x0, x11 # perform operation
-  # Check if x11 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x11, Zbb_rorw_cg_cmp_rd_rs2_b11, Zbb_rorw_cg_cmp_rd_rs2_b11_str)
+  # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x11, Zbb_rorw_cg_cmp_rd_rs2_b11, Zbb_rorw_cg_cmp_rd_rs2_b11_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs1: x29 = 0x9e55129c7937d4a9
-  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs2: x12 = 0x29ee865b21fed232
+  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs1: x3 = 0x7ca7004e81335ece
+  RVTEST_TESTDATA_LOAD_INT(x25, x12) # load rs2: x12 = 0xfb8acdd11e55129c
 Zbb_rorw_cg_cmp_rd_rs2_b12:
-  rorw x12, x29, x12 # perform operation
-  # Check if x12 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x12, Zbb_rorw_cg_cmp_rd_rs2_b12, Zbb_rorw_cg_cmp_rd_rs2_b12_str)
+  rorw x12, x3, x12 # perform operation
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zbb_rorw_cg_cmp_rd_rs2_b12, Zbb_rorw_cg_cmp_rd_rs2_b12_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x23, x12) # load rs1: x12 = 0x2d54ff82234be5ec
-  RVTEST_TESTDATA_LOAD_INT(x23, x13) # load rs2: x13 = 0x038bf5e250406640
+  RVTEST_TESTDATA_LOAD_INT(x25, x26) # load rs1: x26 = 0xd47e68ebdee81719
+  RVTEST_TESTDATA_LOAD_INT(x25, x13) # load rs2: x13 = 0xac1e41acad54ff82
 Zbb_rorw_cg_cmp_rd_rs2_b13:
-  rorw x13, x12, x13 # perform operation
-  # Check if x13 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x13, Zbb_rorw_cg_cmp_rd_rs2_b13, Zbb_rorw_cg_cmp_rd_rs2_b13_str)
+  rorw x13, x26, x13 # perform operation
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, Zbb_rorw_cg_cmp_rd_rs2_b13, Zbb_rorw_cg_cmp_rd_rs2_b13_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x169cb70e9fcb6c8d
-  RVTEST_TESTDATA_LOAD_INT(x23, x14) # load rs2: x14 = 0xa5a083fc72752baf
+  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs1: x20 = 0x7805a9f8e1ed6a80
+  RVTEST_TESTDATA_LOAD_INT(x25, x14) # load rs2: x14 = 0x763d232e905847c3
 Zbb_rorw_cg_cmp_rd_rs2_b14:
-  rorw x14, x31, x14 # perform operation
-  # Check if x14 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x14, Zbb_rorw_cg_cmp_rd_rs2_b14, Zbb_rorw_cg_cmp_rd_rs2_b14_str)
+  rorw x14, x20, x14 # perform operation
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zbb_rorw_cg_cmp_rd_rs2_b14, Zbb_rorw_cg_cmp_rd_rs2_b14_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x2492e6177195a02a
-  RVTEST_TESTDATA_LOAD_INT(x23, x15) # load rs2: x15 = 0xaad649fc9a5e6d4a
+  RVTEST_TESTDATA_LOAD_INT(x25, x30) # load rs1: x30 = 0x2492e6177195a02a
+  RVTEST_TESTDATA_LOAD_INT(x25, x15) # load rs2: x15 = 0xaad649fc9a5e6d4a
 Zbb_rorw_cg_cmp_rd_rs2_b15:
-  rorw x15, x31, x15 # perform operation
-  # Check if x15 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x15, Zbb_rorw_cg_cmp_rd_rs2_b15, Zbb_rorw_cg_cmp_rd_rs2_b15_str)
+  rorw x15, x30, x15 # perform operation
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, Zbb_rorw_cg_cmp_rd_rs2_b15, Zbb_rorw_cg_cmp_rd_rs2_b15_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x23, x15) # load rs1: x15 = 0x657c494cd380d101
-  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load rs2: x16 = 0x8a98b086b2149484
+  RVTEST_TESTDATA_LOAD_INT(x25, x15) # load rs1: x15 = 0x657c494cd380d101
+  RVTEST_TESTDATA_LOAD_INT(x25, x16) # load rs2: x16 = 0x8a98b086b2149484
 Zbb_rorw_cg_cmp_rd_rs2_b16:
   rorw x16, x15, x16 # perform operation
-  # Check if x16 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x16, Zbb_rorw_cg_cmp_rd_rs2_b16, Zbb_rorw_cg_cmp_rd_rs2_b16_str)
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zbb_rorw_cg_cmp_rd_rs2_b16, Zbb_rorw_cg_cmp_rd_rs2_b16_str)
 
-  mv x25, x17 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load rs1: x16 = 0xafcea72361264621
-  RVTEST_TESTDATA_LOAD_INT(x23, x17) # load rs2: x17 = 0x08771ffe9201e7d7
+  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs1: x20 = 0xe126462175af02f3
+  RVTEST_TESTDATA_LOAD_INT(x25, x17) # load rs2: x17 = 0x615aac1684b1a19c
 Zbb_rorw_cg_cmp_rd_rs2_b17:
-  rorw x17, x16, x17 # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x17, Zbb_rorw_cg_cmp_rd_rs2_b17, Zbb_rorw_cg_cmp_rd_rs2_b17_str)
+  rorw x17, x20, x17 # perform operation
+  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x17, Zbb_rorw_cg_cmp_rd_rs2_b17, Zbb_rorw_cg_cmp_rd_rs2_b17_str)
 
+  mv x30, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs1: x11 = 0x02ead99db47c528e
-  RVTEST_TESTDATA_LOAD_INT(x23, x18) # load rs2: x18 = 0xe1f31c73216a596f
+  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs1: x21 = 0x95b6a13e88771ffe
+  RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs2: x18 = 0x02ead99db47c528e
 Zbb_rorw_cg_cmp_rd_rs2_b18:
-  rorw x18, x11, x18 # perform operation
-  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x18, Zbb_rorw_cg_cmp_rd_rs2_b18, Zbb_rorw_cg_cmp_rd_rs2_b18_str)
+  rorw x18, x21, x18 # perform operation
+  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x18, Zbb_rorw_cg_cmp_rd_rs2_b18, Zbb_rorw_cg_cmp_rd_rs2_b18_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs1: x21 = 0xd22d44a942178608
-  RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs2: x19 = 0xa5d0a5b828d610d1
+  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs1: x6 = 0xd22d44a942178608
+  RVTEST_TESTDATA_LOAD_INT(x25, x19) # load rs2: x19 = 0xa5d0a5b828d610d1
 Zbb_rorw_cg_cmp_rd_rs2_b19:
-  rorw x19, x21, x19 # perform operation
-  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x19, Zbb_rorw_cg_cmp_rd_rs2_b19, Zbb_rorw_cg_cmp_rd_rs2_b19_str)
+  rorw x19, x6, x19 # perform operation
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, Zbb_rorw_cg_cmp_rd_rs2_b19, Zbb_rorw_cg_cmp_rd_rs2_b19_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x23, x2) # load rs1: x2 = 0xbea8bb56f37b8c06
-  RVTEST_TESTDATA_LOAD_INT(x23, x20) # load rs2: x20 = 0xa563ef3aeea3f91e
+  RVTEST_TESTDATA_LOAD_INT(x25, x2) # load rs1: x2 = 0xbea8bb56f37b8c06
+  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs2: x20 = 0xa563ef3aeea3f91e
 Zbb_rorw_cg_cmp_rd_rs2_b20:
   rorw x20, x2, x20 # perform operation
-  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x20, Zbb_rorw_cg_cmp_rd_rs2_b20, Zbb_rorw_cg_cmp_rd_rs2_b20_str)
+  # Check if x20 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x20, Zbb_rorw_cg_cmp_rd_rs2_b20, Zbb_rorw_cg_cmp_rd_rs2_b20_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x7bf9efc13f277bb5
-  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs2: x21 = 0x38eb3512233b2746
+  RVTEST_TESTDATA_LOAD_INT(x25, x31) # load rs1: x31 = 0x7bf9efc13f277bb5
+  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs2: x21 = 0x38eb3512233b2746
 Zbb_rorw_cg_cmp_rd_rs2_b21:
   rorw x21, x31, x21 # perform operation
-  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x21, Zbb_rorw_cg_cmp_rd_rs2_b21, Zbb_rorw_cg_cmp_rd_rs2_b21_str)
+  # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x21, Zbb_rorw_cg_cmp_rd_rs2_b21, Zbb_rorw_cg_cmp_rd_rs2_b21_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x23, x6) # load rs1: x6 = 0xfd17b37c5c8bc2ab
-  RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs2: x22 = 0x2b93068e247de4d3
+  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs1: x6 = 0xfd17b37c5c8bc2ab
+  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs2: x22 = 0x2b93068e247de4d3
 Zbb_rorw_cg_cmp_rd_rs2_b22:
   rorw x22, x6, x22 # perform operation
-  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x22, Zbb_rorw_cg_cmp_rd_rs2_b22, Zbb_rorw_cg_cmp_rd_rs2_b22_str)
+  # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x22, Zbb_rorw_cg_cmp_rd_rs2_b22, Zbb_rorw_cg_cmp_rd_rs2_b22_str)
 
-  mv x10, x23 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs1: x15 = 0xbf68bf936a7a009f
-  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs2: x23 = 0x65abe82e95d8e9fe
+  RVTEST_TESTDATA_LOAD_INT(x25, x7) # load rs1: x7 = 0xea7a009ff0312cf5
+  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x9215b1d3602ccfae
 Zbb_rorw_cg_cmp_rd_rs2_b23:
-  rorw x23, x15, x23 # perform operation
-  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x23, Zbb_rorw_cg_cmp_rd_rs2_b23, Zbb_rorw_cg_cmp_rd_rs2_b23_str)
+  rorw x23, x7, x23 # perform operation
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, Zbb_rorw_cg_cmp_rd_rs2_b23, Zbb_rorw_cg_cmp_rd_rs2_b23_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs1: x23 = 0x9215b1d3602ccfae
-  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0xe82f61bc97be7cba
+  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs1: x20 = 0xa41dca48682f61bc
+  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs2: x24 = 0xae6a61c6dd7e6d81
 Zbb_rorw_cg_cmp_rd_rs2_b24:
-  rorw x24, x23, x24 # perform operation
-  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x24, Zbb_rorw_cg_cmp_rd_rs2_b24, Zbb_rorw_cg_cmp_rd_rs2_b24_str)
+  rorw x24, x20, x24 # perform operation
+  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x24, Zbb_rorw_cg_cmp_rd_rs2_b24, Zbb_rorw_cg_cmp_rd_rs2_b24_str)
 
-  mv x11, x25 # switch signature pointer register to avoid conflict with test
+  mv x2, x25 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs1: x22 = 0x79ea881e28118a3e
-  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load rs2: x25 = 0xfa63e7b7e5e6c59d
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xc4d396f99edf63e4
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0x78770293caa76332
 Zbb_rorw_cg_cmp_rd_rs2_b25:
-  rorw x25, x22, x25 # perform operation
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zbb_rorw_cg_cmp_rd_rs2_b25, Zbb_rorw_cg_cmp_rd_rs2_b25_str)
+  rorw x25, x15, x25 # perform operation
+  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x25, Zbb_rorw_cg_cmp_rd_rs2_b25, Zbb_rorw_cg_cmp_rd_rs2_b25_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs1: x24 = 0x88068bb79d4503fd
-  RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs2: x26 = 0x5f7b9f4a16085a96
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x79ea881e28118a3e
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0xfa63e7b7e5e6c59d
 Zbb_rorw_cg_cmp_rd_rs2_b26:
-  rorw x26, x24, x26 # perform operation
-  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x26, Zbb_rorw_cg_cmp_rd_rs2_b26, Zbb_rorw_cg_cmp_rd_rs2_b26_str)
+  rorw x26, x28, x26 # perform operation
+  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x26, Zbb_rorw_cg_cmp_rd_rs2_b26, Zbb_rorw_cg_cmp_rd_rs2_b26_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs1: x28 = 0x449b9ee8e89451c8
-  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x3073b451d262b905
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x88068bb79d4503fd
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0x5f7b9f4a16085a96
 Zbb_rorw_cg_cmp_rd_rs2_b27:
-  rorw x27, x28, x27 # perform operation
-  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x27, Zbb_rorw_cg_cmp_rd_rs2_b27, Zbb_rorw_cg_cmp_rd_rs2_b27_str)
+  rorw x27, x23, x27 # perform operation
+  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x27, Zbb_rorw_cg_cmp_rd_rs2_b27, Zbb_rorw_cg_cmp_rd_rs2_b27_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs1: x27 = 0xc815b8297552e5bb
-  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x4febdda91c64f59c
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x449b9ee8e89451c8
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x3073b451d262b905
 Zbb_rorw_cg_cmp_rd_rs2_b28:
-  rorw x28, x27, x28 # perform operation
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zbb_rorw_cg_cmp_rd_rs2_b28, Zbb_rorw_cg_cmp_rd_rs2_b28_str)
+  rorw x28, x26, x28 # perform operation
+  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x28, Zbb_rorw_cg_cmp_rd_rs2_b28, Zbb_rorw_cg_cmp_rd_rs2_b28_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0x44181fcff02df98b
-  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs2: x29 = 0x95cf7cfac7684d5b
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0xc815b8297552e5bb
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0x4febdda91c64f59c
 Zbb_rorw_cg_cmp_rd_rs2_b29:
-  rorw x29, x14, x29 # perform operation
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zbb_rorw_cg_cmp_rd_rs2_b29, Zbb_rorw_cg_cmp_rd_rs2_b29_str)
+  rorw x29, x26, x29 # perform operation
+  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x29, Zbb_rorw_cg_cmp_rd_rs2_b29, Zbb_rorw_cg_cmp_rd_rs2_b29_str)
 
+  mv x18, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs1: x1 = 0x8eee9b4a3ddb95f0
-  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0xdfe28a46bc08ac26
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x41b10c47b42c9d3c
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x11b9263f86555d7b
 Zbb_rorw_cg_cmp_rd_rs2_b30:
-  rorw x30, x1, x30 # perform operation
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zbb_rorw_cg_cmp_rd_rs2_b30, Zbb_rorw_cg_cmp_rd_rs2_b30_str)
+  rorw x30, x27, x30 # perform operation
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zbb_rorw_cg_cmp_rd_rs2_b30, Zbb_rorw_cg_cmp_rd_rs2_b30_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs1: x24 = 0x516614ca68a2615a
-  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0x98089e2313e5b5ea
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0xf2e103b598096e58
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x2116ed4325a03091
 Zbb_rorw_cg_cmp_rd_rs2_b31:
-  rorw x31, x24, x31 # perform operation
-  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x31, Zbb_rorw_cg_cmp_rd_rs2_b31, Zbb_rorw_cg_cmp_rd_rs2_b31_str)
+  rorw x31, x26, x31 # perform operation
+  # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x31, Zbb_rorw_cg_cmp_rd_rs2_b31, Zbb_rorw_cg_cmp_rd_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs1: x0 = 0xf5a554397ee306d4
-  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs2: x0 = 0x57a37d74e1977c20
+  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0xf5a554397ee306d4
+  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs2: x0 = 0x57a37d74e1977c20
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b0:
   rorw x0, x0, x0 # perform operation
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zbb_rorw_cg_cmp_rd_rs1_rs2_b0, Zbb_rorw_cg_cmp_rd_rs1_rs2_b0_str)
+  # Check if x0 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x0, Zbb_rorw_cg_cmp_rd_rs1_rs2_b0, Zbb_rorw_cg_cmp_rd_rs1_rs2_b0_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs1: x1 = 0x88eb25b5841beeac
-  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0xd2531a668681ffd9
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x88eb25b5841beeac
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xd2531a668681ffd9
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b1:
   rorw x1, x1, x1 # perform operation
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zbb_rorw_cg_cmp_rd_rs1_rs2_b1, Zbb_rorw_cg_cmp_rd_rs1_rs2_b1_str)
+  # Check if x1 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x1, Zbb_rorw_cg_cmp_rd_rs1_rs2_b1, Zbb_rorw_cg_cmp_rd_rs1_rs2_b1_str)
 
+  mv x11, x2 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0x45c5d467cae44766
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0xb69770e8b39b0484
+  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs1: x2 = 0x39c43eebcfe0fb2d
+  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0xbf65579459399feb
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b2:
   rorw x2, x2, x2 # perform operation
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zbb_rorw_cg_cmp_rd_rs1_rs2_b2, Zbb_rorw_cg_cmp_rd_rs1_rs2_b2_str)
+  # Check if x2 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x2, Zbb_rorw_cg_cmp_rd_rs1_rs2_b2, Zbb_rorw_cg_cmp_rd_rs1_rs2_b2_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0xe2e1d6d1815cd87e
-  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0xd9399febc985bfec
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0xcbcbacecd6fecf77
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0x5d5dadb51977e865
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b3:
   rorw x3, x3, x3 # perform operation
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zbb_rorw_cg_cmp_rd_rs1_rs2_b3, Zbb_rorw_cg_cmp_rd_rs1_rs2_b3_str)
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zbb_rorw_cg_cmp_rd_rs1_rs2_b3, Zbb_rorw_cg_cmp_rd_rs1_rs2_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0xcbcbacecd6fecf77
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x5d5dadb51977e865
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x4aeb363d8ba73053
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x288b0b4722f9559a
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b4:
   rorw x4, x4, x4 # perform operation
-  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x11, x8, x7, x4, Zbb_rorw_cg_cmp_rd_rs1_rs2_b4, Zbb_rorw_cg_cmp_rd_rs1_rs2_b4_str)
+  # Check if x4 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x4, Zbb_rorw_cg_cmp_rd_rs1_rs2_b4, Zbb_rorw_cg_cmp_rd_rs1_rs2_b4_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0x572680526ffcfd54
-  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x5ffa97e6796f33df
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0xdfd14a44522e8e91
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0xe8d82b97f7cd148b
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b5:
   rorw x5, x5, x5 # perform operation
-  # Check if x5 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x11, x8, x7, x5, Zbb_rorw_cg_cmp_rd_rs1_rs2_b5, Zbb_rorw_cg_cmp_rd_rs1_rs2_b5_str)
+  # Check if x5 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x5, Zbb_rorw_cg_cmp_rd_rs1_rs2_b5, Zbb_rorw_cg_cmp_rd_rs1_rs2_b5_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0xd22e8e91c08d20da
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0x5a5940ea3c1b905e
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x6cc0e840dc16d6e0
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x5ec7d70a8a021d0d
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b6:
   rorw x6, x6, x6 # perform operation
-  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x11, x8, x7, x6, Zbb_rorw_cg_cmp_rd_rs1_rs2_b6, Zbb_rorw_cg_cmp_rd_rs1_rs2_b6_str)
+  # Check if x6 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x6, Zbb_rorw_cg_cmp_rd_rs1_rs2_b6, Zbb_rorw_cg_cmp_rd_rs1_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x07c8e58945ba1179
-  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0xa1cc1519f3a14614
+  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0x6707af11383c6e91
+  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0xe11c5c5596ddd509
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b7:
   rorw x7, x7, x7 # perform operation
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zbb_rorw_cg_cmp_rd_rs1_rs2_b7, Zbb_rorw_cg_cmp_rd_rs1_rs2_b7_str)
+  # Check if x7 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x7, Zbb_rorw_cg_cmp_rd_rs1_rs2_b7, Zbb_rorw_cg_cmp_rd_rs1_rs2_b7_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs1: x8 = 0xa07bea3c8321cd57
-  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0xff6678573f857626
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0x01407417f00deb14
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0xf21a8a034d36e315
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b8:
   rorw x8, x8, x8 # perform operation
-  # Check if x8 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x8, Zbb_rorw_cg_cmp_rd_rs1_rs2_b8, Zbb_rorw_cg_cmp_rd_rs1_rs2_b8_str)
+  # Check if x8 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x8, Zbb_rorw_cg_cmp_rd_rs1_rs2_b8, Zbb_rorw_cg_cmp_rd_rs1_rs2_b8_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0xa4b8152e08d203b3
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x16ddd509a25258e2
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x43bf55e6f0c36d91
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0x6c9c46ec42a145c1
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b9:
   rorw x9, x9, x9 # perform operation
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zbb_rorw_cg_cmp_rd_rs1_rs2_b9, Zbb_rorw_cg_cmp_rd_rs1_rs2_b9_str)
+  # Check if x9 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x9, Zbb_rorw_cg_cmp_rd_rs1_rs2_b9, Zbb_rorw_cg_cmp_rd_rs1_rs2_b9_str)
 
-  mv x20, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x20, x10) # load rs1: x10 = 0x01407417f00deb14
-  RVTEST_TESTDATA_LOAD_INT(x20, x10) # load rs2: x10 = 0xf21a8a034d36e315
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x4c63622d549528ca
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x8b56d841465cb558
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b10:
   rorw x10, x10, x10 # perform operation
-  # Check if x10 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x10, Zbb_rorw_cg_cmp_rd_rs1_rs2_b10, Zbb_rorw_cg_cmp_rd_rs1_rs2_b10_str)
+  # Check if x10 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x10, Zbb_rorw_cg_cmp_rd_rs1_rs2_b10, Zbb_rorw_cg_cmp_rd_rs1_rs2_b10_str)
 
-  mv x24, x11 # switch signature pointer register to avoid conflict with test
+  mv x24, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs1: x11 = 0x923ea9d8c3bf55e6
-  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs2: x11 = 0x3b6e907cd25f540d
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs1: x11 = 0x3e9ee273dab8ac3c
+  RVTEST_TESTDATA_LOAD_INT(x24, x11) # load rs2: x11 = 0x2224e1cdae115dda
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b11:
   rorw x11, x11, x11 # perform operation
-  # Check if x11 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x11, Zbb_rorw_cg_cmp_rd_rs1_rs2_b11, Zbb_rorw_cg_cmp_rd_rs1_rs2_b11_str)
+  # Check if x11 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x11, Zbb_rorw_cg_cmp_rd_rs1_rs2_b11, Zbb_rorw_cg_cmp_rd_rs1_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs1: x12 = 0x8b56d841465cb558
-  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs2: x12 = 0xae6fe7ba7843b770
+  RVTEST_TESTDATA_LOAD_INT(x24, x12) # load rs1: x12 = 0x07fecc3d2a970bcf
+  RVTEST_TESTDATA_LOAD_INT(x24, x12) # load rs2: x12 = 0xca6703646c95e452
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b12:
   rorw x12, x12, x12 # perform operation
-  # Check if x12 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x12, Zbb_rorw_cg_cmp_rd_rs1_rs2_b12, Zbb_rorw_cg_cmp_rd_rs1_rs2_b12_str)
+  # Check if x12 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x18, x14, x13, x12, Zbb_rorw_cg_cmp_rd_rs1_rs2_b12, Zbb_rorw_cg_cmp_rd_rs1_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs1: x13 = 0xec95e452742174ce
-  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs2: x13 = 0x13f99b1cc77c1269
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs1: x13 = 0xa4eaf41d999daf76
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xae79f9f29941c7fa
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b13:
   rorw x13, x13, x13 # perform operation
-  # Check if x13 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x13, Zbb_rorw_cg_cmp_rd_rs1_rs2_b13, Zbb_rorw_cg_cmp_rd_rs1_rs2_b13_str)
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, Zbb_rorw_cg_cmp_rd_rs1_rs2_b13, Zbb_rorw_cg_cmp_rd_rs1_rs2_b13_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs1: x14 = 0x9b519fb222cf673a
-  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs2: x14 = 0x8cb97e8440b95f53
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs1: x14 = 0x7a7015ea54f7343c
+  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0xa2cf673ab79d6b50
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b14:
   rorw x14, x14, x14 # perform operation
-  # Check if x14 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x14, Zbb_rorw_cg_cmp_rd_rs1_rs2_b14, Zbb_rorw_cg_cmp_rd_rs1_rs2_b14_str)
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zbb_rorw_cg_cmp_rd_rs1_rs2_b14, Zbb_rorw_cg_cmp_rd_rs1_rs2_b14_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs1: x15 = 0x9f1c94135a98a57d
-  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs2: x15 = 0x512df512e5088730
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs1: x15 = 0xc0b95f53fed41a51
+  RVTEST_TESTDATA_LOAD_INT(x24, x15) # load rs2: x15 = 0xf880a7c06cda7c4b
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b15:
   rorw x15, x15, x15 # perform operation
-  # Check if x15 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x15, Zbb_rorw_cg_cmp_rd_rs1_rs2_b15, Zbb_rorw_cg_cmp_rd_rs1_rs2_b15_str)
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, Zbb_rorw_cg_cmp_rd_rs1_rs2_b15, Zbb_rorw_cg_cmp_rd_rs1_rs2_b15_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs1: x16 = 0x70d8f8505525f534
-  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs2: x16 = 0xdb0de5a018f416c8
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs1: x16 = 0x88b2b59d9de72f65
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load rs2: x16 = 0x3f5d1ec7a039b8cd
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b16:
   rorw x16, x16, x16 # perform operation
-  # Check if x16 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x16, Zbb_rorw_cg_cmp_rd_rs1_rs2_b16, Zbb_rorw_cg_cmp_rd_rs1_rs2_b16_str)
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zbb_rorw_cg_cmp_rd_rs1_rs2_b16, Zbb_rorw_cg_cmp_rd_rs1_rs2_b16_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs1: x17 = 0x08b345cc54e5636b
-  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs2: x17 = 0x23a2665bbab809b6
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0xda98a57db540d72f
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0x7e4c0cf56de1eb4a
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b17:
   rorw x17, x17, x17 # perform operation
-  # Check if x17 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x17, Zbb_rorw_cg_cmp_rd_rs1_rs2_b17, Zbb_rorw_cg_cmp_rd_rs1_rs2_b17_str)
+  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x17, Zbb_rorw_cg_cmp_rd_rs1_rs2_b17, Zbb_rorw_cg_cmp_rd_rs1_rs2_b17_str)
 
+  mv x11, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs1: x18 = 0xd8beb7df3e1c530f
-  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs2: x18 = 0x42e39a468d9d9da0
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0x70d8f8505525f534
+  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xdb0de5a018f416c8
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b18:
   rorw x18, x18, x18 # perform operation
-  # Check if x18 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x18, Zbb_rorw_cg_cmp_rd_rs1_rs2_b18, Zbb_rorw_cg_cmp_rd_rs1_rs2_b18_str)
+  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x18, Zbb_rorw_cg_cmp_rd_rs1_rs2_b18, Zbb_rorw_cg_cmp_rd_rs1_rs2_b18_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs1: x19 = 0xa483ffc4c62f8486
-  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs2: x19 = 0x8dc6b64dbc13c39d
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0x08b345cc54e5636b
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs2: x19 = 0x23a2665bbab809b6
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b19:
   rorw x19, x19, x19 # perform operation
-  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x19, Zbb_rorw_cg_cmp_rd_rs1_rs2_b19, Zbb_rorw_cg_cmp_rd_rs1_rs2_b19_str)
+  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x19, Zbb_rorw_cg_cmp_rd_rs1_rs2_b19, Zbb_rorw_cg_cmp_rd_rs1_rs2_b19_str)
 
-  mv x1, x20 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x445f73cfe8153ec5
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x3362536530b0a326
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0xd8beb7df3e1c530f
+  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs2: x20 = 0x42e39a468d9d9da0
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b20:
   rorw x20, x20, x20 # perform operation
-  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x20, Zbb_rorw_cg_cmp_rd_rs1_rs2_b20, Zbb_rorw_cg_cmp_rd_rs1_rs2_b20_str)
+  # Check if x20 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x20, Zbb_rorw_cg_cmp_rd_rs1_rs2_b20, Zbb_rorw_cg_cmp_rd_rs1_rs2_b20_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xcd3089e51eda42e1
-  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x76bebdfac66986f6
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0xa483ffc4c62f8486
+  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0x8dc6b64dbc13c39d
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b21:
   rorw x21, x21, x21 # perform operation
-  # Check if x21 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x21, Zbb_rorw_cg_cmp_rd_rs1_rs2_b21, Zbb_rorw_cg_cmp_rd_rs1_rs2_b21_str)
+  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x21, Zbb_rorw_cg_cmp_rd_rs1_rs2_b21, Zbb_rorw_cg_cmp_rd_rs1_rs2_b21_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x1ff0a33e65325a79
-  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0xbdb633a32584a1df
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x281fddca5a960530
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x7920bb3a82bc0095
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b22:
   rorw x22, x22, x22 # perform operation
-  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x22, Zbb_rorw_cg_cmp_rd_rs1_rs2_b22, Zbb_rorw_cg_cmp_rd_rs1_rs2_b22_str)
+  # Check if x22 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x22, Zbb_rorw_cg_cmp_rd_rs1_rs2_b22, Zbb_rorw_cg_cmp_rd_rs1_rs2_b22_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x3d1b713c72137d52
-  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x84ed40ef07fe76a0
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0x9eda42e1b4c78eed
+  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x0c86aacb5f030276
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b23:
   rorw x23, x23, x23 # perform operation
-  # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x23, Zbb_rorw_cg_cmp_rd_rs1_rs2_b23, Zbb_rorw_cg_cmp_rd_rs1_rs2_b23_str)
+  # Check if x23 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x23, Zbb_rorw_cg_cmp_rd_rs1_rs2_b23, Zbb_rorw_cg_cmp_rd_rs1_rs2_b23_str)
 
-  mv x23, x24 # switch signature pointer register to avoid conflict with test
+  mv x26, x24 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x7e7db60199a75db4
-  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0xaae009bca2a6cdf1
+  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x1ff0a33e65325a79
+  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs2: x24 = 0xbdb633a32584a1df
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b24:
   rorw x24, x24, x24 # perform operation
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, Zbb_rorw_cg_cmp_rd_rs1_rs2_b24, Zbb_rorw_cg_cmp_rd_rs1_rs2_b24_str)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x24, Zbb_rorw_cg_cmp_rd_rs1_rs2_b24, Zbb_rorw_cg_cmp_rd_rs1_rs2_b24_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xffa007d5eedaadba
-  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0xe3b9f08b7ce33964
+  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs1: x25 = 0x3d1b713c72137d52
+  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs2: x25 = 0x84ed40ef07fe76a0
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b25:
   rorw x25, x25, x25 # perform operation
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, Zbb_rorw_cg_cmp_rd_rs1_rs2_b25, Zbb_rorw_cg_cmp_rd_rs1_rs2_b25_str)
+  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x25, Zbb_rorw_cg_cmp_rd_rs1_rs2_b25, Zbb_rorw_cg_cmp_rd_rs1_rs2_b25_str)
 
+  mv x23, x26 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xe92b72f07fefa413
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x3cc51f059abe0ea1
+  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs1: x26 = 0x7e7db60199a75db4
+  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs2: x26 = 0xaae009bca2a6cdf1
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b26:
   rorw x26, x26, x26 # perform operation
-  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x26, Zbb_rorw_cg_cmp_rd_rs1_rs2_b26, Zbb_rorw_cg_cmp_rd_rs1_rs2_b26_str)
+  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x26, Zbb_rorw_cg_cmp_rd_rs1_rs2_b26, Zbb_rorw_cg_cmp_rd_rs1_rs2_b26_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x36ac5e5af215a459
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x091fc1e758c5d5cd
+  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs1: x27 = 0xffa007d5eedaadba
+  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs2: x27 = 0xe3b9f08b7ce33964
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b27:
   rorw x27, x27, x27 # perform operation
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, Zbb_rorw_cg_cmp_rd_rs1_rs2_b27, Zbb_rorw_cg_cmp_rd_rs1_rs2_b27_str)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x27, Zbb_rorw_cg_cmp_rd_rs1_rs2_b27, Zbb_rorw_cg_cmp_rd_rs1_rs2_b27_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xfeeb3d33bac9211a
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0x52e748339ace302a
+  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs1: x28 = 0xe92b72f07fefa413
+  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs2: x28 = 0x3cc51f059abe0ea1
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b28:
   rorw x28, x28, x28 # perform operation
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, Zbb_rorw_cg_cmp_rd_rs1_rs2_b28, Zbb_rorw_cg_cmp_rd_rs1_rs2_b28_str)
+  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x28, Zbb_rorw_cg_cmp_rd_rs1_rs2_b28, Zbb_rorw_cg_cmp_rd_rs1_rs2_b28_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x9b2ace20b74ebeae
-  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0x4671035fb30b0ec6
+  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs1: x29 = 0x36ac5e5af215a459
+  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs2: x29 = 0x091fc1e758c5d5cd
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b29:
   rorw x29, x29, x29 # perform operation
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, Zbb_rorw_cg_cmp_rd_rs1_rs2_b29, Zbb_rorw_cg_cmp_rd_rs1_rs2_b29_str)
+  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x29, Zbb_rorw_cg_cmp_rd_rs1_rs2_b29, Zbb_rorw_cg_cmp_rd_rs1_rs2_b29_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x2acd3ffda45952e1
-  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0xaf1ab13eb9b4ae89
+  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rs1: x30 = 0xfeeb3d33bac9211a
+  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rs2: x30 = 0x52e748339ace302a
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b30:
   rorw x30, x30, x30 # perform operation
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, Zbb_rorw_cg_cmp_rd_rs1_rs2_b30, Zbb_rorw_cg_cmp_rd_rs1_rs2_b30_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x30, Zbb_rorw_cg_cmp_rd_rs1_rs2_b30, Zbb_rorw_cg_cmp_rd_rs1_rs2_b30_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0xb73521140cda9ad3
-  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0xd0f74bfeee36c045
+  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x9b2ace20b74ebeae
+  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs2: x31 = 0x4671035fb30b0ec6
 Zbb_rorw_cg_cmp_rd_rs1_rs2_b31:
   rorw x31, x31, x31 # perform operation
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, Zbb_rorw_cg_cmp_rd_rs1_rs2_b31, Zbb_rorw_cg_cmp_rd_rs1_rs2_b31_str)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x31, Zbb_rorw_cg_cmp_rd_rs1_rs2_b31, Zbb_rorw_cg_cmp_rd_rs1_rs2_b31_str)
 
-  mv x2, x23 # restore signature pointer to default register for teardown
+  mv x2, x11 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -4320,16 +4319,16 @@ RVTEST_DATA_BEGIN
 .dword 0x97e307f428330052
 .dword 0x86f5c8a434536f8e
 .dword 0xbeaedd2713c28ffe
-.dword 0x3246b7d734255ab2
-.dword 0x205a8e18b3f37b73
+.dword 0xe02239e52ce8ba60
 .dword 0xb2d56ba2e8e50b26
-.dword 0xcbc622de1ce08a20
-.dword 0x85fadd5359851daf
-.dword 0xa29827922b28c338
+.dword 0xbee783c14bc622de
+.dword 0xd9851daf1e671471
+.dword 0x64b5a3f8b8fa68af
+.dword 0xde26f744da1f148d
+.dword 0x932c119d781e32db
 .dword 0xde20fa401dccc8b0
-.dword 0x2f24026fdad1c3f0
+.dword 0x7047d543d62e0977
 .dword 0x5cb873131b099466
-.dword 0xb7d795c1156d6103
 .dword 0x4b01d4563217982e
 .dword 0x089abcfbcb907d32
 .dword 0x332542b3ee5db182
@@ -4368,25 +4367,25 @@ RVTEST_DATA_BEGIN
 .dword 0x2c898d35654da1e6
 .dword 0x7bc5acbe3d697d45
 .dword 0x02e71b463eab0163
-.dword 0xcb50e3c0982361c9
-.dword 0x92d8bc3b26aeb198
+.dword 0x50e3e991a25de823
+.dword 0x8d1549664b50e3c0
 .dword 0xf4c4513877048249
 .dword 0x9bdc71d5aa32139a
 .dword 0x41b2b7c9b28aa9ab
 .dword 0xfcec64dfae4c4fac
-.dword 0x6dcd8a511614f5e6
-.dword 0xc0277de729dfb45e
-.dword 0xba6b59ac4fb78fca
-.dword 0xce72a3bcbf002bee
-.dword 0x29fcb994ef4afbad
-.dword 0xef773e2aca00a4c2
-.dword 0x0932005344016e03
-.dword 0x8d9ded030cc1f3fa
-.dword 0x619c07b758fa0773
+.dword 0xd27749990984e99b
+.dword 0xa9dfb45e210dfe81
+.dword 0xcfb78fca5a84dec9
+.dword 0x3f002bee61362c1d
+.dword 0xea60654f6f773e2a
+.dword 0x127311ca9dcb1620
+.dword 0x60771e93ecf61fec
+.dword 0x793287d918abfa8c
+.dword 0x8cc1f3fac8839552
+.dword 0x4498641c32805fbb
+.dword 0x60e12751dc6717f5
 .dword 0x13e84c115ef21cfe
-.dword 0xb9776a81321d8d5f
-.dword 0x3059c6e498302fe8
-.dword 0xa53eb7daf86341b6
+.dword 0xb5f091ce2d50e744
 .dword 0x2d282a0fe0526bd2
 .dword 0xfea7dffba474e771
 .dword 0xb7c17b1928b526db
@@ -5024,10 +5023,8 @@ RVTEST_DATA_BEGIN
 .dword 0xfb470ae8c212b790
 .dword 0xc62261b9db69cda6
 .dword 0x21de8b34d801461c
-.dword 0x1f0a837ed41ef2e5
-.dword 0xdedc0b8910428b8c
-.dword 0x7a4b8aedf94c5265
-.dword 0x5fb00488537f29d5
+.dword 0x90428b8c05ddb4fb
+.dword 0x834297d1fa4b8aed
 .dword 0x402183d4a24a6fbf
 .dword 0xd0f638e0a9c01e2c
 .dword 0xc6889a59bc1fe34f
@@ -5040,18 +5037,20 @@ RVTEST_DATA_BEGIN
 .dword 0x39670dac28fa55d6
 .dword 0x948e83a1d9b00675
 .dword 0x85c014a4c15c68f3
-.dword 0x60306f4b274f2a86
-.dword 0xcac342525b24d632
-.dword 0x72cb4b813c6ee602
-.dword 0x50cfebcbb95204b9
+.dword 0xdb24d6320a6d1100
+.dword 0x304c6eae2b6e299c
+.dword 0x85a7de0fd0cfebcb
 .dword 0x78fc0bdb61983d3e
-.dword 0x87f5d17c3bcbb9c5
-.dword 0xd5d4920e73d536bd
+.dword 0xbbcbb9c5a6a87de9
+.dword 0xdd89e91f4e63dd5c
+.dword 0x6f3799bef827955a
+.dword 0xf3d536bdb7ddc29f
 .dword 0x5fcd6b0975d3c068
-.dword 0xa43883b67633d989
+.dword 0xf633d9897fe265a4
 .dword 0x5323d672b0f43dd5
 .dword 0x961855e163a88e3c
 .dword 0x09078e62c89748ff
+.dword 0x54a385b596766d00
 .dword 0x669510468b8cbc5f
 .dword 0x0034ba7315fad403
 .dword 0x44fa4a3b851591a9
@@ -5072,42 +5071,36 @@ RVTEST_DATA_BEGIN
 .dword 0x0cd73b77f9f226fb
 .dword 0x7f82db51421cde69
 .dword 0x8b69eb4397a50be4
-.dword 0x4e719a256c14ed67
-.dword 0xac1876f157dc4314
-.dword 0x6b09dab9315a4aa3
-.dword 0x75873913d3f56bbb
-.dword 0x8f67940bb565379e
+.dword 0x719907fbb40b0a8d
+.dword 0xc78fb29e75a117a2
+.dword 0x127951eb1a77bddd
 .dword 0xbff202032583dca2
-.dword 0xe6ad1b44871c70ba
-.dword 0x7da52ad30760224f
-.dword 0xd62efed67f0a2f02
-.dword 0xa941c98ee1d2d149
-.dword 0x1a3c6c858ca0803d
+.dword 0xdc729bdd66ad1b44
+.dword 0xb48003c6fda52ad3
+.dword 0xf078cb12562efed6
 .dword 0x085dd45a101f64fc
 .dword 0xdf1b6006ed050c12
 .dword 0x0026d1e50f128479
-.dword 0x4404e9804937e0e0
-.dword 0xbacceee8028bde5f
-.dword 0xa0c7a0735267ab61
-.dword 0x3fc0f22bb072479a
-.dword 0xcc3c796d2fb38599
-.dword 0x5edb2455846094e5
-.dword 0x328d2a61004008f5
-.dword 0x1313f70feb4d0365
-.dword 0x17c8bd405426c289
-.dword 0xd21b35445cfaec6d
+.dword 0xce0d5072f16e0c7f
+.dword 0x262351ed10df5128
+.dword 0xc3bb0dc23acceee8
+.dword 0x9016dfc020c7a073
+.dword 0xd487b918bfc0f22b
+.dword 0xcd04951fdedb2455
+.dword 0x9e5cff9bb28d2a61
+.dword 0xf89575c474b59b53
+.dword 0x1f48ea4aa4bba53e
 .dword 0xac69c48350d7545e
-.dword 0xd1462c4c9c8d5949
+.dword 0x3a8f587ee668a873
+.dword 0x9a823d8a51462c4c
 .dword 0xc656db209eea6686
 .dword 0x1fd01e522e25b946
 .dword 0x739980b6c7edc5a9
 .dword 0xdb4e9684d0abaa0f
-.dword 0xaa08bec56480447c
 .dword 0xf24b3386266cb250
-.dword 0x19f6e3b0c1487678
-.dword 0x30c7544be7f1f5f2
-.dword 0x4086f6e068a5bf20
-.dword 0x228ee7418b04d393
+.dword 0x0c25219cdbd8bc0c
+.dword 0xba82536199f6e3b0
+.dword 0xb0c66ca2a28ee741
 .dword 0xae215a522b54b712
 .dword 0x1571b68795992ecb
 .dword 0x3a9f20e51a0761ab
@@ -5116,16 +5109,22 @@ RVTEST_DATA_BEGIN
 .dword 0xff5e04d40eab1724
 .dword 0xb3cb15906e714777
 .dword 0x75c38d3b3179bf2e
-.dword 0x2a7a6efecc02f9dc
-.dword 0x06f545fe3190fba5
-.dword 0x4a7df57e02ca297f
-.dword 0xb4a7e483628a1ac1
-.dword 0xb952400521629380
-.dword 0x53053ab65ba1cc5a
-.dword 0x8f4fc5bef08618a6
-.dword 0xeecc139bcca9dab7
+.dword 0x195febbe89c66c6c
+.dword 0x825d1fe7ebd30934
+.dword 0xc207dbec4f064cf9
+.dword 0xc8803263af624a3d
+.dword 0x3e7d924f5f15913e
+.dword 0xa162938024fcdb62
+.dword 0x6e989e8c4474c6a2
+.dword 0x077731c3dae2618c
+.dword 0x20cdf12ce216c872
+.dword 0xe19bf5e1aa6dddde
+.dword 0x708618a6d954a4ab
+.dword 0x77de484a830e3f67
+.dword 0x4ca9dab7f60cbe4a
 .dword 0x04f976eab89f0fff
-.dword 0xaa93d1c00c86b149
+.dword 0x42258be5f524d139
+.dword 0x47b71f117ac157de
 .dword 0x2ec451ac15727b75
 .dword 0x293ad50aac379666
 .dword 0x154cb2d8edad343a
@@ -5148,24 +5147,24 @@ RVTEST_DATA_BEGIN
 .dword 0x445dc7e9ea4f9d10
 .dword 0x0a8e8c7972c006e2
 .dword 0x4f70f4cef51aa594
-.dword 0x34c97a82be2eca9e
-.dword 0x0c807409aa08c892
-.dword 0xf30f3e885f0fb188
-.dword 0x20d7d26fea34ee98
-.dword 0x9e55129c7937d4a9
-.dword 0x29ee865b21fed232
-.dword 0x2d54ff82234be5ec
-.dword 0x038bf5e250406640
-.dword 0x169cb70e9fcb6c8d
-.dword 0xa5a083fc72752baf
+.dword 0x227eb8364a1f626d
+.dword 0xf4adbb238c807409
+.dword 0x08ea4f07f8dfba4e
+.dword 0x9c15b044730f3e88
+.dword 0x7ca7004e81335ece
+.dword 0xfb8acdd11e55129c
+.dword 0xd47e68ebdee81719
+.dword 0xac1e41acad54ff82
+.dword 0x7805a9f8e1ed6a80
+.dword 0x763d232e905847c3
 .dword 0x2492e6177195a02a
 .dword 0xaad649fc9a5e6d4a
 .dword 0x657c494cd380d101
 .dword 0x8a98b086b2149484
-.dword 0xafcea72361264621
-.dword 0x08771ffe9201e7d7
+.dword 0xe126462175af02f3
+.dword 0x615aac1684b1a19c
+.dword 0x95b6a13e88771ffe
 .dword 0x02ead99db47c528e
-.dword 0xe1f31c73216a596f
 .dword 0xd22d44a942178608
 .dword 0xa5d0a5b828d610d1
 .dword 0xbea8bb56f37b8c06
@@ -5174,10 +5173,12 @@ RVTEST_DATA_BEGIN
 .dword 0x38eb3512233b2746
 .dword 0xfd17b37c5c8bc2ab
 .dword 0x2b93068e247de4d3
-.dword 0xbf68bf936a7a009f
-.dword 0x65abe82e95d8e9fe
+.dword 0xea7a009ff0312cf5
 .dword 0x9215b1d3602ccfae
-.dword 0xe82f61bc97be7cba
+.dword 0xa41dca48682f61bc
+.dword 0xae6a61c6dd7e6d81
+.dword 0xc4d396f99edf63e4
+.dword 0x78770293caa76332
 .dword 0x79ea881e28118a3e
 .dword 0xfa63e7b7e5e6c59d
 .dword 0x88068bb79d4503fd
@@ -5186,44 +5187,46 @@ RVTEST_DATA_BEGIN
 .dword 0x3073b451d262b905
 .dword 0xc815b8297552e5bb
 .dword 0x4febdda91c64f59c
-.dword 0x44181fcff02df98b
-.dword 0x95cf7cfac7684d5b
-.dword 0x8eee9b4a3ddb95f0
-.dword 0xdfe28a46bc08ac26
-.dword 0x516614ca68a2615a
-.dword 0x98089e2313e5b5ea
+.dword 0x41b10c47b42c9d3c
+.dword 0x11b9263f86555d7b
+.dword 0xf2e103b598096e58
+.dword 0x2116ed4325a03091
 .dword 0xf5a554397ee306d4
 .dword 0x57a37d74e1977c20
 .dword 0x88eb25b5841beeac
 .dword 0xd2531a668681ffd9
-.dword 0x45c5d467cae44766
-.dword 0xb69770e8b39b0484
-.dword 0xe2e1d6d1815cd87e
-.dword 0xd9399febc985bfec
+.dword 0x39c43eebcfe0fb2d
+.dword 0xbf65579459399feb
 .dword 0xcbcbacecd6fecf77
 .dword 0x5d5dadb51977e865
-.dword 0x572680526ffcfd54
-.dword 0x5ffa97e6796f33df
-.dword 0xd22e8e91c08d20da
-.dword 0x5a5940ea3c1b905e
-.dword 0x07c8e58945ba1179
-.dword 0xa1cc1519f3a14614
-.dword 0xa07bea3c8321cd57
-.dword 0xff6678573f857626
-.dword 0xa4b8152e08d203b3
-.dword 0x16ddd509a25258e2
+.dword 0x4aeb363d8ba73053
+.dword 0x288b0b4722f9559a
+.dword 0xdfd14a44522e8e91
+.dword 0xe8d82b97f7cd148b
+.dword 0x6cc0e840dc16d6e0
+.dword 0x5ec7d70a8a021d0d
+.dword 0x6707af11383c6e91
+.dword 0xe11c5c5596ddd509
 .dword 0x01407417f00deb14
 .dword 0xf21a8a034d36e315
-.dword 0x923ea9d8c3bf55e6
-.dword 0x3b6e907cd25f540d
+.dword 0x43bf55e6f0c36d91
+.dword 0x6c9c46ec42a145c1
+.dword 0x4c63622d549528ca
 .dword 0x8b56d841465cb558
-.dword 0xae6fe7ba7843b770
-.dword 0xec95e452742174ce
-.dword 0x13f99b1cc77c1269
-.dword 0x9b519fb222cf673a
-.dword 0x8cb97e8440b95f53
-.dword 0x9f1c94135a98a57d
-.dword 0x512df512e5088730
+.dword 0x3e9ee273dab8ac3c
+.dword 0x2224e1cdae115dda
+.dword 0x07fecc3d2a970bcf
+.dword 0xca6703646c95e452
+.dword 0xa4eaf41d999daf76
+.dword 0xae79f9f29941c7fa
+.dword 0x7a7015ea54f7343c
+.dword 0xa2cf673ab79d6b50
+.dword 0xc0b95f53fed41a51
+.dword 0xf880a7c06cda7c4b
+.dword 0x88b2b59d9de72f65
+.dword 0x3f5d1ec7a039b8cd
+.dword 0xda98a57db540d72f
+.dword 0x7e4c0cf56de1eb4a
 .dword 0x70d8f8505525f534
 .dword 0xdb0de5a018f416c8
 .dword 0x08b345cc54e5636b
@@ -5232,10 +5235,10 @@ RVTEST_DATA_BEGIN
 .dword 0x42e39a468d9d9da0
 .dword 0xa483ffc4c62f8486
 .dword 0x8dc6b64dbc13c39d
-.dword 0x445f73cfe8153ec5
-.dword 0x3362536530b0a326
-.dword 0xcd3089e51eda42e1
-.dword 0x76bebdfac66986f6
+.dword 0x281fddca5a960530
+.dword 0x7920bb3a82bc0095
+.dword 0x9eda42e1b4c78eed
+.dword 0x0c86aacb5f030276
 .dword 0x1ff0a33e65325a79
 .dword 0xbdb633a32584a1df
 .dword 0x3d1b713c72137d52
@@ -5252,10 +5255,6 @@ RVTEST_DATA_BEGIN
 .dword 0x52e748339ace302a
 .dword 0x9b2ace20b74ebeae
 .dword 0x4671035fb30b0ec6
-.dword 0x2acd3ffda45952e1
-.dword 0xaf1ab13eb9b4ae89
-.dword 0xb73521140cda9ad3
-.dword 0xd0f74bfeee36c045
 
 // Testcase strings
 Zbb_rorw_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zbb_rorw_cg; cp: cp_rs1; bin: b0\""

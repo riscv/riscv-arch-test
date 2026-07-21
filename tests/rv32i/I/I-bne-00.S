@@ -115,8 +115,8 @@ I_bne_cg_cp_rs1_b6:
   # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x22, x8, x7, x5, I_bne_cg_cp_rs1_b6, I_bne_cg_cp_rs1_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x29, x7) # load rs1: x7 = 0x6723877c
   RVTEST_TESTDATA_LOAD_INT(x29, x17) # load rs2: x17 = 0x092206f1
@@ -125,8 +125,8 @@ I_bne_cg_cp_rs1_b7:
   bne x7, x17, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x20, I_bne_cg_cp_rs1_b7, I_bne_cg_cp_rs1_b7_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x20, I_bne_cg_cp_rs1_b7, I_bne_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x29, x8) # load rs1: x8 = 0xb66db65d
@@ -136,8 +136,8 @@ I_bne_cg_cp_rs1_b8:
   bne x8, x2, 1f # perform operation
   LI(x1, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x1 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x1, I_bne_cg_cp_rs1_b8, I_bne_cg_cp_rs1_b8_str)
+  # Check if x1 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x1, I_bne_cg_cp_rs1_b8, I_bne_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x29, x9) # load rs1: x9 = 0x0d19fbf1
@@ -147,8 +147,8 @@ I_bne_cg_cp_rs1_b9:
   bne x9, x27, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x26, I_bne_cg_cp_rs1_b9, I_bne_cg_cp_rs1_b9_str)
+  # Check if x26 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x26, I_bne_cg_cp_rs1_b9, I_bne_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x29, x10) # load rs1: x10 = 0x38472474
@@ -158,8 +158,8 @@ I_bne_cg_cp_rs1_b10:
   bne x10, x30, 1f # perform operation
   LI(x31, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x31 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x31, I_bne_cg_cp_rs1_b10, I_bne_cg_cp_rs1_b10_str)
+  # Check if x31 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x31, I_bne_cg_cp_rs1_b10, I_bne_cg_cp_rs1_b10_str)
 
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x29, x11) # load rs1: x11 = 0x9d91b751
@@ -169,32 +169,32 @@ I_bne_cg_cp_rs1_b11:
   bne x11, x3, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x26, I_bne_cg_cp_rs1_b11, I_bne_cg_cp_rs1_b11_str)
+  # Check if x26 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x26, I_bne_cg_cp_rs1_b11, I_bne_cg_cp_rs1_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x29, x12) # load rs1: x12 = 0xf6c4e772
-  RVTEST_TESTDATA_LOAD_INT(x29, x31) # load rs2: x31 = 0xba187f0e
-  RVTEST_TESTDATA_LOAD_INT(x29, x6) # load branch taken value: x6 = 0xee833704
+  RVTEST_TESTDATA_LOAD_INT(x29, x12) # load rs1: x12 = 0x94e6ef43
+  RVTEST_TESTDATA_LOAD_INT(x29, x7) # load rs2: x7 = 0xba187f0e
+  RVTEST_TESTDATA_LOAD_INT(x29, x4) # load branch taken value: x4 = 0xee833704
 I_bne_cg_cp_rs1_b12:
-  bne x12, x31, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  bne x12, x7, 1f # perform operation
+  LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x6, I_bne_cg_cp_rs1_b12, I_bne_cg_cp_rs1_b12_str)
+  # Check if x4 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x4, I_bne_cg_cp_rs1_b12, I_bne_cg_cp_rs1_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x29, x13) # load rs1: x13 = 0x461fe0dd
-  RVTEST_TESTDATA_LOAD_INT(x29, x18) # load rs2: x18 = 0x6fde4a91
-  RVTEST_TESTDATA_LOAD_INT(x29, x25) # load branch taken value: x25 = 0x3198e271
+  RVTEST_TESTDATA_LOAD_INT(x29, x13) # load rs1: x13 = 0xffa9ea09
+  RVTEST_TESTDATA_LOAD_INT(x29, x28) # load rs2: x28 = 0x6fde4a91
+  RVTEST_TESTDATA_LOAD_INT(x29, x24) # load branch taken value: x24 = 0x3198e271
 I_bne_cg_cp_rs1_b13:
-  bne x13, x18, 1f # perform operation
-  LI(x25, -1) # branch not taken, set temp_reg to 0
+  bne x13, x28, 1f # perform operation
+  LI(x24, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x25 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x25, I_bne_cg_cp_rs1_b13, I_bne_cg_cp_rs1_b13_str)
+  # Check if x24 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x24, I_bne_cg_cp_rs1_b13, I_bne_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
   RVTEST_TESTDATA_LOAD_INT(x29, x14) # load rs1: x14 = 0x14575d6e
@@ -481,8 +481,8 @@ I_bne_cg_cp_rs2_b6:
   # Check if x10 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x30, x8, x7, x10, I_bne_cg_cp_rs2_b6, I_bne_cg_cp_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x944f1ca5
   RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs2: x7 = 0x7b9f421b
@@ -491,8 +491,8 @@ I_bne_cg_cp_rs2_b7:
   bne x10, x7, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x3, I_bne_cg_cp_rs2_b7, I_bne_cg_cp_rs2_b7_str)
+  # Check if x3 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x3, I_bne_cg_cp_rs2_b7, I_bne_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs1: x7 = 0xb5849e03
@@ -502,8 +502,8 @@ I_bne_cg_cp_rs2_b8:
   bne x7, x8, 1f # perform operation
   LI(x21, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x21 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x21, I_bne_cg_cp_rs2_b8, I_bne_cg_cp_rs2_b8_str)
+  # Check if x21 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x21, I_bne_cg_cp_rs2_b8, I_bne_cg_cp_rs2_b8_str)
 
 # Testcase cp_rs2 (Test source rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs1: x21 = 0x090cc67d
@@ -513,8 +513,8 @@ I_bne_cg_cp_rs2_b9:
   bne x21, x9, 1f # perform operation
   LI(x6, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x6, I_bne_cg_cp_rs2_b9, I_bne_cg_cp_rs2_b9_str)
+  # Check if x6 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x6, I_bne_cg_cp_rs2_b9, I_bne_cg_cp_rs2_b9_str)
 
 # Testcase cp_rs2 (Test source rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs1: x23 = 0xa55d2533
@@ -524,8 +524,8 @@ I_bne_cg_cp_rs2_b10:
   bne x23, x10, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x3, I_bne_cg_cp_rs2_b10, I_bne_cg_cp_rs2_b10_str)
+  # Check if x3 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x3, I_bne_cg_cp_rs2_b10, I_bne_cg_cp_rs2_b10_str)
 
 # Testcase cp_rs2 (Test source rs2 = x11)
   RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs1: x9 = 0xe29092a1
@@ -535,22 +535,22 @@ I_bne_cg_cp_rs2_b11:
   bne x9, x11, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x20, I_bne_cg_cp_rs2_b11, I_bne_cg_cp_rs2_b11_str)
+  # Check if x20 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x20, I_bne_cg_cp_rs2_b11, I_bne_cg_cp_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs1: x23 = 0xa5e3d5d1
-  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x4bbdc9e3
-  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load branch taken value: x10 = 0x34e15803
+  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs1: x0 = 0x1df8feae
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x55056d88
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load branch taken value: x19 = 0xb3d7e3e2
 I_bne_cg_cp_rs2_b12:
-  bne x23, x12, 1f # perform operation
-  LI(x10, -1) # branch not taken, set temp_reg to 0
+  bne x0, x12, 1f # perform operation
+  LI(x19, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x10 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x10, I_bne_cg_cp_rs2_b12, I_bne_cg_cp_rs2_b12_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x19, I_bne_cg_cp_rs2_b12, I_bne_cg_cp_rs2_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
   RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs1: x28 = 0xd13655d7
   RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0x5d3fd425
@@ -559,8 +559,8 @@ I_bne_cg_cp_rs2_b13:
   bne x28, x13, 1f # perform operation
   LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x11 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x11, I_bne_cg_cp_rs2_b13, I_bne_cg_cp_rs2_b13_str)
+  # Check if x11 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x11, I_bne_cg_cp_rs2_b13, I_bne_cg_cp_rs2_b13_str)
 
 # Testcase cp_rs2 (Test source rs2 = x14)
   RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs1: x2 = 0x533caa64
@@ -570,8 +570,8 @@ I_bne_cg_cp_rs2_b14:
   bne x2, x14, 1f # perform operation
   LI(x23, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x23, I_bne_cg_cp_rs2_b14, I_bne_cg_cp_rs2_b14_str)
+  # Check if x23 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x23, I_bne_cg_cp_rs2_b14, I_bne_cg_cp_rs2_b14_str)
 
 # Testcase cp_rs2 (Test source rs2 = x15)
   RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs1: x0 = 0x110040d2
@@ -581,19 +581,19 @@ I_bne_cg_cp_rs2_b15:
   bne x0, x15, 1f # perform operation
   LI(x27, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x27, I_bne_cg_cp_rs2_b15, I_bne_cg_cp_rs2_b15_str)
+  # Check if x27 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x27, I_bne_cg_cp_rs2_b15, I_bne_cg_cp_rs2_b15_str)
 
 # Testcase cp_rs2 (Test source rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs1: x7 = 0xd7960e68
+  RVTEST_TESTDATA_LOAD_INT(x22, x5) # load rs1: x5 = 0xd7960e68
   RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs2: x16 = 0x62d520a1
   RVTEST_TESTDATA_LOAD_INT(x22, x11) # load branch taken value: x11 = 0x18f01526
 I_bne_cg_cp_rs2_b16:
-  bne x7, x16, 1f # perform operation
+  bne x5, x16, 1f # perform operation
   LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x11 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x11, I_bne_cg_cp_rs2_b16, I_bne_cg_cp_rs2_b16_str)
+  # Check if x11 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x11, I_bne_cg_cp_rs2_b16, I_bne_cg_cp_rs2_b16_str)
 
 # Testcase cp_rs2 (Test source rs2 = x17)
   RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs1: x23 = 0x94863756
@@ -603,8 +603,8 @@ I_bne_cg_cp_rs2_b17:
   bne x23, x17, 1f # perform operation
   LI(x28, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x28, I_bne_cg_cp_rs2_b17, I_bne_cg_cp_rs2_b17_str)
+  # Check if x28 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x28, I_bne_cg_cp_rs2_b17, I_bne_cg_cp_rs2_b17_str)
 
 # Testcase cp_rs2 (Test source rs2 = x18)
   RVTEST_TESTDATA_LOAD_INT(x22, x29) # load rs1: x29 = 0x5fee2004
@@ -614,8 +614,8 @@ I_bne_cg_cp_rs2_b18:
   bne x29, x18, 1f # perform operation
   LI(x21, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x21, I_bne_cg_cp_rs2_b18, I_bne_cg_cp_rs2_b18_str)
+  # Check if x21 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x21, I_bne_cg_cp_rs2_b18, I_bne_cg_cp_rs2_b18_str)
 
 # Testcase cp_rs2 (Test source rs2 = x19)
   RVTEST_TESTDATA_LOAD_INT(x22, x29) # load rs1: x29 = 0x6e1aa829
@@ -625,8 +625,8 @@ I_bne_cg_cp_rs2_b19:
   bne x29, x19, 1f # perform operation
   LI(x25, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x25, I_bne_cg_cp_rs2_b19, I_bne_cg_cp_rs2_b19_str)
+  # Check if x25 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x25, I_bne_cg_cp_rs2_b19, I_bne_cg_cp_rs2_b19_str)
 
 # Testcase cp_rs2 (Test source rs2 = x20)
   RVTEST_TESTDATA_LOAD_INT(x22, x31) # load rs1: x31 = 0x8a4c48dd
@@ -636,8 +636,8 @@ I_bne_cg_cp_rs2_b20:
   bne x31, x20, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x3, I_bne_cg_cp_rs2_b20, I_bne_cg_cp_rs2_b20_str)
+  # Check if x3 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x3, I_bne_cg_cp_rs2_b20, I_bne_cg_cp_rs2_b20_str)
 
 # Testcase cp_rs2 (Test source rs2 = x21)
   RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0x177c1cc4
@@ -647,8 +647,8 @@ I_bne_cg_cp_rs2_b21:
   bne x12, x21, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x20, I_bne_cg_cp_rs2_b21, I_bne_cg_cp_rs2_b21_str)
+  # Check if x20 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x20, I_bne_cg_cp_rs2_b21, I_bne_cg_cp_rs2_b21_str)
 
   mv x9, x22 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x22)
@@ -659,8 +659,8 @@ I_bne_cg_cp_rs2_b22:
   bne x19, x22, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x26, I_bne_cg_cp_rs2_b22, I_bne_cg_cp_rs2_b22_str)
+  # Check if x26 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x26, I_bne_cg_cp_rs2_b22, I_bne_cg_cp_rs2_b22_str)
 
 # Testcase cp_rs2 (Test source rs2 = x23)
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs1: x22 = 0x52ffa791
@@ -670,8 +670,8 @@ I_bne_cg_cp_rs2_b23:
   bne x22, x23, 1f # perform operation
   LI(x12, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x12 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x12, I_bne_cg_cp_rs2_b23, I_bne_cg_cp_rs2_b23_str)
+  # Check if x12 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x12, I_bne_cg_cp_rs2_b23, I_bne_cg_cp_rs2_b23_str)
 
 # Testcase cp_rs2 (Test source rs2 = x24)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xae793d81
@@ -681,19 +681,19 @@ I_bne_cg_cp_rs2_b24:
   bne x10, x24, 1f # perform operation
   LI(x18, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x18, I_bne_cg_cp_rs2_b24, I_bne_cg_cp_rs2_b24_str)
+  # Check if x18 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x18, I_bne_cg_cp_rs2_b24, I_bne_cg_cp_rs2_b24_str)
 
 # Testcase cp_rs2 (Test source rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x19000211
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0x19000211
   RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x13b42759
   RVTEST_TESTDATA_LOAD_INT(x9, x27) # load branch taken value: x27 = 0x30719eb8
 I_bne_cg_cp_rs2_b25:
-  bne x6, x25, 1f # perform operation
+  bne x4, x25, 1f # perform operation
   LI(x27, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x27, I_bne_cg_cp_rs2_b25, I_bne_cg_cp_rs2_b25_str)
+  # Check if x27 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x27, I_bne_cg_cp_rs2_b25, I_bne_cg_cp_rs2_b25_str)
 
 # Testcase cp_rs2 (Test source rs2 = x26)
   RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs1: x16 = 0x35307682
@@ -703,8 +703,8 @@ I_bne_cg_cp_rs2_b26:
   bne x16, x26, 1f # perform operation
   LI(x19, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x19, I_bne_cg_cp_rs2_b26, I_bne_cg_cp_rs2_b26_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x19, I_bne_cg_cp_rs2_b26, I_bne_cg_cp_rs2_b26_str)
 
 # Testcase cp_rs2 (Test source rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0xe2faaabf
@@ -714,8 +714,8 @@ I_bne_cg_cp_rs2_b27:
   bne x12, x27, 1f # perform operation
   LI(x16, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x16 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x16, I_bne_cg_cp_rs2_b27, I_bne_cg_cp_rs2_b27_str)
+  # Check if x16 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x16, I_bne_cg_cp_rs2_b27, I_bne_cg_cp_rs2_b27_str)
 
 # Testcase cp_rs2 (Test source rs2 = x28)
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs1: x22 = 0x4b54ce3a
@@ -725,8 +725,8 @@ I_bne_cg_cp_rs2_b28:
   bne x22, x28, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x26, I_bne_cg_cp_rs2_b28, I_bne_cg_cp_rs2_b28_str)
+  # Check if x26 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x26, I_bne_cg_cp_rs2_b28, I_bne_cg_cp_rs2_b28_str)
 
 # Testcase cp_rs2 (Test source rs2 = x29)
   RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x7aae26fc
@@ -736,20 +736,20 @@ I_bne_cg_cp_rs2_b29:
   bne x2, x29, 1f # perform operation
   LI(x23, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x23, I_bne_cg_cp_rs2_b29, I_bne_cg_cp_rs2_b29_str)
+  # Check if x23 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x23, I_bne_cg_cp_rs2_b29, I_bne_cg_cp_rs2_b29_str)
 
   mv x23, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x9, x17) # load rs1: x17 = 0xc6f9301a
   RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs2: x30 = 0x0865fed5
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load branch taken value: x8 = 0xe2af8c38
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load branch taken value: x6 = 0xe2af8c38
 I_bne_cg_cp_rs2_b30:
   bne x17, x30, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cp_rs2_b30, I_bne_cg_cp_rs2_b30_str)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cp_rs2_b30, I_bne_cg_cp_rs2_b30_str)
 
 # Testcase cp_rs2 (Test source rs2 = x31)
   RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs1: x24 = 0x77bc4631
@@ -759,8 +759,8 @@ I_bne_cg_cp_rs2_b31:
   bne x24, x31, 1f # perform operation
   LI(x15, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cp_rs2_b31, I_bne_cg_cp_rs2_b31_str)
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cp_rs2_b31, I_bne_cg_cp_rs2_b31_str)
 
 /////////////////////////////////
 // cp_rs1_edges
@@ -774,8 +774,8 @@ I_bne_cg_cp_rs1_edges_0x0:
   bne x31, x19, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, I_bne_cg_cp_rs1_edges_0x0, I_bne_cg_cp_rs1_edges_0x0_str)
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, I_bne_cg_cp_rs1_edges_0x0, I_bne_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x00000001
@@ -785,52 +785,52 @@ I_bne_cg_cp_rs1_edges_0x1:
   bne x3, x18, 1f # perform operation
   LI(x19, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cp_rs1_edges_0x1, I_bne_cg_cp_rs1_edges_0x1_str)
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cp_rs1_edges_0x1, I_bne_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
   RVTEST_TESTDATA_LOAD_INT(x9, x28) # load rs1: x28 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x8a90daa0
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x8a90daa0
   RVTEST_TESTDATA_LOAD_INT(x9, x20) # load branch taken value: x20 = 0x187361ef
 I_bne_cg_cp_rs1_edges_0x2:
-  bne x28, x7, 1f # perform operation
+  bne x28, x5, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cp_rs1_edges_0x2, I_bne_cg_cp_rs1_edges_0x2_str)
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cp_rs1_edges_0x2, I_bne_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
   RVTEST_TESTDATA_LOAD_INT(x9, x17) # load rs1: x17 = 0x80000000
   RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs2: x2 = 0xca80d761
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load branch taken value: x6 = 0x9e3037c1
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load branch taken value: x4 = 0x9e3037c1
 I_bne_cg_cp_rs1_edges_0x80000000:
   bne x17, x2, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cp_rs1_edges_0x80000000, I_bne_cg_cp_rs1_edges_0x80000000_str)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cp_rs1_edges_0x80000000, I_bne_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x80000001
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs2: x22 = 0xcf4c14f9
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load branch taken value: x7 = 0xb5170555
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load branch taken value: x5 = 0xb5170555
 I_bne_cg_cp_rs1_edges_0x80000001:
   bne x10, x22, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cp_rs1_edges_0x80000001, I_bne_cg_cp_rs1_edges_0x80000001_str)
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cp_rs1_edges_0x80000001, I_bne_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0x6ab42938
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load branch taken value: x7 = 0x7372f0df
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load branch taken value: x5 = 0x7372f0df
 I_bne_cg_cp_rs1_edges_0x7fffffff:
   bne x10, x1, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cp_rs1_edges_0x7fffffff, I_bne_cg_cp_rs1_edges_0x7fffffff_str)
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cp_rs1_edges_0x7fffffff, I_bne_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x7ffffffe
@@ -840,19 +840,19 @@ I_bne_cg_cp_rs1_edges_0x7ffffffe:
   bne x14, x25, 1f # perform operation
   LI(x27, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cp_rs1_edges_0x7ffffffe, I_bne_cg_cp_rs1_edges_0x7ffffffe_str)
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cp_rs1_edges_0x7ffffffe, I_bne_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x2c394387
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x2c394387
   RVTEST_TESTDATA_LOAD_INT(x9, x17) # load branch taken value: x17 = 0x87bad774
 I_bne_cg_cp_rs1_edges_0xffffffff:
-  bne x10, x7, 1f # perform operation
+  bne x10, x5, 1f # perform operation
   LI(x17, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, I_bne_cg_cp_rs1_edges_0xffffffff, I_bne_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, I_bne_cg_cp_rs1_edges_0xffffffff, I_bne_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
   RVTEST_TESTDATA_LOAD_INT(x9, x18) # load rs1: x18 = 0xfffffffe
@@ -862,8 +862,8 @@ I_bne_cg_cp_rs1_edges_0xfffffffe:
   bne x18, x20, 1f # perform operation
   LI(x1, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cp_rs1_edges_0xfffffffe, I_bne_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cp_rs1_edges_0xfffffffe, I_bne_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
   RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs1: x16 = 0x5bbc8872
@@ -873,8 +873,8 @@ I_bne_cg_cp_rs1_edges_0x5bbc8872:
   bne x16, x24, 1f # perform operation
   LI(x28, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cp_rs1_edges_0x5bbc8872, I_bne_cg_cp_rs1_edges_0x5bbc8872_str)
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cp_rs1_edges_0x5bbc8872, I_bne_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs1: x25 = 0xaaaaaaaa
@@ -884,8 +884,8 @@ I_bne_cg_cp_rs1_edges_0xaaaaaaaa:
   bne x25, x21, 1f # perform operation
   LI(x28, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cp_rs1_edges_0xaaaaaaaa, I_bne_cg_cp_rs1_edges_0xaaaaaaaa_str)
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cp_rs1_edges_0xaaaaaaaa, I_bne_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
   RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs1: x24 = 0x55555555
@@ -895,8 +895,8 @@ I_bne_cg_cp_rs1_edges_0x55555555:
   bne x24, x21, 1f # perform operation
   LI(x25, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cp_rs1_edges_0x55555555, I_bne_cg_cp_rs1_edges_0x55555555_str)
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cp_rs1_edges_0x55555555, I_bne_cg_cp_rs1_edges_0x55555555_str)
 
 /////////////////////////////////
 // cp_rs2_edges
@@ -910,8 +910,8 @@ I_bne_cg_cp_rs2_edges_0x0:
   bne x14, x30, 1f # perform operation
   LI(x22, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, I_bne_cg_cp_rs2_edges_0x0, I_bne_cg_cp_rs2_edges_0x0_str)
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, I_bne_cg_cp_rs2_edges_0x0, I_bne_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs1: x25 = 0xc384ec7f
@@ -921,8 +921,8 @@ I_bne_cg_cp_rs2_edges_0x1:
   bne x25, x27, 1f # perform operation
   LI(x31, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cp_rs2_edges_0x1, I_bne_cg_cp_rs2_edges_0x1_str)
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cp_rs2_edges_0x1, I_bne_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000002)
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xfe9bdde9
@@ -932,19 +932,19 @@ I_bne_cg_cp_rs2_edges_0x2:
   bne x11, x21, 1f # perform operation
   LI(x13, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cp_rs2_edges_0x2, I_bne_cg_cp_rs2_edges_0x2_str)
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, I_bne_cg_cp_rs2_edges_0x2, I_bne_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000000)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x3a9188b6
   RVTEST_TESTDATA_LOAD_INT(x9, x21) # load rs2: x21 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load branch taken value: x6 = 0x9ffe8238
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load branch taken value: x4 = 0x9ffe8238
 I_bne_cg_cp_rs2_edges_0x80000000:
   bne x10, x21, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cp_rs2_edges_0x80000000, I_bne_cg_cp_rs2_edges_0x80000000_str)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cp_rs2_edges_0x80000000, I_bne_cg_cp_rs2_edges_0x80000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs1: x22 = 0xfa0683c2
@@ -954,19 +954,19 @@ I_bne_cg_cp_rs2_edges_0x80000001:
   bne x22, x12, 1f # perform operation
   LI(x30, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, I_bne_cg_cp_rs2_edges_0x80000001, I_bne_cg_cp_rs2_edges_0x80000001_str)
+  # Check if x30 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x30, I_bne_cg_cp_rs2_edges_0x80000001, I_bne_cg_cp_rs2_edges_0x80000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xd747bfad
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs2: x10 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load branch taken value: x7 = 0xa919edec
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load branch taken value: x5 = 0xa919edec
 I_bne_cg_cp_rs2_edges_0x7fffffff:
   bne x14, x10, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x5, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cp_rs2_edges_0x7fffffff, I_bne_cg_cp_rs2_edges_0x7fffffff_str)
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cp_rs2_edges_0x7fffffff, I_bne_cg_cp_rs2_edges_0x7fffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffe)
   RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs1: x25 = 0xe97f3153
@@ -976,8 +976,8 @@ I_bne_cg_cp_rs2_edges_0x7ffffffe:
   bne x25, x11, 1f # perform operation
   LI(x24, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cp_rs2_edges_0x7ffffffe, I_bne_cg_cp_rs2_edges_0x7ffffffe_str)
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cp_rs2_edges_0x7ffffffe, I_bne_cg_cp_rs2_edges_0x7ffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x20) # load rs1: x20 = 0x66cb280c
@@ -987,8 +987,8 @@ I_bne_cg_cp_rs2_edges_0xffffffff:
   bne x20, x10, 1f # perform operation
   LI(x31, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cp_rs2_edges_0xffffffff, I_bne_cg_cp_rs2_edges_0xffffffff_str)
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cp_rs2_edges_0xffffffff, I_bne_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffe)
   RVTEST_TESTDATA_LOAD_INT(x9, x31) # load rs1: x31 = 0xa419aad9
@@ -998,8 +998,8 @@ I_bne_cg_cp_rs2_edges_0xfffffffe:
   bne x31, x30, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cp_rs2_edges_0xfffffffe, I_bne_cg_cp_rs2_edges_0xfffffffe_str)
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cp_rs2_edges_0xfffffffe, I_bne_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc8872)
   RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs1: x16 = 0x3c96d59b
@@ -1009,8 +1009,8 @@ I_bne_cg_cp_rs2_edges_0x5bbc8872:
   bne x16, x3, 1f # perform operation
   LI(x21, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cp_rs2_edges_0x5bbc8872, I_bne_cg_cp_rs2_edges_0x5bbc8872_str)
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cp_rs2_edges_0x5bbc8872, I_bne_cg_cp_rs2_edges_0x5bbc8872_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs1: x24 = 0x62a1c9ce
@@ -1020,8 +1020,8 @@ I_bne_cg_cp_rs2_edges_0xaaaaaaaa:
   bne x24, x1, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cp_rs2_edges_0xaaaaaaaa, I_bne_cg_cp_rs2_edges_0xaaaaaaaa_str)
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cp_rs2_edges_0xaaaaaaaa, I_bne_cg_cp_rs2_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x55555555)
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x3204cfbc
@@ -1031,8 +1031,8 @@ I_bne_cg_cp_rs2_edges_0x55555555:
   bne x3, x2, 1f # perform operation
   LI(x13, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cp_rs2_edges_0x55555555, I_bne_cg_cp_rs2_edges_0x55555555_str)
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, I_bne_cg_cp_rs2_edges_0x55555555, I_bne_cg_cp_rs2_edges_0x55555555_str)
 
 /////////////////////////////////
 // cr_rs1_rs2_edges_offset
@@ -1046,13 +1046,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0:
   bne x15, x28, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x28, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x28, 2b # backward branch, definitely taken
@@ -1066,13 +1066,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1:
   bne x10, x2, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x2, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x2, 2b # backward branch, definitely taken
@@ -1086,13 +1086,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2:
   bne x16, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x16, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x16, 1)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2_str) # signature 1 for taken
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x16, x21, 2b # backward branch, definitely taken
@@ -1106,13 +1106,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000:
   bne x18, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x18, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x18, 1)
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x18, x26, 2b # backward branch, definitely taken
@@ -1126,13 +1126,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001:
   bne x10, x17, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x17, 2b # backward branch, definitely taken
@@ -1146,13 +1146,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff:
   bne x12, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x12, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x12, 1)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x12, x22, 2b # backward branch, definitely taken
@@ -1166,36 +1166,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe:
   bne x10, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x25, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000000 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x00000000
   RVTEST_TESTDATA_LOAD_INT(x9, x17) # load rs2: x17 = 0xffffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff:
-  bne x8, x17, 3f # forward branch, if taken
+  bne x6, x17, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff_str)
+  bne x6, x17, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x17, 2b # backward branch, definitely taken
+  bne x6, x17, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000000 rs2 = 0xfffffffe)
@@ -1206,13 +1206,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe:
   bne x15, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x13, 2b # backward branch, definitely taken
@@ -1226,36 +1226,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872:
   bne x24, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x18, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000000 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs1: x5 = 0x00000000
   RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs2: x12 = 0xaaaaaaaa
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa:
-  bne x7, x12, 3f # forward branch, if taken
+  bne x5, x12, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x7, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa_str)
+  bne x5, x12, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x7, 1)
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  LI(x5, 1)
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x7, x12, 2b # backward branch, definitely taken
+  bne x5, x12, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000000 rs2 = 0x55555555)
@@ -1266,13 +1266,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555:
   bne x21, x19, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x21, x19, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x21, 1)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x0_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x21, x19, 2b # backward branch, definitely taken
@@ -1286,13 +1286,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0:
   bne x31, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x22, 2b # backward branch, definitely taken
@@ -1306,13 +1306,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1:
   bne x30, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x30, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x30, 1)
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1_str) # signature 1 for taken
+  # Check if x30 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x30, x25, 2b # backward branch, definitely taken
@@ -1326,13 +1326,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2:
   bne x27, x29, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x27, x29, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x27, 1)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2_str) # signature 1 for taken
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x27, x29, 2b # backward branch, definitely taken
@@ -1346,36 +1346,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000:
   bne x2, x1, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x1, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x1, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000001 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x00000001
   RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0x80000001
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001:
-  bne x8, x1, 3f # forward branch, if taken
+  bne x6, x1, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x1, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001_str)
+  bne x6, x1, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x1, 2b # backward branch, definitely taken
+  bne x6, x1, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000001 rs2 = 0x7fffffff)
@@ -1386,13 +1386,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff:
   bne x16, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x16, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x16, 1)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x16, x10, 2b # backward branch, definitely taken
@@ -1406,13 +1406,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe:
   bne x1, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x22, 2b # backward branch, definitely taken
@@ -1426,13 +1426,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff:
   bne x25, x14, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x25, x14, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x25, 1)
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x25, x14, 2b # backward branch, definitely taken
@@ -1446,13 +1446,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe:
   bne x13, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x13, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x13, 1)
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x13, x26, 2b # backward branch, definitely taken
@@ -1466,36 +1466,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872:
   bne x24, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x21, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000001 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x00000001
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs2: x22 = 0xaaaaaaaa
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa:
-  bne x8, x22, 3f # forward branch, if taken
+  bne x6, x22, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa_str)
+  bne x6, x22, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x22, 2b # backward branch, definitely taken
+  bne x6, x22, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000001 rs2 = 0x55555555)
@@ -1506,13 +1506,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555:
   bne x19, x28, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x28, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x1_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x28, 2b # backward branch, definitely taken
@@ -1526,36 +1526,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0:
   bne x14, x1, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x1, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x1, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x00000002
   RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0x00000001
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1:
-  bne x8, x27, 3f # forward branch, if taken
+  bne x6, x27, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1_str)
+  bne x6, x27, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x27, 2b # backward branch, definitely taken
+  bne x6, x27, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0x00000002)
@@ -1566,13 +1566,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2:
   bne x12, x20, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x12, x20, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x12, 1)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2_str) # signature 1 for taken
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x12, x20, 2b # backward branch, definitely taken
@@ -1586,13 +1586,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000:
   bne x16, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x16, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x16, 1)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x16, x25, 2b # backward branch, definitely taken
@@ -1606,13 +1606,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001:
   bne x28, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x13, 2b # backward branch, definitely taken
@@ -1626,13 +1626,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff:
   bne x11, x16, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x11, x16, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x11, x16, 2b # backward branch, definitely taken
@@ -1646,13 +1646,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe:
   bne x28, x12, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x12, 2b # backward branch, definitely taken
@@ -1666,13 +1666,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff:
   bne x14, x17, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x17, 2b # backward branch, definitely taken
@@ -1680,22 +1680,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xffffffff:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0xfffffffe)
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xfffffffe
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe:
-  bne x3, x8, 3f # forward branch, if taken
+  bne x3, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x3, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe_str)
+  bne x3, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x3, 1)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x3, x8, 2b # backward branch, definitely taken
+  bne x3, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0x5bbc8872)
@@ -1706,13 +1706,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872:
   bne x2, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x22, 2b # backward branch, definitely taken
@@ -1720,22 +1720,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x5bbc8872:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0xaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x9, x31) # load rs1: x31 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0xaaaaaaaa
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa:
-  bne x31, x7, 3f # forward branch, if taken
+  bne x31, x5, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x31, x7, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa_str)
+  bne x31, x5, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x31, x7, 2b # backward branch, definitely taken
+  bne x31, x5, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x00000002 rs2 = 0x55555555)
@@ -1746,13 +1746,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555:
   bne x3, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x3, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x3, 1)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x2_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x3, x18, 2b # backward branch, definitely taken
@@ -1766,13 +1766,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0:
   bne x14, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x25, 2b # backward branch, definitely taken
@@ -1780,22 +1780,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x0:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x80000000 rs2 = 0x00000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs1: x30 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x00000001
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1:
-  bne x30, x8, 3f # forward branch, if taken
+  bne x30, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x30, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1_str)
+  bne x30, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x30, 1)
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1_str) # signature 1 for taken
+  # Check if x30 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x30, x8, 2b # backward branch, definitely taken
+  bne x30, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x80000000 rs2 = 0x00000002)
@@ -1806,13 +1806,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2:
   bne x21, x15, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x21, x15, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x21, 1)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2_str) # signature 1 for taken
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x21, x15, 2b # backward branch, definitely taken
@@ -1826,13 +1826,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000:
   bne x15, x12, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x12, 2b # backward branch, definitely taken
@@ -1846,13 +1846,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001:
   bne x11, x31, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x11, x31, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x11, x31, 2b # backward branch, definitely taken
@@ -1860,22 +1860,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x80000001:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x80000000 rs2 = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x7fffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff:
-  bne x12, x6, 3f # forward branch, if taken
+  bne x12, x4, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x12, x6, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff_str)
+  bne x12, x4, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x12, 1)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x12, x6, 2b # backward branch, definitely taken
+  bne x12, x4, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x80000000 rs2 = 0x7ffffffe)
@@ -1886,13 +1886,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe:
   bne x29, x11, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x11, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x11, 2b # backward branch, definitely taken
@@ -1906,13 +1906,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff:
   bne x19, x24, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x24, 2b # backward branch, definitely taken
@@ -1926,13 +1926,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe:
   bne x24, x11, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x11, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x11, 2b # backward branch, definitely taken
@@ -1946,13 +1946,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872:
   bne x30, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x30, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x30, 1)
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x30 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x30, x10, 2b # backward branch, definitely taken
@@ -1966,13 +1966,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa:
   bne x14, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x10, 2b # backward branch, definitely taken
@@ -1986,13 +1986,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555:
   bne x20, x28, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x20, x28, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x20, 1)
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000000_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x20, x28, 2b # backward branch, definitely taken
@@ -2006,13 +2006,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0:
   bne x3, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x3, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x3, 1)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0_str) # signature 1 for taken
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x3, x10, 2b # backward branch, definitely taken
@@ -2026,13 +2026,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1:
   bne x22, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x22, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x22, 1)
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1_str) # signature 1 for taken
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x22, x21, 2b # backward branch, definitely taken
@@ -2046,13 +2046,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2:
   bne x11, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x11, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x11, x10, 2b # backward branch, definitely taken
@@ -2066,13 +2066,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000:
   bne x27, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x27, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x27, 1)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x27, x21, 2b # backward branch, definitely taken
@@ -2086,13 +2086,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001:
   bne x2, x24, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x24, 2b # backward branch, definitely taken
@@ -2106,13 +2106,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff:
   bne x28, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x26, 2b # backward branch, definitely taken
@@ -2126,13 +2126,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe:
   bne x20, x29, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x20, x29, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x20, 1)
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x20, x29, 2b # backward branch, definitely taken
@@ -2146,13 +2146,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff:
   bne x19, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x18, 2b # backward branch, definitely taken
@@ -2166,13 +2166,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe:
   bne x21, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x21, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x21, 1)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x21, x3, 2b # backward branch, definitely taken
@@ -2186,13 +2186,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872:
   bne x28, x2, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x2, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x2, 2b # backward branch, definitely taken
@@ -2206,13 +2206,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa:
   bne x14, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x26, 2b # backward branch, definitely taken
@@ -2226,13 +2226,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555:
   bne x27, x29, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x27, x29, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x27, 1)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x80000001_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x27, x29, 2b # backward branch, definitely taken
@@ -2246,13 +2246,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0:
   bne x15, x27, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x27, 2b # backward branch, definitely taken
@@ -2266,13 +2266,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1:
   bne x10, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x13, 2b # backward branch, definitely taken
@@ -2286,56 +2286,56 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2:
   bne x15, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x18, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x80000000
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000:
-  bne x6, x8, 3f # forward branch, if taken
+  bne x4, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x6, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000_str)
+  bne x4, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x6, 1)
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000_str) # signature 1 for taken
+  LI(x4, 1)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x6, x8, 2b # backward branch, definitely taken
+  bne x4, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs2: x12 = 0x80000001
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001:
-  bne x8, x12, 3f # forward branch, if taken
+  bne x6, x12, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001_str)
+  bne x6, x12, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x12, 2b # backward branch, definitely taken
+  bne x6, x12, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0x7fffffff)
@@ -2346,13 +2346,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff:
   bne x22, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x22, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x22, 1)
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x22, x13, 2b # backward branch, definitely taken
@@ -2366,13 +2366,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe:
   bne x25, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x25, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x25, 1)
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x25, x3, 2b # backward branch, definitely taken
@@ -2380,22 +2380,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x7ffffffe:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0xffffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xffffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff:
-  bne x13, x8, 3f # forward branch, if taken
+  bne x13, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x13, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff_str)
+  bne x13, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x13, 1)
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x13, x8, 2b # backward branch, definitely taken
+  bne x13, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0xfffffffe)
@@ -2406,13 +2406,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe:
   bne x10, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x13, 2b # backward branch, definitely taken
@@ -2426,13 +2426,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872:
   bne x10, x17, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x17, 2b # backward branch, definitely taken
@@ -2446,13 +2446,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa:
   bne x14, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x13, 2b # backward branch, definitely taken
@@ -2460,22 +2460,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0xaaaaaaaa:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7fffffff rs2 = 0x55555555)
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x55555555
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555:
-  bne x10, x8, 3f # forward branch, if taken
+  bne x10, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x10, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555_str)
+  bne x10, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7fffffff_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x10, x8, 2b # backward branch, definitely taken
+  bne x10, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7ffffffe rs2 = 0x00000000)
@@ -2486,13 +2486,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0:
   bne x31, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x10, 2b # backward branch, definitely taken
@@ -2506,13 +2506,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1:
   bne x29, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x18, 2b # backward branch, definitely taken
@@ -2526,13 +2526,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2:
   bne x1, x12, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x12, 2b # backward branch, definitely taken
@@ -2546,13 +2546,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000:
   bne x16, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x16, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x16, 1)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x16, x25, 2b # backward branch, definitely taken
@@ -2566,13 +2566,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001:
   bne x21, x2, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x21, x2, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x21, 1)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x21, x2, 2b # backward branch, definitely taken
@@ -2586,13 +2586,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff:
   bne x29, x15, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x15, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x15, 2b # backward branch, definitely taken
@@ -2606,13 +2606,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe:
   bne x14, x11, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x11, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x11, 2b # backward branch, definitely taken
@@ -2626,56 +2626,56 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff:
   bne x19, x17, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x17, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7ffffffe rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0xfffffffe
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe:
-  bne x6, x7, 3f # forward branch, if taken
+  bne x4, x5, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x6, x7, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe_str)
+  bne x4, x5, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x6, 1)
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe_str) # signature 1 for taken
+  LI(x4, 1)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x6, x7, 2b # backward branch, definitely taken
+  bne x4, x5, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7ffffffe rs2 = 0x5bbc8872)
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x5bbc8872
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872:
-  bne x11, x8, 3f # forward branch, if taken
+  bne x11, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x11, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str)
+  bne x11, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x11, x8, 2b # backward branch, definitely taken
+  bne x11, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x7ffffffe rs2 = 0xaaaaaaaa)
@@ -2686,13 +2686,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa:
   bne x3, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x3, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x3, 1)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x3, x18, 2b # backward branch, definitely taken
@@ -2706,13 +2706,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555:
   bne x10, x28, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x28, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x7ffffffe_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x28, 2b # backward branch, definitely taken
@@ -2726,13 +2726,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0:
   bne x19, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x13, 2b # backward branch, definitely taken
@@ -2746,13 +2746,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1:
   bne x25, x19, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x25, x19, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x25, 1)
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1_str) # signature 1 for taken
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x25, x19, 2b # backward branch, definitely taken
@@ -2766,36 +2766,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2:
   bne x24, x27, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x27, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xffffffff rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0xffffffff
   RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs2: x13 = 0x80000000
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000:
-  bne x6, x13, 3f # forward branch, if taken
+  bne x4, x13, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x6, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000_str)
+  bne x4, x13, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x6, 1)
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000_str) # signature 1 for taken
+  LI(x4, 1)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x6, x13, 2b # backward branch, definitely taken
+  bne x4, x13, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xffffffff rs2 = 0x80000001)
@@ -2806,13 +2806,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001:
   bne x2, x30, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x30, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x30, 2b # backward branch, definitely taken
@@ -2826,13 +2826,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff:
   bne x15, x12, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x12, 2b # backward branch, definitely taken
@@ -2846,13 +2846,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe:
   bne x12, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x12, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x12, 1)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x12, x22, 2b # backward branch, definitely taken
@@ -2866,13 +2866,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff:
   bne x13, x31, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x13, x31, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x13, 1)
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x13, x31, 2b # backward branch, definitely taken
@@ -2886,13 +2886,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe:
   bne x10, x14, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x14, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x14, 2b # backward branch, definitely taken
@@ -2906,13 +2906,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872:
   bne x26, x14, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x26, x14, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x26, 1)
-  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x26 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x26, x14, 2b # backward branch, definitely taken
@@ -2926,56 +2926,56 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa:
   bne x15, x17, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x17, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x17, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xffffffff rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xffffffff
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs2: x10 = 0x55555555
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555:
-  bne x8, x10, 3f # forward branch, if taken
+  bne x6, x10, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555_str)
+  bne x6, x10, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xffffffff_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x10, 2b # backward branch, definitely taken
+  bne x6, x10, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xfffffffe
   RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs2: x24 = 0x00000000
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0:
-  bne x8, x24, 3f # forward branch, if taken
+  bne x6, x24, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0_str)
+  bne x6, x24, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x24, 2b # backward branch, definitely taken
+  bne x6, x24, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x00000001)
@@ -2986,13 +2986,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1:
   bne x2, x15, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x15, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x15, 2b # backward branch, definitely taken
@@ -3000,42 +3000,42 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x1:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x00000002)
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x00000002
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2:
-  bne x14, x7, 3f # forward branch, if taken
+  bne x14, x5, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x14, x7, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2_str)
+  bne x14, x5, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x14, x7, 2b # backward branch, definitely taken
+  bne x14, x5, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x80000000)
   RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs1: x16 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x80000000
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000:
-  bne x16, x7, 3f # forward branch, if taken
+  bne x16, x5, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x16, x7, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000_str)
+  bne x16, x5, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x16, 1)
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x16, x7, 2b # backward branch, definitely taken
+  bne x16, x5, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x80000001)
@@ -3046,13 +3046,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001:
   bne x18, x22, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x18, x22, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x18, 1)
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x18, x22, 2b # backward branch, definitely taken
@@ -3066,36 +3066,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff:
   bne x31, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x3, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0xfffffffe
   RVTEST_TESTDATA_LOAD_INT(x9, x18) # load rs2: x18 = 0x7ffffffe
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe:
-  bne x6, x18, 3f # forward branch, if taken
+  bne x4, x18, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x6, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe_str)
+  bne x4, x18, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x6, 1)
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe_str) # signature 1 for taken
+  LI(x4, 1)
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x6, x18, 2b # backward branch, definitely taken
+  bne x4, x18, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xfffffffe rs2 = 0xffffffff)
@@ -3106,13 +3106,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff:
   bne x17, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x17, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x17, 1)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x17, x26, 2b # backward branch, definitely taken
@@ -3126,13 +3126,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe:
   bne x11, x18, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x11, x18, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x11, x18, 2b # backward branch, definitely taken
@@ -3146,13 +3146,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872:
   bne x29, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x3, 2b # backward branch, definitely taken
@@ -3166,13 +3166,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa:
   bne x10, x20, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x10, x20, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x10, 1)
-  # Check if x10 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x10, x20, 2b # backward branch, definitely taken
@@ -3186,13 +3186,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555:
   bne x12, x27, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x12, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x12, 1)
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xfffffffe_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x12, x27, 2b # backward branch, definitely taken
@@ -3206,13 +3206,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0:
   bne x14, x24, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x14, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x14, 1)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0_str) # signature 1 for taken
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x14, x24, 2b # backward branch, definitely taken
@@ -3226,13 +3226,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1:
   bne x28, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x25, 2b # backward branch, definitely taken
@@ -3246,13 +3246,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2:
   bne x31, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x26, 2b # backward branch, definitely taken
@@ -3266,13 +3266,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000:
   bne x20, x15, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x20, x15, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x20, 1)
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x20, x15, 2b # backward branch, definitely taken
@@ -3286,13 +3286,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001:
   bne x27, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x27, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x27, 1)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x27, x25, 2b # backward branch, definitely taken
@@ -3300,22 +3300,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x80000001:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x5bbc8872 rs2 = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x7fffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff:
-  bne x11, x7, 3f # forward branch, if taken
+  bne x11, x5, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x11, x7, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff_str)
+  bne x11, x5, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x11, 1)
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x11, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x11, x7, 2b # backward branch, definitely taken
+  bne x11, x5, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x5bbc8872 rs2 = 0x7ffffffe)
@@ -3326,13 +3326,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe:
   bne x24, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x21, 2b # backward branch, definitely taken
@@ -3346,13 +3346,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff:
   bne x15, x24, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x24, 2b # backward branch, definitely taken
@@ -3366,13 +3366,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe:
   bne x1, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x3, 2b # backward branch, definitely taken
@@ -3386,13 +3386,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872:
   bne x17, x12, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x17, x12, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x17, 1)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x17, x12, 2b # backward branch, definitely taken
@@ -3406,13 +3406,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa:
   bne x2, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x2, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x2, 1)
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x2, x13, 2b # backward branch, definitely taken
@@ -3426,13 +3426,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555:
   bne x19, x24, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x19, x24, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x19, 1)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x5bbc8872_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x19, x24, 2b # backward branch, definitely taken
@@ -3446,13 +3446,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0:
   bne x1, x13, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x13, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x13, 2b # backward branch, definitely taken
@@ -3466,13 +3466,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1:
   bne x15, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x21, 2b # backward branch, definitely taken
@@ -3486,13 +3486,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2:
   bne x25, x30, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x25, x30, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x25, 1)
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2_str) # signature 1 for taken
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x25, x30, 2b # backward branch, definitely taken
@@ -3506,13 +3506,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000:
   bne x31, x15, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x15, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x15, 2b # backward branch, definitely taken
@@ -3520,22 +3520,22 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000000:
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xaaaaaaaa rs2 = 0x80000001)
   RVTEST_TESTDATA_LOAD_INT(x9, x26) # load rs1: x26 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x80000001
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001:
-  bne x26, x8, 3f # forward branch, if taken
+  bne x26, x6, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x26, x8, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001_str)
+  bne x26, x6, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x26, 1)
-  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x26 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x26, x8, 2b # backward branch, definitely taken
+  bne x26, x6, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0xaaaaaaaa rs2 = 0x7fffffff)
@@ -3546,13 +3546,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff:
   bne x1, x3, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x3, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x3, 2b # backward branch, definitely taken
@@ -3566,13 +3566,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe:
   bne x15, x19, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x15, x19, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x15, 1)
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x15, x19, 2b # backward branch, definitely taken
@@ -3586,13 +3586,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff:
   bne x30, x16, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x30, x16, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x30, 1)
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str) # signature 1 for taken
+  # Check if x30 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x30, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x30, x16, 2b # backward branch, definitely taken
@@ -3606,13 +3606,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe:
   bne x26, x20, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x26, x20, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x26, 1)
-  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x26 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x26, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x26, x20, 2b # backward branch, definitely taken
@@ -3626,13 +3626,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872:
   bne x24, x26, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x26, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x26, 2b # backward branch, definitely taken
@@ -3646,13 +3646,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa:
   bne x24, x29, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x29, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x29, 2b # backward branch, definitely taken
@@ -3666,13 +3666,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555:
   bne x27, x30, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x27, x30, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x27, 1)
-  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0xaaaaaaaa_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x27, x30, 2b # backward branch, definitely taken
@@ -3686,13 +3686,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0:
   bne x18, x27, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x18, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x18, 1)
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0_str) # signature 1 for taken
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x0_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x18, x27, 2b # backward branch, definitely taken
@@ -3706,13 +3706,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1:
   bne x25, x10, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x25, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x25, 1)
-  # Check if x25 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1_str) # signature 1 for taken
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x1_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x25, x10, 2b # backward branch, definitely taken
@@ -3726,13 +3726,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2:
   bne x29, x30, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x30, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x2_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x30, 2b # backward branch, definitely taken
@@ -3746,13 +3746,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000:
   bne x31, x11, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x31, x11, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x31, 1)
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000_str) # signature 1 for taken
+  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x31, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000000_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x31, x11, 2b # backward branch, definitely taken
@@ -3766,36 +3766,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001:
   bne x1, x19, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x1, x19, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x1, 1)
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001_str) # signature 1 for taken
+  # Check if x1 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x1, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x80000001_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x1, x19, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x55555555 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x55555555
   RVTEST_TESTDATA_LOAD_INT(x9, x28) # load rs2: x28 = 0x7fffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff:
-  bne x8, x28, 3f # forward branch, if taken
+  bne x6, x28, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x28, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff_str)
+  bne x6, x28, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7fffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x28, 2b # backward branch, definitely taken
+  bne x6, x28, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x55555555 rs2 = 0x7ffffffe)
@@ -3806,36 +3806,36 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe:
   bne x20, x29, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x20, x29, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x20, 1)
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe_str) # signature 1 for taken
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x7ffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x20, x29, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x55555555 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x55555555
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs2: x10 = 0xffffffff
 0: # destination for backwards branch that is never taken
 I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff:
-  bne x8, x10, 3f # forward branch, if taken
+  bne x6, x10, 3f # forward branch, if taken
 1: # goes here if not taken
-  bne x8, x10, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff_str)
+  bne x6, x10, 0b # backward branch, never taken
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
-  LI(x8, 1)
-  # Check if x8 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x8, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff_str) # signature 1 for taken
+  LI(x6, 1)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xffffffff_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
-  bne x8, x10, 2b # backward branch, definitely taken
+  bne x6, x10, 2b # backward branch, definitely taken
 4: # done with test
 
 # cr_rs1_rs2_edges_offset (Test source rs1 = 0x55555555 rs2 = 0xfffffffe)
@@ -3846,13 +3846,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe:
   bne x21, x31, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x21, x31, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x21, 1)
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe_str) # signature 1 for taken
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xfffffffe_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x21, x31, 2b # backward branch, definitely taken
@@ -3866,13 +3866,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872:
   bne x24, x27, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x24, x27, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x24, 1)
-  # Check if x24 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872_str) # signature 1 for taken
+  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x5bbc8872_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x24, x27, 2b # backward branch, definitely taken
@@ -3886,13 +3886,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa:
   bne x29, x25, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x29, x25, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x29, 1)
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa_str) # signature 1 for taken
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0xaaaaaaaa_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x29, x25, 2b # backward branch, definitely taken
@@ -3906,13 +3906,13 @@ I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555:
   bne x28, x21, 3f # forward branch, if taken
 1: # goes here if not taken
   bne x28, x21, 0b # backward branch, never taken
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555_str)
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555_str)
   j 4f # done with test
 2: # goes here during backward branch if taken
   LI(x28, 1)
-  # Check if x28 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555_str) # signature 1 for taken
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555, I_bne_cg_cr_rs1_rs2_edges_offset_rs1val_0x55555555_rs2val_0x55555555_str) # signature 1 for taken
   j 4f # done with test
 3: # goes here during forward branch if taken
   bne x28, x21, 2b # backward branch, definitely taken
@@ -3931,8 +3931,8 @@ I_bne_cg_cmp_rs1_rs2_b0:
   bne x0, x0, 1f # perform operation
   LI(x14, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, I_bne_cg_cmp_rs1_rs2_b0, I_bne_cg_cmp_rs1_rs2_b0_str)
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cmp_rs1_rs2_b0, I_bne_cg_cmp_rs1_rs2_b0_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x1)
   RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0xaf3e666a
@@ -3942,8 +3942,8 @@ I_bne_cg_cmp_rs1_rs2_b1:
   bne x1, x1, 1f # perform operation
   LI(x22, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, I_bne_cg_cmp_rs1_rs2_b1, I_bne_cg_cmp_rs1_rs2_b1_str)
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, I_bne_cg_cmp_rs1_rs2_b1, I_bne_cg_cmp_rs1_rs2_b1_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x2)
   RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x9d96d3e5
@@ -3953,8 +3953,8 @@ I_bne_cg_cmp_rs1_rs2_b2:
   bne x2, x2, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x26, I_bne_cg_cmp_rs1_rs2_b2, I_bne_cg_cmp_rs1_rs2_b2_str)
+  # Check if x26 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x26, I_bne_cg_cmp_rs1_rs2_b2, I_bne_cg_cmp_rs1_rs2_b2_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0xd579b738
@@ -3964,389 +3964,390 @@ I_bne_cg_cmp_rs1_rs2_b3:
   bne x3, x3, 1f # perform operation
   LI(x29, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cmp_rs1_rs2_b3, I_bne_cg_cmp_rs1_rs2_b3_str)
+  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cmp_rs1_rs2_b3, I_bne_cg_cmp_rs1_rs2_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0xd6e7d404
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x10fef709
-  RVTEST_TESTDATA_LOAD_INT(x9, x17) # load branch taken value: x17 = 0x193ced11
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs1: x4 = 0xfddecc7e
+  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x6520e2de
+  RVTEST_TESTDATA_LOAD_INT(x9, x28) # load branch taken value: x28 = 0x10fef709
 I_bne_cg_cmp_rs1_rs2_b4:
   bne x4, x4, 1f # perform operation
-  LI(x17, -1) # branch not taken, set temp_reg to 0
+  LI(x28, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x17 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x17, I_bne_cg_cmp_rs1_rs2_b4, I_bne_cg_cmp_rs1_rs2_b4_str)
+  # Check if x28 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x28, I_bne_cg_cmp_rs1_rs2_b4, I_bne_cg_cmp_rs1_rs2_b4_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs1: x5 = 0x326fa2b6
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x886c6cdf
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load branch taken value: x1 = 0x1462134c
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs1: x5 = 0x623099f9
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x193ced11
+  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load branch taken value: x10 = 0xb3af598c
 I_bne_cg_cmp_rs1_rs2_b5:
   bne x5, x5, 1f # perform operation
-  LI(x1, -1) # branch not taken, set temp_reg to 0
+  LI(x10, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x1 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x1, I_bne_cg_cmp_rs1_rs2_b5, I_bne_cg_cmp_rs1_rs2_b5_str)
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, I_bne_cg_cmp_rs1_rs2_b5, I_bne_cg_cmp_rs1_rs2_b5_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0xd63403e0
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xcb485431
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load branch taken value: x5 = 0x6a486737
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs1: x6 = 0x08835627
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0xc92799e6
+  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load branch taken value: x25 = 0xbe49e57a
 I_bne_cg_cmp_rs1_rs2_b6:
   bne x6, x6, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x25, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x5 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x5, I_bne_cg_cmp_rs1_rs2_b6, I_bne_cg_cmp_rs1_rs2_b6_str)
+  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x25, I_bne_cg_cmp_rs1_rs2_b6, I_bne_cg_cmp_rs1_rs2_b6_str)
 
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x1c09caef
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0xeb52fe11
-  RVTEST_TESTDATA_LOAD_INT(x9, x18) # load branch taken value: x18 = 0x66c75590
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x9d804895
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0xa7a7f2e6
+  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load branch taken value: x12 = 0xce6616f2
 I_bne_cg_cmp_rs1_rs2_b7:
   bne x7, x7, 1f # perform operation
-  LI(x18, -1) # branch not taken, set temp_reg to 0
+  LI(x12, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x18 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x18, I_bne_cg_cmp_rs1_rs2_b7, I_bne_cg_cmp_rs1_rs2_b7_str)
+  # Check if x12 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x12, I_bne_cg_cmp_rs1_rs2_b7, I_bne_cg_cmp_rs1_rs2_b7_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x3f16b6cd
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x763700f6
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load branch taken value: x14 = 0x404b9a24
+  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xb778b1fc
+  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0x66c75590
+  RVTEST_TESTDATA_LOAD_INT(x9, x18) # load branch taken value: x18 = 0x9c71a43f
 I_bne_cg_cmp_rs1_rs2_b8:
   bne x8, x8, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x18, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x14 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x14, I_bne_cg_cmp_rs1_rs2_b8, I_bne_cg_cmp_rs1_rs2_b8_str)
+  # Check if x18 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x18, I_bne_cg_cmp_rs1_rs2_b8, I_bne_cg_cmp_rs1_rs2_b8_str)
 
-  mv x3, x9 # switch data pointer register to avoid conflict with test
+  mv x22, x9 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x9f971832
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0xc45814c2
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load branch taken value: x7 = 0x8fadbdd0
+  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs1: x9 = 0x959d9e71
+  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs2: x9 = 0xf228cfc2
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load branch taken value: x10 = 0xa06a52ad
 I_bne_cg_cmp_rs1_rs2_b9:
   bne x9, x9, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  LI(x10, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x7, I_bne_cg_cmp_rs1_rs2_b9, I_bne_cg_cmp_rs1_rs2_b9_str)
+  # Check if x10 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x10, I_bne_cg_cmp_rs1_rs2_b9, I_bne_cg_cmp_rs1_rs2_b9_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x1cea179e
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x92aba36d
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load branch taken value: x29 = 0x1182c4a1
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0xf4d297af
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0x1182c4a1
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load branch taken value: x3 = 0x3487d6c7
 I_bne_cg_cmp_rs1_rs2_b10:
   bne x10, x10, 1f # perform operation
-  LI(x29, -1) # branch not taken, set temp_reg to 0
+  LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x29 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x29, I_bne_cg_cmp_rs1_rs2_b10, I_bne_cg_cmp_rs1_rs2_b10_str)
+  # Check if x3 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x3, I_bne_cg_cmp_rs1_rs2_b10, I_bne_cg_cmp_rs1_rs2_b10_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0xeb3b95f5
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x4ae83ce6
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load branch taken value: x9 = 0x73c9bf8d
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs1: x11 = 0x3f3ed666
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs2: x11 = 0x092e7c30
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load branch taken value: x17 = 0x4ae83ce6
 I_bne_cg_cmp_rs1_rs2_b11:
   bne x11, x11, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x17, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x9 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x9, I_bne_cg_cmp_rs1_rs2_b11, I_bne_cg_cmp_rs1_rs2_b11_str)
+  # Check if x17 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x17, I_bne_cg_cmp_rs1_rs2_b11, I_bne_cg_cmp_rs1_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x3c7516a0
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0xcd5c3834
-  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load branch taken value: x5 = 0xc0e6c0d5
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0xf4884946
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x3c7516a0
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load branch taken value: x21 = 0x695ccedc
 I_bne_cg_cmp_rs1_rs2_b12:
   bne x12, x12, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x21, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cmp_rs1_rs2_b12, I_bne_cg_cmp_rs1_rs2_b12_str)
+  # Check if x21 contains the expected result. x23 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x23, x14, x13, x21, I_bne_cg_cmp_rs1_rs2_b12, I_bne_cg_cmp_rs1_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x9bb8d2bd
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0x69cf35fe
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load branch taken value: x20 = 0x3d1521e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0x57c7ed70
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0xc0e6c0d5
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load branch taken value: x7 = 0xa5907924
 I_bne_cg_cmp_rs1_rs2_b13:
   bne x13, x13, 1f # perform operation
-  LI(x20, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cmp_rs1_rs2_b13, I_bne_cg_cmp_rs1_rs2_b13_str)
+  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cmp_rs1_rs2_b13, I_bne_cg_cmp_rs1_rs2_b13_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0xb50529a4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0x929a6c42
-  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load branch taken value: x5 = 0xad923628
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0x3d1521e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs2: x14 = 0xb50529a4
+  RVTEST_TESTDATA_LOAD_INT(x22, x6) # load branch taken value: x6 = 0xd51d3893
 I_bne_cg_cmp_rs1_rs2_b14:
   bne x14, x14, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x5, I_bne_cg_cmp_rs1_rs2_b14, I_bne_cg_cmp_rs1_rs2_b14_str)
+  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x6, I_bne_cg_cmp_rs1_rs2_b14, I_bne_cg_cmp_rs1_rs2_b14_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x27a925f5
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x366cd9e6
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load branch taken value: x24 = 0xb784c90e
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs1: x15 = 0xad923628
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0x27a925f5
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load branch taken value: x11 = 0xb784c90e
 I_bne_cg_cmp_rs1_rs2_b15:
   bne x15, x15, 1f # perform operation
-  LI(x24, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x24 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x24, I_bne_cg_cmp_rs1_rs2_b15, I_bne_cg_cmp_rs1_rs2_b15_str)
+  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x11, I_bne_cg_cmp_rs1_rs2_b15, I_bne_cg_cmp_rs1_rs2_b15_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0x4e0806e7
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs2: x16 = 0xd471f0fc
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load branch taken value: x29 = 0x01ad6f1b
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs1: x16 = 0x4e0806e7
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs2: x16 = 0xd471f0fc
+  RVTEST_TESTDATA_LOAD_INT(x22, x29) # load branch taken value: x29 = 0x01ad6f1b
 I_bne_cg_cmp_rs1_rs2_b16:
   bne x16, x16, 1f # perform operation
   LI(x29, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x29 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x29, I_bne_cg_cmp_rs1_rs2_b16, I_bne_cg_cmp_rs1_rs2_b16_str)
+  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x29, I_bne_cg_cmp_rs1_rs2_b16, I_bne_cg_cmp_rs1_rs2_b16_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xd0350190
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs2: x17 = 0x3ebf67e6
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load branch taken value: x6 = 0x1c185d16
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs1: x17 = 0xd0350190
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs2: x17 = 0x3ebf67e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load branch taken value: x7 = 0x1c185d16
 I_bne_cg_cmp_rs1_rs2_b17:
   bne x17, x17, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cmp_rs1_rs2_b17, I_bne_cg_cmp_rs1_rs2_b17_str)
+  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cmp_rs1_rs2_b17, I_bne_cg_cmp_rs1_rs2_b17_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x84deab54
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0x7ef93f7e
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load branch taken value: x14 = 0x6ac7973c
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x84deab54
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs2: x18 = 0x7ef93f7e
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load branch taken value: x13 = 0x6ac7973c
 I_bne_cg_cmp_rs1_rs2_b18:
   bne x18, x18, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x14, I_bne_cg_cmp_rs1_rs2_b18, I_bne_cg_cmp_rs1_rs2_b18_str)
+  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x13, I_bne_cg_cmp_rs1_rs2_b18, I_bne_cg_cmp_rs1_rs2_b18_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x4004fee4
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0x5a5f13d9
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load branch taken value: x22 = 0x2da288fa
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0x4004fee4
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs2: x19 = 0x5a5f13d9
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load branch taken value: x21 = 0x2da288fa
 I_bne_cg_cmp_rs1_rs2_b19:
   bne x19, x19, 1f # perform operation
-  LI(x22, -1) # branch not taken, set temp_reg to 0
+  LI(x21, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x22, I_bne_cg_cmp_rs1_rs2_b19, I_bne_cg_cmp_rs1_rs2_b19_str)
+  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x21, I_bne_cg_cmp_rs1_rs2_b19, I_bne_cg_cmp_rs1_rs2_b19_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x6b8cd1a2
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs2: x20 = 0x9d562145
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load branch taken value: x27 = 0x0233bf1f
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0x6b8cd1a2
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0x9d562145
+  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load branch taken value: x27 = 0x0233bf1f
 I_bne_cg_cmp_rs1_rs2_b20:
   bne x20, x20, 1f # perform operation
   LI(x27, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x27, I_bne_cg_cmp_rs1_rs2_b20, I_bne_cg_cmp_rs1_rs2_b20_str)
+  # Check if x27 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x27, I_bne_cg_cmp_rs1_rs2_b20, I_bne_cg_cmp_rs1_rs2_b20_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0xab7a4df7
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x39378a2f
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load branch taken value: x6 = 0x1501304a
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs1: x21 = 0xab7a4df7
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0x39378a2f
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load branch taken value: x7 = 0x1501304a
 I_bne_cg_cmp_rs1_rs2_b21:
   bne x21, x21, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x7, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x6, I_bne_cg_cmp_rs1_rs2_b21, I_bne_cg_cmp_rs1_rs2_b21_str)
+  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x7, I_bne_cg_cmp_rs1_rs2_b21, I_bne_cg_cmp_rs1_rs2_b21_str)
 
+  mv x21, x22 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0x1f756fc7
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs2: x22 = 0x7db22e07
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load branch taken value: x20 = 0x1a0400bf
+  RVTEST_TESTDATA_LOAD_INT(x21, x22) # load rs1: x22 = 0x4289a72d
+  RVTEST_TESTDATA_LOAD_INT(x21, x22) # load rs2: x22 = 0xc3b8d690
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load branch taken value: x26 = 0x0f4c92f2
 I_bne_cg_cmp_rs1_rs2_b22:
   bne x22, x22, 1f # perform operation
-  LI(x20, -1) # branch not taken, set temp_reg to 0
+  LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x20, I_bne_cg_cmp_rs1_rs2_b22, I_bne_cg_cmp_rs1_rs2_b22_str)
+  # Check if x26 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x23, x5, x4, x26, I_bne_cg_cmp_rs1_rs2_b22, I_bne_cg_cmp_rs1_rs2_b22_str)
 
-  mv x21, x23 # switch signature pointer register to avoid conflict with test
+  mv x15, x23 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xc62700ed
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0x5aba84b6
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load branch taken value: x30 = 0xec7b7ccb
+  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load rs1: x23 = 0x5aba84b6
+  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load rs2: x23 = 0x3eaeb161
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load branch taken value: x13 = 0x512bec97
 I_bne_cg_cmp_rs1_rs2_b23:
   bne x23, x23, 1f # perform operation
-  LI(x30, -1) # branch not taken, set temp_reg to 0
+  LI(x13, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x30 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x30, I_bne_cg_cmp_rs1_rs2_b23, I_bne_cg_cmp_rs1_rs2_b23_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, I_bne_cg_cmp_rs1_rs2_b23, I_bne_cg_cmp_rs1_rs2_b23_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x512bec97
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x8ffcbce8
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load branch taken value: x12 = 0x917115d0
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs1: x24 = 0x8ffcbce8
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs2: x24 = 0x5c042d32
+  RVTEST_TESTDATA_LOAD_INT(x21, x29) # load branch taken value: x29 = 0x917115d0
 I_bne_cg_cmp_rs1_rs2_b24:
   bne x24, x24, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x29, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, I_bne_cg_cmp_rs1_rs2_b24, I_bne_cg_cmp_rs1_rs2_b24_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, I_bne_cg_cmp_rs1_rs2_b24, I_bne_cg_cmp_rs1_rs2_b24_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0x86770f1a
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0xb4fc30c4
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load branch taken value: x31 = 0x7e4ccb29
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs1: x25 = 0x86770f1a
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs2: x25 = 0xb4fc30c4
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load branch taken value: x31 = 0x7e4ccb29
 I_bne_cg_cmp_rs1_rs2_b25:
   bne x25, x25, 1f # perform operation
   LI(x31, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x31 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x31, I_bne_cg_cmp_rs1_rs2_b25, I_bne_cg_cmp_rs1_rs2_b25_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, I_bne_cg_cmp_rs1_rs2_b25, I_bne_cg_cmp_rs1_rs2_b25_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x7fe76d83
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x20894803
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load branch taken value: x12 = 0x72c963ca
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load rs1: x26 = 0x7fe76d83
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load rs2: x26 = 0x20894803
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load branch taken value: x11 = 0x72c963ca
 I_bne_cg_cmp_rs1_rs2_b26:
   bne x26, x26, 1f # perform operation
-  LI(x12, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, I_bne_cg_cmp_rs1_rs2_b26, I_bne_cg_cmp_rs1_rs2_b26_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x11, I_bne_cg_cmp_rs1_rs2_b26, I_bne_cg_cmp_rs1_rs2_b26_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xcce19989
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0x4e6a5f77
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load branch taken value: x1 = 0x4f6b3d3e
+  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load rs1: x27 = 0xcce19989
+  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load rs2: x27 = 0x4e6a5f77
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load branch taken value: x1 = 0x4f6b3d3e
 I_bne_cg_cmp_rs1_rs2_b27:
   bne x27, x27, 1f # perform operation
   LI(x1, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x1 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x1, I_bne_cg_cmp_rs1_rs2_b27, I_bne_cg_cmp_rs1_rs2_b27_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, I_bne_cg_cmp_rs1_rs2_b27, I_bne_cg_cmp_rs1_rs2_b27_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x1724bdea
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x4821823d
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load branch taken value: x9 = 0x7df3597e
+  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load rs1: x28 = 0x1724bdea
+  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load rs2: x28 = 0x4821823d
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load branch taken value: x8 = 0x7df3597e
 I_bne_cg_cmp_rs1_rs2_b28:
   bne x28, x28, 1f # perform operation
-  LI(x9, -1) # branch not taken, set temp_reg to 0
+  LI(x8, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x9 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x9, I_bne_cg_cmp_rs1_rs2_b28, I_bne_cg_cmp_rs1_rs2_b28_str)
+  # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x8, I_bne_cg_cmp_rs1_rs2_b28, I_bne_cg_cmp_rs1_rs2_b28_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x25e153b8
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0xc16e01fb
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load branch taken value: x26 = 0x00fcc255
+  RVTEST_TESTDATA_LOAD_INT(x21, x29) # load rs1: x29 = 0x25e153b8
+  RVTEST_TESTDATA_LOAD_INT(x21, x29) # load rs2: x29 = 0xc16e01fb
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load branch taken value: x26 = 0x00fcc255
 I_bne_cg_cmp_rs1_rs2_b29:
   bne x29, x29, 1f # perform operation
   LI(x26, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x26 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x26, I_bne_cg_cmp_rs1_rs2_b29, I_bne_cg_cmp_rs1_rs2_b29_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, I_bne_cg_cmp_rs1_rs2_b29, I_bne_cg_cmp_rs1_rs2_b29_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x1962d03b
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0x5948c72b
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load branch taken value: x10 = 0xc2720881
+  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs1: x30 = 0x1962d03b
+  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs2: x30 = 0x5948c72b
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load branch taken value: x9 = 0xc2720881
 I_bne_cg_cmp_rs1_rs2_b30:
   bne x30, x30, 1f # perform operation
-  LI(x10, -1) # branch not taken, set temp_reg to 0
+  LI(x9, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x10 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x10, I_bne_cg_cmp_rs1_rs2_b30, I_bne_cg_cmp_rs1_rs2_b30_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x9, I_bne_cg_cmp_rs1_rs2_b30, I_bne_cg_cmp_rs1_rs2_b30_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x004c1d7e
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0x5eb890ca
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load branch taken value: x20 = 0xd3a20f3f
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load rs1: x31 = 0x004c1d7e
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load rs2: x31 = 0x5eb890ca
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load branch taken value: x20 = 0xd3a20f3f
 I_bne_cg_cmp_rs1_rs2_b31:
   bne x31, x31, 1f # perform operation
   LI(x20, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x20, I_bne_cg_cmp_rs1_rs2_b31, I_bne_cg_cmp_rs1_rs2_b31_str)
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, I_bne_cg_cmp_rs1_rs2_b31, I_bne_cg_cmp_rs1_rs2_b31_str)
 
 /////////////////////////////////
 // cp_offset
 /////////////////////////////////
 
 # Testcase cp_offset negative bin (positive bin is covered by other coverpoints)
-  LI(x10, 1)
-  LI(x14, 2) # setup for taken branch
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load branch check value: x26 = 0x165d357f
+  LI(x9, 1)
+  LI(x13, 2) # setup for taken branch
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load branch check value: x26 = 0x165d357f
   j 2f # jump past backward branch target
 1: addi x26, x26, 4 # backward branch target, increment check value
   j 3f # jump past backward branch
 I_bne_cg_cp_offset_neg:
-2: bne x10, x14, 1b # backward branch
+2: bne x9, x13, 1b # backward branch
   addi x26, x26, -2 # branch not taken, decrement check value
 3:  # done with sequence
-  # Check if x26 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x26, I_bne_cg_cp_offset_neg, I_bne_cg_cp_offset_neg_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, I_bne_cg_cp_offset_neg, I_bne_cg_cp_offset_neg_str)
 
 /////////////////////////////////
 // cp_imm_edges_branch
 /////////////////////////////////
 
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load branch check value: x6 = 0x00001000
-  LI(x14, 1)
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load branch check value: x7 = 0x00001000
+  LI(x13, 1)
   LI(x25, 2) # setup for taken branch
 
 I_bne_cg_cp_imm_edges_branch_all:
 
 # branch forward by 4
-  bne x14, x25, 1f
+  bne x13, x25, 1f
   # offset too small to modify counter for checking
 1:
   nop
 
 # branch forward by 8
-  bne x14, x25, 2f
-  addi x6, x6, -2 # shouldn't happen
+  bne x13, x25, 2f
+  addi x7, x7, -2 # shouldn't happen
 2:
-  addi x6, x6, 4 # should happen
+  addi x7, x7, 4 # should happen
 
 # branch forward by 16
-  bne x14, x25, 3f
-  addi x6, x6, -8 # shouldn't happen
+  bne x13, x25, 3f
+  addi x7, x7, -8 # shouldn't happen
   j 19f # shouldn't happen
   nop # use up 4 bytes
 3:
-  addi x6, x6, 16 # should happen
+  addi x7, x7, 16 # should happen
 
 # branch forward by 2048
   .p2align 11 # align to 2048 bytes
-  bne x14, x25, 4f
-  addi x6, x6, -32 # shouldn't happen
+  bne x13, x25, 4f
+  addi x7, x7, -32 # shouldn't happen
   j 19f # shouldn't happen
   .p2align 11 # align to 2048 bytes
 4:
-  addi x6, x6, 64 # should happen
+  addi x7, x7, 64 # should happen
 
 # branch forward by 4092
   .p2align 12 # align to 4096 bytes
   nop # use up 4 bytes
-  bne x14, x25, 5f
-  addi x6, x6, -128 # shouldn't happen
+  bne x13, x25, 5f
+  addi x7, x7, -128 # shouldn't happen
   j 19f # shouldn't happen
   .p2align 12 # align to 4096 bytes
 5:
-  addi x6, x6, 256 # should happen
+  addi x7, x7, 256 # should happen
 
 # backward branch by -4
   j 7f # jump around to test backward branch
@@ -4354,41 +4355,41 @@ I_bne_cg_cp_imm_edges_branch_all:
   j 9f # backward branch succeeded
   # offset too small to modify counter for checking
 7:
-  bne x14, x25, 6b
-  addi x6, x6, -512 # shouldn't happen
+  bne x13, x25, 6b
+  addi x7, x7, -512 # shouldn't happen
   j 19f # shouldn't happen
 
 # backward branch by -8
 8:
-  addi x6, x6, 1024 # should happen
+  addi x7, x7, 1024 # should happen
   j 11f # backward branch succeeded
 9:
-  bne x14, x25, 8b
-  addi x6, x6, -2048 # shouldn't happen
+  bne x13, x25, 8b
+  addi x7, x7, -2048 # shouldn't happen
   j 19f # shouldn't happen
 
 # backward branch by 4096
   .p2align 12 # align to 4096 bytes
 10:
-  addi x6, x6, 1 # should happen
+  addi x7, x7, 1 # should happen
   j 20f # backward branch succeeded
   .p2align 12 # align to 4096 bytes
 11:
-  .insn 0x81971063 # bne x14, x25, -4096; GCC is turning this into a small branch and a jump
-  addi x6, x6, 300 # shouldn't happen
+  .insn 0x81969063 # bne x13, x25, -4096; GCC is turning this into a small branch and a jump
+  addi x7, x7, 300 # shouldn't happen
   j 19f # shouldn't happen
 
 # Shouldn't reach here, write failure code
 19:
-  LI(x6, -1)
+  LI(x7, -1)
 
 # end of branches
 20:
 
-  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x6, I_bne_cg_cp_imm_edges_branch_all, I_bne_cg_cp_imm_edges_branch_all_str)
+  # Check if x7 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x7, I_bne_cg_cp_imm_edges_branch_all, I_bne_cg_cp_imm_edges_branch_all_str)
 
-  mv x2, x21 # restore signature pointer to default register for teardown
+  mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -4433,10 +4434,10 @@ RVTEST_DATA_BEGIN
 .word 0x9d91b751
 .word 0xe43c7614
 .word 0x9d813117
-.word 0xf6c4e772
+.word 0x94e6ef43
 .word 0xba187f0e
 .word 0xee833704
-.word 0x461fe0dd
+.word 0xffa9ea09
 .word 0x6fde4a91
 .word 0x3198e271
 .word 0x14575d6e
@@ -4529,9 +4530,9 @@ RVTEST_DATA_BEGIN
 .word 0xe29092a1
 .word 0x2adde99c
 .word 0xa804680f
-.word 0xa5e3d5d1
-.word 0x4bbdc9e3
-.word 0x34e15803
+.word 0x1df8feae
+.word 0x55056d88
+.word 0xb3d7e3e2
 .word 0xd13655d7
 .word 0x5d3fd425
 .word 0x0f4ef72e
@@ -4961,41 +4962,41 @@ RVTEST_DATA_BEGIN
 .word 0xd579b738
 .word 0x4a0f7e1b
 .word 0x6e0be40e
-.word 0xd6e7d404
+.word 0xfddecc7e
+.word 0x6520e2de
 .word 0x10fef709
+.word 0x623099f9
 .word 0x193ced11
-.word 0x326fa2b6
-.word 0x886c6cdf
-.word 0x1462134c
-.word 0xd63403e0
-.word 0xcb485431
-.word 0x6a486737
-.word 0x1c09caef
-.word 0xeb52fe11
+.word 0xb3af598c
+.word 0x08835627
+.word 0xc92799e6
+.word 0xbe49e57a
+.word 0x9d804895
+.word 0xa7a7f2e6
+.word 0xce6616f2
+.word 0xb778b1fc
 .word 0x66c75590
-.word 0x3f16b6cd
-.word 0x763700f6
-.word 0x404b9a24
-.word 0x9f971832
-.word 0xc45814c2
-.word 0x8fadbdd0
-.word 0x1cea179e
-.word 0x92aba36d
+.word 0x9c71a43f
+.word 0x959d9e71
+.word 0xf228cfc2
+.word 0xa06a52ad
+.word 0xf4d297af
 .word 0x1182c4a1
-.word 0xeb3b95f5
+.word 0x3487d6c7
+.word 0x3f3ed666
+.word 0x092e7c30
 .word 0x4ae83ce6
-.word 0x73c9bf8d
+.word 0xf4884946
 .word 0x3c7516a0
-.word 0xcd5c3834
+.word 0x695ccedc
+.word 0x57c7ed70
 .word 0xc0e6c0d5
-.word 0x9bb8d2bd
-.word 0x69cf35fe
+.word 0xa5907924
 .word 0x3d1521e6
 .word 0xb50529a4
-.word 0x929a6c42
+.word 0xd51d3893
 .word 0xad923628
 .word 0x27a925f5
-.word 0x366cd9e6
 .word 0xb784c90e
 .word 0x4e0806e7
 .word 0xd471f0fc
@@ -5015,14 +5016,14 @@ RVTEST_DATA_BEGIN
 .word 0xab7a4df7
 .word 0x39378a2f
 .word 0x1501304a
-.word 0x1f756fc7
-.word 0x7db22e07
-.word 0x1a0400bf
-.word 0xc62700ed
+.word 0x4289a72d
+.word 0xc3b8d690
+.word 0x0f4c92f2
 .word 0x5aba84b6
-.word 0xec7b7ccb
+.word 0x3eaeb161
 .word 0x512bec97
 .word 0x8ffcbce8
+.word 0x5c042d32
 .word 0x917115d0
 .word 0x86770f1a
 .word 0xb4fc30c4

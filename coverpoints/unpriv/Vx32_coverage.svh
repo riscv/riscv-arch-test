@@ -3411,7 +3411,7 @@ covergroup Vx32_vcompress_vm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -5216,7 +5216,7 @@ covergroup Vx32_vmadc_vi_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -5614,7 +5614,7 @@ covergroup Vx32_vmadc_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -6024,7 +6024,7 @@ covergroup Vx32_vmadc_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -6842,7 +6842,7 @@ covergroup Vx32_vmand_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -7069,7 +7069,7 @@ covergroup Vx32_vmandn_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -9365,7 +9365,7 @@ covergroup Vx32_vmnand_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -9592,7 +9592,7 @@ covergroup Vx32_vmnor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -9819,7 +9819,7 @@ covergroup Vx32_vmor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -10046,7 +10046,7 @@ covergroup Vx32_vmorn_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -10243,7 +10243,7 @@ covergroup Vx32_vmsbc_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -10653,7 +10653,7 @@ covergroup Vx32_vmsbc_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17110,7 +17110,7 @@ covergroup Vx32_vmv_s_x_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17194,7 +17194,7 @@ covergroup Vx32_vmv_v_i_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17316,7 +17316,7 @@ covergroup Vx32_vmv_v_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17434,7 +17434,7 @@ covergroup Vx32_vmv_v_x_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17609,7 +17609,7 @@ covergroup Vx32_vmv_x_s_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17709,7 +17709,7 @@ covergroup Vx32_vmv1r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -17857,7 +17857,7 @@ covergroup Vx32_vmv2r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -18013,7 +18013,7 @@ covergroup Vx32_vmv4r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -18173,7 +18173,7 @@ covergroup Vx32_vmv8r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -18390,7 +18390,7 @@ covergroup Vx32_vmxnor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -18617,7 +18617,7 @@ covergroup Vx32_vmxor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 

@@ -92,8 +92,8 @@ class IntegerRegisterFile(RegisterFile):
     default_sig_reg = 2
     default_data_reg = 3
     default_temp_reg = 4
-    temp_regs = (4, 7, 12)  # Limit legal temp/link registers to simplify failure handler
-    link_temp_regs = (4, 5, 7, 8, 12, 13)  # Valid temp/link register pairs
+    temp_regs = (4, 7, 13)  # Limit legal temp/link registers to simplify failure handler
+    link_temp_regs = (4, 5, 7, 8, 13, 14)  # Valid temp/link register pairs
 
     def __init__(self, e_register_file: bool = False) -> None:
         # Use default RegisterFile functions but set register count based on E
@@ -328,7 +328,7 @@ class FloatRegisterFile(RegisterFile):
     """Class to represent a floating point register file."""
 
     default_temp_reg = 4
-    temp_regs = (4, 7, 12)  # Limit legal temp registers to simplify failure handler
+    temp_regs = (4, 7, 13)  # Limit legal temp registers to simplify failure handler
 
     def __init__(self) -> None:
         # There are always 32 floating point registers
@@ -372,3 +372,167 @@ class FloatRegisterFile(RegisterFile):
         if temp_conflict:
             # Restrict link register to specific set
             self._temp_reg = self.get_register(reg_range=list(self.temp_regs))
+
+
+class VectorRegisterFile(RegisterFile):
+    """Class to represent a vector register file"""
+
+    def __init__(self) -> None:
+        # There are always 32 Vector Registers
+        super().__init__(32)
+
+        # The allocations are more involved with the vector registers because of lmul and potential overlaps,
+        # so these values are both necessary to have
+        self.allocation_map: dict[int, int] = {}
+        self.operand_map: dict[str, tuple[int, int]] = {}
+
+    def get_registers(
+        self,
+        num_regs: int,
+        *,
+        lmul: int = 1,
+        segments: int = 1,
+        exclude_regs: list[int] | None = None,
+        reg_range: list[int] | None = None,
+    ) -> list[int]:
+        """
+        Gets num_regs free registers from the register file, taking into account the desired lmul, number of segments,
+        register exclusions, and a list of desired registers.
+
+        Args:
+            num_regs: The number of registers (not accounting for lmul) to be taken from the register file
+
+        Optional Args:
+            lmul: The lmul that the registers must be aligned to
+            segments: The number of segments to allocate in one allocation. (e.g. with lmul = 2, and segments = 3, this
+                allocates 6 registers at a time, aligned to multiples of 2)
+            exclude_regs: A list of registers not to use
+            reg_range: A list of registers specifically to use
+        """
+        registers_available_to_lmul = set()
+        for register in range(0, 32, lmul):
+            group = set(range(register, register + (lmul * segments)))
+            if len(self.reg_list & group) == len(group):
+                registers_available_to_lmul.add(register)
+
+        reg_range_set = set(reg_range) if reg_range is not None else set(self.reg_list)
+        reg_range_set &= registers_available_to_lmul
+
+        registers = super().get_registers(num_regs, exclude_regs=exclude_regs, reg_range=list(reg_range_set))
+        for register in registers:
+            self.allocation_map[register] = lmul * segments
+            self.consume_registers(list(range(register + 1, register + lmul * segments)))
+
+        return registers
+
+    def get_register(
+        self,
+        *,
+        lmul: int = 1,
+        segments: int = 1,
+        exclude_regs: list[int] | None = None,
+        reg_range: list[int] | None = None,
+    ) -> int:
+        """
+        Gets a single register from the register file (accounting for lmul)
+
+        Optional Args:
+            lmul: The lmul that the registers must be aligned to
+            segments: The number of segments to allocate in one allocation. (e.g. with lmul = 2, and segments = 3, this
+                allocates 6 registers at a time, aligned to multiples of 2)
+            exclude_regs: A list of registers not to use
+            reg_range: A list of registers specifically to use
+        """
+        return self.get_registers(1, lmul=lmul, segments=segments, exclude_regs=exclude_regs, reg_range=reg_range)[0]
+
+    def free_registers(self, lmul: int, segments: int) -> set[int]:
+        """
+        Returns a set of free registers available to a given lmul and number of segments.
+        """
+        registers_available_to_lmul = set()
+        for register in range(0, 32, lmul):
+            group = set(range(register, register + (lmul * segments)))
+            if len(self.reg_list & group) == len(group):
+                registers_available_to_lmul.add(register)
+
+        return self.reg_list & registers_available_to_lmul
+
+    def allocate_operand(self, name: str, register: int, width: int, *, suppress_overlap: bool = False) -> None:
+        """
+        Make a register allocation tied to the name of an operand. This means that an operand can be safely returned
+        to the register file (through deallocate_operand) even if it has an overlap.
+
+        Args:
+            name: The name of the operand (e.g. vd, vs1, vs2)
+            register: The number register to be used (satisfactory registers can be found through free_registers)
+            width: The number of registers in this group (normally lmul * segments)
+
+        Optional Args:
+            suppress_overlap: If the allocation would result in double allocation of a register, this normally throws an
+                error, but when this argument is set no errors are thrown on overlaps.
+        """
+        allocated = []
+        for reg in range(register, register + width):
+            if reg in self.reg_list:
+                self.consume_registers([reg])
+                allocated.append(reg)
+            elif not suppress_overlap or reg >= self.reg_count:
+                self.return_registers(allocated)
+                raise ValueError(f"Unable to Allocate Registers for Operand {name}, v{register} with width {width}")
+        self.operand_map[name] = (register, width)
+
+    def deallocate_operand(self, name: str) -> None:
+        """
+        Deallocate an operand allocated through allocate_operand. This respects the other known active allocations and does
+        not return registers that are otherwise still in use.
+        """
+        if not name in self.operand_map:
+            return
+
+        register, width = self.operand_map.pop(name)
+
+        for attempt_deallocate in range(register, register + width):
+            # Check for an overlap with anything else currently allocated
+            overlap = False
+            for register2, width2 in self.allocation_map.items():
+                if register2 <= attempt_deallocate < register2 + width2:
+                    overlap = True
+
+            for register2, width2 in self.operand_map.values():
+                if register2 <= attempt_deallocate < register2 + width2:
+                    overlap = True
+
+            if not overlap:
+                self.return_register(attempt_deallocate)
+
+    def deallocate_operands(self) -> None:
+        """
+        Deallocates all operands.
+        """
+        for name in list(self.operand_map.keys()):
+            self.deallocate_operand(name)
+
+    def return_registers(self, regs: list[int]) -> None:
+        """Return all registers in a list to the register file, accounting for the lmul that they were allocated at"""
+        reg_groups = []
+        for reg in regs:
+            # assert reg in self.allocation_map, "Deallocating Vector Registers Must go Through the Base Register"
+            if reg in self.allocation_map:
+                reg_groups.extend(range(reg, reg + self.allocation_map[reg]))
+                self.allocation_map.pop(reg)
+            else:
+                reg_groups.append(reg)
+
+        return super().return_registers(reg_groups)
+
+    def return_register(self, reg: int) -> None:
+        """Return a register to the register file, accounting for the lmul it was allocated at"""
+        return self.return_registers([reg])
+
+    def copy(self) -> VectorRegisterFile:
+        """Create a deep copy of the VectorRegisterFile object."""
+        new_reg_file = VectorRegisterFile()
+        new_reg_file.reg_list = self.reg_list.copy()
+        new_reg_file.allocation_map = self.allocation_map.copy()
+        new_reg_file.operand_map = self.operand_map.copy()
+        return new_reg_file

@@ -404,6 +404,7 @@
 //                    if possible.
 //   _VR            - Vector register under test
 //   _VS1           - Vector Source 1
+//   _MASK_REG      - When _VR == v0, we need to store the mask in a different register, so this is where the mask is.
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
 //   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m (1) or not (0),
@@ -420,7 +421,7 @@
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -455,9 +456,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
-        vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
-        j 5f ; \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
+            vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
+            j 5f ; \
+        .endif ; \
     4: ;\
         /* Calculate the mask by hand:  */ \
         /*   1: Calculate the bits of the mask of the byte between where the zeros and ones meet */ \
@@ -491,7 +494,7 @@
     5: ;\
         .if (_MASKED_FLAG == 1); \
             /* Filter the active element mask, if the operation was masked */ \
-            vmand.mm  _MTMP2, _MTMP3, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+            vmand.mm  _MTMP2, _MTMP3, _MASK_REG       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
         .else ; \
             /* (vmv.v.v would generate an exception because _MTMP3 and _MTMP2 are not necessarily aligned for lmul) */ \
             vmand.mm _MTMP2, _MTMP3, _MTMP3; /* Move the base element mask into _MTMP2 */ \
@@ -537,7 +540,7 @@
             j 12f; /* If unmasked, no mask inactive → all checks have passed */ \
         .else; \
             /* Build mask inactive mask */                                                                              \
-            vmandn.mm   _VTMP, _MTMP3, v0        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
+            vmandn.mm   _VTMP, _MTMP3, _MASK_REG        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
             /* Extract and check vma policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
@@ -611,7 +614,7 @@
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -644,9 +647,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        .endif ; \
     4: /* Comments provided for context into where we are relative to the self-checking macro */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \

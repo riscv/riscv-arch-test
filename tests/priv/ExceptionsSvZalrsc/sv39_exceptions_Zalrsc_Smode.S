@@ -44,7 +44,7 @@
 #define TEST_FILE "sv39_exceptions_Zalrsc_Smode.S"
 #define SIGUPD_COUNT 90
 #define TRAP_SIGUPD_COUNT 190
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

@@ -25,6 +25,10 @@ _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 _SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
+# Simulator-reported failure reasons worth surfacing verbatim in FAIL messages, e.g.
+# whisper's "Error: Failed stop: Hart 0: Core entered critical-error state ..." or
+# qemu's "qemu: fatal: M-mode double trap"
+_ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical[-_ ]error|fatal", re.IGNORECASE)
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -68,6 +72,16 @@ def bold_cyan(text: str) -> str:
 
 def dim(text: str) -> str:
     return _color("2", text)
+
+
+def _simulator_error_lines(log_file: Path, limit: int = 3) -> list[str]:
+    """Extract simulator-reported error lines from a run log (skipping the 2-line header)."""
+    try:
+        lines = log_file.read_text(errors="replace").splitlines()
+    except OSError:
+        return []
+    # "Monitoring net ...critical_error" is imperas's startup registration line, not an error
+    return [line.strip() for line in lines[2:] if _ERROR_LINE_RE.search(line) and "Monitoring net" not in line][:limit]
 
 
 def run_test(
@@ -132,22 +146,32 @@ def run_test(
             proc.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             timed_out = True
+            # SIGTERM first so simulators with graceful handlers (e.g. imperas
+            # --stoponcontrolc) can flush trace output; escalate if they don't exit.
             try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
             except (ProcessLookupError, PermissionError):
-                proc.kill()
-            proc.wait()
+                proc.terminate()
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except (ProcessLookupError, PermissionError):
+                    proc.kill()
+                proc.wait()
 
     returncode = proc.returncode
 
     # Build trace/summary file references for failure output
     trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
     summary_msg = f"\n         Summary: {dim(str(summary_file))}" if has_summary_file else ""
+    error_msg = "".join(f"\n         {dim(line)}" for line in _simulator_error_lines(log_file))
 
     if timed_out:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — timed out after {timeout}s, simulator process group killed"
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
         return True, elf_path, f"TIMEOUT after {timeout}s"
 
@@ -175,36 +199,36 @@ def run_test(
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
             f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and no_summary:
         print(
             f"  {red('FAIL')} {bold(elf_path.name)} — exit code {returncode} indicates failure, no RVCP-SUMMARY line found"
             f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code {returncode}"
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif summary_failed and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and not summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif no_summary and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
             f"\n         Test may have been killed externally or hung without producing output."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
 
     return failed, elf_path, rvcp_summary
@@ -287,6 +311,10 @@ def main() -> int:
             rel_log = str(elf_path.relative_to(elf_dir).with_suffix(".log"))
             entries.append((rel_log, rvcp_summary))
             print(f"{rel_log}  {rvcp_summary}", file=f, flush=True)
+        # Let workers exit normally so their buffered stdout (per-test FAIL details) is
+        # flushed before the context manager's terminate() would kill them.
+        pool.close()
+        pool.join()
 
     # Rewrite the top-level summary log sorted and column-aligned now that all results are in.
     entries.sort()

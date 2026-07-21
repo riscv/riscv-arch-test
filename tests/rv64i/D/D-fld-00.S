@@ -580,8 +580,8 @@ D_fld_cg_cp_fd_b6:
   addi x14, x6, 2002 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b7:
   fld f7, -2002(x14) # perform load (0xfa7d6d3951e0d74e)
-  # Check if f7 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f12, f7, D_fld_cg_cp_fd_b7, D_fld_cg_cp_fd_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f7, D_fld_cg_cp_fd_b7, D_fld_cg_cp_fd_b7_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f8)
@@ -589,8 +589,8 @@ D_fld_cg_cp_fd_b7:
   addi x10, x6, -389 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b8:
   fld f8, 389(x10) # perform load (0xe3c853aac8a5bd93)
-  # Check if f8 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f12, f8, D_fld_cg_cp_fd_b8, D_fld_cg_cp_fd_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f8, D_fld_cg_cp_fd_b8, D_fld_cg_cp_fd_b8_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f9)
@@ -598,8 +598,8 @@ D_fld_cg_cp_fd_b8:
   addi x18, x6, -1515 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b9:
   fld f9, 1515(x18) # perform load (0x59f44681f0346fcd)
-  # Check if f9 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f12, f9, D_fld_cg_cp_fd_b9, D_fld_cg_cp_fd_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f9, D_fld_cg_cp_fd_b9, D_fld_cg_cp_fd_b9_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f10)
@@ -607,8 +607,8 @@ D_fld_cg_cp_fd_b9:
   addi x17, x6, -677 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b10:
   fld f10, 677(x17) # perform load (0x6ed53aa615880ced)
-  # Check if f10 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f12, f10, D_fld_cg_cp_fd_b10, D_fld_cg_cp_fd_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f10, D_fld_cg_cp_fd_b10, D_fld_cg_cp_fd_b10_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f11)
@@ -616,17 +616,17 @@ D_fld_cg_cp_fd_b10:
   addi x13, x6, 233 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b11:
   fld f11, -233(x13) # perform load (0xce98f528d99bf85c)
-  # Check if f11 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f12, f11, D_fld_cg_cp_fd_b11, D_fld_cg_cp_fd_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f11, D_fld_cg_cp_fd_b11, D_fld_cg_cp_fd_b11_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f12)
   fsflagsi 0b00000 # clear all fflags
-  addi x19, x6, -1605 # copy data_ptr to rs1 and adjust for offset
+  addi x3, x6, 521 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b12:
-  fld f12, 1605(x19) # perform load (0x03c36650a7c31a28)
-  # Check if f12 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f12, D_fld_cg_cp_fd_b12, D_fld_cg_cp_fd_b12_str)
+  fld f12, -521(x3) # perform load (0xd555553862364321)
+  # Check if f12 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f13, f12, D_fld_cg_cp_fd_b12, D_fld_cg_cp_fd_b12_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f13)
@@ -634,8 +634,8 @@ D_fld_cg_cp_fd_b12:
   addi x19, x6, -1510 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b13:
   fld f13, 1510(x19) # perform load (0x6fa97dd8da80d0ae)
-  # Check if f13 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f13, D_fld_cg_cp_fd_b13, D_fld_cg_cp_fd_b13_str)
+  # Check if f13 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f13, D_fld_cg_cp_fd_b13, D_fld_cg_cp_fd_b13_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f14)
@@ -643,8 +643,8 @@ D_fld_cg_cp_fd_b13:
   addi x3, x6, 1843 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b14:
   fld f14, -1843(x3) # perform load (0xb7771b884128b50b)
-  # Check if f14 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f14, D_fld_cg_cp_fd_b14, D_fld_cg_cp_fd_b14_str)
+  # Check if f14 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f14, D_fld_cg_cp_fd_b14, D_fld_cg_cp_fd_b14_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f15)
@@ -652,8 +652,8 @@ D_fld_cg_cp_fd_b14:
   addi x27, x6, -826 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b15:
   fld f15, 826(x27) # perform load (0x3a21c823a9cb3fdf)
-  # Check if f15 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f15, D_fld_cg_cp_fd_b15, D_fld_cg_cp_fd_b15_str)
+  # Check if f15 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f15, D_fld_cg_cp_fd_b15, D_fld_cg_cp_fd_b15_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f16)
@@ -661,8 +661,8 @@ D_fld_cg_cp_fd_b15:
   addi x11, x6, -6 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b16:
   fld f16, 6(x11) # perform load (0x61d94765aa63a126)
-  # Check if f16 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f16, D_fld_cg_cp_fd_b16, D_fld_cg_cp_fd_b16_str)
+  # Check if f16 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f16, D_fld_cg_cp_fd_b16, D_fld_cg_cp_fd_b16_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f17)
@@ -670,8 +670,8 @@ D_fld_cg_cp_fd_b16:
   addi x9, x6, -155 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b17:
   fld f17, 155(x9) # perform load (0x050092b0a5f6f6dc)
-  # Check if f17 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f17, D_fld_cg_cp_fd_b17, D_fld_cg_cp_fd_b17_str)
+  # Check if f17 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f17, D_fld_cg_cp_fd_b17, D_fld_cg_cp_fd_b17_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f18)
@@ -679,8 +679,8 @@ D_fld_cg_cp_fd_b17:
   addi x13, x6, -488 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b18:
   fld f18, 488(x13) # perform load (0xad708bc7228b1b1a)
-  # Check if f18 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f18, D_fld_cg_cp_fd_b18, D_fld_cg_cp_fd_b18_str)
+  # Check if f18 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f18, D_fld_cg_cp_fd_b18, D_fld_cg_cp_fd_b18_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f19)
@@ -688,8 +688,8 @@ D_fld_cg_cp_fd_b18:
   addi x1, x6, -506 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b19:
   fld f19, 506(x1) # perform load (0xcfde1dc9f4d21ec9)
-  # Check if f19 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f19, D_fld_cg_cp_fd_b19, D_fld_cg_cp_fd_b19_str)
+  # Check if f19 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f19, D_fld_cg_cp_fd_b19, D_fld_cg_cp_fd_b19_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f20)
@@ -697,8 +697,8 @@ D_fld_cg_cp_fd_b19:
   addi x21, x6, 1906 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b20:
   fld f20, -1906(x21) # perform load (0xb145c16bdcbb1ed4)
-  # Check if f20 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f20, D_fld_cg_cp_fd_b20, D_fld_cg_cp_fd_b20_str)
+  # Check if f20 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f20, D_fld_cg_cp_fd_b20, D_fld_cg_cp_fd_b20_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f21)
@@ -706,8 +706,8 @@ D_fld_cg_cp_fd_b20:
   addi x27, x6, 1070 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b21:
   fld f21, -1070(x27) # perform load (0xe4db23291da8d553)
-  # Check if f21 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f21, D_fld_cg_cp_fd_b21, D_fld_cg_cp_fd_b21_str)
+  # Check if f21 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f21, D_fld_cg_cp_fd_b21, D_fld_cg_cp_fd_b21_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f22)
@@ -715,8 +715,8 @@ D_fld_cg_cp_fd_b21:
   addi x11, x6, 609 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b22:
   fld f22, -609(x11) # perform load (0xf7452da23045758f)
-  # Check if f22 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f22, D_fld_cg_cp_fd_b22, D_fld_cg_cp_fd_b22_str)
+  # Check if f22 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f22, D_fld_cg_cp_fd_b22, D_fld_cg_cp_fd_b22_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f23)
@@ -724,8 +724,8 @@ D_fld_cg_cp_fd_b22:
   addi x17, x6, -229 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b23:
   fld f23, 229(x17) # perform load (0x83d8ada683d4f96b)
-  # Check if f23 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f23, D_fld_cg_cp_fd_b23, D_fld_cg_cp_fd_b23_str)
+  # Check if f23 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f23, D_fld_cg_cp_fd_b23, D_fld_cg_cp_fd_b23_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f24)
@@ -733,8 +733,8 @@ D_fld_cg_cp_fd_b23:
   addi x3, x6, 7 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b24:
   fld f24, -7(x3) # perform load (0xb81312cf447e75e6)
-  # Check if f24 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f24, D_fld_cg_cp_fd_b24, D_fld_cg_cp_fd_b24_str)
+  # Check if f24 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f24, D_fld_cg_cp_fd_b24, D_fld_cg_cp_fd_b24_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f25)
@@ -742,8 +742,8 @@ D_fld_cg_cp_fd_b24:
   addi x20, x6, 673 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b25:
   fld f25, -673(x20) # perform load (0x9252753902a31cad)
-  # Check if f25 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f25, D_fld_cg_cp_fd_b25, D_fld_cg_cp_fd_b25_str)
+  # Check if f25 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f25, D_fld_cg_cp_fd_b25, D_fld_cg_cp_fd_b25_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f26)
@@ -751,8 +751,8 @@ D_fld_cg_cp_fd_b25:
   addi x2, x6, 1836 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b26:
   fld f26, -1836(x2) # perform load (0x382ffe8239f24d01)
-  # Check if f26 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f26, D_fld_cg_cp_fd_b26, D_fld_cg_cp_fd_b26_str)
+  # Check if f26 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f26, D_fld_cg_cp_fd_b26, D_fld_cg_cp_fd_b26_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f27)
@@ -760,8 +760,8 @@ D_fld_cg_cp_fd_b26:
   addi x14, x6, 219 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b27:
   fld f27, -219(x14) # perform load (0x4c6b30ac93a7c9b8)
-  # Check if f27 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f27, D_fld_cg_cp_fd_b27, D_fld_cg_cp_fd_b27_str)
+  # Check if f27 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f27, D_fld_cg_cp_fd_b27, D_fld_cg_cp_fd_b27_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f28)
@@ -769,8 +769,8 @@ D_fld_cg_cp_fd_b27:
   addi x21, x6, 2037 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b28:
   fld f28, -2037(x21) # perform load (0xf2fd61ba3c5482bc)
-  # Check if f28 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f28, D_fld_cg_cp_fd_b28, D_fld_cg_cp_fd_b28_str)
+  # Check if f28 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f28, D_fld_cg_cp_fd_b28, D_fld_cg_cp_fd_b28_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f29)
@@ -778,8 +778,8 @@ D_fld_cg_cp_fd_b28:
   addi x11, x6, -357 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b29:
   fld f29, 357(x11) # perform load (0x5d9c6d0b5f395788)
-  # Check if f29 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f29, D_fld_cg_cp_fd_b29, D_fld_cg_cp_fd_b29_str)
+  # Check if f29 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f29, D_fld_cg_cp_fd_b29, D_fld_cg_cp_fd_b29_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f30)
@@ -787,8 +787,8 @@ D_fld_cg_cp_fd_b29:
   addi x14, x6, 831 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b30:
   fld f30, -831(x14) # perform load (0xf060df7ff1deeed5)
-  # Check if f30 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f30, D_fld_cg_cp_fd_b30, D_fld_cg_cp_fd_b30_str)
+  # Check if f30 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f30, D_fld_cg_cp_fd_b30, D_fld_cg_cp_fd_b30_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 # Testcase cp_fd (Test destination fd = f31)
@@ -796,8 +796,8 @@ D_fld_cg_cp_fd_b30:
   addi x26, x6, 717 # copy data_ptr to rs1 and adjust for offset
 D_fld_cg_cp_fd_b31:
   fld f31, -717(x26) # perform load (0xcb5dfce37abea9c7)
-  # Check if f31 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x23, x5, x4, f4, f31, D_fld_cg_cp_fd_b31, D_fld_cg_cp_fd_b31_str)
+  # Check if f31 contains the expected result. Also checks fflags. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x23, x5, x4, f7, f31, D_fld_cg_cp_fd_b31, D_fld_cg_cp_fd_b31_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
   mv x2, x23 # restore signature pointer to default register for teardown
@@ -872,7 +872,7 @@ RVTEST_DATA_BEGIN
 .dword 0x59f44681f0346fcd
 .dword 0x6ed53aa615880ced
 .dword 0xce98f528d99bf85c
-.dword 0x03c36650a7c31a28
+.dword 0xd555553862364321
 .dword 0x6fa97dd8da80d0ae
 .dword 0xb7771b884128b50b
 .dword 0x3a21c823a9cb3fdf

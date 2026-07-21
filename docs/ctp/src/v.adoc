@@ -338,6 +338,6 @@ include::norm/Zvksh_norm_rules.adoc[]
 
 Not tested yet.
 
-==== MisalignedV
+==== MisalignV
 
 TBD, Kaden moving over from SsstrictV

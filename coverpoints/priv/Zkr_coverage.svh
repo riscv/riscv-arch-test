@@ -18,6 +18,9 @@ covergroup Zkr_cg with function sample(ins_t ins);
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
     }
+    prev_csrrw: coverpoint ins.prev.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
 
     csrops_illegal: coverpoint ins.current.insn {
         wildcard bins csrrs  = {CSRRS};
@@ -48,6 +51,7 @@ covergroup Zkr_cg with function sample(ins_t ins);
     // Main coverpoints
     cp_zkr_seed_csrrw_M: cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_m, mseccfg_sseed, mseccfg_useed;
     cp_zkr_seed_illegal_csr_op_M: cross csrops_illegal, seed_csr, rs1_imm_0_1, priv_mode_m;
+    cp_zkr_seed_entropy_zero_non_es16: cross seed_csr, csrrw, prev_csrrw;
 `ifdef S_SUPPORTED
     cp_zkr_seed_csrrw_S: cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_s, mseccfg_sseed, mseccfg_useed;
     cp_zkr_seed_illegal_csr_op_S: cross csrops_illegal, seed_csr, rs1_imm_0_1, priv_mode_s;

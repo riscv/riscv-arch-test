@@ -29,6 +29,8 @@
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_GRANULARITY: 2
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -37,7 +39,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"

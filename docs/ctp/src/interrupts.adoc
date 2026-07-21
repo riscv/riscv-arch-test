@@ -38,6 +38,19 @@ https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7
 
 include::norm/InterruptsS_norm_rules.adoc[]
 
+==== InterruptsSSm Supervisor-Mode Interrupts (runs in Machine mode)
+
+These tests are run on any configuration with supervisor mode and standard machine mode that supports interrupts. Note that the test runs in M mode, testing features that only exist if S mode is supported.
+
+[[t-InterruptsSSm-coverpoints]]
+.InterruptsSSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=1129427901#gid=1129427901[Google Sheet Testplan]
+,===
+
+
+include::norm/InterruptsSSm_norm_rules.adoc[]
+
 ==== InterruptsU User-Mode Interrupts
 
 These tests are run on any configuration with user mode that supports interrupts.

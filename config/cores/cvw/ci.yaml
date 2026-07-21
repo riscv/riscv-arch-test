@@ -5,8 +5,14 @@
 
 # SsstrictSm excluded because of Sail bug (incorrect decoding of add.uw instruction)
 # Sail Issue Link: https://github.com/riscv/sail-riscv/issues/1711
+# ExceptionsZicboS/ExceptionsZicboU excluded due to Wally bug (to be reported upstream):
+# the CMO spec normatively requires that a page-fault/guest-page-fault/access-fault
+# taken by a CBO write the faulting effective address (the rs1 value) to *tval
+# [#norm:fault_excep_csr], but Wally writes 0. The suites' misaligned access-fault
+# probes (cbo.* at ACCESS_FAULT_ADDR+1) catch this: sail records EA in the trap
+# signature, Wally records 0 -> selfcheck mismatch.
 ci_enabled: true
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsS,InterruptsU,InterruptsSstc,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv,Svpbmt,Zicsr"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsS,InterruptsU,InterruptsSstc,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZicboS,ExceptionsZicboU,Sv,Svpbmt,Zicsr"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

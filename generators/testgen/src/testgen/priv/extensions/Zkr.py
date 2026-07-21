@@ -8,7 +8,7 @@
 
 """Zkr extension test generator"""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -209,16 +209,54 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_seed_entropy_zero_non_es16_tests(test_data: TestData) -> list[str]:
+    """Read seed twice in a row using csrrw,
+    check entropy = 0 if OPST is not ES16
+    """
+
+    covergroup = "Zkr_cg"
+    coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
+
+    read_reg, opst_reg, entropy_reg, cmp_reg = test_data.int_regs.get_registers(4)
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            _generate_seed_entropy_zero_non_es16_tests.__doc__,
+        )
+    ]
+
+    lines.extend(
+        [
+            test_data.add_testcase("es16", coverpoint, covergroup),
+            f"csrrw x{read_reg}, seed, zero",
+            f"csrrw x{read_reg}, seed, zero",
+            "# OPST bits",
+            f"srai x{opst_reg}, x{read_reg}, 0x1E",
+            "# entropy bits",
+            f"LI(x{entropy_reg}, 0xFFFF)",
+            "# Check OPST value",
+            f"LI(x{cmp_reg}, 0x2)",
+            f"bne x{opst_reg}, x{cmp_reg}, 1f",
+            "# SIGUPD 0x0BADBEEF if OPST is ES16",
+            f"LI(x{cmp_reg}, 0xB0BA)",
+            write_sigupd(cmp_reg, test_data),
+            "j 2f",
+            "1:",
+            "# If OPST is not ES16",
+            f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+            write_sigupd(entropy_reg, test_data),
+            "2:",
+        ]
+    )
+
+    test_data.int_regs.return_registers([read_reg, opst_reg, entropy_reg, cmp_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "Zkr",
     required_extensions=["Zkr"],
-    extra_defines=[
-        '#include "rvtest_config.h"',
-        "#define rvtest_mtrap_routine",
-        "#ifdef S_SUPPORTED",
-        "#define rvtest_strap_routine",
-        "#endif",
-    ],
 )
 def make_zkr(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zkr"""
@@ -227,6 +265,7 @@ def make_zkr(test_data: TestData) -> list[TestChunk]:
 
     tc.code.extend(_generate_seed_csrrw_tests(test_data))
     tc.code.extend(_generate_seed_illegal_csr_op_tests(test_data))
+    tc.code.extend(_generate_seed_entropy_zero_non_es16_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -11,7 +11,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
@@ -40,6 +40,28 @@ class MissingInstructionFormatterError(MissingRegistryItemError):
 
 
 @dataclass
+class VectorTypeConfig:
+    """
+    Configuration for a vector instruction type.
+
+    This data class holds metadata specific to vector instructions.
+
+    Attributes:
+        overlap_constraints: Set of pairs of vector registers that cannot overlap
+        masked_constraints: Set of pairs of vector register that cannot overlap only when masked
+        mask_regs: Set of registers used as mask registers
+        scalar_regs: Set of registers used as scalar registers
+        widened_regs: Set of registers that are widened
+    """
+
+    overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
+    masked_constraints: set[tuple[str, str]] | None = None
+    mask_regs: set[str] = field(default_factory=set)
+    scalar_regs: set[str] = field(default_factory=set)
+    widened_regs: set[str] = field(default_factory=set)
+
+
+@dataclass
 class InstructionTypeConfig:
     """Configuration for an instruction type.
 
@@ -55,6 +77,8 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+        instruction_class: List of strings containing broader instruction categories (e.g. "load", "store", "indexed")
+        vector_data: Optional attribute containing data necessary for vector instructions
     """
 
     required_params: set[str] | None = None
@@ -64,6 +88,8 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
+    instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
+    vector_data: VectorTypeConfig | None = None
 
 
 # Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)

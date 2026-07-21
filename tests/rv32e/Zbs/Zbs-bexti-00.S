@@ -64,96 +64,96 @@ Zbs_bexti_cg_cp_rs1_b3:
   # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cp_rs1_b3, Zbs_bexti_cg_cp_rs1_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs1: x4 = 0xeae22c17
 Zbs_bexti_cg_cp_rs1_b4:
   bexti x5, x4, 7 # perform operation
-  # Check if x5 contains the expected result. x6 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x6, x13, x12, x5, Zbs_bexti_cg_cp_rs1_b4, Zbs_bexti_cg_cp_rs1_b4_str)
+  # Check if x5 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x5, Zbs_bexti_cg_cp_rs1_b4, Zbs_bexti_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs1: x5 = 0xfe94352b
 Zbs_bexti_cg_cp_rs1_b5:
   bexti x11, x5, 5 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x6, x13, x12, x11, Zbs_bexti_cg_cp_rs1_b5, Zbs_bexti_cg_cp_rs1_b5_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x11, Zbs_bexti_cg_cp_rs1_b5, Zbs_bexti_cg_cp_rs1_b5_str)
 
   mv x9, x6 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0x37c99ba4
 Zbs_bexti_cg_cp_rs1_b6:
   bexti x0, x6, 28 # perform operation
-  # Check if x0 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x0, Zbs_bexti_cg_cp_rs1_b6, Zbs_bexti_cg_cp_rs1_b6_str)
+  # Check if x0 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x0, Zbs_bexti_cg_cp_rs1_b6, Zbs_bexti_cg_cp_rs1_b6_str)
 
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0x478a06fc
 Zbs_bexti_cg_cp_rs1_b7:
-  bexti x14, x7, 16 # perform operation
-  # Check if x14 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x14, Zbs_bexti_cg_cp_rs1_b7, Zbs_bexti_cg_cp_rs1_b7_str)
+  bexti x12, x7, 16 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, Zbs_bexti_cg_cp_rs1_b7, Zbs_bexti_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs1: x8 = 0xc960fcd8
 Zbs_bexti_cg_cp_rs1_b8:
   bexti x0, x8, 13 # perform operation
-  # Check if x0 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x0, Zbs_bexti_cg_cp_rs1_b8, Zbs_bexti_cg_cp_rs1_b8_str)
+  # Check if x0 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x0, Zbs_bexti_cg_cp_rs1_b8, Zbs_bexti_cg_cp_rs1_b8_str)
 
   mv x1, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs1: x9 = 0x21b5de13
 Zbs_bexti_cg_cp_rs1_b9:
   bexti x3, x9, 25 # perform operation
-  # Check if x3 contains the expected result. x1 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x1, x13, x12, x3, Zbs_bexti_cg_cp_rs1_b9, Zbs_bexti_cg_cp_rs1_b9_str)
+  # Check if x3 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x3, Zbs_bexti_cg_cp_rs1_b9, Zbs_bexti_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0xd72b9284
 Zbs_bexti_cg_cp_rs1_b10:
   bexti x4, x10, 5 # perform operation
-  # Check if x4 contains the expected result. x1 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x1, x13, x12, x4, Zbs_bexti_cg_cp_rs1_b10, Zbs_bexti_cg_cp_rs1_b10_str)
+  # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x4, Zbs_bexti_cg_cp_rs1_b10, Zbs_bexti_cg_cp_rs1_b10_str)
 
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0x9d508328
 Zbs_bexti_cg_cp_rs1_b11:
   bexti x7, x11, 1 # perform operation
-  # Check if x7 contains the expected result. x1 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x1, x13, x12, x7, Zbs_bexti_cg_cp_rs1_b11, Zbs_bexti_cg_cp_rs1_b11_str)
+  # Check if x7 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x7, Zbs_bexti_cg_cp_rs1_b11, Zbs_bexti_cg_cp_rs1_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x94382f41
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x5e4a10c5
 Zbs_bexti_cg_cp_rs1_b12:
-  bexti x11, x12, 11 # perform operation
-  # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x11, Zbs_bexti_cg_cp_rs1_b12, Zbs_bexti_cg_cp_rs1_b12_str)
+  bexti x8, x12, 31 # perform operation
+  # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x1, x14, x13, x8, Zbs_bexti_cg_cp_rs1_b12, Zbs_bexti_cg_cp_rs1_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x4822430c
 Zbs_bexti_cg_cp_rs1_b13:
   bexti x11, x13, 24 # perform operation
-  # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x11, Zbs_bexti_cg_cp_rs1_b13, Zbs_bexti_cg_cp_rs1_b13_str)
+  # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x11, Zbs_bexti_cg_cp_rs1_b13, Zbs_bexti_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
   RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0xf8aa4eb3
 Zbs_bexti_cg_cp_rs1_b14:
   bexti x0, x14, 7 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, Zbs_bexti_cg_cp_rs1_b14, Zbs_bexti_cg_cp_rs1_b14_str)
+  # Check if x0 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x0, Zbs_bexti_cg_cp_rs1_b14, Zbs_bexti_cg_cp_rs1_b14_str)
 
   mv x6, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x15)
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x6d6d980d
 Zbs_bexti_cg_cp_rs1_b15:
   bexti x0, x15, 31 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, Zbs_bexti_cg_cp_rs1_b15, Zbs_bexti_cg_cp_rs1_b15_str)
+  # Check if x0 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x0, Zbs_bexti_cg_cp_rs1_b15, Zbs_bexti_cg_cp_rs1_b15_str)
 
 /////////////////////////////////
 // cp_rd
@@ -163,983 +163,986 @@ Zbs_bexti_cg_cp_rs1_b15:
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xe7591ce4
 Zbs_bexti_cg_cp_rd_b0:
   bexti x0, x14, 10 # perform operation
-  # Check if x0 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x0, Zbs_bexti_cg_cp_rd_b0, Zbs_bexti_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x1, x5, x4, x0, Zbs_bexti_cg_cp_rd_b0, Zbs_bexti_cg_cp_rd_b0_str)
 
   mv x15, x1 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x1)
   RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x73924441
 Zbs_bexti_cg_cp_rd_b1:
   bexti x1, x12, 6 # perform operation
-  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x1, Zbs_bexti_cg_cp_rd_b1, Zbs_bexti_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x1, Zbs_bexti_cg_cp_rd_b1, Zbs_bexti_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
   RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x1032d82e
 Zbs_bexti_cg_cp_rd_b2:
   bexti x2, x3, 30 # perform operation
-  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x2, Zbs_bexti_cg_cp_rd_b2, Zbs_bexti_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x2, Zbs_bexti_cg_cp_rd_b2, Zbs_bexti_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0xb02c5b84
+  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xb02c5b84
 Zbs_bexti_cg_cp_rd_b3:
-  bexti x3, x5, 11 # perform operation
-  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x3, Zbs_bexti_cg_cp_rd_b3, Zbs_bexti_cg_cp_rd_b3_str)
+  bexti x3, x8, 11 # perform operation
+  # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x3, Zbs_bexti_cg_cp_rd_b3, Zbs_bexti_cg_cp_rd_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xd5effcda
+  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x90617b53
 Zbs_bexti_cg_cp_rd_b4:
-  bexti x4, x9, 4 # perform operation
-  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x4, Zbs_bexti_cg_cp_rd_b4, Zbs_bexti_cg_cp_rd_b4_str)
+  bexti x4, x7, 6 # perform operation
+  # Check if x4 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x4, Zbs_bexti_cg_cp_rd_b4, Zbs_bexti_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xb3a30591
+  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x58043475
 Zbs_bexti_cg_cp_rd_b5:
-  bexti x5, x3, 20 # perform operation
-  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x5, Zbs_bexti_cg_cp_rd_b5, Zbs_bexti_cg_cp_rd_b5_str)
+  bexti x5, x9, 22 # perform operation
+  # Check if x5 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x5, Zbs_bexti_cg_cp_rd_b5, Zbs_bexti_cg_cp_rd_b5_str)
 
-  mv x11, x6 # switch data pointer register to avoid conflict with test
+  mv x3, x6 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x312b570f
+  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load rs1: x5 = 0x312b570f
 Zbs_bexti_cg_cp_rd_b6:
-  bexti x6, x4, 14 # perform operation
-  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x6, Zbs_bexti_cg_cp_rd_b6, Zbs_bexti_cg_cp_rd_b6_str)
+  bexti x6, x5, 14 # perform operation
+  # Check if x6 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x6, Zbs_bexti_cg_cp_rd_b6, Zbs_bexti_cg_cp_rd_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs1: x1 = 0xaf068839
+  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load rs1: x5 = 0x9a39d805
 Zbs_bexti_cg_cp_rd_b7:
-  bexti x7, x1, 9 # perform operation
-  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x7, Zbs_bexti_cg_cp_rd_b7, Zbs_bexti_cg_cp_rd_b7_str)
+  bexti x7, x5, 29 # perform operation
+  # Check if x7 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x7, Zbs_bexti_cg_cp_rd_b7, Zbs_bexti_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load rs1: x14 = 0xd0a5289c
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0xaf068839
 Zbs_bexti_cg_cp_rd_b8:
-  bexti x8, x14, 16 # perform operation
-  # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x8, Zbs_bexti_cg_cp_rd_b8, Zbs_bexti_cg_cp_rd_b8_str)
+  bexti x8, x10, 9 # perform operation
+  # Check if x8 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x8, Zbs_bexti_cg_cp_rd_b8, Zbs_bexti_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs1: x0 = 0x0301286d
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xd0a5289c
 Zbs_bexti_cg_cp_rd_b9:
-  bexti x9, x0, 16 # perform operation
-  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x9, Zbs_bexti_cg_cp_rd_b9, Zbs_bexti_cg_cp_rd_b9_str)
+  bexti x9, x12, 16 # perform operation
+  # Check if x9 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x9, Zbs_bexti_cg_cp_rd_b9, Zbs_bexti_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x54446a33
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x0301286d
 Zbs_bexti_cg_cp_rd_b10:
-  bexti x10, x4, 1 # perform operation
-  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x10, Zbs_bexti_cg_cp_rd_b10, Zbs_bexti_cg_cp_rd_b10_str)
+  bexti x10, x0, 16 # perform operation
+  # Check if x10 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x10, Zbs_bexti_cg_cp_rd_b10, Zbs_bexti_cg_cp_rd_b10_str)
 
-  mv x10, x11 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xea9e04a2
+  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load rs1: x5 = 0x54446a33
 Zbs_bexti_cg_cp_rd_b11:
-  bexti x11, x2, 13 # perform operation
-  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x11, Zbs_bexti_cg_cp_rd_b11, Zbs_bexti_cg_cp_rd_b11_str)
+  bexti x11, x5, 1 # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x11, Zbs_bexti_cg_cp_rd_b11, Zbs_bexti_cg_cp_rd_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs1: x11 = 0xbb59611e
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0xa363cb4c
 Zbs_bexti_cg_cp_rd_b12:
-  bexti x12, x11, 29 # perform operation
-  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x12, Zbs_bexti_cg_cp_rd_b12, Zbs_bexti_cg_cp_rd_b12_str)
+  bexti x12, x11, 24 # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x12, Zbs_bexti_cg_cp_rd_b12, Zbs_bexti_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs1: x11 = 0x2e0133e2
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0xbb59611e
 Zbs_bexti_cg_cp_rd_b13:
-  bexti x13, x11, 26 # perform operation
-  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x13, Zbs_bexti_cg_cp_rd_b13, Zbs_bexti_cg_cp_rd_b13_str)
+  bexti x13, x14, 29 # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x13, Zbs_bexti_cg_cp_rd_b13, Zbs_bexti_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0x8a58e97a
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x2e0133e2
 Zbs_bexti_cg_cp_rd_b14:
-  bexti x14, x2, 15 # perform operation
-  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x14, Zbs_bexti_cg_cp_rd_b14, Zbs_bexti_cg_cp_rd_b14_str)
+  bexti x14, x11, 26 # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x14, Zbs_bexti_cg_cp_rd_b14, Zbs_bexti_cg_cp_rd_b14_str)
 
-  mv x14, x15 # switch signature pointer register to avoid conflict with test
+  mv x2, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0x53b3a61a
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0xc7ae9a06
 Zbs_bexti_cg_cp_rd_b15:
-  bexti x15, x4, 28 # perform operation
-  # Check if x15 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x15, Zbs_bexti_cg_cp_rd_b15, Zbs_bexti_cg_cp_rd_b15_str)
+  bexti x15, x0, 16 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zbs_bexti_cg_cp_rd_b15, Zbs_bexti_cg_cp_rd_b15_str)
 
 /////////////////////////////////
 // cp_rs1_edges
 /////////////////////////////////
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs1: x15 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x00000000
 Zbs_bexti_cg_cp_rs1_edges_0x0:
-  bexti x4, x15, 7 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zbs_bexti_cg_cp_rs1_edges_0x0, Zbs_bexti_cg_cp_rs1_edges_0x0_str)
+  bexti x8, x15, 7 # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zbs_bexti_cg_cp_rs1_edges_0x0, Zbs_bexti_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x00000001
 Zbs_bexti_cg_cp_rs1_edges_0x1:
-  bexti x15, x13, 19 # perform operation
-  # Check if x15 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x15, Zbs_bexti_cg_cp_rs1_edges_0x1, Zbs_bexti_cg_cp_rs1_edges_0x1_str)
+  bexti x15, x14, 19 # perform operation
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zbs_bexti_cg_cp_rs1_edges_0x1, Zbs_bexti_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs1: x12 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x00000002
 Zbs_bexti_cg_cp_rs1_edges_0x2:
-  bexti x11, x12, 18 # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x11, Zbs_bexti_cg_cp_rs1_edges_0x2, Zbs_bexti_cg_cp_rs1_edges_0x2_str)
+  bexti x12, x13, 18 # perform operation
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zbs_bexti_cg_cp_rs1_edges_0x2, Zbs_bexti_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs1: x15 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x80000000
 Zbs_bexti_cg_cp_rs1_edges_0x80000000:
-  bexti x4, x15, 8 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zbs_bexti_cg_cp_rs1_edges_0x80000000, Zbs_bexti_cg_cp_rs1_edges_0x80000000_str)
+  bexti x8, x15, 8 # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zbs_bexti_cg_cp_rs1_edges_0x80000000, Zbs_bexti_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs1: x15 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x80000001
 Zbs_bexti_cg_cp_rs1_edges_0x80000001:
-  bexti x5, x15, 12 # perform operation
-  # Check if x5 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x5, Zbs_bexti_cg_cp_rs1_edges_0x80000001, Zbs_bexti_cg_cp_rs1_edges_0x80000001_str)
+  bexti x9, x15, 12 # perform operation
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zbs_bexti_cg_cp_rs1_edges_0x80000001, Zbs_bexti_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x7fffffff
 Zbs_bexti_cg_cp_rs1_edges_0x7fffffff:
-  bexti x2, x9, 30 # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x2, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff_str)
+  bexti x6, x11, 30 # perform operation
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff, Zbs_bexti_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0x7ffffffe
 Zbs_bexti_cg_cp_rs1_edges_0x7ffffffe:
-  bexti x3, x2, 27 # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x3, Zbs_bexti_cg_cp_rs1_edges_0x7ffffffe, Zbs_bexti_cg_cp_rs1_edges_0x7ffffffe_str)
+  bexti x7, x6, 27 # perform operation
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zbs_bexti_cg_cp_rs1_edges_0x7ffffffe, Zbs_bexti_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xffffffff
 Zbs_bexti_cg_cp_rs1_edges_0xffffffff:
-  bexti x12, x2, 4 # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x12, Zbs_bexti_cg_cp_rs1_edges_0xffffffff, Zbs_bexti_cg_cp_rs1_edges_0xffffffff_str)
+  bexti x13, x6, 4 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zbs_bexti_cg_cp_rs1_edges_0xffffffff, Zbs_bexti_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0xfffffffe
 Zbs_bexti_cg_cp_rs1_edges_0xfffffffe:
-  bexti x2, x9, 19 # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x2, Zbs_bexti_cg_cp_rs1_edges_0xfffffffe, Zbs_bexti_cg_cp_rs1_edges_0xfffffffe_str)
+  bexti x6, x11, 19 # perform operation
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Zbs_bexti_cg_cp_rs1_edges_0xfffffffe, Zbs_bexti_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x5bbc8872
 Zbs_bexti_cg_cp_rs1_edges_0x5bbc8872:
-  bexti x3, x4, 0 # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x3, Zbs_bexti_cg_cp_rs1_edges_0x5bbc8872, Zbs_bexti_cg_cp_rs1_edges_0x5bbc8872_str)
+  bexti x7, x8, 0 # perform operation
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zbs_bexti_cg_cp_rs1_edges_0x5bbc8872, Zbs_bexti_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs1: x12 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0xaaaaaaaa
 Zbs_bexti_cg_cp_rs1_edges_0xaaaaaaaa:
-  bexti x4, x12, 12 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zbs_bexti_cg_cp_rs1_edges_0xaaaaaaaa, Zbs_bexti_cg_cp_rs1_edges_0xaaaaaaaa_str)
+  bexti x8, x13, 12 # perform operation
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zbs_bexti_cg_cp_rs1_edges_0xaaaaaaaa, Zbs_bexti_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x55555555
 Zbs_bexti_cg_cp_rs1_edges_0x55555555:
-  bexti x12, x13, 23 # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x12, Zbs_bexti_cg_cp_rs1_edges_0x55555555, Zbs_bexti_cg_cp_rs1_edges_0x55555555_str)
+  bexti x13, x14, 23 # perform operation
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Zbs_bexti_cg_cp_rs1_edges_0x55555555, Zbs_bexti_cg_cp_rs1_edges_0x55555555_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs1: x0 = 0x287509a3
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x287509a3
 Zbs_bexti_cg_cmp_rd_rs1_b0:
   bexti x0, x0, 28 # perform operation
-  # Check if x0 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x0, Zbs_bexti_cg_cmp_rd_rs1_b0, Zbs_bexti_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x0, Zbs_bexti_cg_cmp_rd_rs1_b0, Zbs_bexti_cg_cmp_rd_rs1_b0_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs1: x1 = 0x1d52467e
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x1d52467e
 Zbs_bexti_cg_cmp_rd_rs1_b1:
   bexti x1, x1, 21 # perform operation
-  # Check if x1 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x1, Zbs_bexti_cg_cmp_rd_rs1_b1, Zbs_bexti_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zbs_bexti_cg_cmp_rd_rs1_b1, Zbs_bexti_cg_cmp_rd_rs1_b1_str)
 
+  mv x10, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xf81c8b4f
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xfd72bb2b
 Zbs_bexti_cg_cmp_rd_rs1_b2:
-  bexti x2, x2, 26 # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x2, Zbs_bexti_cg_cmp_rd_rs1_b2, Zbs_bexti_cg_cmp_rd_rs1_b2_str)
+  bexti x2, x2, 22 # perform operation
+  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x2, Zbs_bexti_cg_cmp_rd_rs1_b2, Zbs_bexti_cg_cmp_rd_rs1_b2_str)
 
+  mv x1, x3 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x30cc0660
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x682d923f
 Zbs_bexti_cg_cmp_rd_rs1_b3:
-  bexti x3, x3, 5 # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x3, Zbs_bexti_cg_cmp_rd_rs1_b3, Zbs_bexti_cg_cmp_rd_rs1_b3_str)
+  bexti x3, x3, 4 # perform operation
+  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x3, Zbs_bexti_cg_cmp_rd_rs1_b3, Zbs_bexti_cg_cmp_rd_rs1_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0x682d923f
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x7a7b09eb
 Zbs_bexti_cg_cmp_rd_rs1_b4:
-  bexti x4, x4, 4 # perform operation
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zbs_bexti_cg_cmp_rd_rs1_b4, Zbs_bexti_cg_cmp_rd_rs1_b4_str)
+  bexti x4, x4, 25 # perform operation
+  # Check if x4 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x4, Zbs_bexti_cg_cmp_rd_rs1_b4, Zbs_bexti_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0x35ab4135
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xb89cf6bd
 Zbs_bexti_cg_cmp_rd_rs1_b5:
-  bexti x5, x5, 7 # perform operation
-  # Check if x5 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x5, Zbs_bexti_cg_cmp_rd_rs1_b5, Zbs_bexti_cg_cmp_rd_rs1_b5_str)
+  bexti x5, x5, 8 # perform operation
+  # Check if x5 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x5, Zbs_bexti_cg_cmp_rd_rs1_b5, Zbs_bexti_cg_cmp_rd_rs1_b5_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0x72af95d6
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x2a516503
 Zbs_bexti_cg_cmp_rd_rs1_b6:
-  bexti x6, x6, 9 # perform operation
-  # Check if x6 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x6, Zbs_bexti_cg_cmp_rd_rs1_b6, Zbs_bexti_cg_cmp_rd_rs1_b6_str)
+  bexti x6, x6, 21 # perform operation
+  # Check if x6 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x6, Zbs_bexti_cg_cmp_rd_rs1_b6, Zbs_bexti_cg_cmp_rd_rs1_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x2a516503
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0xa3573fe2
 Zbs_bexti_cg_cmp_rd_rs1_b7:
-  bexti x7, x7, 21 # perform operation
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, Zbs_bexti_cg_cmp_rd_rs1_b7, Zbs_bexti_cg_cmp_rd_rs1_b7_str)
+  bexti x7, x7, 26 # perform operation
+  # Check if x7 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x7, Zbs_bexti_cg_cmp_rd_rs1_b7, Zbs_bexti_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs1: x8 = 0xa3573fe2
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0xddf4bb40
 Zbs_bexti_cg_cmp_rd_rs1_b8:
-  bexti x8, x8, 26 # perform operation
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zbs_bexti_cg_cmp_rd_rs1_b8, Zbs_bexti_cg_cmp_rd_rs1_b8_str)
+  bexti x8, x8, 3 # perform operation
+  # Check if x8 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x8, Zbs_bexti_cg_cmp_rd_rs1_b8, Zbs_bexti_cg_cmp_rd_rs1_b8_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0xddf4bb40
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xc388282d
 Zbs_bexti_cg_cmp_rd_rs1_b9:
-  bexti x9, x9, 3 # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x9, Zbs_bexti_cg_cmp_rd_rs1_b9, Zbs_bexti_cg_cmp_rd_rs1_b9_str)
+  bexti x9, x9, 9 # perform operation
+  # Check if x9 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x9, Zbs_bexti_cg_cmp_rd_rs1_b9, Zbs_bexti_cg_cmp_rd_rs1_b9_str)
 
-  mv x9, x10 # switch data pointer register to avoid conflict with test
+  mv x15, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x1224a6cd
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x3a011fa1
 Zbs_bexti_cg_cmp_rd_rs1_b10:
-  bexti x10, x10, 15 # perform operation
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zbs_bexti_cg_cmp_rd_rs1_b10, Zbs_bexti_cg_cmp_rd_rs1_b10_str)
+  bexti x10, x10, 29 # perform operation
+  # Check if x10 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x10, Zbs_bexti_cg_cmp_rd_rs1_b10, Zbs_bexti_cg_cmp_rd_rs1_b10_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x3a011fa1
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x6c6d7117
 Zbs_bexti_cg_cmp_rd_rs1_b11:
-  bexti x11, x11, 29 # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, Zbs_bexti_cg_cmp_rd_rs1_b11, Zbs_bexti_cg_cmp_rd_rs1_b11_str)
+  bexti x11, x11, 15 # perform operation
+  # Check if x11 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x11, Zbs_bexti_cg_cmp_rd_rs1_b11, Zbs_bexti_cg_cmp_rd_rs1_b11_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x6c6d7117
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x5a8647f2
 Zbs_bexti_cg_cmp_rd_rs1_b12:
-  bexti x12, x12, 15 # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, Zbs_bexti_cg_cmp_rd_rs1_b12, Zbs_bexti_cg_cmp_rd_rs1_b12_str)
+  bexti x12, x12, 19 # perform operation
+  # Check if x12 contains the expected result. x15 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x15, x14, x13, x12, Zbs_bexti_cg_cmp_rd_rs1_b12, Zbs_bexti_cg_cmp_rd_rs1_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x5a8647f2
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xaf904985
 Zbs_bexti_cg_cmp_rd_rs1_b13:
-  bexti x13, x13, 19 # perform operation
-  # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x13, Zbs_bexti_cg_cmp_rd_rs1_b13, Zbs_bexti_cg_cmp_rd_rs1_b13_str)
+  bexti x13, x13, 16 # perform operation
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zbs_bexti_cg_cmp_rd_rs1_b13, Zbs_bexti_cg_cmp_rd_rs1_b13_str)
 
-  mv x6, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xaf904985
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xab78b327
 Zbs_bexti_cg_cmp_rd_rs1_b14:
-  bexti x14, x14, 16 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cmp_rd_rs1_b14, Zbs_bexti_cg_cmp_rd_rs1_b14_str)
+  bexti x14, x14, 1 # perform operation
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zbs_bexti_cg_cmp_rd_rs1_b14, Zbs_bexti_cg_cmp_rd_rs1_b14_str)
 
+  mv x9, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs1: x15 = 0xab78b327
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x6e858977
 Zbs_bexti_cg_cmp_rd_rs1_b15:
-  bexti x15, x15, 1 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cmp_rd_rs1_b15, Zbs_bexti_cg_cmp_rd_rs1_b15_str)
+  bexti x15, x15, 14 # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cmp_rd_rs1_b15, Zbs_bexti_cg_cmp_rd_rs1_b15_str)
 
 /////////////////////////////////
 // cp_uimm
 /////////////////////////////////
 
 # Testcase cp_uimm: imm=0
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x27976b2d
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x27976b2d
 Zbs_bexti_cg_cp_uimm_uimm0:
-  bexti x3, x8, 0 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cp_uimm_uimm0, Zbs_bexti_cg_cp_uimm_uimm0_str)
+  bexti x4, x6, 0 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cp_uimm_uimm0, Zbs_bexti_cg_cp_uimm_uimm0_str)
 
 # Testcase cp_uimm: imm=1
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x714c5e0f
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x714c5e0f
 Zbs_bexti_cg_cp_uimm_uimm1:
-  bexti x8, x7, 1 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cp_uimm_uimm1, Zbs_bexti_cg_cp_uimm_uimm1_str)
+  bexti x6, x5, 1 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cp_uimm_uimm1, Zbs_bexti_cg_cp_uimm_uimm1_str)
 
 # Testcase cp_uimm: imm=2
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x1a431f0e
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x1a431f0e
 Zbs_bexti_cg_cp_uimm_uimm2:
-  bexti x2, x11, 2 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, Zbs_bexti_cg_cp_uimm_uimm2, Zbs_bexti_cg_cp_uimm_uimm2_str)
+  bexti x3, x11, 2 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, Zbs_bexti_cg_cp_uimm_uimm2, Zbs_bexti_cg_cp_uimm_uimm2_str)
 
 # Testcase cp_uimm: imm=3
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x84e4d85c
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x84e4d85c
 Zbs_bexti_cg_cp_uimm_uimm3:
-  bexti x8, x12, 3 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cp_uimm_uimm3, Zbs_bexti_cg_cp_uimm_uimm3_str)
+  bexti x6, x12, 3 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cp_uimm_uimm3, Zbs_bexti_cg_cp_uimm_uimm3_str)
 
 # Testcase cp_uimm: imm=4
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x49ceab96
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x49ceab96
 Zbs_bexti_cg_cp_uimm_uimm4:
-  bexti x11, x7, 4 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cp_uimm_uimm4, Zbs_bexti_cg_cp_uimm_uimm4_str)
+  bexti x11, x5, 4 # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cp_uimm_uimm4, Zbs_bexti_cg_cp_uimm_uimm4_str)
 
 # Testcase cp_uimm: imm=5
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0x3d616b08
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x3d616b08
 Zbs_bexti_cg_cp_uimm_uimm5:
   bexti x11, x0, 5 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cp_uimm_uimm5, Zbs_bexti_cg_cp_uimm_uimm5_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cp_uimm_uimm5, Zbs_bexti_cg_cp_uimm_uimm5_str)
 
 # Testcase cp_uimm: imm=6
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x291ccfda
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x291ccfda
 Zbs_bexti_cg_cp_uimm_uimm6:
-  bexti x13, x1, 6 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cp_uimm_uimm6, Zbs_bexti_cg_cp_uimm_uimm6_str)
+  bexti x13, x2, 6 # perform operation
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cp_uimm_uimm6, Zbs_bexti_cg_cp_uimm_uimm6_str)
 
 # Testcase cp_uimm: imm=7
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x0e89d414
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x0e89d414
 Zbs_bexti_cg_cp_uimm_uimm7:
   bexti x0, x11, 7 # perform operation
-  # Check if x0 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x0, Zbs_bexti_cg_cp_uimm_uimm7, Zbs_bexti_cg_cp_uimm_uimm7_str)
+  # Check if x0 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x0, Zbs_bexti_cg_cp_uimm_uimm7, Zbs_bexti_cg_cp_uimm_uimm7_str)
 
 # Testcase cp_uimm: imm=8
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x8a79e37f
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x8a79e37f
 Zbs_bexti_cg_cp_uimm_uimm8:
-  bexti x12, x2, 8 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cp_uimm_uimm8, Zbs_bexti_cg_cp_uimm_uimm8_str)
+  bexti x12, x3, 8 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cp_uimm_uimm8, Zbs_bexti_cg_cp_uimm_uimm8_str)
 
 # Testcase cp_uimm: imm=9
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0xcfa34b06
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xcfa34b06
 Zbs_bexti_cg_cp_uimm_uimm9:
-  bexti x7, x12, 9 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm9, Zbs_bexti_cg_cp_uimm_uimm9_str)
+  bexti x5, x12, 9 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm9, Zbs_bexti_cg_cp_uimm_uimm9_str)
 
 # Testcase cp_uimm: imm=10
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0xf441a46c
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xf441a46c
 Zbs_bexti_cg_cp_uimm_uimm10:
-  bexti x3, x2, 10 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cp_uimm_uimm10, Zbs_bexti_cg_cp_uimm_uimm10_str)
+  bexti x4, x3, 10 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cp_uimm_uimm10, Zbs_bexti_cg_cp_uimm_uimm10_str)
 
 # Testcase cp_uimm: imm=11
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0xfe117a87
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xfe117a87
 Zbs_bexti_cg_cp_uimm_uimm11:
-  bexti x14, x2, 11 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cp_uimm_uimm11, Zbs_bexti_cg_cp_uimm_uimm11_str)
+  bexti x14, x3, 11 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cp_uimm_uimm11, Zbs_bexti_cg_cp_uimm_uimm11_str)
 
 # Testcase cp_uimm: imm=12
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0xb3e4208a
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0xb3e4208a
 Zbs_bexti_cg_cp_uimm_uimm12:
-  bexti x3, x0, 12 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cp_uimm_uimm12, Zbs_bexti_cg_cp_uimm_uimm12_str)
+  bexti x4, x0, 12 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cp_uimm_uimm12, Zbs_bexti_cg_cp_uimm_uimm12_str)
 
 # Testcase cp_uimm: imm=13
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x706ec278
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x706ec278
 Zbs_bexti_cg_cp_uimm_uimm13:
-  bexti x15, x7, 13 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cp_uimm_uimm13, Zbs_bexti_cg_cp_uimm_uimm13_str)
+  bexti x15, x5, 13 # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cp_uimm_uimm13, Zbs_bexti_cg_cp_uimm_uimm13_str)
 
 # Testcase cp_uimm: imm=14
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x30fc400f
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x30fc400f
 Zbs_bexti_cg_cp_uimm_uimm14:
-  bexti x3, x2, 14 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cp_uimm_uimm14, Zbs_bexti_cg_cp_uimm_uimm14_str)
+  bexti x4, x3, 14 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cp_uimm_uimm14, Zbs_bexti_cg_cp_uimm_uimm14_str)
 
 # Testcase cp_uimm: imm=15
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0xd819ba5a
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xd819ba5a
 Zbs_bexti_cg_cp_uimm_uimm15:
-  bexti x10, x2, 15 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cp_uimm_uimm15, Zbs_bexti_cg_cp_uimm_uimm15_str)
+  bexti x10, x3, 15 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cp_uimm_uimm15, Zbs_bexti_cg_cp_uimm_uimm15_str)
 
 # Testcase cp_uimm: imm=16
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0xfa796f2d
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xfa796f2d
 Zbs_bexti_cg_cp_uimm_uimm16:
-  bexti x1, x12, 16 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cp_uimm_uimm16, Zbs_bexti_cg_cp_uimm_uimm16_str)
+  bexti x2, x12, 16 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cp_uimm_uimm16, Zbs_bexti_cg_cp_uimm_uimm16_str)
 
 # Testcase cp_uimm: imm=17
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x39b936dd
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x39b936dd
 Zbs_bexti_cg_cp_uimm_uimm17:
-  bexti x8, x1, 17 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cp_uimm_uimm17, Zbs_bexti_cg_cp_uimm_uimm17_str)
+  bexti x6, x2, 17 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cp_uimm_uimm17, Zbs_bexti_cg_cp_uimm_uimm17_str)
 
 # Testcase cp_uimm: imm=18
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x149ecfeb
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x149ecfeb
 Zbs_bexti_cg_cp_uimm_uimm18:
-  bexti x7, x10, 18 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm18, Zbs_bexti_cg_cp_uimm_uimm18_str)
+  bexti x5, x10, 18 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm18, Zbs_bexti_cg_cp_uimm_uimm18_str)
 
 # Testcase cp_uimm: imm=19
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xc37fb1fa
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xc37fb1fa
 Zbs_bexti_cg_cp_uimm_uimm19:
-  bexti x7, x10, 19 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm19, Zbs_bexti_cg_cp_uimm_uimm19_str)
+  bexti x5, x10, 19 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm19, Zbs_bexti_cg_cp_uimm_uimm19_str)
 
 # Testcase cp_uimm: imm=20
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x8a9cfd9d
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x8a9cfd9d
 Zbs_bexti_cg_cp_uimm_uimm20:
   bexti x0, x12, 20 # perform operation
-  # Check if x0 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x0, Zbs_bexti_cg_cp_uimm_uimm20, Zbs_bexti_cg_cp_uimm_uimm20_str)
+  # Check if x0 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x0, Zbs_bexti_cg_cp_uimm_uimm20, Zbs_bexti_cg_cp_uimm_uimm20_str)
 
 # Testcase cp_uimm: imm=21
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x801e1d35
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x801e1d35
 Zbs_bexti_cg_cp_uimm_uimm21:
-  bexti x2, x3, 21 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, Zbs_bexti_cg_cp_uimm_uimm21, Zbs_bexti_cg_cp_uimm_uimm21_str)
+  bexti x3, x4, 21 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, Zbs_bexti_cg_cp_uimm_uimm21, Zbs_bexti_cg_cp_uimm_uimm21_str)
 
 # Testcase cp_uimm: imm=22
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xfae8160d
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xfae8160d
 Zbs_bexti_cg_cp_uimm_uimm22:
-  bexti x7, x10, 22 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm22, Zbs_bexti_cg_cp_uimm_uimm22_str)
+  bexti x5, x10, 22 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm22, Zbs_bexti_cg_cp_uimm_uimm22_str)
 
 # Testcase cp_uimm: imm=23
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0xf8695b51
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xf8695b51
 Zbs_bexti_cg_cp_uimm_uimm23:
   bexti x12, x13, 23 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cp_uimm_uimm23, Zbs_bexti_cg_cp_uimm_uimm23_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cp_uimm_uimm23, Zbs_bexti_cg_cp_uimm_uimm23_str)
 
 # Testcase cp_uimm: imm=24
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rs1: x0 = 0x591b6020
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x591b6020
 Zbs_bexti_cg_cp_uimm_uimm24:
   bexti x15, x0, 24 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cp_uimm_uimm24, Zbs_bexti_cg_cp_uimm_uimm24_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cp_uimm_uimm24, Zbs_bexti_cg_cp_uimm_uimm24_str)
 
 # Testcase cp_uimm: imm=25
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x1161a68f
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x1161a68f
 Zbs_bexti_cg_cp_uimm_uimm25:
-  bexti x3, x12, 25 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cp_uimm_uimm25, Zbs_bexti_cg_cp_uimm_uimm25_str)
+  bexti x4, x12, 25 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cp_uimm_uimm25, Zbs_bexti_cg_cp_uimm_uimm25_str)
 
 # Testcase cp_uimm: imm=26
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0xfd596bb7
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0xfd596bb7
 Zbs_bexti_cg_cp_uimm_uimm26:
-  bexti x8, x3, 26 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cp_uimm_uimm26, Zbs_bexti_cg_cp_uimm_uimm26_str)
+  bexti x6, x4, 26 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cp_uimm_uimm26, Zbs_bexti_cg_cp_uimm_uimm26_str)
 
 # Testcase cp_uimm: imm=27
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0xf0761170
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xf0761170
 Zbs_bexti_cg_cp_uimm_uimm27:
-  bexti x7, x2, 27 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm27, Zbs_bexti_cg_cp_uimm_uimm27_str)
+  bexti x5, x3, 27 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm27, Zbs_bexti_cg_cp_uimm_uimm27_str)
 
 # Testcase cp_uimm: imm=28
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x52f46773
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x52f46773
 Zbs_bexti_cg_cp_uimm_uimm28:
-  bexti x7, x12, 28 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cp_uimm_uimm28, Zbs_bexti_cg_cp_uimm_uimm28_str)
+  bexti x5, x12, 28 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cp_uimm_uimm28, Zbs_bexti_cg_cp_uimm_uimm28_str)
 
 # Testcase cp_uimm: imm=29
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0xca3d3897
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xca3d3897
 Zbs_bexti_cg_cp_uimm_uimm29:
-  bexti x11, x7, 29 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cp_uimm_uimm29, Zbs_bexti_cg_cp_uimm_uimm29_str)
+  bexti x11, x5, 29 # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cp_uimm_uimm29, Zbs_bexti_cg_cp_uimm_uimm29_str)
 
 # Testcase cp_uimm: imm=30
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xeaaa59db
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0xeaaa59db
 Zbs_bexti_cg_cp_uimm_uimm30:
   bexti x14, x11, 30 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cp_uimm_uimm30, Zbs_bexti_cg_cp_uimm_uimm30_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cp_uimm_uimm30, Zbs_bexti_cg_cp_uimm_uimm30_str)
 
 # Testcase cp_uimm: imm=31
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x60627ded
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x60627ded
 Zbs_bexti_cg_cp_uimm_uimm31:
-  bexti x1, x2, 31 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cp_uimm_uimm31, Zbs_bexti_cg_cp_uimm_uimm31_str)
+  bexti x2, x3, 31 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cp_uimm_uimm31, Zbs_bexti_cg_cp_uimm_uimm31_str)
 
 /////////////////////////////////
 // cr_rs1_imm_edges_uimm
 /////////////////////////////////
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000000, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x00000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0:
-  bexti x14, x2, 0 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0_str)
+  bexti x14, x3, 0 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000000, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x00000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1:
-  bexti x12, x2, 1 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1_str)
+  bexti x12, x3, 1 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000000, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x00000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13:
-  bexti x14, x2, 19 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13_str)
+  bexti x14, x3, 19 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000000, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x00000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e:
-  bexti x8, x12, 30 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e_str)
+  bexti x6, x12, 30 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000000, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x00000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f:
-  bexti x8, x7, 31 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f_str)
+  bexti x6, x5, 31 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x0_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000001, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x00000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0:
-  bexti x1, x12, 0 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0_str)
+  bexti x2, x12, 0 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000001, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x00000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1:
-  bexti x8, x10, 1 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1_str)
+  bexti x6, x10, 1 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000001, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x00000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13:
-  bexti x8, x12, 19 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13_str)
+  bexti x6, x12, 19 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000001, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e:
-  bexti x1, x14, 30 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e_str)
+  bexti x2, x14, 30 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000001, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f:
-  bexti x3, x14, 31 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f_str)
+  bexti x4, x14, 31 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x1_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000002, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x00000002
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0:
-  bexti x11, x7, 0 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0_str)
+  bexti x11, x5, 0 # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000002, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x00000002
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1:
-  bexti x1, x3, 1 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1_str)
+  bexti x2, x4, 1 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000002, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x00000002
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13:
-  bexti x8, x1, 19 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13_str)
+  bexti x6, x2, 19 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000002, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x00000002
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e:
-  bexti x14, x3, 30 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e_str)
+  bexti x14, x4, 30 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x00000002, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x00000002
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f:
   bexti x11, x12, 31 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x2_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000000, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x80000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0:
-  bexti x3, x13, 0 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0_str)
+  bexti x4, x13, 0 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000000, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x80000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1:
   bexti x10, x14, 1 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000000, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13:
-  bexti x3, x2, 19 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13_str)
+  bexti x4, x3, 19 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000000, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x80000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e:
-  bexti x10, x1, 30 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e_str)
+  bexti x10, x2, 30 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000000, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000000
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f:
-  bexti x12, x2, 31 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f_str)
+  bexti x12, x3, 31 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000000_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000001, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x80000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x0:
   bexti x13, x10, 0 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x0_str)
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000001, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x80000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1:
   bexti x15, x14, 1 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000001, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x13:
-  bexti x11, x2, 19 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x13_str)
+  bexti x11, x3, 19 # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000001, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1e:
-  bexti x15, x2, 30 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1e_str)
+  bexti x15, x3, 30 # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x80000001, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs1: x15 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x80000001
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1f:
   bexti x13, x15, 31 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1f_str)
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x80000001_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7fffffff, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7fffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0:
   bexti x13, x11, 0 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0_str)
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7fffffff, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x7fffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1:
-  bexti x13, x8, 1 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1_str)
+  bexti x13, x6, 1 # perform operation
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7fffffff, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x7fffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13:
-  bexti x14, x2, 19 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13_str)
+  bexti x14, x3, 19 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7fffffff, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x7fffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e:
   bexti x14, x13, 30 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7fffffff, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x7fffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f:
-  bexti x15, x1, 31 # perform operation
-  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f_str)
+  bexti x15, x2, 31 # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7fffffff_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7ffffffe, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x7ffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x0:
-  bexti x8, x13, 0 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x0_str)
+  bexti x6, x13, 0 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7ffffffe, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x7ffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1:
-  bexti x12, x2, 1 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1_str)
+  bexti x12, x3, 1 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7ffffffe, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x7ffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x13:
-  bexti x8, x2, 19 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x13_str)
+  bexti x6, x3, 19 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7ffffffe, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x7ffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1e:
   bexti x11, x12, 30 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1e_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x7ffffffe, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7ffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1f:
   bexti x13, x11, 31 # perform operation
-  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1f_str)
+  # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x7ffffffe_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xffffffff, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs1: x15 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xffffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0:
   bexti x14, x15, 0 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xffffffff, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0xffffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1:
   bexti x14, x11, 1 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xffffffff, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xffffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13:
-  bexti x14, x1, 19 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13_str)
+  bexti x14, x2, 19 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xffffffff, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs1: x1 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xffffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e:
-  bexti x14, x1, 30 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e_str)
+  bexti x14, x2, 30 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xffffffff, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0xffffffff
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f:
-  bexti x10, x3, 31 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f_str)
+  bexti x10, x4, 31 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xffffffff_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xfffffffe, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xfffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0:
   bexti x12, x10, 0 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xfffffffe, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs1: x7 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xfffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1:
-  bexti x10, x7, 1 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1_str)
+  bexti x10, x5, 1 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xfffffffe, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xfffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13:
   bexti x11, x13, 19 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xfffffffe, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xfffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e:
   bexti x12, x14, 30 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xfffffffe, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xfffffffe
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f:
-  bexti x7, x8, 31 # perform operation
-  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x7, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f_str)
+  bexti x5, x6, 31 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xfffffffe_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x5bbc8872, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs1: x15 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x5bbc8872
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x0:
   bexti x10, x15, 0 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x0_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x5bbc8872, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x5bbc8872
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1:
-  bexti x14, x8, 1 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1_str)
+  bexti x14, x6, 1 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x5bbc8872, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x5bbc8872
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x13:
-  bexti x3, x10, 19 # perform operation
-  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x13_str)
+  bexti x4, x10, 19 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x5bbc8872, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x5bbc8872
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1e:
   bexti x10, x12, 30 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1e_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x5bbc8872, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs1: x2 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x5bbc8872
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1f:
-  bexti x11, x2, 31 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1f_str)
+  bexti x11, x3, 31 # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x5bbc8872_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xaaaaaaaa, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xaaaaaaaa
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x0:
-  bexti x2, x10, 0 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x0_str)
+  bexti x3, x10, 0 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xaaaaaaaa, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xaaaaaaaa
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1:
-  bexti x8, x12, 1 # perform operation
-  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x8, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1_str)
+  bexti x6, x12, 1 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xaaaaaaaa, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xaaaaaaaa
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x13:
   bexti x12, x14, 19 # perform operation
-  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x13_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xaaaaaaaa, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xaaaaaaaa
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1e:
-  bexti x10, x8, 30 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1e_str)
+  bexti x10, x6, 30 # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0xaaaaaaaa, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xaaaaaaaa
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1f:
-  bexti x14, x8, 31 # perform operation
-  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1f_str)
+  bexti x14, x6, 31 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0xaaaaaaaa_immval_0x1f_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x55555555, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs1: x14 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x55555555
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x0:
   bexti x11, x14, 0 # perform operation
-  # Check if x11 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x0_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x0, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x55555555, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x55555555
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1:
   bexti x10, x13, 1 # perform operation
-  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x55555555, imm = 19)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs1: x12 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x55555555
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x13:
-  bexti x2, x12, 19 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x13_str)
+  bexti x3, x12, 19 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x13, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x13_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x55555555, imm = 30)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs1: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x55555555
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1e:
-  bexti x1, x13, 30 # perform operation
-  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x1, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1e_str)
+  bexti x2, x13, 30 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1e, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1e_str)
 
 # Testcase cr_rs1_imm_edges_uimm (rs1 = 0x55555555, imm = 31)
-  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs1: x8 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x55555555
 Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f:
-  bexti x2, x8, 31 # perform operation
-  # Check if x2 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x2, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f_str)
+  bexti x3, x6, 31 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f, Zbs_bexti_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f_str)
 
-  mv x2, x6 # restore signature pointer to default register for teardown
+  mv x2, x9 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1160,7 +1163,7 @@ RVTEST_DATA_BEGIN
 .word 0x21b5de13
 .word 0xd72b9284
 .word 0x9d508328
-.word 0x94382f41
+.word 0x5e4a10c5
 .word 0x4822430c
 .word 0xf8aa4eb3
 .word 0x6d6d980d
@@ -1168,18 +1171,18 @@ RVTEST_DATA_BEGIN
 .word 0x73924441
 .word 0x1032d82e
 .word 0xb02c5b84
-.word 0xd5effcda
-.word 0xb3a30591
+.word 0x90617b53
+.word 0x58043475
 .word 0x312b570f
+.word 0x9a39d805
 .word 0xaf068839
 .word 0xd0a5289c
 .word 0x0301286d
 .word 0x54446a33
-.word 0xea9e04a2
+.word 0xa363cb4c
 .word 0xbb59611e
 .word 0x2e0133e2
-.word 0x8a58e97a
-.word 0x53b3a61a
+.word 0xc7ae9a06
 .word 0x00000000
 .word 0x00000001
 .word 0x00000002
@@ -1194,20 +1197,20 @@ RVTEST_DATA_BEGIN
 .word 0x55555555
 .word 0x287509a3
 .word 0x1d52467e
-.word 0xf81c8b4f
-.word 0x30cc0660
+.word 0xfd72bb2b
 .word 0x682d923f
-.word 0x35ab4135
-.word 0x72af95d6
+.word 0x7a7b09eb
+.word 0xb89cf6bd
 .word 0x2a516503
 .word 0xa3573fe2
 .word 0xddf4bb40
-.word 0x1224a6cd
+.word 0xc388282d
 .word 0x3a011fa1
 .word 0x6c6d7117
 .word 0x5a8647f2
 .word 0xaf904985
 .word 0xab78b327
+.word 0x6e858977
 .word 0x27976b2d
 .word 0x714c5e0f
 .word 0x1a431f0e

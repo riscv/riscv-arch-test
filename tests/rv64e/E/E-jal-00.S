@@ -80,18 +80,18 @@ E_jal_cg_cp_rd_b3:
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, E_jal_cg_cp_rd_b3, E_jal_cg_cp_rd_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
   LI(x15, 1) # initialize indicator to 1 (jump taken)
 E_jal_cg_cp_rd_b4:
   jal x4, 1f # perform jump
   LI(x15, -1) # should not execute (jump not taken)
 1:
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, E_jal_cg_cp_rd_b4, E_jal_cg_cp_rd_b4_str)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x15, E_jal_cg_cp_rd_b4, E_jal_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x4, E_jal_cg_cp_rd_b4, E_jal_cg_cp_rd_b4_str)
+  # Check if x15 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x15, E_jal_cg_cp_rd_b4, E_jal_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
   LI(x15, 1) # initialize indicator to 1 (jump taken)
@@ -99,10 +99,10 @@ E_jal_cg_cp_rd_b5:
   jal x5, 1f # perform jump
   LI(x15, -1) # should not execute (jump not taken)
 1:
-  # Check if x5 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x5, E_jal_cg_cp_rd_b5, E_jal_cg_cp_rd_b5_str)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x15, E_jal_cg_cp_rd_b5, E_jal_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x5, E_jal_cg_cp_rd_b5, E_jal_cg_cp_rd_b5_str)
+  # Check if x15 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x15, E_jal_cg_cp_rd_b5, E_jal_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
   LI(x9, 1) # initialize indicator to 1 (jump taken)
@@ -110,10 +110,10 @@ E_jal_cg_cp_rd_b6:
   jal x6, 1f # perform jump
   LI(x9, -1) # should not execute (jump not taken)
 1:
-  # Check if x6 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x6, E_jal_cg_cp_rd_b6, E_jal_cg_cp_rd_b6_str)
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, E_jal_cg_cp_rd_b6, E_jal_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x6, E_jal_cg_cp_rd_b6, E_jal_cg_cp_rd_b6_str)
+  # Check if x9 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x9, E_jal_cg_cp_rd_b6, E_jal_cg_cp_rd_b6_str)
 
 # Testcase cp_rd (Test destination rd = x7)
   LI(x3, 1) # initialize indicator to 1 (jump taken)
@@ -121,10 +121,10 @@ E_jal_cg_cp_rd_b7:
   jal x7, 1f # perform jump
   LI(x3, -1) # should not execute (jump not taken)
 1:
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, E_jal_cg_cp_rd_b7, E_jal_cg_cp_rd_b7_str)
-  # Check if x3 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x3, E_jal_cg_cp_rd_b7, E_jal_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x7, E_jal_cg_cp_rd_b7, E_jal_cg_cp_rd_b7_str)
+  # Check if x3 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x3, E_jal_cg_cp_rd_b7, E_jal_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
   LI(x7, 1) # initialize indicator to 1 (jump taken)
@@ -132,10 +132,10 @@ E_jal_cg_cp_rd_b8:
   jal x8, 1f # perform jump
   LI(x7, -1) # should not execute (jump not taken)
 1:
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, E_jal_cg_cp_rd_b8, E_jal_cg_cp_rd_b8_str)
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, E_jal_cg_cp_rd_b8, E_jal_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x8, E_jal_cg_cp_rd_b8, E_jal_cg_cp_rd_b8_str)
+  # Check if x7 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x7, E_jal_cg_cp_rd_b8, E_jal_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
   LI(x8, 1) # initialize indicator to 1 (jump taken)
@@ -143,22 +143,22 @@ E_jal_cg_cp_rd_b9:
   jal x9, 1f # perform jump
   LI(x8, -1) # should not execute (jump not taken)
 1:
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, E_jal_cg_cp_rd_b9, E_jal_cg_cp_rd_b9_str)
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, E_jal_cg_cp_rd_b9, E_jal_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x9, E_jal_cg_cp_rd_b9, E_jal_cg_cp_rd_b9_str)
+  # Check if x8 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x8, E_jal_cg_cp_rd_b9, E_jal_cg_cp_rd_b9_str)
 
   mv x9, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x10)
-  LI(x14, 1) # initialize indicator to 1 (jump taken)
+  LI(x12, 1) # initialize indicator to 1 (jump taken)
 E_jal_cg_cp_rd_b10:
   jal x10, 1f # perform jump
-  LI(x14, -1) # should not execute (jump not taken)
+  LI(x12, -1) # should not execute (jump not taken)
 1:
-  # Check if x10 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x10, E_jal_cg_cp_rd_b10, E_jal_cg_cp_rd_b10_str)
-  # Check if x14 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x14, E_jal_cg_cp_rd_b10, E_jal_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x10, E_jal_cg_cp_rd_b10, E_jal_cg_cp_rd_b10_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_jal_cg_cp_rd_b10, E_jal_cg_cp_rd_b10_str)
 
   mv x6, x11 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x11)
@@ -167,24 +167,24 @@ E_jal_cg_cp_rd_b11:
   jal x11, 1f # perform jump
   LI(x3, -1) # should not execute (jump not taken)
 1:
-  # Check if x11 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x11, E_jal_cg_cp_rd_b11, E_jal_cg_cp_rd_b11_str)
-  # Check if x3 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x3, E_jal_cg_cp_rd_b11, E_jal_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x11, E_jal_cg_cp_rd_b11, E_jal_cg_cp_rd_b11_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x3, E_jal_cg_cp_rd_b11, E_jal_cg_cp_rd_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  LI(x8, 1) # initialize indicator to 1 (jump taken)
+  LI(x4, 1) # initialize indicator to 1 (jump taken)
 E_jal_cg_cp_rd_b12:
   jal x12, 1f # perform jump
-  LI(x8, -1) # should not execute (jump not taken)
+  LI(x4, -1) # should not execute (jump not taken)
 1:
-  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x12, E_jal_cg_cp_rd_b12, E_jal_cg_cp_rd_b12_str)
-  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, E_jal_cg_cp_rd_b12, E_jal_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_jal_cg_cp_rd_b12, E_jal_cg_cp_rd_b12_str)
+  # Check if x4 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x4, E_jal_cg_cp_rd_b12, E_jal_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
   LI(x15, 1) # initialize indicator to 1 (jump taken)
 E_jal_cg_cp_rd_b13:

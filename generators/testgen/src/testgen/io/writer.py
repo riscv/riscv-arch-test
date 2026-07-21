@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from testgen.asm.sections import generate_test_data_section, generate_test_string_section
+from testgen.asm.sections import generate_test_data_section, generate_test_string_section, generate_vector_data_section
 from testgen.constants import INDENT, indent_asm
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -76,6 +76,7 @@ def write_test_file(
 
     # Combine data from all test chunks
     data_values = [v for tc in test_chunks for v in tc.data_values]
+    vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
     sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
 
@@ -91,7 +92,7 @@ def write_test_file(
     test_file_relative = Path(arch_dir) / testsuite / filename if arch_dir else Path(testsuite) / filename
 
     # Test header
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
+    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
@@ -111,6 +112,7 @@ def write_test_file(
 
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
+    test_data_section += generate_vector_data_section(vector_data_labels)
     test_string_section = generate_test_string_section(data_strings)
     footer = insert_footer_template(test_data_section, test_string_section)
 

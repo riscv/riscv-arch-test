@@ -103,15 +103,41 @@ In Privileged section because it has both unpriv and privileged behaviors.
 //include::{testplansdir}/Zicfiss.adoc[]
 //,===
 
-==== Zawrs Wait on Reservation Set
+==== ZawrsSm Machine-Mode Wait on Reservation Set
 
-Waits until timeout on a single hart that cannot modify the reservation set.
+These tests only test single hart behavior and run on any configuration with machine mode that supports Zawrs
 
-[[t-Zawrs-coverpoints]]
-.Zawrs Coverpoints
-//,===
-//include::{testplansdir}/Zawrs.adoc[]
-//,===
+[[t-ZawrsSm-coverpoints]]
+.ZawrsSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527
+,===
+
+include::norm/ZawrsSm_norm_rules.adoc[]
+
+==== ZawrsS Supervisor-Mode Wait on Reservation Set
+
+These tests only test single hart behavior and run on any configuration with supervisor mode that supports Zawrs
+
+[[t-ZawrsS-coverpoints]]
+.ZawrsS Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0
+,===
+
+include::norm/ZawrsS_norm_rules.adoc[]
+
+==== ZawrsU User-Mode Wait on Reservation Set
+
+These tests only test single hart behavior and run on any configuration with user mode that supports Zawrs
+
+[[t-ZawrsU-coverpoints]]
+.ZawrsU Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576
+,===
+
+include::norm/ZawrsU_norm_rules.adoc[]
 
 ==== Sdtrig Debug Triggers
 

@@ -123,7 +123,7 @@ accepted:
 
 ```yaml
 # Quoted style (common in generated tests)
-REQUIRED_EXTENSIONS: ['I', 'Zba']
+REQUIRED_EXTENSIONS: ["I", "Zba"]
 
 # Unquoted style (common in hand-written tests)
 REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]

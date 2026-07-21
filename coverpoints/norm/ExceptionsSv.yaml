@@ -14,3 +14,9 @@ normative_rule_definitions:
       [
         "ExceptionsSv_cg/{cp_misaligned_priority_m, cp_misaligned_priority_s, cp_misaligned_priority_u, cp_misaligned_priority_fetch_m, cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
       ]
+
+  # If an instruction access-fault or instruction page-fault exception occurs on
+  # the target of a jump or taken branch, the exception is reported on the target
+  # instruction, not on the jump or branch instruction.
+  - name: ia_fault_exc_on_target
+    coverpoint: ["ExceptionsSv_cg/cp_instr_page_fault_m"]

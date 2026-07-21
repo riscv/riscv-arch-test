@@ -150,7 +150,7 @@
 
 #define TEST_FILE "sv57_zicboz_exceptions_Smode.S"
 #define SIGUPD_COUNT 75
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

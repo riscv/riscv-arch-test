@@ -115,18 +115,18 @@ E_bgeu_cg_cp_rs1_b6:
   # Check if x13 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x13, E_bgeu_cg_cp_rs1_b6, E_bgeu_cg_cp_rs1_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xd8551baef7b9ea16
-  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load rs2: x14 = 0xb95f6376193671d9
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xb95f6376193671d9
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load branch taken value: x9 = 0x7290b8649c830d63
 E_bgeu_cg_cp_rs1_b7:
-  bgeu x7, x14, 1f # perform operation
+  bgeu x7, x12, 1f # perform operation
   LI(x9, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, E_bgeu_cg_cp_rs1_b7, E_bgeu_cg_cp_rs1_b7_str)
+  # Check if x9 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x9, E_bgeu_cg_cp_rs1_b7, E_bgeu_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xc8bcd6e2eb1c9792
@@ -136,8 +136,8 @@ E_bgeu_cg_cp_rs1_b8:
   bgeu x8, x9, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x3, E_bgeu_cg_cp_rs1_b8, E_bgeu_cg_cp_rs1_b8_str)
+  # Check if x3 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x3, E_bgeu_cg_cp_rs1_b8, E_bgeu_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0xfe3742402783f86c
@@ -147,78 +147,78 @@ E_bgeu_cg_cp_rs1_b9:
   bgeu x9, x0, 1f # perform operation
   LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, E_bgeu_cg_cp_rs1_b9, E_bgeu_cg_cp_rs1_b9_str)
+  # Check if x4 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x4, E_bgeu_cg_cp_rs1_b9, E_bgeu_cg_cp_rs1_b9_str)
 
   mv x9, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x6ff711c663897d18
-  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load rs2: x14 = 0x6783fe8ee957ad68
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0x6783fe8ee957ad68
   RVTEST_TESTDATA_LOAD_INT(x11, x3) # load branch taken value: x3 = 0xad5383941bcf99f8
 E_bgeu_cg_cp_rs1_b10:
-  bgeu x10, x14, 1f # perform operation
+  bgeu x10, x12, 1f # perform operation
   LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x3, E_bgeu_cg_cp_rs1_b10, E_bgeu_cg_cp_rs1_b10_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x3, E_bgeu_cg_cp_rs1_b10, E_bgeu_cg_cp_rs1_b10_str)
 
   mv x1, x11 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x928915eeb395cba6
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x2a38ab38f9b11497
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load branch taken value: x14 = 0xf7eef23e8330d2a1
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load branch taken value: x12 = 0xf7eef23e8330d2a1
 E_bgeu_cg_cp_rs1_b11:
   bgeu x11, x3, 1f # perform operation
-  LI(x14, -1) # branch not taken, set temp_reg to 0
-1:
-  # Check if x14 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x14, E_bgeu_cg_cp_rs1_b11, E_bgeu_cg_cp_rs1_b11_str)
-
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x59643af9b5840631
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x44b9e67ec342ac84
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load branch taken value: x6 = 0x50373871ee25eb3e
-E_bgeu_cg_cp_rs1_b12:
-  bgeu x12, x13, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
-1:
-  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, E_bgeu_cg_cp_rs1_b12, E_bgeu_cg_cp_rs1_b12_str)
-
-# Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x7da7c53e39bac281
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0xbc802d29e3bb42b7
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load branch taken value: x12 = 0x00feb5f683a20f06
-E_bgeu_cg_cp_rs1_b13:
-  bgeu x13, x8, 1f # perform operation
   LI(x12, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x12, E_bgeu_cg_cp_rs1_b13, E_bgeu_cg_cp_rs1_b13_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x12, E_bgeu_cg_cp_rs1_b11, E_bgeu_cg_cp_rs1_b11_str)
+
+# Testcase cp_rs1 (Test source rs1 = x12)
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x4d7d5f2bd5aad548
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xf835a367c4b9e67e
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load branch taken value: x15 = 0x7da7c53e39bac281
+E_bgeu_cg_cp_rs1_b12:
+  bgeu x12, x11, 1f # perform operation
+  LI(x15, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x15 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x15, E_bgeu_cg_cp_rs1_b12, E_bgeu_cg_cp_rs1_b12_str)
+
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1 (Test source rs1 = x13)
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xbc802d29e3bb42b7
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x9288d62e80b7e300
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load branch taken value: x4 = 0xa4d4ac049e8902f3
+E_bgeu_cg_cp_rs1_b13:
+  bgeu x13, x14, 1f # perform operation
+  LI(x4, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, E_bgeu_cg_cp_rs1_b13, E_bgeu_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xfd6eb5381288d62e
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x034fbb1aa82213af
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load branch taken value: x7 = 0x5fc553b3181e908c
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x4d772ced91aa6b66
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs2: x5 = 0x87ea46e031e74d72
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load branch taken value: x3 = 0xe4a95782926f7341
 E_bgeu_cg_cp_rs1_b14:
-  bgeu x14, x0, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  bgeu x14, x5, 1f # perform operation
+  LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, E_bgeu_cg_cp_rs1_b14, E_bgeu_cg_cp_rs1_b14_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x3, E_bgeu_cg_cp_rs1_b14, E_bgeu_cg_cp_rs1_b14_str)
 
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xc51f4c317c18f80f
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x58c23e037cdfb425
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load branch taken value: x8 = 0x126f7341dced4e00
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xcb649c74347b339e
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0xf2a2bccc116e7fed
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load branch taken value: x10 = 0x760e7326de342e09
 E_bgeu_cg_cp_rs1_b15:
-  bgeu x15, x0, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  bgeu x15, x13, 1f # perform operation
+  LI(x10, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, E_bgeu_cg_cp_rs1_b15, E_bgeu_cg_cp_rs1_b15_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x10, E_bgeu_cg_cp_rs1_b15, E_bgeu_cg_cp_rs1_b15_str)
 
 /////////////////////////////////
 // cp_rs2
@@ -227,13 +227,13 @@ E_bgeu_cg_cp_rs1_b15:
 # Testcase cp_rs2 (Test source rs2 = x0)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xdb33ea858603d65c
   RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xab5a649c2a887f1f
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load branch taken value: x8 = 0xbb91974da8e80291
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load branch taken value: x6 = 0xbb91974da8e80291
 E_bgeu_cg_cp_rs2_b0:
   bgeu x14, x0, 1f # perform operation
-  LI(x8, -1) # branch not taken, set temp_reg to 0
+  LI(x6, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, E_bgeu_cg_cp_rs2_b0, E_bgeu_cg_cp_rs2_b0_str)
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, E_bgeu_cg_cp_rs2_b0, E_bgeu_cg_cp_rs2_b0_str)
 
   mv x3, x1 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x1)
@@ -244,8 +244,8 @@ E_bgeu_cg_cp_rs2_b1:
   bgeu x0, x1, 1f # perform operation
   LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x11, E_bgeu_cg_cp_rs2_b1, E_bgeu_cg_cp_rs2_b1_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x11, E_bgeu_cg_cp_rs2_b1, E_bgeu_cg_cp_rs2_b1_str)
 
 # Testcase cp_rs2 (Test source rs2 = x2)
   RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0x92c0976c090b8742
@@ -255,158 +255,157 @@ E_bgeu_cg_cp_rs2_b2:
   bgeu x12, x2, 1f # perform operation
   LI(x15, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x15, E_bgeu_cg_cp_rs2_b2, E_bgeu_cg_cp_rs2_b2_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x15, E_bgeu_cg_cp_rs2_b2, E_bgeu_cg_cp_rs2_b2_str)
 
   mv x1, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xf41c8079e739f45d
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xffb6e7ad0023495b
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load branch taken value: x6 = 0xf3d9be705cd96671
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load branch taken value: x4 = 0xf3d9be705cd96671
 E_bgeu_cg_cp_rs2_b3:
   bgeu x15, x3, 1f # perform operation
-  LI(x6, -1) # branch not taken, set temp_reg to 0
+  LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, E_bgeu_cg_cp_rs2_b3, E_bgeu_cg_cp_rs2_b3_str)
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, E_bgeu_cg_cp_rs2_b3, E_bgeu_cg_cp_rs2_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x4c353d7d29c57546
-  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs2: x4 = 0x0548e7efa620879d
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load branch taken value: x5 = 0xbc2a2393c63f4c8a
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xe6e925eb3c2a2393
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs2: x4 = 0x6e698c9f285e93a3
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load branch taken value: x14 = 0x2710d40deca39919
 E_bgeu_cg_cp_rs2_b4:
   bgeu x6, x4, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x14, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x5 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x5, E_bgeu_cg_cp_rs2_b4, E_bgeu_cg_cp_rs2_b4_str)
+  # Check if x14 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x14, E_bgeu_cg_cp_rs2_b4, E_bgeu_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x6e698c9f285e93a3
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs2: x5 = 0xf65f06c666905d93
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load branch taken value: x7 = 0x2f813a3a7ee023bf
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xb3c371983bac548f
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs2: x5 = 0x846b2f2e459ea989
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load branch taken value: x6 = 0x83b5affc825dadd4
 E_bgeu_cg_cp_rs2_b5:
-  bgeu x8, x5, 1f # perform operation
-  LI(x7, -1) # branch not taken, set temp_reg to 0
+  bgeu x12, x5, 1f # perform operation
+  LI(x6, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x7, E_bgeu_cg_cp_rs2_b5, E_bgeu_cg_cp_rs2_b5_str)
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, E_bgeu_cg_cp_rs2_b5, E_bgeu_cg_cp_rs2_b5_str)
 
 # Testcase cp_rs2 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x67d6f25d6bf0313e
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xafaa6c7c99f8e500
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load branch taken value: x3 = 0x06849ba208d6b55a
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xce1cb5242a89a4c9
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0xa75dd8d0c08b7c4f
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load branch taken value: x12 = 0x0781855fd9954a7a
 E_bgeu_cg_cp_rs2_b6:
-  bgeu x10, x6, 1f # perform operation
-  LI(x3, -1) # branch not taken, set temp_reg to 0
+  bgeu x2, x6, 1f # perform operation
+  LI(x12, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x3 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x3, E_bgeu_cg_cp_rs2_b6, E_bgeu_cg_cp_rs2_b6_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x12, E_bgeu_cg_cp_rs2_b6, E_bgeu_cg_cp_rs2_b6_str)
 
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x6baf316c3be5e7c8
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0x408b7c4ff5b7fc92
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load branch taken value: x10 = 0x261cf851177acdba
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x790de0f5f19770a5
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0x57238adcd2ffb115
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load branch taken value: x10 = 0xfe36a04035b1e367
 E_bgeu_cg_cp_rs2_b7:
-  bgeu x5, x7, 1f # perform operation
+  bgeu x15, x7, 1f # perform operation
   LI(x10, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x10 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x10, E_bgeu_cg_cp_rs2_b7, E_bgeu_cg_cp_rs2_b7_str)
+  # Check if x10 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x10, E_bgeu_cg_cp_rs2_b7, E_bgeu_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x4d508ebf3a4088c3
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x33d51aae6b2746d5
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load branch taken value: x11 = 0xb91a49ba302d8645
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xd394b2f260490ba7
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0xcb024106391a49ba
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load branch taken value: x15 = 0x0125567553e2cf3c
 E_bgeu_cg_cp_rs2_b8:
-  bgeu x4, x8, 1f # perform operation
-  LI(x11, -1) # branch not taken, set temp_reg to 0
+  bgeu x5, x8, 1f # perform operation
+  LI(x15, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x11 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x11, E_bgeu_cg_cp_rs2_b8, E_bgeu_cg_cp_rs2_b8_str)
+  # Check if x15 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x15, E_bgeu_cg_cp_rs2_b8, E_bgeu_cg_cp_rs2_b8_str)
 
-  mv x10, x9 # switch signature pointer register to avoid conflict with test
+  mv x6, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x0125567553e2cf3c
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xe9baf40753cf8fe2
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load branch taken value: x5 = 0xdd7d8d117f886c09
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0xa79bfe9f68433658
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x2b6f3d29ff5009f6
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load branch taken value: x11 = 0xd58c7b19432ad845
 E_bgeu_cg_cp_rs2_b9:
   bgeu x8, x9, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
+  LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x5 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x5, E_bgeu_cg_cp_rs2_b9, E_bgeu_cg_cp_rs2_b9_str)
+  # Check if x11 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x11, E_bgeu_cg_cp_rs2_b9, E_bgeu_cg_cp_rs2_b9_str)
 
-  mv x6, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xb835512c81308ab2
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x195a03645207576c
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load branch taken value: x3 = 0x4c791147325f83c1
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x3702a5ed10531473
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x69ecba5f0daf31af
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load branch taken value: x7 = 0x800cb8cef14ce2c3
 E_bgeu_cg_cp_rs2_b10:
-  bgeu x5, x10, 1f # perform operation
-  LI(x3, -1) # branch not taken, set temp_reg to 0
-1:
-  # Check if x3 contains the expected result. x6 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x6, x13, x12, x3, E_bgeu_cg_cp_rs2_b10, E_bgeu_cg_cp_rs2_b10_str)
-
-# Testcase cp_rs2 (Test source rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x36f21b89c5bf3a52
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x7dff2bf59c0ed9e6
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load branch taken value: x7 = 0x071510a543ec157b
-E_bgeu_cg_cp_rs2_b11:
-  bgeu x15, x11, 1f # perform operation
+  bgeu x11, x10, 1f # perform operation
   LI(x7, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x7 contains the expected result. x6 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x6, x13, x12, x7, E_bgeu_cg_cp_rs2_b11, E_bgeu_cg_cp_rs2_b11_str)
+  # Check if x7 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x7, E_bgeu_cg_cp_rs2_b10, E_bgeu_cg_cp_rs2_b10_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x11)
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x9a396492ea99f610
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xb4b3bec13c1a4c47
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load branch taken value: x15 = 0xb097fd87b25dc7d0
+E_bgeu_cg_cp_rs2_b11:
+  bgeu x8, x11, 1f # perform operation
+  LI(x15, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x15 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x15, E_bgeu_cg_cp_rs2_b11, E_bgeu_cg_cp_rs2_b11_str)
+
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x325dc7d0baa4eacf
-  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0xe453dc0e1bbb3c68
-  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load branch taken value: x4 = 0x378752ad5a755f51
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x2712104dfa6a3d4f
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x663ff1f0a8afcb55
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load branch taken value: x4 = 0xf857ab9e6453dc0e
 E_bgeu_cg_cp_rs2_b12:
-  bgeu x2, x12, 1f # perform operation
+  bgeu x9, x12, 1f # perform operation
+  LI(x4, -1) # branch not taken, set temp_reg to 0
+1:
+  # Check if x4 contains the expected result. x6 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x6, x14, x13, x4, E_bgeu_cg_cp_rs2_b12, E_bgeu_cg_cp_rs2_b12_str)
+
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x13)
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xbf82b6c062d26d98
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x07002297d1a016e7
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load branch taken value: x4 = 0xa70ed862fa54f723
+E_bgeu_cg_cp_rs2_b13:
+  bgeu x2, x13, 1f # perform operation
   LI(x4, -1) # branch not taken, set temp_reg to 0
 1:
   # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x4, E_bgeu_cg_cp_rs2_b12, E_bgeu_cg_cp_rs2_b12_str)
+  RVTEST_SIGUPD(x6, x8, x7, x4, E_bgeu_cg_cp_rs2_b13, E_bgeu_cg_cp_rs2_b13_str)
 
-# Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x32cdca07f14d76be
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0xf542d3b11d4f6a66
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load branch taken value: x11 = 0x1e9f976a53c7c1c6
-E_bgeu_cg_cp_rs2_b13:
-  bgeu x10, x13, 1f # perform operation
+# Testcase cp_rs2 (Test source rs2 = x14)
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x9d4f6a66c9a0b28e
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xc58850df50b2cb43
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load branch taken value: x11 = 0x2f0550c24c74749c
+E_bgeu_cg_cp_rs2_b14:
+  bgeu x9, x14, 1f # perform operation
   LI(x11, -1) # branch not taken, set temp_reg to 0
 1:
   # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x11, E_bgeu_cg_cp_rs2_b13, E_bgeu_cg_cp_rs2_b13_str)
-
-# Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x2971ac221af80625
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x8baed2d8fec6d99c
-  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load branch taken value: x5 = 0x2fcd0bb1929edfd5
-E_bgeu_cg_cp_rs2_b14:
-  bgeu x2, x14, 1f # perform operation
-  LI(x5, -1) # branch not taken, set temp_reg to 0
-1:
-  # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x5, E_bgeu_cg_cp_rs2_b14, E_bgeu_cg_cp_rs2_b14_str)
+  RVTEST_SIGUPD(x6, x8, x7, x11, E_bgeu_cg_cp_rs2_b14, E_bgeu_cg_cp_rs2_b14_str)
 
 # Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0xf7aa14bcce19bf3c
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x97738b3a6455262a
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load branch taken value: x13 = 0x6aaaf5285b2a1bb5
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x7ec6d99cb726e6e8
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0xa8b99096486b1be4
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load branch taken value: x3 = 0xf702f43e77aa14bc
 E_bgeu_cg_cp_rs2_b15:
-  bgeu x4, x15, 1f # perform operation
-  LI(x13, -1) # branch not taken, set temp_reg to 0
+  bgeu x14, x15, 1f # perform operation
+  LI(x3, -1) # branch not taken, set temp_reg to 0
 1:
-  # Check if x13 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x13, E_bgeu_cg_cp_rs2_b15, E_bgeu_cg_cp_rs2_b15_str)
+  # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x6, x8, x7, x3, E_bgeu_cg_cp_rs2_b15, E_bgeu_cg_cp_rs2_b15_str)
 
 /////////////////////////////////
 // cp_rs1_edges
@@ -6229,18 +6228,18 @@ RVTEST_DATA_BEGIN
 .dword 0x928915eeb395cba6
 .dword 0x2a38ab38f9b11497
 .dword 0xf7eef23e8330d2a1
-.dword 0x59643af9b5840631
-.dword 0x44b9e67ec342ac84
-.dword 0x50373871ee25eb3e
+.dword 0x4d7d5f2bd5aad548
+.dword 0xf835a367c4b9e67e
 .dword 0x7da7c53e39bac281
 .dword 0xbc802d29e3bb42b7
-.dword 0x00feb5f683a20f06
-.dword 0xfd6eb5381288d62e
-.dword 0x034fbb1aa82213af
-.dword 0x5fc553b3181e908c
-.dword 0xc51f4c317c18f80f
-.dword 0x58c23e037cdfb425
-.dword 0x126f7341dced4e00
+.dword 0x9288d62e80b7e300
+.dword 0xa4d4ac049e8902f3
+.dword 0x4d772ced91aa6b66
+.dword 0x87ea46e031e74d72
+.dword 0xe4a95782926f7341
+.dword 0xcb649c74347b339e
+.dword 0xf2a2bccc116e7fed
+.dword 0x760e7326de342e09
 .dword 0xdb33ea858603d65c
 .dword 0xab5a649c2a887f1f
 .dword 0xbb91974da8e80291
@@ -6253,42 +6252,42 @@ RVTEST_DATA_BEGIN
 .dword 0xf41c8079e739f45d
 .dword 0xffb6e7ad0023495b
 .dword 0xf3d9be705cd96671
-.dword 0x4c353d7d29c57546
-.dword 0x0548e7efa620879d
-.dword 0xbc2a2393c63f4c8a
+.dword 0xe6e925eb3c2a2393
 .dword 0x6e698c9f285e93a3
-.dword 0xf65f06c666905d93
-.dword 0x2f813a3a7ee023bf
-.dword 0x67d6f25d6bf0313e
-.dword 0xafaa6c7c99f8e500
-.dword 0x06849ba208d6b55a
-.dword 0x6baf316c3be5e7c8
-.dword 0x408b7c4ff5b7fc92
-.dword 0x261cf851177acdba
-.dword 0x4d508ebf3a4088c3
-.dword 0x33d51aae6b2746d5
-.dword 0xb91a49ba302d8645
+.dword 0x2710d40deca39919
+.dword 0xb3c371983bac548f
+.dword 0x846b2f2e459ea989
+.dword 0x83b5affc825dadd4
+.dword 0xce1cb5242a89a4c9
+.dword 0xa75dd8d0c08b7c4f
+.dword 0x0781855fd9954a7a
+.dword 0x790de0f5f19770a5
+.dword 0x57238adcd2ffb115
+.dword 0xfe36a04035b1e367
+.dword 0xd394b2f260490ba7
+.dword 0xcb024106391a49ba
 .dword 0x0125567553e2cf3c
-.dword 0xe9baf40753cf8fe2
-.dword 0xdd7d8d117f886c09
-.dword 0xb835512c81308ab2
-.dword 0x195a03645207576c
-.dword 0x4c791147325f83c1
-.dword 0x36f21b89c5bf3a52
-.dword 0x7dff2bf59c0ed9e6
-.dword 0x071510a543ec157b
-.dword 0x325dc7d0baa4eacf
-.dword 0xe453dc0e1bbb3c68
-.dword 0x378752ad5a755f51
-.dword 0x32cdca07f14d76be
-.dword 0xf542d3b11d4f6a66
-.dword 0x1e9f976a53c7c1c6
-.dword 0x2971ac221af80625
-.dword 0x8baed2d8fec6d99c
-.dword 0x2fcd0bb1929edfd5
-.dword 0xf7aa14bcce19bf3c
-.dword 0x97738b3a6455262a
-.dword 0x6aaaf5285b2a1bb5
+.dword 0xa79bfe9f68433658
+.dword 0x2b6f3d29ff5009f6
+.dword 0xd58c7b19432ad845
+.dword 0x3702a5ed10531473
+.dword 0x69ecba5f0daf31af
+.dword 0x800cb8cef14ce2c3
+.dword 0x9a396492ea99f610
+.dword 0xb4b3bec13c1a4c47
+.dword 0xb097fd87b25dc7d0
+.dword 0x2712104dfa6a3d4f
+.dword 0x663ff1f0a8afcb55
+.dword 0xf857ab9e6453dc0e
+.dword 0xbf82b6c062d26d98
+.dword 0x07002297d1a016e7
+.dword 0xa70ed862fa54f723
+.dword 0x9d4f6a66c9a0b28e
+.dword 0xc58850df50b2cb43
+.dword 0x2f0550c24c74749c
+.dword 0x7ec6d99cb726e6e8
+.dword 0xa8b99096486b1be4
+.dword 0xf702f43e77aa14bc
 .dword 0x0000000000000000
 .dword 0x50f33112b413ce15
 .dword 0x96f564bd2d448c31

@@ -47,80 +47,80 @@ RVTEST_BEGIN
   sw x15, 12(x14) # store at offset 12
 
 # Testcase: cp_misalign (imm[2:0] = 000)
-  mv x22, x2 # switch signature pointer register to avoid conflict with test
+  mv x21, x2 # switch signature pointer register to avoid conflict with test
   LA(sp, scratch) # load base address
   addi sp, sp, 0 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_0:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_0, MisalignZca_c_lwsp_cg_cp_misalign_0_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_0, MisalignZca_c_lwsp_cg_cp_misalign_0_str)
 
 # Testcase: cp_misalign (imm[2:0] = 001)
   LA(sp, scratch) # load base address
   addi sp, sp, 1 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_1:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_1, MisalignZca_c_lwsp_cg_cp_misalign_1_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_1, MisalignZca_c_lwsp_cg_cp_misalign_1_str)
 
 # Testcase: cp_misalign (imm[2:0] = 010)
   LA(sp, scratch) # load base address
   addi sp, sp, 2 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_2:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_2, MisalignZca_c_lwsp_cg_cp_misalign_2_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_2, MisalignZca_c_lwsp_cg_cp_misalign_2_str)
 
 # Testcase: cp_misalign (imm[2:0] = 011)
   LA(sp, scratch) # load base address
   addi sp, sp, 3 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_3:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_3, MisalignZca_c_lwsp_cg_cp_misalign_3_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_3, MisalignZca_c_lwsp_cg_cp_misalign_3_str)
 
 # Testcase: cp_misalign (imm[2:0] = 100)
   LA(sp, scratch) # load base address
   addi sp, sp, 4 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_4:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_4, MisalignZca_c_lwsp_cg_cp_misalign_4_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_4, MisalignZca_c_lwsp_cg_cp_misalign_4_str)
 
 # Testcase: cp_misalign (imm[2:0] = 101)
   LA(sp, scratch) # load base address
   addi sp, sp, 5 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_5:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_5, MisalignZca_c_lwsp_cg_cp_misalign_5_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_5, MisalignZca_c_lwsp_cg_cp_misalign_5_str)
 
 # Testcase: cp_misalign (imm[2:0] = 110)
   LA(sp, scratch) # load base address
   addi sp, sp, 6 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_6:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_6, MisalignZca_c_lwsp_cg_cp_misalign_6_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_6, MisalignZca_c_lwsp_cg_cp_misalign_6_str)
 
 # Testcase: cp_misalign (imm[2:0] = 111)
   LA(sp, scratch) # load base address
   addi sp, sp, 7 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_7:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_7, MisalignZca_c_lwsp_cg_cp_misalign_7_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_7, MisalignZca_c_lwsp_cg_cp_misalign_7_str)
 
 # Testcase: cp_misalign (imm[2:0] = 1000)
   LA(sp, scratch) # load base address
   addi sp, sp, 8 # adjust for alignment
 MisalignZca_c_lwsp_cg_cp_misalign_8:
   c.lwsp x15, 0(sp) # perform load
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_8, MisalignZca_c_lwsp_cg_cp_misalign_8_str)
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, MisalignZca_c_lwsp_cg_cp_misalign_8, MisalignZca_c_lwsp_cg_cp_misalign_8_str)
 
 
-  mv x2, x22 # restore signature pointer to default register for teardown
+  mv x2, x21 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

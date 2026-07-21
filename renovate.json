@@ -167,6 +167,12 @@
       "enabled": false
     },
     {
+      "description": "Keep UDB Ruby gems in one update PR",
+      "matchDepNames": ["udb", "udb-gen", "idlc", "udb_helpers"],
+      "groupName": "udb ruby gems",
+      "groupSlug": "udb-ruby-gems"
+    },
+    {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
       "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
       "groupName": "ruff"

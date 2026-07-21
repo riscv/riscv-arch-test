@@ -24,6 +24,8 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -32,7 +34,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 #define SKIP_MTVAL
 
 // Include framework macros
@@ -57,7 +59,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
-    LI(x4, 0xACCE)
+    LI(a4, 0x00008067)                                       // ret (jalr x0, 0(ra)): on cores where addr 0 is mapped RAM the store lands and the later execute probe at 0 must return
     LI(a5, 0)
     LA(x1, 4f)                                               // Address to be verified
     sw a4, 0(a5)                                             // word-level store test
@@ -78,7 +80,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_4,test_4_str)               // Signature update
 
-    LI(x4, 0xACCE)
     LA(x1, 5f)
     LI(a5, 0)                                                   // Address to be verified
     lw a4, 0(a5)                                             // word-level store test
@@ -88,7 +89,6 @@ RVTEST_BEGIN
     nop
 
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS))
     LA(x1, 1f)                                                // Store the return Address in x1
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
@@ -97,7 +97,6 @@ RVTEST_BEGIN
 1:
     nop
 
-    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS-4))
     LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -105,7 +104,6 @@ RVTEST_BEGIN
 2:
     nop
 
-    LI(x4, 0xACCE)
     LI(a5, 0)
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a5)

@@ -332,10 +332,10 @@ Zcb_c_sh_cg_cp_rs2_p_b13:
   nop
 #endif
 
-  mv x17, x14 # switch signature pointer register to avoid conflict with test
+  mv x16, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2_p (Test source rs2 = x14)
   RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0x151e73609c50ca33
-  mv x11, x17 # move signature pointer register
+  mv x11, x16 # move signature pointer register
   addi x11, x11, 0 # adjust base address for offset
 Zcb_c_sh_cg_cp_rs2_p_b14:
   c.sh x14, 0(x11) # perform store

@@ -185,10 +185,18 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
-    save_mstateen, save_mstatenh = test_data.int_regs.get_registers(2)
-    temp_reg = test_data.int_regs.get_register()
+    save_mstateen_se0, temp_reg = test_data.int_regs.get_registers(2)
 
-    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
+    # Only SE0 needs to be saved and restored for this test
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"CSRR(x{save_mstateen_se0}, mstateen0)  # save mstateen0 on RV64",
+            "#elif __riscv_xlen == 32",
+            f"CSRR(x{save_mstateen_se0}, mstateen0h)  # save mstateen0h on RV32",
+            "#endif",
+        ]
+    )
     lines.extend(_write_se0(temp_reg, enable=True))
 
     # The walk must be sampled in S-mode so the priv_mode_s bin is hit. csr_walk_test
@@ -204,10 +212,17 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     )
     lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
 
-    temp_reg = test_data.int_regs.get_register()
     lines.append(GOTO_MMODE)
-    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
-    test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"CSRW(mstateen0, x{save_mstateen_se0})  # restore mstateen0 on RV64",
+            "#elif __riscv_xlen == 32",
+            f"CSRW(mstateen0h, x{save_mstateen_se0})  # restore mstateen0h on RV32",
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([save_mstateen_se0])
 
     return lines
 

@@ -81,8 +81,8 @@ F_fmsub_s_cg_cp_fs1_b3:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b4:
   fmsub.s f7, f4, f8, f0 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, F_fmsub_s_cg_cp_fs1_b4, F_fmsub_s_cg_cp_fs1_b4_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, F_fmsub_s_cg_cp_fs1_b4, F_fmsub_s_cg_cp_fs1_b4_str)
 
 # Testcase cp_fs1 (Test source fs1 = f5)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xf69bd3a6
@@ -91,8 +91,8 @@ F_fmsub_s_cg_cp_fs1_b4:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b5:
   fmsub.s f14, f5, f20, f8 # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f14, F_fmsub_s_cg_cp_fs1_b5, F_fmsub_s_cg_cp_fs1_b5_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f14, F_fmsub_s_cg_cp_fs1_b5, F_fmsub_s_cg_cp_fs1_b5_str)
 
 # Testcase cp_fs1 (Test source fs1 = f6)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xf45179a7
@@ -101,8 +101,8 @@ F_fmsub_s_cg_cp_fs1_b5:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b6:
   fmsub.s f1, f6, f16, f9 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f1, F_fmsub_s_cg_cp_fs1_b6, F_fmsub_s_cg_cp_fs1_b6_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f1, F_fmsub_s_cg_cp_fs1_b6, F_fmsub_s_cg_cp_fs1_b6_str)
 
 # Testcase cp_fs1 (Test source fs1 = f7)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xab46dbbb
@@ -111,8 +111,8 @@ F_fmsub_s_cg_cp_fs1_b6:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b7:
   fmsub.s f0, f7, f28, f9 # perform operation
-  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f0, F_fmsub_s_cg_cp_fs1_b7, F_fmsub_s_cg_cp_fs1_b7_str)
+  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f0, F_fmsub_s_cg_cp_fs1_b7, F_fmsub_s_cg_cp_fs1_b7_str)
 
 # Testcase cp_fs1 (Test source fs1 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xb6a072fc
@@ -121,18 +121,18 @@ F_fmsub_s_cg_cp_fs1_b7:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b8:
   fmsub.s f31, f8, f15, f5 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f31, F_fmsub_s_cg_cp_fs1_b8, F_fmsub_s_cg_cp_fs1_b8_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f31, F_fmsub_s_cg_cp_fs1_b8, F_fmsub_s_cg_cp_fs1_b8_str)
 
 # Testcase cp_fs1 (Test source fs1 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x0b324c38
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0xeb441917
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xdfa612ac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xdfa612ac
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b9:
-  fmsub.s f28, f9, f10, f13 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f28, F_fmsub_s_cg_cp_fs1_b9, F_fmsub_s_cg_cp_fs1_b9_str)
+  fmsub.s f28, f9, f10, f12 # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f28, F_fmsub_s_cg_cp_fs1_b9, F_fmsub_s_cg_cp_fs1_b9_str)
 
 # Testcase cp_fs1 (Test source fs1 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xb7d0b1d5
@@ -141,28 +141,28 @@ F_fmsub_s_cg_cp_fs1_b9:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b10:
   fmsub.s f26, f10, f30, f6 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f26, F_fmsub_s_cg_cp_fs1_b10, F_fmsub_s_cg_cp_fs1_b10_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f26, F_fmsub_s_cg_cp_fs1_b10, F_fmsub_s_cg_cp_fs1_b10_str)
 
 # Testcase cp_fs1 (Test source fs1 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x6094bfcf
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0xea6b1ca8
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0xea6b1ca8
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xe94fcad6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b11:
-  fmsub.s f2, f11, f13, f15 # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f2, F_fmsub_s_cg_cp_fs1_b11, F_fmsub_s_cg_cp_fs1_b11_str)
+  fmsub.s f2, f11, f12, f15 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f2, F_fmsub_s_cg_cp_fs1_b11, F_fmsub_s_cg_cp_fs1_b11_str)
 
 # Testcase cp_fs1 (Test source fs1 = f12)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x9578abea
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x2225d4b2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xa396d875
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xa396d875
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b12:
-  fmsub.s f27, f12, f2, f10 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cp_fs1_b12, F_fmsub_s_cg_cp_fs1_b12_str)
+  fmsub.s f23, f12, f2, f9 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f23, F_fmsub_s_cg_cp_fs1_b12, F_fmsub_s_cg_cp_fs1_b12_str)
 
 # Testcase cp_fs1 (Test source fs1 = f13)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xba19cd2c
@@ -170,9 +170,9 @@ F_fmsub_s_cg_cp_fs1_b12:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xa1c45788
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs1_b13:
-  fmsub.s f31, f13, f2, f15 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cp_fs1_b13, F_fmsub_s_cg_cp_fs1_b13_str)
+  fmsub.s f30, f13, f2, f15 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cp_fs1_b13, F_fmsub_s_cg_cp_fs1_b13_str)
 
 # Testcase cp_fs1 (Test source fs1 = f14)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xa649c871
@@ -729,8 +729,8 @@ F_fmsub_s_cg_cp_fs3_b3:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b4:
   fmsub.s f31, f5, f1, f4 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f31, F_fmsub_s_cg_cp_fs3_b4, F_fmsub_s_cg_cp_fs3_b4_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f31, F_fmsub_s_cg_cp_fs3_b4, F_fmsub_s_cg_cp_fs3_b4_str)
 
 # Testcase cp_fs3 (Test source fs3 = f5)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0xa657a5b0
@@ -739,8 +739,8 @@ F_fmsub_s_cg_cp_fs3_b4:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b5:
   fmsub.s f26, f29, f1, f5 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f26, F_fmsub_s_cg_cp_fs3_b5, F_fmsub_s_cg_cp_fs3_b5_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f26, F_fmsub_s_cg_cp_fs3_b5, F_fmsub_s_cg_cp_fs3_b5_str)
 
 # Testcase cp_fs3 (Test source fs3 = f6)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x5f15844b
@@ -749,8 +749,8 @@ F_fmsub_s_cg_cp_fs3_b5:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b6:
   fmsub.s f17, f27, f31, f6 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f17, F_fmsub_s_cg_cp_fs3_b6, F_fmsub_s_cg_cp_fs3_b6_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f17, F_fmsub_s_cg_cp_fs3_b6, F_fmsub_s_cg_cp_fs3_b6_str)
 
 # Testcase cp_fs3 (Test source fs3 = f7)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x271d1a05
@@ -759,8 +759,8 @@ F_fmsub_s_cg_cp_fs3_b6:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b7:
   fmsub.s f2, f0, f11, f7 # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f2, F_fmsub_s_cg_cp_fs3_b7, F_fmsub_s_cg_cp_fs3_b7_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f2, F_fmsub_s_cg_cp_fs3_b7, F_fmsub_s_cg_cp_fs3_b7_str)
 
 # Testcase cp_fs3 (Test source fs3 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xc7bf3c58
@@ -769,8 +769,8 @@ F_fmsub_s_cg_cp_fs3_b7:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b8:
   fmsub.s f23, f11, f28, f8 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f23, F_fmsub_s_cg_cp_fs3_b8, F_fmsub_s_cg_cp_fs3_b8_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f23, F_fmsub_s_cg_cp_fs3_b8, F_fmsub_s_cg_cp_fs3_b8_str)
 
 # Testcase cp_fs3 (Test source fs3 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x0a59440f
@@ -779,8 +779,8 @@ F_fmsub_s_cg_cp_fs3_b8:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b9:
   fmsub.s f23, f30, f25, f9 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f23, F_fmsub_s_cg_cp_fs3_b9, F_fmsub_s_cg_cp_fs3_b9_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f23, F_fmsub_s_cg_cp_fs3_b9, F_fmsub_s_cg_cp_fs3_b9_str)
 
 # Testcase cp_fs3 (Test source fs3 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x9d9a5621
@@ -789,8 +789,8 @@ F_fmsub_s_cg_cp_fs3_b9:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b10:
   fmsub.s f5, f7, f26, f10 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f5, F_fmsub_s_cg_cp_fs3_b10, F_fmsub_s_cg_cp_fs3_b10_str)
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, F_fmsub_s_cg_cp_fs3_b10, F_fmsub_s_cg_cp_fs3_b10_str)
 
 # Testcase cp_fs3 (Test source fs3 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x7da10843
@@ -799,128 +799,128 @@ F_fmsub_s_cg_cp_fs3_b10:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b11:
   fmsub.s f10, f19, f29, f11 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, F_fmsub_s_cg_cp_fs3_b11, F_fmsub_s_cg_cp_fs3_b11_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, F_fmsub_s_cg_cp_fs3_b11, F_fmsub_s_cg_cp_fs3_b11_str)
 
 # Testcase cp_fs3 (Test source fs3 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x56d777b0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xbb102e0d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xcd596e81
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x24d0bb50
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x97a1b046
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xbb102e0d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b12:
-  fmsub.s f23, f22, f1, f12 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cp_fs3_b12, F_fmsub_s_cg_cp_fs3_b12_str)
+  fmsub.s f7, f24, f1, f12 # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, F_fmsub_s_cg_cp_fs3_b12, F_fmsub_s_cg_cp_fs3_b12_str)
 
 # Testcase cp_fs3 (Test source fs3 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xadf2d843
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x60445cf8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xd2b40180
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xfe098b47
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xadf2d843
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x8da73eca
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b13:
-  fmsub.s f10, f1, f2, f13 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cp_fs3_b13, F_fmsub_s_cg_cp_fs3_b13_str)
+  fmsub.s f27, f10, f1, f13 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cp_fs3_b13, F_fmsub_s_cg_cp_fs3_b13_str)
 
 # Testcase cp_fs3 (Test source fs3 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xdd9ff05c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x2cb2ba34
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xb5c237e4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x92e2c01e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x7933aef6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x18833908
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b14:
-  fmsub.s f1, f23, f25, f14 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cp_fs3_b14, F_fmsub_s_cg_cp_fs3_b14_str)
+  fmsub.s f26, f31, f1, f14 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cp_fs3_b14, F_fmsub_s_cg_cp_fs3_b14_str)
 
 # Testcase cp_fs3 (Test source fs3 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x41ec6319
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x1e16bebb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x5cfd07f4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x2cb2ba34
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0xb8d80c4c
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xd5672802
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b15:
-  fmsub.s f1, f12, f25, f15 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cp_fs3_b15, F_fmsub_s_cg_cp_fs3_b15_str)
+  fmsub.s f5, f24, f8, f15 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cp_fs3_b15, F_fmsub_s_cg_cp_fs3_b15_str)
 
 # Testcase cp_fs3 (Test source fs3 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x48615ec1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x25bc4c97
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0xcf2f3bef
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x1e16bebb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x2172b7df
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x25bc4c97
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b16:
-  fmsub.s f28, f7, f27, f16 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cp_fs3_b16, F_fmsub_s_cg_cp_fs3_b16_str)
+  fmsub.s f23, f27, f22, f16 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cp_fs3_b16, F_fmsub_s_cg_cp_fs3_b16_str)
 
 # Testcase cp_fs3 (Test source fs3 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x699c3bdf
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0xefb11925
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xfc7b4475
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x2006dc11
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x897703ea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xdc597e46
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b17:
-  fmsub.s f22, f7, f1, f17 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cp_fs3_b17, F_fmsub_s_cg_cp_fs3_b17_str)
+  fmsub.s f10, f7, f11, f17 # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cp_fs3_b17, F_fmsub_s_cg_cp_fs3_b17_str)
 
 # Testcase cp_fs3 (Test source fs3 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x75dbbfb2
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x66738e4b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x914d4359
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x66738e4b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0xd1916336
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x731b567c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b18:
-  fmsub.s f5, f29, f27, f18 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cp_fs3_b18, F_fmsub_s_cg_cp_fs3_b18_str)
+  fmsub.s f16, f5, f2, f18 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cp_fs3_b18, F_fmsub_s_cg_cp_fs3_b18_str)
 
 # Testcase cp_fs3 (Test source fs3 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x81383ae1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xe6292fdd
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x2c2238dc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x0c2a933e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x2c2238dc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x3a8f20f9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b19:
-  fmsub.s f3, f6, f21, f19 # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cp_fs3_b19, F_fmsub_s_cg_cp_fs3_b19_str)
+  fmsub.s f0, f14, f17, f19 # perform operation
+  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, F_fmsub_s_cg_cp_fs3_b19, F_fmsub_s_cg_cp_fs3_b19_str)
 
 # Testcase cp_fs3 (Test source fs3 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x29a88d1b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xdb66b959
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x7d03ffdf
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xda4a5c13
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x6f26ac87
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0xa100394c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b20:
-  fmsub.s f25, f0, f7, f20 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cp_fs3_b20, F_fmsub_s_cg_cp_fs3_b20_str)
+  fmsub.s f12, f24, f13, f20 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cp_fs3_b20, F_fmsub_s_cg_cp_fs3_b20_str)
 
 # Testcase cp_fs3 (Test source fs3 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x6f26ac87
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x9d476b0c
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x81381ce0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x4a0f31ec
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x009ae10b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x4362b052
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b21:
-  fmsub.s f18, f27, f5, f21 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cp_fs3_b21, F_fmsub_s_cg_cp_fs3_b21_str)
+  fmsub.s f13, f31, f26, f21 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cp_fs3_b21, F_fmsub_s_cg_cp_fs3_b21_str)
 
 # Testcase cp_fs3 (Test source fs3 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x6dbb8033
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x1f802faf
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0x5d14294f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x81381ce0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0xace5113c
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0x1f802faf
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b22:
-  fmsub.s f13, f6, f23, f22 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cp_fs3_b22, F_fmsub_s_cg_cp_fs3_b22_str)
+  fmsub.s f30, f21, f13, f22 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cp_fs3_b22, F_fmsub_s_cg_cp_fs3_b22_str)
 
 # Testcase cp_fs3 (Test source fs3 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x39309976
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x39309976
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0xc256fb01
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0xd2002e30
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fs3_b23:
-  fmsub.s f3, f24, f18, f23 # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cp_fs3_b23, F_fmsub_s_cg_cp_fs3_b23_str)
+  fmsub.s f29, f2, f18, f23 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cp_fs3_b23, F_fmsub_s_cg_cp_fs3_b23_str)
 
 # Testcase cp_fs3 (Test source fs3 = f24)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x9eed013a
@@ -1083,8 +1083,8 @@ F_fmsub_s_cg_cp_fd_b6:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b7:
   fmsub.s f7, f19, f28, f10 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, F_fmsub_s_cg_cp_fd_b7, F_fmsub_s_cg_cp_fd_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, F_fmsub_s_cg_cp_fd_b7, F_fmsub_s_cg_cp_fd_b7_str)
 
 # Testcase cp_fd (Test destination fd = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x864f6612
@@ -1093,8 +1093,8 @@ F_fmsub_s_cg_cp_fd_b7:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b8:
   fmsub.s f8, f18, f26, f2 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, F_fmsub_s_cg_cp_fd_b8, F_fmsub_s_cg_cp_fd_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, F_fmsub_s_cg_cp_fd_b8, F_fmsub_s_cg_cp_fd_b8_str)
 
 # Testcase cp_fd (Test destination fd = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xe593395b
@@ -1103,8 +1103,8 @@ F_fmsub_s_cg_cp_fd_b8:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b9:
   fmsub.s f9, f30, f28, f25 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, F_fmsub_s_cg_cp_fd_b9, F_fmsub_s_cg_cp_fd_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, F_fmsub_s_cg_cp_fd_b9, F_fmsub_s_cg_cp_fd_b9_str)
 
 # Testcase cp_fd (Test destination fd = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x70eb7138
@@ -1113,8 +1113,8 @@ F_fmsub_s_cg_cp_fd_b9:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b10:
   fmsub.s f10, f20, f19, f6 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, F_fmsub_s_cg_cp_fd_b10, F_fmsub_s_cg_cp_fd_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, F_fmsub_s_cg_cp_fd_b10, F_fmsub_s_cg_cp_fd_b10_str)
 
 # Testcase cp_fd (Test destination fd = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xe0d3f218
@@ -1123,46 +1123,46 @@ F_fmsub_s_cg_cp_fd_b10:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b11:
   fmsub.s f11, f18, f0, f25 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, F_fmsub_s_cg_cp_fd_b11, F_fmsub_s_cg_cp_fd_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, F_fmsub_s_cg_cp_fd_b11, F_fmsub_s_cg_cp_fd_b11_str)
 
 # Testcase cp_fd (Test destination fd = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xd2deae40
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xa9397831
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x19bf3c1c
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x8e655aea
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs2: f0 = 0xa5e54196
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x07deb292
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b12:
-  fmsub.s f12, f1, f6, f29 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cp_fd_b12, F_fmsub_s_cg_cp_fd_b12_str)
+  fmsub.s f12, f5, f0, f1 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, F_fmsub_s_cg_cp_fd_b12, F_fmsub_s_cg_cp_fd_b12_str)
 
 # Testcase cp_fd (Test destination fd = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x07deb292
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0xb8a7a294
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x244f703f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x1bf03a90
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x244f703f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x9eb47ce8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b13:
-  fmsub.s f13, f24, f26, f15 # perform operation
+  fmsub.s f13, f10, f20, f7 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cp_fd_b13, F_fmsub_s_cg_cp_fd_b13_str)
 
 # Testcase cp_fd (Test destination fd = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x9eb47ce8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0xdaf4f047
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xc9e7a733
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x08f9e0d9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x51c2195f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xca0b23e9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b14:
-  fmsub.s f14, f7, f20, f17 # perform operation
+  fmsub.s f14, f31, f13, f5 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cp_fd_b14, F_fmsub_s_cg_cp_fd_b14_str)
 
 # Testcase cp_fd (Test destination fd = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xa944b2ac
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xc60f267f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0xdfe83353
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xa944b2ac
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0xc60f267f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xdfe83353
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_fd_b15:
-  fmsub.s f15, f10, f24, f23 # perform operation
+  fmsub.s f15, f26, f23, f22 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cp_fd_b15, F_fmsub_s_cg_cp_fd_b15_str)
 
@@ -2229,18 +2229,18 @@ F_fmsub_s_cg_cmp_fd_fs1_b3:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b4:
   fmsub.s f4, f4, f7, f20 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f4, F_fmsub_s_cg_cmp_fd_fs1_b4, F_fmsub_s_cg_cmp_fd_fs1_b4_str)
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, F_fmsub_s_cg_cmp_fd_fs1_b4, F_fmsub_s_cg_cmp_fd_fs1_b4_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f5)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xee6304ca
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0xa8fac675
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0xa8fac675
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x32a95d9e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b5:
-  fmsub.s f5, f5, f13, f20 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f5, F_fmsub_s_cg_cmp_fd_fs1_b5, F_fmsub_s_cg_cmp_fd_fs1_b5_str)
+  fmsub.s f5, f5, f12, f20 # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, F_fmsub_s_cg_cmp_fd_fs1_b5, F_fmsub_s_cg_cmp_fd_fs1_b5_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f6)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xb867b222
@@ -2249,8 +2249,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b5:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b6:
   fmsub.s f6, f6, f4, f27 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f6, F_fmsub_s_cg_cmp_fd_fs1_b6, F_fmsub_s_cg_cmp_fd_fs1_b6_str)
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f6, F_fmsub_s_cg_cmp_fd_fs1_b6, F_fmsub_s_cg_cmp_fd_fs1_b6_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f7)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbfb536c9
@@ -2259,8 +2259,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b6:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b7:
   fmsub.s f7, f7, f14, f22 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, F_fmsub_s_cg_cmp_fd_fs1_b7, F_fmsub_s_cg_cmp_fd_fs1_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, F_fmsub_s_cg_cmp_fd_fs1_b7, F_fmsub_s_cg_cmp_fd_fs1_b7_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xf29d2b3c
@@ -2269,8 +2269,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b7:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b8:
   fmsub.s f8, f8, f30, f2 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, F_fmsub_s_cg_cmp_fd_fs1_b8, F_fmsub_s_cg_cmp_fd_fs1_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, F_fmsub_s_cg_cmp_fd_fs1_b8, F_fmsub_s_cg_cmp_fd_fs1_b8_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x1487cd7a
@@ -2279,8 +2279,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b8:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b9:
   fmsub.s f9, f9, f6, f5 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, F_fmsub_s_cg_cmp_fd_fs1_b9, F_fmsub_s_cg_cmp_fd_fs1_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, F_fmsub_s_cg_cmp_fd_fs1_b9, F_fmsub_s_cg_cmp_fd_fs1_b9_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xc23d5c70
@@ -2289,8 +2289,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b9:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b10:
   fmsub.s f10, f10, f6, f21 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, F_fmsub_s_cg_cmp_fd_fs1_b10, F_fmsub_s_cg_cmp_fd_fs1_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, F_fmsub_s_cg_cmp_fd_fs1_b10, F_fmsub_s_cg_cmp_fd_fs1_b10_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xb9beebdb
@@ -2299,208 +2299,208 @@ F_fmsub_s_cg_cmp_fd_fs1_b10:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b11:
   fmsub.s f11, f11, f2, f30 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, F_fmsub_s_cg_cmp_fd_fs1_b11, F_fmsub_s_cg_cmp_fd_fs1_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, F_fmsub_s_cg_cmp_fd_fs1_b11, F_fmsub_s_cg_cmp_fd_fs1_b11_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xfc22706b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xa0e4a500
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xae00d17e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xa6f040c0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x7a81f158
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xfc22706b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b12:
-  fmsub.s f12, f12, f24, f15 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cmp_fd_fs1_b12, F_fmsub_s_cg_cmp_fd_fs1_b12_str)
+  fmsub.s f12, f12, f22, f26 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, F_fmsub_s_cg_cmp_fd_fs1_b12, F_fmsub_s_cg_cmp_fd_fs1_b12_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x1cc24db8
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x5a1ab8ba
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0xeb367a87
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xae00d17e
+  fsflagsi 0b00000 # clear all fflags
+F_fmsub_s_cg_cmp_fd_fs1_b13:
+  fmsub.s f13, f13, f9, f31 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cmp_fd_fs1_b13, F_fmsub_s_cg_cmp_fd_fs1_b13_str)
+
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f14)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x1cc24db8
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x8602566e
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x87ad387a
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b13:
-  fmsub.s f13, f13, f20, f28 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cmp_fd_fs1_b13, F_fmsub_s_cg_cmp_fd_fs1_b13_str)
-
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xa9f531a0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x4b77afee
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x9af48679
-  fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b14:
-  fmsub.s f14, f14, f15, f31 # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cmp_fd_fs1_b14, F_fmsub_s_cg_cmp_fd_fs1_b14_str)
+  fmsub.s f14, f14, f20, f28 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cmp_fd_fs1_b14, F_fmsub_s_cg_cmp_fd_fs1_b14_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x08b69612
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xa9f531a0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x4b77afee
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x9af48679
+  fsflagsi 0b00000 # clear all fflags
+F_fmsub_s_cg_cmp_fd_fs1_b15:
+  fmsub.s f15, f15, f14, f31 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cmp_fd_fs1_b15, F_fmsub_s_cg_cmp_fd_fs1_b15_str)
+
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f16)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x08b69612
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x0a5d3df3
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x568cd2e7
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b15:
-  fmsub.s f15, f15, f17, f30 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cmp_fd_fs1_b15, F_fmsub_s_cg_cmp_fd_fs1_b15_str)
-
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x87aaf989
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x8aaafc70
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xd0180191
-  fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b16:
-  fmsub.s f16, f16, f6, f3 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cmp_fd_fs1_b16, F_fmsub_s_cg_cmp_fd_fs1_b16_str)
+  fmsub.s f16, f16, f17, f30 # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cmp_fd_fs1_b16, F_fmsub_s_cg_cmp_fd_fs1_b16_str)
 
 # Testcase cmp_fd_fs1 (Test fd = fs1 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x40368c92
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x87aaf989
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x8aaafc70
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xd0180191
+  fsflagsi 0b00000 # clear all fflags
+F_fmsub_s_cg_cmp_fd_fs1_b17:
+  fmsub.s f17, f17, f5, f3 # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cmp_fd_fs1_b17, F_fmsub_s_cg_cmp_fd_fs1_b17_str)
+
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f18)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x40368c92
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x9b1accc8
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xf17f7d15
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b17:
-  fmsub.s f17, f17, f22, f10 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cmp_fd_fs1_b17, F_fmsub_s_cg_cmp_fd_fs1_b17_str)
+F_fmsub_s_cg_cmp_fd_fs1_b18:
+  fmsub.s f18, f18, f22, f10 # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cmp_fd_fs1_b18, F_fmsub_s_cg_cmp_fd_fs1_b18_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x0a095c5b
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f19)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x0a095c5b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0xe6cc84b8
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xb407d818
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b18:
-  fmsub.s f18, f18, f20, f12 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cmp_fd_fs1_b18, F_fmsub_s_cg_cmp_fd_fs1_b18_str)
+F_fmsub_s_cg_cmp_fd_fs1_b19:
+  fmsub.s f19, f19, f20, f12 # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cmp_fd_fs1_b19, F_fmsub_s_cg_cmp_fd_fs1_b19_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x10cb4e96
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f20)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x10cb4e96
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x99181b9f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x87bf202f
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b19:
-  fmsub.s f19, f19, f10, f17 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cmp_fd_fs1_b19, F_fmsub_s_cg_cmp_fd_fs1_b19_str)
+F_fmsub_s_cg_cmp_fd_fs1_b20:
+  fmsub.s f20, f20, f10, f17 # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cmp_fd_fs1_b20, F_fmsub_s_cg_cmp_fd_fs1_b20_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0xa95c065b
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f21)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xa95c065b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x4ca3bd9f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc82b54e3
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b20:
-  fmsub.s f20, f20, f24, f13 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cmp_fd_fs1_b20, F_fmsub_s_cg_cmp_fd_fs1_b20_str)
+F_fmsub_s_cg_cmp_fd_fs1_b21:
+  fmsub.s f21, f21, f24, f13 # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cmp_fd_fs1_b21, F_fmsub_s_cg_cmp_fd_fs1_b21_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xa69188ba
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f22)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xa69188ba
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0xb45b5ea6
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x013ea997
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b21:
-  fmsub.s f21, f21, f23, f29 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cmp_fd_fs1_b21, F_fmsub_s_cg_cmp_fd_fs1_b21_str)
+F_fmsub_s_cg_cmp_fd_fs1_b22:
+  fmsub.s f22, f22, f23, f29 # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cmp_fd_fs1_b22, F_fmsub_s_cg_cmp_fd_fs1_b22_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x9da1b81f
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f23)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x9da1b81f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x18b4bd34
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs3: f0 = 0x062f02e6
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b22:
-  fmsub.s f22, f22, f20, f0 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cmp_fd_fs1_b22, F_fmsub_s_cg_cmp_fd_fs1_b22_str)
+F_fmsub_s_cg_cmp_fd_fs1_b23:
+  fmsub.s f23, f23, f20, f0 # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cmp_fd_fs1_b23, F_fmsub_s_cg_cmp_fd_fs1_b23_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x09780a0e
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f24)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x09780a0e
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x2369f946
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x59cff07c
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b23:
-  fmsub.s f23, f23, f30, f17 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cmp_fd_fs1_b23, F_fmsub_s_cg_cmp_fd_fs1_b23_str)
+F_fmsub_s_cg_cmp_fd_fs1_b24:
+  fmsub.s f24, f24, f30, f17 # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cmp_fd_fs1_b24, F_fmsub_s_cg_cmp_fd_fs1_b24_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x265ab96b
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f25)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x265ab96b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0xcf652d4e
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xdd3b8d99
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b24:
-  fmsub.s f24, f24, f28, f19 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cmp_fd_fs1_b24, F_fmsub_s_cg_cmp_fd_fs1_b24_str)
+F_fmsub_s_cg_cmp_fd_fs1_b25:
+  fmsub.s f25, f25, f28, f19 # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cmp_fd_fs1_b25, F_fmsub_s_cg_cmp_fd_fs1_b25_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x676684ea
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f26)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x676684ea
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x676ed1bc
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0xcae55057
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b25:
-  fmsub.s f25, f25, f23, f28 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cmp_fd_fs1_b25, F_fmsub_s_cg_cmp_fd_fs1_b25_str)
+F_fmsub_s_cg_cmp_fd_fs1_b26:
+  fmsub.s f26, f26, f23, f28 # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cmp_fd_fs1_b26, F_fmsub_s_cg_cmp_fd_fs1_b26_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x458a2bd3
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f27)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x458a2bd3
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x1f4737d7
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x5e48ac26
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b26:
-  fmsub.s f26, f26, f9, f24 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cmp_fd_fs1_b26, F_fmsub_s_cg_cmp_fd_fs1_b26_str)
+F_fmsub_s_cg_cmp_fd_fs1_b27:
+  fmsub.s f27, f27, f9, f24 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cmp_fd_fs1_b27, F_fmsub_s_cg_cmp_fd_fs1_b27_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xb3f94cbe
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f28)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xb3f94cbe
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x82de43a7
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xc28ca4ba
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b27:
-  fmsub.s f27, f27, f1, f12 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cmp_fd_fs1_b27, F_fmsub_s_cg_cmp_fd_fs1_b27_str)
+F_fmsub_s_cg_cmp_fd_fs1_b28:
+  fmsub.s f28, f28, f1, f12 # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cmp_fd_fs1_b28, F_fmsub_s_cg_cmp_fd_fs1_b28_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x4f4646cd
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f29)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x4f4646cd
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x6576cea4
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x93cd98f2
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b28:
-  fmsub.s f28, f28, f14, f27 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cmp_fd_fs1_b28, F_fmsub_s_cg_cmp_fd_fs1_b28_str)
+F_fmsub_s_cg_cmp_fd_fs1_b29:
+  fmsub.s f29, f29, f14, f27 # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cmp_fd_fs1_b29, F_fmsub_s_cg_cmp_fd_fs1_b29_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0xa05fef0f
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f30)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xa05fef0f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x518dff55
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x79f19779
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b29:
-  fmsub.s f29, f29, f14, f16 # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cmp_fd_fs1_b29, F_fmsub_s_cg_cmp_fd_fs1_b29_str)
+F_fmsub_s_cg_cmp_fd_fs1_b30:
+  fmsub.s f30, f30, f14, f16 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cmp_fd_fs1_b30, F_fmsub_s_cg_cmp_fd_fs1_b30_str)
 
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x5993562c
+# Testcase cmp_fd_fs1 (Test fd = fs1 = f31)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x5993562c
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0xdb6a36d2
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x8446858f
   fsflagsi 0b00000 # clear all fflags
-F_fmsub_s_cg_cmp_fd_fs1_b30:
-  fmsub.s f30, f30, f15, f26 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cmp_fd_fs1_b30, F_fmsub_s_cg_cmp_fd_fs1_b30_str)
-
-# Testcase cmp_fd_fs1 (Test fd = fs1 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x0d09b773
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x3b2bada5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x0b7918a9
-  fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs1_b31:
-  fmsub.s f31, f31, f29, f24 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cmp_fd_fs1_b31, F_fmsub_s_cg_cmp_fd_fs1_b31_str)
+  fmsub.s f31, f31, f15, f26 # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cmp_fd_fs1_b31, F_fmsub_s_cg_cmp_fd_fs1_b31_str)
 
 /////////////////////////////////
 // cmp_fd_fs2
@@ -2513,8 +2513,8 @@ F_fmsub_s_cg_cmp_fd_fs1_b31:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b0:
   fmsub.s f0, f19, f0, f18 # perform operation
-  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f0, F_fmsub_s_cg_cmp_fd_fs2_b0, F_fmsub_s_cg_cmp_fd_fs2_b0_str)
+  # Check if f0 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f0, F_fmsub_s_cg_cmp_fd_fs2_b0, F_fmsub_s_cg_cmp_fd_fs2_b0_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f1)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xe273d4f1
@@ -2523,8 +2523,8 @@ F_fmsub_s_cg_cmp_fd_fs2_b0:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b1:
   fmsub.s f1, f11, f1, f31 # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cmp_fd_fs2_b1, F_fmsub_s_cg_cmp_fd_fs2_b1_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cmp_fd_fs2_b1, F_fmsub_s_cg_cmp_fd_fs2_b1_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f2)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xdc15be22
@@ -2533,8 +2533,8 @@ F_fmsub_s_cg_cmp_fd_fs2_b1:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b2:
   fmsub.s f2, f17, f2, f15 # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cmp_fd_fs2_b2, F_fmsub_s_cg_cmp_fd_fs2_b2_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cmp_fd_fs2_b2, F_fmsub_s_cg_cmp_fd_fs2_b2_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f3)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xe1d10fb7
@@ -2543,286 +2543,286 @@ F_fmsub_s_cg_cmp_fd_fs2_b2:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b3:
   fmsub.s f3, f16, f3, f10 # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cmp_fd_fs2_b3, F_fmsub_s_cg_cmp_fd_fs2_b3_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cmp_fd_fs2_b3, F_fmsub_s_cg_cmp_fd_fs2_b3_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f4)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x539c51ae
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x996afa89
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0xa3b992fe
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xc2b0ed2b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x15bd346d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x996afa89
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b4:
-  fmsub.s f4, f2, f4, f28 # perform operation
+  fmsub.s f4, f9, f4, f25 # perform operation
   # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cmp_fd_fs2_b4, F_fmsub_s_cg_cmp_fd_fs2_b4_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f5)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x91d06f84
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x6f2a12c3
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x57cbe02d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xa3b992fe
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x4ef53488
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x6f2a12c3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b5:
-  fmsub.s f5, f28, f5, f13 # perform operation
+  fmsub.s f5, f27, f5, f1 # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cmp_fd_fs2_b5, F_fmsub_s_cg_cmp_fd_fs2_b5_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f6)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x3d286fc7
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x952f2104
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xa1fcc254
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x57cbe02d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xd13103dc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0x952f2104
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b6:
-  fmsub.s f6, f9, f6, f5 # perform operation
+  fmsub.s f6, f13, f6, f22 # perform operation
   # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cmp_fd_fs2_b6, F_fmsub_s_cg_cmp_fd_fs2_b6_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f7)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x8028dd34
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7ea6fa3d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x4854af5b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x53d9e682
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x25c5a3bf
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xf6b168bd
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b7:
-  fmsub.s f7, f15, f7, f4 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, F_fmsub_s_cg_cmp_fd_fs2_b7, F_fmsub_s_cg_cmp_fd_fs2_b7_str)
+  fmsub.s f7, f6, f7, f10 # perform operation
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cmp_fd_fs2_b7, F_fmsub_s_cg_cmp_fd_fs2_b7_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f8)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x58b7812d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x79e01577
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x3f1830c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x80028733
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x4854af5b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x58b7812d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b8:
-  fmsub.s f8, f22, f8, f24 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, F_fmsub_s_cg_cmp_fd_fs2_b8, F_fmsub_s_cg_cmp_fd_fs2_b8_str)
+  fmsub.s f8, f0, f8, f23 # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cmp_fd_fs2_b8, F_fmsub_s_cg_cmp_fd_fs2_b8_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f9)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x80e73ac8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x3589d22e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x7767d732
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x1cbb4d1d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x3f1830c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x80e73ac8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b9:
-  fmsub.s f9, f16, f9, f6 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, F_fmsub_s_cg_cmp_fd_fs2_b9, F_fmsub_s_cg_cmp_fd_fs2_b9_str)
+  fmsub.s f9, f13, f9, f17 # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cmp_fd_fs2_b9, F_fmsub_s_cg_cmp_fd_fs2_b9_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f10)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x05be0926
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x43ae100d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x84c06063
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xe1ecf93f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x7767d732
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x05be0926
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b10:
-  fmsub.s f10, f25, f10, f28 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, F_fmsub_s_cg_cmp_fd_fs2_b10, F_fmsub_s_cg_cmp_fd_fs2_b10_str)
+  fmsub.s f10, f24, f10, f26 # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cmp_fd_fs2_b10, F_fmsub_s_cg_cmp_fd_fs2_b10_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f11)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x6e479d8e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0xe7157b3e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x154096c6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x84c06063
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x1d55264e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xf0b82dec
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b11:
   fmsub.s f11, f21, f11, f3 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, F_fmsub_s_cg_cmp_fd_fs2_b11, F_fmsub_s_cg_cmp_fd_fs2_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cmp_fd_fs2_b11, F_fmsub_s_cg_cmp_fd_fs2_b11_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x2a0adf60
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x9f3c61af
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xd4412f0a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xe7157b3e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0xdba92785
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x2a0adf60
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b12:
-  fmsub.s f12, f26, f12, f22 # perform operation
+  fmsub.s f12, f25, f12, f27 # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cmp_fd_fs2_b12, F_fmsub_s_cg_cmp_fd_fs2_b12_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x8963090e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x39ab86d5
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0xa5114d28
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x7c2b00c2
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x39382a59
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x9f3c61af
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b13:
-  fmsub.s f13, f3, f13, f25 # perform operation
+  fmsub.s f13, f31, f13, f28 # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cmp_fd_fs2_b13, F_fmsub_s_cg_cmp_fd_fs2_b13_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f14)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x91ee786b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0xf61b7f59
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs3: f0 = 0xa45e33ad
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xd4412f0a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x7807df56
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x2de4ce6d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b14:
-  fmsub.s f14, f6, f14, f0 # perform operation
+  fmsub.s f14, f22, f14, f5 # perform operation
   # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cmp_fd_fs2_b14, F_fmsub_s_cg_cmp_fd_fs2_b14_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f15)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x9ac27144
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x29a5d033
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xc63a5ad9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x39ab86d5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x36417d04
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xa5114d28
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b15:
-  fmsub.s f15, f18, f15, f19 # perform operation
+  fmsub.s f15, f1, f15, f19 # perform operation
   # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cmp_fd_fs2_b15, F_fmsub_s_cg_cmp_fd_fs2_b15_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f16)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x556d937d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0xf122fd74
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x4946a9bc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x91ee786b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0xf61b7f59
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs3: f0 = 0xa45e33ad
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b16:
-  fmsub.s f16, f29, f16, f26 # perform operation
+  fmsub.s f16, f6, f16, f0 # perform operation
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cmp_fd_fs2_b16, F_fmsub_s_cg_cmp_fd_fs2_b16_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f17)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xa443c6ce
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x2abf6bae
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xcc670d25
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x9ac27144
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x29a5d033
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xc63a5ad9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b17:
-  fmsub.s f17, f5, f17, f29 # perform operation
+  fmsub.s f17, f18, f17, f19 # perform operation
   # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cmp_fd_fs2_b17, F_fmsub_s_cg_cmp_fd_fs2_b17_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xc2292f3b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x28d510ae
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xf1c69aa9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x556d937d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0xf122fd74
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x4946a9bc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b18:
-  fmsub.s f18, f13, f18, f22 # perform operation
+  fmsub.s f18, f29, f18, f26 # perform operation
   # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cmp_fd_fs2_b18, F_fmsub_s_cg_cmp_fd_fs2_b18_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f19)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x34568991
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x2ad63b48
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x4f094906
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xa443c6ce
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x2abf6bae
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xcc670d25
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b19:
-  fmsub.s f19, f1, f19, f11 # perform operation
+  fmsub.s f19, f5, f19, f29 # perform operation
   # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cmp_fd_fs2_b19, F_fmsub_s_cg_cmp_fd_fs2_b19_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f20)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x0e99e04d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x29f80e30
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xccf6b530
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xc2292f3b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x28d510ae
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xf1c69aa9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b20:
-  fmsub.s f20, f26, f20, f14 # perform operation
+  fmsub.s f20, f13, f20, f22 # perform operation
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cmp_fd_fs2_b20, F_fmsub_s_cg_cmp_fd_fs2_b20_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f21)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x93a65e1f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x768bc635
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc211894b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x34568991
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x2ad63b48
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x4f094906
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b21:
-  fmsub.s f21, f8, f21, f18 # perform operation
+  fmsub.s f21, f1, f21, f11 # perform operation
   # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cmp_fd_fs2_b21, F_fmsub_s_cg_cmp_fd_fs2_b21_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f22)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x64d969b8
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x0d7d9363
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xfbcad953
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x0e99e04d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x29f80e30
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xccf6b530
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b22:
-  fmsub.s f22, f21, f22, f15 # perform operation
+  fmsub.s f22, f26, f22, f14 # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cmp_fd_fs2_b22, F_fmsub_s_cg_cmp_fd_fs2_b22_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f23)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xe08ee75b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0xad1b24f1
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x4c305c64
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x93a65e1f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x768bc635
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xc211894b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b23:
-  fmsub.s f23, f2, f23, f31 # perform operation
+  fmsub.s f23, f8, f23, f18 # perform operation
   # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cmp_fd_fs2_b23, F_fmsub_s_cg_cmp_fd_fs2_b23_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f24)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x57756ae9
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xa319c712
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x344ae4d0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x64d969b8
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x0d7d9363
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xfbcad953
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b24:
-  fmsub.s f24, f0, f24, f19 # perform operation
+  fmsub.s f24, f21, f24, f15 # perform operation
   # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cmp_fd_fs2_b24, F_fmsub_s_cg_cmp_fd_fs2_b24_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f25)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3221269e
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x48702f2b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x4d5e5925
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xe08ee75b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xad1b24f1
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x4c305c64
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b25:
-  fmsub.s f25, f31, f25, f21 # perform operation
+  fmsub.s f25, f2, f25, f31 # perform operation
   # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cmp_fd_fs2_b25, F_fmsub_s_cg_cmp_fd_fs2_b25_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f26)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x5c869c5d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x871d359b
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs3: f0 = 0x725aded0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x57756ae9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0xa319c712
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x344ae4d0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b26:
-  fmsub.s f26, f22, f26, f0 # perform operation
+  fmsub.s f26, f0, f26, f19 # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cmp_fd_fs2_b26, F_fmsub_s_cg_cmp_fd_fs2_b26_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f27)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x75ec78c9
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x95424944
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x7ed6945a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3221269e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x48702f2b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x4d5e5925
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b27:
-  fmsub.s f27, f15, f27, f1 # perform operation
+  fmsub.s f27, f31, f27, f21 # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cmp_fd_fs2_b27, F_fmsub_s_cg_cmp_fd_fs2_b27_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f28)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x95cf927f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0x9b463413
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xd625804f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x5c869c5d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0x871d359b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs3: f0 = 0x725aded0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b28:
-  fmsub.s f28, f10, f28, f3 # perform operation
+  fmsub.s f28, f22, f28, f0 # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cmp_fd_fs2_b28, F_fmsub_s_cg_cmp_fd_fs2_b28_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f29)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xca891ebc
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x39b831fb
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x80019dd9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x75ec78c9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x95424944
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x7ed6945a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b29:
-  fmsub.s f29, f9, f29, f2 # perform operation
+  fmsub.s f29, f15, f29, f1 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cmp_fd_fs2_b29, F_fmsub_s_cg_cmp_fd_fs2_b29_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f30)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x1df0eac9
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0xc230a612
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc1313c41
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x95cf927f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x9b463413
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xd625804f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b30:
-  fmsub.s f30, f0, f30, f29 # perform operation
+  fmsub.s f30, f10, f30, f3 # perform operation
   # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cmp_fd_fs2_b30, F_fmsub_s_cg_cmp_fd_fs2_b30_str)
 
 # Testcase cmp_fd_fs2 (Test fd = fs2 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xf6ec673d
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0xe3f8e705
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x7718bcb6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xca891ebc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x39b831fb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x80019dd9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs2_b31:
-  fmsub.s f31, f1, f31, f5 # perform operation
+  fmsub.s f31, f9, f31, f2 # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cmp_fd_fs2_b31, F_fmsub_s_cg_cmp_fd_fs2_b31_str)
 
@@ -2877,8 +2877,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b3:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b4:
   fmsub.s f4, f22, f25, f4 # perform operation
-  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f4, F_fmsub_s_cg_cmp_fd_fs3_b4, F_fmsub_s_cg_cmp_fd_fs3_b4_str)
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f4, F_fmsub_s_cg_cmp_fd_fs3_b4, F_fmsub_s_cg_cmp_fd_fs3_b4_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f5)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x47b3d95e
@@ -2887,8 +2887,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b4:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b5:
   fmsub.s f5, f25, f10, f5 # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f5, F_fmsub_s_cg_cmp_fd_fs3_b5, F_fmsub_s_cg_cmp_fd_fs3_b5_str)
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f5, F_fmsub_s_cg_cmp_fd_fs3_b5, F_fmsub_s_cg_cmp_fd_fs3_b5_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f6)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xdc5217d0
@@ -2897,8 +2897,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b5:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b6:
   fmsub.s f6, f28, f3, f6 # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f6, F_fmsub_s_cg_cmp_fd_fs3_b6, F_fmsub_s_cg_cmp_fd_fs3_b6_str)
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f6, F_fmsub_s_cg_cmp_fd_fs3_b6, F_fmsub_s_cg_cmp_fd_fs3_b6_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f7)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xd4a7365a
@@ -2907,8 +2907,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b6:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b7:
   fmsub.s f7, f18, f6, f7 # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f7, F_fmsub_s_cg_cmp_fd_fs3_b7, F_fmsub_s_cg_cmp_fd_fs3_b7_str)
+  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f7, F_fmsub_s_cg_cmp_fd_fs3_b7, F_fmsub_s_cg_cmp_fd_fs3_b7_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f8)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x2ecd8920
@@ -2917,8 +2917,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b7:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b8:
   fmsub.s f8, f9, f7, f8 # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f8, F_fmsub_s_cg_cmp_fd_fs3_b8, F_fmsub_s_cg_cmp_fd_fs3_b8_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f8, F_fmsub_s_cg_cmp_fd_fs3_b8, F_fmsub_s_cg_cmp_fd_fs3_b8_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f9)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x7438f2fe
@@ -2927,8 +2927,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b8:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b9:
   fmsub.s f9, f31, f16, f9 # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f9, F_fmsub_s_cg_cmp_fd_fs3_b9, F_fmsub_s_cg_cmp_fd_fs3_b9_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f9, F_fmsub_s_cg_cmp_fd_fs3_b9, F_fmsub_s_cg_cmp_fd_fs3_b9_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f10)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x862c7f57
@@ -2937,8 +2937,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b9:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b10:
   fmsub.s f10, f2, f18, f10 # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f10, F_fmsub_s_cg_cmp_fd_fs3_b10, F_fmsub_s_cg_cmp_fd_fs3_b10_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f10, F_fmsub_s_cg_cmp_fd_fs3_b10, F_fmsub_s_cg_cmp_fd_fs3_b10_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f11)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x3bf5b41c
@@ -2947,38 +2947,38 @@ F_fmsub_s_cg_cmp_fd_fs3_b10:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b11:
   fmsub.s f11, f18, f16, f11 # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f12 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f12, f11, F_fmsub_s_cg_cmp_fd_fs3_b11, F_fmsub_s_cg_cmp_fd_fs3_b11_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f11, F_fmsub_s_cg_cmp_fd_fs3_b11, F_fmsub_s_cg_cmp_fd_fs3_b11_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f12)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f0) # load fs1: f0 = 0x3c3de751
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xad17bfdf
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x690158f3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0xad17bfdf
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x50da8071
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x57c8e8c1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b12:
-  fmsub.s f12, f0, f25, f12 # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cmp_fd_fs3_b12, F_fmsub_s_cg_cmp_fd_fs3_b12_str)
+  fmsub.s f12, f3, f18, f12 # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f13 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f13, f12, F_fmsub_s_cg_cmp_fd_fs3_b12, F_fmsub_s_cg_cmp_fd_fs3_b12_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f13)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x05ee9cc9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x05ee9cc9
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x0c4eec75
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x1c7ebb58
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b13:
-  fmsub.s f13, f28, f11, f13 # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cmp_fd_fs3_b13, F_fmsub_s_cg_cmp_fd_fs3_b13_str)
+  fmsub.s f13, f22, f11, f13 # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cmp_fd_fs3_b13, F_fmsub_s_cg_cmp_fd_fs3_b13_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f14)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x7bcfb290
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x6d8dde3b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x6d8dde3b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x311344f8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b14:
-  fmsub.s f14, f11, f5, f14 # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cmp_fd_fs3_b14, F_fmsub_s_cg_cmp_fd_fs3_b14_str)
+  fmsub.s f14, f11, f4, f14 # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cmp_fd_fs3_b14, F_fmsub_s_cg_cmp_fd_fs3_b14_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f15)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xcdb40b1c
@@ -2987,8 +2987,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b14:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b15:
   fmsub.s f15, f14, f23, f15 # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cmp_fd_fs3_b15, F_fmsub_s_cg_cmp_fd_fs3_b15_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cmp_fd_fs3_b15, F_fmsub_s_cg_cmp_fd_fs3_b15_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f16)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x73d0f568
@@ -2997,8 +2997,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b15:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b16:
   fmsub.s f16, f11, f28, f16 # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cmp_fd_fs3_b16, F_fmsub_s_cg_cmp_fd_fs3_b16_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cmp_fd_fs3_b16, F_fmsub_s_cg_cmp_fd_fs3_b16_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f17)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x8160a509
@@ -3007,18 +3007,18 @@ F_fmsub_s_cg_cmp_fd_fs3_b16:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b17:
   fmsub.s f17, f8, f23, f17 # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cmp_fd_fs3_b17, F_fmsub_s_cg_cmp_fd_fs3_b17_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cmp_fd_fs3_b17, F_fmsub_s_cg_cmp_fd_fs3_b17_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f18)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xcf57c804
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xcf57c804
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x187d8e4f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x9677633d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b18:
-  fmsub.s f18, f5, f3, f18 # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cmp_fd_fs3_b18, F_fmsub_s_cg_cmp_fd_fs3_b18_str)
+  fmsub.s f18, f4, f3, f18 # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cmp_fd_fs3_b18, F_fmsub_s_cg_cmp_fd_fs3_b18_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f19)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x07c20ec5
@@ -3027,8 +3027,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b18:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b19:
   fmsub.s f19, f26, f3, f19 # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cmp_fd_fs3_b19, F_fmsub_s_cg_cmp_fd_fs3_b19_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cmp_fd_fs3_b19, F_fmsub_s_cg_cmp_fd_fs3_b19_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f20)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x2358e665
@@ -3037,8 +3037,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b19:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b20:
   fmsub.s f20, f3, f26, f20 # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cmp_fd_fs3_b20, F_fmsub_s_cg_cmp_fd_fs3_b20_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cmp_fd_fs3_b20, F_fmsub_s_cg_cmp_fd_fs3_b20_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f21)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x60c1b4be
@@ -3047,8 +3047,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b20:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b21:
   fmsub.s f21, f27, f16, f21 # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cmp_fd_fs3_b21, F_fmsub_s_cg_cmp_fd_fs3_b21_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cmp_fd_fs3_b21, F_fmsub_s_cg_cmp_fd_fs3_b21_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f22)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x45243ea4
@@ -3057,8 +3057,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b21:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b22:
   fmsub.s f22, f26, f23, f22 # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cmp_fd_fs3_b22, F_fmsub_s_cg_cmp_fd_fs3_b22_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cmp_fd_fs3_b22, F_fmsub_s_cg_cmp_fd_fs3_b22_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f23)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x1c318176
@@ -3067,8 +3067,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b22:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b23:
   fmsub.s f23, f11, f0, f23 # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cmp_fd_fs3_b23, F_fmsub_s_cg_cmp_fd_fs3_b23_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cmp_fd_fs3_b23, F_fmsub_s_cg_cmp_fd_fs3_b23_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f24)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xa854389e
@@ -3077,8 +3077,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b23:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b24:
   fmsub.s f24, f12, f8, f24 # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cmp_fd_fs3_b24, F_fmsub_s_cg_cmp_fd_fs3_b24_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cmp_fd_fs3_b24, F_fmsub_s_cg_cmp_fd_fs3_b24_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f25)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x5be77378
@@ -3087,8 +3087,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b24:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b25:
   fmsub.s f25, f3, f22, f25 # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cmp_fd_fs3_b25, F_fmsub_s_cg_cmp_fd_fs3_b25_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cmp_fd_fs3_b25, F_fmsub_s_cg_cmp_fd_fs3_b25_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f26)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xee9e3870
@@ -3097,18 +3097,18 @@ F_fmsub_s_cg_cmp_fd_fs3_b25:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b26:
   fmsub.s f26, f24, f21, f26 # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cmp_fd_fs3_b26, F_fmsub_s_cg_cmp_fd_fs3_b26_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cmp_fd_fs3_b26, F_fmsub_s_cg_cmp_fd_fs3_b26_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f27)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x07fad7c0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xa38bcd09
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xa38bcd09
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x561ea29f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b27:
-  fmsub.s f27, f15, f7, f27 # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cmp_fd_fs3_b27, F_fmsub_s_cg_cmp_fd_fs3_b27_str)
+  fmsub.s f27, f15, f6, f27 # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cmp_fd_fs3_b27, F_fmsub_s_cg_cmp_fd_fs3_b27_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f28)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x382244dc
@@ -3117,8 +3117,8 @@ F_fmsub_s_cg_cmp_fd_fs3_b27:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b28:
   fmsub.s f28, f15, f30, f28 # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cmp_fd_fs3_b28, F_fmsub_s_cg_cmp_fd_fs3_b28_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cmp_fd_fs3_b28, F_fmsub_s_cg_cmp_fd_fs3_b28_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f29)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xc9135715
@@ -3127,43 +3127,43 @@ F_fmsub_s_cg_cmp_fd_fs3_b28:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b29:
   fmsub.s f29, f19, f18, f29 # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cmp_fd_fs3_b29, F_fmsub_s_cg_cmp_fd_fs3_b29_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cmp_fd_fs3_b29, F_fmsub_s_cg_cmp_fd_fs3_b29_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f30)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xc9685424
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xec6420dd
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xec6420dd
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x0b43cbe1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b30:
-  fmsub.s f30, f26, f5, f30 # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cmp_fd_fs3_b30, F_fmsub_s_cg_cmp_fd_fs3_b30_str)
+  fmsub.s f30, f26, f4, f30 # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cmp_fd_fs3_b30, F_fmsub_s_cg_cmp_fd_fs3_b30_str)
 
 # Testcase cmp_fd_fs3 (Test fd = fs3 = f31)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xf228c1b5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xf228c1b5
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0x7b75d13a
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x59dfc889
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cmp_fd_fs3_b31:
-  fmsub.s f31, f6, f21, f31 # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cmp_fd_fs3_b31, F_fmsub_s_cg_cmp_fd_fs3_b31_str)
+  fmsub.s f31, f5, f21, f31 # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cmp_fd_fs3_b31, F_fmsub_s_cg_cmp_fd_fs3_b31_str)
 
 /////////////////////////////////
 // cp_frm_4
 /////////////////////////////////
 
 # Testcase cp_frm_4 (Test frm, mode = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xc2189ad4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xc2189ad4
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0xd3c9245b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x40aaae90
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cp_frm_4_bdyn:
-  fmsub.s f9, f7, f10, f1, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cp_frm_4_bdyn, F_fmsub_s_cg_cp_frm_4_bdyn_str)
+  fmsub.s f9, f6, f10, f1, dyn # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cp_frm_4_bdyn, F_fmsub_s_cg_cp_frm_4_bdyn_str)
   fsrmi 0x0
 
 # Testcase cp_frm_4 (Test frm, mode = rdn)
@@ -3173,8 +3173,8 @@ F_fmsub_s_cg_cp_frm_4_bdyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_frm_4_brdn:
   fmsub.s f19, f28, f13, f27, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cp_frm_4_brdn, F_fmsub_s_cg_cp_frm_4_brdn_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cp_frm_4_brdn, F_fmsub_s_cg_cp_frm_4_brdn_str)
 
 # Testcase cp_frm_4 (Test frm, mode = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x838849c7
@@ -3183,8 +3183,8 @@ F_fmsub_s_cg_cp_frm_4_brdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_frm_4_brmm:
   fmsub.s f26, f30, f10, f19, rmm # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cp_frm_4_brmm, F_fmsub_s_cg_cp_frm_4_brmm_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cp_frm_4_brmm, F_fmsub_s_cg_cp_frm_4_brmm_str)
 
 # Testcase cp_frm_4 (Test frm, mode = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x6bed1dc8
@@ -3193,8 +3193,8 @@ F_fmsub_s_cg_cp_frm_4_brmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_frm_4_brne:
   fmsub.s f3, f21, f10, f16, rne # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cp_frm_4_brne, F_fmsub_s_cg_cp_frm_4_brne_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cp_frm_4_brne, F_fmsub_s_cg_cp_frm_4_brne_str)
 
 # Testcase cp_frm_4 (Test frm, mode = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x835b78e7
@@ -3202,19 +3202,19 @@ F_fmsub_s_cg_cp_frm_4_brne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xe6275f70
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_frm_4_brtz:
-  fmsub.s f5, f23, f30, f17, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cp_frm_4_brtz, F_fmsub_s_cg_cp_frm_4_brtz_str)
+  fmsub.s f4, f23, f30, f17, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cp_frm_4_brtz, F_fmsub_s_cg_cp_frm_4_brtz_str)
 
 # Testcase cp_frm_4 (Test frm, mode = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x1da3f5d2
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x1da3f5d2
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x067ba756
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xa7bc8ee4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cp_frm_4_brup:
-  fmsub.s f2, f6, f31, f15, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cp_frm_4_brup, F_fmsub_s_cg_cp_frm_4_brup_str)
+  fmsub.s f2, f5, f31, f15, rup # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cp_frm_4_brup, F_fmsub_s_cg_cp_frm_4_brup_str)
 
 /////////////////////////////////
 // cp_csr_frm
@@ -3228,56 +3228,56 @@ F_fmsub_s_cg_cp_frm_4_brup:
   fsrmi 0
 F_fmsub_s_cg_cp_csr_frm_rne:
   fmsub.s f24, f8, f27, f17, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cp_csr_frm_rne, F_fmsub_s_cg_cp_csr_frm_rne_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cp_csr_frm_rne, F_fmsub_s_cg_cp_csr_frm_rne_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x34a1f931
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0xa15b0856
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x8c3d274f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x8c3d274f
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cp_csr_frm_rtz:
-  fmsub.s f25, f8, f14, f7, dyn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cp_csr_frm_rtz, F_fmsub_s_cg_cp_csr_frm_rtz_str)
+  fmsub.s f25, f8, f14, f6, dyn # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cp_csr_frm_rtz, F_fmsub_s_cg_cp_csr_frm_rtz_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 2)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xb962b870
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xaf8ea6cb
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xaf8ea6cb
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0xabe50571
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
 F_fmsub_s_cg_cp_csr_frm_rdn:
-  fmsub.s f18, f19, f5, f20, dyn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cp_csr_frm_rdn, F_fmsub_s_cg_cp_csr_frm_rdn_str)
+  fmsub.s f18, f19, f4, f20, dyn # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cp_csr_frm_rdn, F_fmsub_s_cg_cp_csr_frm_rdn_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x4b61fe19
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xa3e06910
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xa3e06910
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x82d1cea6
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cp_csr_frm_rup:
-  fmsub.s f25, f18, f6, f19, dyn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cp_csr_frm_rup, F_fmsub_s_cg_cp_csr_frm_rup_str)
+  fmsub.s f25, f18, f5, f19, dyn # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cp_csr_frm_rup, F_fmsub_s_cg_cp_csr_frm_rup_str)
   fsrmi 0x0
 
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xca529c7b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xca529c7b
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0xec1c6de0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xc8cc5391
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cp_csr_frm_rmm:
-  fmsub.s f9, f5, f20, f10, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cp_csr_frm_rmm, F_fmsub_s_cg_cp_csr_frm_rmm_str)
+  fmsub.s f9, f4, f20, f10, dyn # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cp_csr_frm_rmm, F_fmsub_s_cg_cp_csr_frm_rmm_str)
   fsrmi 0x0
 
 /////////////////////////////////
@@ -3292,19 +3292,19 @@ F_fmsub_s_cg_cp_csr_frm_rmm:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_dyn:
   fmsub.s f30, f8, f9, f19, dyn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_dyn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xd537b026
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xd537b026
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn:
-  fmsub.s f28, f8, f19, f6, rdn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn_str)
+  fmsub.s f28, f8, f19, f5, rdn # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -3313,18 +3313,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rmm:
   fmsub.s f29, f12, f1, f25, rmm # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rmm_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x1e337103
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne:
-  fmsub.s f10, f11, f6, f26, rne # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne_str)
+  fmsub.s f10, f11, f5, f26, rne # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x00000000
@@ -3332,9 +3332,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xdf91702a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz:
-  fmsub.s f6, f1, f21, f17, rtz # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz_str)
+  fmsub.s f5, f1, f21, f17, rtz # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
@@ -3343,8 +3343,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup:
   fmsub.s f26, f24, f21, f11, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
@@ -3354,8 +3354,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x0_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn:
   fmsub.s f10, f15, f30, f31, dyn # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = rdn)
@@ -3365,8 +3365,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn:
   fmsub.s f14, f11, f30, f16, rdn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
@@ -3375,8 +3375,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm:
   fmsub.s f18, f2, f14, f30, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x00000000
@@ -3385,8 +3385,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne:
   fmsub.s f15, f1, f13, f31, rne # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -3395,18 +3395,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rtz:
   fmsub.s f23, f12, f22, f15, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rtz_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x5672fe0e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup:
-  fmsub.s f1, f13, f6, f24, rup # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup_str)
+  fmsub.s f1, f13, f5, f24, rup # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x00000000
@@ -3416,8 +3416,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn:
   fmsub.s f2, f16, f21, f18, dyn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = rdn)
@@ -3426,29 +3426,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x292c861b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rdn:
-  fmsub.s f7, f16, f9, f28, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rdn_str)
+  fmsub.s f6, f16, f9, f28, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x7e6b05de
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rmm:
-  fmsub.s f1, f10, f7, f31, rmm # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rmm_str)
+  fmsub.s f1, f10, f6, f31, rmm # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xcc48c622
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne:
-  fmsub.s f27, f7, f26, f30, rne # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne_str)
+  fmsub.s f27, f6, f26, f30, rne # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
@@ -3457,8 +3457,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz:
   fmsub.s f19, f11, f13, f17, rtz # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x00000000
@@ -3466,9 +3466,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xabc7a306
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup:
-  fmsub.s f7, f23, f27, f13, rup # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup_str)
+  fmsub.s f6, f23, f27, f13, rup # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -3478,8 +3478,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3f800000_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn:
   fmsub.s f18, f17, f1, f20, dyn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = rdn)
@@ -3489,8 +3489,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn:
   fmsub.s f3, f27, f24, f30, rdn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00000000
@@ -3499,8 +3499,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm:
   fmsub.s f8, f27, f31, f28, rmm # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x00000000
@@ -3509,8 +3509,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne:
   fmsub.s f30, f16, f13, f2, rne # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x00000000
@@ -3519,8 +3519,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz:
   fmsub.s f18, f21, f22, f2, rtz # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbf800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
@@ -3529,30 +3529,30 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rup:
   fmsub.s f26, f11, f23, f28, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rup_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbf800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x3eeb3669
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_dyn:
-  fmsub.s f5, f6, f16, f27, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_dyn_str)
+  fmsub.s f4, f5, f16, f27, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xce1b430f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn:
-  fmsub.s f7, f5, f23, f11, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn_str)
+  fmsub.s f6, f4, f23, f11, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
@@ -3561,8 +3561,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm:
   fmsub.s f11, f24, f29, f18, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
@@ -3571,8 +3571,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne:
   fmsub.s f29, f13, f12, f20, rne # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00000000
@@ -3580,19 +3580,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xb28c3185
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rtz:
-  fmsub.s f5, f28, f3, f17, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rtz_str)
+  fmsub.s f4, f28, f3, f17, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x3fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x66713586
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup:
-  fmsub.s f22, f21, f7, f17, rup # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup_str)
+  fmsub.s f22, f21, f6, f17, rup # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -3602,39 +3602,39 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x3fc00000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_dyn:
   fmsub.s f25, f9, f2, f28, dyn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_dyn_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x5d6b4f14
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rdn:
-  fmsub.s f1, f8, f7, f10, rdn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rdn_str)
+  fmsub.s f1, f8, f6, f10, rdn # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x4661d08b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rmm:
-  fmsub.s f22, f7, f24, f27, rmm # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rmm_str)
+  fmsub.s f22, f6, f24, f27, rmm # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0xbfc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x2916e4c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x2916e4c3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne:
-  fmsub.s f26, f25, f8, f7, rne # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne_str)
+  fmsub.s f26, f25, f8, f6, rne # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
@@ -3643,18 +3643,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rtz:
   fmsub.s f23, f15, f22, f10, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rtz_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xbfc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xec5029fe
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup:
-  fmsub.s f27, f2, f5, f30, rup # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup_str)
+  fmsub.s f27, f2, f4, f30, rup # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x00000000
@@ -3664,8 +3664,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xbfc00000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn:
   fmsub.s f16, f22, f29, f10, dyn # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = rdn)
@@ -3675,8 +3675,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn:
   fmsub.s f23, f30, f28, f20, rdn # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -3685,18 +3685,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rmm:
   fmsub.s f29, f17, f14, f12, rmm # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rmm_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x40000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xdc9b6c84
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne:
-  fmsub.s f28, f6, f3, f14, rne # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne_str)
+  fmsub.s f28, f5, f3, f14, rne # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
@@ -3705,8 +3705,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz:
   fmsub.s f27, f11, f21, f30, rtz # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x40000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -3715,8 +3715,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup:
   fmsub.s f13, f14, f20, f15, rup # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
@@ -3726,8 +3726,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x40000000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn:
   fmsub.s f23, f2, f9, f25, dyn # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = rdn)
@@ -3737,8 +3737,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn:
   fmsub.s f20, f15, f16, f26, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
@@ -3747,8 +3747,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm:
   fmsub.s f27, f13, f31, f26, rmm # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x00000000
@@ -3757,8 +3757,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne:
   fmsub.s f9, f31, f25, f26, rne # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x00000000
@@ -3767,8 +3767,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz:
   fmsub.s f24, f21, f13, f2, rtz # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xc0000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x00000000
@@ -3777,8 +3777,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup:
   fmsub.s f21, f23, f24, f22, rup # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -3788,8 +3788,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xc0000000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn:
   fmsub.s f28, f9, f2, f12, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = rdn)
@@ -3799,8 +3799,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn:
   fmsub.s f15, f19, f14, f20, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
@@ -3809,8 +3809,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm:
   fmsub.s f11, f15, f10, f19, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x00000000
@@ -3819,8 +3819,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne:
   fmsub.s f22, f29, f12, f20, rne # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
@@ -3829,8 +3829,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz:
   fmsub.s f21, f13, f30, f11, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -3839,8 +3839,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup:
   fmsub.s f21, f12, f26, f11, rup # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x00000000
@@ -3850,8 +3850,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn:
   fmsub.s f16, f22, f18, f13, dyn # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = rdn)
@@ -3860,19 +3860,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x0bbc25a2
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rdn:
-  fmsub.s f5, f17, f25, f16, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rdn_str)
+  fmsub.s f4, f17, f25, f16, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x1c3289c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x1c3289c3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm:
-  fmsub.s f9, f24, f6, f7, rmm # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm_str)
+  fmsub.s f9, f24, f5, f6, rmm # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00000000
@@ -3881,8 +3881,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne:
   fmsub.s f29, f27, f30, f11, rne # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
@@ -3891,18 +3891,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rtz:
   fmsub.s f9, f24, f11, f8, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rtz_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0xe1d24b7b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup:
-  fmsub.s f26, f29, f6, f24, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup_str)
+  fmsub.s f26, f29, f5, f24, rup # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -3912,8 +3912,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80800000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn:
   fmsub.s f28, f9, f1, f3, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = rdn)
@@ -3923,8 +3923,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn:
   fmsub.s f21, f24, f19, f18, rdn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x00000000
@@ -3933,8 +3933,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm:
   fmsub.s f24, f23, f29, f17, rmm # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -3943,8 +3943,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne:
   fmsub.s f14, f17, f13, f22, rne # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
@@ -3952,9 +3952,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x20d5489e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz:
-  fmsub.s f5, f13, f22, f23, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz_str)
+  fmsub.s f4, f13, f22, f23, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -3963,8 +3963,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup:
   fmsub.s f16, f17, f31, f10, rup # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x00000000
@@ -3974,8 +3974,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f7fffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn:
   fmsub.s f31, f26, f29, f28, dyn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = rdn)
@@ -3985,8 +3985,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn:
   fmsub.s f23, f16, f15, f22, rdn # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
@@ -3995,18 +3995,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rmm:
   fmsub.s f19, f15, f18, f14, rmm # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rmm_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x7321e4b6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x7321e4b6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne:
-  fmsub.s f14, f11, f13, f5, rne # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne_str)
+  fmsub.s f14, f11, f13, f4, rne # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4015,8 +4015,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz:
   fmsub.s f19, f14, f25, f28, rtz # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
@@ -4025,8 +4025,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup:
   fmsub.s f18, f3, f19, f10, rup # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -4036,19 +4036,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff7fffff_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_dyn:
   fmsub.s f17, f9, f14, f11, dyn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_dyn_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x007fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xf2a69056
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn:
-  fmsub.s f2, f5, f18, f31, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn_str)
+  fmsub.s f2, f4, f18, f31, rdn # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00000000
@@ -4057,8 +4057,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm:
   fmsub.s f17, f27, f13, f2, rmm # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4067,8 +4067,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne:
   fmsub.s f8, f12, f29, f14, rne # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x00000000
@@ -4077,8 +4077,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz:
   fmsub.s f13, f22, f29, f14, rtz # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x007fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4086,20 +4086,20 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0xe5b86cf9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rup:
-  fmsub.s f5, f14, f18, f25, rup # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rup_str)
+  fmsub.s f4, f14, f18, f25, rup # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x807fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x9730908d
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn:
-  fmsub.s f1, f17, f6, f12, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn_str)
+  fmsub.s f1, f17, f5, f12, dyn # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = rdn)
@@ -4109,8 +4109,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn:
   fmsub.s f24, f8, f28, f9, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x00000000
@@ -4119,8 +4119,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm:
   fmsub.s f23, f8, f26, f15, rmm # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
@@ -4129,18 +4129,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rne:
   fmsub.s f1, f13, f26, f30, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rne_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x807fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x3df45914
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x3df45914
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz:
-  fmsub.s f3, f2, f18, f7, rtz # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz_str)
+  fmsub.s f3, f2, f18, f6, rtz # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x807fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x00000000
@@ -4149,30 +4149,30 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rup:
   fmsub.s f27, f10, f9, f16, rup # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rup_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x807fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x00400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xc78b2b64
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_dyn:
-  fmsub.s f14, f7, f2, f29, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_dyn_str)
+  fmsub.s f14, f6, f2, f29, dyn # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xd1b08e2b
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xd1b08e2b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn:
-  fmsub.s f29, f15, f17, f6, rdn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn_str)
+  fmsub.s f29, f15, f17, f5, rdn # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -4181,18 +4181,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rmm:
   fmsub.s f25, f17, f31, f18, rmm # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rmm_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x00400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x00400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x96bb7c84
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne:
-  fmsub.s f2, f11, f5, f17, rne # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne_str)
+  fmsub.s f2, f11, f4, f17, rne # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
@@ -4201,8 +4201,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz:
   fmsub.s f20, f11, f27, f18, rtz # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
@@ -4211,19 +4211,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rup:
   fmsub.s f17, f2, f24, f1, rup # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rup_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xb20d6dd6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xb20d6dd6
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn:
-  fmsub.s f8, f1, f29, f7, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn_str)
+  fmsub.s f8, f1, f29, f6, dyn # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = rdn)
@@ -4233,8 +4233,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn:
   fmsub.s f28, f11, f25, f30, rdn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x00000000
@@ -4243,18 +4243,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rmm:
   fmsub.s f11, f31, f23, f3, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rmm_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xe7a12b7b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne:
-  fmsub.s f19, f13, f7, f10, rne # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne_str)
+  fmsub.s f19, f13, f6, f10, rne # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x00000000
@@ -4263,8 +4263,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz:
   fmsub.s f22, f30, f25, f3, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x00000000
@@ -4273,8 +4273,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup:
   fmsub.s f26, f19, f15, f22, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -4284,8 +4284,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80400000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn:
   fmsub.s f24, f9, f8, f14, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = rdn)
@@ -4295,8 +4295,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn:
   fmsub.s f21, f3, f31, f16, rdn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x00000000
@@ -4305,8 +4305,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm:
   fmsub.s f13, f26, f15, f25, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4315,8 +4315,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne:
   fmsub.s f12, f14, f23, f13, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
@@ -4325,8 +4325,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz:
   fmsub.s f17, f3, f18, f1, rtz # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x00000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
@@ -4335,8 +4335,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup:
   fmsub.s f13, f3, f19, f11, rup # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x00000000
@@ -4346,8 +4346,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x1_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn:
   fmsub.s f26, f21, f8, f2, dyn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = rdn)
@@ -4357,8 +4357,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn:
   fmsub.s f18, f1, f15, f21, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4367,18 +4367,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rmm:
   fmsub.s f30, f14, f8, f28, rmm # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rmm_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs2: f20 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x77c10884
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x77c10884
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne:
-  fmsub.s f28, f3, f20, f6, rne # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne_str)
+  fmsub.s f28, f3, f20, f5, rne # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x00000000
@@ -4386,9 +4386,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xeb581ce5
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz:
-  fmsub.s f7, f8, f12, f26, rtz # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz_str)
+  fmsub.s f6, f8, f12, f26, rtz # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x80000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x00000000
@@ -4397,8 +4397,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup:
   fmsub.s f2, f16, f24, f22, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4408,8 +4408,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x80000001_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn:
   fmsub.s f9, f14, f3, f29, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = rdn)
@@ -4419,8 +4419,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn:
   fmsub.s f30, f1, f29, f25, rdn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x00000000
@@ -4429,8 +4429,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm:
   fmsub.s f28, f9, f11, f1, rmm # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4439,8 +4439,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne:
   fmsub.s f31, f12, f30, f23, rne # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4449,8 +4449,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz:
   fmsub.s f15, f12, f25, f18, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00000000
@@ -4459,8 +4459,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup:
   fmsub.s f17, f27, f16, f9, rup # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00000000
@@ -4470,8 +4470,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn:
   fmsub.s f11, f28, f18, f20, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = rdn)
@@ -4481,8 +4481,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn:
   fmsub.s f17, f26, f19, f13, rdn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x00000000
@@ -4491,8 +4491,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm:
   fmsub.s f27, f19, f8, f9, rmm # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x00000000
@@ -4501,8 +4501,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne:
   fmsub.s f12, f8, f17, f28, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00000000
@@ -4511,8 +4511,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz:
   fmsub.s f23, f28, f11, f17, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xff800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4521,8 +4521,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup:
   fmsub.s f25, f12, f2, f15, rup # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x00000000
@@ -4532,8 +4532,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xff800000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn:
   fmsub.s f1, f30, f15, f24, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = rdn)
@@ -4543,28 +4543,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rdn:
   fmsub.s f2, f14, f8, f25, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rdn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x64ba5589
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rmm:
-  fmsub.s f9, f15, f5, f27, rmm # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rmm_str)
+  fmsub.s f9, f15, f4, f27, rmm # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x0254141a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x0254141a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne:
-  fmsub.s f21, f3, f12, f6, rne # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne_str)
+  fmsub.s f21, f3, f12, f5, rne # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x00000000
@@ -4573,40 +4573,40 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rtz:
   fmsub.s f28, f25, f31, f13, rtz # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rtz_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0xc4be50fc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rup:
-  fmsub.s f24, f29, f5, f21, rup # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rup_str)
+  fmsub.s f24, f29, f4, f21, rup # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xd47f2468
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_dyn:
-  fmsub.s f7, f15, f5, f3, dyn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_dyn_str)
+  fmsub.s f6, f15, f4, f3, dyn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x3b6fcde3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x3b6fcde3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn:
-  fmsub.s f2, f23, f31, f7, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn_str)
+  fmsub.s f2, f23, f31, f6, rdn # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4615,8 +4615,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm:
   fmsub.s f23, f12, f29, f26, rmm # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
@@ -4625,28 +4625,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rne:
   fmsub.s f20, f24, f1, f13, rne # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rne_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x3c81eb39
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rtz:
-  fmsub.s f22, f13, f7, f28, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rtz_str)
+  fmsub.s f22, f13, f6, f28, rtz # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x73b7f459
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x73b7f459
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup:
-  fmsub.s f8, f12, f2, f7, rup # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup_str)
+  fmsub.s f8, f12, f2, f6, rup # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00000000
@@ -4656,19 +4656,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fffffff_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_dyn:
   fmsub.s f15, f28, f20, f9, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_dyn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x198da238
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn:
-  fmsub.s f3, f6, f5, f10, rdn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn_str)
+  fmsub.s f3, f5, f4, f10, rdn # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x00000000
@@ -4677,8 +4677,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm:
   fmsub.s f20, f12, f10, f30, rmm # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x00000000
@@ -4687,18 +4687,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rne:
   fmsub.s f8, f30, f20, f17, rne # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rne_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x95a672d9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz:
-  fmsub.s f23, f6, f27, f29, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz_str)
+  fmsub.s f23, f5, f27, f29, rtz # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x00000000
@@ -4706,9 +4706,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x1b6c9f23
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup:
-  fmsub.s f6, f10, f2, f29, rup # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup_str)
+  fmsub.s f5, f10, f2, f29, rup # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x00000000
@@ -4718,8 +4718,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffffffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn:
   fmsub.s f3, f19, f21, f31, dyn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = rdn)
@@ -4729,28 +4729,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rdn:
   fmsub.s f25, f29, f16, f8, rdn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rdn_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x8e6ab728
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rmm:
-  fmsub.s f18, f19, f5, f2, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rmm_str)
+  fmsub.s f18, f19, f4, f2, rmm # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x964c3664
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x964c3664
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne:
-  fmsub.s f1, f29, f17, f5, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne_str)
+  fmsub.s f1, f29, f17, f4, rne # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x00000000
@@ -4759,18 +4759,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rtz:
   fmsub.s f11, f28, f20, f8, rtz # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rtz_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7f800001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x5fd8febc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup:
-  fmsub.s f29, f25, f5, f17, rup # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup_str)
+  fmsub.s f29, f25, f4, f17, rup # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x00000000
@@ -4779,9 +4779,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7f800001_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn:
-  fmsub.s f5, f16, f3, f27, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn_str)
+  fmsub.s f4, f16, f3, f27, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = rdn)
@@ -4791,8 +4791,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn:
   fmsub.s f15, f31, f14, f30, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x00000000
@@ -4801,8 +4801,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm:
   fmsub.s f26, f22, f3, f31, rmm # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x00000000
@@ -4811,18 +4811,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rne:
   fmsub.s f12, f2, f23, f28, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fbfffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xf1393cfa
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xf1393cfa
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz:
-  fmsub.s f31, f10, f5, f7, rtz # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz_str)
+  fmsub.s f31, f10, f4, f6, rtz # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7fbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -4831,8 +4831,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup:
   fmsub.s f19, f17, f27, f22, rup # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x00000000
@@ -4842,8 +4842,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7fbfffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn:
   fmsub.s f18, f14, f20, f21, dyn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = rdn)
@@ -4853,8 +4853,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn:
   fmsub.s f25, f14, f21, f17, rdn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x00000000
@@ -4863,28 +4863,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rmm:
   fmsub.s f29, f15, f21, f27, rmm # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rmm_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xffbfffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xe922aecf
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xffbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xe922aecf
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rne:
-  fmsub.s f9, f17, f7, f5, rne # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rne_str)
+  fmsub.s f9, f17, f6, f4, rne # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0xffbfffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x061d8a5d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x061d8a5d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz:
-  fmsub.s f23, f3, f24, f6, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz_str)
+  fmsub.s f23, f3, f24, f5, rtz # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0xffbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x00000000
@@ -4893,8 +4893,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup:
   fmsub.s f3, f24, f2, f21, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x00000000
@@ -4904,19 +4904,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0xffbfffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_dyn:
   fmsub.s f11, f25, f27, f19, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_dyn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x7ef8654f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x815efec6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn:
-  fmsub.s f18, f6, f11, f2, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn_str)
+  fmsub.s f18, f5, f11, f2, rdn # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -4925,8 +4925,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm:
   fmsub.s f29, f17, f3, f21, rmm # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x00000000
@@ -4935,8 +4935,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne:
   fmsub.s f10, f18, f24, f15, rne # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x00000000
@@ -4945,18 +4945,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rtz:
   fmsub.s f11, f10, f21, f1, rtz # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rtz_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x7ef8654f, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7ef8654f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7ef8654f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xec6c4260
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup:
-  fmsub.s f9, f11, f5, f22, rup # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup_str)
+  fmsub.s f9, f11, f4, f22, rup # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x00000000
@@ -4966,8 +4966,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x7ef8654f_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn:
   fmsub.s f27, f17, f2, f16, dyn # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = rdn)
@@ -4977,8 +4977,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn:
   fmsub.s f26, f29, f27, f9, rdn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00000000
@@ -4987,8 +4987,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm:
   fmsub.s f16, f27, f23, f17, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x00000000
@@ -4997,18 +4997,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rne:
   fmsub.s f1, f30, f9, f12, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rne_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x813d9ab0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x813d9ab0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x6f7d28a0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz:
-  fmsub.s f12, f20, f5, f25, rtz # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz_str)
+  fmsub.s f12, f20, f4, f25, rtz # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x00000000 fs2 = 0x813d9ab0, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x00000000
@@ -5017,8 +5017,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup:
   fmsub.s f2, f23, f22, f19, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -5028,8 +5028,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x0_fs2val_0x813d9ab0_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn:
   fmsub.s f15, f23, f24, f18, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = rdn)
@@ -5038,9 +5038,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x87cea610
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn:
-  fmsub.s f5, f1, f23, f2, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn_str)
+  fmsub.s f4, f1, f23, f2, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
@@ -5049,8 +5049,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm:
   fmsub.s f12, f17, f28, f14, rmm # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5059,18 +5059,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rne:
   fmsub.s f14, f22, f16, f8, rne # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rne_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x00000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0x92873659
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz:
-  fmsub.s f5, f26, f7, f14, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz_str)
+  fmsub.s f4, f26, f6, f14, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x80000000
@@ -5078,9 +5078,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x8132db9a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup:
-  fmsub.s f7, f8, f26, f11, rup # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup_str)
+  fmsub.s f6, f8, f26, f11, rup # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x80000000
@@ -5090,19 +5090,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x0_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_dyn:
   fmsub.s f14, f24, f26, f12, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_dyn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xbab7f010
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn:
-  fmsub.s f31, f12, f5, f29, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn_str)
+  fmsub.s f31, f12, f4, f29, rdn # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x80000000
@@ -5111,8 +5111,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm:
   fmsub.s f22, f15, f13, f1, rmm # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x80000000
@@ -5121,18 +5121,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rne:
   fmsub.s f17, f31, f29, f12, rne # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rne_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs2: f8 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xd5dbdd28
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xd5dbdd28
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz:
-  fmsub.s f21, f28, f8, f5, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz_str)
+  fmsub.s f21, f28, f8, f4, rtz # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -5141,8 +5141,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup:
   fmsub.s f26, f11, f13, f2, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5151,9 +5151,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000000_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn:
-  fmsub.s f7, f22, f1, f16, dyn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn_str)
+  fmsub.s f6, f22, f1, f16, dyn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = rdn)
@@ -5163,8 +5163,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn:
   fmsub.s f1, f12, f24, f27, rdn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x80000000
@@ -5173,8 +5173,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm:
   fmsub.s f3, f14, f20, f22, rmm # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -5183,8 +5183,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne:
   fmsub.s f22, f12, f15, f28, rne # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
@@ -5193,8 +5193,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz:
   fmsub.s f8, f2, f31, f20, rtz # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x80000000
@@ -5203,8 +5203,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup:
   fmsub.s f29, f19, f31, f21, rup # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
@@ -5213,9 +5213,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3f800000_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn:
-  fmsub.s f5, f26, f16, f29, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn_str)
+  fmsub.s f4, f26, f16, f29, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = rdn)
@@ -5225,8 +5225,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn:
   fmsub.s f11, f30, f20, f17, rdn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x80000000
@@ -5235,8 +5235,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm:
   fmsub.s f27, f1, f16, f3, rmm # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x80000000
@@ -5245,8 +5245,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne:
   fmsub.s f31, f21, f26, f28, rne # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x80000000
@@ -5255,8 +5255,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz:
   fmsub.s f24, f16, f15, f20, rtz # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbf800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -5265,8 +5265,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup:
   fmsub.s f3, f18, f21, f10, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5276,8 +5276,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbf800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn:
   fmsub.s f9, f25, f23, f1, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = rdn)
@@ -5287,28 +5287,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rdn:
   fmsub.s f8, f10, f9, f3, rdn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rdn_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x3fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xb536bbb6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xb536bbb6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rmm:
-  fmsub.s f2, f26, f14, f7, rmm # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rmm_str)
+  fmsub.s f2, f26, f14, f6, rmm # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x32aa7d98
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne:
-  fmsub.s f1, f26, f5, f12, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne_str)
+  fmsub.s f1, f26, f4, f12, rne # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -5317,8 +5317,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz:
   fmsub.s f15, f11, f31, f26, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x3fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5327,8 +5327,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup:
   fmsub.s f8, f22, f27, f26, rup # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
@@ -5338,8 +5338,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x3fc00000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn:
   fmsub.s f14, f26, f18, f9, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = rdn)
@@ -5349,8 +5349,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn:
   fmsub.s f16, f8, f17, f10, rdn # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x80000000
@@ -5359,8 +5359,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm:
   fmsub.s f1, f15, f17, f26, rmm # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5369,8 +5369,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne:
   fmsub.s f27, f25, f30, f17, rne # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x80000000
@@ -5379,8 +5379,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz:
   fmsub.s f9, f8, f29, f14, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xbfc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5389,8 +5389,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup:
   fmsub.s f24, f22, f26, f3, rup # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -5400,19 +5400,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xbfc00000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_dyn:
   fmsub.s f15, f11, f27, f14, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_dyn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x40000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x9a59a881
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn:
-  fmsub.s f24, f5, f17, f16, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn_str)
+  fmsub.s f24, f4, f17, f16, rdn # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x80000000
@@ -5420,9 +5420,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xeca847cc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm:
-  fmsub.s f5, f31, f29, f12, rmm # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm_str)
+  fmsub.s f4, f31, f29, f12, rmm # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5431,18 +5431,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rne:
   fmsub.s f28, f25, f23, f17, rne # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rne_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x40000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x8d5ebc68
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x8d5ebc68
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz:
-  fmsub.s f14, f18, f24, f6, rtz # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz_str)
+  fmsub.s f14, f18, f24, f5, rtz # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x40000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
@@ -5451,19 +5451,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rup:
   fmsub.s f12, f2, f19, f21, rup # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rup_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x40000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xc0000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x97e3a7b4
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn:
-  fmsub.s f5, f11, f6, f28, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn_str)
+  fmsub.s f4, f11, f5, f28, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = rdn)
@@ -5473,8 +5473,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn:
   fmsub.s f24, f12, f8, f16, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
@@ -5483,8 +5483,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm:
   fmsub.s f18, f3, f30, f23, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
@@ -5492,9 +5492,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0xb9dc4b31
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne:
-  fmsub.s f7, f2, f22, f27, rne # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne_str)
+  fmsub.s f6, f2, f22, f27, rne # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5503,8 +5503,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz:
   fmsub.s f1, f25, f30, f23, rtz # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xc0000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x80000000
@@ -5513,8 +5513,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup:
   fmsub.s f2, f30, f9, f1, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -5524,19 +5524,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xc0000000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_dyn:
   fmsub.s f1, f18, f15, f26, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_dyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xf60dd91c
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xf60dd91c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn:
-  fmsub.s f17, f2, f10, f6, rdn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn_str)
+  fmsub.s f17, f2, f10, f5, rdn # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x80000000
@@ -5544,9 +5544,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x89c2bbe3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm:
-  fmsub.s f6, f1, f29, f3, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm_str)
+  fmsub.s f5, f1, f29, f3, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x80000000
@@ -5555,28 +5555,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rne:
   fmsub.s f27, f10, f31, f21, rne # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rne_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x1f5dc178
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x1f5dc178
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rtz:
-  fmsub.s f27, f28, f15, f7, rtz # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rtz_str)
+  fmsub.s f27, f28, f15, f6, rtz # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00800000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x00800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x041ceb2d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup:
-  fmsub.s f25, f6, f1, f10, rup # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup_str)
+  fmsub.s f25, f5, f1, f10, rup # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -5586,8 +5586,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x800000_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn:
   fmsub.s f14, f23, f2, f28, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = rdn)
@@ -5597,8 +5597,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn:
   fmsub.s f19, f8, f22, f17, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5607,8 +5607,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm:
   fmsub.s f31, f25, f23, f29, rmm # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -5617,8 +5617,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne:
   fmsub.s f20, f23, f2, f8, rne # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x80000000
@@ -5627,8 +5627,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz:
   fmsub.s f29, f31, f8, f14, rtz # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
@@ -5637,8 +5637,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup:
   fmsub.s f17, f28, f29, f19, rup # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
@@ -5648,8 +5648,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80800000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn:
   fmsub.s f24, f28, f13, f14, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = rdn)
@@ -5659,8 +5659,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn:
   fmsub.s f12, f3, f19, f26, rdn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5669,18 +5669,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rmm:
   fmsub.s f15, f22, f25, f20, rmm # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rmm_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x7f7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xe88b9de9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne:
-  fmsub.s f1, f5, f3, f18, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne_str)
+  fmsub.s f1, f4, f3, f18, rne # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x80000000
@@ -5689,8 +5689,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz:
   fmsub.s f8, f24, f27, f23, rtz # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x80000000
@@ -5699,8 +5699,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup:
   fmsub.s f3, f21, f23, f1, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x80000000
@@ -5710,8 +5710,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f7fffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn:
   fmsub.s f28, f19, f3, f16, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = rdn)
@@ -5720,9 +5720,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x33c84eb1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn:
-  fmsub.s f5, f22, f24, f17, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn_str)
+  fmsub.s f4, f22, f24, f17, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5731,8 +5731,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm:
   fmsub.s f31, f25, f20, f8, rmm # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x80000000
@@ -5740,9 +5740,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x56f12b46
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne:
-  fmsub.s f7, f19, f28, f21, rne # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne_str)
+  fmsub.s f6, f19, f28, f21, rne # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -5751,8 +5751,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz:
   fmsub.s f3, f12, f1, f18, rtz # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -5761,30 +5761,30 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rup:
   fmsub.s f11, f12, f9, f8, rup # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rup_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x007fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0xcb0a38ff
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_dyn:
-  fmsub.s f19, f5, f14, f23, dyn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_dyn_str)
+  fmsub.s f19, f4, f14, f23, dyn # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x007fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x720bcc51
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn:
-  fmsub.s f17, f6, f18, f15, rdn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn_str)
+  fmsub.s f17, f5, f18, f15, rdn # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x80000000
@@ -5793,8 +5793,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm:
   fmsub.s f28, f29, f3, f1, rmm # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5803,8 +5803,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne:
   fmsub.s f21, f22, f15, f13, rne # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x80000000
@@ -5813,8 +5813,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz:
   fmsub.s f19, f21, f29, f27, rtz # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x007fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -5823,8 +5823,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup:
   fmsub.s f23, f18, f25, f24, rup # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x80000000
@@ -5834,8 +5834,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn:
   fmsub.s f18, f15, f10, f21, dyn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = rdn)
@@ -5845,18 +5845,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rdn:
   fmsub.s f27, f23, f18, f14, rdn # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rdn_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x807fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0xc8feca92
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm:
-  fmsub.s f1, f20, f6, f31, rmm # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm_str)
+  fmsub.s f1, f20, f5, f31, rmm # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x80000000
@@ -5865,8 +5865,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne:
   fmsub.s f9, f15, f2, f31, rne # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x80000000
@@ -5875,8 +5875,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz:
   fmsub.s f21, f29, f17, f1, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x807fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x80000000
@@ -5885,8 +5885,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup:
   fmsub.s f17, f25, f21, f1, rup # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x80000000
@@ -5896,8 +5896,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x807fffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn:
   fmsub.s f13, f20, f12, f18, dyn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = rdn)
@@ -5907,8 +5907,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn:
   fmsub.s f12, f17, f22, f2, rdn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -5916,9 +5916,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x733b61d1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm:
-  fmsub.s f6, f22, f23, f11, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm_str)
+  fmsub.s f5, f22, f23, f11, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x80000000
@@ -5927,8 +5927,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne:
   fmsub.s f30, f20, f26, f10, rne # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -5937,8 +5937,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz:
   fmsub.s f12, f11, f18, f31, rtz # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -5946,9 +5946,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x5099905c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup:
-  fmsub.s f7, f11, f9, f20, rup # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup_str)
+  fmsub.s f6, f11, f9, f20, rup # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -5958,49 +5958,49 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x400000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_dyn:
   fmsub.s f28, f12, f23, f20, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_dyn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xc0db7e64
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rdn:
-  fmsub.s f7, f6, f29, f13, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rdn_str)
+  fmsub.s f6, f5, f29, f13, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x3f964bd0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rmm:
-  fmsub.s f13, f10, f5, f15, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rmm_str)
+  fmsub.s f13, f10, f4, f15, rmm # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x2cc747de
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x2cc747de
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rne:
-  fmsub.s f2, f22, f19, f7, rne # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rne_str)
+  fmsub.s f2, f22, f19, f6, rne # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x80400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xba2b4f53
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xba2b4f53
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz:
-  fmsub.s f14, f2, f17, f5, rtz # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz_str)
+  fmsub.s f14, f2, f17, f4, rtz # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
@@ -6008,31 +6008,31 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x56d85db3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rup:
-  fmsub.s f6, f17, f26, f29, rup # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rup_str)
+  fmsub.s f5, f17, f26, f29, rup # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x00000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0xe387015c
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_dyn:
-  fmsub.s f31, f10, f6, f29, dyn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_dyn_str)
+  fmsub.s f31, f10, f5, f29, dyn # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x404e45ec
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x404e45ec
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn:
-  fmsub.s f5, f21, f26, f6, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn_str)
+  fmsub.s f4, f21, f26, f5, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -6041,18 +6041,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rmm:
   fmsub.s f28, f23, f26, f13, rmm # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rmm_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x00000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0xf0ce9215
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne:
-  fmsub.s f8, f5, f16, f28, rne # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne_str)
+  fmsub.s f8, f4, f16, f28, rne # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -6061,8 +6061,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz:
   fmsub.s f10, f12, f18, f1, rtz # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x00000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
@@ -6071,8 +6071,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup:
   fmsub.s f23, f12, f31, f25, rup # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -6082,8 +6082,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x1_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn:
   fmsub.s f29, f18, f11, f19, dyn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = rdn)
@@ -6093,8 +6093,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn:
   fmsub.s f8, f2, f18, f21, rdn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -6102,19 +6102,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x18429594
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rmm:
-  fmsub.s f6, f23, f16, f15, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rmm_str)
+  fmsub.s f5, f23, f16, f15, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x80000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x1c89fbf7
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x1c89fbf7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne:
-  fmsub.s f6, f8, f10, f7, rne # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne_str)
+  fmsub.s f5, f8, f10, f6, rne # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x80000000
@@ -6123,18 +6123,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rtz:
   fmsub.s f15, f13, f19, f3, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rtz_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x80000001, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x80000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xe12e87e3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup:
-  fmsub.s f30, f7, f3, f11, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup_str)
+  fmsub.s f30, f6, f3, f11, rup # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x80000000
@@ -6144,19 +6144,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x80000001_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_dyn:
   fmsub.s f22, f29, f21, f26, dyn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_dyn_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x7f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xce7bcd74
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xce7bcd74
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn:
-  fmsub.s f7, f17, f25, f5, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn_str)
+  fmsub.s f6, f17, f25, f4, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
@@ -6165,8 +6165,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm:
   fmsub.s f18, f3, f2, f8, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
@@ -6175,8 +6175,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne:
   fmsub.s f24, f3, f12, f31, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x80000000
@@ -6185,8 +6185,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz:
   fmsub.s f25, f16, f8, f26, rtz # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
@@ -6195,8 +6195,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup:
   fmsub.s f13, f28, f3, f27, rup # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -6206,8 +6206,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn:
   fmsub.s f1, f18, f27, f17, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = rdn)
@@ -6217,28 +6217,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rdn:
   fmsub.s f30, f9, f11, f17, rdn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rdn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x39bedde0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rmm:
-  fmsub.s f28, f24, f5, f2, rmm # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rmm_str)
+  fmsub.s f28, f24, f4, f2, rmm # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x05455f9a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne:
-  fmsub.s f24, f6, f16, f13, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne_str)
+  fmsub.s f24, f5, f16, f13, rne # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x80000000
@@ -6247,18 +6247,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rtz:
   fmsub.s f28, f20, f24, f27, rtz # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rtz_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xff800000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x7159e099
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup:
-  fmsub.s f24, f7, f29, f8, rup # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup_str)
+  fmsub.s f24, f6, f29, f8, rup # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x80000000
@@ -6268,8 +6268,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xff800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn:
   fmsub.s f20, f29, f2, f24, dyn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = rdn)
@@ -6279,8 +6279,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn:
   fmsub.s f20, f26, f1, f25, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x80000000
@@ -6289,8 +6289,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm:
   fmsub.s f24, f8, f25, f11, rmm # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x80000000
@@ -6299,8 +6299,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne:
   fmsub.s f17, f8, f29, f2, rne # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
@@ -6309,29 +6309,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rtz:
   fmsub.s f28, f17, f8, f15, rtz # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rtz_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fc00000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x267bbd01
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x267bbd01
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rup:
-  fmsub.s f11, f7, f29, f5, rup # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rup_str)
+  fmsub.s f11, f6, f29, f4, rup # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xedc431bc
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn:
-  fmsub.s f11, f3, f7, f1, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn_str)
+  fmsub.s f11, f3, f6, f1, dyn # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = rdn)
@@ -6341,8 +6341,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn:
   fmsub.s f20, f17, f21, f31, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
@@ -6351,8 +6351,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm:
   fmsub.s f30, f18, f10, f19, rmm # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -6361,18 +6361,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rne:
   fmsub.s f21, f23, f24, f19, rne # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rne_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xfcbe810a
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xfcbe810a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz:
-  fmsub.s f21, f12, f9, f7, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz_str)
+  fmsub.s f21, f12, f9, f6, rtz # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
@@ -6381,8 +6381,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup:
   fmsub.s f12, f17, f16, f3, rup # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -6392,8 +6392,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fffffff_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn:
   fmsub.s f18, f23, f25, f24, dyn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = rdn)
@@ -6403,38 +6403,38 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rdn:
   fmsub.s f28, f25, f11, f19, rdn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rdn_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs2: f28 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xb04cddc7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rmm:
-  fmsub.s f7, f5, f28, f3, rmm # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rmm_str)
+  fmsub.s f6, f4, f28, f3, rmm # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x70a42102
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rne:
-  fmsub.s f23, f2, f6, f31, rne # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rne_str)
+  fmsub.s f23, f2, f5, f31, rne # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0xc20a84be
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz:
-  fmsub.s f7, f18, f5, f3, rtz # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz_str)
+  fmsub.s f6, f18, f4, f3, rtz # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
@@ -6443,19 +6443,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rup:
   fmsub.s f15, f3, f2, f10, rup # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rup_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x7cf07b78
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x7cf07b78
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn:
-  fmsub.s f13, f24, f23, f7, dyn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn_str)
+  fmsub.s f13, f24, f23, f6, dyn # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = rdn)
@@ -6465,8 +6465,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn:
   fmsub.s f2, f8, f28, f19, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x80000000
@@ -6475,38 +6475,38 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rmm:
   fmsub.s f14, f23, f24, f31, rmm # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rmm_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xe62bc4fc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rne:
-  fmsub.s f9, f29, f5, f19, rne # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rne_str)
+  fmsub.s f9, f29, f4, f19, rne # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0x7f800001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x68fee0d4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x68fee0d4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rtz:
-  fmsub.s f22, f3, f29, f6, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rtz_str)
+  fmsub.s f22, f3, f29, f5, rtz # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7f800001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0xce093e82
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup:
-  fmsub.s f28, f27, f7, f20, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup_str)
+  fmsub.s f28, f27, f6, f20, rup # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x80000000
@@ -6516,8 +6516,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7f800001_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn:
   fmsub.s f10, f26, f31, f9, dyn # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = rdn)
@@ -6527,8 +6527,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn:
   fmsub.s f2, f18, f19, f3, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
@@ -6537,8 +6537,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm:
   fmsub.s f13, f28, f8, f3, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x80000000
@@ -6546,9 +6546,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x04b2f53d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne:
-  fmsub.s f6, f27, f24, f25, rne # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne_str)
+  fmsub.s f5, f27, f24, f25, rne # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x80000000
@@ -6557,8 +6557,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz:
   fmsub.s f20, f24, f21, f31, rtz # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7fbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x80000000
@@ -6567,8 +6567,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup:
   fmsub.s f23, f1, f9, f14, rup # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -6578,19 +6578,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7fbfffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_dyn:
   fmsub.s f17, f11, f22, f16, dyn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_dyn_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xffbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xffbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs3: f23 = 0x5cef5f96
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn:
-  fmsub.s f18, f7, f6, f23, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn_str)
+  fmsub.s f18, f6, f5, f23, rdn # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x80000000
@@ -6598,9 +6598,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs3: f14 = 0xae682461
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm:
-  fmsub.s f7, f9, f22, f14, rmm # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm_str)
+  fmsub.s f6, f9, f22, f14, rmm # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x80000000
@@ -6609,8 +6609,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne:
   fmsub.s f27, f13, f1, f15, rne # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -6618,9 +6618,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x867aee5b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz:
-  fmsub.s f6, f11, f10, f2, rtz # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz_str)
+  fmsub.s f5, f11, f10, f2, rtz # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0xffbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x80000000
@@ -6629,8 +6629,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup:
   fmsub.s f9, f1, f8, f19, rup # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
@@ -6640,8 +6640,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0xffbfffff_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn:
   fmsub.s f21, f28, f8, f23, dyn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = rdn)
@@ -6651,8 +6651,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn:
   fmsub.s f2, f16, f22, f20, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x80000000
@@ -6661,18 +6661,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rmm:
   fmsub.s f19, f11, f2, f8, rmm # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rmm_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7ef8654f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x322e59d7
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7ef8654f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x322e59d7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne:
-  fmsub.s f22, f28, f6, f5, rne # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne_str)
+  fmsub.s f22, f28, f5, f4, rne # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x80000000
@@ -6681,8 +6681,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz:
   fmsub.s f9, f21, f15, f30, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x7ef8654f, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x80000000
@@ -6691,19 +6691,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rup:
   fmsub.s f22, f1, f9, f23, rup # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rup_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x7ef8654f_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x80000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x813d9ab0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x813d9ab0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x89e22915
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn:
-  fmsub.s f10, f12, f7, f2, dyn # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn_str)
+  fmsub.s f10, f12, f6, f2, dyn # perform operation
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = rdn)
@@ -6713,8 +6713,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn:
   fmsub.s f14, f24, f31, f11, rdn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x80000000
@@ -6723,18 +6723,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rmm:
   fmsub.s f8, f22, f23, f29, rmm # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rmm_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x813d9ab0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x11be6e35
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x11be6e35
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne:
-  fmsub.s f11, f30, f14, f7, rne # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne_str)
+  fmsub.s f11, f30, f14, f6, rne # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x80000000
@@ -6743,8 +6743,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz:
   fmsub.s f23, f20, f29, f13, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x80000000 fs2 = 0x813d9ab0, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x80000000
@@ -6753,8 +6753,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup:
   fmsub.s f14, f17, f18, f1, rup # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x3f800000
@@ -6764,39 +6764,39 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x80000000_fs2val_0x813d9ab0_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_dyn:
   fmsub.s f12, f21, f31, f17, dyn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_dyn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs2: f24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x306288c4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x306288c4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rdn:
-  fmsub.s f18, f15, f24, f6, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rdn_str)
+  fmsub.s f18, f15, f24, f5, rdn # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0x6178dde6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rmm:
-  fmsub.s f18, f6, f11, f22, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rmm_str)
+  fmsub.s f18, f5, f11, f22, rmm # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x00000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x6306d1d3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne:
-  fmsub.s f7, f5, f13, f11, rne # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne_str)
+  fmsub.s f6, f4, f13, f11, rne # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x3f800000
@@ -6805,8 +6805,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz:
   fmsub.s f18, f1, f30, f26, rtz # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
@@ -6815,8 +6815,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup:
   fmsub.s f16, f10, f14, f27, rup # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -6826,8 +6826,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x0_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn:
   fmsub.s f11, f23, f14, f17, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = rdn)
@@ -6837,18 +6837,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rdn:
   fmsub.s f1, f20, f28, f24, rdn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rdn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x0fcd5083
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm:
-  fmsub.s f28, f3, f6, f12, rmm # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm_str)
+  fmsub.s f28, f3, f5, f12, rmm # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
@@ -6857,18 +6857,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rne:
   fmsub.s f27, f14, f3, f25, rne # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rne_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x80000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x80000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x93e11805
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz:
-  fmsub.s f21, f14, f5, f8, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz_str)
+  fmsub.s f21, f14, f4, f8, rtz # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x3f800000
@@ -6877,50 +6877,50 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rup:
   fmsub.s f30, f22, f12, f17, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rup_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xb3313807
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_dyn:
-  fmsub.s f3, f15, f6, f9, dyn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_dyn_str)
+  fmsub.s f3, f15, f5, f9, dyn # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xde6b6ae4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rdn:
-  fmsub.s f28, f7, f1, f13, rdn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rdn_str)
+  fmsub.s f28, f6, f1, f13, rdn # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xba549368
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rmm:
-  fmsub.s f9, f7, f2, f13, rmm # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rmm_str)
+  fmsub.s f9, f6, f2, f13, rmm # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x1b944a96
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne:
-  fmsub.s f26, f6, f12, f18, rne # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne_str)
+  fmsub.s f26, f5, f12, f18, rne # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x3f800000
@@ -6929,8 +6929,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz:
   fmsub.s f10, f28, f16, f25, rtz # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x3f800000
@@ -6939,8 +6939,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup:
   fmsub.s f2, f8, f25, f27, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x3f800000
@@ -6950,8 +6950,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3f800000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn:
   fmsub.s f29, f28, f23, f22, dyn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = rdn)
@@ -6961,48 +6961,48 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rdn:
   fmsub.s f15, f24, f29, f30, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x2568c91d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rmm:
-  fmsub.s f20, f7, f6, f21, rmm # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rmm_str)
+  fmsub.s f20, f6, f5, f21, rmm # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x4cb07791
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rne:
-  fmsub.s f26, f11, f6, f27, rne # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rne_str)
+  fmsub.s f26, f11, f5, f27, rne # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x8c18f431
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rtz:
-  fmsub.s f13, f10, f7, f26, rtz # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rtz_str)
+  fmsub.s f13, f10, f6, f26, rtz # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbf800000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0xd8570c7c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup:
-  fmsub.s f27, f6, f10, f24, rup # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup_str)
+  fmsub.s f27, f5, f10, f24, rup # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x3f800000
@@ -7012,8 +7012,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbf800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn:
   fmsub.s f12, f2, f29, f21, dyn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = rdn)
@@ -7023,8 +7023,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn:
   fmsub.s f24, f12, f21, f19, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -7033,8 +7033,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm:
   fmsub.s f18, f19, f8, f31, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
@@ -7043,8 +7043,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne:
   fmsub.s f15, f17, f12, f26, rne # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x3f800000
@@ -7053,8 +7053,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz:
   fmsub.s f8, f26, f22, f15, rtz # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x3fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x3f800000
@@ -7063,8 +7063,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup:
   fmsub.s f18, f9, f28, f17, rup # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
@@ -7074,8 +7074,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x3fc00000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn:
   fmsub.s f26, f30, f27, f13, dyn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = rdn)
@@ -7085,48 +7085,48 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rdn:
   fmsub.s f27, f16, f23, f15, rdn # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rdn_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x9012e5d0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rmm:
-  fmsub.s f19, f27, f7, f15, rmm # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rmm_str)
+  fmsub.s f19, f27, f6, f15, rmm # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x0c048192
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rne:
-  fmsub.s f18, f6, f13, f17, rne # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rne_str)
+  fmsub.s f18, f5, f13, f17, rne # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs3: f3 = 0x766e88fc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rtz:
-  fmsub.s f12, f24, f7, f3, rtz # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rtz_str)
+  fmsub.s f12, f24, f6, f3, rtz # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xbfc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xbfc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x33b1e741
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup:
-  fmsub.s f3, f11, f5, f17, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup_str)
+  fmsub.s f3, f11, f4, f17, rup # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
@@ -7136,8 +7136,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xbfc00000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn:
   fmsub.s f13, f10, f26, f3, dyn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = rdn)
@@ -7147,28 +7147,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rdn:
   fmsub.s f24, f26, f28, f11, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rdn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x40000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x6bf57f86
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rmm:
-  fmsub.s f22, f17, f5, f10, rmm # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rmm_str)
+  fmsub.s f22, f17, f4, f10, rmm # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x40000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x075146c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x40000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x075146c3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne:
-  fmsub.s f28, f7, f6, f5, rne # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne_str)
+  fmsub.s f28, f6, f5, f4, rne # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3f800000
@@ -7177,8 +7177,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz:
   fmsub.s f27, f31, f29, f22, rtz # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x40000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
@@ -7187,8 +7187,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup:
   fmsub.s f12, f14, f1, f16, rup # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x3f800000
@@ -7198,8 +7198,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x40000000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn:
   fmsub.s f11, f22, f9, f2, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = rdn)
@@ -7209,8 +7209,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn:
   fmsub.s f30, f14, f22, f13, rdn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
@@ -7219,8 +7219,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm:
   fmsub.s f16, f27, f22, f13, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
@@ -7229,28 +7229,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rne:
   fmsub.s f14, f3, f9, f28, rne # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rne_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0xc0000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x0322a054
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x0322a054
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rtz:
-  fmsub.s f15, f2, f18, f7, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rtz_str)
+  fmsub.s f15, f2, f18, f6, rtz # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xc0000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xc0000000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xc0000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x9f956ebc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup:
-  fmsub.s f16, f21, f6, f11, rup # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup_str)
+  fmsub.s f16, f21, f5, f11, rup # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
@@ -7260,8 +7260,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xc0000000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn:
   fmsub.s f8, f17, f22, f3, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = rdn)
@@ -7271,18 +7271,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rdn:
   fmsub.s f11, f19, f27, f21, rdn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rdn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x00800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xe8f78b0d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm:
-  fmsub.s f1, f7, f30, f13, rmm # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm_str)
+  fmsub.s f1, f6, f30, f13, rmm # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
@@ -7291,18 +7291,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rne:
   fmsub.s f18, f10, f27, f1, rne # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rne_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x00800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0x45593f20
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz:
-  fmsub.s f17, f1, f6, f2, rtz # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz_str)
+  fmsub.s f17, f1, f5, f2, rtz # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3f800000
@@ -7310,9 +7310,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xcec75836
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup:
-  fmsub.s f5, f25, f27, f10, rup # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup_str)
+  fmsub.s f4, f25, f27, f10, rup # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x3f800000
@@ -7322,8 +7322,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x800000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn:
   fmsub.s f29, f12, f16, f9, dyn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = rdn)
@@ -7333,8 +7333,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn:
   fmsub.s f14, f9, f23, f8, rdn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x3f800000
@@ -7343,8 +7343,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm:
   fmsub.s f10, f26, f27, f2, rmm # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -7353,18 +7353,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rne:
   fmsub.s f31, f23, f26, f9, rne # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rne_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xb5ab5fe6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xb5ab5fe6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz:
-  fmsub.s f9, f11, f16, f6, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz_str)
+  fmsub.s f9, f11, f16, f5, rtz # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -7373,19 +7373,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rup:
   fmsub.s f30, f11, f2, f22, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rup_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x3e5f154e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x3e5f154e
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn:
-  fmsub.s f14, f30, f27, f6, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn_str)
+  fmsub.s f14, f30, f27, f5, dyn # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = rdn)
@@ -7395,8 +7395,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn:
   fmsub.s f31, f11, f30, f8, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
@@ -7405,8 +7405,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm:
   fmsub.s f9, f14, f12, f24, rmm # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7415,28 +7415,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rne:
   fmsub.s f24, f29, f22, f20, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rne_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x7f7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x6df680e1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rtz:
-  fmsub.s f6, f5, f18, f11, rtz # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rtz_str)
+  fmsub.s f5, f4, f18, f11, rtz # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f7fffff, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x7f7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x047b3bc0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup:
-  fmsub.s f5, f6, f17, f11, rup # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup_str)
+  fmsub.s f4, f5, f17, f11, rup # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x3f800000
@@ -7446,8 +7446,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f7fffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn:
   fmsub.s f27, f12, f18, f14, dyn # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = rdn)
@@ -7457,8 +7457,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn:
   fmsub.s f15, f31, f20, f2, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3f800000
@@ -7467,8 +7467,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm:
   fmsub.s f8, f25, f30, f24, rmm # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3f800000
@@ -7477,8 +7477,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne:
   fmsub.s f23, f25, f16, f1, rne # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7487,8 +7487,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz:
   fmsub.s f22, f29, f28, f16, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x3f800000
@@ -7497,19 +7497,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rup:
   fmsub.s f29, f13, f25, f20, rup # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rup_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x0d5b8fbc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x0d5b8fbc
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn:
-  fmsub.s f28, f11, f23, f6, dyn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn_str)
+  fmsub.s f28, f11, f23, f5, dyn # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = rdn)
@@ -7519,18 +7519,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rdn:
   fmsub.s f19, f22, f30, f11, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rdn_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xb02f8975
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0xb02f8975
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm:
-  fmsub.s f24, f18, f13, f5, rmm # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm_str)
+  fmsub.s f24, f18, f13, f4, rmm # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x3f800000
@@ -7539,8 +7539,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne:
   fmsub.s f26, f13, f23, f27, rne # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -7549,8 +7549,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz:
   fmsub.s f18, f19, f15, f3, rtz # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x007fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
@@ -7559,8 +7559,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup:
   fmsub.s f22, f10, f2, f28, rup # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x3f800000
@@ -7570,8 +7570,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn:
   fmsub.s f22, f28, f18, f25, dyn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = rdn)
@@ -7581,8 +7581,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn:
   fmsub.s f24, f14, f30, f9, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
@@ -7591,8 +7591,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm:
   fmsub.s f10, f17, f3, f13, rmm # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x3f800000
@@ -7601,8 +7601,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne:
   fmsub.s f24, f16, f2, f10, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7611,8 +7611,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz:
   fmsub.s f3, f29, f28, f10, rtz # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x807fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x3f800000
@@ -7621,8 +7621,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup:
   fmsub.s f18, f28, f3, f19, rup # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x3f800000
@@ -7632,8 +7632,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x807fffff_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn:
   fmsub.s f31, f20, f30, f16, dyn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = rdn)
@@ -7643,8 +7643,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn:
   fmsub.s f1, f27, f23, f18, rdn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -7652,9 +7652,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x42144ff4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm:
-  fmsub.s f6, f11, f15, f27, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm_str)
+  fmsub.s f5, f11, f15, f27, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
@@ -7663,8 +7663,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne:
   fmsub.s f18, f27, f30, f23, rne # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7673,8 +7673,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz:
   fmsub.s f13, f29, f20, f2, rtz # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x3f800000
@@ -7683,8 +7683,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup:
   fmsub.s f11, f9, f26, f15, rup # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7694,19 +7694,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x400000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_dyn:
   fmsub.s f1, f29, f18, f14, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_dyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x80400000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x1812d148
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn:
-  fmsub.s f19, f24, f7, f28, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn_str)
+  fmsub.s f19, f24, f6, f28, rdn # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
@@ -7715,8 +7715,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm:
   fmsub.s f18, f3, f10, f17, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
@@ -7725,8 +7725,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne:
   fmsub.s f11, f30, f16, f27, rne # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0x3f800000
@@ -7735,8 +7735,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz:
   fmsub.s f14, f10, f15, f19, rtz # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x3f800000
@@ -7745,8 +7745,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup:
   fmsub.s f30, f20, f22, f21, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3f800000
@@ -7756,8 +7756,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80400000_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn:
   fmsub.s f20, f31, f12, f2, dyn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = rdn)
@@ -7767,8 +7767,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn:
   fmsub.s f19, f12, f3, f18, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3f800000
@@ -7777,8 +7777,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm:
   fmsub.s f11, f31, f27, f1, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -7787,18 +7787,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rne:
   fmsub.s f1, f23, f18, f22, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rne_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xacd55da8
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xacd55da8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz:
-  fmsub.s f26, f8, f15, f7, rtz # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz_str)
+  fmsub.s f26, f8, f15, f6, rtz # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x00000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x3f800000
@@ -7807,8 +7807,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup:
   fmsub.s f1, f13, f17, f8, rup # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
@@ -7818,8 +7818,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x1_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn:
   fmsub.s f9, f27, f11, f17, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = rdn)
@@ -7829,8 +7829,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn:
   fmsub.s f25, f10, f3, f30, rdn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x3f800000
@@ -7839,8 +7839,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm:
   fmsub.s f16, f13, f17, f30, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -7849,8 +7849,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne:
   fmsub.s f12, f23, f19, f25, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0x3f800000
@@ -7859,8 +7859,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz:
   fmsub.s f29, f24, f21, f25, rtz # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x80000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -7869,19 +7869,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rup:
   fmsub.s f3, f29, f28, f20, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x80000001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xd029878a
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn:
-  fmsub.s f16, f21, f6, f18, dyn # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn_str)
+  fmsub.s f16, f21, f5, f18, dyn # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = rdn)
@@ -7891,18 +7891,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rdn:
   fmsub.s f21, f11, f3, f15, rdn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rdn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x6ef774a2
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm:
-  fmsub.s f2, f5, f6, f28, rmm # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm_str)
+  fmsub.s f2, f4, f5, f28, rmm # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -7911,8 +7911,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne:
   fmsub.s f29, f19, f3, f9, rne # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -7920,9 +7920,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x63cfacc3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz:
-  fmsub.s f5, f23, f27, f25, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz_str)
+  fmsub.s f4, f23, f27, f25, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
@@ -7931,30 +7931,30 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rup:
   fmsub.s f21, f30, f8, f19, rup # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rup_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xbef301fb
   fsflagsi 0b00000 # clear all fflags
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_dyn:
-  fmsub.s f3, f21, f6, f19, dyn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_dyn_str)
+  fmsub.s f3, f21, f5, f19, dyn # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x112bff6a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn:
-  fmsub.s f21, f6, f31, f27, rdn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn_str)
+  fmsub.s f21, f5, f31, f27, rdn # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
@@ -7963,8 +7963,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm:
   fmsub.s f16, f3, f28, f2, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
@@ -7973,8 +7973,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne:
   fmsub.s f12, f3, f2, f23, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0x3f800000
@@ -7983,8 +7983,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz:
   fmsub.s f20, f9, f17, f19, rtz # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xff800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
@@ -7993,8 +7993,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup:
   fmsub.s f2, f30, f25, f24, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
@@ -8004,8 +8004,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xff800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn:
   fmsub.s f8, f17, f15, f31, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = rdn)
@@ -8015,8 +8015,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn:
   fmsub.s f15, f22, f24, f13, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x3f800000
@@ -8025,38 +8025,38 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rmm:
   fmsub.s f19, f18, f10, f14, rmm # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rmm_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x3bf2bb6e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x3bf2bb6e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rne:
-  fmsub.s f14, f30, f16, f7, rne # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rne_str)
+  fmsub.s f14, f30, f16, f6, rne # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs2: f31 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x94017254
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rtz:
-  fmsub.s f6, f5, f31, f25, rtz # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rtz_str)
+  fmsub.s f5, f4, f31, f25, rtz # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0x44316dae
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup:
-  fmsub.s f15, f28, f6, f9, rup # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup_str)
+  fmsub.s f15, f28, f5, f9, rup # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3f800000
@@ -8065,9 +8065,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fc00000_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn:
-  fmsub.s f5, f25, f28, f11, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn_str)
+  fmsub.s f4, f25, f28, f11, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = rdn)
@@ -8077,8 +8077,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn:
   fmsub.s f26, f29, f30, f15, rdn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0x3f800000
@@ -8087,18 +8087,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rmm:
   fmsub.s f21, f22, f24, f13, rmm # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rmm_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xf9ae2187
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xf9ae2187
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne:
-  fmsub.s f1, f18, f16, f6, rne # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne_str)
+  fmsub.s f1, f18, f16, f5, rne # perform operation
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -8107,8 +8107,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz:
   fmsub.s f24, f11, f12, f28, rtz # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -8117,8 +8117,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup:
   fmsub.s f8, f19, f16, f11, rup # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -8128,8 +8128,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fffffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn:
   fmsub.s f9, f19, f28, f3, dyn # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = rdn)
@@ -8139,18 +8139,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rdn:
   fmsub.s f31, f11, f16, f15, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0xffffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0xa986d442
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm:
-  fmsub.s f7, f6, f25, f13, rmm # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm_str)
+  fmsub.s f6, f5, f25, f13, rmm # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -8158,9 +8158,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x214f810b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne:
-  fmsub.s f6, f11, f29, f25, rne # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne_str)
+  fmsub.s f5, f11, f29, f25, rne # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x3f800000
@@ -8169,8 +8169,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz:
   fmsub.s f28, f12, f16, f3, rtz # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0x3f800000
@@ -8179,19 +8179,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rup:
   fmsub.s f18, f13, f9, f27, rup # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rup_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs2: f12 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x166344b6
   fsflagsi 0b00000 # clear all fflags
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn:
-  fmsub.s f15, f6, f12, f27, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn_str)
+  fmsub.s f15, f5, f12, f27, dyn # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = rdn)
@@ -8201,8 +8201,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn:
   fmsub.s f31, f24, f18, f27, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
@@ -8211,18 +8211,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rmm:
   fmsub.s f20, f17, f8, f11, rmm # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rmm_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xbba5613a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne:
-  fmsub.s f11, f16, f7, f2, rne # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne_str)
+  fmsub.s f11, f16, f6, f2, rne # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3f800000
@@ -8231,8 +8231,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz:
   fmsub.s f29, f30, f14, f23, rtz # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7f800001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
@@ -8241,8 +8241,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup:
   fmsub.s f1, f14, f25, f30, rup # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x3f800000
@@ -8252,19 +8252,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7f800001_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_dyn:
   fmsub.s f30, f8, f16, f11, dyn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_dyn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs2: f2 = 0x7fbfffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xc02caaba
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xc02caaba
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn:
-  fmsub.s f26, f17, f2, f7, rdn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn_str)
+  fmsub.s f26, f17, f2, f6, rdn # perform operation
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -8272,19 +8272,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xd5b6ed1a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rmm:
-  fmsub.s f6, f19, f18, f15, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rmm_str)
+  fmsub.s f5, f19, f18, f15, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0x3c8d0b19
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne:
-  fmsub.s f11, f26, f6, f22, rne # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne_str)
+  fmsub.s f11, f26, f5, f22, rne # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
@@ -8293,8 +8293,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz:
   fmsub.s f1, f27, f29, f9, rtz # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7fbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0x3f800000
@@ -8303,8 +8303,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup:
   fmsub.s f28, f19, f27, f23, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0x3f800000
@@ -8314,8 +8314,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7fbfffff_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn:
   fmsub.s f17, f1, f30, f16, dyn # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = rdn)
@@ -8325,8 +8325,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn:
   fmsub.s f31, f25, f18, f10, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3f800000
@@ -8335,8 +8335,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm:
   fmsub.s f26, f31, f23, f9, rmm # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0x3f800000
@@ -8345,8 +8345,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne:
   fmsub.s f26, f14, f2, f19, rne # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3f800000
@@ -8354,9 +8354,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0xc0bf4065
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz:
-  fmsub.s f5, f25, f15, f26, rtz # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz_str)
+  fmsub.s f4, f25, f15, f26, rtz # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0xffbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -8365,8 +8365,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup:
   fmsub.s f28, f11, f19, f10, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0x3f800000
@@ -8376,19 +8376,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0xffbfffff_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_dyn:
   fmsub.s f22, f8, f16, f2, dyn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_dyn_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x7ef8654f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xbbd600d5
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xbbd600d5
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn:
-  fmsub.s f18, f20, f25, f7, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn_str)
+  fmsub.s f18, f20, f25, f6, rdn # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0x3f800000
@@ -8396,9 +8396,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x54b76d92
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm:
-  fmsub.s f7, f29, f30, f31, rmm # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm_str)
+  fmsub.s f6, f29, f30, f31, rmm # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0x3f800000
@@ -8407,28 +8407,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rne:
   fmsub.s f22, f23, f31, f3, rne # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rne_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0x7ef8654f
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xb4dd27aa
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xb4dd27aa
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rtz:
-  fmsub.s f8, f27, f14, f6, rtz # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rtz_str)
+  fmsub.s f8, f27, f14, f5, rtz # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x7ef8654f, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs2: f18 = 0x7ef8654f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x7d6cd79a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup:
-  fmsub.s f29, f6, f18, f1, rup # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup_str)
+  fmsub.s f29, f5, f18, f1, rup # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0x3f800000
@@ -8438,8 +8438,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x7ef8654f_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn:
   fmsub.s f13, f2, f30, f20, dyn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = rdn)
@@ -8449,18 +8449,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rdn:
   fmsub.s f30, f21, f26, f24, rdn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rdn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x813d9ab0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x13dec7dc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm:
-  fmsub.s f3, f5, f15, f17, rmm # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm_str)
+  fmsub.s f3, f4, f15, f17, rmm # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0x3f800000
@@ -8469,8 +8469,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne:
   fmsub.s f19, f11, f9, f29, rne # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3f800000
@@ -8479,18 +8479,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rtz:
   fmsub.s f21, f3, f1, f28, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rtz_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3f800000 fs2 = 0x813d9ab0, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x813d9ab0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs3: f24 = 0x2f2e9e48
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup:
-  fmsub.s f8, f5, f26, f24, rup # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup_str)
+  fmsub.s f8, f4, f26, f24, rup # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xbf800000
@@ -8500,8 +8500,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3f800000_fs2val_0x813d9ab0_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn:
   fmsub.s f10, f17, f19, f8, dyn # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = rdn)
@@ -8511,8 +8511,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn:
   fmsub.s f11, f26, f14, f20, rdn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -8521,18 +8521,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rmm:
   fmsub.s f1, f23, f24, f20, rmm # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rmm_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xac8b8b5d
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xac8b8b5d
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne:
-  fmsub.s f19, f23, f17, f7, rne # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne_str)
+  fmsub.s f19, f23, f17, f6, rne # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -8541,8 +8541,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz:
   fmsub.s f21, f22, f1, f11, rtz # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -8551,8 +8551,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup:
   fmsub.s f28, f12, f9, f2, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -8561,9 +8561,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x0_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn:
-  fmsub.s f6, f9, f15, f12, dyn # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn_str)
+  fmsub.s f5, f9, f15, f12, dyn # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = rdn)
@@ -8572,9 +8572,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x865ec95f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn:
-  fmsub.s f6, f17, f23, f13, rdn # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn_str)
+  fmsub.s f5, f17, f23, f13, rdn # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xbf800000
@@ -8583,8 +8583,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm:
   fmsub.s f25, f27, f19, f15, rmm # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0xbf800000
@@ -8593,8 +8593,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne:
   fmsub.s f13, f3, f18, f2, rne # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -8603,8 +8603,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz:
   fmsub.s f23, f30, f3, f11, rtz # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -8612,9 +8612,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x6b1e6070
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup:
-  fmsub.s f6, f24, f23, f16, rup # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup_str)
+  fmsub.s f5, f24, f23, f16, rup # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
@@ -8624,39 +8624,39 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_dyn:
   fmsub.s f2, f13, f22, f14, dyn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_dyn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs3: f25 = 0x7d122870
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rdn:
-  fmsub.s f29, f21, f7, f25, rdn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rdn_str)
+  fmsub.s f29, f21, f6, f25, rdn # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x3f800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xed0b65cc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xed0b65cc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rmm:
-  fmsub.s f16, f29, f15, f7, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rmm_str)
+  fmsub.s f16, f29, f15, f6, rmm # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x8101eb2a
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne:
-  fmsub.s f30, f6, f26, f1, rne # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne_str)
+  fmsub.s f30, f5, f26, f1, rne # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xbf800000
@@ -8665,18 +8665,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rtz:
   fmsub.s f22, f26, f30, f10, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rtz_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x3f800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x3f800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x0cf242b6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup:
-  fmsub.s f19, f15, f5, f31, rup # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup_str)
+  fmsub.s f19, f15, f4, f31, rup # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
@@ -8686,8 +8686,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3f800000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn:
   fmsub.s f30, f14, f16, f23, dyn # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = rdn)
@@ -8697,8 +8697,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn:
   fmsub.s f31, f10, f21, f24, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xbf800000
@@ -8707,8 +8707,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm:
   fmsub.s f18, f10, f15, f28, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xbf800000
@@ -8717,8 +8717,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne:
   fmsub.s f12, f10, f11, f15, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
@@ -8727,8 +8727,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz:
   fmsub.s f9, f21, f17, f18, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz_str)
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbf800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
@@ -8737,8 +8737,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup:
   fmsub.s f13, f14, f11, f28, rup # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -8748,29 +8748,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbf800000_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_dyn:
   fmsub.s f14, f22, f1, f21, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_dyn_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x3fc00000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x3457b336
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rdn:
-  fmsub.s f19, f23, f6, f17, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rdn_str)
+  fmsub.s f19, f23, f5, f17, rdn # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x3fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x39ca90f7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm:
-  fmsub.s f13, f6, f19, f16, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm_str)
+  fmsub.s f13, f5, f19, f16, rmm # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xbf800000
@@ -8779,8 +8779,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne:
   fmsub.s f3, f8, f15, f13, rne # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -8789,18 +8789,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rtz:
   fmsub.s f11, f16, f15, f9, rtz # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rtz_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x3fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x3fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x49a05349
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x49a05349
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup:
-  fmsub.s f16, f14, f23, f7, rup # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup_str)
+  fmsub.s f16, f14, f23, f6, rup # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xbf800000
@@ -8810,8 +8810,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x3fc00000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn:
   fmsub.s f12, f17, f2, f10, dyn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = rdn)
@@ -8821,18 +8821,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rdn:
   fmsub.s f12, f29, f20, f26, rdn # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rdn_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs2: f14 = 0xbfc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x195a6142
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm:
-  fmsub.s f18, f6, f14, f15, rmm # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm_str)
+  fmsub.s f18, f5, f14, f15, rmm # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xbf800000
@@ -8840,9 +8840,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs3: f31 = 0x800170ad
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne:
-  fmsub.s f7, f10, f9, f31, rne # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne_str)
+  fmsub.s f6, f10, f9, f31, rne # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -8851,8 +8851,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz:
   fmsub.s f27, f23, f10, f29, rtz # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xbfc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0xbf800000
@@ -8860,20 +8860,20 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs3: f22 = 0xef1cf1bb
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rup:
-  fmsub.s f5, f3, f26, f22, rup # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rup_str)
+  fmsub.s f4, f3, f26, f22, rup # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xbfc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs2: f23 = 0x40000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs3: f2 = 0xf9c7b354
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn:
-  fmsub.s f14, f5, f23, f2, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn_str)
+  fmsub.s f14, f4, f23, f2, dyn # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = rdn)
@@ -8882,9 +8882,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xd2e74db5
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn:
-  fmsub.s f5, f30, f24, f8, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn_str)
+  fmsub.s f4, f30, f24, f8, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xbf800000
@@ -8893,8 +8893,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm:
   fmsub.s f31, f2, f23, f28, rmm # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
@@ -8903,8 +8903,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne:
   fmsub.s f24, f13, f30, f22, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xbf800000
@@ -8913,40 +8913,40 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rtz:
   fmsub.s f19, f31, f25, f8, rtz # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rtz_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x40000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x40000000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x867f4879
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x867f4879
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rup:
-  fmsub.s f15, f13, f16, f7, rup # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rup_str)
+  fmsub.s f15, f13, f16, f6, rup # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x40000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xc0000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0x62a35fbd
   fsflagsi 0b00000 # clear all fflags
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_dyn:
-  fmsub.s f14, f5, f21, f30, dyn # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_dyn_str)
+  fmsub.s f14, f4, f21, f30, dyn # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs2: f29 = 0xc0000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x069a1eef
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn:
-  fmsub.s f20, f7, f29, f21, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn_str)
+  fmsub.s f20, f6, f29, f21, rdn # perform operation
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0xbf800000
@@ -8955,8 +8955,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm:
   fmsub.s f2, f20, f21, f10, rmm # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -8965,8 +8965,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne:
   fmsub.s f29, f16, f28, f17, rne # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -8975,50 +8975,50 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rtz:
   fmsub.s f29, f24, f14, f17, rtz # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rtz_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xc0000000, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xc0000000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xacd198c7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rup:
-  fmsub.s f2, f7, f21, f11, rup # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rup_str)
+  fmsub.s f2, f6, f21, f11, rup # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xc0000000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x00800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x00800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0x1b667a84
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_dyn:
-  fmsub.s f2, f17, f5, f15, dyn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_dyn_str)
+  fmsub.s f2, f17, f4, f15, dyn # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x00800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x546523bc
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x546523bc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rdn:
-  fmsub.s f15, f8, f9, f5, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rdn_str)
+  fmsub.s f15, f8, f9, f4, rdn # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs2: f10 = 0x00800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x36da39e6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm:
-  fmsub.s f8, f7, f10, f26, rmm # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm_str)
+  fmsub.s f8, f6, f10, f26, rmm # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -9026,9 +9026,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rmm:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs3: f21 = 0x87987de4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne:
-  fmsub.s f6, f9, f27, f21, rne # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne_str)
+  fmsub.s f5, f9, f27, f21, rne # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
@@ -9037,8 +9037,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz:
   fmsub.s f3, f21, f8, f23, rtz # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
@@ -9047,8 +9047,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup:
   fmsub.s f10, f13, f20, f14, rup # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -9058,19 +9058,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x800000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_dyn:
   fmsub.s f26, f12, f19, f14, dyn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_dyn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs2: f30 = 0x80800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xafdc86c3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xafdc86c3
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn:
-  fmsub.s f28, f6, f30, f7, rdn # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn_str)
+  fmsub.s f28, f5, f30, f6, rdn # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xbf800000
@@ -9079,8 +9079,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm:
   fmsub.s f16, f18, f3, f14, rmm # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xbf800000
@@ -9089,8 +9089,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne:
   fmsub.s f8, f1, f18, f20, rne # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xbf800000
@@ -9099,8 +9099,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz:
   fmsub.s f19, f28, f27, f14, rtz # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xbf800000
@@ -9109,8 +9109,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup:
   fmsub.s f16, f8, f22, f26, rup # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup_str)
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xbf800000
@@ -9120,29 +9120,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80800000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_dyn:
   fmsub.s f13, f2, f9, f29, dyn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_dyn_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x7f7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs3: f20 = 0x884096f4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rdn:
-  fmsub.s f8, f5, f11, f20, rdn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rdn_str)
+  fmsub.s f8, f4, f11, f20, rdn # perform operation
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x7f7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xa79347b1
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xa79347b1
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm:
-  fmsub.s f3, f30, f26, f7, rmm # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm_str)
+  fmsub.s f3, f30, f26, f6, rmm # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xbf800000
@@ -9151,8 +9151,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne:
   fmsub.s f11, f19, f12, f29, rne # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne_str)
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -9161,18 +9161,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rtz:
   fmsub.s f25, f24, f27, f2, rtz # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rtz_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7f7fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xda568c67
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup:
-  fmsub.s f30, f28, f6, f11, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup_str)
+  fmsub.s f30, f28, f5, f11, rup # perform operation
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -9182,8 +9182,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f7fffff_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn:
   fmsub.s f8, f24, f15, f12, dyn # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = rdn)
@@ -9192,9 +9192,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0x64cd0738
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn:
-  fmsub.s f5, f30, f26, f10, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn_str)
+  fmsub.s f4, f30, f26, f10, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -9202,29 +9202,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs3: f9 = 0xf3c13d79
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rmm:
-  fmsub.s f6, f23, f18, f9, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rmm_str)
+  fmsub.s f5, f23, f18, f9, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs2: f21 = 0xff7fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x96531cb7
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x96531cb7
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rne:
-  fmsub.s f12, f25, f21, f7, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rne_str)
+  fmsub.s f12, f25, f21, f6, rne # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0xff7fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x5fe5bdb8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz:
-  fmsub.s f9, f6, f26, f11, rtz # perform operation
-  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz_str)
+  fmsub.s f9, f5, f26, f11, rtz # perform operation
+  # Check if f9 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f9, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff7fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xbf800000
@@ -9233,8 +9233,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup:
   fmsub.s f20, f28, f3, f24, rup # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -9243,9 +9243,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff7fffff_frm_rup:
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn:
-  fmsub.s f6, f22, f30, f20, dyn # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn_str)
+  fmsub.s f5, f22, f30, f20, dyn # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = rdn)
@@ -9254,9 +9254,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0x7b84d366
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn:
-  fmsub.s f7, f3, f20, f18, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn_str)
+  fmsub.s f6, f3, f20, f18, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xbf800000
@@ -9264,9 +9264,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0x9c886060
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm:
-  fmsub.s f5, f2, f24, f19, rmm # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm_str)
+  fmsub.s f4, f2, f24, f19, rmm # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs1: f10 = 0xbf800000
@@ -9275,28 +9275,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rne:
   fmsub.s f2, f10, f24, f15, rne # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rne_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x007fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x007fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs3: f30 = 0xe5a0a0fc
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rtz:
-  fmsub.s f18, f23, f5, f30, rtz # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rtz_str)
+  fmsub.s f18, f23, f4, f30, rtz # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x007fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs2: f17 = 0x007fffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x5a5798b6
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs3: f4 = 0x5a5798b6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup:
-  fmsub.s f28, f19, f17, f5, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup_str)
+  fmsub.s f28, f19, f17, f4, rup # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xbf800000
@@ -9306,8 +9306,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn:
   fmsub.s f25, f18, f30, f3, dyn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = rdn)
@@ -9317,8 +9317,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn:
   fmsub.s f26, f25, f24, f21, rdn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -9327,8 +9327,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm:
   fmsub.s f3, f24, f19, f20, rmm # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs1: f26 = 0xbf800000
@@ -9337,8 +9337,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne:
   fmsub.s f12, f26, f1, f31, rne # perform operation
-  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne_str)
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f12, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -9347,18 +9347,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rtz:
   fmsub.s f17, f30, f23, f14, rtz # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rtz_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x807fffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x807fffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x807fffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xec1dd2f6
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup:
-  fmsub.s f14, f19, f7, f1, rup # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup_str)
+  fmsub.s f14, f19, f6, f1, rup # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xbf800000
@@ -9368,8 +9368,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x807fffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn:
   fmsub.s f29, f18, f25, f27, dyn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = rdn)
@@ -9378,9 +9378,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs3: f26 = 0x994323a8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn:
-  fmsub.s f5, f27, f31, f26, rdn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn_str)
+  fmsub.s f4, f27, f31, f26, rdn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -9389,18 +9389,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rmm:
   fmsub.s f13, f30, f24, f1, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rmm_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x00400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0xa22b63fd
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne:
-  fmsub.s f3, f7, f19, f28, rne # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne_str)
+  fmsub.s f3, f6, f19, f28, rne # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xbf800000
@@ -9409,18 +9409,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rtz:
   fmsub.s f20, f8, f9, f11, rtz # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rtz_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x00400000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xf071a096
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xf071a096
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup:
-  fmsub.s f31, f13, f19, f6, rup # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup_str)
+  fmsub.s f31, f13, f19, f5, rup # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs1: f17 = 0xbf800000
@@ -9430,8 +9430,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x400000_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn:
   fmsub.s f24, f17, f29, f16, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = rdn)
@@ -9441,28 +9441,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rdn:
   fmsub.s f20, f1, f10, f25, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rdn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs2: f3 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0xea860377
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rmm:
-  fmsub.s f11, f5, f3, f28, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rmm_str)
+  fmsub.s f11, f4, f3, f28, rmm # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs2: f22 = 0x80400000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0xab2a33a0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne:
-  fmsub.s f28, f5, f22, f11, rne # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne_str)
+  fmsub.s f28, f4, f22, f11, rne # perform operation
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -9471,8 +9471,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz:
   fmsub.s f31, f23, f15, f30, rtz # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80400000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xbf800000
@@ -9481,19 +9481,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rup:
   fmsub.s f3, f19, f21, f10, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80400000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs2: f15 = 0x00000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs3: f11 = 0x6a441475
   fsflagsi 0b00000 # clear all fflags
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn:
-  fmsub.s f25, f6, f15, f11, dyn # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn_str)
+  fmsub.s f25, f5, f15, f11, dyn # perform operation
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = rdn)
@@ -9502,29 +9502,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_dyn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0x0af2048b
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rdn:
-  fmsub.s f7, f22, f20, f1, rdn # perform operation
-  # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rdn_str)
+  fmsub.s f6, f22, f20, f1, rdn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs2: f27 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x9f9f68c4
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x9f9f68c4
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rmm:
-  fmsub.s f3, f21, f27, f7, rmm # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rmm_str)
+  fmsub.s f3, f21, f27, f6, rmm # perform operation
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x00000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs3: f19 = 0xf6fbb8c8
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne:
-  fmsub.s f17, f24, f7, f19, rne # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne_str)
+  fmsub.s f17, f24, f6, f19, rne # perform operation
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xbf800000
@@ -9533,18 +9533,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rtz:
   fmsub.s f24, f15, f13, f17, rtz # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rtz_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x00000001, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x00000001
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x883131b2
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0x883131b2
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup:
-  fmsub.s f22, f30, f13, f6, rup # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup_str)
+  fmsub.s f22, f30, f13, f5, rup # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xbf800000
@@ -9554,8 +9554,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x1_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn:
   fmsub.s f2, f25, f29, f10, dyn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = rdn)
@@ -9565,8 +9565,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn:
   fmsub.s f31, f1, f16, f28, rdn # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs1: f29 = 0xbf800000
@@ -9575,8 +9575,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm:
   fmsub.s f19, f29, f25, f10, rmm # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs1: f13 = 0xbf800000
@@ -9585,8 +9585,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne:
   fmsub.s f2, f13, f21, f24, rne # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
@@ -9595,18 +9595,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rtz:
   fmsub.s f29, f14, f13, f31, rtz # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rtz_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x80000001, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs2: f11 = 0x80000001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs3: f15 = 0xdf15169f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup:
-  fmsub.s f13, f6, f11, f15, rup # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup_str)
+  fmsub.s f13, f5, f11, f15, rup # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -9616,8 +9616,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x80000001_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn:
   fmsub.s f1, f30, f14, f25, dyn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = rdn)
@@ -9627,8 +9627,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn:
   fmsub.s f15, f19, f14, f21, rdn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xbf800000
@@ -9637,8 +9637,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm:
   fmsub.s f26, f1, f20, f21, rmm # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -9647,8 +9647,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne:
   fmsub.s f23, f12, f22, f15, rne # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -9657,8 +9657,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz:
   fmsub.s f24, f22, f14, f26, rtz # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs1: f19 = 0xbf800000
@@ -9667,8 +9667,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup:
   fmsub.s f3, f19, f25, f9, rup # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -9678,8 +9678,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800000_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn:
   fmsub.s f10, f9, f18, f2, dyn # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = rdn)
@@ -9689,8 +9689,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn:
   fmsub.s f18, f26, f11, f21, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -9698,19 +9698,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rdn:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0xe2129b44
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rmm:
-  fmsub.s f6, f30, f24, f17, rmm # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rmm_str)
+  fmsub.s f5, f30, f24, f17, rmm # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0xff800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0xff800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs3: f16 = 0x7463c3f0
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne:
-  fmsub.s f24, f30, f7, f16, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne_str)
+  fmsub.s f24, f30, f6, f16, rne # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -9719,8 +9719,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz:
   fmsub.s f28, f23, f19, f3, rtz # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xff800000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -9729,19 +9729,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rup:
   fmsub.s f25, f12, f14, f17, rup # perform operation
-  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rup_str)
+  # Check if f25 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f25, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xff800000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs2: f16 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xe8c68690
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs3: f5 = 0xe8c68690
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn:
-  fmsub.s f5, f1, f16, f6, dyn # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn_str)
+  fmsub.s f4, f1, f16, f5, dyn # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = rdn)
@@ -9751,28 +9751,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rdn:
   fmsub.s f3, f19, f11, f18, rdn # perform operation
-  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rdn_str)
+  # Check if f3 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f3, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs2: f1 = 0x7fc00000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0xe99c18af
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0xe99c18af
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rmm:
-  fmsub.s f15, f11, f1, f7, rmm # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rmm_str)
+  fmsub.s f15, f11, f1, f6, rmm # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs2: f25 = 0x7fc00000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs3: f18 = 0xe34b773c
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne:
-  fmsub.s f19, f5, f25, f18, rne # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne_str)
+  fmsub.s f19, f4, f25, f18, rne # perform operation
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -9781,8 +9781,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz:
   fmsub.s f14, f12, f22, f26, rtz # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fc00000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -9791,8 +9791,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup:
   fmsub.s f28, f22, f11, f17, rup # perform operation
-  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup_str)
+  # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f28, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -9802,8 +9802,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fc00000_frm_rup:
   fsrmi 4
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn:
   fmsub.s f15, f16, f3, f8, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = rdn)
@@ -9813,28 +9813,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rdn:
   fmsub.s f19, f27, f29, f15, rdn # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rdn_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs3: f28 = 0x1808d34f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rmm:
-  fmsub.s f14, f31, f5, f28, rmm # perform operation
-  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rmm_str)
+  fmsub.s f14, f31, f4, f28, rmm # perform operation
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f14, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0x5471371e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne:
-  fmsub.s f24, f15, f7, f8, rne # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne_str)
+  fmsub.s f24, f15, f6, f8, rne # perform operation
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0xbf800000
@@ -9843,8 +9843,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz:
   fmsub.s f15, f3, f18, f29, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f20) # load fs1: f20 = 0xbf800000
@@ -9852,9 +9852,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rtz:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs3: f13 = 0x23082a56
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup:
-  fmsub.s f5, f20, f9, f13, rup # perform operation
-  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup_str)
+  fmsub.s f4, f20, f9, f13, rup # perform operation
+  # Check if f4 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f4, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xbf800000
@@ -9864,8 +9864,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fffffff_frm_rup:
   fsrmi 2
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn:
   fmsub.s f21, f27, f2, f26, dyn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = rdn)
@@ -9875,8 +9875,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn:
   fmsub.s f13, f29, f18, f17, rdn # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -9885,8 +9885,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm:
   fmsub.s f31, f9, f21, f25, rmm # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xbf800000
@@ -9895,8 +9895,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne:
   fmsub.s f19, f25, f8, f11, rne # perform operation
-  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne_str)
+  # Check if f19 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f19, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f28) # load fs1: f28 = 0xbf800000
@@ -9904,9 +9904,9 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rne:
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0x5c31c90f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz:
-  fmsub.s f6, f28, f22, f12, rtz # perform operation
-  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz_str)
+  fmsub.s f5, f28, f22, f12, rtz # perform operation
+  # Check if f5 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f5, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffffffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -9915,8 +9915,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup:
   fmsub.s f30, f16, f28, f2, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0xbf800000
@@ -9926,8 +9926,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffffffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn:
   fmsub.s f15, f25, f20, f29, dyn # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn_str)
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f15, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = rdn)
@@ -9937,18 +9937,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rdn:
   fmsub.s f18, f31, f9, f15, rdn # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rdn_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs1: f8 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7f800001
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f29) # load fs3: f29 = 0x0f64eefd
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm:
-  fmsub.s f21, f8, f5, f29, rmm # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm_str)
+  fmsub.s f21, f8, f4, f29, rmm # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -9957,8 +9957,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne:
   fmsub.s f18, f9, f13, f1, rne # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne_str)
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
@@ -9967,40 +9967,40 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rtz:
   fmsub.s f2, f21, f13, f9, rtz # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rtz_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7f800001, frm = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0x7f800001
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f17) # load fs3: f17 = 0x1db54f90
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rup:
-  fmsub.s f27, f7, f9, f17, rup # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rup_str)
+  fmsub.s f27, f6, f9, f17, rup # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7f800001_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7fbfffff
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x7150a45c
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x7150a45c
   fsflagsi 0b00000 # clear all fflags
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_dyn:
-  fmsub.s f16, f27, f6, f7, dyn # perform operation
-  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_dyn_str)
+  fmsub.s f16, f27, f5, f6, dyn # perform operation
+  # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f16, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xffc2ecc9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn:
-  fmsub.s f29, f16, f5, f8, rdn # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn_str)
+  fmsub.s f29, f16, f4, f8, rdn # perform operation
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f24) # load fs1: f24 = 0xbf800000
@@ -10009,28 +10009,28 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rmm:
   fmsub.s f23, f24, f19, f26, rmm # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rmm_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs1: f4 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f19) # load fs2: f19 = 0x7fbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f8) # load fs3: f8 = 0xe0746555
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rne:
-  fmsub.s f18, f5, f19, f8, rne # perform operation
-  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rne_str)
+  fmsub.s f18, f4, f19, f8, rne # perform operation
+  # Check if f18 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f18, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs2: f5 = 0x7fbfffff
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f4) # load fs2: f4 = 0x7fbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f10) # load fs3: f10 = 0xaa768b89
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz:
-  fmsub.s f22, f21, f5, f10, rtz # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz_str)
+  fmsub.s f22, f21, f4, f10, rtz # perform operation
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7fbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f2) # load fs1: f2 = 0xbf800000
@@ -10039,8 +10039,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup:
   fmsub.s f21, f2, f13, f29, rup # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
@@ -10050,19 +10050,19 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7fbfffff_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_dyn:
   fmsub.s f2, f14, f18, f28, dyn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_dyn_str)
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs1: f7 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs2: f9 = 0xffbfffff
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs3: f1 = 0xfc92146f
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn:
-  fmsub.s f11, f7, f9, f1, rdn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn_str)
+  fmsub.s f11, f6, f9, f1, rdn # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f1) # load fs1: f1 = 0xbf800000
@@ -10071,8 +10071,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm:
   fmsub.s f20, f1, f18, f29, rmm # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -10081,8 +10081,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne:
   fmsub.s f10, f16, f27, f26, rne # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0xbf800000
@@ -10091,8 +10091,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz:
   fmsub.s f31, f16, f22, f3, rtz # perform operation
-  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz_str)
+  # Check if f31 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f31, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0xffbfffff, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f9) # load fs1: f9 = 0xbf800000
@@ -10101,8 +10101,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup:
   fmsub.s f20, f9, f25, f16, rup # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0xbf800000
@@ -10112,8 +10112,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0xffbfffff_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn:
   fmsub.s f24, f15, f21, f20, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = rdn)
@@ -10123,18 +10123,18 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rdn:
   fmsub.s f1, f30, f24, f26, rdn # perform operation
-  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rdn_str)
+  # Check if f1 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f1, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs2: f7 = 0x7ef8654f
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs2: f6 = 0x7ef8654f
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs3: f27 = 0x906b59de
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm:
-  fmsub.s f13, f22, f7, f27, rmm # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm_str)
+  fmsub.s f13, f22, f6, f27, rmm # perform operation
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0xbf800000
@@ -10143,8 +10143,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne:
   fmsub.s f13, f30, f14, f25, rne # perform operation
-  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne_str)
+  # Check if f13 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f13, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
@@ -10153,8 +10153,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz:
   fmsub.s f20, f23, f25, f30, rtz # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x7ef8654f, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f21) # load fs1: f21 = 0xbf800000
@@ -10163,8 +10163,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup:
   fmsub.s f17, f21, f24, f31, rup # perform operation
-  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup_str)
+  # Check if f17 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f17, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f22) # load fs1: f22 = 0xbf800000
@@ -10174,29 +10174,29 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x7ef8654f_frm_rup:
   fsrmi 3
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_dyn:
   fmsub.s f24, f22, f1, f19, dyn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_dyn_str)
+  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f24, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f23) # load fs1: f23 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f26) # load fs2: f26 = 0x813d9ab0
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f7) # load fs3: f7 = 0x2a88770e
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs3: f6 = 0x2a88770e
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rdn:
-  fmsub.s f2, f23, f26, f7, rdn # perform operation
-  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rdn_str)
+  fmsub.s f2, f23, f26, f6, rdn # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f2, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f6) # load fs1: f6 = 0xbf800000
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f5) # load fs1: f5 = 0xbf800000
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f13) # load fs2: f13 = 0x813d9ab0
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs3: f12 = 0xfcb5f0f9
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm:
-  fmsub.s f11, f6, f13, f12, rmm # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm_str)
+  fmsub.s f11, f5, f13, f12, rmm # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f11, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f14) # load fs1: f14 = 0xbf800000
@@ -10205,8 +10205,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne:
   fmsub.s f30, f14, f10, f28, rne # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne_str)
+  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f30, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f11) # load fs1: f11 = 0xbf800000
@@ -10215,8 +10215,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz:
   fmsub.s f27, f11, f3, f29, rtz # perform operation
-  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz_str)
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f27, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0xbf800000 fs2 = 0x813d9ab0, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0xbf800000
@@ -10225,8 +10225,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup:
   fmsub.s f23, f12, f29, f24, rup # perform operation
-  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup_str)
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f23, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fs1: f30 = 0x3fc00000
@@ -10236,8 +10236,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0xbf800000_fs2val_0x813d9ab0_frm_rup:
   fsrmi 0
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn:
   fmsub.s f26, f30, f24, f10, dyn # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = rdn)
@@ -10247,8 +10247,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn:
   fmsub.s f20, f1, f27, f19, rdn # perform operation
-  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn_str)
+  # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f20, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fs1: f16 = 0x3fc00000
@@ -10257,8 +10257,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm:
   fmsub.s f29, f16, f27, f28, rmm # perform operation
-  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm_str)
+  # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f29, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = rne)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x3fc00000
@@ -10267,8 +10267,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rmm:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne:
   fmsub.s f10, f27, f15, f26, rne # perform operation
-  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne_str)
+  # Check if f10 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f10, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = rtz)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f12) # load fs1: f12 = 0x3fc00000
@@ -10277,8 +10277,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rne:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz:
   fmsub.s f8, f12, f2, f26, rtz # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x00000000, frm = rup)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f3) # load fs1: f3 = 0x3fc00000
@@ -10287,8 +10287,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rtz:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup:
   fmsub.s f26, f3, f14, f29, rup # perform operation
-  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup_str)
+  # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f26, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f31) # load fs1: f31 = 0x3fc00000
@@ -10298,8 +10298,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x0_frm_rup:
   fsrmi 1
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn:
   fmsub.s f21, f31, f19, f18, dyn # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn_str)
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f21, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn_str)
   fsrmi 0x0
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x80000000, frm = rdn)
@@ -10309,8 +10309,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_dyn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn:
   fmsub.s f22, f1, f14, f10, rdn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn_str)
+  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f22, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn_str)
 
 # Testcase cr_fs1_fs2_edges_frm4 (Test source fs1 = 0x3fc00000 fs2 = 0x80000000, frm = rmm)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fs1: f25 = 0x3fc00000
@@ -10319,8 +10319,8 @@ F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rdn:
   fsflagsi 0b00000 # clear all fflags
 F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rmm:
   fmsub.s f8, f25, f30, f9, rmm # perform operation
-  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rmm_str)
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f7, f8, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rmm, F_fmsub_s_cg_cr_fs1_fs2_edges_frm4_fs1val_0x3fc00000_fs2val_0x80000000_frm_rmm_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -10557,39 +10557,39 @@ RVTEST_DATA_BEGIN
 .word 0x7da10843
 .word 0x4b027c60
 .word 0xa6215a70
-.word 0x56d777b0
+.word 0x24d0bb50
+.word 0x97a1b046
 .word 0xbb102e0d
-.word 0xcd596e81
+.word 0xfe098b47
 .word 0xadf2d843
-.word 0x60445cf8
-.word 0xd2b40180
-.word 0xdd9ff05c
+.word 0x8da73eca
+.word 0x92e2c01e
+.word 0x7933aef6
+.word 0x18833908
 .word 0x2cb2ba34
-.word 0xb5c237e4
-.word 0x41ec6319
+.word 0xb8d80c4c
+.word 0xd5672802
 .word 0x1e16bebb
-.word 0x5cfd07f4
-.word 0x48615ec1
+.word 0x2172b7df
 .word 0x25bc4c97
-.word 0xcf2f3bef
-.word 0x699c3bdf
-.word 0xefb11925
-.word 0xfc7b4475
-.word 0x75dbbfb2
+.word 0x2006dc11
+.word 0x897703ea
+.word 0xdc597e46
 .word 0x66738e4b
-.word 0x914d4359
-.word 0x81383ae1
-.word 0xe6292fdd
+.word 0xd1916336
+.word 0x731b567c
+.word 0x0c2a933e
 .word 0x2c2238dc
-.word 0x29a88d1b
-.word 0xdb66b959
-.word 0x7d03ffdf
+.word 0x3a8f20f9
+.word 0xda4a5c13
 .word 0x6f26ac87
-.word 0x9d476b0c
+.word 0xa100394c
+.word 0x4a0f31ec
+.word 0x009ae10b
+.word 0x4362b052
 .word 0x81381ce0
-.word 0x6dbb8033
+.word 0xace5113c
 .word 0x1f802faf
-.word 0x5d14294f
 .word 0x39309976
 .word 0xc256fb01
 .word 0xd2002e30
@@ -10653,15 +10653,15 @@ RVTEST_DATA_BEGIN
 .word 0xe0d3f218
 .word 0x28c74815
 .word 0x2112cef1
-.word 0xd2deae40
-.word 0xa9397831
-.word 0x19bf3c1c
+.word 0x8e655aea
+.word 0xa5e54196
 .word 0x07deb292
-.word 0xb8a7a294
+.word 0x1bf03a90
 .word 0x244f703f
 .word 0x9eb47ce8
-.word 0xdaf4f047
-.word 0xc9e7a733
+.word 0x08f9e0d9
+.word 0x51c2195f
+.word 0xca0b23e9
 .word 0xa944b2ac
 .word 0xc60f267f
 .word 0xdfe83353
@@ -11001,8 +11001,11 @@ RVTEST_DATA_BEGIN
 .word 0xb9beebdb
 .word 0xd1244642
 .word 0x1d0403fa
+.word 0xa6f040c0
+.word 0x7a81f158
 .word 0xfc22706b
-.word 0xa0e4a500
+.word 0x5a1ab8ba
+.word 0xeb367a87
 .word 0xae00d17e
 .word 0x1cc24db8
 .word 0x8602566e
@@ -11058,9 +11061,6 @@ RVTEST_DATA_BEGIN
 .word 0x5993562c
 .word 0xdb6a36d2
 .word 0x8446858f
-.word 0x0d09b773
-.word 0x3b2bada5
-.word 0x0b7918a9
 .word 0xbc31e6f4
 .word 0x01ca0e53
 .word 0x7dd56be6
@@ -11073,35 +11073,41 @@ RVTEST_DATA_BEGIN
 .word 0xe1d10fb7
 .word 0x92d9fdf7
 .word 0x887504cc
-.word 0x539c51ae
+.word 0xc2b0ed2b
+.word 0x15bd346d
 .word 0x996afa89
 .word 0xa3b992fe
-.word 0x91d06f84
+.word 0x4ef53488
 .word 0x6f2a12c3
 .word 0x57cbe02d
-.word 0x3d286fc7
+.word 0xd13103dc
 .word 0x952f2104
-.word 0xa1fcc254
-.word 0x8028dd34
-.word 0x7ea6fa3d
+.word 0x53d9e682
+.word 0x25c5a3bf
+.word 0xf6b168bd
+.word 0x80028733
 .word 0x4854af5b
 .word 0x58b7812d
-.word 0x79e01577
+.word 0x1cbb4d1d
 .word 0x3f1830c3
 .word 0x80e73ac8
-.word 0x3589d22e
+.word 0xe1ecf93f
 .word 0x7767d732
 .word 0x05be0926
-.word 0x43ae100d
 .word 0x84c06063
-.word 0x6e479d8e
+.word 0x1d55264e
+.word 0xf0b82dec
 .word 0xe7157b3e
-.word 0x154096c6
+.word 0xdba92785
 .word 0x2a0adf60
+.word 0x7c2b00c2
+.word 0x39382a59
 .word 0x9f3c61af
 .word 0xd4412f0a
-.word 0x8963090e
+.word 0x7807df56
+.word 0x2de4ce6d
 .word 0x39ab86d5
+.word 0x36417d04
 .word 0xa5114d28
 .word 0x91ee786b
 .word 0xf61b7f59
@@ -11151,12 +11157,6 @@ RVTEST_DATA_BEGIN
 .word 0xca891ebc
 .word 0x39b831fb
 .word 0x80019dd9
-.word 0x1df0eac9
-.word 0xc230a612
-.word 0xc1313c41
-.word 0xf6ec673d
-.word 0xe3f8e705
-.word 0x7718bcb6
 .word 0xf0160d41
 .word 0x4ce88f3e
 .word 0x1e464b4d
@@ -11193,9 +11193,9 @@ RVTEST_DATA_BEGIN
 .word 0x3bf5b41c
 .word 0xef31bd94
 .word 0x6c1d4a71
-.word 0x3c3de751
 .word 0xad17bfdf
-.word 0x690158f3
+.word 0x50da8071
+.word 0x57c8e8c1
 .word 0x05ee9cc9
 .word 0x0c4eec75
 .word 0x1c7ebb58

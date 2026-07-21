@@ -27,12 +27,14 @@
 //
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -51,7 +53,6 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
@@ -128,12 +129,13 @@ main:
     .set pmpaddri, pmpaddri+2
     .endr
 
-    // REGIONSTART + i*g in odd PMPADDR
+    // REGIONSTART + i*g in odd PMPADDR. Uses t2 (not t0, which aliases x5 the
+    // accumulator) so the per-iteration LI doesn't clobber the running total.
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    LI(t0, g)
-    add x5, x5, t0
+    LI(t2, g)
+    add x5, x5, t2
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2

@@ -57,9 +57,27 @@
 `define NON_STANDARD_REGION  (`PMP_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
 `define SPECIAL_NON_STANDARD_REGION  (`PMP_SPECIAL_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
 
+// NAPOT region base. PMP_REGION_START (0x80005004) is only TOR/NA4-alignable: it is not a power-of-2
+// boundary, so `(PMP_REGION_START>>2)|trailing1s` decodes to a 16-byte NAPOT region based at
+// 0x80005000 that swallows the return-instruction pad -> NAPOT tests hang / mis-cover. A NAPOT region
+// must instead sit on the next g_napot-aligned address, leaving the pad in the background region.
+// Grain 2: 0x80005008. Grain 4: 0x80005010.
+`define PMP_NAPOT_REGION_START ((`PMP_REGION_START & ~(`g_napot - 1)) + `g_napot)
+
 // NAPOT region: add trailing 1s per `k` to form mask
-`define STANDARD_REGION      ((`PMP_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
+`define STANDARD_REGION      ((`PMP_NAPOT_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 `define SPECIAL_STANDARD_REGION      ((`PMP_SPECIAL_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
+
+// Code-size-invariant region matching. The region-under-test is placed by each test at a `.p2align 12`
+// boundary inside .data, which the linker puts at ALIGN(0x4000) AFTER the variable-size .text.rvtest.
+// So its ABSOLUTE address drifts with test code size (small tests -> 0x80005xxx, large tests such as
+// cfg_XWR's 400-entry signature -> 0x80009xxx), but it always sits at the same offset within a
+// 0x4000-aligned block -> its LOW address bits are invariant. Match pmp_hit and the region-address
+// coverpoints on those low bits (byte address & 0x3FFF, or pmpaddr & 0xFFF) so coverage fires no matter
+// where .data landed. pmpaddr values in these tests are sparse (region / 0 / all-ones), so the low-bit
+// match has no false positives. Assumes the linker's .data ALIGN of 0x4000 (which the DUT/ref share).
+`define PMP_ADDR_LOWMASK      ('h4000 - 1)            // low 14 bits of a byte address  = .data ALIGN(0x4000)
+`define PMP_PMPADDR_LOWMASK   (('h4000 - 1) >> 2)     // low 12 bits of a pmpaddr        = address low bits >> 2
 
 // UDB_MXLEN_64 -> [53:0] & UDB_MXLEN_32 -> [31:0]
 `define EFFECTIVE_PMPADDR (`ifdef UDB_MXLEN_64 53 `else 31 `endif)

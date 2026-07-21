@@ -56,8 +56,8 @@ Zicbop_prefetch_i_cg_cp_rs1_b2:
 Zicbop_prefetch_i_cg_cp_rs1_b3:
   prefetch.i 2016(x3) # align to multiple of 32
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x18, x4) # load rs1: x4 = 0x94c10ddb
 Zicbop_prefetch_i_cg_cp_rs1_b4:
@@ -98,13 +98,13 @@ Zicbop_prefetch_i_cg_cp_rs1_b10:
 Zicbop_prefetch_i_cg_cp_rs1_b11:
   prefetch.i 128(x11) # align to multiple of 32
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs1: x12 = 0x937702b9
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs1: x12 = 0xff669371
 Zicbop_prefetch_i_cg_cp_rs1_b12:
-  prefetch.i -352(x12) # align to multiple of 32
+  prefetch.i 320(x12) # align to multiple of 32
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x18, x13) # load rs1: x13 = 0xde6850cb
 Zicbop_prefetch_i_cg_cp_rs1_b13:
@@ -342,328 +342,328 @@ Zicbop_prefetch_i_cg_cp_rs1_b31:
   prefetch.i 0(x13) # Issue prefetch instruction on first line of scratch
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_0:
   lw x25, 0(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_0, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_0_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_0, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_0_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_1:
   lw x25, 4(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_1, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_1_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_1, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_1_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_2:
   lw x25, 8(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_2, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_2_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_2, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_2_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_3:
   lw x25, 12(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_3, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_3_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_3, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_3_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_4:
   lw x25, 16(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_4, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_4_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_4, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_4_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_5:
   lw x25, 20(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_5, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_5_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_5, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_5_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_6:
   lw x25, 24(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_6, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_6_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_6, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_6_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_7:
   lw x25, 28(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_7, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_7_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_7, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_7_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_8:
   lw x25, 32(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_8, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_8_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_8, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_8_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_9:
   lw x25, 36(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_9, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_9_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_9, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_9_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_10:
   lw x25, 40(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_10, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_10_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_10, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_10_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_11:
   lw x25, 44(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_11, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_11_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_11, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_11_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_12:
   lw x25, 48(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_12, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_12_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_12, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_12_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_13:
   lw x25, 52(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_13, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_13_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_13, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_13_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_14:
   lw x25, 56(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_14, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_14_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_14, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_14_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_15:
   lw x25, 60(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_15, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_15_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_15, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_15_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_16:
   lw x25, 64(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_16, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_16_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_16, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_16_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_17:
   lw x25, 68(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_17, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_17_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_17, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_17_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_18:
   lw x25, 72(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_18, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_18_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_18, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_18_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_19:
   lw x25, 76(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_19, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_19_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_19, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_19_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_20:
   lw x25, 80(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_20, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_20_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_20, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_20_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_21:
   lw x25, 84(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_21, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_21_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_21, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_21_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_22:
   lw x25, 88(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_22, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_22_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_22, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_22_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_23:
   lw x25, 92(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_23, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_23_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_23, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_23_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_24:
   lw x25, 96(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_24, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_24_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_24, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_24_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_25:
   lw x25, 100(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_25_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_25_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_26:
   lw x25, 104(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_26, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_26_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_26, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_26_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_27:
   lw x25, 108(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_27, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_27_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_27, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_27_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_28:
   lw x25, 112(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_28, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_28_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_28, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_28_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_29:
   lw x25, 116(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_29, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_29_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_29, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_29_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_30:
   lw x25, 120(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_30, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_30_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_30, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_30_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_31:
   lw x25, 124(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_31, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_31_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_31, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_31_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_32:
   lw x25, 128(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_32, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_32_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_32, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_32_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_33:
   lw x25, 132(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_33, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_33_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_33, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_33_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_34:
   lw x25, 136(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_34, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_34_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_34, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_34_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_35:
   lw x25, 140(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_35, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_35_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_35, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_35_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_36:
   lw x25, 144(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_36, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_36_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_36, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_36_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_37:
   lw x25, 148(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_37, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_37_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_37, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_37_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_38:
   lw x25, 152(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_38, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_38_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_38, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_38_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_39:
   lw x25, 156(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_39, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_39_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_39, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_39_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_40:
   lw x25, 160(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_40, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_40_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_40, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_40_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_41:
   lw x25, 164(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_41, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_41_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_41, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_41_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_42:
   lw x25, 168(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_42, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_42_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_42, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_42_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_43:
   lw x25, 172(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_43, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_43_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_43, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_43_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_44:
   lw x25, 176(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_44, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_44_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_44, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_44_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_45:
   lw x25, 180(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_45, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_45_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_45, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_45_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_46:
   lw x25, 184(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_46, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_46_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_46, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_46_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_47:
   lw x25, 188(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_47, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_47_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_47, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_47_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_48:
   lw x25, 192(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_48, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_48_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_48, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_48_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_49:
   lw x25, 196(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_49, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_49_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_49, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_49_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_50:
   lw x25, 200(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_50, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_50_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_50, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_50_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_51:
   lw x25, 204(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_51, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_51_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_51, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_51_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_52:
   lw x25, 208(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_52, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_52_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_52, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_52_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_53:
   lw x25, 212(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_53, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_53_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_53, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_53_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_54:
   lw x25, 216(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_54, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_54_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_54, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_54_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_55:
   lw x25, 220(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_55, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_55_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_55, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_55_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_56:
   lw x25, 224(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_56, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_56_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_56, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_56_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_57:
   lw x25, 228(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_57, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_57_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_57, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_57_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_58:
   lw x25, 232(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_58, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_58_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_58, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_58_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_59:
   lw x25, 236(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_59, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_59_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_59, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_59_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_60:
   lw x25, 240(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_60, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_60_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_60, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_60_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_61:
   lw x25, 244(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_61, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_61_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_61, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_61_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_62:
   lw x25, 248(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_62, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_62_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_62, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_62_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_63:
   lw x25, 252(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_63, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_63_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_63, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_63_str)
 
 Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64:
   lw x25, 256(x13)
-  # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64_str)
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64_str)
 
 
   mv x2, x6 # restore signature pointer to default register for teardown
@@ -687,7 +687,7 @@ RVTEST_DATA_BEGIN
 .word 0xe54bd3cf
 .word 0xdecde698
 .word 0x6d453785
-.word 0x937702b9
+.word 0xff669371
 .word 0xde6850cb
 .word 0x103ad7ac
 .word 0x68208ced

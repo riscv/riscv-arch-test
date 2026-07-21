@@ -80,6 +80,11 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     read_stimecmp: coverpoint ins.current.insn[31:20] {
         bins read_stimecmp = {CSR_STIMECMP};
     }
+    `ifdef UDB_MXLEN_32
+        read_stimecmph: coverpoint ins.current.insn[31:20] {
+            bins read_stimecmp = {CSR_STIMECMPH};
+        }
+    `endif
     sip_stip_one: coverpoint ins.current.csr[CSR_SIP][5]{
         bins one = {1};
     }
@@ -102,6 +107,18 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     cp_user_tm:         cross priv_mode_u, csrr, read_stimecmp, mcounteren_tm;
     cp_user_stce:       cross priv_mode_u, csrr, read_stimecmp, menvcfg_stce;
 
+    // also read STIMECMPH for RV32
+    `ifdef UDB_MXLEN_32
+        cp_machine_tm_h:      cross priv_mode_m, csrr, read_stimecmph, mcounteren_tm;
+        cp_machine_stce_h:    cross priv_mode_m, csrr, read_stimecmph, menvcfg_stce;
+
+        cp_supervisor_tm_h:   cross priv_mode_s, csrr, read_stimecmph, mcounteren_tm;
+        cp_supervisor_stce_h: cross priv_mode_s, csrr, read_stimecmph, menvcfg_stce;
+
+        cp_user_tm_h:         cross priv_mode_u, csrr, read_stimecmph, mcounteren_tm;
+        cp_user_stce_h:       cross priv_mode_u, csrr, read_stimecmph, menvcfg_stce;
+
+    `endif
 
 endgroup
 

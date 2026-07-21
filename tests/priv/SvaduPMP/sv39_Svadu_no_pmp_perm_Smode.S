@@ -40,7 +40,7 @@
 #define TEST_FILE "sv39_Svadu_no_pmp_perm_Smode.S"
 #define SIGUPD_COUNT 45
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -62,7 +62,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop

@@ -139,7 +139,6 @@ def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> l
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Instruction Access Fault"),
         f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        "LI(x4, 0xACCE)",  # trap handler checks x4 value and uses x1 (ra) as return address instead of mepc
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
         "nop",
@@ -161,8 +160,9 @@ def generate_ecall_tests(
     lines = [
         comment_banner(coverpoint, description),
         test_data.add_testcase(testcase_name, coverpoint, covergroup),
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns mepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
     ]
     return lines
 
@@ -536,7 +536,6 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - existent address",
             f"LA(x{addr_reg}, {target_label})",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",  # trap handler checks x4 value to use x1 (ra) as return address instead of mepc
             test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             "nop",
@@ -547,7 +546,6 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",  # trap handler checks x4 value to use x1 (ra) as return address instead of mepc
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             "nop",

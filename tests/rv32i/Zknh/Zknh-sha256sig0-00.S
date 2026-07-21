@@ -64,119 +64,119 @@ Zknh_sha256sig0_cg_cp_rs1_b3:
   # Check if x8 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x20, x5, x4, x8, Zknh_sha256sig0_cg_cp_rs1_b3, Zknh_sha256sig0_cg_cp_rs1_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x490c77a4
 Zknh_sha256sig0_cg_cp_rs1_b4:
   sha256sig0 x24, x4 # perform operation
-  # Check if x24 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x24, Zknh_sha256sig0_cg_cp_rs1_b4, Zknh_sha256sig0_cg_cp_rs1_b4_str)
+  # Check if x24 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x24, Zknh_sha256sig0_cg_cp_rs1_b4, Zknh_sha256sig0_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0x303104a8
 Zknh_sha256sig0_cg_cp_rs1_b5:
   sha256sig0 x2, x5 # perform operation
-  # Check if x2 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x2, Zknh_sha256sig0_cg_cp_rs1_b5, Zknh_sha256sig0_cg_cp_rs1_b5_str)
+  # Check if x2 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x2, Zknh_sha256sig0_cg_cp_rs1_b5, Zknh_sha256sig0_cg_cp_rs1_b5_str)
 
 # Testcase cp_rs1 (Test source rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x53f29abc
 Zknh_sha256sig0_cg_cp_rs1_b6:
   sha256sig0 x2, x6 # perform operation
-  # Check if x2 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x2, Zknh_sha256sig0_cg_cp_rs1_b6, Zknh_sha256sig0_cg_cp_rs1_b6_str)
+  # Check if x2 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x2, Zknh_sha256sig0_cg_cp_rs1_b6, Zknh_sha256sig0_cg_cp_rs1_b6_str)
 
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xab1145e4
 Zknh_sha256sig0_cg_cp_rs1_b7:
   sha256sig0 x3, x7 # perform operation
-  # Check if x3 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x3, Zknh_sha256sig0_cg_cp_rs1_b7, Zknh_sha256sig0_cg_cp_rs1_b7_str)
+  # Check if x3 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x3, Zknh_sha256sig0_cg_cp_rs1_b7, Zknh_sha256sig0_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0x8f036178
 Zknh_sha256sig0_cg_cp_rs1_b8:
   sha256sig0 x22, x8 # perform operation
-  # Check if x22 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x22, Zknh_sha256sig0_cg_cp_rs1_b8, Zknh_sha256sig0_cg_cp_rs1_b8_str)
+  # Check if x22 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x22, Zknh_sha256sig0_cg_cp_rs1_b8, Zknh_sha256sig0_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x96e3d885
 Zknh_sha256sig0_cg_cp_rs1_b9:
   sha256sig0 x25, x9 # perform operation
-  # Check if x25 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x25, Zknh_sha256sig0_cg_cp_rs1_b9, Zknh_sha256sig0_cg_cp_rs1_b9_str)
+  # Check if x25 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x25, Zknh_sha256sig0_cg_cp_rs1_b9, Zknh_sha256sig0_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x278e2257
 Zknh_sha256sig0_cg_cp_rs1_b10:
   sha256sig0 x15, x10 # perform operation
-  # Check if x15 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x15, Zknh_sha256sig0_cg_cp_rs1_b10, Zknh_sha256sig0_cg_cp_rs1_b10_str)
+  # Check if x15 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x15, Zknh_sha256sig0_cg_cp_rs1_b10, Zknh_sha256sig0_cg_cp_rs1_b10_str)
 
   mv x18, x11 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x18, x11) # load rs1: x11 = 0xebd7e3e1
 Zknh_sha256sig0_cg_cp_rs1_b11:
   sha256sig0 x3, x11 # perform operation
-  # Check if x3 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x3, Zknh_sha256sig0_cg_cp_rs1_b11, Zknh_sha256sig0_cg_cp_rs1_b11_str)
+  # Check if x3 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x3, Zknh_sha256sig0_cg_cp_rs1_b11, Zknh_sha256sig0_cg_cp_rs1_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs1: x12 = 0xdd3b55e1
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs1: x12 = 0x73ab5f3d
 Zknh_sha256sig0_cg_cp_rs1_b12:
-  sha256sig0 x28, x12 # perform operation
-  # Check if x28 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x28, Zknh_sha256sig0_cg_cp_rs1_b12, Zknh_sha256sig0_cg_cp_rs1_b12_str)
+  sha256sig0 x30, x12 # perform operation
+  # Check if x30 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x30, Zknh_sha256sig0_cg_cp_rs1_b12, Zknh_sha256sig0_cg_cp_rs1_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x18, x13) # load rs1: x13 = 0x0d9b63c6
+  RVTEST_TESTDATA_LOAD_INT(x18, x13) # load rs1: x13 = 0xdd3b55e1
 Zknh_sha256sig0_cg_cp_rs1_b13:
-  sha256sig0 x31, x13 # perform operation
-  # Check if x31 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x31, Zknh_sha256sig0_cg_cp_rs1_b13, Zknh_sha256sig0_cg_cp_rs1_b13_str)
+  sha256sig0 x22, x13 # perform operation
+  # Check if x22 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x22, Zknh_sha256sig0_cg_cp_rs1_b13, Zknh_sha256sig0_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs1: x14 = 0x1d299db3
+  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs1: x14 = 0x0d9b63c6
 Zknh_sha256sig0_cg_cp_rs1_b14:
-  sha256sig0 x16, x14 # perform operation
-  # Check if x16 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x16, Zknh_sha256sig0_cg_cp_rs1_b14, Zknh_sha256sig0_cg_cp_rs1_b14_str)
+  sha256sig0 x31, x14 # perform operation
+  # Check if x31 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x31, Zknh_sha256sig0_cg_cp_rs1_b14, Zknh_sha256sig0_cg_cp_rs1_b14_str)
 
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x18, x15) # load rs1: x15 = 0x3537a09f
+  RVTEST_TESTDATA_LOAD_INT(x18, x15) # load rs1: x15 = 0x1d299db3
 Zknh_sha256sig0_cg_cp_rs1_b15:
-  sha256sig0 x11, x15 # perform operation
-  # Check if x11 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x11, Zknh_sha256sig0_cg_cp_rs1_b15, Zknh_sha256sig0_cg_cp_rs1_b15_str)
+  sha256sig0 x16, x15 # perform operation
+  # Check if x16 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x16, Zknh_sha256sig0_cg_cp_rs1_b15, Zknh_sha256sig0_cg_cp_rs1_b15_str)
 
 # Testcase cp_rs1 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs1: x16 = 0x97aaf186
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs1: x16 = 0x3537a09f
 Zknh_sha256sig0_cg_cp_rs1_b16:
-  sha256sig0 x23, x16 # perform operation
-  # Check if x23 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x23, Zknh_sha256sig0_cg_cp_rs1_b16, Zknh_sha256sig0_cg_cp_rs1_b16_str)
+  sha256sig0 x11, x16 # perform operation
+  # Check if x11 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x11, Zknh_sha256sig0_cg_cp_rs1_b16, Zknh_sha256sig0_cg_cp_rs1_b16_str)
 
 # Testcase cp_rs1 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x18, x17) # load rs1: x17 = 0x3748647c
+  RVTEST_TESTDATA_LOAD_INT(x18, x17) # load rs1: x17 = 0x97aaf186
 Zknh_sha256sig0_cg_cp_rs1_b17:
-  sha256sig0 x29, x17 # perform operation
-  # Check if x29 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x29, Zknh_sha256sig0_cg_cp_rs1_b17, Zknh_sha256sig0_cg_cp_rs1_b17_str)
+  sha256sig0 x23, x17 # perform operation
+  # Check if x23 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x23, Zknh_sha256sig0_cg_cp_rs1_b17, Zknh_sha256sig0_cg_cp_rs1_b17_str)
 
-  mv x28, x18 # switch data pointer register to avoid conflict with test
+  mv x31, x18 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load rs1: x18 = 0x35b30620
+  RVTEST_TESTDATA_LOAD_INT(x31, x18) # load rs1: x18 = 0x35b30620
 Zknh_sha256sig0_cg_cp_rs1_b18:
-  sha256sig0 x31, x18 # perform operation
-  # Check if x31 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x31, Zknh_sha256sig0_cg_cp_rs1_b18, Zknh_sha256sig0_cg_cp_rs1_b18_str)
+  sha256sig0 x3, x18 # perform operation
+  # Check if x3 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x3, Zknh_sha256sig0_cg_cp_rs1_b18, Zknh_sha256sig0_cg_cp_rs1_b18_str)
 
 # Testcase cp_rs1 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x28, x19) # load rs1: x19 = 0xc9ee05e2
+  RVTEST_TESTDATA_LOAD_INT(x31, x19) # load rs1: x19 = 0xc9ee05e2
 Zknh_sha256sig0_cg_cp_rs1_b19:
   sha256sig0 x6, x19 # perform operation
   # Check if x6 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -184,138 +184,138 @@ Zknh_sha256sig0_cg_cp_rs1_b19:
 
   mv x9, x20 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x28, x20) # load rs1: x20 = 0x8d28a449
+  RVTEST_TESTDATA_LOAD_INT(x31, x20) # load rs1: x20 = 0x8d28a449
 Zknh_sha256sig0_cg_cp_rs1_b20:
   sha256sig0 x16, x20 # perform operation
   # Check if x16 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x16, Zknh_sha256sig0_cg_cp_rs1_b20, Zknh_sha256sig0_cg_cp_rs1_b20_str)
 
 # Testcase cp_rs1 (Test source rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x28, x21) # load rs1: x21 = 0xc22a0a0c
+  RVTEST_TESTDATA_LOAD_INT(x31, x21) # load rs1: x21 = 0xc22a0a0c
 Zknh_sha256sig0_cg_cp_rs1_b21:
   sha256sig0 x18, x21 # perform operation
   # Check if x18 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x18, Zknh_sha256sig0_cg_cp_rs1_b21, Zknh_sha256sig0_cg_cp_rs1_b21_str)
 
 # Testcase cp_rs1 (Test source rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x28, x22) # load rs1: x22 = 0x01372777
+  RVTEST_TESTDATA_LOAD_INT(x31, x22) # load rs1: x22 = 0x01372777
 Zknh_sha256sig0_cg_cp_rs1_b22:
   sha256sig0 x24, x22 # perform operation
   # Check if x24 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x24, Zknh_sha256sig0_cg_cp_rs1_b22, Zknh_sha256sig0_cg_cp_rs1_b22_str)
 
 # Testcase cp_rs1 (Test source rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x28, x23) # load rs1: x23 = 0xb54d9d9a
+  RVTEST_TESTDATA_LOAD_INT(x31, x23) # load rs1: x23 = 0xb54d9d9a
 Zknh_sha256sig0_cg_cp_rs1_b23:
   sha256sig0 x3, x23 # perform operation
   # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x3, Zknh_sha256sig0_cg_cp_rs1_b23, Zknh_sha256sig0_cg_cp_rs1_b23_str)
 
 # Testcase cp_rs1 (Test source rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x28, x24) # load rs1: x24 = 0x9a0694b1
+  RVTEST_TESTDATA_LOAD_INT(x31, x24) # load rs1: x24 = 0x9a0694b1
 Zknh_sha256sig0_cg_cp_rs1_b24:
-  sha256sig0 x30, x24 # perform operation
-  # Check if x30 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x30, Zknh_sha256sig0_cg_cp_rs1_b24, Zknh_sha256sig0_cg_cp_rs1_b24_str)
+  sha256sig0 x29, x24 # perform operation
+  # Check if x29 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x29, Zknh_sha256sig0_cg_cp_rs1_b24, Zknh_sha256sig0_cg_cp_rs1_b24_str)
 
 # Testcase cp_rs1 (Test source rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x28, x25) # load rs1: x25 = 0xff6585ee
+  RVTEST_TESTDATA_LOAD_INT(x31, x25) # load rs1: x25 = 0xff6585ee
 Zknh_sha256sig0_cg_cp_rs1_b25:
   sha256sig0 x13, x25 # perform operation
   # Check if x13 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x13, Zknh_sha256sig0_cg_cp_rs1_b25, Zknh_sha256sig0_cg_cp_rs1_b25_str)
 
 # Testcase cp_rs1 (Test source rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load rs1: x26 = 0x662a0899
+  RVTEST_TESTDATA_LOAD_INT(x31, x26) # load rs1: x26 = 0x662a0899
 Zknh_sha256sig0_cg_cp_rs1_b26:
   sha256sig0 x21, x26 # perform operation
   # Check if x21 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x21, Zknh_sha256sig0_cg_cp_rs1_b26, Zknh_sha256sig0_cg_cp_rs1_b26_str)
 
 # Testcase cp_rs1 (Test source rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x28, x27) # load rs1: x27 = 0xba500839
+  RVTEST_TESTDATA_LOAD_INT(x31, x27) # load rs1: x27 = 0xba500839
 Zknh_sha256sig0_cg_cp_rs1_b27:
-  sha256sig0 x30, x27 # perform operation
-  # Check if x30 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x30, Zknh_sha256sig0_cg_cp_rs1_b27, Zknh_sha256sig0_cg_cp_rs1_b27_str)
+  sha256sig0 x29, x27 # perform operation
+  # Check if x29 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x29, Zknh_sha256sig0_cg_cp_rs1_b27, Zknh_sha256sig0_cg_cp_rs1_b27_str)
 
-  mv x27, x28 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs1: x28 = 0xce763041
+  RVTEST_TESTDATA_LOAD_INT(x31, x28) # load rs1: x28 = 0x2697c706
 Zknh_sha256sig0_cg_cp_rs1_b28:
-  sha256sig0 x4, x28 # perform operation
-  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x4, Zknh_sha256sig0_cg_cp_rs1_b28, Zknh_sha256sig0_cg_cp_rs1_b28_str)
+  sha256sig0 x22, x28 # perform operation
+  # Check if x22 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x22, Zknh_sha256sig0_cg_cp_rs1_b28, Zknh_sha256sig0_cg_cp_rs1_b28_str)
 
 # Testcase cp_rs1 (Test source rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load rs1: x29 = 0x10c3b722
+  RVTEST_TESTDATA_LOAD_INT(x31, x29) # load rs1: x29 = 0xce763041
 Zknh_sha256sig0_cg_cp_rs1_b29:
-  sha256sig0 x19, x29 # perform operation
-  # Check if x19 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x19, Zknh_sha256sig0_cg_cp_rs1_b29, Zknh_sha256sig0_cg_cp_rs1_b29_str)
+  sha256sig0 x26, x29 # perform operation
+  # Check if x26 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x26, Zknh_sha256sig0_cg_cp_rs1_b29, Zknh_sha256sig0_cg_cp_rs1_b29_str)
 
 # Testcase cp_rs1 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs1: x30 = 0x98522d17
+  RVTEST_TESTDATA_LOAD_INT(x31, x30) # load rs1: x30 = 0x10c3b722
 Zknh_sha256sig0_cg_cp_rs1_b30:
-  sha256sig0 x16, x30 # perform operation
-  # Check if x16 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x16, Zknh_sha256sig0_cg_cp_rs1_b30, Zknh_sha256sig0_cg_cp_rs1_b30_str)
+  sha256sig0 x19, x30 # perform operation
+  # Check if x19 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x19, Zknh_sha256sig0_cg_cp_rs1_b30, Zknh_sha256sig0_cg_cp_rs1_b30_str)
 
+  mv x21, x31 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs1: x31 = 0x32c92670
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load rs1: x31 = 0x27aefed6
 Zknh_sha256sig0_cg_cp_rs1_b31:
-  sha256sig0 x29, x31 # perform operation
-  # Check if x29 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x29, Zknh_sha256sig0_cg_cp_rs1_b31, Zknh_sha256sig0_cg_cp_rs1_b31_str)
+  sha256sig0 x18, x31 # perform operation
+  # Check if x18 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x18, Zknh_sha256sig0_cg_cp_rs1_b31, Zknh_sha256sig0_cg_cp_rs1_b31_str)
 
 /////////////////////////////////
 // cp_rd
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs1: x3 = 0x342404e4
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs1: x3 = 0x342404e4
 Zknh_sha256sig0_cg_cp_rd_b0:
   sha256sig0 x0, x3 # perform operation
   # Check if x0 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x0, Zknh_sha256sig0_cg_cp_rd_b0, Zknh_sha256sig0_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs1: x20 = 0x90c2297c
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs1: x20 = 0x90c2297c
 Zknh_sha256sig0_cg_cp_rd_b1:
   sha256sig0 x1, x20 # perform operation
   # Check if x1 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x1, Zknh_sha256sig0_cg_cp_rd_b1, Zknh_sha256sig0_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs1: x14 = 0x009c9f28
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs1: x14 = 0x009c9f28
 Zknh_sha256sig0_cg_cp_rd_b2:
   sha256sig0 x2, x14 # perform operation
   # Check if x2 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x2, Zknh_sha256sig0_cg_cp_rd_b2, Zknh_sha256sig0_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs1: x1 = 0xa4612556
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs1: x1 = 0xa4612556
 Zknh_sha256sig0_cg_cp_rd_b3:
   sha256sig0 x3, x1 # perform operation
   # Check if x3 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x3, Zknh_sha256sig0_cg_cp_rd_b3, Zknh_sha256sig0_cg_cp_rd_b3_str)
 
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs1: x14 = 0x36bcd87b
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs1: x14 = 0x36bcd87b
 Zknh_sha256sig0_cg_cp_rd_b4:
   sha256sig0 x4, x14 # perform operation
   # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x4, Zknh_sha256sig0_cg_cp_rd_b4, Zknh_sha256sig0_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs1: x31 = 0xac3d81a8
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load rs1: x31 = 0xac3d81a8
 Zknh_sha256sig0_cg_cp_rd_b5:
   sha256sig0 x5, x31 # perform operation
   # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x5, Zknh_sha256sig0_cg_cp_rd_b5, Zknh_sha256sig0_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs1: x28 = 0x93e35a61
+  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load rs1: x28 = 0x93e35a61
 Zknh_sha256sig0_cg_cp_rd_b6:
   sha256sig0 x6, x28 # perform operation
   # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -324,14 +324,14 @@ Zknh_sha256sig0_cg_cp_rd_b6:
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs1: x23 = 0xeef672a5
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs1: x24 = 0xeef672a5
 Zknh_sha256sig0_cg_cp_rd_b7:
-  sha256sig0 x7, x23 # perform operation
+  sha256sig0 x7, x24 # perform operation
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x7, Zknh_sha256sig0_cg_cp_rd_b7, Zknh_sha256sig0_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs1: x1 = 0xf27f2e33
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs1: x1 = 0xf27f2e33
 Zknh_sha256sig0_cg_cp_rd_b8:
   sha256sig0 x8, x1 # perform operation
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -339,42 +339,42 @@ Zknh_sha256sig0_cg_cp_rd_b8:
 
   mv x15, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs1: x1 = 0x2136ed7c
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs1: x1 = 0x2136ed7c
 Zknh_sha256sig0_cg_cp_rd_b9:
   sha256sig0 x9, x1 # perform operation
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, Zknh_sha256sig0_cg_cp_rd_b9, Zknh_sha256sig0_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs1: x11 = 0x4e2bc962
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs1: x11 = 0x4e2bc962
 Zknh_sha256sig0_cg_cp_rd_b10:
   sha256sig0 x10, x11 # perform operation
   # Check if x10 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x10, Zknh_sha256sig0_cg_cp_rd_b10, Zknh_sha256sig0_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs1: x25 = 0x257559b7
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load rs1: x26 = 0x257559b7
 Zknh_sha256sig0_cg_cp_rd_b11:
-  sha256sig0 x11, x25 # perform operation
+  sha256sig0 x11, x26 # perform operation
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x11, Zknh_sha256sig0_cg_cp_rd_b11, Zknh_sha256sig0_cg_cp_rd_b11_str)
 
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs1: x3 = 0x35d5f491
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs1: x3 = 0x35d5f491
 Zknh_sha256sig0_cg_cp_rd_b12:
   sha256sig0 x12, x3 # perform operation
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x12, Zknh_sha256sig0_cg_cp_rd_b12, Zknh_sha256sig0_cg_cp_rd_b12_str)
 
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs1: x18 = 0xe8b4ea49
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0xe8b4ea49
 Zknh_sha256sig0_cg_cp_rd_b13:
   sha256sig0 x13, x18 # perform operation
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zknh_sha256sig0_cg_cp_rd_b13, Zknh_sha256sig0_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs1: x30 = 0x6dfac81f
+  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs1: x30 = 0x6dfac81f
 Zknh_sha256sig0_cg_cp_rd_b14:
   sha256sig0 x14, x30 # perform operation
   # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -382,121 +382,122 @@ Zknh_sha256sig0_cg_cp_rd_b14:
 
   mv x30, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs1: x2 = 0x0e121c35
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs1: x2 = 0x0e121c35
 Zknh_sha256sig0_cg_cp_rd_b15:
   sha256sig0 x15, x2 # perform operation
   # Check if x15 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x15, Zknh_sha256sig0_cg_cp_rd_b15, Zknh_sha256sig0_cg_cp_rd_b15_str)
 
 # Testcase cp_rd (Test destination rd = x16)
-  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs1: x19 = 0x3b34d17f
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs1: x19 = 0x3b34d17f
 Zknh_sha256sig0_cg_cp_rd_b16:
   sha256sig0 x16, x19 # perform operation
   # Check if x16 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x16, Zknh_sha256sig0_cg_cp_rd_b16, Zknh_sha256sig0_cg_cp_rd_b16_str)
 
 # Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x27, x0) # load rs1: x0 = 0x03090783
+  RVTEST_TESTDATA_LOAD_INT(x21, x0) # load rs1: x0 = 0x03090783
 Zknh_sha256sig0_cg_cp_rd_b17:
   sha256sig0 x17, x0 # perform operation
   # Check if x17 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x17, Zknh_sha256sig0_cg_cp_rd_b17, Zknh_sha256sig0_cg_cp_rd_b17_str)
 
 # Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs1: x26 = 0x290a8cf5
+  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load rs1: x27 = 0x290a8cf5
 Zknh_sha256sig0_cg_cp_rd_b18:
-  sha256sig0 x18, x26 # perform operation
+  sha256sig0 x18, x27 # perform operation
   # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x18, Zknh_sha256sig0_cg_cp_rd_b18, Zknh_sha256sig0_cg_cp_rd_b18_str)
 
 # Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs1: x6 = 0x0e9bbda5
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs1: x6 = 0x0e9bbda5
 Zknh_sha256sig0_cg_cp_rd_b19:
   sha256sig0 x19, x6 # perform operation
   # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x19, Zknh_sha256sig0_cg_cp_rd_b19, Zknh_sha256sig0_cg_cp_rd_b19_str)
 
 # Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs1: x12 = 0x7bdc933f
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0x7bdc933f
 Zknh_sha256sig0_cg_cp_rd_b20:
   sha256sig0 x20, x12 # perform operation
   # Check if x20 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x20, Zknh_sha256sig0_cg_cp_rd_b20, Zknh_sha256sig0_cg_cp_rd_b20_str)
 
+  mv x23, x21 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs1: x17 = 0x1785fc83
+  RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs1: x19 = 0x155f1085
 Zknh_sha256sig0_cg_cp_rd_b21:
-  sha256sig0 x21, x17 # perform operation
+  sha256sig0 x21, x19 # perform operation
   # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x21, Zknh_sha256sig0_cg_cp_rd_b21, Zknh_sha256sig0_cg_cp_rd_b21_str)
 
 # Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x27, x0) # load rs1: x0 = 0x6d148835
+  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0x1785fc83
 Zknh_sha256sig0_cg_cp_rd_b22:
-  sha256sig0 x22, x0 # perform operation
+  sha256sig0 x22, x31 # perform operation
   # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x22, Zknh_sha256sig0_cg_cp_rd_b22, Zknh_sha256sig0_cg_cp_rd_b22_str)
 
+  mv x1, x23 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs1: x19 = 0xfd752fac
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0xfd752fac
 Zknh_sha256sig0_cg_cp_rd_b23:
-  sha256sig0 x23, x19 # perform operation
+  sha256sig0 x23, x20 # perform operation
   # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x23, Zknh_sha256sig0_cg_cp_rd_b23, Zknh_sha256sig0_cg_cp_rd_b23_str)
 
 # Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs1: x10 = 0x5d464454
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x5d464454
 Zknh_sha256sig0_cg_cp_rd_b24:
-  sha256sig0 x24, x10 # perform operation
+  sha256sig0 x24, x11 # perform operation
   # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x24, Zknh_sha256sig0_cg_cp_rd_b24, Zknh_sha256sig0_cg_cp_rd_b24_str)
 
 # Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs1: x14 = 0xbf4a8c7a
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xbf4a8c7a
 Zknh_sha256sig0_cg_cp_rd_b25:
-  sha256sig0 x25, x14 # perform operation
+  sha256sig0 x25, x15 # perform operation
   # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x25, Zknh_sha256sig0_cg_cp_rd_b25, Zknh_sha256sig0_cg_cp_rd_b25_str)
 
 # Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs1: x28 = 0xc4ea2dfb
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xc4ea2dfb
 Zknh_sha256sig0_cg_cp_rd_b26:
   sha256sig0 x26, x28 # perform operation
   # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x26, Zknh_sha256sig0_cg_cp_rd_b26, Zknh_sha256sig0_cg_cp_rd_b26_str)
 
-  mv x10, x27 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0xe4d6e31b
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x1cf0fae1
 Zknh_sha256sig0_cg_cp_rd_b27:
-  sha256sig0 x27, x14 # perform operation
+  sha256sig0 x27, x8 # perform operation
   # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x27, Zknh_sha256sig0_cg_cp_rd_b27, Zknh_sha256sig0_cg_cp_rd_b27_str)
 
 # Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xd0c991d7
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x94e08abe
 Zknh_sha256sig0_cg_cp_rd_b28:
-  sha256sig0 x28, x2 # perform operation
+  sha256sig0 x28, x11 # perform operation
   # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x28, Zknh_sha256sig0_cg_cp_rd_b28, Zknh_sha256sig0_cg_cp_rd_b28_str)
 
 # Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0x030549ec
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0xf2366114
 Zknh_sha256sig0_cg_cp_rd_b29:
-  sha256sig0 x29, x14 # perform operation
+  sha256sig0 x29, x17 # perform operation
   # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x29, Zknh_sha256sig0_cg_cp_rd_b29, Zknh_sha256sig0_cg_cp_rd_b29_str)
 
   mv x25, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x10, x17) # load rs1: x17 = 0x83874a87
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x83874a87
 Zknh_sha256sig0_cg_cp_rd_b30:
-  sha256sig0 x30, x17 # perform operation
+  sha256sig0 x30, x23 # perform operation
   # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x30, Zknh_sha256sig0_cg_cp_rd_b30, Zknh_sha256sig0_cg_cp_rd_b30_str)
 
 # Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x10, x17) # load rs1: x17 = 0x606af1b0
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x606af1b0
 Zknh_sha256sig0_cg_cp_rd_b31:
   sha256sig0 x31, x17 # perform operation
   # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -507,326 +508,327 @@ Zknh_sha256sig0_cg_cp_rd_b31:
 /////////////////////////////////
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load rs1: x20 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x00000000
 Zknh_sha256sig0_cg_cp_rs1_edges_0x0:
   sha256sig0 x13, x20 # perform operation
   # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x13, Zknh_sha256sig0_cg_cp_rs1_edges_0x0, Zknh_sha256sig0_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs1: x26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x00000001
 Zknh_sha256sig0_cg_cp_rs1_edges_0x1:
   sha256sig0 x31, x26 # perform operation
   # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x31, Zknh_sha256sig0_cg_cp_rs1_edges_0x1, Zknh_sha256sig0_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs1: x30 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x00000002
 Zknh_sha256sig0_cg_cp_rs1_edges_0x2:
-  sha256sig0 x8, x30 # perform operation
-  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x8, Zknh_sha256sig0_cg_cp_rs1_edges_0x2, Zknh_sha256sig0_cg_cp_rs1_edges_0x2_str)
+  sha256sig0 x9, x30 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zknh_sha256sig0_cg_cp_rs1_edges_0x2, Zknh_sha256sig0_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs1: x24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x80000000
 Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000:
-  sha256sig0 x8, x24 # perform operation
-  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x8, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000_str)
+  sha256sig0 x9, x24 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x80000001
 Zknh_sha256sig0_cg_cp_rs1_edges_0x80000001:
-  sha256sig0 x3, x31 # perform operation
-  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x3, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000001, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000001_str)
+  sha256sig0 x6, x31 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000001, Zknh_sha256sig0_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs1: x22 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x7fffffff
 Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff:
   sha256sig0 x21, x22 # perform operation
   # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x21, Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff, Zknh_sha256sig0_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load rs1: x19 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x7ffffffe
 Zknh_sha256sig0_cg_cp_rs1_edges_0x7ffffffe:
   sha256sig0 x28, x19 # perform operation
   # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x28, Zknh_sha256sig0_cg_cp_rs1_edges_0x7ffffffe, Zknh_sha256sig0_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs1: x29 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xffffffff
 Zknh_sha256sig0_cg_cp_rs1_edges_0xffffffff:
   sha256sig0 x31, x29 # perform operation
   # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x31, Zknh_sha256sig0_cg_cp_rs1_edges_0xffffffff, Zknh_sha256sig0_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load rs1: x21 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xfffffffe
 Zknh_sha256sig0_cg_cp_rs1_edges_0xfffffffe:
   sha256sig0 x12, x21 # perform operation
   # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x12, Zknh_sha256sig0_cg_cp_rs1_edges_0xfffffffe, Zknh_sha256sig0_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x5bbc8872
 Zknh_sha256sig0_cg_cp_rs1_edges_0x5bbc8872:
-  sha256sig0 x3, x9 # perform operation
-  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x3, Zknh_sha256sig0_cg_cp_rs1_edges_0x5bbc8872, Zknh_sha256sig0_cg_cp_rs1_edges_0x5bbc8872_str)
+  sha256sig0 x6, x10 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zknh_sha256sig0_cg_cp_rs1_edges_0x5bbc8872, Zknh_sha256sig0_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs1: x7 = 0xaaaaaaaa
 Zknh_sha256sig0_cg_cp_rs1_edges_0xaaaaaaaa:
-  sha256sig0 x23, x6 # perform operation
+  sha256sig0 x23, x7 # perform operation
   # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x23, Zknh_sha256sig0_cg_cp_rs1_edges_0xaaaaaaaa, Zknh_sha256sig0_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs1: x24 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x55555555
 Zknh_sha256sig0_cg_cp_rs1_edges_0x55555555:
-  sha256sig0 x7, x24 # perform operation
-  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x7, Zknh_sha256sig0_cg_cp_rs1_edges_0x55555555, Zknh_sha256sig0_cg_cp_rs1_edges_0x55555555_str)
+  sha256sig0 x8, x24 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zknh_sha256sig0_cg_cp_rs1_edges_0x55555555, Zknh_sha256sig0_cg_cp_rs1_edges_0x55555555_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs1: x0 = 0xdee54b14
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0xdee54b14
 Zknh_sha256sig0_cg_cmp_rd_rs1_b0:
   sha256sig0 x0, x0 # perform operation
   # Check if x0 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x0, Zknh_sha256sig0_cg_cmp_rd_rs1_b0, Zknh_sha256sig0_cg_cmp_rd_rs1_b0_str)
 
+  mv x26, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs1: x1 = 0x09f743bf
+  RVTEST_TESTDATA_LOAD_INT(x26, x1) # load rs1: x1 = 0xbf09264c
 Zknh_sha256sig0_cg_cmp_rd_rs1_b1:
   sha256sig0 x1, x1 # perform operation
   # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x1, Zknh_sha256sig0_cg_cmp_rd_rs1_b1, Zknh_sha256sig0_cg_cmp_rd_rs1_b1_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xeabcbb88
+  RVTEST_TESTDATA_LOAD_INT(x26, x2) # load rs1: x2 = 0xc470136b
 Zknh_sha256sig0_cg_cmp_rd_rs1_b2:
   sha256sig0 x2, x2 # perform operation
   # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x2, Zknh_sha256sig0_cg_cmp_rd_rs1_b2, Zknh_sha256sig0_cg_cmp_rd_rs1_b2_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x5a7793db
+  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs1: x3 = 0x4e8b7e45
 Zknh_sha256sig0_cg_cmp_rd_rs1_b3:
   sha256sig0 x3, x3 # perform operation
   # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x3, Zknh_sha256sig0_cg_cmp_rd_rs1_b3, Zknh_sha256sig0_cg_cmp_rd_rs1_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0x132071fd
+  RVTEST_TESTDATA_LOAD_INT(x26, x4) # load rs1: x4 = 0x88c170e5
 Zknh_sha256sig0_cg_cmp_rd_rs1_b4:
   sha256sig0 x4, x4 # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x4, Zknh_sha256sig0_cg_cmp_rd_rs1_b4, Zknh_sha256sig0_cg_cmp_rd_rs1_b4_str)
+  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x4, Zknh_sha256sig0_cg_cmp_rd_rs1_b4, Zknh_sha256sig0_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0x1ca47238
+  RVTEST_TESTDATA_LOAD_INT(x26, x5) # load rs1: x5 = 0xd9e0c166
 Zknh_sha256sig0_cg_cmp_rd_rs1_b5:
   sha256sig0 x5, x5 # perform operation
-  # Check if x5 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x5, Zknh_sha256sig0_cg_cmp_rd_rs1_b5, Zknh_sha256sig0_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x5, Zknh_sha256sig0_cg_cmp_rd_rs1_b5, Zknh_sha256sig0_cg_cmp_rd_rs1_b5_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0x26da0f7c
+  RVTEST_TESTDATA_LOAD_INT(x26, x6) # load rs1: x6 = 0x45bf55ae
 Zknh_sha256sig0_cg_cmp_rd_rs1_b6:
   sha256sig0 x6, x6 # perform operation
-  # Check if x6 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x6, Zknh_sha256sig0_cg_cmp_rd_rs1_b6, Zknh_sha256sig0_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x6, Zknh_sha256sig0_cg_cmp_rd_rs1_b6, Zknh_sha256sig0_cg_cmp_rd_rs1_b6_str)
 
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x4e238803
+  RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs1: x7 = 0x4e238803
 Zknh_sha256sig0_cg_cmp_rd_rs1_b7:
   sha256sig0 x7, x7 # perform operation
-  # Check if x7 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x7, Zknh_sha256sig0_cg_cmp_rd_rs1_b7, Zknh_sha256sig0_cg_cmp_rd_rs1_b7_str)
+  # Check if x7 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x7, Zknh_sha256sig0_cg_cmp_rd_rs1_b7, Zknh_sha256sig0_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs1: x8 = 0x248deeea
+  RVTEST_TESTDATA_LOAD_INT(x26, x8) # load rs1: x8 = 0x248deeea
 Zknh_sha256sig0_cg_cmp_rd_rs1_b8:
   sha256sig0 x8, x8 # perform operation
-  # Check if x8 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x8, Zknh_sha256sig0_cg_cmp_rd_rs1_b8, Zknh_sha256sig0_cg_cmp_rd_rs1_b8_str)
+  # Check if x8 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x8, Zknh_sha256sig0_cg_cmp_rd_rs1_b8, Zknh_sha256sig0_cg_cmp_rd_rs1_b8_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0x4e15777a
+  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs1: x9 = 0x4e15777a
 Zknh_sha256sig0_cg_cmp_rd_rs1_b9:
   sha256sig0 x9, x9 # perform operation
-  # Check if x9 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x9, Zknh_sha256sig0_cg_cmp_rd_rs1_b9, Zknh_sha256sig0_cg_cmp_rd_rs1_b9_str)
+  # Check if x9 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x9, Zknh_sha256sig0_cg_cmp_rd_rs1_b9, Zknh_sha256sig0_cg_cmp_rd_rs1_b9_str)
 
-  mv x17, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rs1: x10 = 0x9bc3048f
+  RVTEST_TESTDATA_LOAD_INT(x26, x10) # load rs1: x10 = 0x468cf81c
 Zknh_sha256sig0_cg_cmp_rd_rs1_b10:
   sha256sig0 x10, x10 # perform operation
-  # Check if x10 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x10, Zknh_sha256sig0_cg_cmp_rd_rs1_b10, Zknh_sha256sig0_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x10, Zknh_sha256sig0_cg_cmp_rd_rs1_b10, Zknh_sha256sig0_cg_cmp_rd_rs1_b10_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs1: x11 = 0xc0d25cbb
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x3c1144d4
 Zknh_sha256sig0_cg_cmp_rd_rs1_b11:
   sha256sig0 x11, x11 # perform operation
-  # Check if x11 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x11, Zknh_sha256sig0_cg_cmp_rd_rs1_b11, Zknh_sha256sig0_cg_cmp_rd_rs1_b11_str)
+  # Check if x11 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x11, Zknh_sha256sig0_cg_cmp_rd_rs1_b11, Zknh_sha256sig0_cg_cmp_rd_rs1_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs1: x12 = 0xf11b0536
+  RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs1: x12 = 0x5e9dba25
 Zknh_sha256sig0_cg_cmp_rd_rs1_b12:
   sha256sig0 x12, x12 # perform operation
-  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x12, Zknh_sha256sig0_cg_cmp_rd_rs1_b12, Zknh_sha256sig0_cg_cmp_rd_rs1_b12_str)
+  # Check if x12 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x12, Zknh_sha256sig0_cg_cmp_rd_rs1_b12, Zknh_sha256sig0_cg_cmp_rd_rs1_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs1: x13 = 0xdbd476ce
+  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs1: x13 = 0xdcbe8080
 Zknh_sha256sig0_cg_cmp_rd_rs1_b13:
   sha256sig0 x13, x13 # perform operation
-  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x13, Zknh_sha256sig0_cg_cmp_rd_rs1_b13, Zknh_sha256sig0_cg_cmp_rd_rs1_b13_str)
+  # Check if x13 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x13, Zknh_sha256sig0_cg_cmp_rd_rs1_b13, Zknh_sha256sig0_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs1: x14 = 0x9a1f73cd
+  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0xf11b0536
 Zknh_sha256sig0_cg_cmp_rd_rs1_b14:
   sha256sig0 x14, x14 # perform operation
-  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x14, Zknh_sha256sig0_cg_cmp_rd_rs1_b14, Zknh_sha256sig0_cg_cmp_rd_rs1_b14_str)
+  # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x14, Zknh_sha256sig0_cg_cmp_rd_rs1_b14, Zknh_sha256sig0_cg_cmp_rd_rs1_b14_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs1: x15 = 0xd8df439e
+  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs1: x15 = 0xdbd476ce
 Zknh_sha256sig0_cg_cmp_rd_rs1_b15:
   sha256sig0 x15, x15 # perform operation
-  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x15, Zknh_sha256sig0_cg_cmp_rd_rs1_b15, Zknh_sha256sig0_cg_cmp_rd_rs1_b15_str)
+  # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x15, Zknh_sha256sig0_cg_cmp_rd_rs1_b15, Zknh_sha256sig0_cg_cmp_rd_rs1_b15_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs1: x16 = 0xf15767e1
+  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x9a1f73cd
 Zknh_sha256sig0_cg_cmp_rd_rs1_b16:
   sha256sig0 x16, x16 # perform operation
-  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x16, Zknh_sha256sig0_cg_cmp_rd_rs1_b16, Zknh_sha256sig0_cg_cmp_rd_rs1_b16_str)
+  # Check if x16 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x16, Zknh_sha256sig0_cg_cmp_rd_rs1_b16, Zknh_sha256sig0_cg_cmp_rd_rs1_b16_str)
 
-  mv x23, x17 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x23, x17) # load rs1: x17 = 0xba96d22a
+  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs1: x17 = 0xd8df439e
 Zknh_sha256sig0_cg_cmp_rd_rs1_b17:
   sha256sig0 x17, x17 # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x17, Zknh_sha256sig0_cg_cmp_rd_rs1_b17, Zknh_sha256sig0_cg_cmp_rd_rs1_b17_str)
+  # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x17, Zknh_sha256sig0_cg_cmp_rd_rs1_b17, Zknh_sha256sig0_cg_cmp_rd_rs1_b17_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x23, x18) # load rs1: x18 = 0xd77b1356
+  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs1: x18 = 0xf15767e1
 Zknh_sha256sig0_cg_cmp_rd_rs1_b18:
   sha256sig0 x18, x18 # perform operation
-  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x18, Zknh_sha256sig0_cg_cmp_rd_rs1_b18, Zknh_sha256sig0_cg_cmp_rd_rs1_b18_str)
+  # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x18, Zknh_sha256sig0_cg_cmp_rd_rs1_b18, Zknh_sha256sig0_cg_cmp_rd_rs1_b18_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs1: x19 = 0x7ec3ba57
+  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs1: x19 = 0xf9021468
 Zknh_sha256sig0_cg_cmp_rd_rs1_b19:
   sha256sig0 x19, x19 # perform operation
-  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x19, Zknh_sha256sig0_cg_cmp_rd_rs1_b19, Zknh_sha256sig0_cg_cmp_rd_rs1_b19_str)
+  # Check if x19 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x19, Zknh_sha256sig0_cg_cmp_rd_rs1_b19, Zknh_sha256sig0_cg_cmp_rd_rs1_b19_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x23, x20) # load rs1: x20 = 0xb22681da
+  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs1: x20 = 0x22ea46a7
 Zknh_sha256sig0_cg_cmp_rd_rs1_b20:
   sha256sig0 x20, x20 # perform operation
-  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x20, Zknh_sha256sig0_cg_cmp_rd_rs1_b20, Zknh_sha256sig0_cg_cmp_rd_rs1_b20_str)
+  # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x20, Zknh_sha256sig0_cg_cmp_rd_rs1_b20, Zknh_sha256sig0_cg_cmp_rd_rs1_b20_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs1: x21 = 0xd0b9eb0d
+  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs1: x21 = 0x0dd1dabe
 Zknh_sha256sig0_cg_cmp_rd_rs1_b21:
   sha256sig0 x21, x21 # perform operation
-  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x21, Zknh_sha256sig0_cg_cmp_rd_rs1_b21, Zknh_sha256sig0_cg_cmp_rd_rs1_b21_str)
+  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x21, Zknh_sha256sig0_cg_cmp_rd_rs1_b21, Zknh_sha256sig0_cg_cmp_rd_rs1_b21_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs1: x22 = 0x9fc39ec9
+  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs1: x22 = 0x7bf616bf
 Zknh_sha256sig0_cg_cmp_rd_rs1_b22:
   sha256sig0 x22, x22 # perform operation
-  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x22, Zknh_sha256sig0_cg_cmp_rd_rs1_b22, Zknh_sha256sig0_cg_cmp_rd_rs1_b22_str)
+  # Check if x22 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x22, Zknh_sha256sig0_cg_cmp_rd_rs1_b22, Zknh_sha256sig0_cg_cmp_rd_rs1_b22_str)
 
-  mv x21, x23 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load rs1: x23 = 0xc6f2cc4d
+  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs1: x23 = 0x22994155
 Zknh_sha256sig0_cg_cmp_rd_rs1_b23:
   sha256sig0 x23, x23 # perform operation
-  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x23, Zknh_sha256sig0_cg_cmp_rd_rs1_b23, Zknh_sha256sig0_cg_cmp_rd_rs1_b23_str)
+  # Check if x23 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x23, Zknh_sha256sig0_cg_cmp_rd_rs1_b23, Zknh_sha256sig0_cg_cmp_rd_rs1_b23_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs1: x24 = 0xdb1f265d
+  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x6235be29
 Zknh_sha256sig0_cg_cmp_rd_rs1_b24:
   sha256sig0 x24, x24 # perform operation
-  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x24, Zknh_sha256sig0_cg_cmp_rd_rs1_b24, Zknh_sha256sig0_cg_cmp_rd_rs1_b24_str)
+  # Check if x24 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x24, Zknh_sha256sig0_cg_cmp_rd_rs1_b24, Zknh_sha256sig0_cg_cmp_rd_rs1_b24_str)
 
-  mv x19, x25 # switch signature pointer register to avoid conflict with test
+  mv x10, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs1: x25 = 0xd86867de
+  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs1: x25 = 0xd0b9eb0d
 Zknh_sha256sig0_cg_cmp_rd_rs1_b25:
   sha256sig0 x25, x25 # perform operation
-  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x25, Zknh_sha256sig0_cg_cmp_rd_rs1_b25, Zknh_sha256sig0_cg_cmp_rd_rs1_b25_str)
+  # Check if x25 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x25, Zknh_sha256sig0_cg_cmp_rd_rs1_b25, Zknh_sha256sig0_cg_cmp_rd_rs1_b25_str)
 
+  mv x6, x26 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load rs1: x26 = 0xc57c39c4
+  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0xda29804e
 Zknh_sha256sig0_cg_cmp_rd_rs1_b26:
   sha256sig0 x26, x26 # perform operation
-  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x26, Zknh_sha256sig0_cg_cmp_rd_rs1_b26, Zknh_sha256sig0_cg_cmp_rd_rs1_b26_str)
+  # Check if x26 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x26, Zknh_sha256sig0_cg_cmp_rd_rs1_b26, Zknh_sha256sig0_cg_cmp_rd_rs1_b26_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load rs1: x27 = 0x1dabe1a7
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0xc6f2cc4d
 Zknh_sha256sig0_cg_cmp_rd_rs1_b27:
   sha256sig0 x27, x27 # perform operation
-  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x27, Zknh_sha256sig0_cg_cmp_rd_rs1_b27, Zknh_sha256sig0_cg_cmp_rd_rs1_b27_str)
+  # Check if x27 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x27, Zknh_sha256sig0_cg_cmp_rd_rs1_b27, Zknh_sha256sig0_cg_cmp_rd_rs1_b27_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load rs1: x28 = 0x294685f8
+  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs1: x28 = 0xdb1f265d
 Zknh_sha256sig0_cg_cmp_rd_rs1_b28:
   sha256sig0 x28, x28 # perform operation
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zknh_sha256sig0_cg_cmp_rd_rs1_b28, Zknh_sha256sig0_cg_cmp_rd_rs1_b28_str)
+  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x28, Zknh_sha256sig0_cg_cmp_rd_rs1_b28, Zknh_sha256sig0_cg_cmp_rd_rs1_b28_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x21, x29) # load rs1: x29 = 0xca23beb5
+  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0xe609647e
 Zknh_sha256sig0_cg_cmp_rd_rs1_b29:
   sha256sig0 x29, x29 # perform operation
-  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x29, Zknh_sha256sig0_cg_cmp_rd_rs1_b29, Zknh_sha256sig0_cg_cmp_rd_rs1_b29_str)
+  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x29, Zknh_sha256sig0_cg_cmp_rd_rs1_b29, Zknh_sha256sig0_cg_cmp_rd_rs1_b29_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs1: x30 = 0xcc4da09c
+  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x33ca857b
 Zknh_sha256sig0_cg_cmp_rd_rs1_b30:
   sha256sig0 x30, x30 # perform operation
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zknh_sha256sig0_cg_cmp_rd_rs1_b30, Zknh_sha256sig0_cg_cmp_rd_rs1_b30_str)
+  # Check if x30 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x30, Zknh_sha256sig0_cg_cmp_rd_rs1_b30, Zknh_sha256sig0_cg_cmp_rd_rs1_b30_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load rs1: x31 = 0xc433b662
+  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0xd4a8979a
 Zknh_sha256sig0_cg_cmp_rd_rs1_b31:
   sha256sig0 x31, x31 # perform operation
-  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x31, Zknh_sha256sig0_cg_cmp_rd_rs1_b31, Zknh_sha256sig0_cg_cmp_rd_rs1_b31_str)
+  # Check if x31 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x31, Zknh_sha256sig0_cg_cmp_rd_rs1_b31, Zknh_sha256sig0_cg_cmp_rd_rs1_b31_str)
 
-  mv x2, x19 # restore signature pointer to default register for teardown
+  mv x2, x10 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -847,12 +849,12 @@ RVTEST_DATA_BEGIN
 .word 0x96e3d885
 .word 0x278e2257
 .word 0xebd7e3e1
+.word 0x73ab5f3d
 .word 0xdd3b55e1
 .word 0x0d9b63c6
 .word 0x1d299db3
 .word 0x3537a09f
 .word 0x97aaf186
-.word 0x3748647c
 .word 0x35b30620
 .word 0xc9ee05e2
 .word 0x8d28a449
@@ -863,10 +865,10 @@ RVTEST_DATA_BEGIN
 .word 0xff6585ee
 .word 0x662a0899
 .word 0xba500839
+.word 0x2697c706
 .word 0xce763041
 .word 0x10c3b722
-.word 0x98522d17
-.word 0x32c92670
+.word 0x27aefed6
 .word 0x342404e4
 .word 0x90c2297c
 .word 0x009c9f28
@@ -888,15 +890,15 @@ RVTEST_DATA_BEGIN
 .word 0x290a8cf5
 .word 0x0e9bbda5
 .word 0x7bdc933f
+.word 0x155f1085
 .word 0x1785fc83
-.word 0x6d148835
 .word 0xfd752fac
 .word 0x5d464454
 .word 0xbf4a8c7a
 .word 0xc4ea2dfb
-.word 0xe4d6e31b
-.word 0xd0c991d7
-.word 0x030549ec
+.word 0x1cf0fae1
+.word 0x94e08abe
+.word 0xf2366114
 .word 0x83874a87
 .word 0x606af1b0
 .word 0x00000000
@@ -912,37 +914,37 @@ RVTEST_DATA_BEGIN
 .word 0xaaaaaaaa
 .word 0x55555555
 .word 0xdee54b14
-.word 0x09f743bf
-.word 0xeabcbb88
-.word 0x5a7793db
-.word 0x132071fd
-.word 0x1ca47238
-.word 0x26da0f7c
+.word 0xbf09264c
+.word 0xc470136b
+.word 0x4e8b7e45
+.word 0x88c170e5
+.word 0xd9e0c166
+.word 0x45bf55ae
 .word 0x4e238803
 .word 0x248deeea
 .word 0x4e15777a
-.word 0x9bc3048f
-.word 0xc0d25cbb
+.word 0x468cf81c
+.word 0x3c1144d4
+.word 0x5e9dba25
+.word 0xdcbe8080
 .word 0xf11b0536
 .word 0xdbd476ce
 .word 0x9a1f73cd
 .word 0xd8df439e
 .word 0xf15767e1
-.word 0xba96d22a
-.word 0xd77b1356
-.word 0x7ec3ba57
-.word 0xb22681da
+.word 0xf9021468
+.word 0x22ea46a7
+.word 0x0dd1dabe
+.word 0x7bf616bf
+.word 0x22994155
+.word 0x6235be29
 .word 0xd0b9eb0d
-.word 0x9fc39ec9
+.word 0xda29804e
 .word 0xc6f2cc4d
 .word 0xdb1f265d
-.word 0xd86867de
-.word 0xc57c39c4
-.word 0x1dabe1a7
-.word 0x294685f8
-.word 0xca23beb5
-.word 0xcc4da09c
-.word 0xc433b662
+.word 0xe609647e
+.word 0x33ca857b
+.word 0xd4a8979a
 
 // Testcase strings
 Zknh_sha256sig0_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zknh_sha256sig0_cg; cp: cp_rs1; bin: b0\""

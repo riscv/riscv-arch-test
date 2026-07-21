@@ -68,145 +68,145 @@ Zicond_czero_eqz_cg_cp_rs1_b3:
   # Check if x17 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x30, x5, x4, x17, Zicond_czero_eqz_cg_cp_rs1_b3, Zicond_czero_eqz_cg_cp_rs1_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs1: x4 = 0x2c3e534f
   RVTEST_TESTDATA_LOAD_INT(x21, x26) # load rs2: x26 = 0x797d4950
 Zicond_czero_eqz_cg_cp_rs1_b4:
   czero.eqz x31, x4, x26 # perform operation
-  # Check if x31 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x31, Zicond_czero_eqz_cg_cp_rs1_b4, Zicond_czero_eqz_cg_cp_rs1_b4_str)
+  # Check if x31 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x31, Zicond_czero_eqz_cg_cp_rs1_b4, Zicond_czero_eqz_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs1: x5 = 0xa39c2b02
   RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0x63936885
 Zicond_czero_eqz_cg_cp_rs1_b5:
   czero.eqz x6, x5, x15 # perform operation
-  # Check if x6 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x6, Zicond_czero_eqz_cg_cp_rs1_b5, Zicond_czero_eqz_cg_cp_rs1_b5_str)
+  # Check if x6 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x6, Zicond_czero_eqz_cg_cp_rs1_b5, Zicond_czero_eqz_cg_cp_rs1_b5_str)
 
 # Testcase cp_rs1 (Test source rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs1: x6 = 0x2b9a5cb2
   RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0x7ab484f0
 Zicond_czero_eqz_cg_cp_rs1_b6:
   czero.eqz x26, x6, x18 # perform operation
-  # Check if x26 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x26, Zicond_czero_eqz_cg_cp_rs1_b6, Zicond_czero_eqz_cg_cp_rs1_b6_str)
+  # Check if x26 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x26, Zicond_czero_eqz_cg_cp_rs1_b6, Zicond_czero_eqz_cg_cp_rs1_b6_str)
 
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs1: x7 = 0x9082882c
   RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0xa85aa521
 Zicond_czero_eqz_cg_cp_rs1_b7:
   czero.eqz x5, x7, x10 # perform operation
-  # Check if x5 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x5, Zicond_czero_eqz_cg_cp_rs1_b7, Zicond_czero_eqz_cg_cp_rs1_b7_str)
+  # Check if x5 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x5, Zicond_czero_eqz_cg_cp_rs1_b7, Zicond_czero_eqz_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs1: x8 = 0x70635101
   RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x5f7ac329
 Zicond_czero_eqz_cg_cp_rs1_b8:
   czero.eqz x19, x8, x10 # perform operation
-  # Check if x19 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x19, Zicond_czero_eqz_cg_cp_rs1_b8, Zicond_czero_eqz_cg_cp_rs1_b8_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x19, Zicond_czero_eqz_cg_cp_rs1_b8, Zicond_czero_eqz_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs1: x9 = 0x8984fc0d
   RVTEST_TESTDATA_LOAD_INT(x21, x22) # load rs2: x22 = 0x21c04ce9
 Zicond_czero_eqz_cg_cp_rs1_b9:
   czero.eqz x0, x9, x22 # perform operation
-  # Check if x0 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x0, Zicond_czero_eqz_cg_cp_rs1_b9, Zicond_czero_eqz_cg_cp_rs1_b9_str)
+  # Check if x0 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x0, Zicond_czero_eqz_cg_cp_rs1_b9, Zicond_czero_eqz_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs1: x10 = 0xdc8244f2
   RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0x2da0cda4
 Zicond_czero_eqz_cg_cp_rs1_b10:
-  czero.eqz x14, x10, x3 # perform operation
-  # Check if x14 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x14, Zicond_czero_eqz_cg_cp_rs1_b10, Zicond_czero_eqz_cg_cp_rs1_b10_str)
+  czero.eqz x12, x10, x3 # perform operation
+  # Check if x12 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x12, Zicond_czero_eqz_cg_cp_rs1_b10, Zicond_czero_eqz_cg_cp_rs1_b10_str)
 
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs1: x11 = 0x1da13980
   RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0xc9c1db3b
 Zicond_czero_eqz_cg_cp_rs1_b11:
   czero.eqz x31, x11, x17 # perform operation
-  # Check if x31 contains the expected result. x30 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x30, x13, x12, x31, Zicond_czero_eqz_cg_cp_rs1_b11, Zicond_czero_eqz_cg_cp_rs1_b11_str)
+  # Check if x31 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x31, Zicond_czero_eqz_cg_cp_rs1_b11, Zicond_czero_eqz_cg_cp_rs1_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0xd8ba664b
-  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0x5c88a9f2
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0x574f4fdc
+  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load rs2: x23 = 0xd8ba664b
 Zicond_czero_eqz_cg_cp_rs1_b12:
-  czero.eqz x23, x12, x1 # perform operation
-  # Check if x23 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x23, Zicond_czero_eqz_cg_cp_rs1_b12, Zicond_czero_eqz_cg_cp_rs1_b12_str)
+  czero.eqz x26, x12, x23 # perform operation
+  # Check if x26 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x26, Zicond_czero_eqz_cg_cp_rs1_b12, Zicond_czero_eqz_cg_cp_rs1_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs1: x13 = 0xa35c9d73
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0x7d4e23f6
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs1: x13 = 0xb803ec70
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0xcbd617c2
 Zicond_czero_eqz_cg_cp_rs1_b13:
-  czero.eqz x9, x13, x18 # perform operation
-  # Check if x9 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x9, Zicond_czero_eqz_cg_cp_rs1_b13, Zicond_czero_eqz_cg_cp_rs1_b13_str)
+  czero.eqz x17, x13, x8 # perform operation
+  # Check if x17 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x17, Zicond_czero_eqz_cg_cp_rs1_b13, Zicond_czero_eqz_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs1: x14 = 0x56d8ecd3
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xfa1e3172
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs1: x14 = 0x5bd82a00
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load rs2: x24 = 0x56d8ecd3
 Zicond_czero_eqz_cg_cp_rs1_b14:
-  czero.eqz x13, x14, x16 # perform operation
-  # Check if x13 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x13, Zicond_czero_eqz_cg_cp_rs1_b14, Zicond_czero_eqz_cg_cp_rs1_b14_str)
+  czero.eqz x18, x14, x24 # perform operation
+  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x18, Zicond_czero_eqz_cg_cp_rs1_b14, Zicond_czero_eqz_cg_cp_rs1_b14_str)
 
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs1: x15 = 0xc649dc7e
-  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0xeb1322d2
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs1: x15 = 0xfa1e3172
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs2: x25 = 0xc649dc7e
 Zicond_czero_eqz_cg_cp_rs1_b15:
-  czero.eqz x24, x15, x9 # perform operation
-  # Check if x24 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x24, Zicond_czero_eqz_cg_cp_rs1_b15, Zicond_czero_eqz_cg_cp_rs1_b15_str)
+  czero.eqz x14, x15, x25 # perform operation
+  # Check if x14 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x14, Zicond_czero_eqz_cg_cp_rs1_b15, Zicond_czero_eqz_cg_cp_rs1_b15_str)
 
 # Testcase cp_rs1 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs1: x16 = 0x4b5870d1
-  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs2: x25 = 0x5e0a7492
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs1: x16 = 0xeb1322d2
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x4b5870d1
 Zicond_czero_eqz_cg_cp_rs1_b16:
-  czero.eqz x11, x16, x25 # perform operation
-  # Check if x11 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x11, Zicond_czero_eqz_cg_cp_rs1_b16, Zicond_czero_eqz_cg_cp_rs1_b16_str)
+  czero.eqz x9, x16, x12 # perform operation
+  # Check if x9 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x9, Zicond_czero_eqz_cg_cp_rs1_b16, Zicond_czero_eqz_cg_cp_rs1_b16_str)
 
 # Testcase cp_rs1 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs1: x17 = 0xa5bc248b
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0x55ea80c7
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs1: x17 = 0x5e0a7492
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0xa5bc248b
 Zicond_czero_eqz_cg_cp_rs1_b17:
-  czero.eqz x2, x17, x16 # perform operation
-  # Check if x2 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x2, Zicond_czero_eqz_cg_cp_rs1_b17, Zicond_czero_eqz_cg_cp_rs1_b17_str)
+  czero.eqz x24, x17, x2 # perform operation
+  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x24, Zicond_czero_eqz_cg_cp_rs1_b17, Zicond_czero_eqz_cg_cp_rs1_b17_str)
 
 # Testcase cp_rs1 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0x122971af
-  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x0e0c9d2f
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0x55ea80c7
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x122971af
 Zicond_czero_eqz_cg_cp_rs1_b18:
-  czero.eqz x17, x18, x10 # perform operation
-  # Check if x17 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x17, Zicond_czero_eqz_cg_cp_rs1_b18, Zicond_czero_eqz_cg_cp_rs1_b18_str)
+  czero.eqz x15, x18, x19 # perform operation
+  # Check if x15 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x15, Zicond_czero_eqz_cg_cp_rs1_b18, Zicond_czero_eqz_cg_cp_rs1_b18_str)
 
 # Testcase cp_rs1 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs1: x19 = 0xb18ae6d4
-  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load rs2: x23 = 0x07227e56
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs1: x19 = 0x0e0c9d2f
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0xb18ae6d4
 Zicond_czero_eqz_cg_cp_rs1_b19:
-  czero.eqz x6, x19, x23 # perform operation
-  # Check if x6 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x6, Zicond_czero_eqz_cg_cp_rs1_b19, Zicond_czero_eqz_cg_cp_rs1_b19_str)
+  czero.eqz x10, x19, x8 # perform operation
+  # Check if x10 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x10, Zicond_czero_eqz_cg_cp_rs1_b19, Zicond_czero_eqz_cg_cp_rs1_b19_str)
 
 # Testcase cp_rs1 (Test source rs1 = x20)
   RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs1: x20 = 0xe7b1b053
   RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0x786a1f13
 Zicond_czero_eqz_cg_cp_rs1_b20:
-  czero.eqz x26, x20, x16 # perform operation
-  # Check if x26 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x26, Zicond_czero_eqz_cg_cp_rs1_b20, Zicond_czero_eqz_cg_cp_rs1_b20_str)
+  czero.eqz x31, x20, x16 # perform operation
+  # Check if x31 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x31, Zicond_czero_eqz_cg_cp_rs1_b20, Zicond_czero_eqz_cg_cp_rs1_b20_str)
 
   mv x23, x21 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x21)
@@ -214,16 +214,16 @@ Zicond_czero_eqz_cg_cp_rs1_b20:
   RVTEST_TESTDATA_LOAD_INT(x23, x25) # load rs2: x25 = 0xedef9762
 Zicond_czero_eqz_cg_cp_rs1_b21:
   czero.eqz x12, x21, x25 # perform operation
-  # Check if x12 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x12, Zicond_czero_eqz_cg_cp_rs1_b21, Zicond_czero_eqz_cg_cp_rs1_b21_str)
+  # Check if x12 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x12, Zicond_czero_eqz_cg_cp_rs1_b21, Zicond_czero_eqz_cg_cp_rs1_b21_str)
 
 # Testcase cp_rs1 (Test source rs1 = x22)
   RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs1: x22 = 0x925dbdbe
   RVTEST_TESTDATA_LOAD_INT(x23, x16) # load rs2: x16 = 0x10799427
 Zicond_czero_eqz_cg_cp_rs1_b22:
   czero.eqz x19, x22, x16 # perform operation
-  # Check if x19 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x19, Zicond_czero_eqz_cg_cp_rs1_b22, Zicond_czero_eqz_cg_cp_rs1_b22_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, Zicond_czero_eqz_cg_cp_rs1_b22, Zicond_czero_eqz_cg_cp_rs1_b22_str)
 
   mv x15, x23 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x23)
@@ -231,56 +231,56 @@ Zicond_czero_eqz_cg_cp_rs1_b22:
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0x5abb0771
 Zicond_czero_eqz_cg_cp_rs1_b23:
   czero.eqz x16, x23, x12 # perform operation
-  # Check if x16 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x16, Zicond_czero_eqz_cg_cp_rs1_b23, Zicond_czero_eqz_cg_cp_rs1_b23_str)
+  # Check if x16 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x16, Zicond_czero_eqz_cg_cp_rs1_b23, Zicond_czero_eqz_cg_cp_rs1_b23_str)
 
 # Testcase cp_rs1 (Test source rs1 = x24)
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs1: x24 = 0x739d04e0
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x51840869
 Zicond_czero_eqz_cg_cp_rs1_b24:
   czero.eqz x19, x24, x9 # perform operation
-  # Check if x19 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x19, Zicond_czero_eqz_cg_cp_rs1_b24, Zicond_czero_eqz_cg_cp_rs1_b24_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, Zicond_czero_eqz_cg_cp_rs1_b24, Zicond_czero_eqz_cg_cp_rs1_b24_str)
 
 # Testcase cp_rs1 (Test source rs1 = x25)
   RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs1: x25 = 0xf15fc61c
   RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs2: x28 = 0x3806b9c3
 Zicond_czero_eqz_cg_cp_rs1_b25:
   czero.eqz x13, x25, x28 # perform operation
-  # Check if x13 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x13, Zicond_czero_eqz_cg_cp_rs1_b25, Zicond_czero_eqz_cg_cp_rs1_b25_str)
+  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x13, Zicond_czero_eqz_cg_cp_rs1_b25, Zicond_czero_eqz_cg_cp_rs1_b25_str)
 
 # Testcase cp_rs1 (Test source rs1 = x26)
   RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs1: x26 = 0xa4366f41
   RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs2: x22 = 0xb24ceead
 Zicond_czero_eqz_cg_cp_rs1_b26:
   czero.eqz x28, x26, x22 # perform operation
-  # Check if x28 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x28, Zicond_czero_eqz_cg_cp_rs1_b26, Zicond_czero_eqz_cg_cp_rs1_b26_str)
+  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x28, Zicond_czero_eqz_cg_cp_rs1_b26, Zicond_czero_eqz_cg_cp_rs1_b26_str)
 
 # Testcase cp_rs1 (Test source rs1 = x27)
   RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs1: x27 = 0xace3ad7d
   RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs2: x3 = 0x6bf0af23
 Zicond_czero_eqz_cg_cp_rs1_b27:
   czero.eqz x2, x27, x3 # perform operation
-  # Check if x2 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x2, Zicond_czero_eqz_cg_cp_rs1_b27, Zicond_czero_eqz_cg_cp_rs1_b27_str)
+  # Check if x2 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x2, Zicond_czero_eqz_cg_cp_rs1_b27, Zicond_czero_eqz_cg_cp_rs1_b27_str)
 
 # Testcase cp_rs1 (Test source rs1 = x28)
   RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs1: x28 = 0x75acbc73
   RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs2: x26 = 0x8b5c2d08
 Zicond_czero_eqz_cg_cp_rs1_b28:
   czero.eqz x14, x28, x26 # perform operation
-  # Check if x14 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x14, Zicond_czero_eqz_cg_cp_rs1_b28, Zicond_czero_eqz_cg_cp_rs1_b28_str)
+  # Check if x14 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x14, Zicond_czero_eqz_cg_cp_rs1_b28, Zicond_czero_eqz_cg_cp_rs1_b28_str)
 
 # Testcase cp_rs1 (Test source rs1 = x29)
   RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0x32053f9a
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs2: x24 = 0x387cae4e
 Zicond_czero_eqz_cg_cp_rs1_b29:
   czero.eqz x19, x29, x24 # perform operation
-  # Check if x19 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x30, x8, x7, x19, Zicond_czero_eqz_cg_cp_rs1_b29, Zicond_czero_eqz_cg_cp_rs1_b29_str)
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, Zicond_czero_eqz_cg_cp_rs1_b29, Zicond_czero_eqz_cg_cp_rs1_b29_str)
 
   mv x20, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x30)
@@ -288,16 +288,16 @@ Zicond_czero_eqz_cg_cp_rs1_b29:
   RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs2: x28 = 0x3b023128
 Zicond_czero_eqz_cg_cp_rs1_b30:
   czero.eqz x10, x30, x28 # perform operation
-  # Check if x10 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x10, Zicond_czero_eqz_cg_cp_rs1_b30, Zicond_czero_eqz_cg_cp_rs1_b30_str)
+  # Check if x10 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x10, Zicond_czero_eqz_cg_cp_rs1_b30, Zicond_czero_eqz_cg_cp_rs1_b30_str)
 
 # Testcase cp_rs1 (Test source rs1 = x31)
   RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs1: x31 = 0x4ad28ae3
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x0f3c0cbc
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0x0f3c0cbc
 Zicond_czero_eqz_cg_cp_rs1_b31:
-  czero.eqz x21, x31, x6 # perform operation
-  # Check if x21 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x21, Zicond_czero_eqz_cg_cp_rs1_b31, Zicond_czero_eqz_cg_cp_rs1_b31_str)
+  czero.eqz x21, x31, x8 # perform operation
+  # Check if x21 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x21, Zicond_czero_eqz_cg_cp_rs1_b31, Zicond_czero_eqz_cg_cp_rs1_b31_str)
 
 /////////////////////////////////
 // cp_rs2
@@ -308,2963 +308,2959 @@ Zicond_czero_eqz_cg_cp_rs1_b31:
   RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rs2: x0 = 0x77670b55
 Zicond_czero_eqz_cg_cp_rs2_b0:
   czero.eqz x25, x18, x0 # perform operation
-  # Check if x25 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x25, Zicond_czero_eqz_cg_cp_rs2_b0, Zicond_czero_eqz_cg_cp_rs2_b0_str)
+  # Check if x25 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x25, Zicond_czero_eqz_cg_cp_rs2_b0, Zicond_czero_eqz_cg_cp_rs2_b0_str)
 
 # Testcase cp_rs2 (Test source rs2 = x1)
   RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs1: x25 = 0xcba539bf
   RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs2: x1 = 0x471cd925
 Zicond_czero_eqz_cg_cp_rs2_b1:
   czero.eqz x0, x25, x1 # perform operation
-  # Check if x0 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x0, Zicond_czero_eqz_cg_cp_rs2_b1, Zicond_czero_eqz_cg_cp_rs2_b1_str)
+  # Check if x0 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x0, Zicond_czero_eqz_cg_cp_rs2_b1, Zicond_czero_eqz_cg_cp_rs2_b1_str)
 
 # Testcase cp_rs2 (Test source rs2 = x2)
   RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0x7fa5ecc6
   RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs2: x2 = 0x7ad02d06
 Zicond_czero_eqz_cg_cp_rs2_b2:
   czero.eqz x31, x29, x2 # perform operation
-  # Check if x31 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x31, Zicond_czero_eqz_cg_cp_rs2_b2, Zicond_czero_eqz_cg_cp_rs2_b2_str)
+  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x31, Zicond_czero_eqz_cg_cp_rs2_b2, Zicond_czero_eqz_cg_cp_rs2_b2_str)
 
 # Testcase cp_rs2 (Test source rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x15, x17) # load rs1: x17 = 0xfdc077e2
   RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs2: x3 = 0x327ee38a
 Zicond_czero_eqz_cg_cp_rs2_b3:
   czero.eqz x13, x17, x3 # perform operation
-  # Check if x13 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x13, Zicond_czero_eqz_cg_cp_rs2_b3, Zicond_czero_eqz_cg_cp_rs2_b3_str)
+  # Check if x13 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x13, Zicond_czero_eqz_cg_cp_rs2_b3, Zicond_czero_eqz_cg_cp_rs2_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0x0daa20c9
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs2: x4 = 0x3d5983e5
+  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs1: x26 = 0x3d5983e5
+  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs2: x4 = 0x03eef34b
 Zicond_czero_eqz_cg_cp_rs2_b4:
-  czero.eqz x21, x29, x4 # perform operation
-  # Check if x21 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x21, Zicond_czero_eqz_cg_cp_rs2_b4, Zicond_czero_eqz_cg_cp_rs2_b4_str)
+  czero.eqz x5, x26, x4 # perform operation
+  # Check if x5 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x5, Zicond_czero_eqz_cg_cp_rs2_b4, Zicond_czero_eqz_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs1: x9 = 0xf80c3dbb
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs2: x5 = 0x805e3472
+  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs1: x21 = 0xcb638b92
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs2: x5 = 0x48d303d3
 Zicond_czero_eqz_cg_cp_rs2_b5:
-  czero.eqz x21, x9, x5 # perform operation
-  # Check if x21 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x21, Zicond_czero_eqz_cg_cp_rs2_b5, Zicond_czero_eqz_cg_cp_rs2_b5_str)
+  czero.eqz x3, x21, x5 # perform operation
+  # Check if x3 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x3, Zicond_czero_eqz_cg_cp_rs2_b5, Zicond_czero_eqz_cg_cp_rs2_b5_str)
 
 # Testcase cp_rs2 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs1: x31 = 0x460722af
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0xe4d1a4aa
+  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs1: x22 = 0xba9fae2f
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x274e6d03
 Zicond_czero_eqz_cg_cp_rs2_b6:
-  czero.eqz x30, x31, x6 # perform operation
-  # Check if x30 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x30, Zicond_czero_eqz_cg_cp_rs2_b6, Zicond_czero_eqz_cg_cp_rs2_b6_str)
+  czero.eqz x21, x22, x6 # perform operation
+  # Check if x21 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x21, Zicond_czero_eqz_cg_cp_rs2_b6, Zicond_czero_eqz_cg_cp_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs1: x21 = 0xd1cffcf0
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs2: x7 = 0xfaef5a09
+  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs1: x26 = 0xfaef5a09
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs2: x7 = 0xa92ad522
 Zicond_czero_eqz_cg_cp_rs2_b7:
-  czero.eqz x31, x21, x7 # perform operation
-  # Check if x31 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x31, Zicond_czero_eqz_cg_cp_rs2_b7, Zicond_czero_eqz_cg_cp_rs2_b7_str)
+  czero.eqz x6, x26, x7 # perform operation
+  # Check if x6 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x6, Zicond_czero_eqz_cg_cp_rs2_b7, Zicond_czero_eqz_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load rs1: x16 = 0x658ac950
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0xecc72617
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0xecc72617
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0x95a09378
 Zicond_czero_eqz_cg_cp_rs2_b8:
-  czero.eqz x5, x16, x8 # perform operation
-  # Check if x5 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x5, Zicond_czero_eqz_cg_cp_rs2_b8, Zicond_czero_eqz_cg_cp_rs2_b8_str)
+  czero.eqz x30, x6, x8 # perform operation
+  # Check if x30 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x30, Zicond_czero_eqz_cg_cp_rs2_b8, Zicond_czero_eqz_cg_cp_rs2_b8_str)
 
 # Testcase cp_rs2 (Test source rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0x143144fb
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x3e49a8a8
+  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0x097645b0
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0xd47f3e00
 Zicond_czero_eqz_cg_cp_rs2_b9:
-  czero.eqz x2, x6, x9 # perform operation
-  # Check if x2 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x2, Zicond_czero_eqz_cg_cp_rs2_b9, Zicond_czero_eqz_cg_cp_rs2_b9_str)
+  czero.eqz x16, x29, x9 # perform operation
+  # Check if x16 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x16, Zicond_czero_eqz_cg_cp_rs2_b9, Zicond_czero_eqz_cg_cp_rs2_b9_str)
 
 # Testcase cp_rs2 (Test source rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0xd4c3e2b3
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0xa0855dd2
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0xe8b37236
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x1ae16d34
 Zicond_czero_eqz_cg_cp_rs2_b10:
-  czero.eqz x11, x14, x10 # perform operation
-  # Check if x11 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x11, Zicond_czero_eqz_cg_cp_rs2_b10, Zicond_czero_eqz_cg_cp_rs2_b10_str)
+  czero.eqz x11, x12, x10 # perform operation
+  # Check if x11 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x11, Zicond_czero_eqz_cg_cp_rs2_b10, Zicond_czero_eqz_cg_cp_rs2_b10_str)
 
 # Testcase cp_rs2 (Test source rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs1: x31 = 0x528ff108
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x44359b2d
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs1: x3 = 0x9972fbc2
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x07992278
 Zicond_czero_eqz_cg_cp_rs2_b11:
-  czero.eqz x3, x31, x11 # perform operation
-  # Check if x3 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x3, Zicond_czero_eqz_cg_cp_rs2_b11, Zicond_czero_eqz_cg_cp_rs2_b11_str)
+  czero.eqz x10, x3, x11 # perform operation
+  # Check if x10 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x10, Zicond_czero_eqz_cg_cp_rs2_b11, Zicond_czero_eqz_cg_cp_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0xf2dc0775
+  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs1: x31 = 0xf2dc0775
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0xf16381a8
 Zicond_czero_eqz_cg_cp_rs2_b12:
-  czero.eqz x21, x10, x12 # perform operation
-  # Check if x21 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x21, Zicond_czero_eqz_cg_cp_rs2_b12, Zicond_czero_eqz_cg_cp_rs2_b12_str)
+  czero.eqz x0, x31, x12 # perform operation
+  # Check if x0 contains the expected result. x20 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x20, x14, x13, x0, Zicond_czero_eqz_cg_cp_rs2_b12, Zicond_czero_eqz_cg_cp_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs1: x22 = 0x26ae161b
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0xf46c76b6
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0x665e3549
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0xbafd6f88
 Zicond_czero_eqz_cg_cp_rs2_b13:
-  czero.eqz x5, x22, x13 # perform operation
-  # Check if x5 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x5, Zicond_czero_eqz_cg_cp_rs2_b13, Zicond_czero_eqz_cg_cp_rs2_b13_str)
+  czero.eqz x21, x11, x13 # perform operation
+  # Check if x21 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x21, Zicond_czero_eqz_cg_cp_rs2_b13, Zicond_czero_eqz_cg_cp_rs2_b13_str)
 
 # Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs1: x28 = 0x6bbf1f98
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs2: x14 = 0xb4a3a14c
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x26afe14a
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs2: x14 = 0x741c4233
 Zicond_czero_eqz_cg_cp_rs2_b14:
-  czero.eqz x11, x28, x14 # perform operation
-  # Check if x11 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x11, Zicond_czero_eqz_cg_cp_rs2_b14, Zicond_czero_eqz_cg_cp_rs2_b14_str)
+  czero.eqz x3, x12, x14 # perform operation
+  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x3, Zicond_czero_eqz_cg_cp_rs2_b14, Zicond_czero_eqz_cg_cp_rs2_b14_str)
 
   mv x2, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0xad595e14
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x14dbe2f1
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x902271c7
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x9f31ae61
 Zicond_czero_eqz_cg_cp_rs2_b15:
-  czero.eqz x18, x3, x15 # perform operation
-  # Check if x18 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x18, Zicond_czero_eqz_cg_cp_rs2_b15, Zicond_czero_eqz_cg_cp_rs2_b15_str)
+  czero.eqz x1, x19, x15 # perform operation
+  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x1, Zicond_czero_eqz_cg_cp_rs2_b15, Zicond_czero_eqz_cg_cp_rs2_b15_str)
 
 # Testcase cp_rs2 (Test source rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x0acc079a
-  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0xcb6d0c78
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xbc8a9d6b
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0xd45f65a2
 Zicond_czero_eqz_cg_cp_rs2_b16:
-  czero.eqz x3, x10, x16 # perform operation
-  # Check if x3 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs2_b16, Zicond_czero_eqz_cg_cp_rs2_b16_str)
+  czero.eqz x9, x10, x16 # perform operation
+  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x9, Zicond_czero_eqz_cg_cp_rs2_b16, Zicond_czero_eqz_cg_cp_rs2_b16_str)
 
 # Testcase cp_rs2 (Test source rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x4d10bb65
-  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x48926c6b
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x0a5e6c9f
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0xb3663510
 Zicond_czero_eqz_cg_cp_rs2_b17:
-  czero.eqz x13, x18, x17 # perform operation
-  # Check if x13 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x13, Zicond_czero_eqz_cg_cp_rs2_b17, Zicond_czero_eqz_cg_cp_rs2_b17_str)
+  czero.eqz x26, x6, x17 # perform operation
+  # Check if x26 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x26, Zicond_czero_eqz_cg_cp_rs2_b17, Zicond_czero_eqz_cg_cp_rs2_b17_str)
 
 # Testcase cp_rs2 (Test source rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x3bb95576
-  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x76ce2c4b
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xbb74f135
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0xc6d7ff16
 Zicond_czero_eqz_cg_cp_rs2_b18:
-  czero.eqz x25, x3, x18 # perform operation
-  # Check if x25 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x25, Zicond_czero_eqz_cg_cp_rs2_b18, Zicond_czero_eqz_cg_cp_rs2_b18_str)
+  czero.eqz x7, x10, x18 # perform operation
+  # Check if x7 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x7, Zicond_czero_eqz_cg_cp_rs2_b18, Zicond_czero_eqz_cg_cp_rs2_b18_str)
 
 # Testcase cp_rs2 (Test source rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs1: x5 = 0xb36f45e7
-  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x8ace9bf2
-Zicond_czero_eqz_cg_cp_rs2_b19:
-  czero.eqz x13, x5, x19 # perform operation
-  # Check if x13 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x13, Zicond_czero_eqz_cg_cp_rs2_b19, Zicond_czero_eqz_cg_cp_rs2_b19_str)
-
-  mv x16, x20 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x20)
   RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x3f63c48e
-  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs2: x20 = 0x06dac8df
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x06dac8df
+Zicond_czero_eqz_cg_cp_rs2_b19:
+  czero.eqz x16, x26, x19 # perform operation
+  # Check if x16 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x16, Zicond_czero_eqz_cg_cp_rs2_b19, Zicond_czero_eqz_cg_cp_rs2_b19_str)
+
+  mv x9, x20 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x20)
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x45de7cb5
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs2: x20 = 0xd2bf6d4e
 Zicond_czero_eqz_cg_cp_rs2_b20:
-  czero.eqz x17, x26, x20 # perform operation
-  # Check if x17 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x17, Zicond_czero_eqz_cg_cp_rs2_b20, Zicond_czero_eqz_cg_cp_rs2_b20_str)
+  czero.eqz x29, x23, x20 # perform operation
+  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zicond_czero_eqz_cg_cp_rs2_b20, Zicond_czero_eqz_cg_cp_rs2_b20_str)
 
 # Testcase cp_rs2 (Test source rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x6e560e9b
-  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0xe574c268
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x63ac5e6d
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0xbf6fa74e
 Zicond_czero_eqz_cg_cp_rs2_b21:
-  czero.eqz x4, x30, x21 # perform operation
-  # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x4, Zicond_czero_eqz_cg_cp_rs2_b21, Zicond_czero_eqz_cg_cp_rs2_b21_str)
+  czero.eqz x12, x17, x21 # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, Zicond_czero_eqz_cg_cp_rs2_b21, Zicond_czero_eqz_cg_cp_rs2_b21_str)
 
 # Testcase cp_rs2 (Test source rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x6500b624
-  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x03533f2d
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0xe2b64ddf
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x46275a5e
 Zicond_czero_eqz_cg_cp_rs2_b22:
-  czero.eqz x15, x28, x22 # perform operation
-  # Check if x15 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x15, Zicond_czero_eqz_cg_cp_rs2_b22, Zicond_czero_eqz_cg_cp_rs2_b22_str)
+  czero.eqz x21, x7, x22 # perform operation
+  # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x21, Zicond_czero_eqz_cg_cp_rs2_b22, Zicond_czero_eqz_cg_cp_rs2_b22_str)
 
 # Testcase cp_rs2 (Test source rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0xa3583055
-  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0xf1262953
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xb61bdeb3
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x7c23d638
 Zicond_czero_eqz_cg_cp_rs2_b23:
-  czero.eqz x18, x22, x23 # perform operation
-  # Check if x18 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x18, Zicond_czero_eqz_cg_cp_rs2_b23, Zicond_czero_eqz_cg_cp_rs2_b23_str)
+  czero.eqz x27, x24, x23 # perform operation
+  # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zicond_czero_eqz_cg_cp_rs2_b23, Zicond_czero_eqz_cg_cp_rs2_b23_str)
 
 # Testcase cp_rs2 (Test source rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x4f9b46de
-  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0xd220e0ef
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x8509ac58
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x7274cc6e
 Zicond_czero_eqz_cg_cp_rs2_b24:
-  czero.eqz x30, x27, x24 # perform operation
-  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x30, Zicond_czero_eqz_cg_cp_rs2_b24, Zicond_czero_eqz_cg_cp_rs2_b24_str)
+  czero.eqz x14, x3, x24 # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, Zicond_czero_eqz_cg_cp_rs2_b24, Zicond_czero_eqz_cg_cp_rs2_b24_str)
 
 # Testcase cp_rs2 (Test source rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0xe4df060b
-  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0xa316a191
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0xa316a191
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0x179a07bc
 Zicond_czero_eqz_cg_cp_rs2_b25:
-  czero.eqz x3, x0, x25 # perform operation
-  # Check if x3 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs2_b25, Zicond_czero_eqz_cg_cp_rs2_b25_str)
+  czero.eqz x0, x28, x25 # perform operation
+  # Check if x0 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x0, Zicond_czero_eqz_cg_cp_rs2_b25, Zicond_czero_eqz_cg_cp_rs2_b25_str)
 
 # Testcase cp_rs2 (Test source rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x6a235102
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x6a235102
   RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0xcad5635f
 Zicond_czero_eqz_cg_cp_rs2_b26:
-  czero.eqz x4, x23, x26 # perform operation
-  # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x4, Zicond_czero_eqz_cg_cp_rs2_b26, Zicond_czero_eqz_cg_cp_rs2_b26_str)
+  czero.eqz x6, x22, x26 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs2_b26, Zicond_czero_eqz_cg_cp_rs2_b26_str)
 
 # Testcase cp_rs2 (Test source rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x15e4cd9f
   RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xf5bace01
 Zicond_czero_eqz_cg_cp_rs2_b27:
-  czero.eqz x4, x20, x27 # perform operation
-  # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x4, Zicond_czero_eqz_cg_cp_rs2_b27, Zicond_czero_eqz_cg_cp_rs2_b27_str)
+  czero.eqz x6, x20, x27 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs2_b27, Zicond_czero_eqz_cg_cp_rs2_b27_str)
 
 # Testcase cp_rs2 (Test source rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x68e86a61
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x68e86a61
   RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x5f988def
 Zicond_czero_eqz_cg_cp_rs2_b28:
-  czero.eqz x23, x11, x28 # perform operation
-  # Check if x23 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x23, Zicond_czero_eqz_cg_cp_rs2_b28, Zicond_czero_eqz_cg_cp_rs2_b28_str)
+  czero.eqz x23, x12, x28 # perform operation
+  # Check if x23 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x23, Zicond_czero_eqz_cg_cp_rs2_b28, Zicond_czero_eqz_cg_cp_rs2_b28_str)
 
 # Testcase cp_rs2 (Test source rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x0daed173
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x0daed173
   RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0x4fe4717a
 Zicond_czero_eqz_cg_cp_rs2_b29:
-  czero.eqz x30, x9, x29 # perform operation
-  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x30, Zicond_czero_eqz_cg_cp_rs2_b29, Zicond_czero_eqz_cg_cp_rs2_b29_str)
+  czero.eqz x30, x10, x29 # perform operation
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, Zicond_czero_eqz_cg_cp_rs2_b29, Zicond_czero_eqz_cg_cp_rs2_b29_str)
 
 # Testcase cp_rs2 (Test source rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0xb76f2d62
   RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x32527cf8
 Zicond_czero_eqz_cg_cp_rs2_b30:
   czero.eqz x24, x27, x30 # perform operation
-  # Check if x24 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x24, Zicond_czero_eqz_cg_cp_rs2_b30, Zicond_czero_eqz_cg_cp_rs2_b30_str)
+  # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x24, Zicond_czero_eqz_cg_cp_rs2_b30, Zicond_czero_eqz_cg_cp_rs2_b30_str)
 
 # Testcase cp_rs2 (Test source rs2 = x31)
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x8954dc8a
   RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x4a858226
 Zicond_czero_eqz_cg_cp_rs2_b31:
   czero.eqz x27, x3, x31 # perform operation
-  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x27, Zicond_czero_eqz_cg_cp_rs2_b31, Zicond_czero_eqz_cg_cp_rs2_b31_str)
+  # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zicond_czero_eqz_cg_cp_rs2_b31, Zicond_czero_eqz_cg_cp_rs2_b31_str)
 
 /////////////////////////////////
 // cp_rd
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs1: x5 = 0xd5d913d1
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0xd5d913d1
   RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x389719bc
 Zicond_czero_eqz_cg_cp_rd_b0:
-  czero.eqz x0, x5, x21 # perform operation
-  # Check if x0 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x0, Zicond_czero_eqz_cg_cp_rd_b0, Zicond_czero_eqz_cg_cp_rd_b0_str)
+  czero.eqz x0, x7, x21 # perform operation
+  # Check if x0 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x0, Zicond_czero_eqz_cg_cp_rd_b0, Zicond_czero_eqz_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x256d582e
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x256d582e
   RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0xb067c4e3
 Zicond_czero_eqz_cg_cp_rd_b1:
-  czero.eqz x1, x11, x30 # perform operation
-  # Check if x1 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x1, Zicond_czero_eqz_cg_cp_rd_b1, Zicond_czero_eqz_cg_cp_rd_b1_str)
+  czero.eqz x1, x12, x30 # perform operation
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, Zicond_czero_eqz_cg_cp_rd_b1, Zicond_czero_eqz_cg_cp_rd_b1_str)
 
   mv x22, x2 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0x0c7dec08
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs1: x15 = 0x0c7dec08
   RVTEST_TESTDATA_LOAD_INT(x22, x27) # load rs2: x27 = 0xb5ef1275
 Zicond_czero_eqz_cg_cp_rd_b2:
-  czero.eqz x2, x14, x27 # perform operation
-  # Check if x2 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x2, Zicond_czero_eqz_cg_cp_rd_b2, Zicond_czero_eqz_cg_cp_rd_b2_str)
+  czero.eqz x2, x15, x27 # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, Zicond_czero_eqz_cg_cp_rd_b2, Zicond_czero_eqz_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs1: x9 = 0xbdbc19ba
-  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs2: x11 = 0xdf26e229
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0xbdbc19ba
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0xdf26e229
 Zicond_czero_eqz_cg_cp_rd_b3:
-  czero.eqz x3, x9, x11 # perform operation
-  # Check if x3 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x3, Zicond_czero_eqz_cg_cp_rd_b3, Zicond_czero_eqz_cg_cp_rd_b3_str)
+  czero.eqz x3, x10, x12 # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zicond_czero_eqz_cg_cp_rd_b3, Zicond_czero_eqz_cg_cp_rd_b3_str)
 
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0x0a5ae4fe
-  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs2: x26 = 0xffc86a2f
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs1: x25 = 0xffc86a2f
+  RVTEST_TESTDATA_LOAD_INT(x22, x1) # load rs2: x1 = 0xb0658df5
 Zicond_czero_eqz_cg_cp_rd_b4:
-  czero.eqz x4, x20, x26 # perform operation
-  # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x4, Zicond_czero_eqz_cg_cp_rd_b4, Zicond_czero_eqz_cg_cp_rd_b4_str)
+  czero.eqz x4, x25, x1 # perform operation
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, Zicond_czero_eqz_cg_cp_rd_b4, Zicond_czero_eqz_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x22, x1) # load rs1: x1 = 0xb0658df5
-  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x563bbe5a
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0x563bbe5a
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs2: x28 = 0xc64b242d
 Zicond_czero_eqz_cg_cp_rd_b5:
-  czero.eqz x5, x1, x12 # perform operation
-  # Check if x5 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x5, Zicond_czero_eqz_cg_cp_rd_b5, Zicond_czero_eqz_cg_cp_rd_b5_str)
+  czero.eqz x5, x12, x28 # perform operation
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, Zicond_czero_eqz_cg_cp_rd_b5, Zicond_czero_eqz_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load rs1: x27 = 0xc64b242d
-  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0xd8efb56b
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs1: x16 = 0xd8efb56b
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs2: x28 = 0x0e88cc1c
 Zicond_czero_eqz_cg_cp_rd_b6:
-  czero.eqz x6, x27, x15 # perform operation
-  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x6, Zicond_czero_eqz_cg_cp_rd_b6, Zicond_czero_eqz_cg_cp_rd_b6_str)
+  czero.eqz x6, x16, x28 # perform operation
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, Zicond_czero_eqz_cg_cp_rd_b6, Zicond_czero_eqz_cg_cp_rd_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs1: x2 = 0x7ef4b8a4
-  RVTEST_TESTDATA_LOAD_INT(x22, x30) # load rs2: x30 = 0x14a0de99
+  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs1: x0 = 0x8450591e
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs2: x19 = 0x53999e40
 Zicond_czero_eqz_cg_cp_rd_b7:
-  czero.eqz x7, x2, x30 # perform operation
-  # Check if x7 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x16, x13, x12, x7, Zicond_czero_eqz_cg_cp_rd_b7, Zicond_czero_eqz_cg_cp_rd_b7_str)
+  czero.eqz x7, x0, x19 # perform operation
+  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x7, Zicond_czero_eqz_cg_cp_rd_b7, Zicond_czero_eqz_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs1: x7 = 0xf8307c1f
-  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load rs2: x3 = 0x40731b46
-Zicond_czero_eqz_cg_cp_rd_b8:
-  czero.eqz x8, x7, x3 # perform operation
-  # Check if x8 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x16, x13, x12, x8, Zicond_czero_eqz_cg_cp_rd_b8, Zicond_czero_eqz_cg_cp_rd_b8_str)
-
-# Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs1: x26 = 0x51f6dfdf
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0x51f6dfdf
   RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs2: x2 = 0x0135134f
+Zicond_czero_eqz_cg_cp_rd_b8:
+  czero.eqz x8, x19, x2 # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x8, Zicond_czero_eqz_cg_cp_rd_b8, Zicond_czero_eqz_cg_cp_rd_b8_str)
+
+  mv x30, x9 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x9)
+  RVTEST_TESTDATA_LOAD_INT(x22, x6) # load rs1: x6 = 0xa40e72b1
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs2: x19 = 0xc4fc5602
 Zicond_czero_eqz_cg_cp_rd_b9:
-  czero.eqz x9, x26, x2 # perform operation
-  # Check if x9 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x16, x13, x12, x9, Zicond_czero_eqz_cg_cp_rd_b9, Zicond_czero_eqz_cg_cp_rd_b9_str)
+  czero.eqz x9, x6, x19 # perform operation
+  # Check if x9 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x9, Zicond_czero_eqz_cg_cp_rd_b9, Zicond_czero_eqz_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs1: x26 = 0xb42e0bfd
-  RVTEST_TESTDATA_LOAD_INT(x22, x4) # load rs2: x4 = 0x59e313c8
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load rs1: x3 = 0xda655bc6
+  RVTEST_TESTDATA_LOAD_INT(x22, x5) # load rs2: x5 = 0x0b12845f
 Zicond_czero_eqz_cg_cp_rd_b10:
-  czero.eqz x10, x26, x4 # perform operation
-  # Check if x10 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x16, x13, x12, x10, Zicond_czero_eqz_cg_cp_rd_b10, Zicond_czero_eqz_cg_cp_rd_b10_str)
+  czero.eqz x10, x3, x5 # perform operation
+  # Check if x10 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x10, Zicond_czero_eqz_cg_cp_rd_b10, Zicond_czero_eqz_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs1: x8 = 0x9d8140fc
-  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0xd8fc6c20
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x0e394655
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0xc959b49c
 Zicond_czero_eqz_cg_cp_rd_b11:
-  czero.eqz x11, x8, x15 # perform operation
-  # Check if x11 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x16, x13, x12, x11, Zicond_czero_eqz_cg_cp_rd_b11, Zicond_czero_eqz_cg_cp_rd_b11_str)
+  czero.eqz x11, x10, x21 # perform operation
+  # Check if x11 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x11, Zicond_czero_eqz_cg_cp_rd_b11, Zicond_czero_eqz_cg_cp_rd_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0x0e394655
-  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs2: x23 = 0xc959b49c
+  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs1: x8 = 0x0f4f45cd
+  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs2: x9 = 0x2ae429ba
 Zicond_czero_eqz_cg_cp_rd_b12:
-  czero.eqz x12, x13, x23 # perform operation
-  # Check if x12 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x12, Zicond_czero_eqz_cg_cp_rd_b12, Zicond_czero_eqz_cg_cp_rd_b12_str)
+  czero.eqz x12, x8, x9 # perform operation
+  # Check if x12 contains the expected result. x30 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x30, x14, x13, x12, Zicond_czero_eqz_cg_cp_rd_b12, Zicond_czero_eqz_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x0f4f45cd
-  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs2: x11 = 0x2ae429ba
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0xbc29879c
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0xe380673b
 Zicond_czero_eqz_cg_cp_rd_b13:
-  czero.eqz x13, x10, x11 # perform operation
-  # Check if x13 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x13, Zicond_czero_eqz_cg_cp_rd_b13, Zicond_czero_eqz_cg_cp_rd_b13_str)
+  czero.eqz x13, x19, x20 # perform operation
+  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x13, Zicond_czero_eqz_cg_cp_rd_b13, Zicond_czero_eqz_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0x38efd976
-  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0xbc29879c
+  RVTEST_TESTDATA_LOAD_INT(x22, x31) # load rs1: x31 = 0x499e795b
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0xf6ba9bf7
 Zicond_czero_eqz_cg_cp_rd_b14:
-  czero.eqz x14, x20, x21 # perform operation
-  # Check if x14 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x14, Zicond_czero_eqz_cg_cp_rd_b14, Zicond_czero_eqz_cg_cp_rd_b14_str)
+  czero.eqz x14, x31, x10 # perform operation
+  # Check if x14 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x14, Zicond_czero_eqz_cg_cp_rd_b14, Zicond_czero_eqz_cg_cp_rd_b14_str)
 
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0xe380673b
-  RVTEST_TESTDATA_LOAD_INT(x22, x31) # load rs2: x31 = 0xc43a0594
-Zicond_czero_eqz_cg_cp_rd_b15:
-  czero.eqz x15, x20, x31 # perform operation
-  # Check if x15 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x16, x8, x7, x15, Zicond_czero_eqz_cg_cp_rd_b15, Zicond_czero_eqz_cg_cp_rd_b15_str)
-
-  mv x17, x16 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x16)
   RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0x20529174
-  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load rs2: x27 = 0x5441e038
-Zicond_czero_eqz_cg_cp_rd_b16:
-  czero.eqz x16, x13, x27 # perform operation
-  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x16, Zicond_czero_eqz_cg_cp_rd_b16, Zicond_czero_eqz_cg_cp_rd_b16_str)
+  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs2: x26 = 0x5441e038
+Zicond_czero_eqz_cg_cp_rd_b15:
+  czero.eqz x15, x13, x26 # perform operation
+  # Check if x15 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x15, Zicond_czero_eqz_cg_cp_rd_b15, Zicond_czero_eqz_cg_cp_rd_b15_str)
 
-  mv x31, x17 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x16)
+  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load rs1: x26 = 0x5dd80bc3
+  RVTEST_TESTDATA_LOAD_INT(x22, x31) # load rs2: x31 = 0xb7d6eb27
+Zicond_czero_eqz_cg_cp_rd_b16:
+  czero.eqz x16, x26, x31 # perform operation
+  # Check if x16 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x16, Zicond_czero_eqz_cg_cp_rd_b16, Zicond_czero_eqz_cg_cp_rd_b16_str)
+
 # Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0xb7d6eb27
-  RVTEST_TESTDATA_LOAD_INT(x22, x30) # load rs2: x30 = 0x971b312a
+  RVTEST_TESTDATA_LOAD_INT(x22, x29) # load rs1: x29 = 0x971b312a
+  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs2: x8 = 0xe0aed45f
 Zicond_czero_eqz_cg_cp_rd_b17:
-  czero.eqz x17, x13, x30 # perform operation
-  # Check if x17 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x17, Zicond_czero_eqz_cg_cp_rd_b17, Zicond_czero_eqz_cg_cp_rd_b17_str)
+  czero.eqz x17, x29, x8 # perform operation
+  # Check if x17 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x17, Zicond_czero_eqz_cg_cp_rd_b17, Zicond_czero_eqz_cg_cp_rd_b17_str)
 
 # Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x22, x6) # load rs1: x6 = 0xe0aed45f
-  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs2: x0 = 0xe2d71749
+  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs1: x0 = 0xe2d71749
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0xec8467c1
 Zicond_czero_eqz_cg_cp_rd_b18:
-  czero.eqz x18, x6, x0 # perform operation
-  # Check if x18 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x18, Zicond_czero_eqz_cg_cp_rd_b18, Zicond_czero_eqz_cg_cp_rd_b18_str)
+  czero.eqz x18, x0, x20 # perform operation
+  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x18, Zicond_czero_eqz_cg_cp_rd_b18, Zicond_czero_eqz_cg_cp_rd_b18_str)
 
 # Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0xec8467c1
-  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs2: x0 = 0xc501ebc4
+  RVTEST_TESTDATA_LOAD_INT(x22, x0) # load rs1: x0 = 0xc501ebc4
+  RVTEST_TESTDATA_LOAD_INT(x22, x6) # load rs2: x6 = 0xff11ac22
 Zicond_czero_eqz_cg_cp_rd_b19:
-  czero.eqz x19, x18, x0 # perform operation
-  # Check if x19 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x19, Zicond_czero_eqz_cg_cp_rd_b19, Zicond_czero_eqz_cg_cp_rd_b19_str)
+  czero.eqz x19, x0, x6 # perform operation
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, Zicond_czero_eqz_cg_cp_rd_b19, Zicond_czero_eqz_cg_cp_rd_b19_str)
 
 # Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load rs1: x3 = 0xff11ac22
-  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs2: x23 = 0x61de7754
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs1: x21 = 0x61de7754
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs2: x25 = 0x9c19e8e9
 Zicond_czero_eqz_cg_cp_rd_b20:
-  czero.eqz x20, x3, x23 # perform operation
-  # Check if x20 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x20, Zicond_czero_eqz_cg_cp_rd_b20, Zicond_czero_eqz_cg_cp_rd_b20_str)
+  czero.eqz x20, x21, x25 # perform operation
+  # Check if x20 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x20, Zicond_czero_eqz_cg_cp_rd_b20, Zicond_czero_eqz_cg_cp_rd_b20_str)
 
 # Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x22, x24) # load rs1: x24 = 0x9c19e8e9
-  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs2: x28 = 0xee6dd29c
+  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load rs1: x27 = 0xee6dd29c
+  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs2: x9 = 0x0c5df0ad
 Zicond_czero_eqz_cg_cp_rd_b21:
-  czero.eqz x21, x24, x28 # perform operation
-  # Check if x21 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x21, Zicond_czero_eqz_cg_cp_rd_b21, Zicond_czero_eqz_cg_cp_rd_b21_str)
+  czero.eqz x21, x27, x9 # perform operation
+  # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x21, Zicond_czero_eqz_cg_cp_rd_b21, Zicond_czero_eqz_cg_cp_rd_b21_str)
 
-  mv x14, x22 # switch data pointer register to avoid conflict with test
+  mv x2, x22 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0xde6ccad9
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs2: x23 = 0x781dcc5c
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x781dcc5c
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x2d685881
 Zicond_czero_eqz_cg_cp_rd_b22:
-  czero.eqz x22, x20, x23 # perform operation
-  # Check if x22 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x22, Zicond_czero_eqz_cg_cp_rd_b22, Zicond_czero_eqz_cg_cp_rd_b22_str)
+  czero.eqz x22, x21, x23 # perform operation
+  # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x22, Zicond_czero_eqz_cg_cp_rd_b22, Zicond_czero_eqz_cg_cp_rd_b22_str)
 
 # Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x2d685881
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x289a4a60
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x289a4a60
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0xa2c0759b
 Zicond_czero_eqz_cg_cp_rd_b23:
-  czero.eqz x23, x21, x17 # perform operation
-  # Check if x23 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x23, Zicond_czero_eqz_cg_cp_rd_b23, Zicond_czero_eqz_cg_cp_rd_b23_str)
+  czero.eqz x23, x17, x14 # perform operation
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, Zicond_czero_eqz_cg_cp_rd_b23, Zicond_czero_eqz_cg_cp_rd_b23_str)
 
 # Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs1: x13 = 0xa2c0759b
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0xe034426c
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0xe034426c
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0xebf80783
 Zicond_czero_eqz_cg_cp_rd_b24:
-  czero.eqz x24, x13, x2 # perform operation
-  # Check if x24 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x24, Zicond_czero_eqz_cg_cp_rd_b24, Zicond_czero_eqz_cg_cp_rd_b24_str)
+  czero.eqz x24, x3, x19 # perform operation
+  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x24, Zicond_czero_eqz_cg_cp_rd_b24, Zicond_czero_eqz_cg_cp_rd_b24_str)
 
 # Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs1: x18 = 0xebf80783
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x8f72581e
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x8f72581e
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x25f67bba
 Zicond_czero_eqz_cg_cp_rd_b25:
-  czero.eqz x25, x18, x5 # perform operation
-  # Check if x25 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x25, Zicond_czero_eqz_cg_cp_rd_b25, Zicond_czero_eqz_cg_cp_rd_b25_str)
+  czero.eqz x25, x8, x6 # perform operation
+  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x25, Zicond_czero_eqz_cg_cp_rd_b25, Zicond_czero_eqz_cg_cp_rd_b25_str)
 
 # Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x25f67bba
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0x80bd76d9
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x80bd76d9
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x74c20ec4
 Zicond_czero_eqz_cg_cp_rd_b26:
-  czero.eqz x26, x3, x1 # perform operation
-  # Check if x26 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x26, Zicond_czero_eqz_cg_cp_rd_b26, Zicond_czero_eqz_cg_cp_rd_b26_str)
+  czero.eqz x26, x1, x12 # perform operation
+  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x26, Zicond_czero_eqz_cg_cp_rd_b26, Zicond_czero_eqz_cg_cp_rd_b26_str)
 
 # Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x74c20ec4
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x492ae076
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x492ae076
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x960b4dc0
 Zicond_czero_eqz_cg_cp_rd_b27:
-  czero.eqz x27, x10, x19 # perform operation
-  # Check if x27 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x27, Zicond_czero_eqz_cg_cp_rd_b27, Zicond_czero_eqz_cg_cp_rd_b27_str)
+  czero.eqz x27, x18, x8 # perform operation
+  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x27, Zicond_czero_eqz_cg_cp_rd_b27, Zicond_czero_eqz_cg_cp_rd_b27_str)
 
 # Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x960b4dc0
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0xbbcba88b
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0xbbcba88b
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0xe8ff0419
 Zicond_czero_eqz_cg_cp_rd_b28:
-  czero.eqz x28, x5, x1 # perform operation
-  # Check if x28 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x28, Zicond_czero_eqz_cg_cp_rd_b28, Zicond_czero_eqz_cg_cp_rd_b28_str)
+  czero.eqz x28, x1, x29 # perform operation
+  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x28, Zicond_czero_eqz_cg_cp_rd_b28, Zicond_czero_eqz_cg_cp_rd_b28_str)
 
 # Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x14, x27) # load rs1: x27 = 0xe8ff0419
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0xdeedb227
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0xdeedb227
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0xbf9484de
 Zicond_czero_eqz_cg_cp_rd_b29:
-  czero.eqz x29, x27, x6 # perform operation
-  # Check if x29 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x29, Zicond_czero_eqz_cg_cp_rd_b29, Zicond_czero_eqz_cg_cp_rd_b29_str)
+  czero.eqz x29, x9, x22 # perform operation
+  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x29, Zicond_czero_eqz_cg_cp_rd_b29, Zicond_czero_eqz_cg_cp_rd_b29_str)
 
+  mv x25, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0xbf9484de
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs2: x20 = 0x8b621480
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x26a15892
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x66e4f159
 Zicond_czero_eqz_cg_cp_rd_b30:
-  czero.eqz x30, x21, x20 # perform operation
-  # Check if x30 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x31, x8, x7, x30, Zicond_czero_eqz_cg_cp_rd_b30, Zicond_czero_eqz_cg_cp_rd_b30_str)
+  czero.eqz x30, x1, x17 # perform operation
+  # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x30, Zicond_czero_eqz_cg_cp_rd_b30, Zicond_czero_eqz_cg_cp_rd_b30_str)
 
-  mv x27, x31 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0xf91e8e90
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs2: x20 = 0xde470a85
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x8cabfaf0
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x9c92a674
 Zicond_czero_eqz_cg_cp_rd_b31:
-  czero.eqz x31, x28, x20 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cp_rd_b31, Zicond_czero_eqz_cg_cp_rd_b31_str)
+  czero.eqz x31, x7, x3 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cp_rd_b31, Zicond_czero_eqz_cg_cp_rd_b31_str)
 
 /////////////////////////////////
 // cp_rs1_edges
 /////////////////////////////////
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs2: x29 = 0xf24cec45
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0xf24cec45
 Zicond_czero_eqz_cg_cp_rs1_edges_0x0:
-  czero.eqz x3, x9, x29 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs1_edges_0x0, Zicond_czero_eqz_cg_cp_rs1_edges_0x0_str)
+  czero.eqz x6, x10, x29 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs1_edges_0x0, Zicond_czero_eqz_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs2: x22 = 0x3b376136
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x3b376136
 Zicond_czero_eqz_cg_cp_rs1_edges_0x1:
   czero.eqz x31, x21, x22 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cp_rs1_edges_0x1, Zicond_czero_eqz_cg_cp_rs1_edges_0x1_str)
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cp_rs1_edges_0x1, Zicond_czero_eqz_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0xf816e8fb
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0xf816e8fb
 Zicond_czero_eqz_cg_cp_rs1_edges_0x2:
-  czero.eqz x31, x9, x19 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cp_rs1_edges_0x2, Zicond_czero_eqz_cg_cp_rs1_edges_0x2_str)
+  czero.eqz x31, x10, x19 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cp_rs1_edges_0x2, Zicond_czero_eqz_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x4c10399e
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x4c10399e
 Zicond_czero_eqz_cg_cp_rs1_edges_0x80000000:
-  czero.eqz x16, x5, x13 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000000, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000000_str)
+  czero.eqz x16, x8, x14 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000000, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x0c57a8db
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x0c57a8db
 Zicond_czero_eqz_cg_cp_rs1_edges_0x80000001:
   czero.eqz x16, x29, x18 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000001, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000001_str)
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000001, Zicond_czero_eqz_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs1: x18 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0xf9810be9
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xf9810be9
 Zicond_czero_eqz_cg_cp_rs1_edges_0x7fffffff:
-  czero.eqz x10, x18, x1 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cp_rs1_edges_0x7fffffff, Zicond_czero_eqz_cg_cp_rs1_edges_0x7fffffff_str)
+  czero.eqz x11, x18, x1 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cp_rs1_edges_0x7fffffff, Zicond_czero_eqz_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs2: x20 = 0x36425a06
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs2: x20 = 0x36425a06
 Zicond_czero_eqz_cg_cp_rs1_edges_0x7ffffffe:
-  czero.eqz x26, x4, x20 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cp_rs1_edges_0x7ffffffe, Zicond_czero_eqz_cg_cp_rs1_edges_0x7ffffffe_str)
+  czero.eqz x27, x7, x20 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cp_rs1_edges_0x7ffffffe, Zicond_czero_eqz_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0x7553d081
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0x7553d081
 Zicond_czero_eqz_cg_cp_rs1_edges_0xffffffff:
   czero.eqz x19, x30, x16 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cp_rs1_edges_0xffffffff, Zicond_czero_eqz_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cp_rs1_edges_0xffffffff, Zicond_czero_eqz_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0x290edbf9
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x290edbf9
 Zicond_czero_eqz_cg_cp_rs1_edges_0xfffffffe:
-  czero.eqz x3, x15, x30 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs1_edges_0xfffffffe, Zicond_czero_eqz_cg_cp_rs1_edges_0xfffffffe_str)
+  czero.eqz x6, x15, x30 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs1_edges_0xfffffffe, Zicond_czero_eqz_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0x2f1f59b8
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x2f1f59b8
 Zicond_czero_eqz_cg_cp_rs1_edges_0x5bbc8872:
-  czero.eqz x9, x29, x10 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cp_rs1_edges_0x5bbc8872, Zicond_czero_eqz_cg_cp_rs1_edges_0x5bbc8872_str)
+  czero.eqz x10, x29, x11 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cp_rs1_edges_0x5bbc8872, Zicond_czero_eqz_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs1: x2 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0xf7a780b6
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xf7a780b6
 Zicond_czero_eqz_cg_cp_rs1_edges_0xaaaaaaaa:
-  czero.eqz x20, x2, x6 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cp_rs1_edges_0xaaaaaaaa, Zicond_czero_eqz_cg_cp_rs1_edges_0xaaaaaaaa_str)
+  czero.eqz x20, x3, x9 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cp_rs1_edges_0xaaaaaaaa, Zicond_czero_eqz_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs1: x13 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x2ac666b4
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x2ac666b4
 Zicond_czero_eqz_cg_cp_rs1_edges_0x55555555:
-  czero.eqz x29, x13, x18 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cp_rs1_edges_0x55555555, Zicond_czero_eqz_cg_cp_rs1_edges_0x55555555_str)
+  czero.eqz x29, x14, x18 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cp_rs1_edges_0x55555555, Zicond_czero_eqz_cg_cp_rs1_edges_0x55555555_str)
 
 /////////////////////////////////
 // cp_rs2_edges
 /////////////////////////////////
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0x8b5618bf
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x8b5618bf
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x00000000
 Zicond_czero_eqz_cg_cp_rs2_edges_0x0:
-  czero.eqz x3, x25, x24 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs2_edges_0x0, Zicond_czero_eqz_cg_cp_rs2_edges_0x0_str)
+  czero.eqz x6, x26, x24 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs2_edges_0x0, Zicond_czero_eqz_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0xc0ab67a5
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0xc0ab67a5
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x00000001
 Zicond_czero_eqz_cg_cp_rs2_edges_0x1:
-  czero.eqz x20, x16, x3 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cp_rs2_edges_0x1, Zicond_czero_eqz_cg_cp_rs2_edges_0x1_str)
+  czero.eqz x20, x16, x6 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cp_rs2_edges_0x1, Zicond_czero_eqz_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0xa3ba3781
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0xa3ba3781
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x00000002
 Zicond_czero_eqz_cg_cp_rs2_edges_0x2:
   czero.eqz x23, x20, x1 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cp_rs2_edges_0x2, Zicond_czero_eqz_cg_cp_rs2_edges_0x2_str)
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cp_rs2_edges_0x2, Zicond_czero_eqz_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x2e351ff1
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x2e351ff1
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x80000000
 Zicond_czero_eqz_cg_cp_rs2_edges_0x80000000:
-  czero.eqz x19, x16, x4 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000000, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000000_str)
+  czero.eqz x19, x16, x7 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000000, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0xe478f6ba
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0xe478f6ba
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x80000001
 Zicond_czero_eqz_cg_cp_rs2_edges_0x80000001:
-  czero.eqz x17, x5, x25 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000001, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000001_str)
+  czero.eqz x17, x8, x26 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000001, Zicond_czero_eqz_cg_cp_rs2_edges_0x80000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs1: x18 = 0x27687183
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x27687183
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x7fffffff
 Zicond_czero_eqz_cg_cp_rs2_edges_0x7fffffff:
-  czero.eqz x24, x18, x9 # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zicond_czero_eqz_cg_cp_rs2_edges_0x7fffffff, Zicond_czero_eqz_cg_cp_rs2_edges_0x7fffffff_str)
+  czero.eqz x24, x18, x10 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x24, Zicond_czero_eqz_cg_cp_rs2_edges_0x7fffffff, Zicond_czero_eqz_cg_cp_rs2_edges_0x7fffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0xdda20b17
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0xdda20b17
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x7ffffffe
 Zicond_czero_eqz_cg_cp_rs2_edges_0x7ffffffe:
-  czero.eqz x9, x4, x31 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cp_rs2_edges_0x7ffffffe, Zicond_czero_eqz_cg_cp_rs2_edges_0x7ffffffe_str)
+  czero.eqz x10, x7, x31 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cp_rs2_edges_0x7ffffffe, Zicond_czero_eqz_cg_cp_rs2_edges_0x7ffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x7b9b1bf9
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x7b9b1bf9
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0xffffffff
 Zicond_czero_eqz_cg_cp_rs2_edges_0xffffffff:
-  czero.eqz x18, x22, x4 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cp_rs2_edges_0xffffffff, Zicond_czero_eqz_cg_cp_rs2_edges_0xffffffff_str)
+  czero.eqz x18, x22, x7 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cp_rs2_edges_0xffffffff, Zicond_czero_eqz_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x1d0b57de
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x1d0b57de
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0xfffffffe
 Zicond_czero_eqz_cg_cp_rs2_edges_0xfffffffe:
-  czero.eqz x11, x26, x2 # perform operation
-  # Check if x11 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x11, Zicond_czero_eqz_cg_cp_rs2_edges_0xfffffffe, Zicond_czero_eqz_cg_cp_rs2_edges_0xfffffffe_str)
+  czero.eqz x12, x27, x3 # perform operation
+  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x12, Zicond_czero_eqz_cg_cp_rs2_edges_0xfffffffe, Zicond_czero_eqz_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x68e827fc
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x68e827fc
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x5bbc8872
 Zicond_czero_eqz_cg_cp_rs2_edges_0x5bbc8872:
-  czero.eqz x3, x6, x18 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs2_edges_0x5bbc8872, Zicond_czero_eqz_cg_cp_rs2_edges_0x5bbc8872_str)
+  czero.eqz x6, x9, x18 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs2_edges_0x5bbc8872, Zicond_czero_eqz_cg_cp_rs2_edges_0x5bbc8872_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs1: x2 = 0x2d31d7ca
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x2d31d7ca
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cp_rs2_edges_0xaaaaaaaa:
-  czero.eqz x11, x2, x30 # perform operation
-  # Check if x11 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x11, Zicond_czero_eqz_cg_cp_rs2_edges_0xaaaaaaaa, Zicond_czero_eqz_cg_cp_rs2_edges_0xaaaaaaaa_str)
+  czero.eqz x12, x3, x30 # perform operation
+  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x12, Zicond_czero_eqz_cg_cp_rs2_edges_0xaaaaaaaa, Zicond_czero_eqz_cg_cp_rs2_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x13a31b0e
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x13a31b0e
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x55555555
 Zicond_czero_eqz_cg_cp_rs2_edges_0x55555555:
-  czero.eqz x3, x11, x2 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cp_rs2_edges_0x55555555, Zicond_czero_eqz_cg_cp_rs2_edges_0x55555555_str)
+  czero.eqz x6, x12, x3 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cp_rs2_edges_0x55555555, Zicond_czero_eqz_cg_cp_rs2_edges_0x55555555_str)
 
 /////////////////////////////////
 // cr_rs1_rs2_edges
 /////////////////////////////////
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0:
-  czero.eqz x3, x24, x6 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str)
+  czero.eqz x6, x24, x9 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1:
-  czero.eqz x10, x20, x13 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str)
+  czero.eqz x11, x20, x14 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2:
   czero.eqz x31, x24, x17 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str)
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs2: x29 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000:
-  czero.eqz x18, x6, x29 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str)
+  czero.eqz x18, x9, x29 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000001:
-  czero.eqz x19, x12, x30 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000001_str)
+  czero.eqz x19, x13, x30 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff:
-  czero.eqz x9, x26, x16 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str)
+  czero.eqz x10, x27, x16 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffe:
-  czero.eqz x18, x28, x10 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffe_str)
+  czero.eqz x18, x28, x11 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff:
-  czero.eqz x10, x9, x26 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str)
+  czero.eqz x11, x10, x27 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs1: x17 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe:
   czero.eqz x18, x17, x30 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str)
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc8872:
-  czero.eqz x9, x22, x3 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc8872_str)
+  czero.eqz x10, x22, x6 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaa:
-  czero.eqz x2, x29, x31 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaa_str)
+  czero.eqz x3, x29, x31 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000000 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x00000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x55555555:
-  czero.eqz x26, x30, x6 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x55555555_str)
+  czero.eqz x27, x30, x9 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x0_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0:
-  czero.eqz x17, x5, x2 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str)
+  czero.eqz x17, x8, x3 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1:
-  czero.eqz x30, x5, x25 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
+  czero.eqz x30, x8, x26 # perform operation
+  # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2:
-  czero.eqz x15, x22, x2 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
+  czero.eqz x15, x22, x3 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000:
-  czero.eqz x17, x25, x2 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str)
+  czero.eqz x17, x26, x3 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000001:
-  czero.eqz x19, x28, x25 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000001_str)
+  czero.eqz x19, x28, x26 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs2: x15 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff:
-  czero.eqz x6, x9, x15 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str)
+  czero.eqz x9, x10, x15 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffe:
-  czero.eqz x5, x10, x21 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x5, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffe_str)
+  czero.eqz x8, x11, x21 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff:
-  czero.eqz x28, x3, x12 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
+  czero.eqz x28, x6, x13 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs1: x17 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs2: x22 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe:
   czero.eqz x28, x17, x22 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs1: x13 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs2: x15 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc8872:
-  czero.eqz x29, x13, x15 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc8872_str)
+  czero.eqz x29, x14, x15 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaa:
-  czero.eqz x21, x5, x28 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaa_str)
+  czero.eqz x21, x8, x28 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000001 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x00000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x55555555:
-  czero.eqz x16, x5, x25 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x55555555_str)
+  czero.eqz x16, x8, x26 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x1_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs2: x20 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs2: x20 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0:
-  czero.eqz x9, x30, x20 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
+  czero.eqz x10, x30, x20 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1:
-  czero.eqz x3, x20, x21 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
+  czero.eqz x6, x20, x21 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2:
-  czero.eqz x17, x29, x13 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
+  czero.eqz x17, x29, x14 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000:
-  czero.eqz x3, x6, x19 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str)
+  czero.eqz x6, x9, x19 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs2: x22 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000001:
   czero.eqz x1, x24, x22 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000001_str)
+  # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs1: x13 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs2: x11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff:
-  czero.eqz x17, x13, x11 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str)
+  czero.eqz x17, x14, x12 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffe:
-  czero.eqz x15, x4, x5 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffe_str)
+  czero.eqz x15, x7, x8 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs1: x17 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff:
-  czero.eqz x29, x17, x9 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
+  czero.eqz x29, x17, x10 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe:
-  czero.eqz x31, x24, x25 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
+  czero.eqz x31, x24, x26 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc8872:
-  czero.eqz x26, x15, x16 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc8872_str)
+  czero.eqz x27, x15, x16 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaa:
-  czero.eqz x20, x28, x12 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaa_str)
+  czero.eqz x20, x28, x13 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x00000002 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x00000002
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x55555555:
-  czero.eqz x26, x11, x2 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x55555555_str)
+  czero.eqz x27, x12, x3 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x2_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0:
-  czero.eqz x2, x26, x9 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str)
+  czero.eqz x3, x27, x10 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1:
-  czero.eqz x9, x10, x21 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str)
+  czero.eqz x10, x11, x21 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2:
-  czero.eqz x22, x30, x4 # perform operation
-  # Check if x22 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str)
+  czero.eqz x22, x30, x7 # perform operation
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000:
-  czero.eqz x6, x9, x24 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str)
+  czero.eqz x9, x10, x24 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs2: x11 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000001:
-  czero.eqz x28, x10, x11 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000001_str)
+  czero.eqz x28, x11, x12 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff:
   czero.eqz x22, x16, x18 # perform operation
-  # Check if x22 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str)
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffe:
-  czero.eqz x28, x15, x4 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffe_str)
+  czero.eqz x28, x15, x7 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs2: x11 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs2: x12 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff:
-  czero.eqz x21, x20, x11 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str)
+  czero.eqz x21, x20, x12 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe:
-  czero.eqz x4, x22, x16 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str)
+  czero.eqz x7, x22, x16 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc8872:
   czero.eqz x20, x29, x18 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc8872_str)
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaa:
-  czero.eqz x22, x6, x4 # perform operation
-  # Check if x22 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaa_str)
+  czero.eqz x22, x9, x7 # perform operation
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000000 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x80000000
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x55555555:
-  czero.eqz x21, x30, x5 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x55555555_str)
+  czero.eqz x21, x30, x8 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000000_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x0:
-  czero.eqz x13, x25, x26 # perform operation
-  # Check if x13 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x0_str)
+  czero.eqz x14, x26, x27 # perform operation
+  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x14, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x1:
-  czero.eqz x19, x10, x12 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x1_str)
+  czero.eqz x19, x11, x13 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x2:
-  czero.eqz x13, x3, x18 # perform operation
-  # Check if x13 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x2_str)
+  czero.eqz x14, x6, x18 # perform operation
+  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x14, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000000:
-  czero.eqz x1, x26, x21 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000000_str)
+  czero.eqz x1, x27, x21 # perform operation
+  # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs2: x29 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000001:
-  czero.eqz x12, x6, x29 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x12, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000001_str)
+  czero.eqz x13, x9, x29 # perform operation
+  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7fffffff:
-  czero.eqz x26, x6, x1 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7fffffff_str)
+  czero.eqz x27, x9, x1 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7ffffffe:
-  czero.eqz x29, x6, x12 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7ffffffe_str)
+  czero.eqz x29, x9, x13 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xffffffff:
-  czero.eqz x6, x23, x21 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xffffffff_str)
+  czero.eqz x9, x23, x21 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xfffffffe:
-  czero.eqz x4, x25, x30 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xfffffffe_str)
+  czero.eqz x7, x26, x30 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs1: x2 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x5bbc8872:
-  czero.eqz x3, x2, x5 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x5bbc8872_str)
+  czero.eqz x6, x3, x8 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xaaaaaaaa:
-  czero.eqz x26, x25, x3 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xaaaaaaaa_str)
+  czero.eqz x27, x26, x6 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x80000001 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x80000001
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x55555555:
-  czero.eqz x20, x26, x13 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x55555555_str)
+  czero.eqz x20, x27, x14 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x80000001_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0:
-  czero.eqz x2, x23, x30 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str)
+  czero.eqz x3, x23, x30 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1:
-  czero.eqz x10, x3, x25 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str)
+  czero.eqz x11, x6, x26 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2:
   czero.eqz x21, x16, x28 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str)
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000:
-  czero.eqz x28, x6, x12 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str)
+  czero.eqz x28, x9, x13 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000001:
-  czero.eqz x10, x4, x16 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000001_str)
+  czero.eqz x11, x7, x16 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs1: x1 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff:
-  czero.eqz x29, x1, x13 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
+  czero.eqz x29, x1, x14 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs2: x23 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffe:
-  czero.eqz x6, x19, x23 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffe_str)
+  czero.eqz x9, x19, x23 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff:
-  czero.eqz x9, x16, x1 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str)
+  czero.eqz x10, x16, x1 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe:
-  czero.eqz x23, x16, x4 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
+  czero.eqz x23, x16, x7 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs1: x18 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc8872:
   czero.eqz x30, x18, x17 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc8872_str)
+  # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaa:
-  czero.eqz x24, x4, x9 # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str)
+  czero.eqz x24, x7, x10 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7fffffff rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0x7fffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x55555555:
-  czero.eqz x9, x15, x24 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x55555555_str)
+  czero.eqz x10, x15, x24 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7fffffff_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs2: x22 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x0:
-  czero.eqz x28, x12, x22 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x0_str)
+  czero.eqz x28, x13, x22 # perform operation
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x1:
-  czero.eqz x15, x3, x24 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x1_str)
+  czero.eqz x15, x6, x24 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x2:
-  czero.eqz x29, x3, x19 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x2_str)
+  czero.eqz x29, x6, x19 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs1: x1 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs2: x16 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000000:
-  czero.eqz x25, x1, x16 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000000_str)
+  czero.eqz x26, x1, x16 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000001:
   czero.eqz x28, x30, x17 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000001_str)
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7fffffff:
-  czero.eqz x18, x28, x5 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7fffffff_str)
+  czero.eqz x18, x28, x8 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7ffffffe:
-  czero.eqz x4, x16, x19 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str)
+  czero.eqz x7, x16, x19 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xffffffff:
-  czero.eqz x2, x23, x26 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xffffffff_str)
+  czero.eqz x3, x23, x27 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs1: x31 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xfffffffe:
-  czero.eqz x19, x31, x26 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xfffffffe_str)
+  czero.eqz x19, x31, x27 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x5bbc8872:
-  czero.eqz x20, x22, x3 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str)
+  czero.eqz x20, x22, x6 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa:
-  czero.eqz x26, x11, x25 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str)
+  czero.eqz x27, x12, x26 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x7ffffffe rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x7ffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x55555555:
-  czero.eqz x4, x30, x21 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x55555555_str)
+  czero.eqz x7, x30, x21 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x7ffffffe_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0:
-  czero.eqz x3, x22, x25 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
+  czero.eqz x6, x22, x26 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1:
   czero.eqz x31, x28, x17 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2:
-  czero.eqz x23, x9, x6 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
+  czero.eqz x23, x10, x9 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000:
-  czero.eqz x23, x26, x19 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str)
+  czero.eqz x23, x27, x19 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000001:
-  czero.eqz x31, x9, x4 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000001_str)
+  czero.eqz x31, x10, x7 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff:
-  czero.eqz x17, x3, x13 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str)
+  czero.eqz x17, x6, x14 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffe:
   czero.eqz x15, x16, x28 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffe_str)
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff:
-  czero.eqz x29, x5, x31 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
+  czero.eqz x29, x8, x31 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe:
-  czero.eqz x30, x12, x6 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
+  czero.eqz x30, x13, x9 # perform operation
+  # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x30, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc8872:
-  czero.eqz x16, x15, x25 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc8872_str)
+  czero.eqz x16, x15, x26 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaa:
-  czero.eqz x18, x29, x5 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str)
+  czero.eqz x18, x29, x8 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xffffffff rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0xffffffff
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x55555555:
-  czero.eqz x4, x6, x13 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x55555555_str)
+  czero.eqz x7, x9, x14 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xffffffff_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0:
   czero.eqz x24, x23, x28 # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
+  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1:
-  czero.eqz x6, x9, x21 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
+  czero.eqz x9, x10, x21 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs1: x31 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2:
   czero.eqz x29, x31, x17 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs1: x17 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000:
-  czero.eqz x10, x17, x31 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str)
+  czero.eqz x11, x17, x31 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000001:
   czero.eqz x23, x19, x31 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000001_str)
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff:
-  czero.eqz x25, x3, x19 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
+  czero.eqz x26, x6, x19 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffe:
-  czero.eqz x29, x3, x10 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffe_str)
+  czero.eqz x29, x6, x11 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff:
-  czero.eqz x17, x25, x26 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
+  czero.eqz x17, x26, x27 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe:
-  czero.eqz x31, x28, x12 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
+  czero.eqz x31, x28, x13 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc8872:
-  czero.eqz x15, x24, x12 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc8872_str)
+  czero.eqz x15, x24, x13 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs1: x8 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaa:
-  czero.eqz x21, x5, x6 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str)
+  czero.eqz x21, x8, x9 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xfffffffe rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0xfffffffe
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs2: x6 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x55555555:
-  czero.eqz x2, x28, x3 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x55555555_str)
+  czero.eqz x3, x28, x6 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xfffffffe_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs1: x18 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs2: x21 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x0:
   czero.eqz x29, x18, x21 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x0_str)
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x1:
-  czero.eqz x31, x29, x10 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x1_str)
+  czero.eqz x31, x29, x11 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x2:
-  czero.eqz x18, x22, x5 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x2_str)
+  czero.eqz x18, x22, x8 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000000:
   czero.eqz x16, x19, x1 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000000_str)
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000001:
-  czero.eqz x15, x10, x19 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000001_str)
+  czero.eqz x15, x11, x19 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7fffffff:
-  czero.eqz x25, x11, x24 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7fffffff_str)
+  czero.eqz x26, x12, x24 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7ffffffe:
-  czero.eqz x5, x19, x9 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x5, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str)
+  czero.eqz x8, x19, x10 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs1: x1 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs2: x9 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xffffffff:
-  czero.eqz x4, x1, x6 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xffffffff_str)
+  czero.eqz x7, x1, x9 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xfffffffe:
-  czero.eqz x12, x21, x13 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x12, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xfffffffe_str)
+  czero.eqz x13, x21, x14 # perform operation
+  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x5bbc8872:
-  czero.eqz x25, x21, x17 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str)
+  czero.eqz x26, x21, x17 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs1: x26 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa:
-  czero.eqz x20, x26, x10 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str)
+  czero.eqz x20, x27, x11 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x5bbc8872 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x5bbc8872
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs2: x11 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x55555555:
-  czero.eqz x23, x11, x10 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x55555555_str)
+  czero.eqz x23, x12, x11 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x5bbc8872_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x0:
-  czero.eqz x16, x12, x26 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x0_str)
+  czero.eqz x16, x13, x27 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs2: x22 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x1:
-  czero.eqz x3, x15, x22 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x1_str)
+  czero.eqz x6, x15, x22 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x2:
-  czero.eqz x31, x25, x28 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x2_str)
+  czero.eqz x31, x26, x28 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x31, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs2: x30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000000:
   czero.eqz x17, x19, x30 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000000_str)
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000001:
   czero.eqz x17, x24, x31 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000001_str)
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs2: x24 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7fffffff:
-  czero.eqz x21, x12, x24 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str)
+  czero.eqz x21, x13, x24 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x26) # load rs2: x26 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe:
-  czero.eqz x16, x3, x26 # perform operation
-  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str)
+  czero.eqz x16, x6, x27 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs1: x19 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xffffffff:
-  czero.eqz x20, x19, x5 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str)
+  czero.eqz x20, x19, x8 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xfffffffe:
-  czero.eqz x12, x21, x18 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x12, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str)
+  czero.eqz x13, x21, x18 # perform operation
+  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs1: x17 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs2: x3 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872:
-  czero.eqz x6, x17, x2 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x6, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str)
+  czero.eqz x9, x17, x3 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa:
-  czero.eqz x25, x30, x1 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str)
+  czero.eqz x26, x30, x1 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0xaaaaaaaa rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0xaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x14, x17) # load rs2: x17 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x55555555:
-  czero.eqz x10, x20, x17 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x55555555_str)
+  czero.eqz x11, x20, x17 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0xaaaaaaaa_rs2val_0x55555555_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs2: x23 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x00000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x0:
-  czero.eqz x4, x9, x23 # perform operation
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x0_str)
+  czero.eqz x7, x10, x23 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x0, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x0_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x19) # load rs2: x19 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0x00000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x1:
   czero.eqz x18, x21, x19 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x1_str)
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x1_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs1: x2 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x8) # load rs2: x8 = 0x00000002
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x2:
-  czero.eqz x20, x2, x5 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x2_str)
+  czero.eqz x20, x3, x8 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x2, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x2_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs2: x28 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x80000000
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000000:
   czero.eqz x1, x23, x28 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000000_str)
+  # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x1, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000000, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000000_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x14, x21) # load rs1: x21 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x80000001
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000001:
-  czero.eqz x5, x21, x12 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x5, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000001_str)
+  czero.eqz x8, x21, x13 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000001, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x80000001_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs2: x25 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x7fffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7fffffff:
-  czero.eqz x24, x30, x25 # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7fffffff_str)
+  czero.eqz x24, x30, x26 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x24, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7fffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7fffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x7ffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7ffffffe:
-  czero.eqz x12, x11, x4 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x12, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7ffffffe_str)
+  czero.eqz x13, x12, x7 # perform operation
+  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7ffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x7ffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs1: x15 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0xffffffff
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xffffffff:
   czero.eqz x28, x15, x18 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xffffffff_str)
+  # Check if x28 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x28, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xffffffff, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xffffffff_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x14, x24) # load rs1: x24 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x15) # load rs2: x15 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0xfffffffe
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xfffffffe:
-  czero.eqz x13, x24, x15 # perform operation
-  # Check if x13 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x13, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xfffffffe_str)
+  czero.eqz x14, x24, x15 # perform operation
+  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x14, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xfffffffe, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xfffffffe_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x18) # load rs2: x18 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x5bbc8872
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x5bbc8872:
-  czero.eqz x5, x6, x18 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x5, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x5bbc8872_str)
+  czero.eqz x8, x9, x18 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x5bbc8872, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x5bbc8872_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs2: x31 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x12) # load rs1: x12 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0xaaaaaaaa
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xaaaaaaaa:
-  czero.eqz x25, x11, x31 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x25, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xaaaaaaaa_str)
+  czero.eqz x26, x12, x31 # perform operation
+  # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x26, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xaaaaaaaa, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0xaaaaaaaa_str)
 
 # Testcase cr_rs1_rs2_edges (Test source rs1 = 0x55555555 rs2 = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x55555555
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs2: x23 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0x55555555
 Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x55555555:
-  czero.eqz x10, x29, x23 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x55555555_str)
+  czero.eqz x11, x29, x23 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x55555555, Zicond_czero_eqz_cg_cr_rs1_rs2_edges_rs1val_0x55555555_rs2val_0x55555555_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2
 /////////////////////////////////
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x14, x0) # load rs1: x0 = 0xfb57d21e
-  RVTEST_TESTDATA_LOAD_INT(x14, x0) # load rs2: x0 = 0xa7a8a9b2
+  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0xfb57d21e
+  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs2: x0 = 0xa7a8a9b2
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b0:
-  czero.eqz x3, x0, x0 # perform operation
-  # Check if x3 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x3, Zicond_czero_eqz_cg_cmp_rs1_rs2_b0, Zicond_czero_eqz_cg_cmp_rs1_rs2_b0_str)
+  czero.eqz x6, x0, x0 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b0, Zicond_czero_eqz_cg_cmp_rs1_rs2_b0_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs1: x1 = 0x2cc73d41
-  RVTEST_TESTDATA_LOAD_INT(x14, x1) # load rs2: x1 = 0xe66039f4
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x2cc73d41
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0xe66039f4
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b1:
-  czero.eqz x26, x1, x1 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cmp_rs1_rs2_b1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b1_str)
+  czero.eqz x27, x1, x1 # perform operation
+  # Check if x27 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x27, Zicond_czero_eqz_cg_cmp_rs1_rs2_b1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b1_str)
 
+  mv x10, x2 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs1: x2 = 0x2c94a2de
-  RVTEST_TESTDATA_LOAD_INT(x14, x2) # load rs2: x2 = 0x2765a7d7
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0x2c94a2de
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0x2765a7d7
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b2:
-  czero.eqz x31, x2, x2 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b2, Zicond_czero_eqz_cg_cmp_rs1_rs2_b2_str)
+  czero.eqz x29, x2, x2 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x29, Zicond_czero_eqz_cg_cmp_rs1_rs2_b2, Zicond_czero_eqz_cg_cmp_rs1_rs2_b2_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs1: x3 = 0x6e9561e1
-  RVTEST_TESTDATA_LOAD_INT(x14, x3) # load rs2: x3 = 0xde80d5e7
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs1: x3 = 0x6e9561e1
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0xde80d5e7
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b3:
   czero.eqz x22, x3, x3 # perform operation
-  # Check if x22 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b3, Zicond_czero_eqz_cg_cmp_rs1_rs2_b3_str)
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b3, Zicond_czero_eqz_cg_cmp_rs1_rs2_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs1: x4 = 0x8e5ecc56
-  RVTEST_TESTDATA_LOAD_INT(x14, x4) # load rs2: x4 = 0xe0d76092
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs1: x4 = 0xe9d60003
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x6d7b53b4
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b4:
-  czero.eqz x18, x4, x4 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b4, Zicond_czero_eqz_cg_cmp_rs1_rs2_b4_str)
+  czero.eqz x1, x4, x4 # perform operation
+  # Check if x1 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b4, Zicond_czero_eqz_cg_cmp_rs1_rs2_b4_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0x569d4d2f
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs2: x5 = 0x1c5ef23a
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0xef88bea9
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0xff358f2c
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b5:
-  czero.eqz x26, x5, x5 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, Zicond_czero_eqz_cg_cmp_rs1_rs2_b5, Zicond_czero_eqz_cg_cmp_rs1_rs2_b5_str)
+  czero.eqz x3, x5, x5 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x3, Zicond_czero_eqz_cg_cmp_rs1_rs2_b5, Zicond_czero_eqz_cg_cmp_rs1_rs2_b5_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs1: x6 = 0xff358f2c
-  RVTEST_TESTDATA_LOAD_INT(x14, x6) # load rs2: x6 = 0x09ffb22d
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs1: x6 = 0xb9dabe94
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0x7c6a930b
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b6:
-  czero.eqz x30, x6, x6 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, Zicond_czero_eqz_cg_cmp_rs1_rs2_b6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b6_str)
+  czero.eqz x21, x6, x6 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x14, x7) # load rs1: x7 = 0x95a7341f
-  RVTEST_TESTDATA_LOAD_INT(x14, x7) # load rs2: x7 = 0x203b84de
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x8506dfac
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0xc1a7c55d
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b7:
-  czero.eqz x5, x7, x7 # perform operation
-  # Check if x5 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x5, Zicond_czero_eqz_cg_cmp_rs1_rs2_b7, Zicond_czero_eqz_cg_cmp_rs1_rs2_b7_str)
+  czero.eqz x2, x7, x7 # perform operation
+  # Check if x2 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x2, Zicond_czero_eqz_cg_cmp_rs1_rs2_b7, Zicond_czero_eqz_cg_cmp_rs1_rs2_b7_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x14, x8) # load rs1: x8 = 0x0aade1c7
-  RVTEST_TESTDATA_LOAD_INT(x14, x8) # load rs2: x8 = 0x8d16d8c3
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs1: x8 = 0x3dfad298
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0xf396b229
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b8:
-  czero.eqz x6, x8, x8 # perform operation
-  # Check if x6 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b8, Zicond_czero_eqz_cg_cmp_rs1_rs2_b8_str)
+  czero.eqz x29, x8, x8 # perform operation
+  # Check if x29 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x29, Zicond_czero_eqz_cg_cmp_rs1_rs2_b8, Zicond_czero_eqz_cg_cmp_rs1_rs2_b8_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0xbba14756
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs2: x9 = 0x7da99203
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs1: x9 = 0x5dd9ae50
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x7973b5fb
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b9:
-  czero.eqz x23, x9, x9 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x23, Zicond_czero_eqz_cg_cmp_rs1_rs2_b9, Zicond_czero_eqz_cg_cmp_rs1_rs2_b9_str)
+  czero.eqz x17, x9, x9 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b9, Zicond_czero_eqz_cg_cmp_rs1_rs2_b9_str)
 
+  mv x22, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs1: x10 = 0x9148f2a4
-  RVTEST_TESTDATA_LOAD_INT(x14, x10) # load rs2: x10 = 0xaf2eb131
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x9148f2a4
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0xaf2eb131
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b10:
-  czero.eqz x20, x10, x10 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x20, Zicond_czero_eqz_cg_cmp_rs1_rs2_b10, Zicond_czero_eqz_cg_cmp_rs1_rs2_b10_str)
+  czero.eqz x1, x10, x10 # perform operation
+  # Check if x1 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b10, Zicond_czero_eqz_cg_cmp_rs1_rs2_b10_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs1: x11 = 0xb9fd233a
-  RVTEST_TESTDATA_LOAD_INT(x14, x11) # load rs2: x11 = 0xbcec60a6
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs1: x11 = 0xb9fd233a
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs2: x11 = 0xbcec60a6
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b11:
   czero.eqz x10, x11, x11 # perform operation
-  # Check if x10 contains the expected result. x27 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x27, x13, x12, x10, Zicond_czero_eqz_cg_cmp_rs1_rs2_b11, Zicond_czero_eqz_cg_cmp_rs1_rs2_b11_str)
+  # Check if x10 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x10, Zicond_czero_eqz_cg_cmp_rs1_rs2_b11, Zicond_czero_eqz_cg_cmp_rs1_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs1: x12 = 0x3f78495e
-  RVTEST_TESTDATA_LOAD_INT(x14, x12) # load rs2: x12 = 0xd45eea12
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0x88b8b7c6
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x3f78495e
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b12:
-  czero.eqz x8, x12, x12 # perform operation
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, Zicond_czero_eqz_cg_cmp_rs1_rs2_b12, Zicond_czero_eqz_cg_cmp_rs1_rs2_b12_str)
+  czero.eqz x19, x12, x12 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x25, x14, x13, x19, Zicond_czero_eqz_cg_cmp_rs1_rs2_b12, Zicond_czero_eqz_cg_cmp_rs1_rs2_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs1: x13 = 0x12b76a3d
-  RVTEST_TESTDATA_LOAD_INT(x14, x13) # load rs2: x13 = 0x36361e87
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0x12b76a3d
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0x36361e87
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b13:
-  czero.eqz x31, x13, x13 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b13, Zicond_czero_eqz_cg_cmp_rs1_rs2_b13_str)
+  czero.eqz x15, x13, x13 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x15, Zicond_czero_eqz_cg_cmp_rs1_rs2_b13, Zicond_czero_eqz_cg_cmp_rs1_rs2_b13_str)
 
-  mv x2, x14 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0xc4f60da4
-  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs2: x14 = 0x191bda0b
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0xd395ddae
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs2: x14 = 0x5632c8fc
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b14:
-  czero.eqz x13, x14, x14 # perform operation
-  # Check if x13 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x13, Zicond_czero_eqz_cg_cmp_rs1_rs2_b14, Zicond_czero_eqz_cg_cmp_rs1_rs2_b14_str)
+  czero.eqz x1, x14, x14 # perform operation
+  # Check if x1 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b14, Zicond_czero_eqz_cg_cmp_rs1_rs2_b14_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xd2547d66
-  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs2: x15 = 0x1ef3e1e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs1: x15 = 0x191bda0b
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0xe8f16a27
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b15:
-  czero.eqz x17, x15, x15 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b15, Zicond_czero_eqz_cg_cmp_rs1_rs2_b15_str)
+  czero.eqz x18, x15, x15 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b15, Zicond_czero_eqz_cg_cmp_rs1_rs2_b15_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x79205174
-  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs2: x16 = 0xd2fc3578
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs1: x16 = 0x1ef3e1e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs2: x16 = 0xb24a42eb
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b16:
-  czero.eqz x30, x16, x16 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x30, Zicond_czero_eqz_cg_cmp_rs1_rs2_b16, Zicond_czero_eqz_cg_cmp_rs1_rs2_b16_str)
+  czero.eqz x6, x16, x16 # perform operation
+  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b16, Zicond_czero_eqz_cg_cmp_rs1_rs2_b16_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0xe3553e83
-  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs2: x17 = 0x3da61c8a
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs1: x17 = 0x2b2d0768
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs2: x17 = 0x1b4aedd9
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b17:
-  czero.eqz x12, x17, x17 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x12, Zicond_czero_eqz_cg_cmp_rs1_rs2_b17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b17_str)
+  czero.eqz x18, x17, x17 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b17_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0x85a6e30b
-  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x680e4842
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x649ec034
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs2: x18 = 0x60f7eb67
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b18:
-  czero.eqz x1, x18, x18 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, Zicond_czero_eqz_cg_cmp_rs1_rs2_b18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b18_str)
+  czero.eqz x24, x18, x18 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x24, Zicond_czero_eqz_cg_cmp_rs1_rs2_b18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b18_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x0ad728e4
-  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs2: x19 = 0xc03fd7cd
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0xcfc12721
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs2: x19 = 0x0ad728e4
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b19:
-  czero.eqz x9, x19, x19 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x9, Zicond_czero_eqz_cg_cmp_rs1_rs2_b19, Zicond_czero_eqz_cg_cmp_rs1_rs2_b19_str)
+  czero.eqz x0, x19, x19 # perform operation
+  # Check if x0 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x0, Zicond_czero_eqz_cg_cmp_rs1_rs2_b19, Zicond_czero_eqz_cg_cmp_rs1_rs2_b19_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x43cf67b5
-  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs2: x20 = 0x554ca3a2
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0x90b887e5
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0x43cf67b5
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b20:
-  czero.eqz x7, x20, x20 # perform operation
-  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x7, Zicond_czero_eqz_cg_cmp_rs1_rs2_b20, Zicond_czero_eqz_cg_cmp_rs1_rs2_b20_str)
+  czero.eqz x10, x20, x20 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x10, Zicond_czero_eqz_cg_cmp_rs1_rs2_b20, Zicond_czero_eqz_cg_cmp_rs1_rs2_b20_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x5b4dd164
-  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs2: x21 = 0x43fe9807
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs1: x21 = 0x3919afa6
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0x0c3c5702
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b21:
-  czero.eqz x22, x21, x21 # perform operation
-  # Check if x22 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b21_str)
+  czero.eqz x16, x21, x21 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x16, Zicond_czero_eqz_cg_cmp_rs1_rs2_b21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b21_str)
 
+  mv x11, x22 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0xd15de785
-  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0xb9c51faf
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs1: x22 = 0x5b4dd164
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0x43fe9807
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b22:
-  czero.eqz x8, x22, x22 # perform operation
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, Zicond_czero_eqz_cg_cmp_rs1_rs2_b22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b22_str)
+  czero.eqz x21, x22, x22 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b22_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x28ff91b8
-  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs2: x23 = 0xc15ce595
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs1: x23 = 0xd15de785
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0xb9c51faf
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b23:
-  czero.eqz x17, x23, x23 # perform operation
-  # Check if x17 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b23, Zicond_czero_eqz_cg_cmp_rs1_rs2_b23_str)
+  czero.eqz x5, x23, x23 # perform operation
+  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rs1_rs2_b23, Zicond_czero_eqz_cg_cmp_rs1_rs2_b23_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xd966cc8a
-  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs2: x24 = 0xc8644b70
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs1: x24 = 0x28ff91b8
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0xc15ce595
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b24:
-  czero.eqz x21, x24, x24 # perform operation
-  # Check if x21 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b24, Zicond_czero_eqz_cg_cmp_rs1_rs2_b24_str)
+  czero.eqz x17, x24, x24 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b24, Zicond_czero_eqz_cg_cmp_rs1_rs2_b24_str)
 
+  mv x27, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs1: x25 = 0xaaea7c20
-  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs2: x25 = 0x39826b33
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0x1fd3f961
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x48cc0774
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b25:
-  czero.eqz x28, x25, x25 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x28, Zicond_czero_eqz_cg_cmp_rs1_rs2_b25, Zicond_czero_eqz_cg_cmp_rs1_rs2_b25_str)
+  czero.eqz x22, x25, x25 # perform operation
+  # Check if x22 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x27, x8, x7, x22, Zicond_czero_eqz_cg_cmp_rs1_rs2_b25, Zicond_czero_eqz_cg_cmp_rs1_rs2_b25_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x6f962ec6
-  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs2: x26 = 0x14646134
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs1: x26 = 0xc8644b70
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0xaaea7c20
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b26:
-  czero.eqz x31, x26, x26 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b26, Zicond_czero_eqz_cg_cmp_rs1_rs2_b26_str)
+  czero.eqz x16, x26, x26 # perform operation
+  # Check if x16 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x27, x8, x7, x16, Zicond_czero_eqz_cg_cmp_rs1_rs2_b26, Zicond_czero_eqz_cg_cmp_rs1_rs2_b26_str)
 
-  mv x30, x27 # switch signature pointer register to avoid conflict with test
+  mv x25, x27 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x5679fa9e
-  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs2: x27 = 0x7d9662e6
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs1: x27 = 0x2eec8972
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x6f962ec6
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b27:
-  czero.eqz x21, x27, x27 # perform operation
-  # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b27, Zicond_czero_eqz_cg_cmp_rs1_rs2_b27_str)
+  czero.eqz x31, x27, x27 # perform operation
+  # Check if x31 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b27, Zicond_czero_eqz_cg_cmp_rs1_rs2_b27_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0x62e1d937
-  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs2: x28 = 0x1039b47c
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs1: x28 = 0x0df61aa5
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x62e1d937
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b28:
-  czero.eqz x25, x28, x28 # perform operation
-  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x25, Zicond_czero_eqz_cg_cmp_rs1_rs2_b28, Zicond_czero_eqz_cg_cmp_rs1_rs2_b28_str)
+  czero.eqz x21, x28, x28 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b28, Zicond_czero_eqz_cg_cmp_rs1_rs2_b28_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x6e55b252
-  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs2: x29 = 0xe603cb6f
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs1: x29 = 0xf47851db
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x9e680833
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b29:
-  czero.eqz x18, x29, x29 # perform operation
-  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x18, Zicond_czero_eqz_cg_cmp_rs1_rs2_b29, Zicond_czero_eqz_cg_cmp_rs1_rs2_b29_str)
+  czero.eqz x21, x29, x29 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x21, Zicond_czero_eqz_cg_cmp_rs1_rs2_b29, Zicond_czero_eqz_cg_cmp_rs1_rs2_b29_str)
 
-  mv x9, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0xcf82db73
-  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs2: x30 = 0xb14ccfab
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs1: x30 = 0xf4faa6d8
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x7115e440
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b30:
-  czero.eqz x17, x30, x30 # perform operation
-  # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rs1_rs2_b30, Zicond_czero_eqz_cg_cmp_rs1_rs2_b30_str)
+  czero.eqz x12, x30, x30 # perform operation
+  # Check if x12 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x12, Zicond_czero_eqz_cg_cmp_rs1_rs2_b30, Zicond_czero_eqz_cg_cmp_rs1_rs2_b30_str)
 
 # Testcase cmp_rs1_rs2 (Test rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x59055807
-  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs2: x31 = 0x6d396cf0
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x9eeb693d
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x8214117d
 Zicond_czero_eqz_cg_cmp_rs1_rs2_b31:
-  czero.eqz x6, x31, x31 # perform operation
-  # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, Zicond_czero_eqz_cg_cmp_rs1_rs2_b31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b31_str)
+  czero.eqz x16, x31, x31 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x16, Zicond_czero_eqz_cg_cmp_rs1_rs2_b31, Zicond_czero_eqz_cg_cmp_rs1_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0x65aa9cae
-  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs2: x7 = 0x3b2d901f
+  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs1: x0 = 0x65aa9cae
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x3b2d901f
 Zicond_czero_eqz_cg_cmp_rd_rs1_b0:
-  czero.eqz x0, x0, x7 # perform operation
-  # Check if x0 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x0, Zicond_czero_eqz_cg_cmp_rd_rs1_b0, Zicond_czero_eqz_cg_cmp_rd_rs1_b0_str)
+  czero.eqz x0, x0, x4 # perform operation
+  # Check if x0 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x0, Zicond_czero_eqz_cg_cmp_rd_rs1_b0, Zicond_czero_eqz_cg_cmp_rd_rs1_b0_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x6ad008e2
-  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs2: x22 = 0xb99fd4c7
+  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs1: x1 = 0x6ad008e2
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0xb99fd4c7
 Zicond_czero_eqz_cg_cmp_rd_rs1_b1:
-  czero.eqz x1, x1, x22 # perform operation
-  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x1, Zicond_czero_eqz_cg_cmp_rd_rs1_b1, Zicond_czero_eqz_cg_cmp_rd_rs1_b1_str)
+  czero.eqz x1, x1, x21 # perform operation
+  # Check if x1 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x1, Zicond_czero_eqz_cg_cmp_rd_rs1_b1, Zicond_czero_eqz_cg_cmp_rd_rs1_b1_str)
 
-  mv x17, x2 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs1: x2 = 0xc655b480
-  RVTEST_TESTDATA_LOAD_INT(x17, x21) # load rs2: x21 = 0xd3bb45f7
+  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs1: x2 = 0x7fc4b0f1
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0x0648eaa6
 Zicond_czero_eqz_cg_cmp_rd_rs1_b2:
-  czero.eqz x2, x2, x21 # perform operation
-  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x2, Zicond_czero_eqz_cg_cmp_rd_rs1_b2, Zicond_czero_eqz_cg_cmp_rd_rs1_b2_str)
+  czero.eqz x2, x2, x19 # perform operation
+  # Check if x2 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x2, Zicond_czero_eqz_cg_cmp_rd_rs1_b2, Zicond_czero_eqz_cg_cmp_rd_rs1_b2_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs1: x3 = 0x0f154c1b
-  RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0x145b35c1
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0xa97dc128
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0xf745e700
 Zicond_czero_eqz_cg_cmp_rd_rs1_b3:
-  czero.eqz x3, x3, x8 # perform operation
-  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x3, Zicond_czero_eqz_cg_cmp_rd_rs1_b3, Zicond_czero_eqz_cg_cmp_rd_rs1_b3_str)
+  czero.eqz x3, x3, x22 # perform operation
+  # Check if x3 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x3, Zicond_czero_eqz_cg_cmp_rd_rs1_b3, Zicond_czero_eqz_cg_cmp_rd_rs1_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs1: x4 = 0x994bcfe8
-  RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rs2: x23 = 0x31ea0dac
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x994bcfe8
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0x31ea0dac
 Zicond_czero_eqz_cg_cmp_rd_rs1_b4:
-  czero.eqz x4, x4, x23 # perform operation
-  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x4, Zicond_czero_eqz_cg_cmp_rd_rs1_b4, Zicond_czero_eqz_cg_cmp_rd_rs1_b4_str)
+  czero.eqz x4, x4, x22 # perform operation
+  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x4, Zicond_czero_eqz_cg_cmp_rd_rs1_b4, Zicond_czero_eqz_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rs1: x5 = 0x70339e6d
-  RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs2: x3 = 0x2d00e072
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0x70339e6d
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0x2d00e072
 Zicond_czero_eqz_cg_cmp_rd_rs1_b5:
   czero.eqz x5, x5, x3 # perform operation
-  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rd_rs1_b5, Zicond_czero_eqz_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rd_rs1_b5, Zicond_czero_eqz_cg_cmp_rd_rs1_b5_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rs1: x6 = 0xf5d354f8
-  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs2: x13 = 0x557c802c
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0xf5d354f8
+  RVTEST_TESTDATA_LOAD_INT(x11, x13) # load rs2: x13 = 0x557c802c
 Zicond_czero_eqz_cg_cmp_rd_rs1_b6:
   czero.eqz x6, x6, x13 # perform operation
-  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rd_rs1_b6, Zicond_czero_eqz_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x25, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rd_rs1_b6, Zicond_czero_eqz_cg_cmp_rd_rs1_b6_str)
 
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs1: x7 = 0x4eb53b94
-  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0xe2729fc7
+  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0x4eb53b94
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0xe2729fc7
 Zicond_czero_eqz_cg_cmp_rd_rs1_b7:
-  czero.eqz x7, x7, x18 # perform operation
-  # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, Zicond_czero_eqz_cg_cmp_rd_rs1_b7, Zicond_czero_eqz_cg_cmp_rd_rs1_b7_str)
+  czero.eqz x7, x7, x17 # perform operation
+  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x7, Zicond_czero_eqz_cg_cmp_rd_rs1_b7, Zicond_czero_eqz_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs1: x8 = 0xdcb725a9
-  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0x43ec8dd6
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xdcb725a9
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0x43ec8dd6
 Zicond_czero_eqz_cg_cmp_rd_rs1_b8:
-  czero.eqz x8, x8, x18 # perform operation
-  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, Zicond_czero_eqz_cg_cmp_rd_rs1_b8, Zicond_czero_eqz_cg_cmp_rd_rs1_b8_str)
+  czero.eqz x8, x8, x17 # perform operation
+  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x8, Zicond_czero_eqz_cg_cmp_rd_rs1_b8, Zicond_czero_eqz_cg_cmp_rd_rs1_b8_str)
 
-  mv x28, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs1: x9 = 0x938f8b6e
-  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rs2: x24 = 0x7e55c23f
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0x19c898bc
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x938f8b6e
 Zicond_czero_eqz_cg_cmp_rd_rs1_b9:
-  czero.eqz x9, x9, x24 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, Zicond_czero_eqz_cg_cmp_rd_rs1_b9, Zicond_czero_eqz_cg_cmp_rd_rs1_b9_str)
+  czero.eqz x9, x9, x28 # perform operation
+  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x9, Zicond_czero_eqz_cg_cmp_rd_rs1_b9, Zicond_czero_eqz_cg_cmp_rd_rs1_b9_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rs1: x10 = 0xd30158ba
-  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs2: x7 = 0x4959125f
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0x84b0ad09
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x614aa9ae
 Zicond_czero_eqz_cg_cmp_rd_rs1_b10:
-  czero.eqz x10, x10, x7 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, Zicond_czero_eqz_cg_cmp_rd_rs1_b10, Zicond_czero_eqz_cg_cmp_rd_rs1_b10_str)
+  czero.eqz x10, x10, x30 # perform operation
+  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x10, Zicond_czero_eqz_cg_cmp_rd_rs1_b10, Zicond_czero_eqz_cg_cmp_rd_rs1_b10_str)
 
+  mv x15, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs1: x11 = 0xafbbb9ce
-  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x2bdd4e07
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0xa0cb2d12
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0xf825b7cd
 Zicond_czero_eqz_cg_cmp_rd_rs1_b11:
-  czero.eqz x11, x11, x15 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, Zicond_czero_eqz_cg_cmp_rd_rs1_b11, Zicond_czero_eqz_cg_cmp_rd_rs1_b11_str)
+  czero.eqz x11, x11, x8 # perform operation
+  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x11, Zicond_czero_eqz_cg_cmp_rd_rs1_b11, Zicond_czero_eqz_cg_cmp_rd_rs1_b11_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs1: x12 = 0x6c7023bc
-  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs2: x13 = 0x88143bd6
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x88143bd6
+  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load rs2: x17 = 0xd9abfb9f
 Zicond_czero_eqz_cg_cmp_rd_rs1_b12:
-  czero.eqz x12, x12, x13 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, Zicond_czero_eqz_cg_cmp_rd_rs1_b12, Zicond_czero_eqz_cg_cmp_rd_rs1_b12_str)
+  czero.eqz x12, x12, x17 # perform operation
+  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x12, Zicond_czero_eqz_cg_cmp_rd_rs1_b12, Zicond_czero_eqz_cg_cmp_rd_rs1_b12_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs1: x13 = 0x1419d6cb
-  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0x3049d930
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x3049d930
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0x8022142e
 Zicond_czero_eqz_cg_cmp_rd_rs1_b13:
-  czero.eqz x13, x13, x18 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, Zicond_czero_eqz_cg_cmp_rd_rs1_b13, Zicond_czero_eqz_cg_cmp_rd_rs1_b13_str)
+  czero.eqz x13, x13, x6 # perform operation
+  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x13, Zicond_czero_eqz_cg_cmp_rd_rs1_b13, Zicond_czero_eqz_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs1: x14 = 0x5ded1232
-  RVTEST_TESTDATA_LOAD_INT(x17, x0) # load rs2: x0 = 0xbecc5e64
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0xd8483f12
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0xbc311893
 Zicond_czero_eqz_cg_cmp_rd_rs1_b14:
-  czero.eqz x14, x14, x0 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, Zicond_czero_eqz_cg_cmp_rd_rs1_b14, Zicond_czero_eqz_cg_cmp_rd_rs1_b14_str)
+  czero.eqz x14, x14, x13 # perform operation
+  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x14, Zicond_czero_eqz_cg_cmp_rd_rs1_b14, Zicond_czero_eqz_cg_cmp_rd_rs1_b14_str)
 
+  mv x1, x15 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs1: x15 = 0xad9f1b45
-  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs2: x9 = 0xfac56181
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xd672c0ef
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x0b580e05
 Zicond_czero_eqz_cg_cmp_rd_rs1_b15:
-  czero.eqz x15, x15, x9 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, Zicond_czero_eqz_cg_cmp_rd_rs1_b15, Zicond_czero_eqz_cg_cmp_rd_rs1_b15_str)
+  czero.eqz x15, x15, x23 # perform operation
+  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x15, Zicond_czero_eqz_cg_cmp_rd_rs1_b15, Zicond_czero_eqz_cg_cmp_rd_rs1_b15_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs1: x16 = 0xd672c0ef
-  RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rs2: x23 = 0x0b580e05
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0x176a7c22
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x65236a24
 Zicond_czero_eqz_cg_cmp_rd_rs1_b16:
-  czero.eqz x16, x16, x23 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, Zicond_czero_eqz_cg_cmp_rd_rs1_b16, Zicond_czero_eqz_cg_cmp_rd_rs1_b16_str)
+  czero.eqz x16, x16, x22 # perform operation
+  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x16, Zicond_czero_eqz_cg_cmp_rd_rs1_b16, Zicond_czero_eqz_cg_cmp_rd_rs1_b16_str)
 
-  mv x24, x17 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs1: x17 = 0x465ec12a
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs2: x23 = 0x176a7c22
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x81bf821c
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x15384a09
 Zicond_czero_eqz_cg_cmp_rd_rs1_b17:
-  czero.eqz x17, x17, x23 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rd_rs1_b17, Zicond_czero_eqz_cg_cmp_rd_rs1_b17_str)
+  czero.eqz x17, x17, x10 # perform operation
+  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rd_rs1_b17, Zicond_czero_eqz_cg_cmp_rd_rs1_b17_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs1: x18 = 0xc57ffca9
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs2: x22 = 0x81bf821c
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0xc8e88ba6
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0x2b187c84
 Zicond_czero_eqz_cg_cmp_rd_rs1_b18:
-  czero.eqz x18, x18, x22 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, Zicond_czero_eqz_cg_cmp_rd_rs1_b18, Zicond_czero_eqz_cg_cmp_rd_rs1_b18_str)
+  czero.eqz x18, x18, x24 # perform operation
+  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x18, Zicond_czero_eqz_cg_cmp_rd_rs1_b18, Zicond_czero_eqz_cg_cmp_rd_rs1_b18_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load rs1: x19 = 0xb94addff
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs2: x21 = 0xdc2145f1
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x83643a41
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs2: x2 = 0x612753c2
 Zicond_czero_eqz_cg_cmp_rd_rs1_b19:
-  czero.eqz x19, x19, x21 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, Zicond_czero_eqz_cg_cmp_rd_rs1_b19, Zicond_czero_eqz_cg_cmp_rd_rs1_b19_str)
+  czero.eqz x19, x19, x2 # perform operation
+  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x19, Zicond_czero_eqz_cg_cmp_rd_rs1_b19, Zicond_czero_eqz_cg_cmp_rd_rs1_b19_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x24, x20) # load rs1: x20 = 0x95b6c9fc
-  RVTEST_TESTDATA_LOAD_INT(x24, x0) # load rs2: x0 = 0x792fd18b
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0xd70539ac
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0xe121beaf
 Zicond_czero_eqz_cg_cmp_rd_rs1_b20:
-  czero.eqz x20, x20, x0 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, Zicond_czero_eqz_cg_cmp_rd_rs1_b20, Zicond_czero_eqz_cg_cmp_rd_rs1_b20_str)
+  czero.eqz x20, x20, x23 # perform operation
+  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x20, Zicond_czero_eqz_cg_cmp_rd_rs1_b20, Zicond_czero_eqz_cg_cmp_rd_rs1_b20_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x24, x21) # load rs1: x21 = 0xef603a18
-  RVTEST_TESTDATA_LOAD_INT(x24, x12) # load rs2: x12 = 0xe121beaf
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x419e124b
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x3c72a1d1
 Zicond_czero_eqz_cg_cmp_rd_rs1_b21:
-  czero.eqz x21, x21, x12 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rd_rs1_b21, Zicond_czero_eqz_cg_cmp_rd_rs1_b21_str)
+  czero.eqz x21, x21, x27 # perform operation
+  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rd_rs1_b21, Zicond_czero_eqz_cg_cmp_rd_rs1_b21_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load rs1: x22 = 0x419e124b
-  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load rs2: x26 = 0x3c72a1d1
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xfcd504f6
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x3f075bdd
 Zicond_czero_eqz_cg_cmp_rd_rs1_b22:
-  czero.eqz x22, x22, x26 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rd_rs1_b22, Zicond_czero_eqz_cg_cmp_rd_rs1_b22_str)
+  czero.eqz x22, x22, x15 # perform operation
+  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rd_rs1_b22, Zicond_czero_eqz_cg_cmp_rd_rs1_b22_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x24, x23) # load rs1: x23 = 0xfcd504f6
-  RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x3f075bdd
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x0d1a9981
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x517b3c7d
 Zicond_czero_eqz_cg_cmp_rd_rs1_b23:
-  czero.eqz x23, x23, x14 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, Zicond_czero_eqz_cg_cmp_rd_rs1_b23, Zicond_czero_eqz_cg_cmp_rd_rs1_b23_str)
+  czero.eqz x23, x23, x12 # perform operation
+  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x23, Zicond_czero_eqz_cg_cmp_rd_rs1_b23, Zicond_czero_eqz_cg_cmp_rd_rs1_b23_str)
 
-  mv x27, x24 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs1: x24 = 0x0d1a9981
-  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x517b3c7d
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xd3cbcbe8
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x3a8816c1
 Zicond_czero_eqz_cg_cmp_rd_rs1_b24:
-  czero.eqz x24, x24, x11 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, Zicond_czero_eqz_cg_cmp_rd_rs1_b24, Zicond_czero_eqz_cg_cmp_rd_rs1_b24_str)
+  czero.eqz x24, x24, x30 # perform operation
+  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x25, x5, x4, x24, Zicond_czero_eqz_cg_cmp_rd_rs1_b24, Zicond_czero_eqz_cg_cmp_rd_rs1_b24_str)
 
+  mv x19, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs1: x25 = 0xd3cbcbe8
-  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs2: x30 = 0x3a8816c1
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xdc6349b8
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x91d7ff9d
 Zicond_czero_eqz_cg_cmp_rd_rs1_b25:
-  czero.eqz x25, x25, x30 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, Zicond_czero_eqz_cg_cmp_rd_rs1_b25, Zicond_czero_eqz_cg_cmp_rd_rs1_b25_str)
+  czero.eqz x25, x25, x8 # perform operation
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, Zicond_czero_eqz_cg_cmp_rd_rs1_b25, Zicond_czero_eqz_cg_cmp_rd_rs1_b25_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs1: x26 = 0x71d4f0d7
-  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load rs2: x23 = 0x4eec5503
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x8e53eb25
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x7df54b36
 Zicond_czero_eqz_cg_cmp_rd_rs1_b26:
-  czero.eqz x26, x26, x23 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, Zicond_czero_eqz_cg_cmp_rd_rs1_b26, Zicond_czero_eqz_cg_cmp_rd_rs1_b26_str)
+  czero.eqz x26, x26, x3 # perform operation
+  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x26, Zicond_czero_eqz_cg_cmp_rd_rs1_b26, Zicond_czero_eqz_cg_cmp_rd_rs1_b26_str)
 
-  mv x26, x27 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs1: x27 = 0xdc6349b8
-  RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs2: x7 = 0x91d7ff9d
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x8d567853
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0xb43dee70
 Zicond_czero_eqz_cg_cmp_rd_rs1_b27:
-  czero.eqz x27, x27, x7 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, Zicond_czero_eqz_cg_cmp_rd_rs1_b27, Zicond_czero_eqz_cg_cmp_rd_rs1_b27_str)
+  czero.eqz x27, x27, x29 # perform operation
+  # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x27, Zicond_czero_eqz_cg_cmp_rd_rs1_b27, Zicond_czero_eqz_cg_cmp_rd_rs1_b27_str)
 
-  mv x2, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x26, x28) # load rs1: x28 = 0x9e320ad5
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0x8d567853
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x34dc1da6
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x4a3373ec
 Zicond_czero_eqz_cg_cmp_rd_rs1_b28:
-  czero.eqz x28, x28, x17 # perform operation
-  # Check if x28 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x28, Zicond_czero_eqz_cg_cmp_rd_rs1_b28, Zicond_czero_eqz_cg_cmp_rd_rs1_b28_str)
+  czero.eqz x28, x28, x6 # perform operation
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, Zicond_czero_eqz_cg_cmp_rd_rs1_b28, Zicond_czero_eqz_cg_cmp_rd_rs1_b28_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x26, x29) # load rs1: x29 = 0x46e2711d
-  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rs2: x31 = 0xb43dee70
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xf2b9e83e
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xec6f7bc3
 Zicond_czero_eqz_cg_cmp_rd_rs1_b29:
-  czero.eqz x29, x29, x31 # perform operation
-  # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x29, Zicond_czero_eqz_cg_cmp_rd_rs1_b29, Zicond_czero_eqz_cg_cmp_rd_rs1_b29_str)
+  czero.eqz x29, x29, x9 # perform operation
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, Zicond_czero_eqz_cg_cmp_rd_rs1_b29, Zicond_czero_eqz_cg_cmp_rd_rs1_b29_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs1: x30 = 0x34dc1da6
-  RVTEST_TESTDATA_LOAD_INT(x26, x6) # load rs2: x6 = 0x4a3373ec
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0xabd5e9c4
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xc203ed51
 Zicond_czero_eqz_cg_cmp_rd_rs1_b30:
-  czero.eqz x30, x30, x6 # perform operation
-  # Check if x30 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x30, Zicond_czero_eqz_cg_cmp_rd_rs1_b30, Zicond_czero_eqz_cg_cmp_rd_rs1_b30_str)
+  czero.eqz x30, x30, x0 # perform operation
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, Zicond_czero_eqz_cg_cmp_rd_rs1_b30, Zicond_czero_eqz_cg_cmp_rd_rs1_b30_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rs1: x31 = 0xf2b9e83e
-  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs2: x9 = 0xec6f7bc3
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0xe6d1cc25
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0xa5d00437
 Zicond_czero_eqz_cg_cmp_rd_rs1_b31:
-  czero.eqz x31, x31, x9 # perform operation
-  # Check if x31 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rd_rs1_b31, Zicond_czero_eqz_cg_cmp_rd_rs1_b31_str)
+  czero.eqz x31, x31, x15 # perform operation
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rd_rs1_b31, Zicond_czero_eqz_cg_cmp_rd_rs1_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs1: x20 = 0x68af7033
-  RVTEST_TESTDATA_LOAD_INT(x26, x0) # load rs2: x0 = 0x35afea88
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x68af7033
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x35afea88
 Zicond_czero_eqz_cg_cmp_rd_rs2_b0:
-  czero.eqz x0, x20, x0 # perform operation
-  # Check if x0 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x0, Zicond_czero_eqz_cg_cmp_rd_rs2_b0, Zicond_czero_eqz_cg_cmp_rd_rs2_b0_str)
+  czero.eqz x0, x21, x0 # perform operation
+  # Check if x0 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x0, Zicond_czero_eqz_cg_cmp_rd_rs2_b0, Zicond_czero_eqz_cg_cmp_rd_rs2_b0_str)
 
+  mv x2, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x26, x0) # load rs1: x0 = 0x15b69c34
-  RVTEST_TESTDATA_LOAD_INT(x26, x1) # load rs2: x1 = 0xc2496c1c
+  RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0x951691cb
+  RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs2: x1 = 0x37fb1cbb
 Zicond_czero_eqz_cg_cmp_rd_rs2_b1:
-  czero.eqz x1, x0, x1 # perform operation
-  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, Zicond_czero_eqz_cg_cmp_rd_rs2_b1, Zicond_czero_eqz_cg_cmp_rd_rs2_b1_str)
+  czero.eqz x1, x13, x1 # perform operation
+  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x1, Zicond_czero_eqz_cg_cmp_rd_rs2_b1, Zicond_czero_eqz_cg_cmp_rd_rs2_b1_str)
 
-  mv x25, x2 # switch signature pointer register to avoid conflict with test
+  mv x17, x2 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs1: x22 = 0x60bd4814
-  RVTEST_TESTDATA_LOAD_INT(x26, x2) # load rs2: x2 = 0xb7b36f87
+  RVTEST_TESTDATA_LOAD_INT(x17, x22) # load rs1: x22 = 0x63d4c4af
+  RVTEST_TESTDATA_LOAD_INT(x17, x2) # load rs2: x2 = 0x63fded7c
 Zicond_czero_eqz_cg_cmp_rd_rs2_b2:
   czero.eqz x2, x22, x2 # perform operation
-  # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x2, Zicond_czero_eqz_cg_cmp_rd_rs2_b2, Zicond_czero_eqz_cg_cmp_rd_rs2_b2_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, Zicond_czero_eqz_cg_cmp_rd_rs2_b2, Zicond_czero_eqz_cg_cmp_rd_rs2_b2_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs1: x12 = 0xdb094a9e
-  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs2: x3 = 0xa500be8d
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs1: x18 = 0xcf514251
+  RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs2: x3 = 0x1024f6a5
 Zicond_czero_eqz_cg_cmp_rd_rs2_b3:
-  czero.eqz x3, x12, x3 # perform operation
-  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x3, Zicond_czero_eqz_cg_cmp_rd_rs2_b3, Zicond_czero_eqz_cg_cmp_rd_rs2_b3_str)
+  czero.eqz x3, x18, x3 # perform operation
+  # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x3, Zicond_czero_eqz_cg_cmp_rd_rs2_b3, Zicond_czero_eqz_cg_cmp_rd_rs2_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs1: x13 = 0xc2ee6120
-  RVTEST_TESTDATA_LOAD_INT(x26, x4) # load rs2: x4 = 0x5e0ea647
+  RVTEST_TESTDATA_LOAD_INT(x17, x27) # load rs1: x27 = 0x11d4f6a5
+  RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs2: x4 = 0xdb7f4290
 Zicond_czero_eqz_cg_cmp_rd_rs2_b4:
-  czero.eqz x4, x13, x4 # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x4, Zicond_czero_eqz_cg_cmp_rd_rs2_b4, Zicond_czero_eqz_cg_cmp_rd_rs2_b4_str)
+  czero.eqz x4, x27, x4 # perform operation
+  # Check if x4 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x4, Zicond_czero_eqz_cg_cmp_rd_rs2_b4, Zicond_czero_eqz_cg_cmp_rd_rs2_b4_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs1: x3 = 0x0aeb5a02
-  RVTEST_TESTDATA_LOAD_INT(x26, x5) # load rs2: x5 = 0xf71bd11f
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs1: x11 = 0xc2ee6120
+  RVTEST_TESTDATA_LOAD_INT(x17, x5) # load rs2: x5 = 0x5e0ea647
 Zicond_czero_eqz_cg_cmp_rd_rs2_b5:
-  czero.eqz x5, x3, x5 # perform operation
-  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rd_rs2_b5, Zicond_czero_eqz_cg_cmp_rd_rs2_b5_str)
+  czero.eqz x5, x11, x5 # perform operation
+  # Check if x5 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x5, Zicond_czero_eqz_cg_cmp_rd_rs2_b5, Zicond_czero_eqz_cg_cmp_rd_rs2_b5_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x29f64dbd
-  RVTEST_TESTDATA_LOAD_INT(x26, x6) # load rs2: x6 = 0xcbfbacf3
+  RVTEST_TESTDATA_LOAD_INT(x17, x3) # load rs1: x3 = 0x0aeb5a02
+  RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rs2: x6 = 0xf71bd11f
 Zicond_czero_eqz_cg_cmp_rd_rs2_b6:
-  czero.eqz x6, x11, x6 # perform operation
-  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rd_rs2_b6, Zicond_czero_eqz_cg_cmp_rd_rs2_b6_str)
+  czero.eqz x6, x3, x6 # perform operation
+  # Check if x6 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x6, Zicond_czero_eqz_cg_cmp_rd_rs2_b6, Zicond_czero_eqz_cg_cmp_rd_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0xdae14ec4
-  RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs2: x7 = 0xd5f2dbdb
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs1: x9 = 0x29f64dbd
+  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs2: x7 = 0xcbfbacf3
 Zicond_czero_eqz_cg_cmp_rd_rs2_b7:
-  czero.eqz x7, x14, x7 # perform operation
-  # Check if x7 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x7, Zicond_czero_eqz_cg_cmp_rd_rs2_b7, Zicond_czero_eqz_cg_cmp_rd_rs2_b7_str)
+  czero.eqz x7, x9, x7 # perform operation
+  # Check if x7 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x7, Zicond_czero_eqz_cg_cmp_rd_rs2_b7, Zicond_czero_eqz_cg_cmp_rd_rs2_b7_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs1: x22 = 0x697ec0e8
-  RVTEST_TESTDATA_LOAD_INT(x26, x8) # load rs2: x8 = 0x353cd303
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs1: x18 = 0xd80274ad
+  RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0x48cc3d81
 Zicond_czero_eqz_cg_cmp_rd_rs2_b8:
-  czero.eqz x8, x22, x8 # perform operation
-  # Check if x8 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x8, Zicond_czero_eqz_cg_cmp_rd_rs2_b8, Zicond_czero_eqz_cg_cmp_rd_rs2_b8_str)
+  czero.eqz x8, x18, x8 # perform operation
+  # Check if x8 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x8, Zicond_czero_eqz_cg_cmp_rd_rs2_b8, Zicond_czero_eqz_cg_cmp_rd_rs2_b8_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs1: x17 = 0x2f1f98fa
-  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs2: x9 = 0xdb2ff3dd
+  RVTEST_TESTDATA_LOAD_INT(x17, x27) # load rs1: x27 = 0xdae14ec4
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs2: x9 = 0xd5f2dbdb
 Zicond_czero_eqz_cg_cmp_rd_rs2_b9:
-  czero.eqz x9, x17, x9 # perform operation
-  # Check if x9 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x9, Zicond_czero_eqz_cg_cmp_rd_rs2_b9, Zicond_czero_eqz_cg_cmp_rd_rs2_b9_str)
+  czero.eqz x9, x27, x9 # perform operation
+  # Check if x9 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x9, Zicond_czero_eqz_cg_cmp_rd_rs2_b9, Zicond_czero_eqz_cg_cmp_rd_rs2_b9_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs1: x9 = 0xd2ffe764
-  RVTEST_TESTDATA_LOAD_INT(x26, x10) # load rs2: x10 = 0xc2b164b7
+  RVTEST_TESTDATA_LOAD_INT(x17, x24) # load rs1: x24 = 0x697ec0e8
+  RVTEST_TESTDATA_LOAD_INT(x17, x10) # load rs2: x10 = 0x353cd303
 Zicond_czero_eqz_cg_cmp_rd_rs2_b10:
-  czero.eqz x10, x9, x10 # perform operation
-  # Check if x10 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x10, Zicond_czero_eqz_cg_cmp_rd_rs2_b10, Zicond_czero_eqz_cg_cmp_rd_rs2_b10_str)
+  czero.eqz x10, x24, x10 # perform operation
+  # Check if x10 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x10, Zicond_czero_eqz_cg_cmp_rd_rs2_b10, Zicond_czero_eqz_cg_cmp_rd_rs2_b10_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs1: x9 = 0x17b84dd0
-  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs2: x11 = 0x6bc3d336
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs1: x18 = 0x2f1f98fa
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0xdb2ff3dd
 Zicond_czero_eqz_cg_cmp_rd_rs2_b11:
-  czero.eqz x11, x9, x11 # perform operation
-  # Check if x11 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x25, x13, x12, x11, Zicond_czero_eqz_cg_cmp_rd_rs2_b11, Zicond_czero_eqz_cg_cmp_rd_rs2_b11_str)
+  czero.eqz x11, x18, x11 # perform operation
+  # Check if x11 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x11, Zicond_czero_eqz_cg_cmp_rd_rs2_b11, Zicond_czero_eqz_cg_cmp_rd_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x0bb6b8a8
-  RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs2: x12 = 0x67605fc9
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs1: x9 = 0xd2ffe764
+  RVTEST_TESTDATA_LOAD_INT(x17, x12) # load rs2: x12 = 0xc2b164b7
 Zicond_czero_eqz_cg_cmp_rd_rs2_b12:
-  czero.eqz x12, x16, x12 # perform operation
-  # Check if x12 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x12, Zicond_czero_eqz_cg_cmp_rd_rs2_b12, Zicond_czero_eqz_cg_cmp_rd_rs2_b12_str)
+  czero.eqz x12, x9, x12 # perform operation
+  # Check if x12 contains the expected result. x19 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x19, x14, x13, x12, Zicond_czero_eqz_cg_cmp_rd_rs2_b12, Zicond_czero_eqz_cg_cmp_rd_rs2_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs1: x30 = 0x8b6e5b31
-  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs2: x13 = 0x2372e02d
+  RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rs1: x29 = 0x52aa08ae
+  RVTEST_TESTDATA_LOAD_INT(x17, x13) # load rs2: x13 = 0xe55ae521
 Zicond_czero_eqz_cg_cmp_rd_rs2_b13:
-  czero.eqz x13, x30, x13 # perform operation
-  # Check if x13 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x13, Zicond_czero_eqz_cg_cmp_rd_rs2_b13, Zicond_czero_eqz_cg_cmp_rd_rs2_b13_str)
+  czero.eqz x13, x29, x13 # perform operation
+  # Check if x13 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x13, Zicond_czero_eqz_cg_cmp_rd_rs2_b13, Zicond_czero_eqz_cg_cmp_rd_rs2_b13_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x26, x6) # load rs1: x6 = 0xaa30a4ce
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x6dc83c85
+  RVTEST_TESTDATA_LOAD_INT(x17, x6) # load rs1: x6 = 0x48aed53f
+  RVTEST_TESTDATA_LOAD_INT(x17, x14) # load rs2: x14 = 0xe6a0117b
 Zicond_czero_eqz_cg_cmp_rd_rs2_b14:
   czero.eqz x14, x6, x14 # perform operation
-  # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x14, Zicond_czero_eqz_cg_cmp_rd_rs2_b14, Zicond_czero_eqz_cg_cmp_rd_rs2_b14_str)
+  # Check if x14 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x14, Zicond_czero_eqz_cg_cmp_rd_rs2_b14, Zicond_czero_eqz_cg_cmp_rd_rs2_b14_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs1: x18 = 0x2b4fb979
-  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs2: x15 = 0x32539643
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs1: x18 = 0x4bf62bf4
+  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0xe306d8e4
 Zicond_czero_eqz_cg_cmp_rd_rs2_b15:
   czero.eqz x15, x18, x15 # perform operation
-  # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x15, Zicond_czero_eqz_cg_cmp_rd_rs2_b15, Zicond_czero_eqz_cg_cmp_rd_rs2_b15_str)
+  # Check if x15 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x15, Zicond_czero_eqz_cg_cmp_rd_rs2_b15, Zicond_czero_eqz_cg_cmp_rd_rs2_b15_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs1: x3 = 0x04e21999
-  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs2: x16 = 0x6794e6dc
+  RVTEST_TESTDATA_LOAD_INT(x17, x26) # load rs1: x26 = 0xa26afc86
+  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs2: x16 = 0x04e21999
 Zicond_czero_eqz_cg_cmp_rd_rs2_b16:
-  czero.eqz x16, x3, x16 # perform operation
-  # Check if x16 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x16, Zicond_czero_eqz_cg_cmp_rd_rs2_b16, Zicond_czero_eqz_cg_cmp_rd_rs2_b16_str)
+  czero.eqz x16, x26, x16 # perform operation
+  # Check if x16 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x16, Zicond_czero_eqz_cg_cmp_rd_rs2_b16, Zicond_czero_eqz_cg_cmp_rd_rs2_b16_str)
 
+  mv x1, x17 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x68b3e102
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0x86b01289
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x68b3e102
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0x86b01289
 Zicond_czero_eqz_cg_cmp_rd_rs2_b17:
-  czero.eqz x17, x24, x17 # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x17, Zicond_czero_eqz_cg_cmp_rd_rs2_b17, Zicond_czero_eqz_cg_cmp_rd_rs2_b17_str)
+  czero.eqz x17, x26, x17 # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x17, Zicond_czero_eqz_cg_cmp_rd_rs2_b17, Zicond_czero_eqz_cg_cmp_rd_rs2_b17_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x00ae1dc1
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs2: x18 = 0xb5a43d78
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x00ae1dc1
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs2: x18 = 0xb5a43d78
 Zicond_czero_eqz_cg_cmp_rd_rs2_b18:
-  czero.eqz x18, x16, x18 # perform operation
-  # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x18, Zicond_czero_eqz_cg_cmp_rd_rs2_b18, Zicond_czero_eqz_cg_cmp_rd_rs2_b18_str)
+  czero.eqz x18, x17, x18 # perform operation
+  # Check if x18 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x19, x8, x7, x18, Zicond_czero_eqz_cg_cmp_rd_rs2_b18, Zicond_czero_eqz_cg_cmp_rd_rs2_b18_str)
 
+  mv x3, x19 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x26, x1) # load rs1: x1 = 0xdb849880
-  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs2: x19 = 0x37116455
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x7d7f7cdb
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs2: x19 = 0x8502ebcb
 Zicond_czero_eqz_cg_cmp_rd_rs2_b19:
-  czero.eqz x19, x1, x19 # perform operation
-  # Check if x19 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x19, Zicond_czero_eqz_cg_cmp_rd_rs2_b19, Zicond_czero_eqz_cg_cmp_rd_rs2_b19_str)
+  czero.eqz x19, x15, x19 # perform operation
+  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x19, Zicond_czero_eqz_cg_cmp_rd_rs2_b19, Zicond_czero_eqz_cg_cmp_rd_rs2_b19_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0xad98e3f9
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs2: x20 = 0xe7d4bca7
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x8ceaaf08
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x906eca93
 Zicond_czero_eqz_cg_cmp_rd_rs2_b20:
-  czero.eqz x20, x14, x20 # perform operation
-  # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x20, Zicond_czero_eqz_cg_cmp_rd_rs2_b20, Zicond_czero_eqz_cg_cmp_rd_rs2_b20_str)
+  czero.eqz x20, x9, x20 # perform operation
+  # Check if x20 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x20, Zicond_czero_eqz_cg_cmp_rd_rs2_b20, Zicond_czero_eqz_cg_cmp_rd_rs2_b20_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs1: x3 = 0x7a933488
-  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0x85a8a2e9
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xa4de023c
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xf86c52d2
 Zicond_czero_eqz_cg_cmp_rd_rs2_b21:
-  czero.eqz x21, x3, x21 # perform operation
-  # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x21, Zicond_czero_eqz_cg_cmp_rd_rs2_b21, Zicond_czero_eqz_cg_cmp_rd_rs2_b21_str)
+  czero.eqz x21, x15, x21 # perform operation
+  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x21, Zicond_czero_eqz_cg_cmp_rd_rs2_b21, Zicond_czero_eqz_cg_cmp_rd_rs2_b21_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs1: x19 = 0xf86c52d2
-  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs2: x22 = 0x86c5ff8a
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x419c1958
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x14fa349d
 Zicond_czero_eqz_cg_cmp_rd_rs2_b22:
-  czero.eqz x22, x19, x22 # perform operation
-  # Check if x22 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x22, Zicond_czero_eqz_cg_cmp_rd_rs2_b22, Zicond_czero_eqz_cg_cmp_rd_rs2_b22_str)
+  czero.eqz x22, x0, x22 # perform operation
+  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x22, Zicond_czero_eqz_cg_cmp_rd_rs2_b22, Zicond_czero_eqz_cg_cmp_rd_rs2_b22_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs1: x20 = 0x419c1958
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs2: x23 = 0x14fa349d
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0x7ddf6a53
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0xbcb6916b
 Zicond_czero_eqz_cg_cmp_rd_rs2_b23:
-  czero.eqz x23, x20, x23 # perform operation
-  # Check if x23 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x23, Zicond_czero_eqz_cg_cmp_rd_rs2_b23, Zicond_czero_eqz_cg_cmp_rd_rs2_b23_str)
+  czero.eqz x23, x16, x23 # perform operation
+  # Check if x23 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x23, Zicond_czero_eqz_cg_cmp_rd_rs2_b23, Zicond_czero_eqz_cg_cmp_rd_rs2_b23_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0x7ddf6a53
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs2: x24 = 0xbcb6916b
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x2572482a
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0xb5608399
 Zicond_czero_eqz_cg_cmp_rd_rs2_b24:
-  czero.eqz x24, x14, x24 # perform operation
-  # Check if x24 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x24, Zicond_czero_eqz_cg_cmp_rd_rs2_b24, Zicond_czero_eqz_cg_cmp_rd_rs2_b24_str)
+  czero.eqz x24, x21, x24 # perform operation
+  # Check if x24 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x24, Zicond_czero_eqz_cg_cmp_rd_rs2_b24, Zicond_czero_eqz_cg_cmp_rd_rs2_b24_str)
 
-  mv x24, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x26, x0) # load rs1: x0 = 0xac025f3e
-  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs2: x25 = 0x22b90580
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xc2ca7848
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x9df5e561
 Zicond_czero_eqz_cg_cmp_rd_rs2_b25:
-  czero.eqz x25, x0, x25 # perform operation
-  # Check if x25 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x25, Zicond_czero_eqz_cg_cmp_rd_rs2_b25, Zicond_czero_eqz_cg_cmp_rd_rs2_b25_str)
+  czero.eqz x25, x29, x25 # perform operation
+  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x25, Zicond_czero_eqz_cg_cmp_rd_rs2_b25, Zicond_czero_eqz_cg_cmp_rd_rs2_b25_str)
 
-  mv x11, x26 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load rs1: x14 = 0x41fbd6d1
-  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0xf3b6f887
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xf94434ee
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x482f623e
 Zicond_czero_eqz_cg_cmp_rd_rs2_b26:
-  czero.eqz x26, x14, x26 # perform operation
-  # Check if x26 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x26, Zicond_czero_eqz_cg_cmp_rd_rs2_b26, Zicond_czero_eqz_cg_cmp_rd_rs2_b26_str)
+  czero.eqz x26, x21, x26 # perform operation
+  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x26, Zicond_czero_eqz_cg_cmp_rd_rs2_b26, Zicond_czero_eqz_cg_cmp_rd_rs2_b26_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs1: x29 = 0x9df5e561
-  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x0af92d85
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xd1447cd2
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x4322a75b
 Zicond_czero_eqz_cg_cmp_rd_rs2_b27:
-  czero.eqz x27, x29, x27 # perform operation
-  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x27, Zicond_czero_eqz_cg_cmp_rd_rs2_b27, Zicond_czero_eqz_cg_cmp_rd_rs2_b27_str)
+  czero.eqz x27, x5, x27 # perform operation
+  # Check if x27 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x27, Zicond_czero_eqz_cg_cmp_rd_rs2_b27, Zicond_czero_eqz_cg_cmp_rd_rs2_b27_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0xf94434ee
-  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x482f623e
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xc4b5856f
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0x6152ab42
 Zicond_czero_eqz_cg_cmp_rd_rs2_b28:
-  czero.eqz x28, x31, x28 # perform operation
-  # Check if x28 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x28, Zicond_czero_eqz_cg_cmp_rd_rs2_b28, Zicond_czero_eqz_cg_cmp_rd_rs2_b28_str)
+  czero.eqz x28, x25, x28 # perform operation
+  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x28, Zicond_czero_eqz_cg_cmp_rd_rs2_b28, Zicond_czero_eqz_cg_cmp_rd_rs2_b28_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0xd1447cd2
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x4322a75b
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xc777be73
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0xc0b232ba
 Zicond_czero_eqz_cg_cmp_rd_rs2_b29:
-  czero.eqz x29, x3, x29 # perform operation
-  # Check if x29 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x29, Zicond_czero_eqz_cg_cmp_rd_rs2_b29, Zicond_czero_eqz_cg_cmp_rd_rs2_b29_str)
+  czero.eqz x29, x15, x29 # perform operation
+  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x29, Zicond_czero_eqz_cg_cmp_rd_rs2_b29, Zicond_czero_eqz_cg_cmp_rd_rs2_b29_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0xc4b5856f
-  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x6152ab42
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x3fa25d93
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x7f16eb38
 Zicond_czero_eqz_cg_cmp_rd_rs2_b30:
-  czero.eqz x30, x25, x30 # perform operation
-  # Check if x30 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x30, Zicond_czero_eqz_cg_cmp_rd_rs2_b30, Zicond_czero_eqz_cg_cmp_rd_rs2_b30_str)
+  czero.eqz x30, x15, x30 # perform operation
+  # Check if x30 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x30, Zicond_czero_eqz_cg_cmp_rd_rs2_b30, Zicond_czero_eqz_cg_cmp_rd_rs2_b30_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load rs1: x14 = 0xc777be73
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0xc0b232ba
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xf8928d68
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0x08f34889
 Zicond_czero_eqz_cg_cmp_rd_rs2_b31:
-  czero.eqz x31, x14, x31 # perform operation
-  # Check if x31 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x31, Zicond_czero_eqz_cg_cmp_rd_rs2_b31, Zicond_czero_eqz_cg_cmp_rd_rs2_b31_str)
+  czero.eqz x31, x5, x31 # perform operation
+  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x31, Zicond_czero_eqz_cg_cmp_rd_rs2_b31, Zicond_czero_eqz_cg_cmp_rd_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs1: x0 = 0xfdc8f24e
-  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0xb6828d4d
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0xfdc8f24e
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xb6828d4d
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b0:
   czero.eqz x0, x0, x0 # perform operation
-  # Check if x0 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x0, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b0, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b0_str)
+  # Check if x0 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x0, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b0, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b0_str)
 
+  mv x21, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs1: x1 = 0x67eb5bfe
-  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs2: x1 = 0xa125d0c6
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs1: x1 = 0xa125d0c6
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0xafc89466
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b1:
   czero.eqz x1, x1, x1 # perform operation
-  # Check if x1 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x1, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b1, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b1_str)
+  # Check if x1 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x1, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b1, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b1_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs1: x2 = 0xafc89466
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0x463d7b15
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs1: x2 = 0x463d7b15
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0x108e3259
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b2:
   czero.eqz x2, x2, x2 # perform operation
-  # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x2, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b2, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b2_str)
+  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x3, x8, x7, x2, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b2, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b2_str)
 
+  mv x20, x3 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs1: x3 = 0x108e3259
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0x3a912946
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs1: x3 = 0x5165c5ea
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0x297f70a7
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b3:
   czero.eqz x3, x3, x3 # perform operation
-  # Check if x3 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x3, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b3, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b3_str)
+  # Check if x3 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x3, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b3, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b3_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs1: x4 = 0x5165c5ea
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x297f70a7
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs1: x4 = 0xad3653a3
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0xa596bece
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b4:
   czero.eqz x4, x4, x4 # perform operation
-  # Check if x4 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x4, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b4, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b4_str)
+  # Check if x4 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x4, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b4, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b4_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0xad3653a3
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0xa596bece
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs1: x5 = 0x310b3cf4
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0xe8e81593
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b5:
   czero.eqz x5, x5, x5 # perform operation
-  # Check if x5 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b5, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b5_str)
+  # Check if x5 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x5, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b5, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b5_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0x310b3cf4
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0xe8e81593
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs1: x6 = 0xe22681b9
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0x3dac4153
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b6:
   czero.eqz x6, x6, x6 # perform operation
-  # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b6, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b6_str)
+  # Check if x6 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x20, x8, x7, x6, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b6, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x4, x7 # switch temp register to avoid conflict with test
+  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs1: x7 = 0xfb47bb16
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0xa11b7a10
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs1: x7 = 0xa11b7a10
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0xd16e7f66
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b7:
   czero.eqz x7, x7, x7 # perform operation
-  # Check if x7 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x7, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b7, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b7_str)
+  # Check if x7 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x7, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b7, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b7_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs1: x8 = 0xd16e7f66
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x8eb54a74
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs1: x8 = 0x8eb54a74
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0xfc875941
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b8:
   czero.eqz x8, x8, x8 # perform operation
-  # Check if x8 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x8, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b8, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b8_str)
+  # Check if x8 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x8, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b8, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b8_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs1: x9 = 0xfc875941
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0x2deaa09b
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs1: x9 = 0x2deaa09b
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0xe5bd311f
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b9:
   czero.eqz x9, x9, x9 # perform operation
-  # Check if x9 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x9, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b9, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b9_str)
+  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x9, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b9, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b9_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs1: x10 = 0xe5bd311f
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x29037b2f
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs1: x10 = 0x29037b2f
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x50612634
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b10:
   czero.eqz x10, x10, x10 # perform operation
-  # Check if x10 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x10, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b10, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b10_str)
+  # Check if x10 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x10, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b10, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b10_str)
 
-  mv x26, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x14afd676
-  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs2: x11 = 0x806c17e7
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs1: x11 = 0x78b36cd6
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0x0cf345d4
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b11:
   czero.eqz x11, x11, x11 # perform operation
-  # Check if x11 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x11, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b11, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b11_str)
+  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x11, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b11, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs1: x12 = 0xacaf9e0f
-  RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs2: x12 = 0x174f6a5d
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs1: x12 = 0x84116b51
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x3d34f8f1
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b12:
   czero.eqz x12, x12, x12 # perform operation
-  # Check if x12 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x12, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b12, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b12_str)
+  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x12, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b12, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b12_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs1: x13 = 0x686470c0
-  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs2: x13 = 0x4e397a9b
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs1: x13 = 0x30839e9d
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0x6bc5559e
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b13:
   czero.eqz x13, x13, x13 # perform operation
-  # Check if x13 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x13, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b13, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b13_str)
+  # Check if x13 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x13, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b13, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b13_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0xc7a638ca
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x8f7446be
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs1: x14 = 0x699cc564
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0x0488d522
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b14:
   czero.eqz x14, x14, x14 # perform operation
-  # Check if x14 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x14, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b14, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b14_str)
+  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x14, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b14, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b14_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs1: x15 = 0x9fe3139e
-  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs2: x15 = 0x4e7d9e0e
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs1: x15 = 0x8933f1c8
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0xa966497d
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b15:
   czero.eqz x15, x15, x15 # perform operation
-  # Check if x15 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x15, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b15, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b15_str)
+  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x15, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b15, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b15_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x15c3f15a
-  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs2: x16 = 0x14d0b0f8
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs1: x16 = 0x02cf7816
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xd44ce2b0
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b16:
   czero.eqz x16, x16, x16 # perform operation
-  # Check if x16 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x16, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b16, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b16_str)
+  # Check if x16 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x16, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b16, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b16_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs1: x17 = 0xdfbf1d65
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0x28c9baaf
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs1: x17 = 0x90cdbc4d
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0xc4ef4732
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b17:
   czero.eqz x17, x17, x17 # perform operation
-  # Check if x17 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b17, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b17_str)
+  # Check if x17 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x17, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b17, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b17_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs1: x18 = 0x52e4c3d3
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs2: x18 = 0x4e699819
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs1: x18 = 0xaf53592b
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0xdce9e256
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b18:
   czero.eqz x18, x18, x18 # perform operation
-  # Check if x18 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x18, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b18, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b18_str)
+  # Check if x18 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x18, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b18, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b18_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs1: x19 = 0x315ad964
-  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs2: x19 = 0x6c2cd65d
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs1: x19 = 0x46b24e11
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x9d61ef42
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b19:
   czero.eqz x19, x19, x19 # perform operation
-  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x19, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b19, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b19_str)
+  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x20, x5, x4, x19, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b19, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b19_str)
 
+  mv x15, x20 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs1: x20 = 0x45449ff3
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs2: x20 = 0xfbf5b95a
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs1: x20 = 0x77831117
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x06573afb
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b20:
   czero.eqz x20, x20, x20 # perform operation
-  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x20, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b20, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b20_str)
+  # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x20, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b20, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b20_str)
 
+  mv x25, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs1: x21 = 0xcedfd561
-  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0xe61f1bfb
+  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs1: x21 = 0x5c752d90
+  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs2: x21 = 0xef83f8d8
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b21:
   czero.eqz x21, x21, x21 # perform operation
-  # Check if x21 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b21, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b21_str)
+  # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x21, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b21, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b21_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs1: x22 = 0x64161212
-  RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs2: x22 = 0x7fb846d5
+  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs1: x22 = 0xf0b666bc
+  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs2: x22 = 0x64993da7
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b22:
   czero.eqz x22, x22, x22 # perform operation
-  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b22, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b22_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x22, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b22, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b22_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs1: x23 = 0x0e8c2a92
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs2: x23 = 0x19abf56b
+  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs1: x23 = 0x4ee9852d
+  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x42f8e268
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b23:
   czero.eqz x23, x23, x23 # perform operation
-  # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x23, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b23, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b23_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x23, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b23, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b23_str)
 
-  mv x27, x24 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x9d61ef42
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs2: x24 = 0x6f82dd9a
+  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs1: x24 = 0x0108cc28
+  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs2: x24 = 0x9aa12953
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b24:
   czero.eqz x24, x24, x24 # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x24, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b24, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b24_str)
+  # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x24, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b24, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b24_str)
 
+  mv x1, x25 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs1: x25 = 0x77831117
-  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs2: x25 = 0x06573afb
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xbb07de68
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x4a88fdff
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b25:
   czero.eqz x25, x25, x25 # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x25, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b25, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b25_str)
+  # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x25, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b25, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b25_str)
 
-  mv x23, x26 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs1: x26 = 0x5c752d90
-  RVTEST_TESTDATA_LOAD_INT(x23, x26) # load rs2: x26 = 0xef83f8d8
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x9d86447a
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0xb97d41bb
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b26:
   czero.eqz x26, x26, x26 # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x26, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b26, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b26_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x26, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b26, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b26_str)
 
-  mv x21, x27 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs1: x27 = 0xe65b1005
-  RVTEST_TESTDATA_LOAD_INT(x23, x27) # load rs2: x27 = 0x58f46450
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0xd0b430a3
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x48b28977
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b27:
   czero.eqz x27, x27, x27 # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b27, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b27_str)
+  # Check if x27 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x27, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b27, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b27_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs1: x28 = 0x0188ef55
-  RVTEST_TESTDATA_LOAD_INT(x23, x28) # load rs2: x28 = 0x106ee40a
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x4855fe78
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0x15d93fa0
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b28:
   czero.eqz x28, x28, x28 # perform operation
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b28, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b28_str)
+  # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x28, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b28, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b28_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs1: x29 = 0x8ea5c26e
-  RVTEST_TESTDATA_LOAD_INT(x23, x29) # load rs2: x29 = 0xbb07de68
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x9278452a
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0xebb6123a
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b29:
   czero.eqz x29, x29, x29 # perform operation
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b29, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b29_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x29, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b29, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b29_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rs1: x30 = 0x4a88fdff
-  RVTEST_TESTDATA_LOAD_INT(x23, x30) # load rs2: x30 = 0x9d86447a
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x7c581528
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0xcfb1cdd1
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b30:
   czero.eqz x30, x30, x30 # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b30, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b30_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x30, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b30, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b30_str)
 
 # Testcase cmp_rd_rs1_rs2 (Test rd = rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs1: x31 = 0xb97d41bb
-  RVTEST_TESTDATA_LOAD_INT(x23, x31) # load rs2: x31 = 0xd0b430a3
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x784be0f4
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0xabdcacb0
 Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b31:
   czero.eqz x31, x31, x31 # perform operation
-  # Check if x31 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b31, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b31_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b31, Zicond_czero_eqz_cg_cmp_rd_rs1_rs2_b31_str)
 
-  mv x2, x21 # restore signature pointer to default register for teardown
+  mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -3297,10 +3293,11 @@ RVTEST_DATA_BEGIN
 .word 0x2da0cda4
 .word 0x1da13980
 .word 0xc9c1db3b
+.word 0x574f4fdc
 .word 0xd8ba664b
-.word 0x5c88a9f2
-.word 0xa35c9d73
-.word 0x7d4e23f6
+.word 0xb803ec70
+.word 0xcbd617c2
+.word 0x5bd82a00
 .word 0x56d8ecd3
 .word 0xfa1e3172
 .word 0xc649dc7e
@@ -3312,7 +3309,6 @@ RVTEST_DATA_BEGIN
 .word 0x122971af
 .word 0x0e0c9d2f
 .word 0xb18ae6d4
-.word 0x07227e56
 .word 0xe7b1b053
 .word 0x786a1f13
 .word 0x6e392fa6
@@ -3345,50 +3341,50 @@ RVTEST_DATA_BEGIN
 .word 0x7ad02d06
 .word 0xfdc077e2
 .word 0x327ee38a
-.word 0x0daa20c9
 .word 0x3d5983e5
-.word 0xf80c3dbb
-.word 0x805e3472
-.word 0x460722af
-.word 0xe4d1a4aa
-.word 0xd1cffcf0
+.word 0x03eef34b
+.word 0xcb638b92
+.word 0x48d303d3
+.word 0xba9fae2f
+.word 0x274e6d03
 .word 0xfaef5a09
-.word 0x658ac950
+.word 0xa92ad522
 .word 0xecc72617
-.word 0x143144fb
-.word 0x3e49a8a8
-.word 0xd4c3e2b3
-.word 0xa0855dd2
-.word 0x528ff108
-.word 0x44359b2d
+.word 0x95a09378
+.word 0x097645b0
+.word 0xd47f3e00
+.word 0xe8b37236
+.word 0x1ae16d34
+.word 0x9972fbc2
+.word 0x07992278
 .word 0xf2dc0775
 .word 0xf16381a8
-.word 0x26ae161b
-.word 0xf46c76b6
-.word 0x6bbf1f98
-.word 0xb4a3a14c
-.word 0xad595e14
-.word 0x14dbe2f1
-.word 0x0acc079a
-.word 0xcb6d0c78
-.word 0x4d10bb65
-.word 0x48926c6b
-.word 0x3bb95576
-.word 0x76ce2c4b
-.word 0xb36f45e7
-.word 0x8ace9bf2
+.word 0x665e3549
+.word 0xbafd6f88
+.word 0x26afe14a
+.word 0x741c4233
+.word 0x902271c7
+.word 0x9f31ae61
+.word 0xbc8a9d6b
+.word 0xd45f65a2
+.word 0x0a5e6c9f
+.word 0xb3663510
+.word 0xbb74f135
+.word 0xc6d7ff16
 .word 0x3f63c48e
 .word 0x06dac8df
-.word 0x6e560e9b
-.word 0xe574c268
-.word 0x6500b624
-.word 0x03533f2d
-.word 0xa3583055
-.word 0xf1262953
-.word 0x4f9b46de
-.word 0xd220e0ef
-.word 0xe4df060b
+.word 0x45de7cb5
+.word 0xd2bf6d4e
+.word 0x63ac5e6d
+.word 0xbf6fa74e
+.word 0xe2b64ddf
+.word 0x46275a5e
+.word 0xb61bdeb3
+.word 0x7c23d638
+.word 0x8509ac58
+.word 0x7274cc6e
 .word 0xa316a191
+.word 0x179a07bc
 .word 0x6a235102
 .word 0xcad5635f
 .word 0x15e4cd9f
@@ -3409,32 +3405,31 @@ RVTEST_DATA_BEGIN
 .word 0xb5ef1275
 .word 0xbdbc19ba
 .word 0xdf26e229
-.word 0x0a5ae4fe
 .word 0xffc86a2f
 .word 0xb0658df5
 .word 0x563bbe5a
 .word 0xc64b242d
 .word 0xd8efb56b
-.word 0x7ef4b8a4
-.word 0x14a0de99
-.word 0xf8307c1f
-.word 0x40731b46
+.word 0x0e88cc1c
+.word 0x8450591e
+.word 0x53999e40
 .word 0x51f6dfdf
 .word 0x0135134f
-.word 0xb42e0bfd
-.word 0x59e313c8
-.word 0x9d8140fc
-.word 0xd8fc6c20
+.word 0xa40e72b1
+.word 0xc4fc5602
+.word 0xda655bc6
+.word 0x0b12845f
 .word 0x0e394655
 .word 0xc959b49c
 .word 0x0f4f45cd
 .word 0x2ae429ba
-.word 0x38efd976
 .word 0xbc29879c
 .word 0xe380673b
-.word 0xc43a0594
+.word 0x499e795b
+.word 0xf6ba9bf7
 .word 0x20529174
 .word 0x5441e038
+.word 0x5dd80bc3
 .word 0xb7d6eb27
 .word 0x971b312a
 .word 0xe0aed45f
@@ -3445,7 +3440,7 @@ RVTEST_DATA_BEGIN
 .word 0x61de7754
 .word 0x9c19e8e9
 .word 0xee6dd29c
-.word 0xde6ccad9
+.word 0x0c5df0ad
 .word 0x781dcc5c
 .word 0x2d685881
 .word 0x289a4a60
@@ -3462,9 +3457,10 @@ RVTEST_DATA_BEGIN
 .word 0xe8ff0419
 .word 0xdeedb227
 .word 0xbf9484de
-.word 0x8b621480
-.word 0xf91e8e90
-.word 0xde470a85
+.word 0x26a15892
+.word 0x66e4f159
+.word 0x8cabfaf0
+.word 0x9c92a674
 .word 0x00000000
 .word 0xf24cec45
 .word 0x00000001
@@ -3809,70 +3805,70 @@ RVTEST_DATA_BEGIN
 .word 0x2765a7d7
 .word 0x6e9561e1
 .word 0xde80d5e7
-.word 0x8e5ecc56
-.word 0xe0d76092
-.word 0x569d4d2f
-.word 0x1c5ef23a
+.word 0xe9d60003
+.word 0x6d7b53b4
+.word 0xef88bea9
 .word 0xff358f2c
-.word 0x09ffb22d
-.word 0x95a7341f
-.word 0x203b84de
-.word 0x0aade1c7
-.word 0x8d16d8c3
-.word 0xbba14756
-.word 0x7da99203
+.word 0xb9dabe94
+.word 0x7c6a930b
+.word 0x8506dfac
+.word 0xc1a7c55d
+.word 0x3dfad298
+.word 0xf396b229
+.word 0x5dd9ae50
+.word 0x7973b5fb
 .word 0x9148f2a4
 .word 0xaf2eb131
 .word 0xb9fd233a
 .word 0xbcec60a6
+.word 0x88b8b7c6
 .word 0x3f78495e
-.word 0xd45eea12
 .word 0x12b76a3d
 .word 0x36361e87
-.word 0xc4f60da4
+.word 0xd395ddae
+.word 0x5632c8fc
 .word 0x191bda0b
-.word 0xd2547d66
+.word 0xe8f16a27
 .word 0x1ef3e1e6
-.word 0x79205174
-.word 0xd2fc3578
-.word 0xe3553e83
-.word 0x3da61c8a
-.word 0x85a6e30b
-.word 0x680e4842
+.word 0xb24a42eb
+.word 0x2b2d0768
+.word 0x1b4aedd9
+.word 0x649ec034
+.word 0x60f7eb67
+.word 0xcfc12721
 .word 0x0ad728e4
-.word 0xc03fd7cd
+.word 0x90b887e5
 .word 0x43cf67b5
-.word 0x554ca3a2
+.word 0x3919afa6
+.word 0x0c3c5702
 .word 0x5b4dd164
 .word 0x43fe9807
 .word 0xd15de785
 .word 0xb9c51faf
 .word 0x28ff91b8
 .word 0xc15ce595
-.word 0xd966cc8a
+.word 0x1fd3f961
+.word 0x48cc0774
 .word 0xc8644b70
 .word 0xaaea7c20
-.word 0x39826b33
+.word 0x2eec8972
 .word 0x6f962ec6
-.word 0x14646134
-.word 0x5679fa9e
-.word 0x7d9662e6
+.word 0x0df61aa5
 .word 0x62e1d937
-.word 0x1039b47c
-.word 0x6e55b252
-.word 0xe603cb6f
-.word 0xcf82db73
-.word 0xb14ccfab
-.word 0x59055807
-.word 0x6d396cf0
+.word 0xf47851db
+.word 0x9e680833
+.word 0xf4faa6d8
+.word 0x7115e440
+.word 0x9eeb693d
+.word 0x8214117d
 .word 0x65aa9cae
 .word 0x3b2d901f
 .word 0x6ad008e2
 .word 0xb99fd4c7
-.word 0xc655b480
-.word 0xd3bb45f7
-.word 0x0f154c1b
-.word 0x145b35c1
+.word 0x7fc4b0f1
+.word 0x0648eaa6
+.word 0xa97dc128
+.word 0xf745e700
 .word 0x994bcfe8
 .word 0x31ea0dac
 .word 0x70339e6d
@@ -3883,31 +3879,29 @@ RVTEST_DATA_BEGIN
 .word 0xe2729fc7
 .word 0xdcb725a9
 .word 0x43ec8dd6
+.word 0x19c898bc
 .word 0x938f8b6e
-.word 0x7e55c23f
-.word 0xd30158ba
-.word 0x4959125f
-.word 0xafbbb9ce
-.word 0x2bdd4e07
-.word 0x6c7023bc
+.word 0x84b0ad09
+.word 0x614aa9ae
+.word 0xa0cb2d12
+.word 0xf825b7cd
 .word 0x88143bd6
-.word 0x1419d6cb
+.word 0xd9abfb9f
 .word 0x3049d930
-.word 0x5ded1232
-.word 0xbecc5e64
-.word 0xad9f1b45
-.word 0xfac56181
+.word 0x8022142e
+.word 0xd8483f12
+.word 0xbc311893
 .word 0xd672c0ef
 .word 0x0b580e05
-.word 0x465ec12a
 .word 0x176a7c22
-.word 0xc57ffca9
+.word 0x65236a24
 .word 0x81bf821c
-.word 0xb94addff
-.word 0xdc2145f1
-.word 0x95b6c9fc
-.word 0x792fd18b
-.word 0xef603a18
+.word 0x15384a09
+.word 0xc8e88ba6
+.word 0x2b187c84
+.word 0x83643a41
+.word 0x612753c2
+.word 0xd70539ac
 .word 0xe121beaf
 .word 0x419e124b
 .word 0x3c72a1d1
@@ -3917,32 +3911,38 @@ RVTEST_DATA_BEGIN
 .word 0x517b3c7d
 .word 0xd3cbcbe8
 .word 0x3a8816c1
-.word 0x71d4f0d7
-.word 0x4eec5503
 .word 0xdc6349b8
 .word 0x91d7ff9d
-.word 0x9e320ad5
+.word 0x8e53eb25
+.word 0x7df54b36
 .word 0x8d567853
-.word 0x46e2711d
 .word 0xb43dee70
 .word 0x34dc1da6
 .word 0x4a3373ec
 .word 0xf2b9e83e
 .word 0xec6f7bc3
+.word 0xabd5e9c4
+.word 0xc203ed51
+.word 0xe6d1cc25
+.word 0xa5d00437
 .word 0x68af7033
 .word 0x35afea88
-.word 0x15b69c34
-.word 0xc2496c1c
-.word 0x60bd4814
-.word 0xb7b36f87
-.word 0xdb094a9e
-.word 0xa500be8d
+.word 0x951691cb
+.word 0x37fb1cbb
+.word 0x63d4c4af
+.word 0x63fded7c
+.word 0xcf514251
+.word 0x1024f6a5
+.word 0x11d4f6a5
+.word 0xdb7f4290
 .word 0xc2ee6120
 .word 0x5e0ea647
 .word 0x0aeb5a02
 .word 0xf71bd11f
 .word 0x29f64dbd
 .word 0xcbfbacf3
+.word 0xd80274ad
+.word 0x48cc3d81
 .word 0xdae14ec4
 .word 0xd5f2dbdb
 .word 0x697ec0e8
@@ -3951,40 +3951,32 @@ RVTEST_DATA_BEGIN
 .word 0xdb2ff3dd
 .word 0xd2ffe764
 .word 0xc2b164b7
-.word 0x17b84dd0
-.word 0x6bc3d336
-.word 0x0bb6b8a8
-.word 0x67605fc9
-.word 0x8b6e5b31
-.word 0x2372e02d
-.word 0xaa30a4ce
-.word 0x6dc83c85
-.word 0x2b4fb979
-.word 0x32539643
+.word 0x52aa08ae
+.word 0xe55ae521
+.word 0x48aed53f
+.word 0xe6a0117b
+.word 0x4bf62bf4
+.word 0xe306d8e4
+.word 0xa26afc86
 .word 0x04e21999
-.word 0x6794e6dc
 .word 0x68b3e102
 .word 0x86b01289
 .word 0x00ae1dc1
 .word 0xb5a43d78
-.word 0xdb849880
-.word 0x37116455
-.word 0xad98e3f9
-.word 0xe7d4bca7
-.word 0x7a933488
-.word 0x85a8a2e9
+.word 0x7d7f7cdb
+.word 0x8502ebcb
+.word 0x8ceaaf08
+.word 0x906eca93
+.word 0xa4de023c
 .word 0xf86c52d2
-.word 0x86c5ff8a
 .word 0x419c1958
 .word 0x14fa349d
 .word 0x7ddf6a53
 .word 0xbcb6916b
-.word 0xac025f3e
-.word 0x22b90580
-.word 0x41fbd6d1
-.word 0xf3b6f887
+.word 0x2572482a
+.word 0xb5608399
+.word 0xc2ca7848
 .word 0x9df5e561
-.word 0x0af92d85
 .word 0xf94434ee
 .word 0x482f623e
 .word 0xd1447cd2
@@ -3993,21 +3985,24 @@ RVTEST_DATA_BEGIN
 .word 0x6152ab42
 .word 0xc777be73
 .word 0xc0b232ba
+.word 0x3fa25d93
+.word 0x7f16eb38
+.word 0xf8928d68
+.word 0x08f34889
 .word 0xfdc8f24e
 .word 0xb6828d4d
-.word 0x67eb5bfe
 .word 0xa125d0c6
 .word 0xafc89466
 .word 0x463d7b15
 .word 0x108e3259
-.word 0x3a912946
 .word 0x5165c5ea
 .word 0x297f70a7
 .word 0xad3653a3
 .word 0xa596bece
 .word 0x310b3cf4
 .word 0xe8e81593
-.word 0xfb47bb16
+.word 0xe22681b9
+.word 0x3dac4153
 .word 0xa11b7a10
 .word 0xd16e7f66
 .word 0x8eb54a74
@@ -4015,48 +4010,49 @@ RVTEST_DATA_BEGIN
 .word 0x2deaa09b
 .word 0xe5bd311f
 .word 0x29037b2f
-.word 0x14afd676
-.word 0x806c17e7
-.word 0xacaf9e0f
-.word 0x174f6a5d
-.word 0x686470c0
-.word 0x4e397a9b
-.word 0xc7a638ca
-.word 0x8f7446be
-.word 0x9fe3139e
-.word 0x4e7d9e0e
-.word 0x15c3f15a
-.word 0x14d0b0f8
-.word 0xdfbf1d65
-.word 0x28c9baaf
-.word 0x52e4c3d3
-.word 0x4e699819
-.word 0x315ad964
-.word 0x6c2cd65d
-.word 0x45449ff3
-.word 0xfbf5b95a
-.word 0xcedfd561
-.word 0xe61f1bfb
-.word 0x64161212
-.word 0x7fb846d5
-.word 0x0e8c2a92
-.word 0x19abf56b
+.word 0x50612634
+.word 0x78b36cd6
+.word 0x0cf345d4
+.word 0x84116b51
+.word 0x3d34f8f1
+.word 0x30839e9d
+.word 0x6bc5559e
+.word 0x699cc564
+.word 0x0488d522
+.word 0x8933f1c8
+.word 0xa966497d
+.word 0x02cf7816
+.word 0xd44ce2b0
+.word 0x90cdbc4d
+.word 0xc4ef4732
+.word 0xaf53592b
+.word 0xdce9e256
+.word 0x46b24e11
 .word 0x9d61ef42
-.word 0x6f82dd9a
 .word 0x77831117
 .word 0x06573afb
 .word 0x5c752d90
 .word 0xef83f8d8
-.word 0xe65b1005
-.word 0x58f46450
-.word 0x0188ef55
-.word 0x106ee40a
-.word 0x8ea5c26e
+.word 0xf0b666bc
+.word 0x64993da7
+.word 0x4ee9852d
+.word 0x42f8e268
+.word 0x0108cc28
+.word 0x9aa12953
 .word 0xbb07de68
 .word 0x4a88fdff
 .word 0x9d86447a
 .word 0xb97d41bb
 .word 0xd0b430a3
+.word 0x48b28977
+.word 0x4855fe78
+.word 0x15d93fa0
+.word 0x9278452a
+.word 0xebb6123a
+.word 0x7c581528
+.word 0xcfb1cdd1
+.word 0x784be0f4
+.word 0xabdcacb0
 
 // Testcase strings
 Zicond_czero_eqz_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zicond_czero.eqz_cg; cp: cp_rs1; bin: b0\""

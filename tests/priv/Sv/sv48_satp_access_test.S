@@ -18,7 +18,7 @@
 #define TEST_FILE "sv48_satp_access_test.S"
 #define SIGUPD_COUNT 70
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

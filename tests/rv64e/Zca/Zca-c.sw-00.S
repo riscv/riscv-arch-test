@@ -353,22 +353,22 @@ Zca_c_sw_cg_cp_rs2_p_b14:
   nop
 #endif
 
-  mv x14, x15 # switch signature pointer register to avoid conflict with test
+  mv x12, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2_p (Test source rs2 = x15)
   RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x65853ad7daf69ff3
-  mv x12, x14 # move signature pointer register
-  addi x12, x12, -12 # adjust base address for offset
+  mv x13, x12 # move signature pointer register
+  addi x13, x13, -12 # adjust base address for offset
 Zca_c_sw_cg_cp_rs2_p_b15:
-  c.sw x15, 12(x12) # perform store
-  addi x12, x12, 12 # restore base address
-  addi x12, x12, SIG_STRIDE # increment signature pointer
+  c.sw x15, 12(x13) # perform store
+  addi x13, x13, 12 # restore base address
+  addi x13, x13, SIG_STRIDE # increment signature pointer
 #ifdef RVTEST_SELFCHECK
-  LREG x13, -SIG_STRIDE(x12) # load stored value for checking
-  # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x12, x5, x4, x13, Zca_c_sw_cg_cp_rs2_p_b15, Zca_c_sw_cg_cp_rs2_p_b15_str)
+  LREG x14, -SIG_STRIDE(x13) # load stored value for checking
+  # Check if x14 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x13, x5, x4, x14, Zca_c_sw_cg_cp_rs2_p_b15, Zca_c_sw_cg_cp_rs2_p_b15_str)
 #else
-  c.sw x15, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
+  c.sw x15, 0(x13) # repeat store so it is available for checking
+  addi x13, x13, SIG_STRIDE # adjust base address for offset
   # nops to ensure length matches SELFCHECK
   nop
   nop
@@ -381,7 +381,7 @@ Zca_c_sw_cg_cp_rs2_p_b15:
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs2: x8 = 0x0000000000000000
-  mv x9, x12 # move signature pointer register
+  mv x9, x13 # move signature pointer register
   addi x9, x9, -92 # adjust base address for offset
 Zca_c_sw_cg_cp_rs2_edges_0x0:
   c.sw x8, 92(x9) # perform store

@@ -137,3 +137,10 @@ SKIP_COVERPOINTS = frozenset(
 
 # Resolves to generators/testgen/.coverfloat-work
 COVERFLOAT_GENERATION_DIR = Path(__file__).resolve().parent.parent.parent / ".coverfloat-work"
+
+# =============================================================================
+# Vector Configuration
+# =============================================================================
+MIN_SEW_MIN = 8
+ELEN_MAX = 64
+VLEN_MAX = 1024

@@ -8,7 +8,7 @@
 
 """U privileged extension test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -27,8 +27,9 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
             "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
         ),
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        "ecall                 # test ecall instruction",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak                # test ebreak instruction",
         "nop",

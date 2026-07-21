@@ -36,7 +36,7 @@
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 100
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 

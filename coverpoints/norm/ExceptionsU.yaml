@@ -3,3 +3,51 @@ normative_rule_definitions:
   # the value of xIE; xIE is set to 0; and xPP is set to y.
   - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
     coverpoint: ["ExceptionsU_cg/cp_ecall_u"]
+
+  # An instruction-address-misaligned exception is generated on a taken branch or unconditional jump
+  # if the target address is not IALIGN-bit aligned. This exception is reported on the branch or jump
+  # instruction, not on the target instruction
+  - name: taken_cti_misaligned_exc
+    coverpoint: ["ExceptionsU_cg/cp_instr_adr_misaligned_{branch, jal, jalr}"]
+
+  - name: branch_misaligned_taken_exception
+    coverpoint: ["ExceptionsU_cg/cp_instr_adr_misaligned_branch"]
+
+  - name: jump_misaligned_exception
+    coverpoint: ["ExceptionsU_cg/cp_instr_adr_misaligned_{jal, jalr}"]
+
+  # No instruction-address-misaligned exception is generated for a conditional
+  # branch that is not taken.
+  - name: cond_br_no_ia_misaligned_exc_not_taken
+    coverpoint: ["ExceptionsU_cg/cp_instr_adr_misaligned_branch_nottaken"]
+
+  - name: branch_misaligned_untaken_exception
+    coverpoint: ["ExceptionsU_cg/cp_instr_adr_misaligned_branch_nottaken"]
+
+  # If an instruction access-fault or instruction page-fault exception occurs on
+  # the target of a jump or taken branch, the exception is reported on the target
+  # instruction, not on the jump or branch instruction.
+  - name: ia_fault_exc_on_target
+    coverpoint: ["ExceptionsU_cg/cp_instr_access_fault"]
+
+  # The EBREAK instruction is used to return control to a debugging environment.
+  - name: ebreak_op
+    coverpoint: ["ExceptionsU_cg/cp_breakpoint"]
+
+  # Naturally aligned loads and stores do not raise an address-misaligned
+  # exception.
+  - name: ldst_no_exc_aligned
+    coverpoint: ["ExceptionsU_cg/cp_{load, store}_address_misaligned"]
+
+  # Load and load-reserved instructions generate load exceptions.
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: ["ExceptionsU_cg/cp_load_access_fault"]
+
+  # Store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint: ["ExceptionsU_cg/cp_store_access_fault"]
+
+  # Exception codes reflect the relative priority of simultaneously-raised
+  # exceptions.
+  - name: mcause_exccode_pri
+    coverpoint: ["ExceptionsU_cg/cp_misaligned_priority_{load, store}"]

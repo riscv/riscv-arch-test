@@ -31,21 +31,14 @@ normative_rule_definitions:
   # respectively. When a hart is executing in privilege mode x, interrupts are
   # globally enabled when xIE=1 and globally disabled when xIE=0.
   - names: [mstatus_sie_op]
-    coverpoint: [""]
-
-  # Interrupts for lower-privilege modes, w&lt;x, are always globally disabled
-  # regardless of the setting of any global wIE bit for the lower-privilege mode.
-  # Interrupts for higher-privilege modes, y&gt;x, are always globally enabled
-  # regardless of the setting of the global yIE bit for the higher-privilege mode.
-  - name: mstatus_xie_intr_en_dis
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
   # interrupt-enable bits and privilege modes. xPIE holds the value of the
   # interrupt-enable bit active prior to the trap, and xPP holds the previous
   # privilege mode.
   - names: [mstatus_xpie_op, mstatus_xpp_op]
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti"]
 
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
   # the value of xIE; xIE is set to 0; and xPP is set to y.
@@ -58,38 +51,20 @@ normative_rule_definitions:
   # implementation-specific, bounded time limit, the WFI instruction causes an
   # illegal-instruction exception.
   - name: mstatus_tw_op
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_wfi_{s, timeout_s}"]
 
   # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
   # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
   # interrupt causes only, while bits 16 and above are designated for platform use.
   - name: mip_enc
-    coverpoint: [""]
-
-  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
-  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
-  # interrupt causes only, while bits 16 and above are designated for platform use.
-  - name: mie_enc
-    coverpoint: [""]
-
-  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
-  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
-  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
-  - name: mip_std_enc
-    coverpoint: [""]
-
-  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
-  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
-  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
-  - name: mie_std_enc
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_{sti_s, ssi_sip, sei}"]
 
   # When bit i in mip is writable, a pending interrupt i can be cleared by writing 0
   # to this bit.
   - name: mip_bits_wr_op
     coverpoint:
       [
-        "InterruptsS/{cp_trigger_ssi_mip, cp_trigger_ssi_sip, cp_trigger_sei_seip}",
+        "InterruptsS_cg/{cp_trigger_ssi_mip, cp_trigger_ssi_sip, cp_trigger_sei_seip}",
       ]
 
   # An interrupt i will trap to M-mode (causing the privilege mode to change to
@@ -98,7 +73,7 @@ normative_rule_definitions:
   # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
   # (c) if register mideleg exists, bit i is not set in mideleg.
   - name: intr_mip_mie_op
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_priority_mip_s_m"]
 
   # An interrupt i will trap to M-mode (causing the privilege mode to change to
   # M-mode) if all of the following are true: (a) either the current privilege mode
@@ -109,22 +84,17 @@ normative_rule_definitions:
   # to a CSR on which these interrupt trap conditions expressly depend (including
   # mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_priority_mip_s_m"]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
   - name: intr_M_mode_highest_pri
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_priority_mideleg_m"]
 
   # Supervisor-level external interrupts are made pending based on the logical-OR of
   # the software-writable SEIP bit and the signal from the external interrupt
   # controller.
   - name: intr_sei_op
-    coverpoint: [""]
-
-  # Multiple simultaneous interrupts destined for M-mode are handled in the
-  # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
-  - name: intr_M_mode_pri
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_{sei, sei_seip}"]
 
   # Traps never transition from a more-privileged mode to a less-privileged mode.
   # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
@@ -137,7 +107,10 @@ normative_rule_definitions:
   # illegal-instruction exceptions to S-mode, and S-mode software later executes an
   # illegal instruction, the trap is taken in S-mode.
   - name: trap_horiz
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_{mti/msi/mei/sti/ssi_mip/ssi_sip/sei_sei_seip}",
+      ]
 
   # Delegated interrupts result in the interrupt being masked at the delegator
   # privilege level. For example, if the supervisor timer interrupt (STI) is
@@ -151,45 +124,40 @@ normative_rule_definitions:
   # illegal-instruction exception, regardless of the value of the TW bit, unless the
   # instruction completes within an implementation-specific, bounded time limit.
   - name: mstatus_tw_umode_op
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_wfi_timeout_u"]
 
   # If supervisor mode is implemented, bits mip.SEIP and mie.SEIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level external
   # interrupts.
   - names: [mip_seip_op, mie_seie_op]
-    coverpoint: ["*** some will need to move to S priv"]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sei"]
 
   # SEIP is writable in mip
   - name: mip_seip_acc
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sei_seip"]
 
   # When mip is read with a CSR instruction, the value of the SEIP bit returned in
   # the rd destination register is the logical-OR of the software-writable bit and
   # the interrupt signal from the interrupt controller
   - name: mip_seip_rdcsr
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_{sei, sei_seip}"]
 
   # the signal from the interrupt controller is not used to calculate the value
   # written to SEIP. Only the software-writable SEIP bit participates in the
   # read-modify-write sequence of a CSRRS or CSRRC instruction.
   - name: mip_seip_wrcsr
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_{sei, sei_seip}"]
 
   # If the stimecmp register is not implemented, STIP is writable in mip
   - name: mip_stip_no_stimecmp_acc
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level timer
   # interrupts. If the stimecmp register is not implemented, STIP is writable in mip
   # may be written by M-mode software to deliver timer interrupts to S-mode.
   - name: mip_stip_no_stimecmp_op
-    coverpoint: [""]
-
-  # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is
-  # read-only in mip
-  - name: mip_stip_stimecmp_acc
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level timer
@@ -197,33 +165,36 @@ normative_rule_definitions:
   # implemented, STIP is read-only in mip reflects the supervisor-level timer
   # interrupt signal resulting from stimecmp.
   - name: mip_stip_stimecmp_op
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # This timer interrupt signal is cleared by writing stimecmp with a value greater
   # than the current time value.
   - name: mip_stip_stimecmp_clr
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level timer
   # interrupts.
   - name: mip_stie_op
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_sti_s"]
 
   # SSIP is writable in mip
   - name: mip_ssip_acc
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_ssi_mip"]
 
   # If supervisor mode is implemented, bits mip.SSIP and mie.SSIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level software
   # interrupts.
   - names: [mip_ssip_op, mie_ssie_op]
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_trigger_ssi_{mip_m, sip}"]
 
   # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt
   # controller.
   - name: mip_ssip_intr_ctrl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_ssi_{mip_m, sip}, Platform specific interrupt controller not tested",
+      ]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
   # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
@@ -232,10 +203,10 @@ normative_rule_definitions:
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
   - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
-    coverpoint: ["TODO"]
+    coverpoint: ["InterruptsS_cg/cp_{trigger_sti, user_sei}"]
 
   # An implementation may have WFI always raise an illegal-instruction exception in
   # modes less privileged than M when TW=1, even if there are pending
   # globally-disabled interrupts when the instruction is executed.
   - name: mstatus_tw_always_illegal
-    coverpoint: ["InterruptsS_cg/cp_wfi_timeout"]
+    coverpoint: ["InterruptsS_cg/cp_wfi_{timeout, timeout_u}"]

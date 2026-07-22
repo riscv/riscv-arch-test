@@ -34,3 +34,5 @@ exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1
+config_shards:
+  qemu-rv64-max: 2

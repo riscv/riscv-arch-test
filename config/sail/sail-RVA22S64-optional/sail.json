@@ -587,7 +587,7 @@
       "supported": false
     },
     "Zaamo": {
-      "supported": false
+      "supported": true
     },
     "Zabha": {
       "supported": false
@@ -596,7 +596,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": false
+      "supported": true
     },
     // This extension just asserts that each memory region has a MAG
     // PMA of 16 bytes.  If you enable this you also need to ensure

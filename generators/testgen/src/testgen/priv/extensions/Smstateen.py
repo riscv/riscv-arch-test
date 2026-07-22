@@ -6,6 +6,8 @@
 
 """Smstateen privileged extension test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
@@ -568,7 +570,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Smstateen",
     required_extensions=["S", "Zicsr", "Smstateen"],
-    march_extensions=["S", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
+    march_extensions=["S", "Smstateen", "Zcmt", "Zfinx"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Smstateen state-enable extension testsuite."""

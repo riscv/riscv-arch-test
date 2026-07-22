@@ -243,7 +243,7 @@ def add_opcode(normalized_instr: str, rs1: int, rs2: int, rd: int) -> str:
 
         if mnemonic == "csrr":
             csr = _parse_csr(second_arg)
-            encoded = _encode_i_type(opcode, 0b010, tsbi_rd, tsbi_rs1, csr)
+            encoded = _encode_i_type(opcode, 0b010, tsbi_rd, 0, csr)
         else:
             csr = _parse_csr(first_arg)
             funct3 = {"csrw": 0b001, "csrs": 0b010, "csrc": 0b011}[mnemonic]

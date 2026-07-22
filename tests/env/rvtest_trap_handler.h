@@ -1658,7 +1658,6 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
         TSBI_CSR_INSTR_TABLE(0x180) // satp
-        // Sdtrig trigger CSRs: M-mode (and debug-mode) only, so S/U-mode tests reach them via T-SBI
         TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
         TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
         TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2

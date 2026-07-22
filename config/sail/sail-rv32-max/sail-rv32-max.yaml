@@ -572,3 +572,8 @@ dut_environment:
   RVMODEL_TIMER_INT_SOON_DELAY: 100
   RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
   STANDARD_SM_SUPPORTED: true
+
+# Sail reference-model settings that UDB does not express. Applied on top of the
+# generated config; every path must already exist in sail_template.json.
+sail_overrides:
+  extensions.V.max_index_eew_exp: 5

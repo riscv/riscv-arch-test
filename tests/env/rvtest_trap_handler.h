@@ -118,24 +118,11 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-#ifndef T1
-  #define T1      x6                             // handler temporary 1
-#endif
-#ifndef T2
-  #define T2      x7                             // handler temporary 2
-#endif
-#ifndef T3
-  #define T3      x8                             // handler temporary 3
-#endif
-#ifndef T4
-  #define T4      x9                             // handler temporary 4
-#endif
-#ifndef T5
-  #define T5      x14                            // handler temporary 5
-#endif
-#ifndef T6
-  #define T6      x15                            // handler temporary 6
-#endif
+// T1..T6 moved to utils.h: they are a framework-wide register convention, not a
+// trap-handler-private one, and rvmodel_shim.S needs them without pulling in
+// this header. utils.h is included before this file, so the definitions are
+// already in scope here. The #ifndef guards there preserve the previous
+// "a prior definition wins" behaviour.
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS

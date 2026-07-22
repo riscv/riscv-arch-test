@@ -13,10 +13,26 @@
 #define TEST_FILE "rvmodel_shim.S"
 #define SIGUPD_COUNT 0
 
-// RVTEST_SELFCHECK selects the DUT macros over the Sail overrides in
-// sail_macros.h. The kit build always defines it; the reference build that
-// produced the golden signatures deliberately did not.
-#include "riscv_arch_test.h"
+// The shim deliberately does NOT include riscv_arch_test.h.
+//
+// That header pulls in rvtest_setup.h, which contains `#include SIGNATURE_FILE`
+// inside .macro RVTEST_SIG_SETUP. The C preprocessor runs before the assembler
+// and does not respect .macro boundaries, so that include fires even though the
+// macro is never invoked here -- the shim has no signature and no testcases.
+//
+// Including only what the shim actually needs also keeps the set of headers
+// shipped in a certification kit as small as possible.
+#include "rvtest_config.h"
+#undef H_SUPPORTED // matches riscv_arch_test.h: Sail does not support Hypervisor yet
+#include "derived_config.h"
+#include "encoding.h"
+#include "utils.h"
+#include "rvmodel_macros.h"
+#include "dut_environment.h"
+// Checks the DUT macros this file is about to expand. Note RVMODEL_SHIM_EXTERN
+// is NOT defined for the shim: the implementation checks are exactly the ones
+// that matter here, because supplying those implementations is the shim's job.
+#include "check_defines.h"
 
   .pushsection .text.rvmodel,"ax",@progbits
 

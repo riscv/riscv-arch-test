@@ -3,6 +3,28 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Framework-wide temporary-register convention. Moved here from
+// rvtest_trap_handler.h so rvmodel_shim.S can use T1..T6 without including the
+// whole trap handler. The #ifndef guards let a test or DUT override one.
+#ifndef T1
+  #define T1      x6                             // handler temporary 1
+#endif
+#ifndef T2
+  #define T2      x7                             // handler temporary 2
+#endif
+#ifndef T3
+  #define T3      x8                             // handler temporary 3
+#endif
+#ifndef T4
+  #define T4      x9                             // handler temporary 4
+#endif
+#ifndef T5
+  #define T5      x14                            // handler temporary 5
+#endif
+#ifndef T6
+  #define T6      x15                            // handler temporary 6
+#endif
+
 // General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

@@ -20,6 +20,8 @@ dependencies = [
 
 [project.scripts]
 act = "act.act:main"
+act-package = "act.package:main"
+act-verify-logs = "act.verify_logs:main"
 
 ##### BUILD #####
 [build-system]

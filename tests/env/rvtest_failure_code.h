@@ -426,6 +426,7 @@
         lhu x7, -12(DEFAULT_LINK_REG)     # get lower half of the ld
         slli x6, x6, 16     # reassemble ld
         or x6, x6, x7
+        addi x10, x6, 0     # save raw reconstructed word for sentinel reporting
         # ld format: imm[11:0] at bits [31:20], rs1 at bits [19:15]
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
@@ -442,23 +443,37 @@
         bnez x8, 1f                        # misaligned -> skip
         LREG x6, 0(x6)      # load expected value (pointer validated)
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
-        j failedtest_saveresults_common
-    1:
-        # Pointer invalid (null or misaligned sentinel) — record 0 as expected value
-        SREG x0, 280(DEFAULT_TEMP_REG)
+# After successful load-handling we jump to common; fallthrough labels
+# for opcode/pointer fallback are placed below so branches above can target
+# them using numeric local labels (1f/2f).
         j failedtest_saveresults_common
 
-  #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+    1:
+        # Pointer invalid (null or misaligned sentinel) — store raw word so sentinel shows
+        SREG x10, 280(DEFAULT_TEMP_REG)
+        j failedtest_saveresults_common
+
+    2:
+        # Not a LOAD -> store raw reconstructed word
+        SREG x10, 280(DEFAULT_TEMP_REG)
+        j failedtest_saveresults_common
+
+#if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
     failedtest_saveresults_fflags:
         # Re-read fflags for bad value (hasn't changed since failure).
         csrr x6, fflags
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 
         # Extract load instruction at -12 for expected value (same approach as integer)
+        # Validate opcode first — same secondary-trap risk as integer path.
         lhu x6, -10(DEFAULT_LINK_REG)
         lhu x7, -12(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or x6, x6, x7
+        addi x10, x6, 0                   # save raw reconstructed word
+        andi x8, x6, 0x7F                  # extract opcode[6:0]
+        li   x9, 0x03                       # LOAD opcode = 0b0000011
+        bne  x8, x9, 2f                    # not a LOAD -> fallback
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31     # extract rs1
@@ -466,8 +481,15 @@
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)      # sigptr register value
         add x6, x6, x7      # sigptr + offset
-        LREG x6, 0(x6)      # expected value
+        # Validate pointer before dereferencing: skip if null or misaligned
+        beqz x6, 2f
+        andi x8, x6, (REGWIDTH-1)
+        bnez x8, 2f
+        LREG x6, 0(x6)      # expected value (pointer validated)
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
+        j failedtest_saveresults_common
+    2:
+        SREG x10, 280(DEFAULT_TEMP_REG)    # store raw word — sentinel visible in report
         j failedtest_saveresults_common
 
     failedtest_saveresults_fp:
@@ -500,19 +522,38 @@
         lhu x7, -12(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or x6, x6, x7
+        addi x10, x6, 0                   # save raw reconstructed word
+        andi x8, x6, 0x7F                 # extract opcode[6:0]
+        li   x9, 0x03                     # LOAD opcode = 0b0000011
+        bne  x8, x9, 2f                   # not a LOAD -> fallback (store raw)
+        srai x7, x6, 20                   # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31                   # rs1 (sigptr register number)
         slli x6, x6, 3
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)                    # sigptr value (base of FP signature entry)
-        # Load full expected FP value from signature
-        LREG x7, 0(x6)
+        add x6, x6, x7                    # sigptr + offset = address of expected value
+        # Validate pointer before dereferencing: skip if null or misaligned
+        beqz x6, 1f                        # null pointer -> fallback (store raw)
+        andi x8, x6, (REGWIDTH-1)         # check alignment
+        bnez x8, 1f                        # misaligned -> fallback (store raw)
+        LREG x7, 0(x6)                    # load expected value (pointer validated)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, SIG_STRIDE(x6)
         la x8, expected_value_upper
         SREG x7, 0(x8)                    # expected_value upper half
     #endif
+        j failedtest_saveresults_common
+
+    1:
+        # FP pointer invalid -> store raw reconstructed word
+        SREG x10, 280(DEFAULT_TEMP_REG)
+        j failedtest_saveresults_common
+
+    2:
+        # FP not a LOAD -> store raw reconstructed word
+        SREG x10, 280(DEFAULT_TEMP_REG)
         j failedtest_saveresults_common
 #endif // F_SUPPORTED
 
@@ -822,14 +863,12 @@
         li x9, 0                                     # mode: M
         j trap_diag_field_identified
     1:
-        la x7, sv_Mcause_str
-        bne x6, x7, 1f
-        li x8, 2                                     # subtype: xcause
+        SREG x10, 280(DEFAULT_TEMP_REG)    # store raw word — sentinel visible in report
+        j failedtest_saveresults_common
         li x9, 0
         j trap_diag_field_identified
     1:
-        la x7, sv_Mepc_str
-        bne x6, x7, 1f
+        SREG x10, 280(DEFAULT_TEMP_REG)    # store raw word — sentinel visible in report
         li x8, 3                                     # subtype: xepc
         li x9, 0
         j trap_diag_field_identified

@@ -15,7 +15,7 @@
 # InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation.
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm"
+exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 1

@@ -1,13 +1,10 @@
 normative_rule_definitions:
-  # Note that load and load-reserved instructions generate load exceptions
-  - name: mcause_exccode_ld_ldrsv
-    coverpoint: [""]
+  # store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_{address_misaligned, access_fault}"]
 
   # For AMOs, the Zaamo extension requires that the address held in rs1 be
   # naturally aligned to the size of the operand (i.e., eight-byte aligned
   # for doublewords and four-byte aligned for words).
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
-
-  - name: amo_misaligned_atomicity_granule
-    coverpoint: [""]

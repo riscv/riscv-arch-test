@@ -12,7 +12,15 @@ Instruction parameter dataclass.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Literal
+
+
+class PresetMask(Enum):
+    ZEROS = 0
+    ONES = 1
+    VLMAX_M1_ONES = 2
+    VLMAX_D2_P1_ONES = 3
 
 
 @dataclass
@@ -37,6 +45,7 @@ class InstructionParams:
 
     # Integer register values
     rs1val: int | None = None
+    rs1val_pointer: str | None = None  # Needed for vector load tests
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None
@@ -55,6 +64,31 @@ class InstructionParams:
     fs3val: int | None = None
     fdval: int | None = None
     temp_fval: int | None = None
+
+    # Vector registers
+    vs1: int | None = None
+    vs2: int | None = None
+    vs3: int | None = None
+    vd: int | None = None
+
+    # Vector register pointers
+    vs1_val_pointer: str | None = None
+    vs2_val_pointer: str | None = None
+    vs3_val_pointer: str | None = None
+    vd_val_pointer: str | None = None
+
+    # Other Vector Information
+    lmul: int | float | None = None
+    sew: int | None = None
+    vl: int | Literal["vlmax", "random"] | None = None
+    vstart: int | None = None
+    vector_suite: Literal["length", "base"] | None = None
+    vxrm: str | None = None  # Vector Fixed Point Rounding Mode
+    ta: bool | None = None  # Tail Agnostic
+    ma: bool | None = None  # Mask Agnostic
+    egs: int | None = None  # Element Group Size
+
+    maskval: str | PresetMask | None = None
 
     # Immediate value
     immval: int | None = None
@@ -89,4 +123,9 @@ class InstructionParams:
     def used_float_regs(self) -> list[int]:
         """Return list of all float registers used in this test."""
         regs: list[int] = [reg for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg] if reg is not None]
+        return regs
+
+    @property
+    def used_vec_regs(self) -> list[int]:
+        regs: list[int] = [reg for reg in [self.vd, self.vs1, self.vs2, self.vs3] if reg is not None]
         return regs

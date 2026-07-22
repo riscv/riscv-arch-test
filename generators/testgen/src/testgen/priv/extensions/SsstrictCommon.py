@@ -682,12 +682,14 @@ def _generate_compressed_instr(
 
 _MODE_LABEL = {"M": "M-mode", "S": "S-mode", "U": "U-mode"}
 
-# M-mode only: lock PMP region 0 (TOR RWX) before each CSR chunk so PMP CSR
-# reads do not corrupt config regardless of which split file the chunk lands in.
+# M-mode only: lock PMP region 0 before each CSR chunk so later CSR writes
+# cannot corrupt the PMP configuration regardless of which split file the chunk
+# lands in. RVTEST_BOOT_TO_MMODE has already set up pmpaddr0/pmpcfg0; this only
+# sets pmp0cfg.L.
 _M_MODE_PMP_LOCK = [
-    "# Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
-    "\tli x10, 0x8F",
-    "\tcsrw pmpcfg0, x10",
+    "# Lock PMP region 0 so PMP CSR writes cannot corrupt config",
+    "\tli x10, 0x80",
+    "\tcsrs pmpcfg0, x10",
     "",
 ]
 

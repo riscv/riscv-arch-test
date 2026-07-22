@@ -14,8 +14,13 @@
 # SSTATUS shadow view whose write mask excludes MPRV, so the clear is silently dropped
 # The MRET path writes MSTATUS directly and is unaffected. The S suite's
 # cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
+# SmV excluded due to https://github.com/tenstorrent/whisper/issues/33
+# InterruptsSSm excluded because whisper supports M mode interrupt delegation and SAIL currently only support S mode interrupt delegation
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
+exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
+shards: 1
+config_shards:
+  whisper-rv64-max: 2

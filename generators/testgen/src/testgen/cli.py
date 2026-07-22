@@ -48,6 +48,7 @@ class UnprivTask:
     testsuite: str
     testplan_dir: Path
     output_test_dir: Path
+    is_vector: bool
 
 
 @dataclass
@@ -124,7 +125,8 @@ def generate_all_tests(
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
+                is_vector = testsuite.startswith(("V", "Zv"))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
@@ -164,6 +166,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
+            is_vector=task.is_vector,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(

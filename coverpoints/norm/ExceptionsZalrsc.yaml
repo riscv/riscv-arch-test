@@ -24,3 +24,11 @@ normative_rule_definitions:
       [
         "ExceptionsZalrsc_cg/{cp_load_address_misaligned,cp_store_address_misaligned}",
       ]
+
+  # Naturally aligned loads and stores do not raise an address-misaligned
+  # exception.
+  - name: ldst_no_exc_aligned
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/cp_{load_address_misaligned, store_address_misaligned_legal_w}",
+      ]

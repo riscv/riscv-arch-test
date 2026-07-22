@@ -161,12 +161,13 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_scountovf_mcounteren"
     ######################################
 
-    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENTH{n}" for n in range(3, 32)]  # 29 registers
+    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENTH{n}" for n in range(3, 32)]  # RV32: 29 registers
+    MHPMEVENT_CSRS = [f"CSR_MHPMEVENT{n}" for n in range(3, 32)]  # RV64: 29 registers
 
     lines = [
         comment_banner(
             "cp_scountovf_mcounteren",
-            "scountovf masked by mcounteren.\n"
+            "scountovf masked by mcounteren -- M-mode only for now.\n"
             "Write OF patterns (all_ones/checker_even/checker_odd) across\n"
             "mhpmevent3..31.OF, walk mcounteren, read scountovf. In M-mode,\n"
             "scountovf should equal the value written, regardless of mcounteren.",
@@ -181,19 +182,24 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData) -> list[str]:
     }
 
     for of_name, of_bit_fn in of_patterns.items():
-        # Acquire only for the set/clear pattern, then release BEFORE csr_walk_test
         r_of_bit = test_data.int_regs.get_register(exclude_regs=[0, 31])
 
-        lines.append(f"LI(x{r_of_bit}, {1 << 31})   # bit 31 -- reused for every set/clear below")
-        lines.append(f"# --- Write OF pattern: {of_name} across mhpmevent3..31 ---")
+        lines.append("#if __riscv_xlen == 32")
+        lines.append(f"LI(x{r_of_bit}, {1 << 31})   # OF bit (bit 31 of mhpmeventh, RV32)")
+        lines.append(f"# --- Write OF pattern: {of_name} across mhpmeventh3..31 (RV32) ---")
         for i, csr_name in enumerate(MHPMEVENTH_CSRS):
-            if of_bit_fn(i):
-                lines.append(f"CSRS({csr_name}, x{r_of_bit})   # set OF bit -- {csr_name}")
-            else:
-                lines.append(f"CSRC({csr_name}, x{r_of_bit})   # clear OF bit -- {csr_name}")
+            op = "CSRS" if of_bit_fn(i) else "CSRC"
+            lines.append(f"{op}({csr_name}, x{r_of_bit})   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
+        lines.append("#else")
+        lines.append(f"LI(x{r_of_bit}, {1 << 63})   # OF bit (bit 63 of mhpmevent, RV64)")
+        lines.append(f"# --- Write OF pattern: {of_name} across mhpmevent3..31 (RV64) ---")
+        for i, csr_name in enumerate(MHPMEVENT_CSRS):
+            op = "CSRS" if of_bit_fn(i) else "CSRC"
+            lines.append(f"{op}({csr_name}, x{r_of_bit})   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
+        lines.append("#endif")
         lines.append("")
 
-        test_data.int_regs.return_registers([r_of_bit])  # <-- free it up before csr_walk_test needs its 5
+        test_data.int_regs.return_registers([r_of_bit])
 
         lines.extend(
             csr_walk_test(

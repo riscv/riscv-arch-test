@@ -797,7 +797,7 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      j cleanup_epilogs  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T1, cleanup_epilogs; jr T1  // default: abort test on unexpected interrupt
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
@@ -2201,9 +2201,14 @@ excpt_\__MODE__\()hndlr_tbl:
 
 .pushsection .text.rvmodel, "ax"
 
+// These routines are placed after .data, which can be larger than the jal range
+// in PMP tests with large granularity. Load the restore routine address instead
+// of using direct jumps.
+
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt: invoke RVMODEL macro
         RVMODEL_CLR_MSW_INT(T2, T5)
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Mtmr_int:                            // M-mode timer interrupt: write max to mtimecmp
         li T5, -1
@@ -2214,13 +2219,15 @@ excpt_\__MODE__\()hndlr_tbl:
         #if(UDB_MXLEN == 32)
                 sw T5, 4(T2)
         #endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
         RVMODEL_CLR_MEXT_INT(T2, T5)
         // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
         // removed because cause mepc might be different across different DUTs
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
         .ifc \__MODE__ , M
@@ -2238,7 +2245,8 @@ excpt_\__MODE__\()hndlr_tbl:
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt
         .ifc \__MODE__ , M
@@ -2250,7 +2258,8 @@ excpt_\__MODE__\()hndlr_tbl:
                         RVTEST_CLR_STIMER_INT
                 .endif
         .endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
         .ifc \__MODE__ , M
@@ -2280,19 +2289,23 @@ excpt_\__MODE__\()hndlr_tbl:
         beq T1, T3, 1f
         RVMODEL_CLR_SEXT_INT(T2, T5)
     1:
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
         RVMODEL_CLR_VSW_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
         RVMODEL_CLR_VTIMER_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
         RVMODEL_CLR_VEXT_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 .popsection                                          // end of .text.rvmodel section
 

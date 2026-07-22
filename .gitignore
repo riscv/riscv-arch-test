@@ -36,6 +36,9 @@ tests/rv64i/Zv*
 # priv tests
 tests/priv/headers
 tests/priv/**/*.S
+!tests/priv/pmp/**/*.S
+!tests/priv/*Sv*/**/*.S
+
 # docs
 docs/ctp/mismatch_report.txt
 docs/crd/build

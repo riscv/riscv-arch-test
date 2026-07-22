@@ -318,6 +318,15 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
+  // Global counter of the number of traps taken, incremented by every mode's
+  // trap handler. Lives in .data (NOT the signature region) so it does not
+  // participate in signature self-checking. Readable from any privilege mode
+  // when paging is off (Bare mode ignores the PTE U bit).
+  .p2align 3
+  .global rvtest_trap_count
+  rvtest_trap_count:
+    .dword 0
+
   .p2align 4
 
   // Create separate save areas for each priv mode trap handler

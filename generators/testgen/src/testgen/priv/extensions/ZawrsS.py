@@ -16,17 +16,13 @@ from testgen.priv.extensions.ZawrsCommon import (
     _wrs_no_res_helper,
     _wrs_resume_helper,
     _wrs_timeout_helper,
-    _zawrs_define_helper,
-    _zawrs_trap_handler,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 covergroup = "ZawrsS_cg"
 
 
-def _generate_wrs_sto_timeout_tests(
-    test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_temp2: int
-) -> list[str]:
+def _generate_wrs_sto_timeout_tests(test_data: TestData) -> list[str]:
     """Generate S mode wrs.sto timeout tests.
 
     cross lr instruction to set up reservation.
@@ -47,7 +43,7 @@ def _generate_wrs_sto_timeout_tests(
             _generate_wrs_sto_timeout_tests.__doc__,
         ),
     ]
-    lines.extend(_wrs_timeout_helper(test_data, ["S"], coverpoint, covergroup, r_cause, r_scratch, r_temp, r_temp2))
+    lines.extend(_wrs_timeout_helper(test_data, ["S"], coverpoint, covergroup))
 
     return lines
 
@@ -79,9 +75,7 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_wrs_resume_tests(
-    test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_timecmp: int, r_temp2: int
-) -> list[str]:
+def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
     """Generate S mode WRS instruction resume when interrupt pending tests
 
     For DUTs that supports S mode but do not have Sstc, the WRS resume behavior
@@ -108,13 +102,11 @@ def _generate_wrs_resume_tests(
         ),
     ]
 
-    lines.extend(_wrs_resume_helper(test_data, "S", covergroup, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
+    lines.extend(_wrs_resume_helper(test_data, "S", covergroup))
     return lines
 
 
-def _generate_wrs_no_mie_tests(
-    test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_timecmp: int, r_temp2: int
-) -> list[str]:
+def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
     """Generate S mode wrs tests with mie = all 0s.
 
     cross lr instruction to set up reservation
@@ -138,13 +130,11 @@ def _generate_wrs_no_mie_tests(
         ),
     ]
 
-    lines.extend(_wrs_no_mie_helper(test_data, "S", covergroup, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
+    lines.extend(_wrs_no_mie_helper(test_data, "S", covergroup))
     return lines
 
 
-def _generate_wrs_nto_timeout_tests(
-    test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_temp2: int
-) -> list[str]:
+def _generate_wrs_nto_timeout_tests(test_data: TestData) -> list[str]:
     """Generate S mode WRS.NTO timeout test
 
     cross lr instruction to set up reservation.
@@ -167,13 +157,11 @@ def _generate_wrs_nto_timeout_tests(
         ),
         "",
     ]
-    lines.extend(_wrs_timeout_helper(test_data, ["S"], coverpoint, covergroup, r_cause, r_scratch, r_temp, r_temp2))
+    lines.extend(_wrs_timeout_helper(test_data, ["S"], coverpoint, covergroup))
     return lines
 
 
-def _generate_wrs_nto_timeout_h_tests(
-    test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_temp2: int
-) -> list[str]:
+def _generate_wrs_nto_timeout_h_tests(test_data: TestData) -> list[str]:
     """Generate WRS.NTO timeout test in VS/VU mode
 
     cross lr instruction to set up reservation.
@@ -199,9 +187,7 @@ def _generate_wrs_nto_timeout_h_tests(
         "",
     ]
 
-    lines.extend(
-        _wrs_timeout_helper(test_data, ["VS", "VU"], coverpoint, covergroup, r_cause, r_scratch, r_temp, r_temp2)
-    )
+    lines.extend(_wrs_timeout_helper(test_data, ["VS", "VU"], coverpoint, covergroup))
 
     return lines
 
@@ -216,22 +202,13 @@ def make_zawrss(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
     tc.code.extend(_generate_wrs_no_res_tests(test_data))
 
-    r_cause, r_scratch, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(5)
-    tc.code.extend(_zawrs_define_helper("S"))
-    # interrupt trap handler
-    tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, True, r_temp, r_timecmp, r_temp2))
-    # exception trap handler
-    tc.code.extend(_zawrs_trap_handler(r_cause, r_scratch, False, r_temp))
+    tc.code.extend(_generate_wrs_sto_timeout_tests(test_data))
 
-    tc.code.extend(_generate_wrs_sto_timeout_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))
+    tc.code.extend(_generate_wrs_nto_timeout_tests(test_data))
+    tc.code.extend(_generate_wrs_nto_timeout_h_tests(test_data))
+    tc.code.extend(_generate_wrs_no_mie_tests(test_data))
 
-    tc.code.extend(_generate_wrs_nto_timeout_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))
-    tc.code.extend(_generate_wrs_nto_timeout_h_tests(test_data, r_cause, r_scratch, r_temp, r_temp2))
-    tc.code.extend(_generate_wrs_no_mie_tests(test_data, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
-
-    tc.code.extend(_generate_wrs_resume_tests(test_data, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
-
-    test_data.int_regs.return_registers([r_cause, r_scratch, r_temp, r_temp2, r_timecmp])
+    tc.code.extend(_generate_wrs_resume_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

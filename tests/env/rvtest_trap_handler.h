@@ -1623,8 +1623,6 @@ tsbi_instr_not_found:
         ret
         .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a1
         ret
-        .word (\csr_addr << 20) | (0x01073) // csrw csr_addr, x0
-        ret
         .word (\csr_addr << 20) | (0x5a073) // csrs csr_addr, a1
         ret
         .word (\csr_addr << 20) | (0x5b073) // csrc csr_addr, a1

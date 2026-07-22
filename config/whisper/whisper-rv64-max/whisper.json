@@ -23,6 +23,21 @@
         "attribs": [],
         "high": 1023,
         "low": 0
+      },
+      {
+        // Main memory supports a 16-byte misaligned atomicity granule.
+        "attribs": [
+          "read",
+          "write",
+          "exec",
+          "amo",
+          "rsrv",
+          "idempotent",
+          "misal_ok",
+          "mag16"
+        ],
+        "high": "0x3ffffffff",
+        "low": "0x80000000"
       }
     ],
     "consoleio": "0x10000000", // Matches virtual printer address in rvmodel_macros.h

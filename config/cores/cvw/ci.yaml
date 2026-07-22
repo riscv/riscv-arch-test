@@ -5,7 +5,7 @@
 
 # Remaining exclusions are CVW/Sail behavior mismatches under the current configs.
 ci_enabled: true
-exclude_extensions: "Sm,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv,Svpbmt,InterruptsS,Zkr"
+exclude_extensions: "Sm,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv,Svpbmt,InterruptsS"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

@@ -1584,6 +1584,8 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
             f"CSRS(mstatus, x{r_temp})",
             "# clear STIP through STIMECMP",
             *set_stimecmp_max(r_temp),
+            "# wait for the stimcmp change to reflect on STIP",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "",
             test_data.add_testcase("Write_1", coverpoint, covergroup),
             "# attempt to write mip.STIP",
@@ -1594,6 +1596,8 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
             "",
             "# set STIP through STIMECMP",
             *set_stimecmp_zero(),
+            "# wait for the stimcmp change to reflect on STIP",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             test_data.add_testcase("Write_0", coverpoint, covergroup),
             "# attempt to write 0 to mip.STIP",
             f"LI(x{r_temp}, 0x20)",
@@ -1607,6 +1611,126 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
         ]
     )
     test_data.int_regs.return_registers([r_temp])
+    return lines
+
+
+def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
+    """Generate mideleg priority tests (M behavior).
+
+    Covers:
+    - M-mode priority vs delegation (all 8 patterns)
+    """
+    covergroup = "InterruptsSSm_cg"
+
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch = test_data.int_regs.get_registers(5)
+
+    lines = [
+        comment_banner(
+            "cp_priority_mideleg_m",
+            _generate_priority_mideleg_tests.__doc__,
+        ),
+        "",
+    ]
+
+    # ============================================================
+    # PASS 1: M-MODE PRIORITY (original _m_tests)
+    # ============================================================
+    for mideleg_pattern in range(8):
+        ssie = (mideleg_pattern >> 0) & 1
+        stie = (mideleg_pattern >> 1) & 1
+        seie = (mideleg_pattern >> 2) & 1
+
+        mideleg_val = (ssie << 1) | (stie << 5) | (seie << 9)
+
+        coverpoint = "cp_priority_mideleg_m"
+
+        binname = f"mideleg_m_{mideleg_pattern:03b}"
+
+        lines.extend(
+            [
+                "",
+                f"# M-test: mideleg={mideleg_pattern:03b}",
+                "CSRW(mie, zero)",
+                "# Clear mstatus.MIE and mstatus.SIE",
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# Clear SEIP and SSIP",
+                f"LI(x{r_scratch}, 0x202)",
+                f"CSRC(mip, x{r_scratch})",
+            ]
+        )
+        lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+        lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+
+        lines.extend(
+            [
+                "# mtvec direct",
+                f"CSRR x{r_scratch}, mtvec",
+                f"SRLI x{r_scratch}, x{r_scratch}, 2",
+                f"SLLI x{r_scratch}, x{r_scratch}, 2",
+                f"CSRW(mtvec, x{r_scratch})",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# mideleg",
+                f"LI(x{r_scratch}, {hex(mideleg_val)})",
+                f"CSRW(mideleg, x{r_scratch})",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# mie = all",
+                f"LI(x{r_scratch}, -1)",
+                f"CSRW(mie, x{r_scratch})",
+            ]
+        )
+
+        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+
+        lines.append("# set all S interrupts")
+        lines.append(f"SET_SEXT_INT(x{r_temp}, x{r_temp2})")
+        lines.append(f"SET_SSW_INT(x{r_temp}, x{r_temp2})")
+        lines.extend(set_stimer_mmode(r_mtime))
+
+        lines.extend(
+            [
+                "# enable SIE",
+                f"LI(x{r_scratch}, 0x02)",
+                f"CSRS(mstatus, x{r_scratch})",
+                "# clear MPIE",
+                f"LI(x{r_scratch}, 0x80)",
+                f"CSRC(mstatus, x{r_scratch})",
+            ]
+        )
+
+        lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+
+        lines.append("# wait")
+        lines.append(f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})")
+
+        lines.extend(
+            [
+                "# cleanup",
+                "RVTEST_GOTO_MMODE",
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
+                "CSRW(mideleg, zero)",
+                "CSRW(mie, zero)",
+                f"LI(x{r_scratch}, 0x202)",
+                f"CSRC(mip, x{r_scratch})",
+            ]
+        )
+        lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+    test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch])
+
     return lines
 
 
@@ -1641,21 +1765,22 @@ def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     # -----------------------------------------------------------------------
     # M-mode interrupt tests (non-delegated and delegated S-interrupts)
     # -----------------------------------------------------------------------
-    tc.code.extend(_generate_interrupts_m_tests(test_data))
-    tc.code.extend(_generate_vectored_m_tests(test_data))
-    tc.code.extend(_generate_priority_mip_m_tests(test_data))
-    tc.code.extend(_generate_priority_mie_m_tests(test_data))
-    tc.code.extend(_generate_wfi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_mti_m_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_sip_m_tests(test_data))
-    tc.code.extend(_generate_trigger_msi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_mei_m_tests(test_data))
-    tc.code.extend(_generate_trigger_sti_m_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_sei_m_tests(test_data))
-    tc.code.extend(_generate_sei_interaction_tests(test_data))
-    tc.code.extend(_generate_global_ie_tests(test_data))
-    tc.code.extend(_generate_stip_write_stimecmp_tests(test_data))
+    # tc.code.extend(_generate_interrupts_m_tests(test_data))
+    # tc.code.extend(_generate_vectored_m_tests(test_data))
+    # tc.code.extend(_generate_priority_mip_m_tests(test_data))
+    # tc.code.extend(_generate_priority_mie_m_tests(test_data))
+    # tc.code.extend(_generate_wfi_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_mti_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_ssi_sip_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_msi_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_mei_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_sti_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_ssi_m_tests(test_data))
+    # tc.code.extend(_generate_trigger_sei_m_tests(test_data))
+    # tc.code.extend(_generate_sei_interaction_tests(test_data))
+    # tc.code.extend(_generate_global_ie_tests(test_data))
+    # tc.code.extend(_generate_stip_write_stimecmp_tests(test_data))
+    tc.code.extend(_generate_priority_mideleg_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

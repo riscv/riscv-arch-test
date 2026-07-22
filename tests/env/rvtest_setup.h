@@ -643,8 +643,11 @@
       #endif
 
       #ifdef SMRNMI_SUPPORTED
-        // if Resumable NMI supported, also clear all RNMI-related fields, especially mnstatus.NMIE
-        csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
+        // Smrnmi resets with mnstatus.NMIE=0. With NMIE clear, M-mode exceptions
+        // are routed to the RNMI exception vector instead of mtvec. Enable NMIE
+        // so T-SBI ecalls and other M-mode traps use the normal handler.
+        li t0, MNSTATUS_NMIE
+        csrw mnstatus, t0
       #endif
 
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)

@@ -3,11 +3,6 @@
 # CI configuration for Whisper simulator
 
 # SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in whisper-max supported by Sail
-# 1. incorrect decoding of add.uw instruction) Link: https://github.com/riscv/sail-riscv/issues/1711
-# 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
-# 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
-# InterruptsSm excluded due to Whisper bug
-# 1. setting mtimecmp equal to mtime using sd does not trigger machine timer interrupt: https://github.com/tenstorrent/whisper/issues/26
 # Smstateen will be added back once issue related srmcfg in whisper is resolved
 # S excluded due to Whisper bug (to be reported upstream): SRET that drops below M-mode must
 # clear mstatus.MPRV (priv spec 3.1.6.3), but whisper's execSret applies the clear through the
@@ -15,10 +10,12 @@
 # The MRET path writes MSTATUS directly and is unaffected. The S suite's
 # cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
 # SmV excluded due to https://github.com/tenstorrent/whisper/issues/33
-# InterruptsSSm excluded because whisper supports M mode interrupt delegation and SAIL currently only support S mode interrupt delegation
+# ExceptionsZaamo: Whisper reports mtval from the second half of cross-granule AMOCAS faults.
+# ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
+# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation.
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm"
+exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 1

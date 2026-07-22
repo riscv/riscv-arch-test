@@ -4,4 +4,4 @@
 # Imperas is proprietary and cannot run in public CI.
 
 ci_enabled: false
-exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "Zkr,SdtrigSm,SdtrigS,SdtrigU"

@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.12 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.13 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.12/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.13/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]

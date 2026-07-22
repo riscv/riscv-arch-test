@@ -29,7 +29,6 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -72,7 +71,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT)  // Background region with RWX enable.
 #define DEFAULT_TOR_REGION  (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION0_XWR_000  (((PMP_L|                  PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION1_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
@@ -84,17 +82,8 @@ main:
 #define PMPREGION7_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP7_CFG_SHIFT)
 
 
-    LA(x4, -1)
-    csrw     pmpaddr15, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL))
-    csrw pmpcfg2, x4
-// For larger UDB_PMP_GRANUMARITY, it is raising
-// relocation truncation error to fit: R_RISCV_JAL
-// Regions get so large, trap handler, RVMODEL macros,
-// and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 2
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
@@ -160,7 +149,7 @@ main:
 
     LI(x4, (PMPREGION7_XWR_001|PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|DEFAULT_TOR_REGION))
     csrw pmpcfg0, x4
-    LI(x4, (PMP_REGION_GLOBAL |PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
+    LI(x4, (PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
     csrw pmpcfg2, x4
 
     VERIFICATION_RWX    (TEST_FOR_EXECUTION_0 - 4) , test_1     // Access at the end of default region
@@ -181,7 +170,6 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_15
 
-#endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .p2align 4
@@ -189,8 +177,6 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
-
-#if UDB_PMP_GRANULARITY == 2
 
 .p2align 12
 TEST_FOR_EXECUTION_X:
@@ -277,7 +263,6 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-#endif
 RVTEST_DATA_END
 
 // Signature region for self-checking

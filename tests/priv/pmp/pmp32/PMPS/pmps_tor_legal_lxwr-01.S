@@ -18,15 +18,16 @@
 //               default TOR region, address-g in pmpaddr_i-1: making {lw,sw,jalr}
 //               address, address-4, address-g, address-g-4.  Observing proper
 //               access faults for restricted regions.
+//
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
-#   MXLEN: 64
+#   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_TOR_SUPPORTED: true
-# MARCH: rv64i_zicsr_zifencei
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmps_tor_legal_lxwr.S"
@@ -58,7 +59,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
-    LA (a4, \ADDRESS)
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
     \TEST_CASE\()_12:
@@ -70,7 +70,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
-    LA (a4, \ADDRESS)
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
     \TEST_CASE\()_13:
@@ -82,8 +81,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
 
-    LA (a4, \ADDRESS)
-    li t0, (g-8)
+    li   t0, (g - 8)
     add a4, a4, t0                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_14:
@@ -95,7 +93,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
 
-    LA (a4, \ADDRESS)
     addi a4, a4, 4                      // REGIONSTART + g
     \TEST_CASE\()_15:
     LA(x1, 5f)                          // Store the return Address in x1
@@ -117,7 +114,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
-    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, -4                                         // REGIONSTART - 4
 
     \TEST_CASE\()_2:
@@ -126,7 +122,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
-    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 8                                          // REGIONSTART + 4
 
     \TEST_CASE\()_3:
@@ -135,8 +130,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    LA(a5, \ADDRESS)                                        // Address to be verified
-    li t0, (g-8)
+    li   t0, (g - 8)
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
@@ -145,7 +139,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
 
-    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 4                                          // REGIONSTART + g
 
     \TEST_CASE\()_5:
@@ -178,8 +171,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    li t0, (g-8)
-    add a5, a5, t0                                     // REGIONSTART + g - 4
+    li   t0, (g - 8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
     lw a4, 0(a5)
@@ -200,9 +193,9 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+2
+    .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
@@ -212,9 +205,9 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMPREGION_LXWR_0100 ((((                    PMP_X|PMP_TOR  )&0xFF) << PMP5_CFG_SHIFT))
-#define PMPREGION_LXWR_0101 ((((      PMP_R         |PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_0111 ((((      PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_0000 ((((                        PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_0001 ((((      PMP_R|            PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_0011 ((((      PMP_R|PMP_W       |PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
@@ -222,8 +215,7 @@ main:
     RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
-
-// Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
+// Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -233,14 +225,14 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_0100)
-    csrw pmpcfg0, x4
+    LI(x4, PMPREGION_LXWR_0000)
+    csrw pmpcfg1, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
-// Test Case: 5 : L -> 0 and RX Permissions given to the PMP Region 3
+// Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 3
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -250,14 +242,14 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_0101)
+    LI(x4, PMPREGION_LXWR_0001)
     csrw pmpcfg0, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
 
-// Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 1
+// Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 1
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -267,11 +259,11 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_0111)
+    LI(x4, PMPREGION_LXWR_0011)
     csrw pmpcfg0, x4
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test

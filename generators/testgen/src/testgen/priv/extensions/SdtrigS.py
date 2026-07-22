@@ -18,7 +18,6 @@ from testgen.priv.registry import add_priv_test_generator
     march_extensions=["I", "Zicsr"],
     extra_defines=[
         *UDB_DEFINES,
-        "#define SKIP_MEPC",  # SKIP_MEPC: hangs otherwise.
         "#define RVTEST_TEMP_BOOT_TO_S",
     ],
 )

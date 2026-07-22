@@ -22,13 +22,14 @@
 //               address, address-4, address-g, address-g-4.  Observing proper
 //               access faults for restricted regions.
 // --------------------------------------------------------------------------------
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['U']
 # params:
-#   MXLEN: 64
+#   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_TOR_SUPPORTED: true
-# MARCH: rv64i_zicsr_zifencei
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpu_tor_legal_lxwr.S"
@@ -40,16 +41,15 @@
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
-
 #define g    (1<<(UDB_PMP_GRANULARITY))
 
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+2
+    .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
@@ -59,17 +59,17 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMPREGION_LXWR_0000 ((((                        PMP_TOR  )&0xFF) << PMP5_CFG_SHIFT))
-#define PMPREGION_LXWR_0001 ((((      PMP_R|            PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_0011 ((((      PMP_R|PMP_W       |PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-
+#define PMPREGION_LXWR_0100 ((((                    PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_0101 ((((      PMP_R         |PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_0111 ((((      PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
 
     RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
-// Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
+
+// Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -79,14 +79,14 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_0000)
-    csrw pmpcfg0, x4
+    LI(x4, PMPREGION_LXWR_0100)
+    csrw pmpcfg1, x4
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
 
-// Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 3
+// Test Case: 5 : L -> 0 and RX Permissions given to the PMP Region 3
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -96,14 +96,14 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_0001)
+    LI(x4, PMPREGION_LXWR_0101)
     csrw pmpcfg0, x4
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
 
-// Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 1
+// Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 1
 
     LA(x6, REGIONSTART)
     li t0, g
@@ -113,11 +113,11 @@ main:
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_0011)
+    LI(x4, PMPREGION_LXWR_0111)
     csrw pmpcfg0, x4
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_6
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
@@ -160,6 +160,7 @@ TEST_FOR_EXECUTION:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
     .endr
+
 
 RETURN_INSTRUCTION:
     nop

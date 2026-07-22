@@ -15,7 +15,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "SdtrigSm",
     required_extensions=["Sm", "Sdtrig"],
-    march_extensions=["I", "Zicsr"],
+    march_extensions=["I"],
     extra_defines=UDB_DEFINES,
 )
 def make_sdtrigsm(test_data: TestData) -> list[TestChunk]:

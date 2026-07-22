@@ -15,7 +15,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "SdtrigS",
     required_extensions=["S", "Sdtrig"],
-    march_extensions=["I", "Zicsr"],
+    march_extensions=["I"],
     extra_defines=[
         *UDB_DEFINES,
         "#define RVTEST_TEMP_BOOT_TO_S",

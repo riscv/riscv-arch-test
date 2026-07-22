@@ -110,10 +110,10 @@ INSTR_IFDEFS = {
     "c.lbu": ["#ifdef ZCB_SUPPORTED"],
     "c.lh": ["#ifdef ZCB_SUPPORTED"],
     "c.lhu": ["#ifdef ZCB_SUPPORTED"],
-    "c.fsw": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
-    "c.flw": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
-    "c.fswsp": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
-    "c.flwsp": ["#ifdef ZCF_SUPPORTED", "#if __riscv_xlen == 32"],
+    "c.fsw": ["#ifdef ZCF_SUPPORTED"],
+    "c.flw": ["#ifdef ZCF_SUPPORTED"],
+    "c.fswsp": ["#ifdef ZCF_SUPPORTED"],
+    "c.flwsp": ["#ifdef ZCF_SUPPORTED"],
     "c.fsd": ["#ifdef ZCD_SUPPORTED"],
     "c.fld": ["#ifdef ZCD_SUPPORTED"],
     "c.fsdsp": ["#ifdef ZCD_SUPPORTED"],
@@ -144,16 +144,18 @@ def _load_tdata1(reg: int, trig_type: int, mode: str, lowfields: int = 0) -> lis
         f"LI(x{reg}, 0x{(trig_type << 28) | lowfields:x})",
         "#endif",
     ]
-    if mode == "Sm":
-        lines.append(f"csrw tdata1, x{reg} # write trigger type")
-    else:
-        lines.append(tsbi_call(f"csrw tdata1, x{reg} # write trigger type"))
-    # TODO REMOVE MIE ENABLE ONCE SAIL IMPLEMENTED
-    if mode == "Sm":
-        lines.append("csrsi mstatus, 0x8 # MIE=1 to arm an M-mode trigger")
-    elif mode == "S":
-        lines.append("csrsi sstatus, 0x2 # SIE=1 to arm an S-mode trigger")
+    lines.append(_csr_access(f"csrw tdata1, x{reg} # write trigger type", mode))
     return lines
+
+
+def _global_ie(mode: str, enable: bool) -> list[str]:
+    """TODO REMOVE ONCE SAIL IMPLEMENTED: globally enable/disable interrupts to arm triggers."""
+    op, why = ("csrsi", "arm") if enable else ("csrci", "disarm")
+    if mode == "Sm":
+        return [f"{op} mstatus, 0x8 # MIE={int(enable)} to {why} M-mode triggers"]
+    if mode == "S":
+        return [f"{op} sstatus, 0x2 # SIE={int(enable)} to {why} S-mode triggers"]
+    return []
 
 
 def _load_reg(reg: int, val: int | str) -> str:
@@ -196,8 +198,6 @@ def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
             _load_reg(reg, trig_num),
             _csr_access(f"csrw tselect, x{reg}", mode),
             _csr_access("csrw tdata1, x0", mode),
-            _csr_access("csrw tdata2, x0", mode),
-            _csr_access("csrw tdata3, x0", mode),
         ]
     )
     return lines
@@ -1024,6 +1024,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
+    lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_priv_mode"
@@ -1544,6 +1545,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num + 1}")
         lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
 
+    lines.extend(_global_ie(mode, False))
     test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
     return [test_data.end_test_chunk()]
 

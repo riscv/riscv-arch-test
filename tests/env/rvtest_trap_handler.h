@@ -1664,6 +1664,10 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x7A3) // tdata3
         TSBI_CSR_INSTR_TABLE(0x7A4) // tinfo
         TSBI_CSR_INSTR_TABLE(0x7A5) // tcontrol
+        TSBI_CSR_INSTR_TABLE(0x7A8) // mcontext
+        TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
+        TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
+        TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
         // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
         lw a0, 0(a1)
         ret

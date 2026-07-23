@@ -3,5 +3,16 @@
 # CI configuration for Imperas simulator
 # Imperas is proprietary and cannot run in public CI.
 
+# These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
+#  - Sm: Insufficient WARL configuration options.
+#  - SsstrictSm/S/U: Sail does not yet implement hypervisor instructions/CSRs
+#  - Zkr: https://github.com/riscv/sail-riscv/issues/1829
+# - InterruptsSm/S/SSm/U: Imperas does not implement interrupts
+# - Smstateen: Sail does not implement all state yet to match
+# ExceptionsZaamo: unknown
+# ExceptionsSvZaamo: unknown
+# ExceptionsSvZalrsc: unknown
+# Zama16b: unknown
+
 ci_enabled: false
-exclude_extensions: "Zkr"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Zkr,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,Zama16b"

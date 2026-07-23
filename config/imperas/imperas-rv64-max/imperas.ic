@@ -80,6 +80,7 @@
 --override cpu*/Zfh=T
 --override cpu*/Zfa=T
 --override cpu*/Zcb=T
+--override cpu*/Zcd=T
 --override cpu*/Sstc=T
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T

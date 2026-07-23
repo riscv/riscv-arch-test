@@ -214,6 +214,10 @@
         #endif
     #endif
 
+    // Clear the global trap counter at the end of boot code
+    LA (T1, rvtest_trap_count)
+    SREG zero, 0(T1)
+
     RVTEST_INIT_REGS // Put deterministic values in each register
 
     LA (T1, rvtest_code_begin)

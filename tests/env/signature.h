@@ -845,6 +845,18 @@
       .word TRAP_CANARY_VALUE
 #endif
 
+#if UDB_MXLEN==64
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5C0DEF00D
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .dword FINAL_TRAP_OFFSET_CANARY_VALUE
+#else
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .word FINAL_TRAP_OFFSET_CANARY_VALUE
+#endif
+
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _INST_PTR, _STR_PTR) \
     CSRR(_R, _CSR)                                       ;\

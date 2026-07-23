@@ -345,7 +345,7 @@ def set_lower_xreg_bits(num_bits_reg: int, test_data: TestData) -> list[str]:
     """
     Builds a mask register with the lowest n bits set, where n is held in num_bits_reg.
 
-    Uses the same technique as
+    Uses the same calculation as the length suite sigupd macro building the tail mask.
     """
 
     temp_reg, temp_reg2 = test_data.int_regs.get_registers(2, exclude_regs=[0])

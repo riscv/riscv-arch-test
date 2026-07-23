@@ -1,9 +1,12 @@
 # Parameter mappings
 
 parameter_definitions:
-  - name: STVEC_MODE_DIRECT
+  - name: STVEC_MODES
     coverpoint: ["TODO"]
-    effect: ["TODO"]
-  - name: STVEC_MODE_VECTORED
-    coverpoint: ["TODO"]
-    effect: ["TODO"]
+    effect:
+      [
+        "If direct or vectored are not supported, tests relying on those modes will not operate TODO should not be run",
+      ]
+  - name: STVEC_BASE_ALIGNMENT_VECTORED
+    coverpoint: ["all"]
+    effect: ["Trap handler is aligned to the appropriate boundary"]

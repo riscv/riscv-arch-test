@@ -1686,12 +1686,11 @@ tsbi_instr_table:
 //
 // This section:
 //   1. Calculates the trap signature entry size (3, 4, or 6 words)
-//   2. Pre-increments the trap signature pointer
+//   2. Pre-increments the trap signature pointer and checks for overrun
 //   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
 //   4. For exceptions: relocates xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
-//   6. Checks for trap signature overrun
-//   7. Restores registers and returns via xret
+//   6. Restores registers and returns via xret
 //==============================================================================
 
 \__MODE__\()trapsig_ptr_upd:                     // pre-update trap signature pointer
@@ -1746,7 +1745,7 @@ tsbi_instr_table:
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
 
-        // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_m* slots before the
+        // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_x* slots before the
         // first TRAP_SIGUPD so failedtest_print_csr_context reports THIS trap's
         // CSRs on any word's mismatch.  They must be captured here rather than
         // at reporter entry for two reasons:
@@ -1762,16 +1761,20 @@ tsbi_instr_table:
         // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before
         // use); T5 has held xcause since handler entry.
         csrr    T3, CSR_XEPC
-        LA(T4, saved_mepc)
+        LA(T4, saved_xepc)
         SREG    T3, 0(T4)
-        LA(T4, saved_mcause)
-        SREG    T5, 0(T4)
+        SREG    T5, 8(T4)
         csrr    T3, CSR_XTVAL
-        LA(T4, saved_mtval)
-        SREG    T3, 0(T4)
+        SREG    T3, 16(T4)
         csrr    T3, CSR_XSTATUS
-        LA(T4, saved_mstatus)
-        SREG    T3, 0(T4)
+        SREG    T3, 24(T4)
+
+        // Check before any trap signature stores. The end canary immediately follows
+        // trap_sigptr's allocated space, so the updated write pointer may equal
+        // sig_end_canary but must never pass it.
+        LA(     T3, sig_end_canary)
+        add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
+        bgtu    T4, T3, trap_sig_overflow           // overrun -> fail before corrupting the signature/tohost
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -2060,17 +2063,8 @@ skp_\__MODE__\()tval:
   .endif
 
 1:
-// --- Check for trap signature overrun ---
-chk_\__MODE__\()trapsig_overrun:
-        addi    sp, sp, -1*sv_area_sz              // temp adjust sp (same as trap_sig_sv)
-        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr (from M-mode shared area)
-        addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
-        LREG    T2, sig_bgn_off(sp)                // T2 = this mode's sig begin
-        LREG    T1, sig_seg_siz(sp)                // T1 = this mode's sig size
-
-        add     T1, T1, T2                          // T1 = sig end address
-        bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort
-
+// --- Dispatch special exception handlers ---
+dispatch_\__MODE__\()spcl_excpt_handler:
         li      T2, int_hndlr_tblsz                // T2 = offset to exception dispatch table
         j       spcl_\__MODE__\()handler           // jump to special handler dispatcher
 

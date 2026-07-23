@@ -1066,14 +1066,37 @@ rvtest_\__MODE__\()prolog_done:
 .macro RVTEST_TRAP_HANDLER __MODE__
 .option push
 .option rvc             // temporarily allow compress to allow c.nop alignment
-// Ensure that trampoline is on a boundary that is the max of 64 bytes, UDB_MTVEC_BASE_ALIGNMENT_VECTORED, and UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+// Ensure that trampoline is on a boundary that satisfies the relevant xTVEC
+// WARL BASE alignment. M-mode uses mtvec; S-mode and HS-mode use stvec.
+// VS-mode keeps the legacy mtvec-based over-alignment until UDB exposes a
+// separate vstvec BASE alignment parameter.
 .balign 64
+.ifc \__MODE__,M
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 #endif
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
+.endif
+.ifc \__MODE__,S
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
+#endif
+.endif
+.ifc \__MODE__,H
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
+#endif
+.endif
+.ifc \__MODE__,V
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+#endif
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#endif
+.endif
 .option pop
 
   /**********************************************************************/
@@ -2559,11 +2582,8 @@ fast_Mothertrap:
 // Align to the core's WARL stvec BASE boundary so the prolog's write of the
 // handler address into stvec survives.
 .balign 64
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-#endif
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
 // Same entry protocol as the M handler: preserve the caller's a0/a1 across the
 // forward path (the S standard handler dispatches delegated U-ecalls on the

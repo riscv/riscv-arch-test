@@ -359,7 +359,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Zama16b",
     required_extensions=["Zama16b"],
-    march_extensions=["I", "Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
+    march_extensions=["Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
 )
 def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""

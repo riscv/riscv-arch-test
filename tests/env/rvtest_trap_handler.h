@@ -1746,15 +1746,31 @@ tsbi_instr_table:
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
 
-        // Snapshot xEPC to saved_mepc before the first TRAP_SIGUPD so
-        // failedtest_print_csr_context reports THIS trap's EPC on any word's
-        // mismatch.  It must be captured here rather than at reporter entry:
-        // the exception path rewrites the live xEPC CSR (adj_\__MODE__\()epc_rtn)
-        // after word 2, and snapshotting only in common_\__MODE__\()excpt_handler
-        // (as before) left word 0/1 mismatches printing the PREVIOUS trap's EPC.
-        // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before use).
+        // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_m* slots before the
+        // first TRAP_SIGUPD so failedtest_print_csr_context reports THIS trap's
+        // CSRs on any word's mismatch.  They must be captured here rather than
+        // at reporter entry for two reasons:
+        //  1. The exception path rewrites the live xEPC CSR
+        //     (adj_\__MODE__\()epc_rtn) after word 2, so the live value can be
+        //     stale by reporting time.
+        //  2. Only the handler expansion knows its own privilege mode.  The
+        //     reporter used to read mcause/mtval/mstatus directly, which is an
+        //     illegal instruction when the failing handler runs in S/VS-mode:
+        //     the resulting trap re-entered the handler, mismatched again, and
+        //     livelocked (watchdog "trapped N times in a row").  The CSR_X*
+        //     aliases here resolve to this mode's CSRs.
+        // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before
+        // use); T5 has held xcause since handler entry.
         csrr    T3, CSR_XEPC
-        la      T4, saved_mepc
+        LA(T4, saved_mepc)
+        SREG    T3, 0(T4)
+        LA(T4, saved_mcause)
+        SREG    T5, 0(T4)
+        csrr    T3, CSR_XTVAL
+        LA(T4, saved_mtval)
+        SREG    T3, 0(T4)
+        csrr    T3, CSR_XSTATUS
+        LA(T4, saved_mstatus)
         SREG    T3, 0(T4)
 
 //---------- Trap Signature Word 0: vect+mode+status ----------

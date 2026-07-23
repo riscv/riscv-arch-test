@@ -236,7 +236,7 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZicntrU",
     required_extensions=["U", "Zicntr"],
-    march_extensions=["Zicntr", "I", "Zihpm"],
+    march_extensions=["Zicntr", "Zihpm"],
 )
 def make_zicntru(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrU coverpoints"""

@@ -26,11 +26,11 @@ ci_enabled: true
 # SvaduPMP: hardware A/D update ignores PMP write permission on PTE (https://gitlab.com/qemu-project/qemu/-/work_items/3495)
 # Svinval: sfence.w.inval/sfence.inval.ir don't raise illegal instruction in U-mode
 #        (https://gitlab.com/qemu-project/qemu/-/work_items/3493); also hangs Svinval.elf
-# ExceptionsZaamo/ExceptionsSvZaamo/Zama16b: QEMU max CPU implements zama16b (misaligned AMOs within 16B execute);
-#        Sail/UDB config expects traps (MISALIGNED_AMO: false) — config/model mismatch to resolve.
+# ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
+#        but cross-granule word/doubleword AMOs execute instead of trapping.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting SM1P13 too
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

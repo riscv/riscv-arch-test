@@ -30,7 +30,6 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -73,7 +72,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)  // Background region with RWX enable.
 #define DEFAULT_TOR_REGION  (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION0_XWR_000  (((PMP_L|                  PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION1_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
@@ -81,12 +79,7 @@ main:
 #define PMPREGION3_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP3_CFG_SHIFT)
 
 
-    LA(x4, -1)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL))
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT

@@ -1771,8 +1771,11 @@
 
 
     # Print saved mepc, mcause, mtval, mstatus for trap failure diagnostics.
-    # Values were snapshotted at failedtest_trap_x7_x9 entry, before any re-trap
-    # could corrupt the live CSRs (e.g. PMP faults from rvmodel_io_write_str).
+    # mcause/mtval/mstatus were snapshotted at failedtest_trap_x7_x9 entry,
+    # before any re-trap could corrupt the live CSRs (e.g. PMP faults from
+    # rvmodel_io_write_str).  mepc was snapshotted by the trap handler before
+    # trap signature word 0, since the handler itself rewrites the live xEPC
+    # (adj_*epc_rtn) before some mismatches are detected.
     # Saves and restores ra via csr_context_ret_addr so callers can use 'call'.
     failedtest_print_csr_context:
         la a2, csr_context_ret_addr

@@ -1746,6 +1746,17 @@ tsbi_instr_table:
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
 
+        // Snapshot xEPC to saved_mepc before the first TRAP_SIGUPD so
+        // failedtest_print_csr_context reports THIS trap's EPC on any word's
+        // mismatch.  It must be captured here rather than at reporter entry:
+        // the exception path rewrites the live xEPC CSR (adj_\__MODE__\()epc_rtn)
+        // after word 2, and snapshotting only in common_\__MODE__\()excpt_handler
+        // (as before) left word 0/1 mismatches printing the PREVIOUS trap's EPC.
+        // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before use).
+        csrr    T3, CSR_XEPC
+        la      T4, saved_mepc
+        SREG    T3, 0(T4)
+
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
 //   bits  1: 0 = mode (MMODE_SIG=3, SMODE_SIG=1, HMODE_SIG=1, VMODE_SIG=2)
@@ -1826,11 +1837,6 @@ sv_\__MODE__\()cause:
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        // Save original xEPC before adj_Mepc advances it past the faulting instruction.
-        // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
-        // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
-        la      T2, saved_mepc
-        SREG    T3, 0(T2)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---

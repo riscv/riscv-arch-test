@@ -2172,6 +2172,13 @@
         .asciz "\"\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    trap_sig_overflowstr:
+        #ifdef RVTEST_SELFCHECK
+            .string "\nRVCP: Trap signature overflow in self-check mode. DUT generated too many traps.     \n"
+        #else
+            // Keep the same byte count as the self-check string above.
+            .string "\nRVCP: Trap signature overflow in sig mode. Increase TRAP_SIGUPD_COUNT for this test.\n"
+        #endif
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

@@ -985,11 +985,9 @@
         la x16, trap_diag_subtype
         sw x8, 0(x16)
 
-        // The actual offset was stored as the failing SIGUPD value.
-        // We need to extract it the same way integer failures do:
-        // the beq compared actual vs expected, and the ld loaded expected.
-        // For trap_sig_offset_mismatch, the value T1 (actual offset) was
-        // the value being checked. Extract from the instruction stream.
+        // Extract the compared values from the final trap-count check:
+        // the beq compared the DUT trap signature byte count against the
+        // reference byte count loaded from final_trap_sig_offset.
 
         // Extract actual value (rs2 of beq = the value being compared)
         lhu x6, -6(DEFAULT_LINK_REG)
@@ -1417,6 +1415,14 @@
     //==========================================================================
 
     failedtest_report_trap_detailed:
+        // Load subtype and dispatch. The final trap-count check has a compact
+        // report below; skip the generic trap-failure header to keep it focused.
+        lw x8, trap_diag_subtype
+
+        // ---- Subtype 9: Trap signature offset mismatch ----
+        li x9, 9
+        beq x8, x9, trap_report_offset_mismatch
+
         // Print trap failure header
         LA(a0, trap_diag_header_str)
         call rvmodel_io_write_str
@@ -1430,13 +1436,6 @@
         LA(a0, newlinestr)
         call rvmodel_io_write_str
 
-        // Load subtype and dispatch
-        lw x8, trap_diag_subtype
-
-        // ---- Subtype 9: Trap signature offset mismatch ----
-        li x9, 9
-        beq x8, x9, trap_report_offset_mismatch
-
         // ---- Subtype 0: Unknown / generic ----
         beqz x8, trap_report_generic
 
@@ -1447,11 +1446,6 @@
     // OFFSET MISMATCH: DUT generated wrong number of traps
     //--------------------------------------------------------------
     trap_report_offset_mismatch:
-        // Print "Trap Count Mismatch"
-        LA(a0, trap_diag_count_mismatch_str)
-        call rvmodel_io_write_str
-
-        // Print expected offset
         LA(a0, trap_diag_expected_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_expected_offset
@@ -1460,7 +1454,6 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        // Print actual offset
         LA(a0, trap_diag_actual_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_actual_offset
@@ -1469,24 +1462,16 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        // Determine if extra or missing traps
+        // Determine if extra or missing traps. Offsets are unsigned byte counts.
         LREG x6, trap_diag_actual_offset
         LREG x7, trap_diag_expected_offset
-        blt x6, x7, trap_report_missing_traps
+        bltu x6, x7, trap_report_missing_traps
 
     trap_report_extra_traps:
-        // DUT generated more traps than expected
         LA(a0, trap_diag_extra_traps_str)
         call rvmodel_io_write_str
 
-        // Calculate and print approximate extra trap count
-        // Each standard trap entry is 4*REGWIDTH bytes
-        LREG x6, trap_diag_actual_offset
-        LREG x7, trap_diag_expected_offset
-        sub x6, x6, x7                              # extra bytes
-        srli x6, x6, 2                               # divide by REGWIDTH (approx entries * 4/REGWIDTH)
-        // Print the byte difference as a hex number (exact entry count depends on entry size)
-        LA(a0, trap_diag_extra_bytes_str)
+        LA(a0, trap_diag_diff_bytes_str)
         call rvmodel_io_write_str
         LREG x6, trap_diag_actual_offset
         LREG x7, trap_diag_expected_offset
@@ -1496,17 +1481,15 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        LA(a0, trap_diag_extra_hint_str)
+        LA(a0, trap_diag_extra_next_step_str)
         call rvmodel_io_write_str
-        call failedtest_print_csr_context
         j failedtest_report_end
 
     trap_report_missing_traps:
-        // DUT generated fewer traps than expected
         LA(a0, trap_diag_missing_traps_str)
         call rvmodel_io_write_str
 
-        LA(a0, trap_diag_extra_bytes_str)
+        LA(a0, trap_diag_diff_bytes_str)
         call rvmodel_io_write_str
         LREG x6, trap_diag_expected_offset
         LREG x7, trap_diag_actual_offset
@@ -1516,9 +1499,8 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        LA(a0, trap_diag_missing_hint_str)
+        LA(a0, trap_diag_missing_next_step_str)
         call rvmodel_io_write_str
-        call failedtest_print_csr_context
         j failedtest_report_end
 
     //--------------------------------------------------------------
@@ -2202,7 +2184,7 @@
     mstatusstr:
         .string "RVCP: MSTATUS: "
     trap_sig_offset_mismatch:
-        .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
+        .string "\"Trap count mismatch.\"";
     sv_Mvect_str:
         .string "\"Mismatch in trap signature! Trap was being handled in M-Mode.\"";
     sv_Svect_str:
@@ -2311,27 +2293,24 @@
         .string "RVCP: ===== TRAP FAILURE DIAGNOSTICS =====\n"
     trap_diag_origstr_label:
         .string "RVCP: Failure: "
-    trap_diag_count_mismatch_str:
-        .string "RVCP: TRAP COUNT MISMATCH - DUT generated a different number of traps than the reference model.\n"
     trap_diag_expected_offset_str:
-        .string "RVCP: Expected trap signature offset: "
+        .string "RVCP: Expected trap signature byte count: "
     trap_diag_actual_offset_str:
-        .string "RVCP: Actual trap signature offset:   "
+        .string "RVCP: Actual trap signature byte count:       "
     trap_diag_extra_traps_str:
-        .string "RVCP: DIAGNOSIS: DUT generated MORE traps than expected.\n"
+        .string "RVCP: DIAGNOSIS: DUT recorded EXTRA traps.\n"
     trap_diag_missing_traps_str:
-        .string "RVCP: DIAGNOSIS: DUT generated FEWER traps than expected (missing traps).\n"
-    trap_diag_extra_bytes_str:
-        .string "RVCP: Difference in trap signature bytes: "
-    trap_diag_extra_hint_str:
+        .string "RVCP: DIAGNOSIS: DUT recorded FEWER traps (missing traps).\n"
+    trap_diag_diff_bytes_str:
+        .string "RVCP: Trap signature byte difference: "
+    trap_diag_extra_next_step_str:
         .ascii  "RVCP: HINT: Extra traps may indicate: spurious interrupts, incorrect exception\n"
         .ascii  "RVCP:       delegation, wrong privilege mode at instruction execution, or an\n"
         .asciz  "RVCP:       instruction causing a fault that should not fault on this DUT.\n"
-    trap_diag_missing_hint_str:
+    trap_diag_missing_next_step_str:
         .ascii  "RVCP: HINT: Missing traps may indicate: exception not raised when expected,\n"
         .ascii  "RVCP:       incorrect CSR state preventing trap (e.g. xIE disabled), trap\n"
         .asciz  "RVCP:       delegation causing handler in wrong mode, or PMP/page fault missed.\n"
-
     trap_diag_handler_mode_str:
         .string "RVCP: Trap handler mode: "
     trap_diag_mode_m_str:

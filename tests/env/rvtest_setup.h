@@ -121,8 +121,19 @@
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
       LA(     T2, trap_sigptr)       // Base address of trap signature region
-      sub     T1, T1, T2              // Calculate offset
-      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+      sub     T1, T1, T2              // Calculate DUT trap signature byte count
+      LA(     T3, final_trap_sig_offset)
+    #ifdef RVTEST_SELFCHECK
+      LREG    T4, 0(T3)               // Reference trap signature byte count
+      beq     T4, T1, 1f
+    #else
+      SREG    T1, 0(T3)               // Save reference trap signature byte count
+      beq     x0, x0, 1f
+    #endif
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR check_trap_sig_offset
+      RVTEST_WORD_PTR trap_sig_offset_mismatch
+    1:
   #endif
 
   // Terminate test
@@ -411,6 +422,14 @@
         CANARY
         // Initialize remaining signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+
+      // Fixed diagnostic slot for the final trap signature byte count.
+      // sig_modify.py inserts the final_trap_sig_offset label after this canary
+      // in self-checking builds, where the raw signature data is included.
+      final_trap_sig_offset_canary:
+        FINAL_TRAP_OFFSET_CANARY
+      final_trap_sig_offset:
+        .fill (REGWIDTH>>2),4,0xdeadbeef
 
       // Signature region for trap handlers
       tsig_begin_canary:

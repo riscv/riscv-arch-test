@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPSM
+`define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
 
 covergroup PMPSM_cg with function sample(
                     ins_t ins,
@@ -967,52 +968,53 @@ covergroup PMPSM_cg with function sample(
 
 //-------------------------------------------------------
 
-  // Setting the even pmpcfg to 0 and odd pmpcfg to TOR & and rotating through the 6 legal XWR values for each pair.
-  pmp_entries_setup: coverpoint {pmpcfg_a[27:0], pmpcfg_l[13:0], pmpcfg_x[13:0], pmpcfg_wr[27:0]} {
-    bins tor_legal_xwr = {84'b0100010001000100010001000100_10101010101010_00100010001000_0000110001000000110001000000};
+  // Setting all 7 pmpcfg entries to NAPOT and rotating through the 6 legal XWR values.
+  pmp_entries_setup: coverpoint {pmpcfg_a[13:0], pmpcfg_l[6:0], pmpcfg_x[6:0], pmpcfg_wr[13:0]} {
+    bins napot_legal_xwr = {42'b11_1111_1111_1111_1111111_0101010_00_1101_0011_0100};
   }
 
-  overlapping_regions: coverpoint (
-                   pmpaddr[13] == ((`PMP_REGION_START + 7*`g_tor) >> 2) &&
-                   pmpaddr[12] == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[11] == ((`PMP_REGION_START + 6*`g_tor) >> 2) &&
-                   pmpaddr[10] == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[9]  == ((`PMP_REGION_START + 5*`g_tor) >> 2) &&
-                   pmpaddr[8]  == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[7]  == ((`PMP_REGION_START + 4*`g_tor) >> 2) &&
-                   pmpaddr[6]  == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[5]  == ((`PMP_REGION_START + 3*`g_tor) >> 2) &&
-                   pmpaddr[4]  == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[3]  == ((`PMP_REGION_START + 2*`g_tor) >> 2) &&
-                   pmpaddr[2]  == (`PMP_REGION_START  >> 2)     &&
-                   pmpaddr[1]  == ((`PMP_REGION_START + 1*`g_tor) >> 2) &&
-                   pmpaddr[0]  == (`PMP_REGION_START  >> 2)
+  // 7 overlapping NAPOT regions all based at PMP_NAPOT_PRIORITY_REGION_START, with
+  // sizes g_napot, 2x, 4x, 8x, 16x, 32x, 64x. The base is aligned to the
+  // largest region size so every NAPOT entry is naturally aligned.
+  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1)
+  napot_priority_regions: coverpoint (
+                   ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                   ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
                    ) {
-    bins tor_regions = {1};  // Set 1 when overlapping tor regions set up.
+    bins napot_regions = {1};
   }
 
-  // Address at the end of the overlapping regions
+  // Address at the last word of each overlapping NAPOT region.
+  // Region i has size (1<<i)*g_napot, so its last word is at REGIONSTART + (1<<i)*g_napot - 4.
   addr_offset_for_priority_check: coverpoint (ins.current.rs1_val+ins.current.imm) {
-    bins at_end_of_region13 = {`PMP_REGION_START + 7*`g_tor - 4};
-    bins at_end_of_region11 = {`PMP_REGION_START + 6*`g_tor - 4};
-    bins at_end_of_region9  = {`PMP_REGION_START + 5*`g_tor - 4};
-    bins at_end_of_region7  = {`PMP_REGION_START + 4*`g_tor - 4};
-    bins at_end_of_region5  = {`PMP_REGION_START + 3*`g_tor - 4};
-    bins at_end_of_region3  = {`PMP_REGION_START + 2*`g_tor - 4};
-    bins at_end_of_region1  = {`PMP_REGION_START + 1*`g_tor - 4};
+    bins at_end_of_region6 = {`PMP_NAPOT_PRIORITY_REGION_START + 64*`g_napot - 4};
+    bins at_end_of_region5 = {`PMP_NAPOT_PRIORITY_REGION_START + 32*`g_napot - 4};
+    bins at_end_of_region4 = {`PMP_NAPOT_PRIORITY_REGION_START + 16*`g_napot - 4};
+    bins at_end_of_region3 = {`PMP_NAPOT_PRIORITY_REGION_START +  8*`g_napot - 4};
+    bins at_end_of_region2 = {`PMP_NAPOT_PRIORITY_REGION_START +  4*`g_napot - 4};
+    bins at_end_of_region1 = {`PMP_NAPOT_PRIORITY_REGION_START +  2*`g_napot - 4};
+    bins at_end_of_region0 = {`PMP_NAPOT_PRIORITY_REGION_START +  1*`g_napot - 4};
   }
 
 //-------------------------------------------------------
 
-  // {TOR, OFF, TOR, OFF} and {1111, 1000, 1101, 1000}
+  // {NAPOT, OFF, NAPOT, OFF} and {1111, 1000, 1101, 1000}
   cfg_first_four_entries: coverpoint {pmpcfg[3],pmpcfg[2],pmpcfg[1],pmpcfg[0]} {
-    bins cfg_regions = {32'h8F808D80};
+    bins cfg_regions = {32'h9F809D80};
   }
 
-  first_four_pmp_entries: coverpoint (pmpaddr[0]==((`PMP_REGION_START)     >> 2) &&
-                    pmpaddr[1]==((`PMP_REGION_START+`g_tor) >> 2) &&
-                    pmpaddr[2]==((`PMP_REGION_START)     >> 2) &&
-                    pmpaddr[3]==((`PMP_REGION_START+`g_tor) >> 2)
+  // pmpaddr0 and pmpaddr2 are OFF but set to the access address (PMP_NAPOT_REGION_START >> 2),
+  // verifying they are ignored. pmpaddr1 and pmpaddr3 are NAPOT covering PMP_NAPOT_REGION_START.
+  first_four_pmp_entries: coverpoint (
+                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                    ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
+                    ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                    ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
                     ) {
     bins pmp_entries = {1};
   }
@@ -1129,9 +1131,9 @@ covergroup PMPSM_cg with function sample(
     cp_pmp64_read: cross priv_mode_m, read_instr_lw, pmp64;
   `endif
 
-  cp_priority_lw: cross priv_mode_m, pmp_entries_setup, overlapping_regions, addr_offset_for_priority_check, read_instr_lw ;
-  cp_priority_sw: cross priv_mode_m, pmp_entries_setup, overlapping_regions, addr_offset_for_priority_check, write_instr_sw ;
-  cp_priority_jalr: cross priv_mode_m, pmp_entries_setup, overlapping_regions, addr_offset_for_priority_check, exec_instr ;
+  cp_priority_lw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, read_instr_lw ;
+  cp_priority_sw: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, write_instr_sw ;
+  cp_priority_jalr: cross priv_mode_m, pmp_entries_setup, napot_priority_regions, addr_offset_for_priority_check, exec_instr ;
 
   cp_priority_off_lw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, read_instr_lw ;
   cp_priority_off_sw: cross priv_mode_m, cfg_first_four_entries, first_four_pmp_entries, write_instr_sw ;

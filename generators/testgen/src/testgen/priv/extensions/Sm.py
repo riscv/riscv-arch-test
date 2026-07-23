@@ -997,7 +997,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     ######################################
     # add — retires normally, no trap
     ######################################
-    lines.append(comment_banner(coverpoint, "add: retires normally, delta must be 1"))
+    lines.append(comment_banner(coverpoint, "add: retires normally"))
     lines.extend(
         [
             test_data.add_testcase("add", coverpoint, covergroup),
@@ -1012,7 +1012,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     ######################################
     # ecall
     ######################################
-    lines.append(comment_banner(coverpoint, "ecall: does not retire)"))
+    lines.append(comment_banner(coverpoint, "ecall: does not retire"))
     lines.extend(
         [
             test_data.add_testcase("ecall", coverpoint, covergroup),
@@ -1035,7 +1035,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
         [
             test_data.add_testcase("ebreak", coverpoint, covergroup),
             f"CSRR(x{r_before}, minstret)",
-            "ebreak                        # breakpoint exception, never reaches T-SBI dispatch, safe bare",
+            "ebreak                        # breakpoint exception",
             "nop",
             f"CSRR(x{r_after}, minstret)",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
@@ -1046,7 +1046,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     ######################################
     # mret — retires directly, no trap handler involved
     ######################################
-    lines.append(comment_banner(coverpoint, "mret: retires normally, delta must be 1"))
+    lines.append(comment_banner(coverpoint, "mret: retires normally"))
     lines.extend(
         [
             test_data.add_testcase("mret", coverpoint, covergroup),
@@ -1068,7 +1068,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     ######################################
     r_mtimecmp, r_t0 = test_data.int_regs.get_registers(2)
     r_mtime, r_t1, r_t2, r_t3, r_scratch = r_before, r_after, r_val, r_diff, r_tmp  # reused, not freshly acquired
-    lines.append(comment_banner(coverpoint, "wfi: arm timer, MIE=0 so it retires immediately, delta must be 1"))
+    lines.append(comment_banner(coverpoint, "wfi: arm timer, MIE=0 so it retires immediately"))
     lines.extend(
         [
             test_data.add_testcase("wfi", coverpoint, covergroup),
@@ -1093,11 +1093,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     lines.append("#ifdef ZAWRS_SUPPORTED")
     r_mtimecmp, r_t0 = test_data.int_regs.get_registers(2)
     r_mtime, r_t1, r_t2, r_t3, r_scratch = r_before, r_after, r_val, r_diff, r_tmp  # reused, not freshly acquired
-    lines.append(
-        comment_banner(
-            "cp_minstret_wrs", "wrs.nto: arm timer (can't rely on reservation clearing itself), delta must be 1"
-        )
-    )
+    lines.append(comment_banner("cp_minstret_wrs", "wrs.nto: arm timer"))
     lines.extend(
         [
             test_data.add_testcase("wrs_nto", "cp_minstret_wrs", covergroup),
@@ -1120,7 +1116,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     ######################################
     # illegal instruction
     ######################################
-    lines.append(comment_banner("cp_minstret_illegal", "illegal instruction: does not retire, delta must be 0"))
+    lines.append(comment_banner("cp_minstret_illegal", "illegal instruction: does not retire"))
     lines.extend(
         [
             test_data.add_testcase("illegal", "cp_minstret_illegal", covergroup),

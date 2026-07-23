@@ -475,7 +475,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     `ifdef ZAWRS_SUPPORTED
         wrs_nto: coverpoint ins.current.insn {
-            bins wrs_nto = {WRS_NTO}; // wrs.nto encoding
+            bins wrs_nto = {WRS_NTO};
         }
     `endif
 
@@ -488,7 +488,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `ifdef ZAWRS_SUPPORTED
         cp_minstret_wrs:     cross priv_mode_m, wrs_nto;
     `endif
-    cp_minstret_illegal: cross priv_mode_m, illegal_trap; // minstret read after illegal-instruction trap
+
+    cp_minstret_illegal: cross priv_mode_m, illegal_trap;
 
 endgroup
 

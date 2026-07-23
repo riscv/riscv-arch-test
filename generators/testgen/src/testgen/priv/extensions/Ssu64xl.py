@@ -70,7 +70,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssu64xl",
     required_extensions=["S", "Ssu64xl"],
-    march_extensions=[],
+    march_extensions=["S"],
 )
 def make_ssu64xl(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []

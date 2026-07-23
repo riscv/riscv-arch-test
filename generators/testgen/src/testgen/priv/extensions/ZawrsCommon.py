@@ -401,7 +401,7 @@ def _wrs_timeout_helper(
                         "#ifndef UDB_ZAWRS_NTO_IS_NOP",
                         f"# check if x{r_cause} = 0, WRS.NTO terminated prematurely, repeat until timeout",
                         *_read_trap_count_helper(r_temp),
-                        f"beq x{r_cause}, x{r_temp} 1b",
+                        f"beq x{r_cause}, x{r_temp}, 1b",
                         "#endif",
                     ]
                 )

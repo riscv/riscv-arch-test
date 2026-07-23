@@ -63,6 +63,7 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_U_AVAILABLE",
     "#define UDB_SDTRIG_VS_AVAILABLE",
     "#define UDB_SDTRIG_VU_AVAILABLE",
+    "#define UDB_SDTRIG_SKIP_MEPC",
 ]
 
 XSL_UDB_NAMES = ("LOAD", "STORE", "EXECUTE")  # mcontrol6 xsl bits 0, 1, 2

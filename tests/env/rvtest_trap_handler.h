@@ -1975,7 +1975,7 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
-#ifdef SDTRIG_SUPPORTED
+#ifdef UDB_SDTRIG_SKIP_MEPC
         csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
         LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
         beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2

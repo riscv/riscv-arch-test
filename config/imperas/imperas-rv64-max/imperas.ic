@@ -88,6 +88,7 @@
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T
 --override cpu*/unaligned_low_pri=T
+--override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
 
 # Timeout
 #--override cpu*/TW_time_limit=65536  # *** attempted adding this summer 2025 for interrupt tests, but it breaks WALLY-status-tw-01.elf test and tests/coverage/priv.elf.  Not in rv32gc either

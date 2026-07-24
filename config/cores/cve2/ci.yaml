@@ -5,7 +5,7 @@
 ci_enabled: true
 # Sm excluded: Insufficient WARL configuration options.
 # Ssstrict excluded: blocked by https://github.com/riscv/riscv-arch-test/issues/1601
-exclude_extensions: "Sm,SsstrictSm,Zkr"
+exclude_extensions: "Sm,SsstrictSm"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve2.sh"
 setup_script: ".github/scripts/setup-cve2.sh"

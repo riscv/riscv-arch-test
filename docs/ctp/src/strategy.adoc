@@ -80,7 +80,7 @@ TODO: Generate this table from norm rules via YAML when Ssstrict is tagged.
 
 CSR fields can be Write Preserves, Read Ignores (*WPRI*), Write Legal, Read Legal (*WLRL*), or Write Any, Read Legal (*WARL*). Examples of WPRI fields include undefined fields of `xstatus`, `xenvcfg`, `mseccfg`, and `xstateen*` that could have unintended side effects if they are subsequently defined and unwittingly set to nonzero values. Examples of *WLRL* fields include `xcause.ExceptionCode` and `hstatus.VGEIN`.  Other CSR fields are generally *WARL*.
 
-*WPRI* fields are not tested. *WLRL* fields are tested with all legal values but no illegal values. Similarly, *WARL* fields are tested with all legal values but no illegal values. Reserved values are never tested in CSRs because the behavior is implementation-defined.
+*WPRI* fields are not tested because the test suite may be unaware of subsequently ratified extensions that use them. *WLRL* fields are tested with all legal values but no illegal values. Similarly, *WARL* fields are tested with all legal values but no illegal values. Reserved values are never tested in CSRs because the behavior is implementation-defined.
 
 Instructions and CSRs in the custom encoding space are never tested because the behavior is implementation-defined.
 

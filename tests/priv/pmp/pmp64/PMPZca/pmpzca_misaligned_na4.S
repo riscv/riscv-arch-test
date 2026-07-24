@@ -29,14 +29,12 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_GRANULARITY: 2
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_NA4_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_aligned_na4.S"
+#define TEST_FILE "pmpzca_misaligned_na4.S"
 #define SIGUPD_COUNT 50
 
 
@@ -66,21 +64,14 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)   &0xFF)   << PMP0_CFG_SHIFT))
 #define PMP1CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)   &0xFF)   << PMP1_CFG_SHIFT))
 #define PMP2CFG                     ((((PMP_L|                  PMP_NA4)   &0xFF)   << PMP2_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                            // All memory region
 
 #define REGIONSTART                    TEST_FOR_EXECUTION_0
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
@@ -125,7 +116,7 @@ RVTEST_DATA_BEGIN
 .p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_na4_region_execute\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)

@@ -447,7 +447,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssstateen",
     required_extensions=["S", "Zicsr", "Smstateen", "Ssstateen"],
-    march_extensions=["Ssstateen", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
+    march_extensions=["Ssstateen", "Smstateen", "Zcmt", "Zfinx"],
 )
 def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Ssstateen state-enable extension testsuite."""

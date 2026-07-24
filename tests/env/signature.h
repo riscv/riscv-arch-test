@@ -404,6 +404,7 @@
 //                    if possible.
 //   _VR            - Vector register under test
 //   _VS1           - Vector Source 1
+//   _MASK_REG      - When _VR == v0, we need to store the mask in a different register, so this is where the mask is.
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
 //   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m (1) or not (0),
@@ -420,7 +421,7 @@
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -436,15 +437,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
             vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
@@ -455,9 +458,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
-        vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
-        j 5f ; \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
+            vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
+            j 5f ; \
+        .endif ; \
     4: ;\
         /* Calculate the mask by hand:  */ \
         /*   1: Calculate the bits of the mask of the byte between where the zeros and ones meet */ \
@@ -487,11 +492,15 @@
         /* Calculate the number of elements to slide _VTMP up */ \
         srli _TEMP_REG3, _TEMP_REG, 3; /* _TEMP_REG = _TEMP_REG >> 3 (divides by 8) */ \
         vslideup.vx _MTMP3, _VTMP, _TEMP_REG3; /* Slide Up By _TEMP_REG3. rs1 is NOT truncated to SEW bytes for this instruction */ \
-        vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .if (_MASKPROD_FLAG == 1) ; \
+            vsetvli _LINK_REG, x0, e8, m8, ta, ma; /* Return to the previous vector settings */     \
+        .else ; \
+            vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .endif ; \
     5: ;\
         .if (_MASKED_FLAG == 1); \
             /* Filter the active element mask, if the operation was masked */ \
-            vmand.mm  _MTMP2, _MTMP3, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+            vmand.mm  _MTMP2, _MTMP3, _MASK_REG       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
         .else ; \
             /* (vmv.v.v would generate an exception because _MTMP3 and _MTMP2 are not necessarily aligned for lmul) */ \
             vmand.mm _MTMP2, _MTMP3, _MTMP3; /* Move the base element mask into _MTMP2 */ \
@@ -505,7 +514,7 @@
         /* Check whether instr is a mask-producing instruction */                                                                      \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-            vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+            vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
             vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == 1) → mismatch with all 1s */  \
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
@@ -537,14 +546,14 @@
             j 12f; /* If unmasked, no mask inactive → all checks have passed */ \
         .else; \
             /* Build mask inactive mask */                                                                              \
-            vmandn.mm   _VTMP, _MTMP3, v0        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
+            vmandn.mm   _VTMP, _MTMP3, _MASK_REG        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
             /* Extract and check vma policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
             beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-                vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+                vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
                 vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
             .else; \
                 /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
@@ -611,7 +620,7 @@
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -627,15 +636,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1) ; \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
             nop                                  ;                                                                      \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                   \
             nop                                  ;                                                                      \
         .endif; \
@@ -644,9 +655,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        .endif ; \
     4: /* Comments provided for context into where we are relative to the self-checking macro */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -660,7 +673,11 @@
         /* As, v1 = 1, this sets only the first element of vtmp to 1 */ \
         nop                                  ;                                                                      \
         /* Return to a full vector register */ \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 1) ; \
+            nop ; \
+        .else ; \
+            nop ; \
+        .endif ; \
         /* Set the target to be all ones at the start */ \
         LI(_LINK_REG, 0xff)                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -789,7 +806,7 @@
 #endif
 
 #ifdef RVTEST_SELFCHECK
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                         ;                                                 \
         .option norvc                        ;                                                 \
         nop                                  ;                                                 \
@@ -797,10 +814,11 @@
         RVTEST_SIGUPD_V_ADVANCE_NOP          ;                                                 \
         .option pop
 #else
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                                            ;                              \
         .option norvc                                           ;                              \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                              \
+        /* Store the whole mask, regardless of vl, the corresponding read uses this setting */   \
+        vsetvli     _LINK_REG, x0, e8, m8, ta, ma               ;                              \
         vsm.v _VR, 0(_SIG_PTR)                                  ;                              \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG) ;                              \
         .option pop
@@ -825,6 +843,18 @@
       0xD3A91F6C
   #define TRAP_CANARY \
       .word TRAP_CANARY_VALUE
+#endif
+
+#if UDB_MXLEN==64
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5C0DEF00D
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .dword FINAL_TRAP_OFFSET_CANARY_VALUE
+#else
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .word FINAL_TRAP_OFFSET_CANARY_VALUE
 #endif
 
 // Read _CSR into _R and record/check the signature

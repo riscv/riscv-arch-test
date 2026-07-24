@@ -67,8 +67,8 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "UV",
-    required_extensions=["Sm", "U", "I", "M", "V", "Zicsr"],
-    march_extensions=["I", "M", "V", "Zicsr"],
+    required_extensions=["Sm", "U", "M", "V", "Zicsr"],
+    march_extensions=["M", "V"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",

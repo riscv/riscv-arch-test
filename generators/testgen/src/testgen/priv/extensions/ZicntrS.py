@@ -432,7 +432,7 @@ def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
-    march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
+    march_extensions=["Zicntr", "Zihpm"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrS coverpoints"""

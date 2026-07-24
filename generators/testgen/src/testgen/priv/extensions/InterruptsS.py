@@ -1808,7 +1808,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                             "",
                             f"# Test: MIE={mie_val}, SIE={sie_val}, mideleg={mideleg_name}, MTIE={mtie_val}",
                             "RVTEST_GOTO_MMODE",
-                            "CSRW(mie, zero)",
+                            "csrw mie, zero",
                             "csrci mstatus, 8 # MIE=0",
                             "csrci mstatus, 2 # SIE=0",
                         ]
@@ -1818,7 +1818,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         [
                             "# Clear all interrupts",
                             f"LI(x{r_scratch}, 0x2)",
-                            f"CSRC(mip, x{r_scratch})",
+                            f"csrc mip, x{r_scratch}",
                             "RVTEST_CLR_MSW_INT",
                         ]
                     )
@@ -1830,17 +1830,17 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 f"LI(x{r_scratch}, 0x222)",
-                                f"CSRW(mideleg, x{r_scratch})",
+                                f"csrw mideleg, x{r_scratch}",
                             ]
                         )
                     else:
-                        lines.append("CSRW(mideleg, zero)")
+                        lines.append("csrw mideleg, zero")
 
                     lines.extend(
                         [
                             "# Set TW=1 (timeout enabled)",
                             f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
-                            f"CSRS(mstatus, x{r_scratch})",
+                            f"csrs mstatus, x{r_scratch}",
                         ]
                     )
 
@@ -1849,11 +1849,11 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 f"LI(x{r_scratch}, 0x80) # MTIE",
-                                f"CSRW(mie, x{r_scratch})",
+                                f"csrw mie, x{r_scratch}",
                             ]
                         )
                     else:
-                        lines.append("CSRW(mie, zero)")
+                        lines.append("csrw mie, zero")
 
                     lines.extend(
                         [
@@ -1869,7 +1869,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                             [
                                 "# Set MIE+MPIE so MIE=1 persists through MRET into lower-mode",
                                 f"LI(x{r_scratch}, 0x88)",
-                                f"CSRS(mstatus, x{r_scratch})",
+                                f"csrs mstatus, x{r_scratch}",
                             ]
                         )
 
@@ -1895,9 +1895,9 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                             "csrci mstatus, 8",
                             "csrci mstatus, 2",
                             f"LI(x{r_scratch}, 0x200000)",
-                            f"CSRC(mstatus, x{r_scratch}) # Clear TW",
-                            "CSRW(mideleg, zero)",
-                            "CSRW(mie, zero)",
+                            f"csrc mstatus, x{r_scratch} # Clear TW",
+                            "csrw mideleg, zero",
+                            "csrw mie, zero",
                         ]
                     )
                     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
@@ -2556,7 +2556,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                         "",
                         f"# Test: MIE={mie_val}, SIE={sie_val}",
                         "RVTEST_GOTO_MMODE",
-                        "CSRW(mie, zero)",
+                        "csrw mie, zero",
                         "csrci mstatus, 8 # MIE=0",
                         "csrci mstatus, 2 # SIE=0",
                     ]
@@ -2566,7 +2566,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                     [
                         "# Clear all interrupts",
                         f"LI(x{r_scratch}, 0x2)",
-                        f"CSRC(mip, x{r_scratch})",
+                        f"csrc mip, x{r_scratch}",
                         "RVTEST_CLR_MSW_INT",
                     ]
                 )
@@ -2577,7 +2577,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                     [
                         "# Set mideleg = ones",
                         f"LI(x{r_scratch}, 0x222)",
-                        f"CSRW(mideleg, x{r_scratch})",
+                        f"csrw mideleg, x{r_scratch}",
                     ]
                 )
 
@@ -2593,7 +2593,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                     [
                         "# Enable MTIE=1 (required for timeout to work)",
                         f"LI(x{r_scratch}, 0x80) # MTIE",
-                        f"CSRW(mie, x{r_scratch})",
+                        f"csrw mie, x{r_scratch}",
                     ]
                 )
 
@@ -2611,7 +2611,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                         [
                             "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
                             f"LI(x{r_scratch}, 0x88)",
-                            f"CSRS(mstatus, x{r_scratch})",
+                            f"csrs mstatus, x{r_scratch}",
                         ]
                     )
 
@@ -2637,9 +2637,9 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                         "csrci mstatus, 8",
                         "csrci mstatus, 2",
                         f"LI(x{r_scratch}, 0x200000)",
-                        f"CSRC(mstatus, x{r_scratch}) # Clear TW",
-                        "CSRW(mideleg, zero)",
-                        "CSRW(mie, zero)",
+                        f"csrc mstatus, x{r_scratch} # Clear TW",
+                        "csrw mideleg, zero",
+                        "csrw mie, zero",
                     ]
                 )
                 lines.extend(clr_mtimer_int(r_temp, r_stimecmp))

@@ -283,7 +283,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 @add_priv_test_generator(
     "Sstvala",
     required_extensions=["Sstvala"],
-    march_extensions=[],
+    march_extensions=["S"],
     extra_defines=[],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:

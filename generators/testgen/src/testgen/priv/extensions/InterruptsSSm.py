@@ -108,7 +108,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 f"LI(x{r_scratch}, 0xAAA) # MTI+MEI+MSI+STI+SEI+SSI",
-                                f"CSRW(mideleg, x{r_scratch})",
+                                f"csrw mideleg, x{r_scratch}",
                             ]
                         )
                     else:
@@ -1581,15 +1581,15 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
             *set_menvcfg_stce(r_temp, True),
             "# clear mstatus.MIE",
             f"LI(x{r_temp}, 0x8)",
-            f"CSRS(mstatus, x{r_temp})",
+            f"csrs mstatus, x{r_temp}",
             "# clear STIP through STIMECMP",
             *set_stimecmp_max(r_temp),
             "",
             test_data.add_testcase("Write_1", coverpoint, covergroup),
             "# attempt to write mip.STIP",
             f"LI(x{r_temp}, 0x20)",
-            f"CSRS(mip, x{r_temp})",
-            f"CSRR(x{r_temp}, mip)",
+            f"csrs mip, x{r_temp}",
+            f"csrr x{r_temp}, mip",
             write_sigupd(r_temp, test_data),
             "",
             "# set STIP through STIMECMP",
@@ -1597,8 +1597,8 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("Write_0", coverpoint, covergroup),
             "# attempt to write 0 to mip.STIP",
             f"LI(x{r_temp}, 0x20)",
-            f"CSRC(mip, x{r_temp})",
-            f"CSRR(x{r_temp}, mip)",
+            f"csrc mip, x{r_temp}",
+            f"csrr x{r_temp}, mip",
             write_sigupd(r_temp, test_data),
             "",
             "# Clean up: clear Supervisor timer interrupt",

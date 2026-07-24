@@ -55,7 +55,7 @@ def wrs_resume_helper(
                 *set_menvcfg_stce(r_temp, True),
                 "# Delegate supervisor timer interrupt (STI) to S-mode",
                 f"LI(x{r_temp}, 0x20)",
-                f"CSRS(mideleg, x{r_temp})",
+                f"csrs mideleg, x{r_temp}",
                 "#endif",
             ]
         )
@@ -68,10 +68,10 @@ def wrs_resume_helper(
                             "#### Setup ####",
                             f"# mstatus.MPIE and mstatus.MIE = {mie_val}",
                             f"LI(x{r_temp}, 0x88)",
-                            f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_temp})",
+                            f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_temp}",
                             "# Write mstatus.TW",
                             f"LI(x{r_temp}, 0x200000)",
-                            f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
+                            f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
                             "",
                         ]
                     )
@@ -86,13 +86,13 @@ def wrs_resume_helper(
                                 "#ifdef SSTC_SUPPORTED",
                                 "# Set sie.STIE",
                                 f"LI(x{r_temp}, 0x20)",
-                                f"CSRS(sie, x{r_temp})",
+                                f"csrs sie, x{r_temp}",
                                 "# Set stimer interrupt soon",
                                 *set_stimer_int_soon_sstc(r_time, r_temp, r_temp2, r_temp3, r_cause),
                                 "#else",
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
-                                f"CSRS(mie, x{r_temp})",
+                                f"csrs mie, x{r_temp}",
                                 "# Set mtimer interrupt soon",
                                 *set_mtimer_int_soon(
                                     r_time,
@@ -112,7 +112,7 @@ def wrs_resume_helper(
                             [
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
-                                f"CSRS(mie, x{r_temp})",
+                                f"csrs mie, x{r_temp}",
                                 "# Set mtimer interrupt soon",
                                 *set_mtimer_int_soon(r_time, r_timecmp, r_temp, r_temp2, r_temp3, r_cause),
                             ]
@@ -200,10 +200,10 @@ def wrs_no_mie_helper(
             [
                 "###### Setup (M Mode) ######",
                 "# Disable all interrupts in mie",
-                "CSRW mie, zero",
+                "csrw mie, zero",
                 "# mstatus.MIE, SIE and MPIE = 1",
                 f"LI(x{r_temp}, 0x8A)",
-                f"CSRS(mstatus, x{r_temp})",
+                f"csrs mstatus, x{r_temp}",
             ]
         )
         lines.extend(
@@ -222,12 +222,12 @@ def wrs_no_mie_helper(
                     *set_stimer_mmode(r_temp),
                     "# set SSI and SEI through mip",
                     f"LI(x{r_temp}, 0x202)",
-                    f"CSRS(mip, x{r_temp})",
+                    f"csrs mip, x{r_temp}",
                     "#endif",
                     "",
                     "# Set TW bit",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"CSRS(mstatus, x{r_temp})",
+                    f"csrs mstatus, x{r_temp}",
                     f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                 ]
             )
@@ -236,7 +236,7 @@ def wrs_no_mie_helper(
                 [
                     "# Clear TW bit",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"CSRC(mstatus, x{r_temp})",
+                    f"csrc mstatus, x{r_temp}",
                 ]
             )
         lines.extend(
@@ -275,7 +275,7 @@ def wrs_no_mie_helper(
                     *clr_stimer_int(r_temp, r_timecmp, r_temp2, r_cause),
                     "# clear SSI and SEI through mip",
                     f"LI(x{r_temp}, 0x202)",
-                    f"CSRC(mip, x{r_temp})",
+                    f"csrc mip, x{r_temp}",
                     "#endif",
                 ]
             )
@@ -308,13 +308,13 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[s
                 [
                     "#### Setup (M mode) ####",
                     "# Disable all interrupts in mie",
-                    "CSRW mie, zero",
+                    "csrw mie, zero",
                     "# mstatus.MPIE, SIE and MIE = 0",
                     f"LI(x{r_temp}, 0x8A)",
-                    f"CSRC(mstatus, x{r_temp})",
+                    f"csrc mstatus, x{r_temp}",
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
+                    f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
                     "",
                 ]
             )
@@ -367,13 +367,13 @@ def wrs_timeout_helper(
                 [
                     "###### Setup (M Mode) ######",
                     "# Disable all interrupts in mie",
-                    "CSRW mie, zero",
+                    "csrw mie, zero",
                     "# mstatus.MIE, SIE and MPIE = 0",
                     f"LI(x{r_temp}, 0x8A)",
-                    f"CSRC(mstatus, x{r_temp})",
+                    f"csrc mstatus, x{r_temp}",
                     "# Write TW bit",
                     f"LI(x{r_temp}, 0x200000)",
-                    f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
+                    f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}",
                 ]
             )
             if coverpoint == "cp_wrs_nto_timeout_h":
@@ -381,9 +381,9 @@ def wrs_timeout_helper(
                     [
                         "# Set VTW",
                         f"LI(x{r_temp}, 0x200000)",
-                        f"CSRS(hstatus, x{r_temp})",
+                        f"csrs hstatus, x{r_temp}",
                         "# No delegation in hedeleg",
-                        "CSRW hedeleg, zero",
+                        "csrw hedeleg, zero",
                     ]
                 )
             if priv != "M":

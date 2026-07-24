@@ -689,8 +689,6 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 There are a few important gotchas to keep in mind when writing privileged tests:
 
 - There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
-- The trap handler skips 4 bytes when returning to the test. This means that every instruction that could trap must be followed by a `nop` (or two `c.nop` if compressed instructions are supported). Alternatively, this skipped instruction can be used to change a counter/indicator of some kind to detect if a trap was taken. This is generally not necessary because the total number of traps is always checked at the end of a test.
-- Different implementations may trap on different CSRs, so always assume a CSR access could trap. The `CSRRW`, `CSRRS`, `CSRR`, etc. macros include a `nop` after the CSR access and should always be used in place of raw CSR instructions.
 
 For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 

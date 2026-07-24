@@ -23,9 +23,9 @@ def _enable_vs_and_vector(temp_reg: int) -> list[str]:
     """In M-mode prelude: set mstatus.VS=Dirty and configure a legal vtype/vl."""
     return [
         f"LI(x{temp_reg}, {_VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear VS",
+        f"csrc mstatus, x{temp_reg}  # clear VS",
         f"LI(x{temp_reg}, {3 << 9})",
-        f"CSRS(mstatus, x{temp_reg})  # VS=Dirty",
+        f"csrs mstatus, x{temp_reg}  # VS=Dirty",
         f"vsetivli x{temp_reg}, 1, e32, m1, tu, mu",
         "csrw vstart, x0",
     ]

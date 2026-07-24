@@ -702,11 +702,11 @@
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // Set up PMP so lower privilege modes can access the full address space.
         LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // all-ones address gives the largest TOR/NAPOT range
+        csrw pmpaddr0, t0   // all-ones address gives the largest TOR/NAPOT range
         #ifdef UDB_PMP_TOR_SUPPORTED
-          CSRW(pmpcfg0, 0x0F)   // configure PMP0 to TOR RWX
+          csrw pmpcfg0, 0x0F   // configure PMP0 to TOR RWX
         #elif defined(UDB_PMP_NAPOT_SUPPORTED)
-          CSRW(pmpcfg0, 0x1F)   // configure PMP0 to NAPOT RWX
+          csrw pmpcfg0, 0x1F   // configure PMP0 to NAPOT RWX
         #else
           #error "PMP initialization requires TOR or NAPOT support"
         #endif

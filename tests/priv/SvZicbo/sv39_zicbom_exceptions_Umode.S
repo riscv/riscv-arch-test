@@ -194,8 +194,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of Zicbom instructions in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

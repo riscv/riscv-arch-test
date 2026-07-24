@@ -325,7 +325,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         (
             "medeleg",
             0xDBBFE,
-        ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on MISALIGNED_LDST so don't check it
+        ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
@@ -337,35 +337,35 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ("mip", 0xFFFF),  # limit to standard interrupt bits
         ("menvcfg", None),
         ("mcountinhibit", None),
-        ("mhpmevent3", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent4", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent5", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent6", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent7", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent8", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent9", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent10", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent11", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent12", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent13", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent14", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent15", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent16", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent17", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent18", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent19", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent20", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent21", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent22", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent23", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent24", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent25", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent26", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent27", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent28", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent29", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent30", 0),  # mask all bits because they are WARL can can all be ROZ
-        ("mhpmevent31", 0),  # mask all bits because they are WARL can can all be ROZ
+        ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent6", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent7", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent8", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent9", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent10", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent11", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent12", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent13", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent14", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent15", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent16", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent17", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent18", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent19", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent20", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent21", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent22", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent23", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent24", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent25", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent26", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent27", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent28", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent29", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
     # RV32-only high CSRs
     csrs32 = [("mstatush", None), ("menvcfgh", None)]

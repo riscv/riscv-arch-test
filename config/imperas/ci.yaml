@@ -14,4 +14,4 @@
 #   fault (5). No Imperas parameter changes this priority.
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Zkr,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Zkr,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,SdtrigSm,SdtrigS,SdtrigU"

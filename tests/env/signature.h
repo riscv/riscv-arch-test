@@ -898,7 +898,7 @@
 
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _INST_PTR, _STR_PTR) \
-    CSRR(_R, _CSR)                                       ;\
+    csrr _R, _CSR                                    ;\
     RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers
@@ -908,7 +908,7 @@
 
 // Write _R1 into _CSR, then read back into _R2 and record/check the signature
 #define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _INST_PTR, _STR_PTR) \
-    CSRW(_CSR, _R1)                                      ;\
+    csrw _CSR, _R1                                      ;\
     RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers, overwrites _R with value read back

@@ -31,7 +31,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(a0, SATP_MODE_SV57<<60)      // satp.MODE = 4'b1010 (Sv57)
-  CSRW(satp, a0)
+  csrw satp, a0
   test1_sv57:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test1_sv57, test1_sv57_str)
 
@@ -44,14 +44,14 @@ main:
 
   // satp.PPN = All zeros
   mv   a0, a1
-  CSRW(satp, a0)
+  csrw satp, a0
   test2_zeros:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_zeros, test2_zeros_str)
 
   // satp.PPN = All ones
   LI(  a0, 0xFFFFFFFFFFF)
   or   a0, a1, a0
-  CSRW(satp, a0)
+  csrw satp, a0
   test2_ones:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test2_ones, test2_ones_str)
 
@@ -59,7 +59,7 @@ main:
   li a2, 1
   .rept(44)
     or   a0, a1, a2
-    CSRW(satp, a0)
+    csrw satp, a0
     5:
     RVTEST_SIGUPD_CSR_READ(satp, a4, 5b, test2_walk_str)
     slli  a2, a2, 1
@@ -74,7 +74,7 @@ main:
 
   // satp.ASID = All zeros
   mv   a0, a1
-  CSRW(satp, a0)
+  csrw satp, a0
   test3_zeros:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test3_zeros, test3_zeros_str)
 
@@ -82,7 +82,7 @@ main:
   LI(  a0, 0xFFFF)
   slli a0, a0, 44
   or   a0, a1, a0
-  CSRW(satp, a0)
+  csrw satp, a0
   test3_ones:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test3_ones, test3_ones_str)
 
@@ -91,7 +91,7 @@ main:
   slli a2, a2, 44
   .rept(16)
     or   a0, a1, a2
-    CSRW(satp, a0)
+    csrw satp, a0
     6:
     RVTEST_SIGUPD_CSR_READ(satp, a4, 6b, test3_walk_str)
     slli  a2, a2, 1

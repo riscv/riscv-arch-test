@@ -199,7 +199,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     ]
     lines.extend(
         [
-            "CSRW(fcsr, zero)    # clear all flags and rounding mode before starting",
+            "csrw fcsr, zero    # clear all flags and rounding mode before starting",
             load_float_reg("0.0", 10, 0x00000000, test_data, "single"),
             load_float_reg("1.0", 11, 0x3F800000, test_data, "single"),
             load_float_reg("3.0", 12, 0x40400000, test_data, "single"),

@@ -54,6 +54,7 @@
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
+--override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
 
 # PMP Configuration
 --override cpu*/PMP_registers=16

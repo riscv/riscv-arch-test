@@ -32,39 +32,12 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_1:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    // Load Access Check
-    \TEST_CASE\()_3:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -81,19 +54,7 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-
-#define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)      // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL        -1                                        // All memory region
-
-    csrw satp, zero                // Disable address translation.
-
-
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL<<24))
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, -1)
     // Putting all 1s in pmpaddr0
@@ -105,7 +66,7 @@ main:
     csrw pmpcfg0, x0        // pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
@@ -121,9 +82,11 @@ test_1_str: .string "\"test: 1; cp: pmps_cfg_A_off_all_jalr\""
 test_2_str: .string "\"test: 2; cp: pmps_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmps_cfg_A_off_all_lw\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

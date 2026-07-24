@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from testgen.asm.sections import generate_test_data_section, generate_test_string_section
+from testgen.asm.sections import generate_test_data_section, generate_test_string_section, generate_vector_data_section
 from testgen.constants import INDENT, indent_asm
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -54,6 +54,7 @@ def write_test_file(
     output_dir: Path,
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
+    split_name: str | None = None,
 ) -> None:
     """
     Write a single test file.
@@ -65,17 +66,25 @@ def write_test_file(
         output_dir: Directory to write the test file to
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
+        split_name: Named-split label for priv tests (mutually exclusive with instr_name)
     """
+    if instr_name is not None and split_name is not None:
+        raise ValueError("instr_name and split_name are mutually exclusive (unpriv tests should not use split_name).")
+    if split_name is not None and (".." in split_name or "/" in split_name or "\\" in split_name):
+        raise ValueError(f"Invalid split_name {split_name!r}; must not contain path separators or '..'.")
     testsuite = test_config.testsuite
 
     # Combine data from all test chunks
     data_values = [v for tc in test_chunks for v in tc.data_values]
+    vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
     sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
 
     # Construct filename and paths
     if instr_name is not None:
         filename = f"{testsuite}-{instr_name}-{file_idx:02d}.S"
+    elif split_name is not None:
+        filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
     else:
         filename = f"{testsuite}-{file_idx:02d}.S"
     test_file = output_dir / filename
@@ -83,7 +92,7 @@ def write_test_file(
     test_file_relative = Path(arch_dir) / testsuite / filename if arch_dir else Path(testsuite) / filename
 
     # Test header
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
+    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
@@ -99,10 +108,11 @@ def write_test_file(
             body += tc.section_header + "\n\n"
         elif i > 0:
             body += "\n\n"
-        body += "\n".join(indent_asm(line) for line in tc.code.split("\n"))
+        body += "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
 
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
+    test_data_section += generate_vector_data_section(vector_data_labels)
     test_string_section = generate_test_string_section(data_strings)
     footer = insert_footer_template(test_data_section, test_string_section)
 

@@ -10,6 +10,7 @@ from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
@@ -184,10 +185,18 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
-    save_mstateen, save_mstatenh = test_data.int_regs.get_registers(2)
-    temp_reg = test_data.int_regs.get_register()
+    save_mstateen_se0, temp_reg = test_data.int_regs.get_registers(2)
 
-    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
+    # Only SE0 needs to be saved and restored for this test
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"CSRR(x{save_mstateen_se0}, mstateen0)  # save mstateen0 on RV64",
+            "#elif __riscv_xlen == 32",
+            f"CSRR(x{save_mstateen_se0}, mstateen0h)  # save mstateen0h on RV32",
+            "#endif",
+        ]
+    )
     lines.extend(_write_se0(temp_reg, enable=True))
 
     # The walk must be sampled in S-mode so the priv_mode_s bin is hit. csr_walk_test
@@ -203,10 +212,17 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     )
     lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
 
-    temp_reg = test_data.int_regs.get_register()
     lines.append(GOTO_MMODE)
-    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
-    test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"CSRW(mstateen0, x{save_mstateen_se0})  # restore mstateen0 on RV64",
+            "#elif __riscv_xlen == 32",
+            f"CSRW(mstateen0h, x{save_mstateen_se0})  # restore mstateen0h on RV32",
+            "#endif",
+        ]
+    )
+    test_data.int_regs.return_registers([save_mstateen_se0])
 
     return lines
 
@@ -436,27 +452,29 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssstateen",
     required_extensions=["S", "Zicsr", "Smstateen", "Ssstateen"],
-    march_extensions=["Ssstateen", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
+    march_extensions=["Ssstateen", "Smstateen", "Zcmt", "Zfinx"],
 )
-def make_ssstateen(test_data: TestData) -> list[str]:
+def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Ssstateen state-enable extension testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     # Unconditional coverpoints — required by all Ssstateen targets
-    lines.extend(_generate_se0_controls_sstateen0(test_data, se0=0))
-    lines.extend(_generate_se0_controls_sstateen0(test_data, se0=1))
-    lines.extend(_generate_csr_illegal_accesses(test_data))
-    lines.extend(_generate_walking_ones(test_data))
+    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=0))
+    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=1))
+    tc.code.extend(_generate_csr_illegal_accesses(test_data))
+    tc.code.extend(_generate_walking_ones(test_data))
 
     # cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx is supported
-    lines.append("#ifdef ZFINX_SUPPORTED")
-    lines.extend(_generate_fcsr_lower(test_data))
-    lines.extend(_generate_fcsr_lower_fp_instrs(test_data))
-    lines.append("#endif  // ZFINX_SUPPORTED")
+    tc.code.append("#ifdef ZFINX_SUPPORTED")
+    tc.code.extend(_generate_fcsr_lower(test_data))
+    tc.code.extend(_generate_fcsr_lower_fp_instrs(test_data))
+    tc.code.append("#endif  // ZFINX_SUPPORTED")
 
     # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
-    lines.append("#ifdef ZCMT_SUPPORTED")
-    lines.extend(_generate_jvt(test_data))
-    lines.append("#endif  // ZCMT_SUPPORTED")
+    tc.code.append("#ifdef ZCMT_SUPPORTED")
+    tc.code.extend(_generate_jvt(test_data))
+    tc.code.append("#endif  // ZCMT_SUPPORTED")
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -8,11 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test Explanation:
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// This test verifies the functioning of the PMP Permissions on the PTE in S mode in the SV-32 virtual memory system.
-//
-// PMP Permissions on the Page Table Entry test in S mode
-// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
-// Future updates will align with ISA version 1.13.
+// This test verifies exceptions are thrown when the V bit is not set on PTEs in S mode in the Sv32 virtual memory system.
 //
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -33,7 +29,7 @@
 #define TEST_FILE "sv32_invalid_pte_Smode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 40
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -55,7 +51,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -152,7 +147,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -166,7 +161,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

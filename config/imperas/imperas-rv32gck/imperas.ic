@@ -7,6 +7,7 @@
 --processorvendor riscv.ovpworld.org
 --processorname riscv
 --variant RV32GCK
+--addressbits 34 # Physical address bus width
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
@@ -59,6 +60,7 @@
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
+--override cpu*/Zam=T # misaligned AMOs are supported
 
 # PMP Configuration
 --override cpu*/PMP_registers=16
@@ -67,8 +69,8 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # More extensions
-#--override cpu*/Smdbltrp=T
-#--override cpu*/Ssdbltrp=T
+--override cpu*/Smdbltrp=T
+--override cpu*/Ssdbltrp=T
 --override iss/cpu0/Zicfilp=T
 --override iss/cpu0/Zicfiss=T
 

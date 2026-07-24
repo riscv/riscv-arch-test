@@ -253,16 +253,16 @@ I_ori_cg_cp_rs1_b29:
   # Check if x1 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x1, I_ori_cg_cp_rs1_b29, I_ori_cg_cp_rs1_b29_str)
 
-  mv x14, x30 # switch data pointer register to avoid conflict with test
+  mv x12, x30 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0x4e4430e6
+  RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs1: x30 = 0x4e4430e6
 I_ori_cg_cp_rs1_b30:
   ori x10, x30, 1074 # perform operation
   # Check if x10 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x10, I_ori_cg_cp_rs1_b30, I_ori_cg_cp_rs1_b30_str)
 
 # Testcase cp_rs1 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs1: x31 = 0x7eec99dd
+  RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs1: x31 = 0x7eec99dd
 I_ori_cg_cp_rs1_b31:
   ori x7, x31, 1239 # perform operation
   # Check if x7 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -273,2389 +273,2386 @@ I_ori_cg_cp_rs1_b31:
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x14, x9) # load rs1: x9 = 0xae530a10
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs1: x9 = 0xae530a10
 I_ori_cg_cp_rd_b0:
   ori x0, x9, 1500 # perform operation
   # Check if x0 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x0, I_ori_cg_cp_rd_b0, I_ori_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x14, x20) # load rs1: x20 = 0x44423b75
+  RVTEST_TESTDATA_LOAD_INT(x12, x20) # load rs1: x20 = 0x44423b75
 I_ori_cg_cp_rd_b1:
   ori x1, x20, 1104 # perform operation
   # Check if x1 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x1, I_ori_cg_cp_rd_b1, I_ori_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0xa9b76327
+  RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs1: x30 = 0xa9b76327
 I_ori_cg_cp_rd_b2:
   ori x2, x30, 1607 # perform operation
   # Check if x2 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x2, I_ori_cg_cp_rd_b2, I_ori_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x14, x23) # load rs1: x23 = 0x39cf57a9
+  RVTEST_TESTDATA_LOAD_INT(x12, x23) # load rs1: x23 = 0x39cf57a9
 I_ori_cg_cp_rd_b3:
   ori x3, x23, 1966 # perform operation
   # Check if x3 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x3, I_ori_cg_cp_rd_b3, I_ori_cg_cp_rd_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x14, x31) # load rs1: x31 = 0x9e2dce6a
+  RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs1: x31 = 0x9e2dce6a
 I_ori_cg_cp_rd_b4:
   ori x4, x31, 863 # perform operation
-  # Check if x4 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x4, I_ori_cg_cp_rd_b4, I_ori_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x4, I_ori_cg_cp_rd_b4, I_ori_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x14, x16) # load rs1: x16 = 0xc640d057
+  RVTEST_TESTDATA_LOAD_INT(x12, x16) # load rs1: x16 = 0xc640d057
 I_ori_cg_cp_rd_b5:
   ori x5, x16, 412 # perform operation
-  # Check if x5 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x5, I_ori_cg_cp_rd_b5, I_ori_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x5, I_ori_cg_cp_rd_b5, I_ori_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x14, x5) # load rs1: x5 = 0xf1b84808
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs1: x5 = 0xf1b84808
 I_ori_cg_cp_rd_b6:
   ori x6, x5, 231 # perform operation
-  # Check if x6 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x6, I_ori_cg_cp_rd_b6, I_ori_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x6, I_ori_cg_cp_rd_b6, I_ori_cg_cp_rd_b6_str)
 
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x14, x25) # load rs1: x25 = 0xb2b65d09
+  RVTEST_TESTDATA_LOAD_INT(x12, x25) # load rs1: x25 = 0xb2b65d09
 I_ori_cg_cp_rd_b7:
   ori x7, x25, -35 # perform operation
-  # Check if x7 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x7, I_ori_cg_cp_rd_b7, I_ori_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x7, I_ori_cg_cp_rd_b7, I_ori_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x14, x27) # load rs1: x27 = 0xb33d323a
+  RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs1: x27 = 0xb33d323a
 I_ori_cg_cp_rd_b8:
   ori x8, x27, -1777 # perform operation
-  # Check if x8 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x8, I_ori_cg_cp_rd_b8, I_ori_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x8, I_ori_cg_cp_rd_b8, I_ori_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x14, x30) # load rs1: x30 = 0xfb4e6c8b
+  RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs1: x30 = 0xfb4e6c8b
 I_ori_cg_cp_rd_b9:
   ori x9, x30, 1658 # perform operation
-  # Check if x9 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x9, I_ori_cg_cp_rd_b9, I_ori_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x9, I_ori_cg_cp_rd_b9, I_ori_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x14, x28) # load rs1: x28 = 0x5be4af29
+  RVTEST_TESTDATA_LOAD_INT(x12, x28) # load rs1: x28 = 0x5be4af29
 I_ori_cg_cp_rd_b10:
   ori x10, x28, -12 # perform operation
-  # Check if x10 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x10, I_ori_cg_cp_rd_b10, I_ori_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x10, I_ori_cg_cp_rd_b10, I_ori_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x86d0f4ef
+  RVTEST_TESTDATA_LOAD_INT(x12, x22) # load rs1: x22 = 0x86d0f4ef
 I_ori_cg_cp_rd_b11:
   ori x11, x22, 1713 # perform operation
-  # Check if x11 contains the expected result. x17 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x17, x13, x12, x11, I_ori_cg_cp_rd_b11, I_ori_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x11, I_ori_cg_cp_rd_b11, I_ori_cg_cp_rd_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
+  mv x1, x12 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x14, x22) # load rs1: x22 = 0x6ae0cee2
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x6ae0cee2
 I_ori_cg_cp_rd_b12:
   ori x12, x22, 1942 # perform operation
-  # Check if x12 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x12, I_ori_cg_cp_rd_b12, I_ori_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x17 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x17, x14, x13, x12, I_ori_cg_cp_rd_b12, I_ori_cg_cp_rd_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x14, x29) # load rs1: x29 = 0x2b0ca1c5
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xec552a30
 I_ori_cg_cp_rd_b13:
-  ori x13, x29, 1418 # perform operation
-  # Check if x13 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x13, I_ori_cg_cp_rd_b13, I_ori_cg_cp_rd_b13_str)
+  ori x13, x22, -488 # perform operation
+  # Check if x13 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x13, I_ori_cg_cp_rd_b13, I_ori_cg_cp_rd_b13_str)
 
-  mv x22, x14 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs1: x8 = 0x9f729d73
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x0aaf15cb
 I_ori_cg_cp_rd_b14:
-  ori x14, x8, -243 # perform operation
-  # Check if x14 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x14, I_ori_cg_cp_rd_b14, I_ori_cg_cp_rd_b14_str)
+  ori x14, x4, 592 # perform operation
+  # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x14, I_ori_cg_cp_rd_b14, I_ori_cg_cp_rd_b14_str)
 
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs1: x11 = 0x31a6aec6
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xa597bcdd
 I_ori_cg_cp_rd_b15:
-  ori x15, x11, -1684 # perform operation
-  # Check if x15 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x15, I_ori_cg_cp_rd_b15, I_ori_cg_cp_rd_b15_str)
+  ori x15, x28, -1775 # perform operation
+  # Check if x15 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x15, I_ori_cg_cp_rd_b15, I_ori_cg_cp_rd_b15_str)
 
 # Testcase cp_rd (Test destination rd = x16)
-  RVTEST_TESTDATA_LOAD_INT(x22, x24) # load rs1: x24 = 0x888df86c
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x8ab4c76e
 I_ori_cg_cp_rd_b16:
-  ori x16, x24, -1321 # perform operation
-  # Check if x16 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x16, I_ori_cg_cp_rd_b16, I_ori_cg_cp_rd_b16_str)
+  ori x16, x4, 1428 # perform operation
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, I_ori_cg_cp_rd_b16, I_ori_cg_cp_rd_b16_str)
 
-  mv x30, x17 # switch signature pointer register to avoid conflict with test
+  mv x21, x17 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs1: x28 = 0x8ab4c76e
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0xa34fcf45
 I_ori_cg_cp_rd_b17:
-  ori x17, x28, 1428 # perform operation
-  # Check if x17 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x17, I_ori_cg_cp_rd_b17, I_ori_cg_cp_rd_b17_str)
+  ori x17, x27, -702 # perform operation
+  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x17, I_ori_cg_cp_rd_b17, I_ori_cg_cp_rd_b17_str)
 
 # Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0x7077dbb7
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x043a4e2b
 I_ori_cg_cp_rd_b18:
-  ori x18, x14, 1608 # perform operation
-  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x18, I_ori_cg_cp_rd_b18, I_ori_cg_cp_rd_b18_str)
+  ori x18, x28, 862 # perform operation
+  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x18, I_ori_cg_cp_rd_b18, I_ori_cg_cp_rd_b18_str)
 
 # Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs1: x7 = 0x3b4522c4
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x4b529664
 I_ori_cg_cp_rd_b19:
-  ori x19, x7, 1326 # perform operation
-  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x19, I_ori_cg_cp_rd_b19, I_ori_cg_cp_rd_b19_str)
+  ori x19, x6, 654 # perform operation
+  # Check if x19 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x19, I_ori_cg_cp_rd_b19, I_ori_cg_cp_rd_b19_str)
 
 # Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0xaffd0865
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x7f8f3731
 I_ori_cg_cp_rd_b20:
-  ori x20, x13, -1403 # perform operation
-  # Check if x20 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x20, I_ori_cg_cp_rd_b20, I_ori_cg_cp_rd_b20_str)
+  ori x20, x9, -1270 # perform operation
+  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x20, I_ori_cg_cp_rd_b20, I_ori_cg_cp_rd_b20_str)
 
+  mv x12, x21 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0xd81ee32a
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xf55bfd7c
 I_ori_cg_cp_rd_b21:
-  ori x21, x12, -412 # perform operation
-  # Check if x21 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x21, I_ori_cg_cp_rd_b21, I_ori_cg_cp_rd_b21_str)
+  ori x21, x26, 84 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cp_rd_b21, I_ori_cg_cp_rd_b21_str)
 
-  mv x29, x22 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x29, x16) # load rs1: x16 = 0x86c6e4e1
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x5769d560
 I_ori_cg_cp_rd_b22:
-  ori x22, x16, 98 # perform operation
-  # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x22, I_ori_cg_cp_rd_b22, I_ori_cg_cp_rd_b22_str)
+  ori x22, x11, -1451 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cp_rd_b22, I_ori_cg_cp_rd_b22_str)
 
 # Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x29, x31) # load rs1: x31 = 0xf33c152d
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x56d9dac1
 I_ori_cg_cp_rd_b23:
-  ori x23, x31, -809 # perform operation
-  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x23, I_ori_cg_cp_rd_b23, I_ori_cg_cp_rd_b23_str)
+  ori x23, x5, 1347 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cp_rd_b23, I_ori_cg_cp_rd_b23_str)
 
 # Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x29, x31) # load rs1: x31 = 0xc962bf85
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x7a78af0d
 I_ori_cg_cp_rd_b24:
-  ori x24, x31, -844 # perform operation
-  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x24, I_ori_cg_cp_rd_b24, I_ori_cg_cp_rd_b24_str)
+  ori x24, x20, -1049 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cp_rd_b24, I_ori_cg_cp_rd_b24_str)
 
 # Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x29, x31) # load rs1: x31 = 0x7a78af0d
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xffc211f1
 I_ori_cg_cp_rd_b25:
-  ori x25, x31, -1049 # perform operation
-  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x25, I_ori_cg_cp_rd_b25, I_ori_cg_cp_rd_b25_str)
+  ori x25, x16, -837 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cp_rd_b25, I_ori_cg_cp_rd_b25_str)
 
 # Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x29, x14) # load rs1: x14 = 0xffc211f1
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0xd1a8adb5
 I_ori_cg_cp_rd_b26:
-  ori x26, x14, -837 # perform operation
-  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x26, I_ori_cg_cp_rd_b26, I_ori_cg_cp_rd_b26_str)
+  ori x26, x5, -170 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cp_rd_b26, I_ori_cg_cp_rd_b26_str)
 
 # Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x29, x6) # load rs1: x6 = 0xd1a8adb5
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x95c2c133
 I_ori_cg_cp_rd_b27:
-  ori x27, x6, -170 # perform operation
-  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x27, I_ori_cg_cp_rd_b27, I_ori_cg_cp_rd_b27_str)
+  ori x27, x21, -1338 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cp_rd_b27, I_ori_cg_cp_rd_b27_str)
 
 # Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x29, x19) # load rs1: x19 = 0x95c2c133
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0xf60eaaea
 I_ori_cg_cp_rd_b28:
-  ori x28, x19, -1338 # perform operation
-  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x28, I_ori_cg_cp_rd_b28, I_ori_cg_cp_rd_b28_str)
+  ori x28, x4, -745 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cp_rd_b28, I_ori_cg_cp_rd_b28_str)
 
-  mv x6, x29 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0xa6915e05
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x912cfa23
 I_ori_cg_cp_rd_b29:
-  ori x29, x17, -1277 # perform operation
-  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x29, I_ori_cg_cp_rd_b29, I_ori_cg_cp_rd_b29_str)
+  ori x29, x4, 755 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cp_rd_b29, I_ori_cg_cp_rd_b29_str)
 
-  mv x28, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x912cfa23
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x8b3a8c46
 I_ori_cg_cp_rd_b30:
-  ori x30, x29, 755 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cp_rd_b30, I_ori_cg_cp_rd_b30_str)
+  ori x30, x22, -679 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cp_rd_b30, I_ori_cg_cp_rd_b30_str)
 
 # Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x8b3a8c46
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x8775fc02
 I_ori_cg_cp_rd_b31:
-  ori x31, x21, -679 # perform operation
-  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x31, I_ori_cg_cp_rd_b31, I_ori_cg_cp_rd_b31_str)
+  ori x31, x2, -1705 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, I_ori_cg_cp_rd_b31, I_ori_cg_cp_rd_b31_str)
 
 /////////////////////////////////
 // cp_rs1_edges
 /////////////////////////////////
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000000
 I_ori_cg_cp_rs1_edges_0x0:
-  ori x11, x13, -400 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cp_rs1_edges_0x0, I_ori_cg_cp_rs1_edges_0x0_str)
+  ori x11, x14, -400 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cp_rs1_edges_0x0, I_ori_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x00000001
 I_ori_cg_cp_rs1_edges_0x1:
-  ori x7, x23, 1974 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cp_rs1_edges_0x1, I_ori_cg_cp_rs1_edges_0x1_str)
+  ori x5, x24, 1974 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cp_rs1_edges_0x1, I_ori_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x00000002
 I_ori_cg_cp_rs1_edges_0x2:
-  ori x23, x29, 1471 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cp_rs1_edges_0x2, I_ori_cg_cp_rs1_edges_0x2_str)
+  ori x24, x29, 1471 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cp_rs1_edges_0x2, I_ori_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x80000000
 I_ori_cg_cp_rs1_edges_0x80000000:
-  ori x27, x31, 711 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cp_rs1_edges_0x80000000, I_ori_cg_cp_rs1_edges_0x80000000_str)
+  ori x28, x31, 711 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cp_rs1_edges_0x80000000, I_ori_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x80000001
 I_ori_cg_cp_rs1_edges_0x80000001:
-  ori x20, x9, 1544 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cp_rs1_edges_0x80000001, I_ori_cg_cp_rs1_edges_0x80000001_str)
+  ori x21, x9, 1544 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cp_rs1_edges_0x80000001, I_ori_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x7fffffff
 I_ori_cg_cp_rs1_edges_0x7fffffff:
-  ori x1, x16, -89 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cp_rs1_edges_0x7fffffff, I_ori_cg_cp_rs1_edges_0x7fffffff_str)
+  ori x2, x17, -89 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cp_rs1_edges_0x7fffffff, I_ori_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x7ffffffe
 I_ori_cg_cp_rs1_edges_0x7ffffffe:
-  ori x23, x27, -587 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cp_rs1_edges_0x7ffffffe, I_ori_cg_cp_rs1_edges_0x7ffffffe_str)
+  ori x24, x28, -587 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cp_rs1_edges_0x7ffffffe, I_ori_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xffffffff
 I_ori_cg_cp_rs1_edges_0xffffffff:
-  ori x18, x25, 472 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cp_rs1_edges_0xffffffff, I_ori_cg_cp_rs1_edges_0xffffffff_str)
+  ori x19, x26, 472 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cp_rs1_edges_0xffffffff, I_ori_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xfffffffe
 I_ori_cg_cp_rs1_edges_0xfffffffe:
-  ori x22, x25, -1396 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cp_rs1_edges_0xfffffffe, I_ori_cg_cp_rs1_edges_0xfffffffe_str)
+  ori x23, x26, -1396 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cp_rs1_edges_0xfffffffe, I_ori_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x5bbc8872
 I_ori_cg_cp_rs1_edges_0x5bbc8872:
-  ori x8, x26, 730 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cp_rs1_edges_0x5bbc8872, I_ori_cg_cp_rs1_edges_0x5bbc8872_str)
+  ori x6, x27, 730 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cp_rs1_edges_0x5bbc8872, I_ori_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0xaaaaaaaa
 I_ori_cg_cp_rs1_edges_0xaaaaaaaa:
-  ori x20, x17, 1543 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cp_rs1_edges_0xaaaaaaaa, I_ori_cg_cp_rs1_edges_0xaaaaaaaa_str)
+  ori x21, x18, 1543 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cp_rs1_edges_0xaaaaaaaa, I_ori_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x55555555
 I_ori_cg_cp_rs1_edges_0x55555555:
-  ori x17, x24, 1085 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cp_rs1_edges_0x55555555, I_ori_cg_cp_rs1_edges_0x55555555_str)
+  ori x18, x25, 1085 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cp_rs1_edges_0x55555555, I_ori_cg_cp_rs1_edges_0x55555555_str)
 
 /////////////////////////////////
 // cr_rs1_imm_edges
 /////////////////////////////////
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x0:
-  ori x27, x12, 0 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x0_str)
+  ori x28, x13, 0 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x1:
-  ori x11, x3, 1 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x1_str)
+  ori x11, x4, 1 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x2:
-  ori x16, x31, 2 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x2_str)
+  ori x17, x31, 2 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3:
-  ori x19, x22, 3 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3_str)
+  ori x20, x23, 3 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x4:
-  ori x7, x1, 4 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x4_str)
+  ori x5, x2, 4 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x8:
   ori x10, x31, 8 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x8_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x10:
-  ori x30, x8, 16 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x10_str)
+  ori x30, x6, 16 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x20:
   ori x29, x10, 32 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x20_str)
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x40:
-  ori x25, x18, 64 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x40_str)
+  ori x26, x19, 64 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x80:
-  ori x2, x27, 128 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x80_str)
+  ori x3, x28, 128 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x100:
-  ori x12, x13, 256 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x100_str)
+  ori x13, x14, 256 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x200:
-  ori x12, x25, 512 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x200_str)
+  ori x13, x26, 512 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3ff:
-  ori x11, x13, 1023 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3ff_str)
+  ori x11, x14, 1023 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x400:
-  ori x16, x17, 1024 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x400_str)
+  ori x17, x18, 1024 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x703:
-  ori x15, x29, 1795 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x703_str)
+  ori x16, x29, 1795 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x7ff:
-  ori x15, x24, 2047 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x7ff_str)
+  ori x16, x25, 2047 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x800:
-  ori x27, x11, -2048 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x800_str)
+  ori x28, x11, -2048 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x7ff:
-  ori x8, x20, -2047 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x7ff_str)
+  ori x6, x21, -2047 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x2:
-  ori x12, x16, -2 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x2_str)
+  ori x13, x17, -2 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000000, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x00000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x00000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x1:
-  ori x9, x14, -1 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x1_str)
+  ori x9, x15, -1 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x0_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x0:
-  ori x25, x11, 0 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x0_str)
+  ori x26, x11, 0 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x1:
-  ori x11, x26, 1 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x1_str)
+  ori x11, x27, 1 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x2:
-  ori x19, x25, 2 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x2_str)
+  ori x20, x26, 2 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3:
-  ori x19, x13, 3 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3_str)
+  ori x20, x14, 3 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x4:
-  ori x20, x8, 4 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x4_str)
+  ori x21, x6, 4 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x8:
-  ori x16, x21, 8 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x8_str)
+  ori x17, x22, 8 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x10:
-  ori x26, x1, 16 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x10_str)
+  ori x27, x2, 16 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x20:
-  ori x13, x3, 32 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x20_str)
+  ori x14, x4, 32 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x40:
-  ori x20, x1, 64 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x40_str)
+  ori x21, x2, 64 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x80:
-  ori x21, x9, 128 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x80_str)
+  ori x22, x9, 128 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x100:
-  ori x9, x7, 256 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x100_str)
+  ori x9, x5, 256 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x200:
-  ori x19, x22, 512 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x200_str)
+  ori x20, x23, 512 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3ff:
-  ori x8, x30, 1023 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3ff_str)
+  ori x6, x30, 1023 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x400:
-  ori x2, x24, 1024 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x400_str)
+  ori x3, x25, 1024 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x703:
-  ori x13, x18, 1795 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x703_str)
+  ori x14, x19, 1795 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x7ff:
-  ori x27, x18, 2047 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x7ff_str)
+  ori x28, x19, 2047 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x800:
-  ori x25, x19, -2048 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x800_str)
+  ori x26, x20, -2048 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x7ff:
-  ori x29, x7, -2047 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x7ff_str)
+  ori x29, x5, -2047 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x2:
-  ori x2, x18, -2 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x2_str)
+  ori x3, x19, -2 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000001, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x00000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x1:
-  ori x8, x26, -1 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x1_str)
+  ori x6, x27, -1 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x1_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x0:
-  ori x2, x12, 0 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x0_str)
+  ori x3, x13, 0 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x1:
-  ori x29, x15, 1 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x1_str)
+  ori x29, x16, 1 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x2:
-  ori x26, x1, 2 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x2_str)
+  ori x27, x2, 2 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3:
-  ori x7, x26, 3 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3_str)
+  ori x5, x27, 3 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x4:
-  ori x19, x10, 4 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x4_str)
+  ori x20, x10, 4 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x8:
-  ori x3, x10, 8 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x8_str)
+  ori x4, x10, 8 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x10:
-  ori x11, x12, 16 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x10_str)
+  ori x11, x13, 16 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x20:
-  ori x13, x24, 32 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x20_str)
+  ori x14, x25, 32 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x40:
-  ori x27, x18, 64 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x40_str)
+  ori x28, x19, 64 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x80:
-  ori x12, x21, 128 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x80_str)
+  ori x13, x22, 128 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x100:
-  ori x21, x17, 256 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x100_str)
+  ori x22, x18, 256 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x200:
-  ori x17, x14, 512 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x200_str)
+  ori x18, x15, 512 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3ff:
-  ori x26, x29, 1023 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3ff_str)
+  ori x27, x29, 1023 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x400:
-  ori x23, x21, 1024 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x400_str)
+  ori x24, x22, 1024 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x703:
-  ori x12, x8, 1795 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x703_str)
+  ori x13, x6, 1795 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x7ff:
-  ori x14, x3, 2047 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x7ff_str)
+  ori x15, x4, 2047 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x800:
-  ori x24, x19, -2048 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x800_str)
+  ori x25, x20, -2048 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x7ff:
-  ori x7, x21, -2047 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x7ff_str)
+  ori x5, x22, -2047 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x2:
-  ori x20, x24, -2 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x2_str)
+  ori x21, x25, -2 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x00000002, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000002
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x1:
-  ori x30, x13, -1 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x1_str)
+  ori x30, x14, -1 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x2_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x0:
-  ori x27, x14, 0 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x0_str)
+  ori x28, x15, 0 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x1:
-  ori x26, x20, 1 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x1_str)
+  ori x27, x21, 1 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x2:
-  ori x12, x17, 2 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x2_str)
+  ori x13, x18, 2 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3:
-  ori x12, x23, 3 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3_str)
+  ori x13, x24, 3 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x4:
-  ori x15, x10, 4 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x4_str)
+  ori x16, x10, 4 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x8:
-  ori x22, x12, 8 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x8_str)
+  ori x23, x13, 8 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x10:
   ori x9, x11, 16 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x10_str)
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x20:
-  ori x17, x30, 32 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x20_str)
+  ori x18, x30, 32 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x40:
-  ori x19, x11, 64 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x40_str)
+  ori x20, x11, 64 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x7) # load rs1: x7 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load rs1: x5 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x80:
-  ori x21, x7, 128 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x80_str)
+  ori x22, x5, 128 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x100:
-  ori x11, x15, 256 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x100_str)
+  ori x11, x16, 256 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x200:
   ori x30, x31, 512 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x200_str)
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3ff:
-  ori x9, x8, 1023 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3ff_str)
+  ori x9, x6, 1023 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x400:
-  ori x17, x1, 1024 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x400_str)
+  ori x18, x2, 1024 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x703:
-  ori x1, x24, 1795 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x703_str)
+  ori x2, x25, 1795 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x7ff:
-  ori x1, x19, 2047 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x7ff_str)
+  ori x2, x20, 2047 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x800:
-  ori x11, x2, -2048 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x800_str)
+  ori x11, x3, -2048 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x7ff:
-  ori x18, x29, -2047 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x7ff_str)
+  ori x19, x29, -2047 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x2:
-  ori x15, x2, -2 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x2_str)
+  ori x16, x3, -2 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000000, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x80000000
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x1:
   ori x10, x31, -1 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x1_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000000_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x0:
-  ori x16, x26, 0 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x0_str)
+  ori x17, x27, 0 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x1:
-  ori x26, x18, 1 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x1_str)
+  ori x27, x19, 1 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x2:
-  ori x30, x24, 2 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x2_str)
+  ori x30, x25, 2 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3:
-  ori x7, x18, 3 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3_str)
+  ori x5, x19, 3 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x4:
-  ori x20, x1, 4 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x4_str)
+  ori x21, x2, 4 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x8:
-  ori x13, x12, 8 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x8_str)
+  ori x14, x13, 8 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x10:
-  ori x21, x14, 16 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x10_str)
+  ori x22, x15, 16 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x20:
-  ori x19, x1, 32 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x20_str)
+  ori x20, x2, 32 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x40:
-  ori x22, x10, 64 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x40_str)
+  ori x23, x10, 64 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x80:
-  ori x8, x30, 128 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x80_str)
+  ori x6, x30, 128 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x100:
-  ori x20, x8, 256 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x100_str)
+  ori x21, x6, 256 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x200:
-  ori x21, x13, 512 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x200_str)
+  ori x22, x14, 512 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3ff:
-  ori x24, x14, 1023 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3ff_str)
+  ori x25, x15, 1023 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x400:
-  ori x2, x13, 1024 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x400_str)
+  ori x3, x14, 1024 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x703:
-  ori x9, x16, 1795 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x703_str)
+  ori x9, x17, 1795 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x7ff:
-  ori x24, x9, 2047 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x7ff_str)
+  ori x25, x9, 2047 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x800:
-  ori x17, x20, -2048 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x800_str)
+  ori x18, x21, -2048 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x7ff:
-  ori x19, x23, -2047 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x7ff_str)
+  ori x20, x24, -2047 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x2:
-  ori x7, x9, -2 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x2_str)
+  ori x5, x9, -2 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x80000001, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x80000001
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x80000001
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x1:
-  ori x13, x16, -1 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x1_str)
+  ori x14, x17, -1 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x80000001_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x0:
   ori x29, x30, 0 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x0_str)
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x1:
-  ori x24, x9, 1 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x1_str)
+  ori x25, x9, 1 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x2:
-  ori x12, x27, 2 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x2_str)
+  ori x13, x28, 2 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3:
-  ori x27, x14, 3 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3_str)
+  ori x28, x15, 3 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x4:
-  ori x21, x9, 4 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x4_str)
+  ori x22, x9, 4 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x8:
-  ori x19, x29, 8 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x8_str)
+  ori x20, x29, 8 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x10:
-  ori x9, x22, 16 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x10_str)
+  ori x9, x23, 16 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x20:
-  ori x26, x11, 32 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x20_str)
+  ori x27, x11, 32 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x40:
-  ori x1, x29, 64 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x40_str)
+  ori x2, x29, 64 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x80:
-  ori x13, x11, 128 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x80_str)
+  ori x14, x11, 128 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x100:
-  ori x30, x3, 256 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x100_str)
+  ori x30, x4, 256 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x200:
-  ori x25, x22, 512 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x200_str)
+  ori x26, x23, 512 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3ff:
-  ori x26, x24, 1023 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3ff_str)
+  ori x27, x25, 1023 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x400:
-  ori x10, x3, 1024 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x400_str)
+  ori x10, x4, 1024 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x703:
-  ori x3, x9, 1795 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x703_str)
+  ori x4, x9, 1795 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x7ff:
-  ori x3, x11, 2047 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x7ff_str)
+  ori x4, x11, 2047 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x800:
-  ori x26, x31, -2048 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x800_str)
+  ori x27, x31, -2048 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x7ff:
-  ori x9, x16, -2047 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x7ff_str)
+  ori x9, x17, -2047 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x2:
-  ori x31, x22, -2 # perform operation
-  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x2_str)
+  ori x31, x23, -2 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7fffffff, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0x7fffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x1:
-  ori x20, x15, -1 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x1_str)
+  ori x21, x16, -1 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7fffffff_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x0:
-  ori x1, x9, 0 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x0_str)
+  ori x2, x9, 0 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x1:
-  ori x27, x22, 1 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x1_str)
+  ori x28, x23, 1 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x2:
-  ori x14, x18, 2 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x2_str)
+  ori x15, x19, 2 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3:
-  ori x2, x1, 3 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3_str)
+  ori x3, x2, 3 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x4:
-  ori x17, x27, 4 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x4_str)
+  ori x18, x28, 4 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x8:
-  ori x12, x25, 8 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x8_str)
+  ori x13, x26, 8 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x10:
-  ori x18, x11, 16 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x10_str)
+  ori x19, x11, 16 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x20:
-  ori x31, x19, 32 # perform operation
-  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x20_str)
+  ori x31, x20, 32 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x40:
-  ori x12, x31, 64 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x40_str)
+  ori x13, x31, 64 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x80:
   ori x30, x10, 128 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x80_str)
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x100:
-  ori x8, x31, 256 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x100_str)
+  ori x6, x31, 256 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x200:
-  ori x29, x8, 512 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x200_str)
+  ori x29, x6, 512 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3ff:
-  ori x8, x22, 1023 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3ff_str)
+  ori x6, x23, 1023 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x400:
-  ori x1, x24, 1024 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x400_str)
+  ori x2, x25, 1024 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x703:
-  ori x9, x24, 1795 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x703_str)
+  ori x9, x25, 1795 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x7ff:
-  ori x12, x21, 2047 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x7ff_str)
+  ori x13, x22, 2047 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x800:
-  ori x20, x17, -2048 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x800_str)
+  ori x21, x18, -2048 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x7ff:
-  ori x21, x16, -2047 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x7ff_str)
+  ori x22, x17, -2047 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x2:
-  ori x30, x25, -2 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x2_str)
+  ori x30, x26, -2 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x7ffffffe, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x7ffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x1:
-  ori x15, x2, -1 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x1_str)
+  ori x16, x3, -1 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x7ffffffe_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x0:
-  ori x13, x10, 0 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x0_str)
+  ori x14, x10, 0 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x1:
-  ori x16, x26, 1 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x1_str)
+  ori x17, x27, 1 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x2:
-  ori x11, x24, 2 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x2_str)
+  ori x11, x25, 2 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3:
-  ori x16, x8, 3 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3_str)
+  ori x17, x6, 3 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x4:
-  ori x3, x23, 4 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x4_str)
+  ori x4, x24, 4 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x8:
-  ori x30, x25, 8 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x8_str)
+  ori x30, x26, 8 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x10:
-  ori x31, x13, 16 # perform operation
-  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x10_str)
+  ori x31, x14, 16 # perform operation
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x20:
-  ori x21, x15, 32 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x20_str)
+  ori x22, x16, 32 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x40:
-  ori x16, x24, 64 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x40_str)
+  ori x17, x25, 64 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x80:
-  ori x18, x15, 128 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x80_str)
+  ori x19, x16, 128 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x100:
-  ori x15, x10, 256 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x100_str)
+  ori x16, x10, 256 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x200:
-  ori x12, x20, 512 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x200_str)
+  ori x13, x21, 512 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3ff:
-  ori x1, x9, 1023 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3ff_str)
+  ori x2, x9, 1023 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x400:
-  ori x17, x11, 1024 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x400_str)
+  ori x18, x11, 1024 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x703:
-  ori x29, x17, 1795 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x703_str)
+  ori x29, x18, 1795 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x7ff:
-  ori x26, x25, 2047 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x7ff_str)
+  ori x27, x26, 2047 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x800:
-  ori x2, x20, -2048 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x800_str)
+  ori x3, x21, -2048 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x7ff:
-  ori x16, x14, -2047 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x7ff_str)
+  ori x17, x15, -2047 # perform operation
+  # Check if x17 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x2:
-  ori x20, x12, -2 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x2_str)
+  ori x21, x13, -2 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xffffffff, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0xffffffff
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x1:
-  ori x25, x26, -1 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x1_str)
+  ori x26, x27, -1 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xffffffff_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x0:
-  ori x30, x23, 0 # perform operation
-  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x0_str)
+  ori x30, x24, 0 # perform operation
+  # Check if x30 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x30, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x1:
-  ori x10, x27, 1 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x1_str)
+  ori x10, x28, 1 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x2:
-  ori x8, x20, 2 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x2_str)
+  ori x6, x21, 2 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3:
-  ori x19, x23, 3 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3_str)
+  ori x20, x24, 3 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x4:
-  ori x23, x14, 4 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x4_str)
+  ori x24, x15, 4 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x8:
-  ori x26, x30, 8 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x8_str)
+  ori x27, x30, 8 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x10:
   ori x31, x9, 16 # perform operation
-  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x10_str)
+  # Check if x31 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x31, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x20:
-  ori x12, x11, 32 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x20_str)
+  ori x13, x11, 32 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x40:
-  ori x12, x23, 64 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x40_str)
+  ori x13, x24, 64 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x80:
-  ori x25, x13, 128 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x80_str)
+  ori x26, x14, 128 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x100:
-  ori x11, x27, 256 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x100_str)
+  ori x11, x28, 256 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x200:
-  ori x22, x13, 512 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x200_str)
+  ori x23, x14, 512 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3ff:
-  ori x14, x21, 1023 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3ff_str)
+  ori x15, x22, 1023 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x400:
-  ori x17, x15, 1024 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x400_str)
+  ori x18, x16, 1024 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x703:
-  ori x1, x23, 1795 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x703_str)
+  ori x2, x24, 1795 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x7ff:
-  ori x27, x18, 2047 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x7ff_str)
+  ori x28, x19, 2047 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs1: x24 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x800:
-  ori x22, x24, -2048 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x800_str)
+  ori x23, x25, -2048 # perform operation
+  # Check if x23 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load rs1: x18 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x7ff:
-  ori x11, x18, -2047 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x7ff_str)
+  ori x11, x19, -2047 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x2:
-  ori x17, x1, -2 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x2_str)
+  ori x18, x2, -2 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xfffffffe, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0xfffffffe
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x1:
-  ori x12, x3, -1 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x1_str)
+  ori x13, x4, -1 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xfffffffe_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x0:
-  ori x14, x3, 0 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x0_str)
+  ori x15, x4, 0 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x1:
-  ori x15, x19, 1 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x1_str)
+  ori x16, x20, 1 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x2:
-  ori x26, x21, 2 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x2_str)
+  ori x27, x22, 2 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3:
-  ori x9, x8, 3 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3_str)
+  ori x9, x6, 3 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x4:
-  ori x18, x31, 4 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x4_str)
+  ori x19, x31, 4 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x8:
-  ori x24, x25, 8 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x8_str)
+  ori x25, x26, 8 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x10:
-  ori x26, x16, 16 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x10_str)
+  ori x27, x17, 16 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x20:
-  ori x8, x9, 32 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x20_str)
+  ori x6, x9, 32 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x31) # load rs1: x31 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x40:
-  ori x8, x31, 64 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x40_str)
+  ori x6, x31, 64 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x80:
-  ori x8, x11, 128 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x80_str)
+  ori x6, x11, 128 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs1: x22 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x100:
-  ori x21, x22, 256 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x100_str)
+  ori x22, x23, 256 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs1: x20 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x200:
-  ori x21, x20, 512 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x200_str)
+  ori x22, x21, 512 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3ff:
-  ori x1, x12, 1023 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3ff_str)
+  ori x2, x13, 1023 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x400:
-  ori x19, x14, 1024 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x400_str)
+  ori x20, x15, 1024 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x703:
-  ori x19, x8, 1795 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x703_str)
+  ori x20, x6, 1795 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs1: x12 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x7ff:
-  ori x15, x12, 2047 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x7ff_str)
+  ori x16, x13, 2047 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x800:
-  ori x8, x19, -2048 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x800_str)
+  ori x6, x20, -2048 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x7ff:
-  ori x27, x10, -2047 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x7ff_str)
+  ori x28, x10, -2047 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x2:
-  ori x2, x19, -2 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x2_str)
+  ori x3, x20, -2 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x5bbc8872, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x5bbc8872
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x1:
-  ori x13, x21, -1 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x1_str)
+  ori x14, x22, -1 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x5bbc8872_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x0:
-  ori x12, x29, 0 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x0_str)
+  ori x13, x29, 0 # perform operation
+  # Check if x13 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x1:
-  ori x17, x2, 1 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x1_str)
+  ori x18, x3, 1 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x2:
-  ori x15, x19, 2 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x2_str)
+  ori x16, x20, 2 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs1: x21 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3:
-  ori x29, x21, 3 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3_str)
+  ori x29, x22, 3 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x4:
-  ori x2, x29, 4 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x4_str)
+  ori x3, x29, 4 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x8:
-  ori x9, x2, 8 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x8_str)
+  ori x9, x3, 8 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x9, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x10:
-  ori x15, x27, 16 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x10_str)
+  ori x16, x28, 16 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs1: x10 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x20:
   ori x29, x10, 32 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x20_str)
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x40:
-  ori x23, x9, 64 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x40_str)
+  ori x24, x9, 64 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x80:
-  ori x23, x9, 128 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x80_str)
+  ori x24, x9, 128 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x100:
-  ori x20, x13, 256 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x100_str)
+  ori x21, x14, 256 # perform operation
+  # Check if x21 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x200:
-  ori x2, x8, 512 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x200_str)
+  ori x3, x6, 512 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3ff:
-  ori x11, x14, 1023 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3ff_str)
+  ori x11, x15, 1023 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x400:
-  ori x1, x15, 1024 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x400_str)
+  ori x2, x16, 1024 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x703:
-  ori x24, x17, 1795 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x703_str)
+  ori x25, x18, 1795 # perform operation
+  # Check if x25 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x7ff:
-  ori x29, x13, 2047 # perform operation
-  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x7ff_str)
+  ori x29, x14, 2047 # perform operation
+  # Check if x29 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x29, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x800:
-  ori x15, x2, -2048 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x800_str)
+  ori x16, x3, -2048 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x7ff:
-  ori x1, x13, -2047 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x7ff_str)
+  ori x2, x14, -2047 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load rs1: x26 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x2:
-  ori x25, x26, -2 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x2_str)
+  ori x26, x27, -2 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0xaaaaaaaa, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xaaaaaaaa
 I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x1:
-  ori x7, x13, -1 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x1_str)
+  ori x5, x14, -1 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0xaaaaaaaa_immval_m0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs1: x13 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x0:
-  ori x25, x13, 0 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x0_str)
+  ori x26, x14, 0 # perform operation
+  # Check if x26 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x0, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x0_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x1:
-  ori x17, x3, 1 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x1_str)
+  ori x18, x4, 1 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x1_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x2:
-  ori x23, x30, 2 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x2_str)
+  ori x24, x30, 2 # perform operation
+  # Check if x24 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x24, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3:
-  ori x3, x27, 3 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3_str)
+  ori x4, x28, 3 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x4:
-  ori x26, x9, 4 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x4_str)
+  ori x27, x9, 4 # perform operation
+  # Check if x27 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x4_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x8:
-  ori x14, x2, 8 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x8_str)
+  ori x15, x3, 8 # perform operation
+  # Check if x15 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x8, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x8_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs1: x25 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x10:
-  ori x27, x25, 16 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x10_str)
+  ori x28, x26, 16 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x10, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x10_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs1: x30 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x20:
-  ori x17, x30, 32 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x20_str)
+  ori x18, x30, 32 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x20_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x40:
-  ori x11, x19, 64 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x40_str)
+  ori x11, x20, 64 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x40, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x40_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x80:
-  ori x18, x11, 128 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x80_str)
+  ori x19, x11, 128 # perform operation
+  # Check if x19 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x80, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x80_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x100:
-  ori x19, x9, 256 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x100_str)
+  ori x20, x9, 256 # perform operation
+  # Check if x20 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x20, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x100, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x100_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load rs1: x19 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x200:
-  ori x17, x19, 512 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x200_str)
+  ori x18, x20, 512 # perform operation
+  # Check if x18 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x18, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x200, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x200_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3ff:
-  ori x15, x1, 1023 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3ff_str)
+  ori x16, x2, 1023 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x3ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs1: x14 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x400:
-  ori x27, x14, 1024 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x400_str)
+  ori x28, x15, 1024 # perform operation
+  # Check if x28 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x28, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x400, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x400_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs1: x29 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x703:
-  ori x15, x29, 1795 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x703_str)
+  ori x16, x29, 1795 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x703, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x703_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs1: x16 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x7ff:
-  ori x21, x16, 2047 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x7ff_str)
+  ori x22, x17, 2047 # perform operation
+  # Check if x22 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x22, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs1: x27 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x800:
-  ori x15, x27, -2048 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x800_str)
+  ori x16, x28, -2048 # perform operation
+  # Check if x16 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x16, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x800, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x800_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x7ff:
-  ori x3, x1, -2047 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x7ff_str)
+  ori x4, x2, -2047 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x7ff, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x7ff_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs1: x23 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x2:
-  ori x11, x23, -2 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x2_str)
+  ori x11, x24, -2 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x11, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x2, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x2_str)
 
 # Testcase cr_rs1_imm_edges (rs1 = 0x55555555, imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x17) # load rs1: x17 = 0x55555555
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x55555555
 I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x1:
-  ori x13, x17, -1 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x1_str)
+  ori x14, x18, -1 # perform operation
+  # Check if x14 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x14, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x1, I_ori_cg_cr_rs1_imm_edges_rs1val_0x55555555_immval_m0x1_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x6, x0) # load rs1: x0 = 0x53bd1517
+  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs1: x0 = 0x53bd1517
 I_ori_cg_cmp_rd_rs1_b0:
   ori x0, x0, 690 # perform operation
-  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x0, I_ori_cg_cmp_rd_rs1_b0, I_ori_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x0, I_ori_cg_cmp_rd_rs1_b0, I_ori_cg_cmp_rd_rs1_b0_str)
 
+  mv x15, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs1: x1 = 0x64cc9f60
+  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs1: x1 = 0xd6b7efdd
 I_ori_cg_cmp_rd_rs1_b1:
-  ori x1, x1, 238 # perform operation
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, I_ori_cg_cmp_rd_rs1_b1, I_ori_cg_cmp_rd_rs1_b1_str)
+  ori x1, x1, -1757 # perform operation
+  # Check if x1 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x1, I_ori_cg_cmp_rd_rs1_b1, I_ori_cg_cmp_rd_rs1_b1_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs1: x2 = 0x0c10c370
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs1: x2 = 0x528401d3
 I_ori_cg_cmp_rd_rs1_b2:
-  ori x2, x2, 1819 # perform operation
-  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x2, I_ori_cg_cmp_rd_rs1_b2, I_ori_cg_cmp_rd_rs1_b2_str)
+  ori x2, x2, -745 # perform operation
+  # Check if x2 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x2, I_ori_cg_cmp_rd_rs1_b2, I_ori_cg_cmp_rd_rs1_b2_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x156b5770
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs1: x3 = 0xfd47131b
 I_ori_cg_cmp_rd_rs1_b3:
-  ori x3, x3, 284 # perform operation
-  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x3, I_ori_cg_cmp_rd_rs1_b3, I_ori_cg_cmp_rd_rs1_b3_str)
+  ori x3, x3, 1604 # perform operation
+  # Check if x3 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x3, I_ori_cg_cmp_rd_rs1_b3, I_ori_cg_cmp_rd_rs1_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0xa8bbac3c
+  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs1: x4 = 0xd246422d
 I_ori_cg_cmp_rd_rs1_b4:
-  ori x4, x4, -1365 # perform operation
-  # Check if x4 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x28, x8, x7, x4, I_ori_cg_cmp_rd_rs1_b4, I_ori_cg_cmp_rd_rs1_b4_str)
+  ori x4, x4, -1324 # perform operation
+  # Check if x4 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x4, I_ori_cg_cmp_rd_rs1_b4, I_ori_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x5955b3fb
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs1: x5 = 0xd78d01e9
 I_ori_cg_cmp_rd_rs1_b5:
-  ori x5, x5, -73 # perform operation
-  # Check if x5 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x28, x8, x7, x5, I_ori_cg_cmp_rd_rs1_b5, I_ori_cg_cmp_rd_rs1_b5_str)
+  ori x5, x5, -1836 # perform operation
+  # Check if x5 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x5, I_ori_cg_cmp_rd_rs1_b5, I_ori_cg_cmp_rd_rs1_b5_str)
 
-  mv x3, x6 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xd78d01e9
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0xd667053a
 I_ori_cg_cmp_rd_rs1_b6:
-  ori x6, x6, -1836 # perform operation
-  # Check if x6 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x28, x8, x7, x6, I_ori_cg_cmp_rd_rs1_b6, I_ori_cg_cmp_rd_rs1_b6_str)
+  ori x6, x6, -384 # perform operation
+  # Check if x6 contains the expected result. x12 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x12, x8, x7, x6, I_ori_cg_cmp_rd_rs1_b6, I_ori_cg_cmp_rd_rs1_b6_str)
 
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs1: x7 = 0x52a19daa
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0xfcab678e
 I_ori_cg_cmp_rd_rs1_b7:
-  ori x7, x7, -1486 # perform operation
-  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x7, I_ori_cg_cmp_rd_rs1_b7, I_ori_cg_cmp_rd_rs1_b7_str)
+  ori x7, x7, 1188 # perform operation
+  # Check if x7 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x7, I_ori_cg_cmp_rd_rs1_b7, I_ori_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x792f8c61
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs1: x8 = 0x60752843
 I_ori_cg_cmp_rd_rs1_b8:
-  ori x8, x8, 1219 # perform operation
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, I_ori_cg_cmp_rd_rs1_b8, I_ori_cg_cmp_rd_rs1_b8_str)
+  ori x8, x8, -1661 # perform operation
+  # Check if x8 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x8, I_ori_cg_cmp_rd_rs1_b8, I_ori_cg_cmp_rd_rs1_b8_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x7e86ab70
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs1: x9 = 0x850975bf
 I_ori_cg_cmp_rd_rs1_b9:
-  ori x9, x9, 1941 # perform operation
-  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x9, I_ori_cg_cmp_rd_rs1_b9, I_ori_cg_cmp_rd_rs1_b9_str)
+  ori x9, x9, 435 # perform operation
+  # Check if x9 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x9, I_ori_cg_cmp_rd_rs1_b9, I_ori_cg_cmp_rd_rs1_b9_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x7711fb6c
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0x227ee113
 I_ori_cg_cmp_rd_rs1_b10:
-  ori x10, x10, 1761 # perform operation
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, I_ori_cg_cmp_rd_rs1_b10, I_ori_cg_cmp_rd_rs1_b10_str)
+  ori x10, x10, -796 # perform operation
+  # Check if x10 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x10, I_ori_cg_cmp_rd_rs1_b10, I_ori_cg_cmp_rd_rs1_b10_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs1: x11 = 0x55f1eb6f
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0xbbdffaef
 I_ori_cg_cmp_rd_rs1_b11:
-  ori x11, x11, -1887 # perform operation
-  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x11, I_ori_cg_cmp_rd_rs1_b11, I_ori_cg_cmp_rd_rs1_b11_str)
+  ori x11, x11, -1074 # perform operation
+  # Check if x11 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x12, x5, x4, x11, I_ori_cg_cmp_rd_rs1_b11, I_ori_cg_cmp_rd_rs1_b11_str)
 
+  mv x6, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs1: x12 = 0xd27c8cbe
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x15b76f4d
 I_ori_cg_cmp_rd_rs1_b12:
-  ori x12, x12, -133 # perform operation
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, I_ori_cg_cmp_rd_rs1_b12, I_ori_cg_cmp_rd_rs1_b12_str)
+  ori x12, x12, 364 # perform operation
+  # Check if x12 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x12, I_ori_cg_cmp_rd_rs1_b12, I_ori_cg_cmp_rd_rs1_b12_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x34234ba2
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x9d566c15
 I_ori_cg_cmp_rd_rs1_b13:
-  ori x13, x13, -1245 # perform operation
-  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x13, I_ori_cg_cmp_rd_rs1_b13, I_ori_cg_cmp_rd_rs1_b13_str)
+  ori x13, x13, -1360 # perform operation
+  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x13, I_ori_cg_cmp_rd_rs1_b13, I_ori_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x15b76f4d
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0xa67305ff
 I_ori_cg_cmp_rd_rs1_b14:
-  ori x14, x14, 364 # perform operation
-  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x14, I_ori_cg_cmp_rd_rs1_b14, I_ori_cg_cmp_rd_rs1_b14_str)
+  ori x14, x14, 708 # perform operation
+  # Check if x14 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x14, I_ori_cg_cmp_rd_rs1_b14, I_ori_cg_cmp_rd_rs1_b14_str)
 
+  mv x2, x15 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0x9d566c15
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0xec22d433
 I_ori_cg_cmp_rd_rs1_b15:
-  ori x15, x15, -1360 # perform operation
-  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x15, I_ori_cg_cmp_rd_rs1_b15, I_ori_cg_cmp_rd_rs1_b15_str)
+  ori x15, x15, -1325 # perform operation
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, I_ori_cg_cmp_rd_rs1_b15, I_ori_cg_cmp_rd_rs1_b15_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0xa67305ff
+  RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0x87fa685d
 I_ori_cg_cmp_rd_rs1_b16:
-  ori x16, x16, 708 # perform operation
-  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x16, I_ori_cg_cmp_rd_rs1_b16, I_ori_cg_cmp_rd_rs1_b16_str)
+  ori x16, x16, 107 # perform operation
+  # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x16, I_ori_cg_cmp_rd_rs1_b16, I_ori_cg_cmp_rd_rs1_b16_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0x0ebabdcb
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x4a9333d9
 I_ori_cg_cmp_rd_rs1_b17:
-  ori x17, x17, 1205 # perform operation
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, I_ori_cg_cmp_rd_rs1_b17, I_ori_cg_cmp_rd_rs1_b17_str)
+  ori x17, x17, 666 # perform operation
+  # Check if x17 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x17, I_ori_cg_cmp_rd_rs1_b17, I_ori_cg_cmp_rd_rs1_b17_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0x4cc1fe00
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0xd74e1a73
 I_ori_cg_cmp_rd_rs1_b18:
-  ori x18, x18, 322 # perform operation
-  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x18, I_ori_cg_cmp_rd_rs1_b18, I_ori_cg_cmp_rd_rs1_b18_str)
+  ori x18, x18, -481 # perform operation
+  # Check if x18 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x18, I_ori_cg_cmp_rd_rs1_b18, I_ori_cg_cmp_rd_rs1_b18_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x7dac5759
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x0949de63
 I_ori_cg_cmp_rd_rs1_b19:
-  ori x19, x19, -1927 # perform operation
-  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x19, I_ori_cg_cmp_rd_rs1_b19, I_ori_cg_cmp_rd_rs1_b19_str)
+  ori x19, x19, 1767 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, I_ori_cg_cmp_rd_rs1_b19, I_ori_cg_cmp_rd_rs1_b19_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x3b95bc9b
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x2ab707c6
 I_ori_cg_cmp_rd_rs1_b20:
-  ori x20, x20, 462 # perform operation
-  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x20, I_ori_cg_cmp_rd_rs1_b20, I_ori_cg_cmp_rd_rs1_b20_str)
+  ori x20, x20, -804 # perform operation
+  # Check if x20 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x20, I_ori_cg_cmp_rd_rs1_b20, I_ori_cg_cmp_rd_rs1_b20_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs1: x21 = 0xd4d38b21
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x4df3e2f0
 I_ori_cg_cmp_rd_rs1_b21:
-  ori x21, x21, 745 # perform operation
-  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x21, I_ori_cg_cmp_rd_rs1_b21, I_ori_cg_cmp_rd_rs1_b21_str)
+  ori x21, x21, -1746 # perform operation
+  # Check if x21 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x21, I_ori_cg_cmp_rd_rs1_b21, I_ori_cg_cmp_rd_rs1_b21_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs1: x22 = 0xf358e5b3
+  RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0x973f65ab
 I_ori_cg_cmp_rd_rs1_b22:
-  ori x22, x22, -734 # perform operation
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, I_ori_cg_cmp_rd_rs1_b22, I_ori_cg_cmp_rd_rs1_b22_str)
+  ori x22, x22, 26 # perform operation
+  # Check if x22 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x22, I_ori_cg_cmp_rd_rs1_b22, I_ori_cg_cmp_rd_rs1_b22_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs1: x23 = 0xab1904f5
+  RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x5073af4c
 I_ori_cg_cmp_rd_rs1_b23:
-  ori x23, x23, 2038 # perform operation
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, I_ori_cg_cmp_rd_rs1_b23, I_ori_cg_cmp_rd_rs1_b23_str)
+  ori x23, x23, 1432 # perform operation
+  # Check if x23 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x23, I_ori_cg_cmp_rd_rs1_b23, I_ori_cg_cmp_rd_rs1_b23_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs1: x24 = 0x897432ed
+  RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xb848fdae
 I_ori_cg_cmp_rd_rs1_b24:
-  ori x24, x24, -1188 # perform operation
-  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x24, I_ori_cg_cmp_rd_rs1_b24, I_ori_cg_cmp_rd_rs1_b24_str)
+  ori x24, x24, -1865 # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, I_ori_cg_cmp_rd_rs1_b24, I_ori_cg_cmp_rd_rs1_b24_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xc0d2ea28
+  RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs1: x25 = 0x42443482
 I_ori_cg_cmp_rd_rs1_b25:
-  ori x25, x25, -349 # perform operation
-  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x25, I_ori_cg_cmp_rd_rs1_b25, I_ori_cg_cmp_rd_rs1_b25_str)
+  ori x25, x25, 1576 # perform operation
+  # Check if x25 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x25, I_ori_cg_cmp_rd_rs1_b25, I_ori_cg_cmp_rd_rs1_b25_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x55ac0c6a
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0x1c7057b9
 I_ori_cg_cmp_rd_rs1_b26:
-  ori x26, x26, -247 # perform operation
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, I_ori_cg_cmp_rd_rs1_b26, I_ori_cg_cmp_rd_rs1_b26_str)
+  ori x26, x26, -1324 # perform operation
+  # Check if x26 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x26, I_ori_cg_cmp_rd_rs1_b26, I_ori_cg_cmp_rd_rs1_b26_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0x85bfbeff
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x87bc807b
 I_ori_cg_cmp_rd_rs1_b27:
-  ori x27, x27, 570 # perform operation
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, I_ori_cg_cmp_rd_rs1_b27, I_ori_cg_cmp_rd_rs1_b27_str)
+  ori x27, x27, 347 # perform operation
+  # Check if x27 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x27, I_ori_cg_cmp_rd_rs1_b27, I_ori_cg_cmp_rd_rs1_b27_str)
 
-  mv x27, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x056cd0a7
+  RVTEST_TESTDATA_LOAD_INT(x2, x28) # load rs1: x28 = 0xee0af9f0
 I_ori_cg_cmp_rd_rs1_b28:
-  ori x28, x28, 1254 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x28, I_ori_cg_cmp_rd_rs1_b28, I_ori_cg_cmp_rd_rs1_b28_str)
+  ori x28, x28, 694 # perform operation
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, I_ori_cg_cmp_rd_rs1_b28, I_ori_cg_cmp_rd_rs1_b28_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x20b1f8c2
+  RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x1abd7185
 I_ori_cg_cmp_rd_rs1_b29:
-  ori x29, x29, -1801 # perform operation
-  # Check if x29 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x29, I_ori_cg_cmp_rd_rs1_b29, I_ori_cg_cmp_rd_rs1_b29_str)
+  ori x29, x29, 1824 # perform operation
+  # Check if x29 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x29, I_ori_cg_cmp_rd_rs1_b29, I_ori_cg_cmp_rd_rs1_b29_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xcc49c026
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x43fbc46b
 I_ori_cg_cmp_rd_rs1_b30:
-  ori x30, x30, 1473 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x30, I_ori_cg_cmp_rd_rs1_b30, I_ori_cg_cmp_rd_rs1_b30_str)
+  ori x30, x30, 1351 # perform operation
+  # Check if x30 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x30, I_ori_cg_cmp_rd_rs1_b30, I_ori_cg_cmp_rd_rs1_b30_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0xda8756c8
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x78baee2e
 I_ori_cg_cmp_rd_rs1_b31:
-  ori x31, x31, -112 # perform operation
-  # Check if x31 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x31, I_ori_cg_cmp_rd_rs1_b31, I_ori_cg_cmp_rd_rs1_b31_str)
+  ori x31, x31, -479 # perform operation
+  # Check if x31 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x31, I_ori_cg_cmp_rd_rs1_b31, I_ori_cg_cmp_rd_rs1_b31_str)
 
 /////////////////////////////////
 // cp_imm_edges
 /////////////////////////////////
 
 # Testcase cp_imm_edges (imm = 0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x63620466
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x63620466
 I_ori_cg_cp_imm_edges_0x0:
-  ori x1, x2, 0 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, I_ori_cg_cp_imm_edges_0x0, I_ori_cg_cp_imm_edges_0x0_str)
+  ori x1, x3, 0 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_ori_cg_cp_imm_edges_0x0, I_ori_cg_cp_imm_edges_0x0_str)
 
 # Testcase cp_imm_edges (imm = 1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs1: x18 = 0xcd1dcf77
+  RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0xcd1dcf77
 I_ori_cg_cp_imm_edges_0x1:
-  ori x7, x18, 1 # perform operation
-  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x7, I_ori_cg_cp_imm_edges_0x1, I_ori_cg_cp_imm_edges_0x1_str)
+  ori x8, x19, 1 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, I_ori_cg_cp_imm_edges_0x1, I_ori_cg_cp_imm_edges_0x1_str)
 
 # Testcase cp_imm_edges (imm = 2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x57be1249
+  RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x57be1249
 I_ori_cg_cp_imm_edges_0x2:
-  ori x9, x2, 2 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x9, I_ori_cg_cp_imm_edges_0x2, I_ori_cg_cp_imm_edges_0x2_str)
+  ori x10, x3, 2 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x10, I_ori_cg_cp_imm_edges_0x2, I_ori_cg_cp_imm_edges_0x2_str)
 
 # Testcase cp_imm_edges (imm = 3)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs1: x20 = 0x1825cdaa
+  RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x1825cdaa
 I_ori_cg_cp_imm_edges_0x3:
-  ori x8, x20, 3 # perform operation
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, I_ori_cg_cp_imm_edges_0x3, I_ori_cg_cp_imm_edges_0x3_str)
+  ori x9, x21, 3 # perform operation
+  # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x9, I_ori_cg_cp_imm_edges_0x3, I_ori_cg_cp_imm_edges_0x3_str)
 
 # Testcase cp_imm_edges (imm = 4)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x4a33e010
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x4a33e010
 I_ori_cg_cp_imm_edges_0x4:
-  ori x7, x13, 4 # perform operation
-  # Check if x7 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x7, I_ori_cg_cp_imm_edges_0x4, I_ori_cg_cp_imm_edges_0x4_str)
+  ori x8, x14, 4 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, I_ori_cg_cp_imm_edges_0x4, I_ori_cg_cp_imm_edges_0x4_str)
 
 # Testcase cp_imm_edges (imm = 8)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0xd7034430
+  RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0xd7034430
 I_ori_cg_cp_imm_edges_0x8:
-  ori x28, x13, 8 # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x28, I_ori_cg_cp_imm_edges_0x8, I_ori_cg_cp_imm_edges_0x8_str)
+  ori x28, x14, 8 # perform operation
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, I_ori_cg_cp_imm_edges_0x8, I_ori_cg_cp_imm_edges_0x8_str)
 
 # Testcase cp_imm_edges (imm = 16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0xf72a7235
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0xf72a7235
 I_ori_cg_cp_imm_edges_0x10:
-  ori x14, x31, 16 # perform operation
-  # Check if x14 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x14, I_ori_cg_cp_imm_edges_0x10, I_ori_cg_cp_imm_edges_0x10_str)
+  ori x15, x31, 16 # perform operation
+  # Check if x15 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x15, I_ori_cg_cp_imm_edges_0x10, I_ori_cg_cp_imm_edges_0x10_str)
 
 # Testcase cp_imm_edges (imm = 32)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs1: x17 = 0xc2635032
+  RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0xc2635032
 I_ori_cg_cp_imm_edges_0x20:
-  ori x30, x17, 32 # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x30, I_ori_cg_cp_imm_edges_0x20, I_ori_cg_cp_imm_edges_0x20_str)
+  ori x30, x18, 32 # perform operation
+  # Check if x30 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x30, I_ori_cg_cp_imm_edges_0x20, I_ori_cg_cp_imm_edges_0x20_str)
 
 # Testcase cp_imm_edges (imm = 64)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x416ad392
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0x416ad392
 I_ori_cg_cp_imm_edges_0x40:
-  ori x20, x30, 64 # perform operation
-  # Check if x20 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x20, I_ori_cg_cp_imm_edges_0x40, I_ori_cg_cp_imm_edges_0x40_str)
+  ori x21, x30, 64 # perform operation
+  # Check if x21 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x21, I_ori_cg_cp_imm_edges_0x40, I_ori_cg_cp_imm_edges_0x40_str)
 
 # Testcase cp_imm_edges (imm = 128)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0x5e5eb84f
+  RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x5e5eb84f
 I_ori_cg_cp_imm_edges_0x80:
-  ori x9, x26, 128 # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x9, I_ori_cg_cp_imm_edges_0x80, I_ori_cg_cp_imm_edges_0x80_str)
+  ori x10, x27, 128 # perform operation
+  # Check if x10 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x10, I_ori_cg_cp_imm_edges_0x80, I_ori_cg_cp_imm_edges_0x80_str)
 
 # Testcase cp_imm_edges (imm = 256)
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs1: x6 = 0xf24e5766
+  RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0xf24e5766
 I_ori_cg_cp_imm_edges_0x100:
-  ori x18, x6, 256 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, I_ori_cg_cp_imm_edges_0x100, I_ori_cg_cp_imm_edges_0x100_str)
+  ori x19, x7, 256 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, I_ori_cg_cp_imm_edges_0x100, I_ori_cg_cp_imm_edges_0x100_str)
 
 # Testcase cp_imm_edges (imm = 512)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs1: x16 = 0x1c5a28dd
+  RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x1c5a28dd
 I_ori_cg_cp_imm_edges_0x200:
-  ori x18, x16, 512 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, I_ori_cg_cp_imm_edges_0x200, I_ori_cg_cp_imm_edges_0x200_str)
+  ori x19, x17, 512 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, I_ori_cg_cp_imm_edges_0x200, I_ori_cg_cp_imm_edges_0x200_str)
 
 # Testcase cp_imm_edges (imm = 1023)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs1: x19 = 0x2414e579
+  RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x2414e579
 I_ori_cg_cp_imm_edges_0x3ff:
-  ori x15, x19, 1023 # perform operation
-  # Check if x15 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x15, I_ori_cg_cp_imm_edges_0x3ff, I_ori_cg_cp_imm_edges_0x3ff_str)
+  ori x16, x20, 1023 # perform operation
+  # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x16, I_ori_cg_cp_imm_edges_0x3ff, I_ori_cg_cp_imm_edges_0x3ff_str)
 
 # Testcase cp_imm_edges (imm = 1024)
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x1d8164ac
+  RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0x1d8164ac
 I_ori_cg_cp_imm_edges_0x400:
-  ori x1, x8, 1024 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, I_ori_cg_cp_imm_edges_0x400, I_ori_cg_cp_imm_edges_0x400_str)
+  ori x1, x9, 1024 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_ori_cg_cp_imm_edges_0x400, I_ori_cg_cp_imm_edges_0x400_str)
 
 # Testcase cp_imm_edges (imm = 1795)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x0b34bb41
+  RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x0b34bb41
 I_ori_cg_cp_imm_edges_0x703:
-  ori x19, x31, 1795 # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x19, I_ori_cg_cp_imm_edges_0x703, I_ori_cg_cp_imm_edges_0x703_str)
+  ori x20, x31, 1795 # perform operation
+  # Check if x20 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x20, I_ori_cg_cp_imm_edges_0x703, I_ori_cg_cp_imm_edges_0x703_str)
 
 # Testcase cp_imm_edges (imm = 2047)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs1: x14 = 0x4f9e109e
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x4f9e109e
 I_ori_cg_cp_imm_edges_0x7ff:
-  ori x12, x14, 2047 # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x12, I_ori_cg_cp_imm_edges_0x7ff, I_ori_cg_cp_imm_edges_0x7ff_str)
+  ori x13, x15, 2047 # perform operation
+  # Check if x13 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x13, I_ori_cg_cp_imm_edges_0x7ff, I_ori_cg_cp_imm_edges_0x7ff_str)
 
 # Testcase cp_imm_edges (imm = -2048)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs1: x25 = 0xd503d0a2
+  RVTEST_TESTDATA_LOAD_INT(x2, x26) # load rs1: x26 = 0xd503d0a2
 I_ori_cg_cp_imm_edges_m0x800:
-  ori x2, x25, -2048 # perform operation
-  # Check if x2 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x2, I_ori_cg_cp_imm_edges_m0x800, I_ori_cg_cp_imm_edges_m0x800_str)
+  ori x3, x26, -2048 # perform operation
+  # Check if x3 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x3, I_ori_cg_cp_imm_edges_m0x800, I_ori_cg_cp_imm_edges_m0x800_str)
 
 # Testcase cp_imm_edges (imm = -2047)
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x580f7f4a
+  RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x580f7f4a
 I_ori_cg_cp_imm_edges_m0x7ff:
-  ori x23, x10, -2047 # perform operation
-  # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x23, I_ori_cg_cp_imm_edges_m0x7ff, I_ori_cg_cp_imm_edges_m0x7ff_str)
+  ori x24, x11, -2047 # perform operation
+  # Check if x24 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x24, I_ori_cg_cp_imm_edges_m0x7ff, I_ori_cg_cp_imm_edges_m0x7ff_str)
 
 # Testcase cp_imm_edges (imm = -2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0xb487f12e
+  RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0xb487f12e
 I_ori_cg_cp_imm_edges_m0x2:
-  ori x1, x9, -2 # perform operation
-  # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x1, I_ori_cg_cp_imm_edges_m0x2, I_ori_cg_cp_imm_edges_m0x2_str)
+  ori x1, x10, -2 # perform operation
+  # Check if x1 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x1, I_ori_cg_cp_imm_edges_m0x2, I_ori_cg_cp_imm_edges_m0x2_str)
 
 # Testcase cp_imm_edges (imm = -1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0xc5d64924
+  RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0xc5d64924
 I_ori_cg_cp_imm_edges_m0x1:
-  ori x18, x30, -1 # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, I_ori_cg_cp_imm_edges_m0x1, I_ori_cg_cp_imm_edges_m0x1_str)
+  ori x19, x30, -1 # perform operation
+  # Check if x19 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x19, I_ori_cg_cp_imm_edges_m0x1, I_ori_cg_cp_imm_edges_m0x1_str)
 
-  mv x2, x27 # restore signature pointer to default register for teardown
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -2709,25 +2706,25 @@ RVTEST_DATA_BEGIN
 .word 0x5be4af29
 .word 0x86d0f4ef
 .word 0x6ae0cee2
-.word 0x2b0ca1c5
-.word 0x9f729d73
-.word 0x31a6aec6
-.word 0x888df86c
+.word 0xec552a30
+.word 0x0aaf15cb
+.word 0xa597bcdd
 .word 0x8ab4c76e
-.word 0x7077dbb7
-.word 0x3b4522c4
-.word 0xaffd0865
-.word 0xd81ee32a
-.word 0x86c6e4e1
-.word 0xf33c152d
-.word 0xc962bf85
+.word 0xa34fcf45
+.word 0x043a4e2b
+.word 0x4b529664
+.word 0x7f8f3731
+.word 0xf55bfd7c
+.word 0x5769d560
+.word 0x56d9dac1
 .word 0x7a78af0d
 .word 0xffc211f1
 .word 0xd1a8adb5
 .word 0x95c2c133
-.word 0xa6915e05
+.word 0xf60eaaea
 .word 0x912cfa23
 .word 0x8b3a8c46
+.word 0x8775fc02
 .word 0x00000000
 .word 0x00000001
 .word 0x00000002
@@ -2981,37 +2978,37 @@ RVTEST_DATA_BEGIN
 .word 0x55555555
 .word 0x55555555
 .word 0x53bd1517
-.word 0x64cc9f60
-.word 0x0c10c370
-.word 0x156b5770
-.word 0xa8bbac3c
-.word 0x5955b3fb
+.word 0xd6b7efdd
+.word 0x528401d3
+.word 0xfd47131b
+.word 0xd246422d
 .word 0xd78d01e9
-.word 0x52a19daa
-.word 0x792f8c61
-.word 0x7e86ab70
-.word 0x7711fb6c
-.word 0x55f1eb6f
-.word 0xd27c8cbe
-.word 0x34234ba2
+.word 0xd667053a
+.word 0xfcab678e
+.word 0x60752843
+.word 0x850975bf
+.word 0x227ee113
+.word 0xbbdffaef
 .word 0x15b76f4d
 .word 0x9d566c15
 .word 0xa67305ff
-.word 0x0ebabdcb
-.word 0x4cc1fe00
-.word 0x7dac5759
-.word 0x3b95bc9b
-.word 0xd4d38b21
-.word 0xf358e5b3
-.word 0xab1904f5
-.word 0x897432ed
-.word 0xc0d2ea28
-.word 0x55ac0c6a
-.word 0x85bfbeff
-.word 0x056cd0a7
-.word 0x20b1f8c2
-.word 0xcc49c026
-.word 0xda8756c8
+.word 0xec22d433
+.word 0x87fa685d
+.word 0x4a9333d9
+.word 0xd74e1a73
+.word 0x0949de63
+.word 0x2ab707c6
+.word 0x4df3e2f0
+.word 0x973f65ab
+.word 0x5073af4c
+.word 0xb848fdae
+.word 0x42443482
+.word 0x1c7057b9
+.word 0x87bc807b
+.word 0xee0af9f0
+.word 0x1abd7185
+.word 0x43fbc46b
+.word 0x78baee2e
 .word 0x63620466
 .word 0xcd1dcf77
 .word 0x57be1249

@@ -47,14 +47,6 @@ RVTEST_BEGIN
 main:
     RVTEST_GOTO_MMODE
 
-    // -----------------------------------------------------------------------
-    // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).
-    //
-    // The original test writes walking ones only to even-numbered pmpcfg
-    // registers (pmpcfg0, pmpcfg2, and — for 64-PMP systems — pmpcfg4 through
-    // pmpcfg14).  Odd registers (pmpcfg1, pmpcfg3, ...) are RV32 aliases and
-    // are intentionally left out, matching original behaviour.
-    //
     // UDB_NUM_PMP_ENTRIES/8 gives the count of even cfg registers:
     //   16 PMPs → 2 even regs (pmpcfg0, pmpcfg2)
     //   64 PMPs → 8 even regs (pmpcfg0 .. pmpcfg14, step 2)
@@ -63,16 +55,15 @@ main:
     // --- pmpcfg even walking ones, bit 3 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 3)
+1:  LI(t2, 1 << 3)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
-
     // --- pmpcfg even walking ones, bit 5 ---
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 5)
+1:  LI(t2, 1 << 5)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_2_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -81,7 +72,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 6)
+1:  LI(t2, 1 << 6)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_3_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -90,7 +81,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 7)
+1:  LI(t2, 1 << 7)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_4_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -99,20 +90,13 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 8)
+1:  LI(t2, 1 << 8)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 9 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 9)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-
+    // Skipped, R=0,W=1 is reserved
     RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END
@@ -126,9 +110,11 @@ test_4_str: .string "\"test: 4; cp: cp_csr_walk\""
 test_5_str: .string "\"test: 5; cp: cp_csr_walk\""
 test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

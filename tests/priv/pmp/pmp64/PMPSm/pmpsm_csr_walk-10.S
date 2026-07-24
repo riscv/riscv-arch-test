@@ -58,7 +58,7 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 63)
+1:  LI(t2, 1 << 63)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_64_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -93,25 +93,19 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 0)
+1:  LI(t2, 1 << 0)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 1 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 1)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_66_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+    // Skipped, R=0,W=1 is reserved
 
     // --- pmpcfg even walking ones, bit 2 ---
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 2)
+1:  LI(t2, 1 << 2)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_67_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -120,7 +114,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 3)
+1:  LI(t2, 1 << 3)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_68_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -129,7 +123,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 5)
+1:  LI(t2, 1 << 5)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_69_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -147,10 +141,12 @@ test_67_str: .string "\"test: 67; cp: cp_csr_walk_test_67\""
 test_68_str: .string "\"test: 68; cp: cp_csr_walk_test_68\""
 test_69_str: .string "\"test: 69; cp: cp_csr_walk_test_69\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

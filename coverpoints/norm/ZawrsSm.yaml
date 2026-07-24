@@ -1,0 +1,30 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # After LR instruction set up reservation, a subsequent WRS.NTO instruction
+  # would cause the hart to temporarily stall execution in a low-power state
+  # until a store occurs to the reservation set or an interrupt is observed.
+  - name: Zawrs_wrs-nto_stall_exec
+    coverpoint:
+      [
+        "ZawrsSm_cg/cp_wrs_resume",
+        "stores not tested in single core configurations",
+      ]
+
+  # WRS.STO (WRS-with-short-timeout) is provided that works like WRS.NTO
+  # but bounds the stall duration to an implementation-define short timeout
+  # such that the stall is terminated on the timeout if no other conditions
+  # have occurred to terminate the stall.
+  - name: Zawrs_wrs-sto_stall_duration
+    coverpoint: ["ZawrsSm_cg/cp_wrs_sto_timeout"]
+
+  # While stalled, an implementation is permitted to occasionally terminate the
+  # stall and complete execution for any reason.
+  - name: Zawrs_stall_terminate
+    coverpoint: ["ZawrsSm_cg/cp_wrs_resume loops if terminating early"]
+
+  # WRS.NTO and WRS.STO instructions follow the rules of the WFI instruction
+  # for resuming execution on a pending interrupt.
+  - name: Zawrs_exec_resume_rules
+    coverpoint: ["ZawrsSm_cg/cp_wrs_resume"]

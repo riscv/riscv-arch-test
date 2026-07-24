@@ -34,7 +34,7 @@
 #define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 200
 
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -76,9 +76,10 @@ RVTEST_BEGIN
 // Test regions all use L=1, R=1, X=1, W=0 (NAPOT) — read+execute, no write.
 // ---------------------------------------------------------------------------
 
-#define PMP_REGION_GLOBAL  ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT
 
-// Slots 0-14 (used by both 16-PMP and 64-PMP systems)
+// Slots 0-15. Slot 15 is tested only on 64-PMP systems; on 16-PMP
+// systems, slot 15 is reserved as the background region.
+#define PMP_REGION_15   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT
 #define PMP_REGION_14   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP6_CFG_SHIFT
 #define PMP_REGION_13   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT
 #define PMP_REGION_12   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT
@@ -149,7 +150,6 @@ RVTEST_BEGIN
 // ---------------------------------------------------------------------------
 // Address helpers
 // ---------------------------------------------------------------------------
-#define PMPADDRESS_TOP_GLOBAL   -1              // Covers entire address space
 #define REGIONSTART     TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
 
 #if UDB_PMP_GRANULARITY != 2
@@ -167,8 +167,10 @@ RVTEST_BEGIN
 .macro SET_PMP_ENTRY ADDR_REG, CFG_REG, CFG_BITS
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI (x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw \ADDR_REG, x5
     LI(x4, \CFG_BITS)
     csrw \CFG_REG, x4
@@ -193,29 +195,13 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-    // -----------------------------------------------------------------------
-    // Background (catch-all) region — must be the highest-numbered entry so
-    // that all lower entries take priority over it.
-    //   16-PMP : last entry = pmpaddr15, config byte lives in pmpcfg2[PMP7]
-    //   64-PMP : last entry = pmpaddr63, config byte lives in pmpcfg14[PMP7]
-    // -----------------------------------------------------------------------
-#if UDB_NUM_PMP_ENTRIES == 64
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr63, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg14, x4
-#elif UDB_NUM_PMP_ENTRIES == 16
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr15, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
-#else
-    #error "Unsupported UDB_NUM_PMP_ENTRIES value; only 16 and 64 are supported."
-#endif
+    // Background (catch-all) region: use the highest-numbered usable PMP entry
+    // so that all lower entries take priority over it.
+    RVTEST_PMP_SET_BACKGROUND x4
 
 // ===========================================================================
-// TEST CASES — 64-PMP ONLY (slots 16-62, test cases 1-47)
-// Slots 0-14 follow as test cases 48-62 in this build.
+// TEST CASES — 64-PMP ONLY (slots 16-62, then 15-0; test cases 1-63)
+// Slot 63 is the background region.
 // ===========================================================================
 #if UDB_NUM_PMP_ENTRIES == 64
 
@@ -407,65 +393,69 @@ main:
     SET_PMP_ENTRY pmpaddr16, pmpcfg4, PMP_REGION_16
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
 
-// Test Case: 48 — slot 14, pmpcfg2
-    SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
+// Test Case: 48 — slot 15, pmpcfg2
+    SET_PMP_ENTRY pmpaddr15, pmpcfg2, PMP_REGION_15
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
 
-// Test Case: 49 — slot 13, pmpcfg2
-    SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
+// Test Case: 49 — slot 14, pmpcfg2
+    SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
 
-// Test Case: 50 — slot 12, pmpcfg2
-    SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
+// Test Case: 50 — slot 13, pmpcfg2
+    SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
 
-// Test Case: 51 — slot 11, pmpcfg2
-    SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
+// Test Case: 51 — slot 12, pmpcfg2
+    SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
 
-// Test Case: 52 — slot 10, pmpcfg2
-    SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
+// Test Case: 52 — slot 11, pmpcfg2
+    SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
 
-// Test Case: 53 — slot 9, pmpcfg2
-    SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
+// Test Case: 53 — slot 10, pmpcfg2
+    SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
 
-// Test Case: 54 — slot 8, pmpcfg2
-    SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
+// Test Case: 54 — slot 9, pmpcfg2
+    SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
 
-// Test Case: 55 — slot 7, pmpcfg0
-    SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
+// Test Case: 55 — slot 8, pmpcfg2
+    SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
 
-// Test Case: 56 — slot 6, pmpcfg0
-    SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
+// Test Case: 56 — slot 7, pmpcfg0
+    SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
 
-// Test Case: 57 — slot 5, pmpcfg0
-    SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
+// Test Case: 57 — slot 6, pmpcfg0
+    SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
 
-// Test Case: 58 — slot 4, pmpcfg0
-    SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
+// Test Case: 58 — slot 5, pmpcfg0
+    SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
 
-// Test Case: 59 — slot 3, pmpcfg0
-    SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
+// Test Case: 59 — slot 4, pmpcfg0
+    SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
 
-// Test Case: 60 — slot 2, pmpcfg0
-    SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
+// Test Case: 60 — slot 3, pmpcfg0
+    SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
 
-// Test Case: 61 — slot 1, pmpcfg0
-    SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
+// Test Case: 61 — slot 2, pmpcfg0
+    SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
 
-// Test Case: 62 — slot 0, pmpcfg0
-    SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
+// Test Case: 62 — slot 1, pmpcfg0
+    SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
+
+// Test Case: 63 — slot 0, pmpcfg0
+    SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_63
 
 #endif  // UDB_NUM_PMP_ENTRIES == 64
 
@@ -539,22 +529,24 @@ main:
 
 #endif  // UDB_NUM_PMP_ENTRIES == 16
 
-    j exit                                                  // Verification complete
 
 exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
+    .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

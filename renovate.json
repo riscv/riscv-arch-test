@@ -6,6 +6,7 @@
   "labels": ["dependencies"],
   "prHourlyLimit": 4,
   "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
   "automerge": true,
@@ -19,6 +20,10 @@
   },
   "pre-commit": {
     "enabled": true
+  },
+  "pep723": {
+    "enabled": true,
+    "managerFilePatterns": ["/^\\.github/scripts/ci_config\\.py$/"]
   },
   "lockFileMaintenance": {
     "enabled": true,
@@ -160,6 +165,12 @@
       "matchDepNames": ["ruby"],
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "description": "Keep UDB Ruby gems in one update PR",
+      "matchDepNames": ["udb", "udb-gen", "idlc", "udb_helpers"],
+      "groupName": "udb ruby gems",
+      "groupSlug": "udb-ruby-gems"
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",

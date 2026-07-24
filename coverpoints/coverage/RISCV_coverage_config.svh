@@ -110,6 +110,9 @@
 `ifdef INTERRUPTSS_COVERAGE
   `include "InterruptsS_coverage.svh"
 `endif
+`ifdef INTERRUPTSSSM_COVERAGE
+  `include "InterruptsSSm_coverage.svh"
+`endif
 `ifdef INTERRUPTSSM_COVERAGE
   `include "InterruptsSm_coverage.svh"
 `endif
@@ -131,11 +134,11 @@
 `ifdef MISALIGNF_COVERAGE
   `include "MisalignF_coverage.svh"
 `endif
+`ifdef MISALIGNV_COVERAGE
+  `include "MisalignV_coverage.svh"
+`endif
 `ifdef MISALIGNZCA_COVERAGE
   `include "MisalignZca_coverage.svh"
-`endif
-`ifdef MISALIGNEDV_COVERAGE
-  `include "MisalignedV_coverage.svh"
 `endif
 `ifdef PMPF_COVERAGE
   `include "PMPF_coverage.svh"
@@ -322,6 +325,12 @@
 `endif
 `ifdef ZAMA16B_COVERAGE
   `include "Zama16b_coverage.svh"
+`endif
+`ifdef ZAWRSSU_COVERAGE
+  `include "ZawrsSU_coverage.svh"
+`endif
+`ifdef ZAWRSSM_COVERAGE
+  `include "ZawrsSm_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"

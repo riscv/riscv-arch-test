@@ -12,8 +12,11 @@ Verifies that misaligned loads, stores, and AMOs that do not cross a
 naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 """
 
+from __future__ import annotations
+
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # Each row: (mnemonic, access_size_bytes, is_fp, guard).
@@ -290,7 +293,13 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "Zama16b_cg"
 
-    addr_reg, src_reg, dest_reg, base_reg = test_data.int_regs.get_registers(4)
+    addr_reg, base_reg = test_data.int_regs.get_registers(2)
+    # amocas.q operates on register pairs: its rd and rs2 must be EVEN-numbered
+    # registers (each names the pair reg, reg+1), otherwise the assembler
+    # rejects the operands. Allocate even pairs for src/dest so the same
+    # registers are legal for every AMO mnemonic in the sweep, incl. amocas.q.
+    src_reg = test_data.int_regs.get_register_pair()
+    dest_reg = test_data.int_regs.get_register_pair()
 
     lines = [
         comment_banner(
@@ -341,19 +350,23 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     if prev_guard is not None:
         lines.append("#endif")
 
-    test_data.int_regs.return_registers([addr_reg, src_reg, dest_reg, base_reg])
+    test_data.int_regs.return_registers([addr_reg, base_reg])
+    test_data.int_regs.return_register_pair(src_reg)
+    test_data.int_regs.return_register_pair(dest_reg)
     return lines
 
 
 @add_priv_test_generator(
     "Zama16b",
     required_extensions=["Zama16b"],
-    march_extensions=["I", "Zicsr", "Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
+    march_extensions=["Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
 )
-def make_zama16b(test_data: TestData) -> list[str]:
+def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""
-    lines: list[str] = []
-    lines.extend(_generate_load_tests(test_data))
-    lines.extend(_generate_store_tests(test_data))
-    lines.extend(_generate_amo_tests(test_data))
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_load_tests(test_data))
+    tc.code.extend(_generate_store_tests(test_data))
+    tc.code.extend(_generate_amo_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

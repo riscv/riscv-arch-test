@@ -109,6 +109,9 @@
     `ifdef COVER_INTERRUPTSS
         interruptss_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_INTERRUPTSSSM
+        interruptsssm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_INTERRUPTSSM
         interruptssm_sample(hart, issue, ins);
     `endif
@@ -130,11 +133,11 @@
     `ifdef COVER_MISALIGNF
         misalignf_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_MISALIGNV
+        misalignv_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_MISALIGNZCA
         misalignzca_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_MISALIGNEDV
-        misalignedv_sample(hart, issue, ins);
     `endif
     `ifdef COVER_PMPF
         pmpf_sample(hart, issue, ins);
@@ -321,6 +324,12 @@
     `endif
     `ifdef COVER_ZAMA16B
         zama16b_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZAWRSSU
+        zawrssu_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZAWRSSM
+        zawrssm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZBA
         zba_sample(hart, issue, ins);

@@ -32,7 +32,7 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -41,7 +41,6 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
 .macro VERIFICATION_X ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
     \TEST_CASE\()_1:
     jalr ra, 0(a4)
@@ -91,7 +90,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL      ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPREGION_LXWR_1111   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 #define PMPREGION_LXWR_0111   ((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
@@ -99,7 +97,6 @@ main:
 #define S_MODE                    (1 << 11)
 #define M_MODE                    (3 << 11)
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY-3))-1)
@@ -108,20 +105,16 @@ main:
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
 #endif
-    csrw satp, zero                // Disable address translation.
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL << PMP7_CFG_SHIFT)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //-------------------------------------
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_0111)
@@ -172,8 +165,10 @@ main:
 //-------------------------------------
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)
@@ -227,17 +222,21 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
-.align 12
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS  // NAPOT-safe fillers: places the region at PMP_NAPOT_REGION_START (matches cp_mprv_*'s standard_region requirement)
     jr ra
+    .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

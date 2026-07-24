@@ -32,23 +32,14 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 
-    csrw satp, zero                // Disable address translation.
-
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+RVTEST_PMP_SET_BACKGROUND x4
 
 main:
 
@@ -79,8 +70,8 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 10
-.align (UDB_PMP_GRANULARITY)
+.p2align 10
+.p2align (UDB_PMP_GRANULARITY)
 RETURN_INSTRUCTION:
     nop
     nop
@@ -90,7 +81,7 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_pmpaddr_access_s\""

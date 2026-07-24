@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "SmV_cg"
@@ -533,36 +534,38 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
 
 @add_priv_test_generator(
     "SmV",
-    required_extensions=["Sm", "I", "M", "V", "Zicsr"],
-    march_extensions=["I", "M", "V", "Zicsr"],
+    required_extensions=["Sm", "M", "V", "Zicsr"],
+    march_extensions=["M", "V"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],
 )
-def make_smv(test_data: TestData) -> list[str]:
+def make_smv(test_data: TestData) -> list[TestChunk]:
     """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V)."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
     temp_reg = test_data.int_regs.get_register()
 
-    lines: list[str] = []
-    lines.extend(_gen_vcsrrswc(test_data, temp_reg))
-    lines.extend(_gen_vcsrs_walking1s(test_data, temp_reg))
-    lines.extend(_gen_mstatus_vs_dirty(test_data, temp_reg))
-    lines.extend(_gen_mstatus_vs_off(test_data, temp_reg))
-    lines.extend(_gen_misa_v(test_data, temp_reg))
-    lines.extend(_gen_sew_lmul_vsetvl(test_data, temp_reg))
-    lines.extend(_gen_sew_lmul_vset_i_vli(test_data, temp_reg))
-    lines.extend(_gen_vill_vsetvl(test_data, temp_reg))
-    lines.extend(_gen_vill_vset_i_vli(test_data, temp_reg))
-    lines.extend(_gen_vill_vsetvl_rs2_vill(test_data, temp_reg))
-    lines.extend(_gen_vsetvl_rs2_vill(test_data, temp_reg))
-    lines.extend(_gen_vtype_vill_set_vl_0(test_data, temp_reg))
-    lines.extend(_gen_vsetvl_i_rd_rs1(test_data, temp_reg))
-    lines.extend(_gen_avl_corners(test_data, temp_reg))
-    lines.extend(_gen_vsetivli_avl_edges(test_data, temp_reg))
-    lines.extend(_gen_vstart_oob(test_data, temp_reg))
-    lines.extend(_gen_vl_walking1s_sew_lmul(test_data, temp_reg))
+    tc.code.extend(_gen_vcsrrswc(test_data, temp_reg))
+    tc.code.extend(_gen_vcsrs_walking1s(test_data, temp_reg))
+    tc.code.extend(_gen_mstatus_vs_dirty(test_data, temp_reg))
+    tc.code.extend(_gen_mstatus_vs_off(test_data, temp_reg))
+    tc.code.extend(_gen_misa_v(test_data, temp_reg))
+    tc.code.extend(_gen_sew_lmul_vsetvl(test_data, temp_reg))
+    tc.code.extend(_gen_sew_lmul_vset_i_vli(test_data, temp_reg))
+    tc.code.extend(_gen_vill_vsetvl(test_data, temp_reg))
+    tc.code.extend(_gen_vill_vset_i_vli(test_data, temp_reg))
+    tc.code.extend(_gen_vill_vsetvl_rs2_vill(test_data, temp_reg))
+    tc.code.extend(_gen_vsetvl_rs2_vill(test_data, temp_reg))
+    tc.code.extend(_gen_vtype_vill_set_vl_0(test_data, temp_reg))
+    tc.code.extend(_gen_vsetvl_i_rd_rs1(test_data, temp_reg))
+    tc.code.extend(_gen_avl_corners(test_data, temp_reg))
+    tc.code.extend(_gen_vsetivli_avl_edges(test_data, temp_reg))
+    tc.code.extend(_gen_vstart_oob(test_data, temp_reg))
+    tc.code.extend(_gen_vl_walking1s_sew_lmul(test_data, temp_reg))
 
     test_data.int_regs.return_registers([temp_reg])
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

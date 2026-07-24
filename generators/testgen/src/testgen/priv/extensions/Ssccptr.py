@@ -30,6 +30,7 @@ tests/env/rvtest_setup.h when S-mode is enabled (S_SUPPORTED).
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 covergroup = "Ssccptr_cg"
@@ -147,17 +148,18 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssccptr",
     required_extensions=["S", "Ssccptr"],
-    march_extensions=["S"],
+    march_extensions=[],
 )
-def _generate_ssccptr_main(test_data: TestData) -> list[str]:
+def _generate_ssccptr_main(test_data: TestData) -> list[TestChunk]:
     """Generate all Ssccptr tests running in S-mode."""
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     # Initialize scratch memory with a known sentinel value so the lw
     # result is deterministic and the signature check is meaningful.
     # Use get_registers to avoid assuming which registers are free.
     scratch_reg, val_reg = test_data.int_regs.get_registers(2)
-    lines.extend(
+    tc.code.extend(
         [
             "# Initialize scratch memory with known sentinel value",
             f"LA(x{scratch_reg}, scratch)",
@@ -168,6 +170,7 @@ def _generate_ssccptr_main(test_data: TestData) -> list[str]:
     )
     test_data.int_regs.return_registers([scratch_reg, val_reg])
 
-    lines.extend(_generate_ssccptr_lw(test_data))
+    tc.code.extend(_generate_ssccptr_lw(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

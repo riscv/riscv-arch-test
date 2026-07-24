@@ -39,7 +39,7 @@
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -73,7 +73,6 @@ RVTEST_BEGIN
 .endm
 
 // PMP Macros
-#define PMP_GLOBAL_RWX        (((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP2_CFG_SHIFT)
 #define PMP0CFG_X             (((PMP_NAPOT | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
 
 
@@ -83,10 +82,7 @@ main:
 //                                                    Setup pmpaddr registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                  // Set PMP permission for all memory in pmp2cfg0 (TOR)
-  csrw pmpaddr1, t2
-  li t2, -1
-  csrw pmpaddr2, t2
+  RVTEST_PMP_SET_BACKGROUND t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -130,7 +126,7 @@ main:
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
-  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)
+  LI (t2, PMP0CFG_X)
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
@@ -239,7 +235,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2 and 3
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -253,17 +249,17 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl2_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 

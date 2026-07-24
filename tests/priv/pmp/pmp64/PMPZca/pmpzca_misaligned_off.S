@@ -35,7 +35,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -43,15 +43,12 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE         (1<<(UDB_PMP_GRANULARITY))
+#if UDB_PMP_GRANULARITY > 3
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY))
+#else
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY + 1))
+#endif
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -68,54 +65,40 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X         )&0xFF) << PMP0_CFG_SHIFT))
 #define PMP1CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X         )&0xFF) << PMP1_CFG_SHIFT))
 #define PMP2CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X         )&0xFF) << PMP2_CFG_SHIFT))
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 
 #define REGIONSTART         TEST_FOR_EXECUTION_1
+#define NEWREGION1          (REGIONSTART)
+#define NEWREGION2          (REGIONSTART+NAPOT_REGION_SIZE)
+#define NEWREGION3          (REGIONSTART+(2*NAPOT_REGION_SIZE))
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: Setting up 3 OFF regions with LWXR = 1111
 
-    LA(x5, REGIONSTART)
+    LA(x5, NEWREGION1)
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
     csrw pmpaddr0, x5
 
-    LA(x4, PMP0CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, REGION_SIZE)
-    add x5, x5, x4
+    LA(x5, NEWREGION2)
     srl  x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, 2*REGION_SIZE)
-    add x5, x5, x4
+    LA(x5, NEWREGION3)
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
 
     // Test Case 1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1
 
     // Test Case 2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -124,26 +107,31 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_off_execute\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS                    // NAPOT-safe return fillers: puts TEST_FOR_EXECUTION_1 at PMP_NAPOT_REGION_START
     jalr x0, x1, 0
-
-TEST_FOR_EXECUTION_1:
-    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
-    nop
     .endr
 
+TEST_FOR_EXECUTION_1:
+    .rept ((NAPOT_REGION_SIZE / 2) -1)
+    c.nop                                                        // 2-byte fillers: precise offsets so _2/_4's uncompressed jalr genuinely straddle the region boundary
+    .endr
+
+// No .p2align here (and none before _3/_4 below): the c.nop offsets above must survive
+// unrounded so these uncompressed jalr instructions land mid-word, genuinely straddling the
+// region boundary, instead of being pushed back onto the next grain-aligned boundary.
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
 TEST_FOR_EXECUTION_3:
-    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
-    nop
+    .rept ((NAPOT_REGION_SIZE / 2) -2)
+    c.nop
     .endr
 
 TEST_FOR_EXECUTION_4:

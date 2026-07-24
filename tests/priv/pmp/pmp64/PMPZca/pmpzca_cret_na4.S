@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_GRANULARITY: 2
+#   PMP_NA4_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -37,7 +37,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -45,13 +45,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -68,18 +61,11 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL       ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG                 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4  ) &0xFF)   << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL   -1                          // All memory region
 #define REGIONSTART             TEST_FOR_EXECUTION_1
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: NA4 Region with L->1 and XWR->111
@@ -92,30 +78,26 @@ main:
     csrw pmpcfg0, x4
 
     //Test case1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_0, test1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test3
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
 
-    j exit                                                  // Verification Complete, exit the test
-
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
-.align 10
+.p2align 10
 .skip (0x802)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region

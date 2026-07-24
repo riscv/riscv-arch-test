@@ -3,10 +3,20 @@
 # CI configuration for CORE-V Wally (CVW)
 # Requires Verilator and the CVW repository
 
-# SsstrictSm excluded because of Sail bug (incorrect decoding of add.uw instruction)
-# Sail Issue Link: https://github.com/riscv/sail-riscv/issues/1711
+# Remaining exclusions are CVW/Sail behavior mismatches under the current configs.
+# Sm: Insufficient WARL configuration options.
+# Sv: https://github.com/openhwgroup/cvw/issues/1766
+# Svpbmt: unknown
+# ExceptionsSvZalrsc: Wally should produce access fault rather than misaligned fault on misaligned LRSC. https://github.com/openhwgroup/cvw/issues/1809
 ci_enabled: true
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv,Svpbmt,Zicsr,PMPS,PMPU"
+exclude_extensions: "Sm,ExceptionsSvZalrsc,Sv,Svpbmt"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"
+# Default to a single shard; only the heavyweight ``gc`` configs benefit
+# from sharding. ``imc`` runs the full implemented test set quickly enough
+# in a single job, so paying the extra runner cost there isn't worth it.
+shards: 1
+config_shards:
+  cvw-rv32gc: 5
+  cvw-rv64gc: 5

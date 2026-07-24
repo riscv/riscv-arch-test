@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
@@ -66,13 +67,13 @@ def _generate_page_table_data_section() -> list[str]:
         "# already declared by the framework). Injected into .data via .pushsection.",
         ".pushsection .data",
         "#ifdef SV39_SUPPORTED",
-        ".align 12",
+        ".p2align 12",
         "rvtest_slvl1_pg_tbl: .zero 4096   # Sv39 L1 intermediate PT (unused on Sv32)",
         "#endif  // SV39_SUPPORTED",
         "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
-        ".align 12",
+        ".p2align 12",
         "rvtest_slvl0_pg_tbl: .zero 4096   # leaf PT (Sv39/Sv32)",
-        ".align 12",
+        ".p2align 12",
         "rvtest_pf_data:      .zero 4096   # physical backing page for the fault VA",
         "#endif  // SV39_SUPPORTED || SV32_SUPPORTED",
         ".popsection",
@@ -254,7 +255,9 @@ def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> li
 def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_instr_page_fault — R|W PTE (no X) → instruction page fault on jalr.
 
-    x4 = 0xACCE signals the trap handler to use ra (x1) as the return address.
+    The jalr uses x1 (ra) as its link register, so ra holds the fall-through
+    address; the trap handler resumes there after the instruction page fault
+    (advancing past a fetch fault would just re-fault).
     """
     addr_reg = test_data.int_regs.get_register()
 
@@ -272,7 +275,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
         instrs_rv64=[_jalr(_VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_jalr(_VA_PF_PAGE_RV32, "rv32")],
         section_title="Instruction Page Fault (R|W PTE, no X)",
-        extra_setup=["LI(x4, 0xACCE)"],
+        extra_setup=[],
     )
     test_data.int_regs.return_registers([addr_reg])
     return lines
@@ -281,21 +284,20 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 @add_priv_test_generator(
     "Sstvala",
     required_extensions=["Sstvala"],
-    march_extensions=["S", "Zicsr"],
-    extra_defines=[
-        "#define SKIP_MEPC",
-    ],
+    march_extensions=[],
+    extra_defines=[],
 )
-def _generate_sstvala_tests(test_data: TestData) -> list[str]:
+def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_page_table_data_section())
+    tc.code.extend(_generate_page_table_data_section())
 
     # Delegate exceptions to S-mode via medeleg.
     # 0xB0F7 = bits {15,13,12,7,6,5,4,2,1,0}
     medeleg_reg = test_data.int_regs.get_register()
-    lines.extend(
+    tc.code.extend(
         [
             "RVTEST_GOTO_MMODE",
             f"LI(x{medeleg_reg}, 0xB0F7)",
@@ -308,22 +310,22 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
     # Reuse the shared helpers from ExceptionsCommon. These emit their own
     # coverpoint names (cp_load_access_fault, etc.) — Sstvala_coverage.svh
     # references those names directly.
-    lines.extend(generate_load_access_fault_tests(test_data, covergroup))
-    lines.extend(generate_store_access_fault_tests(test_data, covergroup))
-    lines.extend(generate_instr_access_fault_tests(test_data, covergroup))
-    lines.extend(generate_load_address_misaligned_tests(test_data, covergroup))
-    lines.extend(generate_store_address_misaligned_tests(test_data, covergroup))
-    lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, covergroup))
-    lines.extend(generate_illegal_instruction_tests(test_data, covergroup))
+    tc.code.extend(generate_load_access_fault_tests(test_data, covergroup))
+    tc.code.extend(generate_store_access_fault_tests(test_data, covergroup))
+    tc.code.extend(generate_instr_access_fault_tests(test_data, covergroup))
+    tc.code.extend(generate_load_address_misaligned_tests(test_data, covergroup))
+    tc.code.extend(generate_store_address_misaligned_tests(test_data, covergroup))
+    tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, covergroup))
+    tc.code.extend(generate_illegal_instruction_tests(test_data, covergroup))
 
-    lines.extend(["", "# --- Page-fault tests (VM required) ---", "RVTEST_GOTO_MMODE"])
+    tc.code.extend(["", "# --- Page-fault tests (VM required) ---", "RVTEST_GOTO_MMODE"])
 
-    lines.extend(_generate_load_page_fault_tests(test_data, covergroup))
-    lines.extend(_generate_store_page_fault_tests(test_data, covergroup))
-    lines.extend(_generate_instr_page_fault_tests(test_data, covergroup))
+    tc.code.extend(_generate_load_page_fault_tests(test_data, covergroup))
+    tc.code.extend(_generate_store_page_fault_tests(test_data, covergroup))
+    tc.code.extend(_generate_instr_page_fault_tests(test_data, covergroup))
 
     medeleg_reg = test_data.int_regs.get_register()
-    lines.extend(
+    tc.code.extend(
         [
             f"LI(x{medeleg_reg}, 0)",
             f"csrw medeleg, x{medeleg_reg}",
@@ -331,4 +333,5 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
     )
     test_data.int_regs.return_registers([medeleg_reg])
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

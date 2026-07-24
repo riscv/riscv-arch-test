@@ -21,7 +21,7 @@
 //
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
@@ -57,17 +57,10 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
@@ -76,9 +69,9 @@ main:
 //                                            Verification Section
 // Test Case: Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0.
 
-    li x6, 0
+    LI(x6, 0)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     test_1:
          # Write x6 to pmpaddr0, read back and check against expected.
          RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x6, test_1, test_1_str)
@@ -97,10 +90,12 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
 test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

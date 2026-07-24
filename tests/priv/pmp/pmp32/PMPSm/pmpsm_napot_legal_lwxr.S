@@ -26,12 +26,13 @@
 
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -55,10 +56,10 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -84,7 +85,10 @@ RVTEST_BEGIN
     nop
     nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    LA (a4, \ADDRESS)
+    LI(t0, g)
+    add    a4, a4, t0
+    addi a4, a4, -4                     // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     jalr ra, 0(a4)
     nop
@@ -93,7 +97,9 @@ RVTEST_BEGIN
     nop
     nop
 
-    addi a4, a4, 4                      // REGIONSTART + g
+    LA (a4, \ADDRESS)
+    LI(t0, g)
+    add    a4, a4, t0                     // REGIONSTART + g
     LA(x1, 5f)                          // Store the return Address in x1
     jalr ra, 0(a4)
     nop
@@ -124,7 +130,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    addi a5, a5, -4                                         // REGIONSTART - 4
+    addi a5, a5, -4                                    // REGIONSTART - 4
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)
@@ -140,7 +146,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_6:
     sw a4, 0(a5)
@@ -204,7 +213,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_15:
     lw a4, 0(a5)
@@ -237,7 +249,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W      |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
@@ -245,7 +256,6 @@ main:
 #define PMPREGION_LXWR_1101 ((((PMP_L|PMP_R      |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -255,20 +265,17 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
@@ -280,8 +287,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
@@ -293,8 +302,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
@@ -306,8 +317,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LI(x4, PMPREGION_LXWR_1100)
@@ -319,8 +332,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LI(x4, PMPREGION_LXWR_1101)
@@ -332,8 +347,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)
@@ -345,7 +362,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 10
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_aligned_sb_address\""
@@ -368,10 +385,15 @@ test_14_str: .string "\"test: 14; cp: pmpm_aligned_lw_address+4\""
 test_15_str: .string "\"test: 15; cp: pmpm_aligned_lw_address+g-4\""
 test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
+
 TEST_FOR_EXECUTION_0:
-    jr ra
+    .rept (g>>2)                                         // NAPOT region must be 8-byte aligned at grain 2 -> region at 0x80005008 (pmpaddr=STANDARD_REGION). A 4-byte pad (0x80005004) yields a 16-byte NAPOT covering the pad -> hang.
+    nop
+    .endr
+
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

@@ -59,7 +59,7 @@ main:
     // -----------------------------------------------------------------------
 
     // --- pmpaddr walking ones, bit 21 ---
-    li t2, (1 << 21)
+    LI(t2, 1 << 21)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_1_str)
@@ -67,7 +67,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 22 ---
-    li t2, (1 << 22)
+    LI(t2, 1 << 22)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_2_str)
@@ -75,7 +75,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 23 ---
-    li t2, (1 << 23)
+    LI(t2, 1 << 23)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_3_str)
@@ -83,7 +83,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 24 ---
-    li t2, (1 << 24)
+    LI(t2, 1 << 24)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_4_str)
@@ -91,7 +91,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 25 ---
-    li t2, (1 << 25)
+    LI(t2, 1 << 25)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_5_str)
@@ -99,7 +99,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 26 ---
-    li t2, (1 << 26)
+    LI(t2, 1 << 26)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_6_str)
@@ -107,7 +107,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 27 ---
-    li t2, (1 << 27)
+    LI(t2, 1 << 27)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_7_str)
@@ -128,9 +128,11 @@ test_5_str: .string "\"test: 5; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_26\"
 test_6_str: .string "\"test: 6; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_27\""
 test_7_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_28\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

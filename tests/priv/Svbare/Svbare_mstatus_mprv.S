@@ -18,7 +18,7 @@
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 10
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -102,7 +102,7 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4

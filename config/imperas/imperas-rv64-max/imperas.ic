@@ -7,6 +7,7 @@
 --processorvendor riscv.ovpworld.org
 --processorname riscv
 --variant RVA23S64
+--addressbits 56 # Physical address bus width
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
@@ -79,6 +80,7 @@
 --override cpu*/Zfh=T
 --override cpu*/Zfa=T
 --override cpu*/Zcb=T
+--override cpu*/Zcd=T
 --override cpu*/Sstc=T
 --override cpu*/Smstateen=T
 --override cpu*/Ssstateen=T
@@ -86,6 +88,7 @@
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T
 --override cpu*/unaligned_low_pri=T
+--override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
 
 # Timeout
 #--override cpu*/TW_time_limit=65536  # *** attempted adding this summer 2025 for interrupt tests, but it breaks WALLY-status-tw-01.elf test and tests/coverage/priv.elf.  Not in rv32gc either
@@ -102,8 +105,8 @@
 --override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
-#--override cpu*/Smdbltrp=T
-#--override cpu*/Ssdbltrp=T
+--override cpu*/Smdbltrp=T
+--override cpu*/Ssdbltrp=T
 
 # PMA Settings
 # 'r': read access allowed

@@ -2501,6 +2501,8 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                         "    wfi # TW=0: waits, TW=1: illegal instruction",
                         "    nop",
                         "    nop",
+                        "# Idle in U-mode until the armed machine timer interrupt is taken,",
+                        f"    RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
                     ]
                 )
 

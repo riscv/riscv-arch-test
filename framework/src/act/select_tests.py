@@ -15,12 +15,7 @@ from pathlib import Path
 
 from act.config import Config, load_config
 from act.parse_test_constraints import TestMetadata
-from act.parse_udb_config import (
-    get_config_params,
-    get_implemented_extensions,
-    get_ref_model_pmp_params,
-    prepare_dut_outputs,
-)
+from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
 
@@ -124,7 +119,7 @@ def prepare_configs_and_select_tests(
     results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
     for config in configs:
         implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
-        config_params = get_config_params(config.udb_config) | get_ref_model_pmp_params(config.dut_include_dir)
+        config_params = get_config_params(config.udb_config)
         selected_tests = select_tests(
             full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
         )

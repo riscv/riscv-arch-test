@@ -797,7 +797,7 @@
 // RVMODEL macros in their rvmodel_macros.h to actually set/clear the interrupt.
 //==============================================================================
 
-#define RVTEST_DFLT_INT_HNDLR      j cleanup_epilogs  // default: abort test on unexpected interrupt
+#define RVTEST_DFLT_INT_HNDLR      la T1, cleanup_epilogs; jr T1  // default: abort test on unexpected interrupt
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
@@ -1686,12 +1686,11 @@ tsbi_instr_table:
 //
 // This section:
 //   1. Calculates the trap signature entry size (3, 4, or 6 words)
-//   2. Pre-increments the trap signature pointer
+//   2. Pre-increments the trap signature pointer and checks for overrun
 //   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
 //   4. For exceptions: relocates xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
-//   6. Checks for trap signature overrun
-//   7. Restores registers and returns via xret
+//   6. Restores registers and returns via xret
 //==============================================================================
 
 \__MODE__\()trapsig_ptr_upd:                     // pre-update trap signature pointer
@@ -1745,6 +1744,37 @@ tsbi_instr_table:
         addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
+
+        // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_x* slots before the
+        // first TRAP_SIGUPD so failedtest_print_csr_context reports THIS trap's
+        // CSRs on any word's mismatch.  They must be captured here rather than
+        // at reporter entry for two reasons:
+        //  1. The exception path rewrites the live xEPC CSR
+        //     (adj_\__MODE__\()epc_rtn) after word 2, so the live value can be
+        //     stale by reporting time.
+        //  2. Only the handler expansion knows its own privilege mode.  The
+        //     reporter used to read mcause/mtval/mstatus directly, which is an
+        //     illegal instruction when the failing handler runs in S/VS-mode:
+        //     the resulting trap re-entered the handler, mismatched again, and
+        //     livelocked (watchdog "trapped N times in a row").  The CSR_X*
+        //     aliases here resolve to this mode's CSRs.
+        // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before
+        // use); T5 has held xcause since handler entry.
+        csrr    T3, CSR_XEPC
+        LA(T4, saved_xepc)
+        SREG    T3, 0(T4)
+        SREG    T5, 8(T4)
+        csrr    T3, CSR_XTVAL
+        SREG    T3, 16(T4)
+        csrr    T3, CSR_XSTATUS
+        SREG    T3, 24(T4)
+
+        // Check before any trap signature stores. The end canary immediately follows
+        // trap_sigptr's allocated space, so the updated write pointer may equal
+        // sig_end_canary but must never pass it.
+        LA(     T3, sig_end_canary)
+        add     T4, T1, T2                          // T4 = this mode's updated trap sig write pointer
+        bgtu    T4, T3, trap_sig_overflow           // overrun -> fail before corrupting the signature/tohost
 
 //---------- Trap Signature Word 0: vect+mode+status ----------
 // Packed format:
@@ -1826,11 +1856,6 @@ sv_\__MODE__\()cause:
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        // Save original xEPC before adj_Mepc advances it past the faulting instruction.
-        // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
-        // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
-        la      T2, saved_mepc
-        SREG    T3, 0(T2)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---
@@ -2038,17 +2063,8 @@ skp_\__MODE__\()tval:
   .endif
 
 1:
-// --- Check for trap signature overrun ---
-chk_\__MODE__\()trapsig_overrun:
-        addi    sp, sp, -1*sv_area_sz              // temp adjust sp (same as trap_sig_sv)
-        LREG    T4, sv_area_off+trapsig_ptr_off(sp) // T4 = updated trap sig ptr (from M-mode shared area)
-        addi    sp, sp, 1*sv_area_sz               // undo sp adjustment
-        LREG    T2, sig_bgn_off(sp)                // T2 = this mode's sig begin
-        LREG    T1, sig_seg_siz(sp)                // T1 = this mode's sig size
-
-        add     T1, T1, T2                          // T1 = sig end address
-        bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort
-
+// --- Dispatch special exception handlers ---
+dispatch_\__MODE__\()spcl_excpt_handler:
         li      T2, int_hndlr_tblsz                // T2 = offset to exception dispatch table
         j       spcl_\__MODE__\()handler           // jump to special handler dispatcher
 
@@ -2201,9 +2217,14 @@ excpt_\__MODE__\()hndlr_tbl:
 
 .pushsection .text.rvmodel, "ax"
 
+// These routines are placed after .data, which can be larger than the jal range
+// in PMP tests with large granularity. Load the restore routine address instead
+// of using direct jumps.
+
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt: invoke RVMODEL macro
         RVMODEL_CLR_MSW_INT(T2, T5)
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Mtmr_int:                            // M-mode timer interrupt: write max to mtimecmp
         li T5, -1
@@ -2214,13 +2235,15 @@ excpt_\__MODE__\()hndlr_tbl:
         #if(UDB_MXLEN == 32)
                 sw T5, 4(T2)
         #endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
         RVMODEL_CLR_MEXT_INT(T2, T5)
         // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
         // removed because cause mepc might be different across different DUTs
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
         .ifc \__MODE__ , M
@@ -2238,7 +2261,8 @@ excpt_\__MODE__\()hndlr_tbl:
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt
         .ifc \__MODE__ , M
@@ -2250,7 +2274,8 @@ excpt_\__MODE__\()hndlr_tbl:
                         RVTEST_CLR_STIMER_INT
                 .endif
         .endif
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
         .ifc \__MODE__ , M
@@ -2280,19 +2305,23 @@ excpt_\__MODE__\()hndlr_tbl:
         beq T1, T3, 1f
         RVMODEL_CLR_SEXT_INT(T2, T5)
     1:
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
         RVMODEL_CLR_VSW_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
         RVMODEL_CLR_VTIMER_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
         RVMODEL_CLR_VEXT_INT
-        j       resto_\__MODE__\()rtn
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
 
 .popsection                                          // end of .text.rvmodel section
 

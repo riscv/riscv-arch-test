@@ -94,7 +94,9 @@ def format_mmm(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.maskval is None, "MMM-type instructions are not maskable"
-    return format_mask_producing_type(instr_str, test_data, params, "MMM", {"vd", "vs1", "vs2"}, {"vd", "vs1", "vs2"})
+    return format_mask_producing_type(
+        instr_str, test_data, params, "MMM", {"vd", "vs1", "vs2"}, {"vd", "vs1", "vs2"}, force_full_length_check=True
+    )
 
 
 @add_instruction_formatter("MVV", mvv_config)
@@ -170,7 +172,9 @@ def format_mvim(
 
 @add_instruction_formatter("MM", mm_config)
 def format_mm(instr_str: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
-    return format_mask_producing_type(instr_str, test_data, params, "MM", {"vd", "vs2"}, {"vd", "vs2"})
+    return format_mask_producing_type(
+        instr_str, test_data, params, "MM", {"vd", "vs2"}, {"vd", "vs2"}, force_full_length_check=True
+    )
 
 
 def format_mask_producing_type(
@@ -182,6 +186,7 @@ def format_mask_producing_type(
     mask_registers: set[str],
     *,
     no_dot_t: bool = False,
+    force_full_length_check: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
     assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
@@ -282,6 +287,14 @@ def format_mask_producing_type(
         if mask_reg != 0:
             recover_mask = [f"vmand.mm v0, v{mask_reg}, v{mask_reg}"]
 
+        if force_full_length_check:
+            vlmax_vsetvli = [
+                "# The spec says for mask-logical and vmsbf, vmsif, and vmsof, that the vlmax check is run at LMUL=8, SEW=8",
+                f"vsetvli x{params.temp_reg}, x0, e8, m8, tu, mu",
+            ]
+        else:
+            vlmax_vsetvli = [load_test_vtype(params, random_vl_reg, force_vlmax=True)]
+
         check = [
             *write_sigupd_v_len(test_data, params, 1, lmul=1, mask_producing=True, mask_reg=mask_reg),
             "# After a length suite sigupd, we need to do the operation as if vl=vlmax as that is a valid behavior",
@@ -289,7 +302,7 @@ def format_mask_producing_type(
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",
             "# So, we may have to recover that value.",
             *recover_mask,
-            load_test_vtype(params, random_vl_reg, force_vlmax=True),
+            *vlmax_vsetvli,
             test[0],
             "# This sigupd variant saves this result to the signature in non-selfcheck mode, and no-ops in selfcheck mode",
             *write_sigupd_v_mask_prod(test_data, params),

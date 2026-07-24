@@ -26,12 +26,11 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_aligned_tor.S"
+#define TEST_FILE "pmpzca_aligned_off.S"
 #define SIGUPD_COUNT 50
 
 
@@ -43,7 +42,15 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE         (1<<(UDB_PMP_GRANULARITY))
+#if UDB_PMP_GRANULARITY > 3
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY))
+  #define NAPOT_ADDR_MASK           ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+  #define NAPOT_ADDR_TRAILING_ONES  ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#else
+  #define NAPOT_REGION_SIZE         (1 << (UDB_PMP_GRANULARITY + 1))
+  #define NAPOT_ADDR_MASK           ~0
+  #define NAPOT_ADDR_TRAILING_ONES  0
+#endif
 
 
 main:
@@ -61,47 +68,45 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X          )&0xFF) << PMP0_CFG_SHIFT))
 #define PMP1CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X          )&0xFF) << PMP1_CFG_SHIFT))
 #define PMP2CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X          )&0xFF) << PMP2_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART                 TEST_FOR_EXECUTION_1
+#define NEWREGION1          (REGIONSTART)
+#define NEWREGION2          (REGIONSTART+NAPOT_REGION_SIZE)
+#define NEWREGION3          (REGIONSTART+(2*NAPOT_REGION_SIZE))
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: Setting up 3 OFF regions with LWXR = 1111
 
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
+    LA(x5, NEWREGION1)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, NAPOT_ADDR_MASK)
+    and x5, x5, x6
+    LI(x6, NAPOT_ADDR_TRAILING_ONES)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
-    LA(x4, PMP0CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, REGION_SIZE)
-    add x5, x5, x4
-    srl  x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
+    LA(x5, NEWREGION2)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, NAPOT_ADDR_MASK)
+    and x5, x5, x6
+    LI(x6, NAPOT_ADDR_TRAILING_ONES)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, REGIONSTART)
-    LI(x4, 2*REGION_SIZE)
-    add x5, x5, x4
-    srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
+    LA(x5, NEWREGION3)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, NAPOT_ADDR_MASK)
+    and x5, x5, x6
+    LI(x6, NAPOT_ADDR_TRAILING_ONES)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return in 1st region
@@ -122,21 +127,21 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_off_region_execute\""
 
 .p2align 12
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS                    // NAPOT-safe return fillers: puts TEST_FOR_EXECUTION_1 at PMP_NAPOT_REGION_START
     jalr x0, x1, 0
+    .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
-    .rept (((1<<(UDB_PMP_GRANULARITY)) - 4) / 2)                        //(region size - jalr size)/ compressed nop size
+    .rept ((NAPOT_REGION_SIZE - 4) / 2)                               //(region size - jalr size)/ compressed nop size
     nop
     .endr
 
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return inside the second region
-    .rept (((1<<(UDB_PMP_GRANULARITY)) - 4) / 2)
+    .rept ((NAPOT_REGION_SIZE - 4) / 2)
     nop
     .endr
 

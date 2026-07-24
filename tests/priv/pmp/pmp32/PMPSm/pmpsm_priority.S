@@ -16,14 +16,12 @@
 // Coverpoints :  cp_priority for PMPM is fully covered in this file.
 //
 // Test Cases  :  Testing that first matching region has priority to determining
-//                XWR. Set up 7 even/odd pairs of TOR regions, where each pair
-//                starts (even) at the standard location and has pair i has size
-//                i*g (in odd reg) so the regions partially overlap. Set the even
-//                pmpcfg to 0 (OFF). Set the odd pmpcfg to TOR and cycle through
-//                the 6 legal XWR values for each pair. Make {lw, sw, jalr} to
-//                each of (PMP_writable_regs-1) addresses at end of each region.
-//                Access fault if the relevant (highest priority) region prohibits
-//                access.
+//                XWR. Set up 7 overlapping NAPOT regions all based at REGIONSTART
+//                with sizes NAPOT_REGION_SIZE, 2x, 4x, 8x, 16x, 32x, 64x. Region 0
+//                is smallest and highest priority. Cycle through the 6 legal XWR
+//                values across regions 0-5; region 6 has no permissions. Make
+//                {lw, sw, jalr} to the last word of each region. Access fault if
+//                the matching region prohibits access.
 //
 // --------------------------------------------------------------------------------
 
@@ -33,8 +31,6 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
-#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -49,7 +45,13 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g   (1 << (UDB_PMP_GRANULARITY))
+#if UDB_PMP_GRANULARITY > 3
+  #define NAPOT_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY))
+  #define NAPOT_PRIORITY_ALIGN  (UDB_PMP_GRANULARITY + 6)
+#else
+  #define NAPOT_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY + 1))
+  #define NAPOT_PRIORITY_ALIGN  (UDB_PMP_GRANULARITY + 7)
+#endif
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -101,90 +103,65 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1101 ((((PMP_L|      PMP_R|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W|      PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1100 ((((PMP_L|            PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R            |PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_1000   ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LXWR_1101   ((((PMP_L|      PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1011   ((((PMP_L|PMP_R|PMP_W|      PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGION_LXWR_1100   ((((PMP_L|            PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_1001   ((((PMP_L|PMP_R            |PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LXWR_1111   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1000_6 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
 
 
-    LA(x4, -1)                      // All memory region
-    csrw    pmpaddr15, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
-
-    LA(x4, TEST_FOR_EXECUTION)
-    srl x4, x4, PMP_SHIFT
-    LI(t0, g)
-    add x5, x0, t0
-
-    // REGIONSTART in even PMPADDR
+    // Set 7 overlapping NAPOT regions all based at TEST_FOR_EXECUTION, with
+    // sizes NAPOT_REGION_SIZE, 2x, 4x, 8x, 16x, 32x, 64x.
+    // pmpaddr[i] = (REGIONSTART >> 2) | ((1<<i) * NAPOT_REGION_SIZE/8 - 1)
+    LA(x5, TEST_FOR_EXECUTION)
+    srl x5, x5, PMP_SHIFT
+    .set i, 0
     .set pmpaddri, CSR_PMPADDR0
     .rept 7
-    csrw pmpaddri, x4
-    .set pmpaddri, pmpaddri+2
-    .endr
-
-    // REGIONSTART + i*g in odd PMPADDR. Uses t2 (not t0, which aliases x5 the
-    // accumulator) so the per-iteration LI doesn't clobber the running total.
-    LA(x5, TEST_FOR_EXECUTION)
-    .set pmpaddri, CSR_PMPADDR0+1
-    .rept 7
-    LI(t2, g)
-    add x5, x5, t2
-    srl x6, x5, PMP_SHIFT
+    LI(x6, (1 << i) * (NAPOT_REGION_SIZE / 8) - 1)
+    or x6, x5, x6
     csrw pmpaddri, x6
-    .set pmpaddri, pmpaddri+2
+    .set i, i+1
+    .set pmpaddri, pmpaddri+1
     .endr
 
-    // Setting the even pmpcfg to 0 and odd pmpcfg to TOR & and rotating through the 6 legal XWR values.
-    LI(x4, (PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
+    // Set NAPOT cfg for all 7 regions, cycling through the 6 legal XWR values.
+    LI(x4, (PMPREGION_LXWR_1100|PMPREGION_LXWR_1011|PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
     csrw pmpcfg0, x4
-    LI(x5, (PMPREGION_LXWR_1100|PMPREGION_LXWR_1011))
+    LI(x5, (PMPREGION_LXWR_1000_6|PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
     csrw pmpcfg1, x5
-    LI(x4, (PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
-    csrw pmpcfg2, x4
-//    LI(x5, PMPREGION_LXWR_1000)
-    LI(x5, (PMPREGION_LXWR_1000 | PMP_REGION_GLOBAL))
-    csrw pmpcfg3, x5
 
 //                                          Verification Section
-// Test Case: 1 : Accessing at end of region with No Permissions
+// Test Case: 1 : Accessing at end of region 0 (size 1x) with No Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + g - 4), test_1
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 1*NAPOT_REGION_SIZE - 4), test_1
 
-// Test Case: 2 : Accessing at end of region with XR Permissions
+// Test Case: 2 : Accessing at end of region 1 (size 2x) with XR Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*g - 4), test_2
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*NAPOT_REGION_SIZE - 4), test_2
 
-// For larger UDB_PMP_GRANUMARITY, it is raising
-// relocation truncation error to fit: R_RISCV_JAL
-// Regions get so large, trap handler, RVMODEL macros,
-// and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 2
-// Test Case: 3 : Accessing at end of region with WR Permissions
+// Test Case: 3 : Accessing at end of region 2 (size 4x) with WR Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 3*g - 4), test_3
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 4*NAPOT_REGION_SIZE - 4), test_3
 
-// Test Case: 4 : Accessing at end of region with X Permissions
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 4*g - 4), test_4
+// Test Case: 4 : Accessing at end of region 3 (size 8x) with X Permissions
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 8*NAPOT_REGION_SIZE - 4), test_4
 
-// Test Case: 5 : Accessing at end of region with R Permissions
+// Test Case: 5 : Accessing at end of region 4 (size 16x) with R Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 5*g - 4), test_5
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 16*NAPOT_REGION_SIZE - 4), test_5
 
-// Test Case: 6 : Accessing at end of region with XWR Permissions
+// Test Case: 6 : Accessing at end of region 5 (size 32x) with XWR Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 6*g - 4), test_6
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 32*NAPOT_REGION_SIZE - 4), test_6
 
-// Test Case: 7 : Accessing at end of region with No Permissions
+// Test Case: 7 : Accessing at end of region 6 (size 64x) with No Permissions
 
-    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4), test_7
-#endif
+    VERIFICATION_RWX   (TEST_FOR_EXECUTION + 64*NAPOT_REGION_SIZE - 4), test_7
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -198,20 +175,11 @@ test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
 
 .p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
-    jr ra
-    .endr
+    jr ra                                                        // return pad before the aligned NAPOT priority region
 
+.p2align NAPOT_PRIORITY_ALIGN
 TEST_FOR_EXECUTION:
-// For larger UDB_PMP_GRANUMARITY, it is raising
-// relocation truncation error to fit: R_RISCV_JAL
-// Regions get so large, trap handler, RVMODEL macros,
-// and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 2
-    .rept (8*(1<<(UDB_PMP_GRANULARITY)))
-#else
-    .rept (2*(1<<(UDB_PMP_GRANULARITY)))
-#endif
+    .rept (16*NAPOT_REGION_SIZE)                                // 64*NAPOT_REGION_SIZE bytes: covers the largest overlapping region
     nop
     .endr
 

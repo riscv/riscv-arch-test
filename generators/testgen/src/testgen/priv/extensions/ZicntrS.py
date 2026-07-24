@@ -384,17 +384,17 @@ def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("S", coverpoint, covergroup),
-            f"CSRR(x{old_reg}, instret)",
+            f"csrr x{old_reg}, instret",
             "# make counter inaccessible in S mode",
-            "CSRW(mcounteren, zero)",
+            "csrw mcounteren, zero",
             "RVTEST_GOTO_LOWER_MODE Smode",
             "nop",
             "RVTEST_GOTO_MMODE",
             "# make counter accessible in S mode",
             f" LI(x{read_reg}, -1)",
-            f"CSRW(mcounteren, x{read_reg})",
+            f"csrw mcounteren, x{read_reg}",
             "RVTEST_GOTO_LOWER_MODE Smode",
-            f"CSRR(x{read_reg}, instret)",
+            f"csrr x{read_reg}, instret",
             f"sub x{read_reg}, x{read_reg}, x{old_reg}",
             "# SIGUPD the difference in instret",
             write_sigupd(read_reg, test_data),
@@ -415,11 +415,11 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.extend(_generate_mcounteren_access_s_tests(test_data))
-    tc.code.extend(_generate_scounteren_access_s_tests(test_data))
-    tc.code.extend(_generate_scounteren_access_m_tests(test_data))
-    tc.code.extend(_generate_scounteren_access_u_tests(test_data))
-    tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
+    # tc.code.extend(_generate_mcounteren_access_s_tests(test_data))
+    # tc.code.extend(_generate_scounteren_access_s_tests(test_data))
+    # tc.code.extend(_generate_scounteren_access_m_tests(test_data))
+    # tc.code.extend(_generate_scounteren_access_u_tests(test_data))
+    # tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -19,6 +19,7 @@ the test must actually take an illegal-instruction trap.
 
 from __future__ import annotations
 
+import math
 from random import seed as set_seed
 from typing import Iterable
 
@@ -96,35 +97,10 @@ def init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
 
 def build_testline(instruction: str, instruction_data: list, *,
                    maskval: str | None = None,
-                   override_vd: int | None = None,
-                   override_vs1: int | None = None,
-                   override_vs2: int | None = None,
-                   override_vs3: int | None = None,
-                   override_rs1: int | None = None,
-                   override_rs2: int | None = None,
-                   override_rd: int | None = None,
-                   override_imm: int | None = None,
                    addr_label: str = "random_mask_0") -> tuple[str, int, int]:
     """Build the assembly mnemonic line. Returns (testline, vd_reg, rd_reg)."""
     args = common.getInstructionArguments(instruction)
     vec_data, scalar_data, fp_data, imm_val = instruction_data
-
-    if override_vd is not None:
-        vec_data["vd"]["reg"] = override_vd
-    if override_vs1 is not None and "vs1" in vec_data:
-        vec_data["vs1"]["reg"] = override_vs1
-    if override_vs2 is not None and "vs2" in vec_data:
-        vec_data["vs2"]["reg"] = override_vs2
-    if override_vs3 is not None and "vs3" in vec_data:
-        vec_data["vs3"]["reg"] = override_vs3
-    if override_rs1 is not None and "rs1" in scalar_data:
-        scalar_data["rs1"]["reg"] = override_rs1
-    if override_rs2 is not None and "rs2" in scalar_data:
-        scalar_data["rs2"]["reg"] = override_rs2
-    if override_rd is not None and "rd" in scalar_data:
-        scalar_data["rd"]["reg"] = override_rd
-    if override_imm is not None:
-        imm_val = override_imm
 
     testline = instruction + " "
     for arg in args:
@@ -209,8 +185,59 @@ def make_dest_zero_overrides(instruction: str) -> dict:
     return {}
 
 
+def make_valid_indices(instruction: str, instruction_data: list, sew: int, lmul: int, scratch: int):
+    # Logic Taken From loadVecReg. The idea is to stop load access faults on instructions that don't trap
+    vec_data, scalar_data, *_ = instruction_data
+    register = vec_data['vs2']['reg']
+
+    vtypeReg = common.pickPrivScratch(scalar_data, (scratch,))
+    vlmaxReg = common.pickPrivScratch(scalar_data, (scratch, vtypeReg))
+    avlReg = scratch
+
+    if   sew == 8  : sew_aligned = -1  #"0x1F"
+    elif sew == 16 : sew_aligned = -2  #"0x1E"
+    elif sew == 32 : sew_aligned = -4  #"0x1C"
+    elif sew == 64 : sew_aligned = -8  #"0x18"
+
+    eew = common.getInstructionEEW(instruction)
+    vs2_emul = math.ceil(lmul * eew / sew)
+
+    common.writeLine(f"csrr x{vtypeReg}, vtype",                                     "# save vtype register for after load")
+    common.writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
+    common.writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
+    common.writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
+    common.writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{common.getLmulFlag(vs2_emul)}, tu, mu", "# setting sew to vs2 eew")
+    # spec zero-extends index elements to XLEN; use unsigned remainder so
+    # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+    common.writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")
+    common.writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
+
+
+def override_registers(instruction_data: list, *, override_vd: int | None = None, override_vs1: int | None = None,
+                       override_vs2: int | None = None, override_vs3: int | None = None, override_rd: int | None = None,
+                       override_rs1: int | None = None, override_rs2: int | None = None, override_imm: int | None = None):
+    vec_data, scalar_data, _fp_data, _imm_val = instruction_data
+
+    if override_vd is not None:
+        vec_data["vd"]["reg"] = override_vd
+    if override_vs1 is not None and "vs1" in vec_data:
+        vec_data["vs1"]["reg"] = override_vs1
+    if override_vs2 is not None and "vs2" in vec_data:
+        vec_data["vs2"]["reg"] = override_vs2
+    if override_vs3 is not None and "vs3" in vec_data:
+        vec_data["vs3"]["reg"] = override_vs3
+    if override_rs1 is not None and "rs1" in scalar_data:
+        scalar_data["rs1"]["reg"] = override_rs1
+    if override_rs2 is not None and "rs2" in scalar_data:
+        scalar_data["rs2"]["reg"] = override_rs2
+    if override_rd is not None and "rd" in scalar_data:
+        scalar_data["rd"]["reg"] = override_rd
+    if override_imm is not None:
+        instruction_data[3] = override_imm
+
+
 def issue_simple_test(instruction: str, cp: str, *,
-                       sew: int | None = None, lmul: int = 1, vl: int = 1,
+                       sew: int | None = None, lmul: int | str = 1, vl: int = 1,
                        vstart: int | None = None,
                        maskval: str | None = "v0.t",
                        override_vd: int | None = None,
@@ -232,11 +259,24 @@ def issue_simple_test(instruction: str, cp: str, *,
         eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
         sew = eew
 
+    # Default fractional lmul to take up one register
+    bounded_lmul = lmul if isinstance(lmul, int) else 1
+
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
+        lmul= bounded_lmul,
+    )
+    override_registers(
+        instruction_data,
+        override_vd=override_vd,
+        override_vs1=override_vs1,
+        override_vs2=override_vs2,
+        override_vs3=override_vs3,
+        override_rd=override_rd,
+        override_imm=override_imm
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
@@ -244,6 +284,8 @@ def issue_simple_test(instruction: str, cp: str, *,
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
     init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
+    if instruction in common.indexed_ls_ins:
+        make_valid_indices(instruction, instruction_data, sew, bounded_lmul, scratch)
     # Re-emit vsetivli RIGHT BEFORE the test so the previous-instruction CSR
     # snapshot used by SAMPLE_BEFORE includes vtype/vl/vstart. The intervening
     # vle*.v ops do not write those CSRs, and the rvvi shim does not carry
@@ -255,11 +297,8 @@ def issue_simple_test(instruction: str, cp: str, *,
 
     testline, vd, rd = build_testline(
         instruction, instruction_data, maskval=maskval,
-        override_vd=override_vd, override_vs1=override_vs1,
-        override_vs2=override_vs2, override_vs3=override_vs3,
-        override_rd=override_rd, override_imm=override_imm,
     )
-    sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
+    sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=bounded_lmul)
     write_lmul = lmul if isinstance(lmul, int) else 1
 
     common.add_testcase_string(cp, instruction)

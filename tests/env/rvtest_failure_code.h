@@ -1169,6 +1169,8 @@
       print_failstr:
         LA(a0, failstr)
         call rvmodel_io_write_str
+        LA(a0, begin_debugstr)
+        call rvmodel_io_write_str
 
         # Print test name string
       print_testnamestr:
@@ -2217,7 +2219,9 @@
     failstr:
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
-        .asciz "\"\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .asciz "\"\n"
+    begin_debugstr:
+        .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
     trap_sig_overflowstr:

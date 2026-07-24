@@ -99,8 +99,10 @@
   #ifdef STANDARD_SM_SUPPORTED
     check_trap_sig_overflow:
       LA(     T4, trap_sig_overflow)
-      bne     T4, T5, check_abort_test
+      bne     T4, T5, check_trap_sig_offset
       LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, begin_debugstr)
       call rvmodel_io_write_str
       LA(a0, trap_sig_overflowstr)
       call rvmodel_io_write_str
@@ -108,39 +110,49 @@
       call rvmodel_io_write_str
       call rvmodel_halt_fail
 
-    check_abort_test:
-      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, check_trap_sig_offset
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR abort_test
-      RVTEST_WORD_PTR abortstr
-      .word   CSR_MEPC
-
     // Check trap signature offset to make sure the correct number of traps occurred
     check_trap_sig_offset:
+    #ifndef RVTEST_NOSIG
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
-      LA(     T2, trap_sigptr)       // Base address of trap signature region
+      LA(     T2, trap_sigptr)        // Base address of trap signature region
       sub     T1, T1, T2              // Calculate DUT trap signature byte count
       LA(     T3, final_trap_sig_offset)
     #ifdef RVTEST_SELFCHECK
       LREG    T4, 0(T3)               // Reference trap signature byte count
-      beq     T4, T1, 1f
+      beq     T4, T1, check_abort_test
     #else
       SREG    T1, 0(T3)               // Save reference trap signature byte count
-      beq     x0, x0, 1f
+      beq     x0, x0, check_abort_test
     #endif
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR check_trap_sig_offset
       RVTEST_WORD_PTR trap_sig_offset_mismatch
-    1:
+    #endif
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, exit_cleanup
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
   #endif
 
-  // Terminate test
+  // Terminate test with passing status
   exit_cleanup:
     LA(a0, successstr)
     call rvmodel_io_write_str
     call rvmodel_halt_pass
+
+  // Terminate the test with a failure message
+  // Does not include any debug information.
+  // Used for C tests that print their own failure messages inline.
+  .global rvtest_fail_summary
+  rvtest_fail_summary:
+    LA(a0, failstr)
+    call rvmodel_io_write_str
+    call rvmodel_halt_fail
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:
@@ -249,8 +261,19 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
-    // safe to use T1-T3 because this is only invoked in termination code
+    // Use rvmodel_io_write_str_c for C-ABI compatible version.
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
+    ret
+
+  .global rvmodel_io_write_str_c
+  rvmodel_io_write_str_c:
+    addi sp, sp, -16
+    SREG ra, 0(sp)
+    SREG s0, REGWIDTH(sp)
+    call rvmodel_io_write_str
+    LREG s0, REGWIDTH(sp)
+    LREG ra, 0(sp)
+    addi sp, sp, 16
     ret
 
   rvmodel_halt_pass:
@@ -410,11 +433,18 @@
   rvtest_sig_begin:
 
     // Main signature region
-    #ifdef RVTEST_SELFCHECK
-        signature_base:
-          // Preload signature region with correct values for self-checking
-          #include SIGNATURE_FILE
-    #else
+    #ifdef RVTEST_NOSIG
+      // No signature storage; keep compatibility labels for shared ACT code.
+      signature_base:
+      final_trap_sig_offset:
+      tsig_begin_canary:
+      trap_sigptr:
+      sig_end_canary:
+    #elif defined(RVTEST_SELFCHECK)
+      signature_base:
+        // Preload signature region with correct values for self-checking
+        #include SIGNATURE_FILE
+    #else // SIGNATURE Mode
       // Canary is the first entry in the signature region; the dynamic canary
       // check at test start reads and verifies this value to ensure the signature
       // mechanism is functioning correctly.
@@ -1031,31 +1061,46 @@
     .option pop
   #endif
 
-  // Initialize signature pointer
-  LA(DEFAULT_SIG_REG, signature_base)
+  #ifndef RVTEST_NOSIG
+    // Initialize signature pointer
+    LA(DEFAULT_SIG_REG, signature_base)
 
-  // Initial signature check to confirm self-checking is working
-  canary_check:
-  LI(T1, CANARY_VALUE)
-  #ifdef RVTEST_SELFCHECK
-    // Can't use DEFAULT_*_REG macros here because of macro expansion order
-    // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-    RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
-  #else
-    // Increment sig pointer to skip the CANARY
-    addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
-    // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
-    // used in self-check mode (including its embedded pointer words/dwords).
-    nop
-    nop
-    nop
-    nop
-    nop
-    #if __riscv_xlen == 64
+    // Initial signature check to confirm self-checking is working
+    canary_check:
+    LI(T1, CANARY_VALUE)
+    // The canary check runs in .text.rvmodel, which may be more than a jal away
+    // from the shared failure handler. Preload the handler address into
+    // DEFAULT_DATA_REG, which is reinitialized as the data pointer after this block.
+    LA(DEFAULT_DATA_REG, failedtest_x5_x4)
+    #ifdef RVTEST_SELFCHECK
+      .option push
+      .option norvc
+      LREG DEFAULT_TEMP_REG, 0(DEFAULT_SIG_REG)
+      beq DEFAULT_TEMP_REG, T1, 1f
+      // Keep jalr immediately after the compare so the failure reporter can
+      // decode the preceding LREG/beq pair using the DEFAULT_LINK_REG return address.
+      jalr DEFAULT_LINK_REG, 0(DEFAULT_DATA_REG)
+      RVTEST_WORD_PTR canary_check
+      RVTEST_WORD_PTR canary_mismatch
+      1:
+      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+      .option pop
+    #else
+      // Increment sig pointer to skip the CANARY
+      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+      // NOPs to keep the emitted code size/bytes aligned with the self-check
+      // sequence above (including its embedded pointer words/dwords).
       nop
       nop
-    #endif
-  #endif
+      nop
+      nop
+      nop
+      #if __riscv_xlen == 64
+        nop
+        nop
+      #endif // __riscv_xlen == 64
+    #endif // !RVTEST_SELFCHECK
+  #endif // RVTEST_NOSIG
   // Initialize test data pointer
   LA(DEFAULT_DATA_REG, rvtest_data_begin)
 .endm

@@ -277,7 +277,7 @@ def make_eew_lt_sewmin(instruction: str) -> None:
     else:
         return
 
-    cp = "cp_ssstrict_ls_eew_lt_sewmin"
+    cp = "cp_ssstrictv_ls_eew_lt_sewmin"
     for possible_sew_min in (8, 16, 32, 64):
         if width_encoded_eew < possible_sew_min:
             _ls_test(instruction, cp, possible_sew_min, "m1", if_guard=f"UDB_SEW_MIN == {possible_sew_min}")

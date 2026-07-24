@@ -52,15 +52,12 @@
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
-        csrr x1, mcause
-        la x9, saved_mcause
-        SREG x1, 0(x9)
-        csrr x1, mtval
-        la x9, saved_mtval
-        SREG x1, 0(x9)
-        csrr x1, mstatus
-        la x9, saved_mstatus
-        SREG x1, 0(x9)
+        # NOTE: do NOT read mcause/mtval/mstatus here.  This entry point is
+        # reached from whichever mode's trap handler detected the mismatch;
+        # when that handler runs in S/VS-mode, an M-mode CSR read traps and
+        # livelocks the reporter.  The trap handler snapshots its own mode's
+        # xEPC/xCAUSE/xTVAL/xSTATUS into saved_xepc/saved_xcause/saved_xtval/
+        # saved_xstatus before trap signature word 0 (rvtest_trap_handler.h).
         j failedtest_saveregs
 
 #ifdef F_SUPPORTED
@@ -1671,7 +1668,7 @@
         call rvmodel_io_write_str // print "Unrecognized trap failure..."
 
         // Print instruction at saved mepc
-        LREG a2, saved_mepc
+        LREG a2, saved_xepc
         LA(a0, xepcinstrstr)
         call rvmodel_io_write_str  // Print "Instruction that trapped:"
 
@@ -1752,9 +1749,13 @@
         call rvmodel_halt_fail
 
 
-    # Print saved mepc, mcause, mtval, mstatus for trap failure diagnostics.
-    # Values were snapshotted at failedtest_trap_x7_x9 entry, before any re-trap
-    # could corrupt the live CSRs (e.g. PMP faults from rvmodel_io_write_str).
+    # Print saved xepc, xcause, xtval, xstatus for trap failure diagnostics.
+    # All four were snapshotted by the trap handler before trap signature
+    # word 0, using the trapping mode's own CSRs (CSR_X* aliases): the live
+    # CSRs can't be read here because the handler rewrites xEPC
+    # (adj_*epc_rtn) before some mismatches are detected, an S/VS-mode
+    # handler can't read the M-mode CSRs at all, and any re-trap (e.g. PMP
+    # faults from rvmodel_io_write_str) would clobber them.
     # Saves and restores ra via csr_context_ret_addr so callers can use 'call'.
     failedtest_print_csr_context:
         la a2, csr_context_ret_addr
@@ -1762,7 +1763,7 @@
 
         LA(a0, mepcstr)
         call rvmodel_io_write_str
-        LREG a0, saved_mepc
+        LREG a0, saved_xepc
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1770,7 +1771,7 @@
 
         LA(a0, mcausestr)
         call rvmodel_io_write_str
-        LREG a0, saved_mcause
+        LREG a0, saved_xcause
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1778,7 +1779,7 @@
 
         LA(a0, mtvalstr)
         call rvmodel_io_write_str
-        LREG a0, saved_mtval
+        LREG a0, saved_xtval
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1786,7 +1787,7 @@
 
         LA(a0, mstatusstr)
         call rvmodel_io_write_str
-        LREG a0, saved_mstatus
+        LREG a0, saved_xstatus
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1975,13 +1976,16 @@
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
         .fill 2, 4, 0
-    saved_mepc:                                  # original xEPC saved by common_excpt_handler before adj_Mepc
+    # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
+    # snapshotted by the trap handler before trap signature word 0
+    # (rvtest_trap_handler.h).
+    saved_xepc:
         .fill 2, 4, 0
-    saved_mcause:                                # mcause snapshotted at failedtest_trap_x7_x9 entry
+    saved_xcause:
         .fill 2, 4, 0
-    saved_mtval:                                 # mtval snapshotted at failedtest_trap_x7_x9 entry
+    saved_xtval:
         .fill 2, 4, 0
-    saved_mstatus:                               # mstatus snapshotted at failedtest_trap_x7_x9 entry
+    saved_xstatus:
         .fill 2, 4, 0
 
     ascii_buffer:
@@ -2176,13 +2180,13 @@
     xepcinstrstr:
         .string "RVCP: Instruction that trapped: "
     mepcstr:
-        .string "RVCP: MEPC:    "
+        .string "RVCP: XEPC:    "
     mcausestr:
-        .string "RVCP: MCAUSE:  "
+        .string "RVCP: XCAUSE:  "
     mtvalstr:
-        .string "RVCP: MTVAL:   "
+        .string "RVCP: XTVAL:   "
     mstatusstr:
-        .string "RVCP: MSTATUS: "
+        .string "RVCP: XSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Trap count mismatch.\"";
     sv_Mvect_str:

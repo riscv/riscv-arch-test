@@ -1745,6 +1745,30 @@ tsbi_instr_table:
         LREG    T3, sig_bgn_off+          0(sp)    // T3 = this mode's signature begin address
         add     T1, T1, T3                          // T1 = this mode's current trap sig write address
 
+        // Snapshot xEPC/xCAUSE/xTVAL/xSTATUS to the saved_x* slots before the
+        // first TRAP_SIGUPD so failedtest_print_csr_context reports THIS trap's
+        // CSRs on any word's mismatch.  They must be captured here rather than
+        // at reporter entry for two reasons:
+        //  1. The exception path rewrites the live xEPC CSR
+        //     (adj_\__MODE__\()epc_rtn) after word 2, so the live value can be
+        //     stale by reporting time.
+        //  2. Only the handler expansion knows its own privilege mode.  The
+        //     reporter used to read mcause/mtval/mstatus directly, which is an
+        //     illegal instruction when the failing handler runs in S/VS-mode:
+        //     the resulting trap re-entered the handler, mismatched again, and
+        //     livelocked (watchdog "trapped N times in a row").  The CSR_X*
+        //     aliases here resolve to this mode's CSRs.
+        // T3 and T4 are dead here (both rewritten in sv_\__MODE__\()vect before
+        // use); T5 has held xcause since handler entry.
+        csrr    T3, CSR_XEPC
+        LA(T4, saved_xepc)
+        SREG    T3, 0(T4)
+        SREG    T5, 8(T4)
+        csrr    T3, CSR_XTVAL
+        SREG    T3, 16(T4)
+        csrr    T3, CSR_XSTATUS
+        SREG    T3, 24(T4)
+
         // Check before any trap signature stores. The end canary immediately follows
         // trap_sigptr's allocated space, so the updated write pointer may equal
         // sig_end_canary but must never pass it.
@@ -1832,11 +1856,6 @@ sv_\__MODE__\()cause:
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        // Save original xEPC before adj_Mepc advances it past the faulting instruction.
-        // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
-        // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
-        la      T2, saved_mepc
-        SREG    T3, 0(T2)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---

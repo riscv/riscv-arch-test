@@ -2585,7 +2585,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
                     [
                         f"# Write TW={tw_val}",
                         f"LI(x{r_scratch}, 0x200000) # TW bit (bit 21)",
-                        f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_scratch})",
+                        f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_scratch}",
                     ]
                 )
 

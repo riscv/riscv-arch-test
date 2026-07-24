@@ -362,8 +362,8 @@
             "amo": "AccessFault"
           },
           "atomic_support": "AMOCASQ",
-          "misaligned_atomicity_granule_size_exp": 4,
-          "vector_misaligned_atomicity_granule_size_exp": 4,
+          "misaligned_atomicity_granule_size_exp": 6,
+          "vector_misaligned_atomicity_granule_size_exp": 6,
           "reservability": "RsrvEventual",
           "supports_cbo_zero": true,
           "supports_pte_read": true,
@@ -604,7 +604,7 @@
     // cacheable main memory region is 4, otherwise you will get a
     // config validation error.
     "Zama16b": {
-      "supported": true
+      "supported": false
     },
     "Zawrs": {
       "supported": true,

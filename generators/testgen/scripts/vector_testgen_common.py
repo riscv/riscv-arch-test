@@ -2475,7 +2475,6 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"vsetivli x0, 1, e{sew}, m{lmulflag}, tu, mu", "# Restore valid vtype after vill test")
 
     if (priv):
-      writeLine("nop",                                           "# nop after possible trap")
       # The test instruction may have trapped or otherwise left mstatus.VS in a
       # state where vector CSR access (csrw vstart) is itself illegal. Restore
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never

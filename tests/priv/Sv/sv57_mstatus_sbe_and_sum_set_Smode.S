@@ -119,9 +119,9 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(   t0, MSTATUS_SBE)
-  CSRS( mstatus, t0)                                                     // Set mstatus.SBE (Supervisor Big Endian)
+  csrs  mstatus, t0                                                     // Set mstatus.SBE (Supervisor Big Endian)
   LI(   t0, MSTATUS_SUM)
-  CSRS( mstatus, t0)                                                     // Set mstatus.SUM
+  csrs  mstatus, t0                                                     // Set mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

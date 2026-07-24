@@ -119,7 +119,7 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test1_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv32, ASID is in bits 30:22 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv32, ASID is in bits 30:22 of satp)
   slli  t0, t0, 1
   srli  t0, t0, 23
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -141,7 +141,7 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL0, test2_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv32, ASID is in bits 30:22 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv32, ASID is in bits 30:22 of satp)
   slli  t0, t0, 1
   srli  t0, t0, 23
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)

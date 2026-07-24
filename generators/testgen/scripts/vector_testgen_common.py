@@ -712,6 +712,8 @@ widening_mac_ins = [
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
+saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx", "vsmul.vv", "vsmul.vx"]
+
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",
 
@@ -1230,7 +1232,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
             else:
               vectordata += writeData(f"   .word 0x{word:08x}")
         else:
-          for i in range(num_words),:
+          for i in range(num_words):
               randomElem = getrandbits(32)
               vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
@@ -1807,6 +1809,37 @@ def writeSIGUPD_F(fd):
     writeLine(f"{str_ptr}:")
     writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {str_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
+def writeSIGUPD_FFLAGS(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_FFLAGS(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check fflags in signature")
+
+def writeSIGUPD_VXSAT(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
+
+
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
 
 # def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
@@ -1867,7 +1900,10 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     # the same formula at runtime (bytes = vl << vsew, +4 pad, round up to 8)
     # and advances _SIG_PTR accordingly.  Here we compute the worst case so
     # the reserved signature region is large enough.
-    if length_macro or vlmax_mask_prod:
+    if vd_mask:
+      emul_for_bytes = 8
+      worst_bytes = (maxVLEN * emul_for_bytes) // 8
+    elif length_macro or vlmax_mask_prod:
       # _LEN macro sets vl = VLMAX for (sew, emul) → bytes = maxVLEN_bits * emul / 8.
       emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1 and not whole_register_operation) else 1
       worst_bytes = (maxVLEN * emul_for_bytes) // 8
@@ -1985,8 +2021,8 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
         writeLine("# for the reference model, it will store a value. This is because for a mask-producing operation, there are 3 valid outputs")
         writeLine("# in the tail region, as given by the spec: undisturbed, all ones, or computed as if vl = vlmax. So, to have self-checking tests")
         writeLine("# this must be included as a no-op")
-        writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL)")
-        writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd}, {sew}, {emul})")
+        writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR)")
+        writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd})")
       elif length_macro:
         scalar_dst_flag = 1 if scalar_dst else 0
         writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
@@ -2471,10 +2507,10 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
         writeLine(reset_vl_post_load, "# reset vl to the previous value")
 
     if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
-      fcsrsaveReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(fcsrsaveReg)
-      writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
-      writeSIGUPD(inst_ptr, fcsrsaveReg)
+      writeSIGUPD_FFLAGS(inst_ptr)
+
+    if test in saturating_ins:
+      writeSIGUPD_VXSAT(inst_ptr)
 
     if skip_sigupd:
       # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.
@@ -2848,6 +2884,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
 
     if instruction in vfloattypes and clear_fflags:
       writeLine("fsflagsi 0b00000", "# clear all fflags")
+
+    if instruction in saturating_ins:
+      writeLine("csrwi vxsat, 0", "# clear vxsat bit")
 
     # If mask value specified, load to v0 (must be before prepBaseV for types that
     # do their own vsetvli, so prepBaseV restores the correct vl/vtype afterward)

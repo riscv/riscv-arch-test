@@ -234,40 +234,48 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
-    """In M mode:
-    read from instret, cycle, time. write mcounteren = 0s
-    go down to S mode
-    RVTEST_IDLE_FOR_INTERRUPT
-    go up to M mode
-    read from each counter, sigupd 0xBADBEEF if it is the same before and after
+    """ "start in M mode
+    read instret and mcounteren = 0s
+    goto S mode
+    nop
+    go back to M mode
+    mcounteren = 1s
+    read and sigupd change in instret"
     """
     covergroup, coverpoint = "ZicntrU_cg", "cp_mcounter_inc_inaccessible"
 
     old_reg, read_reg = test_data.int_regs.get_registers(2)
 
-    reg_list = ["cycle", "time", "instret"]
     lines = [
         comment_banner(coverpoint, _generate_mcounter_inc_inaccessible_tests.__doc__),
         "",
     ]
-    for counter in reg_list:
-        lines.extend(
-            [
-                test_data.add_testcase(f"{counter}", coverpoint, covergroup),
-                "CSRW(mcounteren, 0)",
-                f"CSRR(x{old_reg}, {counter})",
-                # counter is inaccessible in U mode
-                "RVTEST_GOTO_LOWER_MODE Umode",
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{read_reg})",
-                "RVTEST_GOTO_MMODE",
-                f"CSRR(x{read_reg}, {counter})",
-                f"bne x{read_reg}, x{old_reg}, 1f",
-                # if test got to here something was wrong
-                f"LI(x{read_reg}, 0xBAD1BEEF)",
-                write_sigupd(read_reg, test_data),
-                "1:",
-            ]
-        )
+    lines.extend(
+        [
+            test_data.add_testcase("U", coverpoint, covergroup),
+            f"CSRR(x{old_reg}, instret)",
+            "# make counter inaccessible in U mode",
+            "CSRW(mcounteren, zero)",
+            "#ifdef S_SUPPORTED",
+            "CSRW(scounteren, zero)",
+            "#endif",
+            "RVTEST_GOTO_LOWER_MODE Umode",
+            "nop",
+            "RVTEST_GOTO_MMODE",
+            "# make counter accessible in U mode",
+            f" LI(x{read_reg}, -1)",
+            f"CSRW(mcounteren, x{read_reg})",
+            "#ifdef S_SUPPORTED",
+            f"CSRW(scounteren, x{read_reg})",
+            "#endif",
+            "RVTEST_GOTO_LOWER_MODE Umode",
+            f"CSRR(x{read_reg}, instret)",
+            f"sub x{read_reg}, x{read_reg}, x{old_reg}",
+            "# SIGUPD the difference in instret",
+            write_sigupd(read_reg, test_data),
+            "RVTEST_GOTO_MMODE",
+        ]
+    )
     test_data.int_regs.return_registers([old_reg, read_reg])
     return lines
 

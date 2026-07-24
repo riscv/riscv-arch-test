@@ -61,8 +61,6 @@ Some RISC-V behaviors are UNSPECIFIED, which means an implementation can do anyt
 
 Unimplemented opcodes (except in the custom space) and instructions accessing non-existent CSRs are reserved.  The behavior of reserved instructions is UNSPECIFIED, so they should not be tested by most testplans.  However, when the Ssstrict extension is enabled, reserved instructions raise an illegal instruction exception.  This is tested by the <<SsstrictS, SsstrictS>> test plan.
 
-[NOTE]If the instruction is reserved only in certain architectural states, it is not required to raise an illegal instruction and Ssstrict does not test it.  For example, vector register groups that are not a multiple of LMUL are reserved, but LMUL is architectural state not encoded in the instruction, so instructions with groups not aligned to LMUL are reserved but untested even by Ssstrict.
-
 [[t-behavior-normative-rules]]
 .I Normative Rules Regarding Behaviors
 [cols="1, 4" options=header]

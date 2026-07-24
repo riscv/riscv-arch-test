@@ -322,7 +322,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     csrs = [
         # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
         ("mstatus", 0xFFFFFFCFFFFFFFBF),
-        # ("medeleg", 0xDBBFE),  # mask off custom bits and reserved bits and bits that should be ROZ (Double trap [16], ecall from M [11]; instr misaligned [0] depends on MISALIGNED_LDST so don't check it
+        (
+            "medeleg",
+            0xDBBFE,
+        ),  # mask off custom bits and reserved bits and bits that should be ROZ (Double trap [16], ecall from M [11]; instr misaligned [0] depends on MISALIGNED_LDST so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
@@ -385,8 +388,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("mseccfg", None), covergroup, coverpoint))
     lines.append("#endif")
-
-    return lines
 
     lines.append("\n// Read-Only CSRs")
     for csr in csrsro:

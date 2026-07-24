@@ -716,14 +716,7 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("scsr")
-    tc.code.extend(
-        [
-            "",
-            "",
-            "RVTEST_GOTO_MMODE  # Get back to machine mode to prepare to go to supervisor mode",
-            "RVTEST_GOTO_LOWER_MODE Smode  # Run remaining tests in supervisor mode",
-        ]
-    )
+    tc.code.append("RVTEST_GOTO_LOWER_MODE Smode  # Run tests in supervisor mode")
     tc.code.extend(_generate_scsr_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

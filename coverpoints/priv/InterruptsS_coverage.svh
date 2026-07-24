@@ -45,17 +45,17 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mstatus_tw_one:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
         bins one = {1};
     }
-    mideleg_msi_zero: coverpoint ins.current.csr[CSR_MIDELEG][3] {
-        bins zero = {0};
+    mideleg_msi_one: coverpoint ins.current.csr[CSR_MIDELEG][3] {
+        bins one = {1};
     }
-    mideleg_mti_zero: coverpoint ins.current.csr[CSR_MIDELEG][7] {
-        bins zero = {0};
+    mideleg_mti_one: coverpoint ins.current.csr[CSR_MIDELEG][7] {
+        bins one = {1};
     }
     mideleg_sei: coverpoint ins.current.csr[CSR_MIDELEG][9] {
         // autofill 0/1
     }
-    mideleg_mei_zero: coverpoint ins.current.csr[CSR_MIDELEG][11] {
-        bins zero = {0};
+    mideleg_mei_one: coverpoint ins.current.csr[CSR_MIDELEG][11] {
+        bins one = {1};
     }
     mideleg_zeros: coverpoint ins.current.csr[CSR_MIDELEG][15:0] {
         bins zeros = {16'b0000000000000000}; // zeros in every field that is not tied to zero
@@ -101,14 +101,23 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mip_msip: coverpoint ins.current.csr[CSR_MIP][3] {
         // autofill 0/1
     }
+    mip_msip_one: coverpoint ins.current.csr[CSR_MIP][3] {
+        bins one = {1};
+    }
     mip_mtip: coverpoint ins.current.csr[CSR_MIP][7] {
         // autofill 0/1
+    }
+    mip_mtip_one: coverpoint ins.current.csr[CSR_MIP][7] {
+        bins one = {1};
     }
     mip_seip: coverpoint ins.current.csr[CSR_MIP][9] {
         // autofill 0/1
     }
     mip_meip: coverpoint ins.current.csr[CSR_MIP][11] {
         // autofill 0/1
+    }
+    mip_meip_one: coverpoint ins.current.csr[CSR_MIP][11] {
+        bins one = {1};
     }
     mip_ssip_one: coverpoint ins.current.csr[CSR_MIP][1] {
         bins one = {1};
@@ -263,19 +272,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins combo_110 = {3'b110};  // STIE+SEIE
         bins combo_111 = {3'b111};  // All delegated
     }
-
-    // Patterns where at least one S-interrupt is NOT delegated (for M-mode sampling)
-    mideleg_combinations_m: coverpoint {ins.current.csr[CSR_MIDELEG][9],
-                                        ins.current.csr[CSR_MIDELEG][5],
-                                        ins.current.csr[CSR_MIDELEG][1]} {
-        bins combo_000 = {3'b000};  // None delegated
-        bins combo_001 = {3'b001};  // SSIE only (STIP/SEIP not delegated)
-        bins combo_010 = {3'b010};  // STIE only (SSIP/SEIP not delegated)
-        bins combo_011 = {3'b011};  // SSIE+STIE (SEIP not delegated)
-        bins combo_100 = {3'b100};  // SEIE only (SSIP/STIP not delegated)
-        bins combo_101 = {3'b101};  // SSIE+SEIE (STIP not delegated)
-        bins combo_110 = {3'b110};  // STIE+SEIE (SSIP not delegated)
-    }
     mip_mie_eq: coverpoint (ins.current.csr[CSR_MIE][11:0] == ins.current.csr[CSR_MIP][11:0]) {
         bins equal = {1};
     }
@@ -372,18 +368,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_priority_mie_s_m:         cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_m, mip_ones_m, mideleg_zeros;
     cp_priority_both_s:          cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_s, mip_mie_eq_s, mideleg_ones;
     cp_priority_both_m:          cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_m, mip_mie_eq_m, mideleg_zeros;
-    cp_priority_mideleg_m:       cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_m, mip_ones_s, mie_ones;
     cp_priority_mideleg_s:       cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_s, mip_ones_s, mideleg_mie_eq_s;
     cp_wfi_s:                    cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_zero, mie_mtie_one;
     cp_wfi_timeout_s:            cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_one, mie_mtie;
 
     // U-mode tests
-    cp_user_mti:                cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_mti_zero, mie_mtie_one, mip_mtip;
-    cp_user_mti_m:              cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_mti_zero, mie_mtie_one, mip_mtip;
-    cp_user_msi:                cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_msi_zero, mie_msie_one, mip_msip;
-    cp_user_msi_m:              cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_msi_zero, mie_msie_one, mip_msip;
-    cp_user_mei:                cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_mei_zero, mie_meie_one, mip_meip;
-    cp_user_mei_m:              cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_mei_zero, mie_meie_one, mip_meip;
+    cp_user_mti:                 cross priv_mode_u, mstatus_mie, mstatus_sie, stvec_mode, mideleg_mti_one, mie_mtie_one, mip_mtip_one;
+    cp_user_msi:                 cross priv_mode_u, mstatus_mie, mstatus_sie, stvec_mode, mideleg_msi_one, mie_mtie_one, mip_msip_one;
+    cp_user_mei:                 cross priv_mode_u, mstatus_mie, mstatus_sie, stvec_mode, mideleg_mei_one, mie_mtie_one, mip_meip_one;
+
     // 1. M-Mode Handled: SEI is NOT delegated, OR we are in M-mode with MIE=1
     cp_user_sei_handled_m: cross priv_mode_m_after, mstatus_mpp_u, mstatus_mie, mideleg_sei_zero, stvec_mode, mie_seie_one, mip_seip;
     // 2. S-Mode Handled: SEI IS delegated AND we were in U or S mode

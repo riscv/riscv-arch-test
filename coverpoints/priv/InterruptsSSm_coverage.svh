@@ -24,6 +24,9 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
     mstatus_mie_zero: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         bins zero = {0};
     }
+    mstatus_mpie_zero: coverpoint ins.prev.csr[CSR_MSTATUS][7] {
+        bins zero = {0};
+    }
     mstatus_mie_one: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         bins one = {1};
     }
@@ -219,6 +222,31 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
         bins no_sei = {0};
     }
 
+    mstatus_mpp_s: coverpoint ins.current.csr[CSR_MSTATUS][12:11] {
+        bins s_mode = {2'b01};
+    }
+    mret_insn: coverpoint ins.current.insn {
+        bins mret = {32'h30200073};
+    }
+    // Patterns where at least one S-interrupt is NOT delegated (for M-mode sampling)
+    mideleg_combinations_m: coverpoint {ins.current.csr[CSR_MIDELEG][9],
+                                        ins.current.csr[CSR_MIDELEG][5],
+                                        ins.current.csr[CSR_MIDELEG][1]} {
+        bins combo_000 = {3'b000};  // None delegated
+        bins combo_001 = {3'b001};  // SSIE only (STIP/SEIP not delegated)
+        bins combo_010 = {3'b010};  // STIE only (SSIP/SEIP not delegated)
+        bins combo_011 = {3'b011};  // SSIE+STIE (SEIP not delegated)
+        bins combo_100 = {3'b100};  // SEIE only (SSIP/STIP not delegated)
+        bins combo_101 = {3'b101};  // SSIE+SEIE (STIP not delegated)
+        bins combo_110 = {3'b110};  // STIE+SEIE (SSIP not delegated)
+    }
+    // All S-mode interrupts set: {SEIP, STIP, SSIP}
+    mip_ones_s: coverpoint {ins.current.csr[CSR_MIP][9],   // SEIP
+                        ins.current.csr[CSR_MIP][5],   // STIP
+                        ins.current.csr[CSR_MIP][1]} { // SSIP
+        bins all_s_set = {3'b111};  // All three S-mode interrupts set
+    }
+
     // main coverpoints
 
     // M-mode tests
@@ -245,6 +273,9 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
         cp_stip_write_stimecmp_one: cross priv_mode_m, prev_mip_stip_zero, csrrs, write_mip, rs1_STIP;
         cp_stip_write_stimecmp_zero: cross priv_mode_m, prev_mip_stip_one, csrrc, write_mip, rs1_STIP;
     `endif
+
+    // Tests that may trap to M mode
+    cp_priority_mideleg_m:       cross priv_mode_m, mstatus_mie_zero, mstatus_sie_one, mideleg_combinations_m, mip_ones_s, mie_ones;
 
 
 endgroup

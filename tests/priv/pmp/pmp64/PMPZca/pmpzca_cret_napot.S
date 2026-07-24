@@ -26,6 +26,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -34,7 +35,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -58,10 +59,8 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION_1
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -73,12 +72,7 @@ main:
     #define SIZE (1<<(UDB_PMP_GRANULARITY+1)
 #endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: NAPOT Region with L->1 and XWR->111
@@ -120,7 +114,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
 .p2align 10
-.skip (0x802)
+.skip (0x806)                                                  // shifted +4B so REGIONSTART lands at PMP_NAPOT_REGION_START, not PMP_REGION_START
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

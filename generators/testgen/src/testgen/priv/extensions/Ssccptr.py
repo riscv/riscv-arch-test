@@ -148,7 +148,7 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssccptr",
     required_extensions=["S", "Ssccptr"],
-    march_extensions=["S"],
+    march_extensions=[],
 )
 def _generate_ssccptr_main(test_data: TestData) -> list[TestChunk]:
     """Generate all Ssccptr tests running in S-mode."""

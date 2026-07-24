@@ -59,6 +59,18 @@
         "base_alignment": 2
       }
     },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
     "xtval_nonzero": {
       // mtval hardwired to 0 (User Manual, Control and Status Registers)
       "illegal_instruction": false,
@@ -93,9 +105,11 @@
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
-    }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
+    "physaddr_bits": 32,
     "pmp": {
       "grain": 0,
       // PMP_NUM_REGIONS=0
@@ -107,19 +121,15 @@
     },
     "misaligned": {
       // misaligned handled as split bus transactions
-      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
-      "allowed_within_exp": 0,
+      "default_allowed_within_exp": 0,
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
         "lrsc": "AccessFault",
-        "amo": "AccessFault"
+        "amo": { "Some": "AccessFault" }
       }
-    },
-    "translation": {
-      "dirty_update": false
     },
     "dtb_address": {
       "len": 64,
@@ -144,6 +154,8 @@
             "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -170,6 +182,8 @@
             "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -196,6 +210,8 @@
             "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -241,7 +257,10 @@
   "extensions": {
     "M": { "supported": true },
     "A": { "supported": false },
-    "F": { "supported": false },
+    "F": {
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
     "D": { "supported": false },
     "V": {
       "support_level": "Disabled",
@@ -288,6 +307,9 @@
     "Zabha": { "supported": false },
     "Zacas": { "supported": false },
     "Zalrsc": { "supported": false },
+    "Zama16b": {
+      "supported": false
+    },
     "Zawrs": {
       "supported": false,
       "nto": { "is_nop": false },

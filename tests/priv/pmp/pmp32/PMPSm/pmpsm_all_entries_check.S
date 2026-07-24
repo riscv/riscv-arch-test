@@ -36,7 +36,7 @@
 #define SIGUPD_COUNT 360
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -73,7 +73,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT // Background region with RWX enable.
 #define PMP_REGION_62       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
 #define PMP_REGION_61       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
 #define PMP_REGION_60       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
@@ -138,7 +137,6 @@ main:
 #define PMP_REGION_1       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
 #define PMP_REGION_0       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -148,25 +146,9 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-    // -----------------------------------------------------------------------
-    // Background (catch-all) region — must be the highest-numbered entry so
-    // that all lower entries take priority over it.
-    //   16-PMP : last entry = pmpaddr15, config byte lives in pmpcfg3[PMP3]
-    //   64-PMP : last entry = pmpaddr63, config byte lives in pmpcfg15[PMP3]
-    // -----------------------------------------------------------------------
-#if UDB_NUM_PMP_ENTRIES == 64
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr63, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg15, x4
-#elif UDB_NUM_PMP_ENTRIES == 16
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw pmpaddr15, x4
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
-#else
-    #error "Unsupported UDB_NUM_PMP_ENTRIES value; only 16 and 64 are supported."
-#endif
+    // Background (catch-all) region: use the highest-numbered usable PMP entry
+    // so that all lower entries take priority over it.
+    RVTEST_PMP_SET_BACKGROUND x4
 
 #if UDB_NUM_PMP_ENTRIES == 64
 //                                          Verification Section
@@ -986,7 +968,7 @@ test_2_str: .string "\"test: 2; cp: cp_pmpm64_lw\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
     .endr
 

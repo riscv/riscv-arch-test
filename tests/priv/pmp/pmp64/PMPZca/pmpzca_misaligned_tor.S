@@ -28,6 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -36,7 +37,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -62,21 +63,14 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL               ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP1CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
 #define PMP2CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP2_CFG_SHIFT))
 #define PMP3CFG                         ((((PMP_L|                  PMP_TOR)   &0xFF)   << PMP3_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL           -1                  // All memory region
 
 #define REGIONSTART                     TEST_FOR_EXECUTION_1
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: Setting up three TOR regions with L = 1, and XWR = 111 and XWR = 000 for third region
@@ -138,20 +132,17 @@ TEST_FOR_EXECUTION_0:
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
-    nop
+    c.nop                                                        // 2-byte filler: lands TEST_FOR_EXECUTION_2 2 bytes before the region2 boundary so its uncompressed jalr genuinely straddles it
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                            // Uncompressed return straddling the start
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
     nop
     .endr
 
-.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                             // Uncompressed return straddling the end
 

@@ -33,7 +33,7 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
+  - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -239,7 +239,6 @@ params:
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
@@ -280,6 +279,10 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 12
+  NUM_USABLE_PMP_ENTRIES: 64
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -550,3 +553,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

@@ -21,6 +21,69 @@
 // local .macro of the same name (GAS errors on macro redefinition).
 //==============================================================================
 
+// PMP_NAPOT_REGION_PAD_WORDS: number of 4-byte filler words to emit before a NAPOT
+// region-under-test so the region lands on the next g_napot-aligned boundary
+// (0x80005008 at coverage grain 2). This makes the region's pmpaddr encode a *clean*
+// NAPOT region that matches the coverage model's STANDARD_REGION / PMP_NAPOT_REGION_START
+// and does NOT swallow the return-instruction pad (which would give a 16-byte region and
+// hang execute probes). g_napot = (GRAN>3) ? 2^GRAN : 2^(GRAN+1); words = g_napot/4.
+// (GAS .rept cannot evaluate a C ternary, so the branch is done with the preprocessor.)
+#if UDB_PMP_GRANULARITY > 3
+  #define PMP_NAPOT_REGION_PAD_WORDS (1 << (UDB_PMP_GRANULARITY - 2))
+#else
+  #define PMP_NAPOT_REGION_PAD_WORDS (1 << (UDB_PMP_GRANULARITY - 1))
+#endif
+
+// Background region helpers. The catch-all PMP entry must be the lowest-priority
+// usable entry (highest usable PMP index). These macros compute the address CSR,
+// config CSR, and config-byte shift from the UDB NUM_USABLE_PMP_ENTRIES parameter.
+#define RVTEST_PMP_BACKGROUND_ENTRY (UDB_NUM_USABLE_PMP_ENTRIES - 1)
+#define RVTEST_PMP_BACKGROUND_ADDR_CSR (CSR_PMPADDR0 + RVTEST_PMP_BACKGROUND_ENTRY)
+#if UDB_MXLEN == 64
+  #define RVTEST_PMP_BACKGROUND_CFG_CSR (CSR_PMPCFG0 + (2 * (RVTEST_PMP_BACKGROUND_ENTRY / 8)))
+  #define RVTEST_PMP_BACKGROUND_CFG_SHIFT ((RVTEST_PMP_BACKGROUND_ENTRY % 8) * 8)
+#else
+  #define RVTEST_PMP_BACKGROUND_CFG_CSR (CSR_PMPCFG0 + (RVTEST_PMP_BACKGROUND_ENTRY / 4))
+  #define RVTEST_PMP_BACKGROUND_CFG_SHIFT ((RVTEST_PMP_BACKGROUND_ENTRY % 4) * 8)
+#endif
+#define RVTEST_PMP_BACKGROUND_NAPOT_CFG \
+  (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << RVTEST_PMP_BACKGROUND_CFG_SHIFT)
+#define RVTEST_PMP_BACKGROUND_TOR_CFG \
+  (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << RVTEST_PMP_BACKGROUND_CFG_SHIFT)
+
+.macro RVTEST_PMP_SET_BACKGROUND_NAPOT TMP_REG
+    LI(\TMP_REG, -1)
+    .set rvtest_pmp_background_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR
+    csrw rvtest_pmp_background_addr_csr, \TMP_REG
+    LI(\TMP_REG, RVTEST_PMP_BACKGROUND_NAPOT_CFG)
+    .set rvtest_pmp_background_cfg_csr, RVTEST_PMP_BACKGROUND_CFG_CSR
+    csrw rvtest_pmp_background_cfg_csr, \TMP_REG
+.endm
+
+.macro RVTEST_PMP_SET_BACKGROUND_TOR TMP_REG
+    .if RVTEST_PMP_BACKGROUND_ENTRY > 0
+      LI(\TMP_REG, 0)
+      .set rvtest_pmp_background_prev_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR - 1
+      csrw rvtest_pmp_background_prev_addr_csr, \TMP_REG
+    .endif
+    LI(\TMP_REG, -1)
+    .set rvtest_pmp_background_addr_csr, RVTEST_PMP_BACKGROUND_ADDR_CSR
+    csrw rvtest_pmp_background_addr_csr, \TMP_REG
+    LI(\TMP_REG, RVTEST_PMP_BACKGROUND_TOR_CFG)
+    .set rvtest_pmp_background_cfg_csr, RVTEST_PMP_BACKGROUND_CFG_CSR
+    csrw rvtest_pmp_background_cfg_csr, \TMP_REG
+.endm
+
+.macro RVTEST_PMP_SET_BACKGROUND TMP_REG
+  #ifdef UDB_PMP_NAPOT_SUPPORTED
+    RVTEST_PMP_SET_BACKGROUND_NAPOT \TMP_REG
+  #elif defined(UDB_PMP_TOR_SUPPORTED)
+    RVTEST_PMP_SET_BACKGROUND_TOR \TMP_REG
+  #else
+    #error "PMP background region requires NAPOT or TOR support"
+  #endif
+.endm
+
 // PMP_VERIFICATION_X_C: compressed execute-only check.
 // Jumps (c.jalr) to ADDRESS and records whether execution was permitted.
 // No store occurs, so no RVTEST_FENCEI is required.
@@ -73,7 +136,6 @@
 .macro PMP_VERIFICATION_RWX ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_1:
@@ -115,7 +177,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
@@ -128,7 +189,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_2:
@@ -140,7 +200,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_3:
@@ -152,7 +211,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a4, a4, t0                  // REGIONSTART + g - 4
     LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_4:
@@ -201,7 +267,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
@@ -242,7 +315,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)                                   // Signature update
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_14:
@@ -272,7 +352,6 @@
 .macro PMP_VERIFICATION_RWX_ALL ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
   .if (UDB_MXLEN == 64)
@@ -481,7 +560,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
@@ -559,7 +637,6 @@
 
     RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
@@ -572,7 +649,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_18:
@@ -584,7 +660,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_19:
@@ -596,7 +671,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a4, a4, t0                  // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
     LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_20:
@@ -661,7 +743,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a5, a5, t0                                      // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
 
     \TEST_CASE\()_6:
@@ -726,7 +815,14 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
+    // t0 <- g_napot - 8, where g_napot = 2^GRAN at grain>3, else 2^(GRAN+1) (matches the
+    // coverage model's PMP_NAPOT_REGION_START granularity, NOT the plain PMP granule
+    // 1<<UDB_PMP_GRANULARITY used elsewhere in this macro's addressing).
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY))-8))
+    .else
+    LI(t0, ((1<<(UDB_PMP_GRANULARITY+1))-8))
+    .endif
     add a5, a5, t0                                      // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
 
     \TEST_CASE\()_15:
@@ -768,20 +864,29 @@
 .endm
 
 // PMP_VERIFICATION_RWX_NAPOT_SM_RV64: boundary R/W/X check for a NAPOT region (RV64,
-// Smepmp napot_legal family). Executes from start, start-4, start+4, start+g-4, start+g
-// (g = (1<<UDB_PMP_GRANULARITY) bytes) to exercise the fetch path, then records every
-// store width (sb/sh/sw/sd, _1.._4) plus boundary word stores (_5.._8) and every load
-// width (lb/lbu/lh/lhu/lw/lwu/ld, _9.._15) plus boundary word loads (_16.._19). The five
-// execute probes are recorded as _20.._24. RVTEST_FENCEI before the first jump syncs the
-// I-cache after a prior store. Needs test_1_str..test_24_str.
+// Smepmp napot_legal family). Executes from start, start-4, start+4, start+g_napot-4,
+// start+g_napot (the minimum NAPOT region size g_napot = 2^(UDB_PMP_GRANULARITY+1) at
+// grain <=3, matching the coverage model's PMP_NAPOT_REGION_START granularity, NOT the
+// same as the plain PMP granule (1<<UDB_PMP_GRANULARITY)) to exercise the fetch path,
+// then records every store width (sb/sh/sw/sd, _1.._4) plus boundary word stores
+// (_5.._8) and every load width (lb/lbu/lh/lhu/lw/lwu/ld, _9.._15) plus boundary word
+// loads (_16.._19). The five execute probes are recorded as _20.._24. RVTEST_FENCEI
+// before the first jump syncs the I-cache after a prior store. Needs test_1_str..test_24_str.
 //   ADDRESS   - region label to probe
 //   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_NAPOT_SM_RV64 ADDRESS, TEST_CASE
 
-    // Execution Access Check — probe start, start-4, start+4, start+g-4, start+g and
-    // record each outcome (_20.._24). The sentinel x4=0xACCE is reloaded before every
-    // probe because RVTEST_SIGUPD clobbers x4 (the temp reg) in selfcheck mode.
-    LI(x4, 0xACCE)                        // sentinel checked by the trap handler on a fetch fault
+    // t1 <- g_napot - 8, reused at each "highest_word"/"just_beyond" boundary probe below.
+    .if (UDB_PMP_GRANULARITY > 3)
+    LI(t1, (1<<(UDB_PMP_GRANULARITY))-8)
+    .else
+    LI(t1, (1<<(UDB_PMP_GRANULARITY+1))-8)
+    .endif
+
+    // Execution Access Check — probe start, start-4, start+4, start+g_napot-4,
+    // start+g_napot and record each outcome (_20.._24). Each probe sets ra to its
+    // resume label so the trap handler returns there after an execute (fetch) fault
+    // instead of looping.
     LA (a4, \ADDRESS)
     LA(ra, 1f)                            // ra: resume target on a fetch fault (and the region's ret target)
     RVTEST_FENCEI                         // sync I-cache: a prior store may have updated this executable region
@@ -792,7 +897,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_20, test_20_str)
 
-    LI(x4, 0xACCE)                        // reload sentinel (RVTEST_SIGUPD clobbered x4 in selfcheck mode)
     addi a4, a4, -4                       // REGIONSTART - 4
     LA(ra, 2f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_21:
@@ -802,7 +906,6 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_21, test_21_str)
 
-    LI(x4, 0xACCE)
     addi a4, a4, 8                        // REGIONSTART + 4
     LA(ra, 3f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_22:
@@ -812,9 +915,7 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_22, test_22_str)
 
-    LI(x4, 0xACCE)
-    LI(t0, (1<<(UDB_PMP_GRANULARITY))-8)
-    add a4, a4, t0                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
+    add a4, a4, t1                        // REGIONSTART + g_napot - 4
     LA(ra, 4f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_23:
     jalr x0, 0(a4)
@@ -823,8 +924,7 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_23, test_23_str)
 
-    LI(x4, 0xACCE)
-    addi a4, a4, 4                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY))
+    addi a4, a4, 4                        // REGIONSTART + g_napot
     LA(ra, 5f)                            // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_24:
     jalr x0, 0(a4)
@@ -875,8 +975,7 @@
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
 
-    LI(t0, (1<<(UDB_PMP_GRANULARITY))-8)
-    add a5, a5, t0                                           // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
+    add a5, a5, t1                                           // REGIONSTART + g_napot - 4
 
     \TEST_CASE\()_7:
     sw a4, 0(a5)
@@ -884,7 +983,7 @@
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
 
 
-    addi a5, a5, 4                                           // REGIONSTART + (1<<(UDB_PMP_GRANULARITY))
+    addi a5, a5, 4                                           // REGIONSTART + g_napot
 
     \TEST_CASE\()_8:
     sw a4, 0(a5)
@@ -945,8 +1044,7 @@
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
 
-    LI(t0, (1<<(UDB_PMP_GRANULARITY))-8)
-    add a5, a5, t0
+    add a5, a5, t1                                           // REGIONSTART + g_napot - 4
 
     \TEST_CASE\()_18:
     lw a4, 0(a5)

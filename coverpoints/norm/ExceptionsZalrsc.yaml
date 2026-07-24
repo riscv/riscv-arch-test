@@ -6,14 +6,29 @@ normative_rule_definitions:
         "ExceptionsZalrsc_cg/{cp_store_access_fault,cp_store_address_misaligned_illegal_w}",
       ]
 
+  # No SC.W instruction shall retire unless it passes memory permission checks
   - name: sc_retire_permission
     coverpoint: ["ExceptionsZalrsc_cg/cp_store_access_fault"]
 
+  # For the purposes of memory protection, a failed SC.W may be treated like a store
   - name: sc_failed_as_store
     coverpoint: ["ExceptionsZalrsc_cg/cp_store_access_fault"]
 
+  # For LR and SC, the Zalrsc extension requires that the address held in rs1 be naturally
+  # aligned to the size of the operand. If the address is not naturally aligned, an address-misaligned
+  # exception or an access-fault exception will be generated. The access-fault exception can be generated
+  # for a memory access that would otherwise be able to complete except for the misalignment, if the
+  # misaligned access should not be emulated.
   - name: lr_sc_alignment
     coverpoint:
       [
         "ExceptionsZalrsc_cg/{cp_load_address_misaligned,cp_store_address_misaligned}",
+      ]
+
+  # Naturally aligned loads and stores do not raise an address-misaligned
+  # exception.
+  - name: ldst_no_exc_aligned
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/cp_{load_address_misaligned, store_address_misaligned_legal_w}",
       ]

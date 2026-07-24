@@ -176,6 +176,7 @@ def _emit_raw_words(
     setup: SetupFn | None = None,
     label: tuple[str, str, str] | None = None,
     section_header: str | None = None,
+    split_name: str | None = None,
 ) -> None:
     """Emit a template's encodings as one or more self-contained .word/.hword chunks.
 
@@ -201,7 +202,7 @@ def _emit_raw_words(
     total = len(encodings)
     for grp_start in range(0, total, MAX_WORDS_PER_CHUNK):
         group = encodings[grp_start : grp_start + MAX_WORDS_PER_CHUNK]
-        tc = test_data.begin_test_chunk()
+        tc = test_data.begin_test_chunk(split_name)
         if section_header is not None and grp_start == 0:
             tc.section_header = section_header
         lines: list[str] = []
@@ -230,9 +231,11 @@ def _emit_raw_sweeps(
     setup: SetupFn | None = None,
     label: tuple[str, str, str] | None = None,
     section_header: str | None = None,
+    split_name: str | None = None,
 ) -> None:
     next_label = label
     next_header = section_header
+    next_split_name = split_name
     for sweep in sweeps:
         _emit_raw_words(
             test_data,
@@ -244,9 +247,11 @@ def _emit_raw_sweeps(
             setup=setup,
             label=next_label,
             section_header=next_header,
+            split_name=next_split_name,
         )
         next_label = None
         next_header = None
+        next_split_name = None
 
 
 # ── CSR sweep body ────────────────────────────────────────────────────────
@@ -268,7 +273,7 @@ def _generate_csr_sweep_body(
     test_chunks: list[TestChunk] = []
     for batch_start in range(0, len(csr_addresses), CSRS_PER_CHUNK):
         batch = csr_addresses[batch_start : batch_start + CSRS_PER_CHUNK]
-        tc = test_data.begin_test_chunk()
+        tc = test_data.begin_test_chunk("CSR")
         if section_header is not None and batch_start == 0:
             tc.section_header = section_header
         lines: list[str] = []
@@ -321,6 +326,7 @@ def _generate_illegal_instr(
     # Only the first chunk carries the coverpoint testcase label and section banner.
     label: tuple[str, str, str] | None = ("illegal_instr_sweep", coverpoint, covergroup)
     section_header: str | None = comment_banner(coverpoint)
+    split_name = "IllegalInstr"
 
     scalar_sweeps = [
         [
@@ -437,6 +443,7 @@ def _generate_illegal_instr(
             setup=_scratch_setup,
             label=label,
             section_header=section_header,
+            split_name=split_name,
         )
         label = None
         section_header = None
@@ -524,6 +531,7 @@ def _generate_vector_illegal_instr(
         setup=_vector_setup(),
         label=label,
         section_header=vset_header,
+        split_name="VectorInstr",
     )
 
     # ── Reserved vector loads ── rs1 is the scratch base (B field) ──
@@ -664,6 +672,7 @@ def _generate_compressed_instr(
         compressed_sweeps,
         label=("compressed_sweep", coverpoint, covergroup),
         section_header=comment_banner(coverpoint, "Exhaustive 16-bit quadrant sweep."),
+        split_name="CompressedInstr",
     )
 
     return test_chunks
@@ -673,12 +682,14 @@ def _generate_compressed_instr(
 
 _MODE_LABEL = {"M": "M-mode", "S": "S-mode", "U": "U-mode"}
 
-# M-mode only: lock PMP region 0 (TOR RWX) before each CSR chunk so PMP CSR
-# reads do not corrupt config regardless of which split file the chunk lands in.
+# M-mode only: lock PMP region 0 before each CSR chunk so later CSR writes
+# cannot corrupt the PMP configuration regardless of which split file the chunk
+# lands in. RVTEST_BOOT_TO_MMODE has already set up pmpaddr0/pmpcfg0; this only
+# sets pmp0cfg.L.
 _M_MODE_PMP_LOCK = [
-    "# Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
-    "\tli x10, 0x8F",
-    "\tcsrw pmpcfg0, x10",
+    "# Lock PMP region 0 so PMP CSR writes cannot corrupt config",
+    "\tli x10, 0x80",
+    "\tcsrs pmpcfg0, x10",
     "",
 ]
 

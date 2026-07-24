@@ -35,7 +35,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -51,18 +51,11 @@ main:
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-#define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define NAPOT   (PMP_NAPOT & 0xFF)
 #define TOR     (PMP_TOR   & 0xFF)
 #define NA4     (PMP_NA4   & 0xFF)
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case 1 : Setting region 0-14 to be NA4, NAPOT, TOR and OFF with L->0, XWR->000

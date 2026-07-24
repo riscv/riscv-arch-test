@@ -39,7 +39,7 @@
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 60
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -61,7 +61,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -90,7 +89,6 @@ RVTEST_BEGIN
 .endm
 
 // PMP Macros
-#define PMP_GLOBAL_RWX        (((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP2_CFG_SHIFT)
 #define PMP0CFG_X             (((PMP_NAPOT | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
 
 
@@ -101,10 +99,7 @@ main:
 //                                                    Setup pmpaddr registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                  // Set PMP permission for all memory in pmp2cfg0 (TOR)
-  csrw pmpaddr1, t2
-  li t2, -1
-  csrw pmpaddr2, t2
+  RVTEST_PMP_SET_BACKGROUND t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -144,7 +139,7 @@ main:
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
-  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)
+  LI (t2, PMP0CFG_X)
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 

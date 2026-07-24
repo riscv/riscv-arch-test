@@ -26,7 +26,7 @@ def _read_trap_count_helper(r_temp: int) -> list[str]:
     return [f"# Read trap count into x{r_temp}", f"LA(x{r_temp}, rvtest_trap_count)", f"LREG x{r_temp}, 0(x{r_temp})"]
 
 
-def _wrs_resume_helper(
+def wrs_resume_helper(
     test_data: TestData,
     priv: str,
     covergroup: str,
@@ -94,7 +94,15 @@ def _wrs_resume_helper(
                                 f"LI(x{r_temp}, 0x80)",
                                 f"CSRS(mie, x{r_temp})",
                                 "# Set mtimer interrupt soon",
-                                *set_mtimer_int_soon(r_time, r_timecmp, r_temp, r_temp2, r_temp3, r_cause),
+                                *set_mtimer_int_soon(
+                                    r_time,
+                                    r_timecmp,
+                                    r_temp,
+                                    r_temp2,
+                                    r_temp3,
+                                    r_cause,
+                                    delay="(RVMODEL_TIMER_INT_SOON_DELAY * 8)",
+                                ),
                                 "#endif",
                                 f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                             ]
@@ -170,7 +178,7 @@ def _wrs_resume_helper(
     return lines
 
 
-def _wrs_no_mie_helper(
+def wrs_no_mie_helper(
     test_data: TestData,
     priv: str,
     covergroup: str,
@@ -181,7 +189,7 @@ def _wrs_no_mie_helper(
     coverpoint = "cp_wrs_no_mie"
     ######################################
 
-    r_time, r_temp3, r_cause, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(6)
+    r_time, r_cause, r_temp, r_temp2, r_timecmp = test_data.int_regs.get_registers(5)
 
     lines = []
     # wrs.nto can only be tested in non-M mode using TW = 1
@@ -279,11 +287,11 @@ def _wrs_no_mie_helper(
                 *clr_mtimer_int(r_temp, r_temp2),
             ]
         )
-    test_data.int_regs.return_registers([r_time, r_temp3, r_cause, r_temp, r_temp2, r_timecmp])
+    test_data.int_regs.return_registers([r_time, r_cause, r_temp, r_temp2, r_timecmp])
     return lines
 
 
-def _wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[str]:
+def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[str]:
     """Helper function for generating WRS instruction no reservation tests"""
 
     r_scratch, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
@@ -338,7 +346,7 @@ def _wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[
     return lines
 
 
-def _wrs_timeout_helper(
+def wrs_timeout_helper(
     test_data: TestData,
     priv_list: list[str],
     coverpoint: str,

@@ -12,10 +12,10 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZawrsCommon import (
-    _wrs_no_mie_helper,
-    _wrs_no_res_helper,
-    _wrs_resume_helper,
-    _wrs_timeout_helper,
+    wrs_no_mie_helper,
+    wrs_no_res_helper,
+    wrs_resume_helper,
+    wrs_timeout_helper,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -44,7 +44,7 @@ def _generate_wrs_sto_timeout_tests(test_data: TestData) -> list[str]:
         ),
         "",
     ]
-    lines.extend(_wrs_timeout_helper(test_data, ["U"], coverpoint, covergroup))
+    lines.extend(wrs_timeout_helper(test_data, ["U"], coverpoint, covergroup))
 
     return lines
 
@@ -72,7 +72,7 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    lines.extend(_wrs_no_res_helper(test_data, "U", covergroup))
+    lines.extend(wrs_no_res_helper(test_data, "U", covergroup))
 
     return lines
 
@@ -106,7 +106,7 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    lines.extend(_wrs_resume_helper(test_data, "U", covergroup))
+    lines.extend(wrs_resume_helper(test_data, "U", covergroup))
     return lines
 
 
@@ -133,7 +133,7 @@ def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
-    lines.extend(_wrs_no_mie_helper(test_data, "U", covergroup))
+    lines.extend(wrs_no_mie_helper(test_data, "U", covergroup))
     return lines
 
 
@@ -160,7 +160,7 @@ def _generate_wrs_nto_timeout_tests(test_data: TestData) -> list[str]:
         ),
         "",
     ]
-    lines.extend(_wrs_timeout_helper(test_data, ["U"], coverpoint, covergroup))
+    lines.extend(wrs_timeout_helper(test_data, ["U"], coverpoint, covergroup))
     return lines
 
 

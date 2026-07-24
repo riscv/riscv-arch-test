@@ -44,7 +44,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
     save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
 
     lines = [
-        f"CSRR(x{save_reg}, mcause)     # save CSR before testing it",
+        f"csrr x{save_reg}, mcause     # save CSR before testing it",
         comment_banner(
             "cp_mcause_write_exception",
             "with interrupt = 0: test writing each exception cause",
@@ -114,7 +114,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    lines.append(f"\nCSRW(mcause, x{save_reg})       # restore CSR")
+    lines.append(f"\ncsrw mcause, x{save_reg}       # restore CSR")
 
     test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
     return lines
@@ -136,7 +136,7 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
         ),
         "",
         f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"csrr x{save_reg}, mstatus        # read and save mstatus",
         f"{INDENT}# set up x{reg3} with mstatus except SD, FS, XS, VS cleared",
         f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
         f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
@@ -167,7 +167,7 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
                     )
                     lines.extend(test_lines)
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -194,7 +194,6 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         # ebreak test
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak                # test ebreak instruction",
-        "nop                   # this is skipped after trap handler returns",
     ]
 
     return lines
@@ -214,7 +213,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
             "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
         ),
         "",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"csrr x{save_reg}, mstatus        # read and save mstatus",
         f"{INDENT}# set up x{reg1} with mstatus except MPP, MPRV, MPIE, MIE cleared",
         f"LI(x{reg2}, 0x21888)          # x{reg2} has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPP, MPRV, MPIE, MIE bits set",
@@ -236,8 +235,8 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"LI(x{check_reg}, 0x{fields:08x})",
                             f"or x{check_reg}, x{check_reg}, x{reg1}         # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             f"LA(x{reg3}, 1f)              # return address after mret",
-                            f"CSRW(mepc, x{reg3})          # set mepc to return address",
-                            f"CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
+                            f"csrw mepc, x{reg3}          # set mepc to return address",
+                            f"csrw mstatus, x{check_reg}       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "mret                     # test mret instruction",
                             f"addi x{check_reg}, zero, -1       # should not be executed",
@@ -249,7 +248,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -271,7 +270,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
             "MPRV <- 0. SPP <- 0 (U-mode).  TSR has no effect.",
         ),
         "",
-        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"csrr x{save_reg}, mstatus        # read and save mstatus",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
@@ -294,8 +293,8 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"LI(x{check_reg}, 0x{fields:08x})",
                                 f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"LA(x{reg3}, 1f)             # return address after sret",
-                                f"CSRW(sepc, x{reg3})         # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
-                                f"CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
+                                f"csrw sepc, x{reg3}         # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                f"csrw mstatus, x{check_reg}       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "sret                    # test sret instruction",
                                 f"addi x{check_reg}, zero, -1       # should not be executed",
@@ -308,7 +307,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                             ]
                         )
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -454,7 +453,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 "",
                 # Test the write value
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRR(t0, 0x{csr:03x})    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
+                f"csrr t0, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
             ]
         )
 
@@ -475,7 +474,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"csrw 0x{csr:03x}, t0    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
 
@@ -760,7 +759,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             write_sigupd(r_msip, test_data),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_set", coverpoint, covergroup),
-            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"csrr x{r_msip}, mip                     # read mip",
             f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
             f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
             write_sigupd(r_msip, test_data),
@@ -774,7 +773,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             write_sigupd(r_msip, test_data),
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_clear", coverpoint, covergroup),
-            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"csrr x{r_msip}, mip                     # read mip",
             f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
             f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
             write_sigupd(r_msip, test_data),
@@ -900,11 +899,11 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
-            f"CSRW(mcountinhibit, x{r1})        # inhibit mcycle",
-            f"CSRR(x{r1}, mcycle)        # read mcycle",
+            f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
+            f"csrr x{r1}, mcycle        # read mcycle",
             "nop\nnop\nnop\nnop\nnop\nnop # wait a bit",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"CSRR(x{r2}, mcycle)        # read mcycle again",
+            f"csrr x{r2}, mcycle        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
         ]
@@ -922,11 +921,11 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r1}, 0b100)        # inhibit minstret",
-            f"CSRW(mcountinhibit, x{r1})        # inhibit minstret",
-            f"CSRR(x{r1}, minstret)        # read minstret",
+            f"csrw mcountinhibit, x{r1}        # inhibit minstret",
+            f"csrr x{r1}, minstret        # read minstret",
             "nop\nnop\nnop\nnop\nnop\nnop # wait a bit",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"CSRR(x{r2}, minstret)        # read minstret again",
+            f"csrr x{r2}, minstret        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
         ]
@@ -948,7 +947,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"CSRR(x{r2}, time)        # read time",
+            f"csrr x{r2}, time        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
             f"slti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
             write_sigupd(r2, test_data),
@@ -958,7 +957,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
             f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
             test_data.add_testcase("h", coverpoint, covergroup),
-            f"CSRR(x{r2}, timeh)        # read timeh",
+            f"csrr x{r2}, timeh        # read timeh",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
             write_sigupd(r2, test_data),
             "#endif",

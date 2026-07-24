@@ -126,7 +126,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRC( mstatus, t0)                                                             // Clear mstatus.MXR
+  csrc  mstatus, t0                                                             // Clear mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRS( mstatus, t0)                                                             // Set mstatus.MXR
+  csrs  mstatus, t0                                                             // Set mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test2
 
 
@@ -155,7 +155,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRC( mstatus, t0)                                                             // Clear mstatus.MXR
+  csrc  mstatus, t0                                                             // Clear mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test3
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ main:
   sfence.vma
 
   LI(   t0, MSTATUS_MXR)
-  CSRS( mstatus, t0)                                                             // Set mstatus.MXR
+  csrs  mstatus, t0                                                             // Set mstatus.MXR
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test4
 
 

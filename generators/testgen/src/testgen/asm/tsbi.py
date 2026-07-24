@@ -36,9 +36,9 @@ def tsbi_call(instr: str) -> str:
 
     preamble = []
     postscript = []
-    if rs1 not in [0, 11]:
+    if rs1 not in [11]:
         preamble.append(f"{INDENT}# Copy rs1 (x{rs1}) to a1 for T-SBI call\n{INDENT}mv a1, x{rs1}\n")
-    if rs2 not in [0, 12]:
+    if rs2 not in [12]:
         preamble.append(f"{INDENT}# Copy rs2 (x{rs2}) to a2 for T-SBI call\n{INDENT}mv a2, x{rs2}\n")
     if rd not in [0, 10]:
         postscript.append(f"{INDENT}# Copy a0 to rd (x{rd}) for T-SBI call\n{INDENT}mv x{rd}, a0\n")
@@ -116,6 +116,16 @@ _CSR_ALIASES = {
     "menvcfgh": 0x31A,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
+    "tselect": 0x7A0,
+    "tdata1": 0x7A1,
+    "tdata2": 0x7A2,
+    "tdata3": 0x7A3,
+    "tinfo": 0x7A4,
+    "tcontrol": 0x7A5,
+    "mcontext": 0x7A8,
+    "mscontext": 0x7AA,
+    "scontext": 0x5A8,
+    "hcontext": 0x6A8,
 }
 
 
@@ -203,14 +213,6 @@ def _tsbi_rd_reg(rd: int) -> int:
     return rd if rd in {0, 10} else 10
 
 
-def _tsbi_rs1_reg(rs1: int) -> int:
-    return rs1 if rs1 in {0, 11} else 11
-
-
-def _tsbi_rs2_reg(rs2: int) -> int:
-    return rs2 if rs2 in {0, 12} else 12
-
-
 def _encode_i_type(opcode: int, funct3: int, rd: int, rs1: int, imm12: int) -> int:
     return (
         ((imm12 & 0xFFF) << 20) | ((rs1 & 0x1F) << 15) | ((funct3 & 0x7) << 12) | ((rd & 0x1F) << 7) | (opcode & 0x7F)
@@ -237,11 +239,11 @@ def add_opcode(normalized_instr: str, rs1: int, rs2: int, rd: int) -> str:
         second_arg = csr_match.group(3)
         opcode = 0x73
         tsbi_rd = _tsbi_rd_reg(rd)
-        tsbi_rs1 = _tsbi_rs1_reg(rs1)
+        tsbi_rs1 = 11
 
         if mnemonic == "csrr":
             csr = _parse_csr(second_arg)
-            encoded = _encode_i_type(opcode, 0b010, tsbi_rd, tsbi_rs1, csr)
+            encoded = _encode_i_type(opcode, 0b010, tsbi_rd, 0, csr)
         else:
             csr = _parse_csr(first_arg)
             funct3 = {"csrw": 0b001, "csrs": 0b010, "csrc": 0b011}[mnemonic]
@@ -254,8 +256,8 @@ def add_opcode(normalized_instr: str, rs1: int, rs2: int, rd: int) -> str:
         mnemonic = mem_match.group(1).lower()
         imm12 = _parse_imm12(mem_match.group(3))
         tsbi_rd = _tsbi_rd_reg(rd)
-        tsbi_rs1 = _tsbi_rs1_reg(rs1)
-        tsbi_rs2 = _tsbi_rs2_reg(rs2)
+        tsbi_rs1 = 11
+        tsbi_rs2 = 12
 
         if mnemonic in {"lw", "ld"}:
             funct3 = {"lw": 0b010, "ld": 0b011}[mnemonic]

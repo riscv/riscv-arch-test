@@ -167,6 +167,9 @@ def emit() -> None:
     lines.append("    // vs1r.v catch-all: relax nf + mew; reserved encodings dispatch to vs1r.v")
     add("VS1R_V", NF | MEW, mnem_override="vs1r.v")
 
+    lines.append("    // vl1re8.v catch-all: relax nf; reserved encodings dispatch to vl1re8.v")
+    add("VL1RE8_V", NF, mnem_override="vl1re8.v")
+
     lines.append("    // vector LS with mew=1 (reserved): map back to canonical mnemonic for cg dispatch")
     pat_decode = re.compile(r"localparam \[31:0\] (\S+)\s*=\s*32'b([01?]{32});")
     seen = set()

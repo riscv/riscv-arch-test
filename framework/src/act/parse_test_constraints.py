@@ -18,6 +18,8 @@ from rich.panel import Panel
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
+_TEST_FILE_SUFFIXES = (".S", ".c")
+
 
 class TestYamlHeaderError(Exception):
     """Raised when a test file's YAML config header is missing, malformed, or fails validation."""
@@ -45,6 +47,7 @@ class TestMetadata(BaseModel):
     test_path: FilePath
     required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
+    needs_signature: bool = Field(alias="NEEDS_SIGNATURE", default=True)
     params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}
@@ -87,6 +90,11 @@ class TestMetadata(BaseModel):
         """Check if E extension is present."""
         return self.march.startswith(("rv32e", "rv64e", "rv${XLEN}e"))
 
+    @property
+    def is_c_test(self) -> bool:
+        """Whether the test source is C."""
+        return self.test_path.suffix == ".c"
+
 
 def _describe_validation_error(err: ValidationError) -> str:
     """Translate the first Pydantic error into a short human-readable error."""
@@ -98,9 +106,23 @@ def _describe_validation_error(err: ValidationError) -> str:
         return f"unexpected key '{field}' found"
     if etype == "missing":
         return f"required key '{field}' is missing"
-    if etype.startswith(("string_pattern_mismatch", "value_error")):
+    if etype == "value_error":
+        return e["msg"].removeprefix("Value error, ")
+    if etype.startswith("string_pattern_mismatch"):
         return f"illegal value for key '{field}': {got!r}"
     return f"invalid value for key '{field}': {e['msg']}"
+
+
+def _strip_yaml_comment_prefix(line: str) -> str:
+    """Remove an assembly/C comment prefix from a YAML header line."""
+    stripped = line.lstrip()
+    if stripped.startswith("#"):
+        return stripped[1:]
+    if stripped.startswith("//"):
+        return stripped[2:]
+    if stripped.startswith("*"):
+        return stripped[1:]
+    return line
 
 
 def extract_yaml_config(file: Path) -> TestMetadata:
@@ -123,8 +145,7 @@ def extract_yaml_config(file: Path) -> TestMetadata:
 
     yaml_section = content[start_pos:end_pos]
 
-    # Process lines to remove comment prefixes
-    yaml_lines = [line.lstrip("#") for line in yaml_section.split("\n")]
+    yaml_lines = [_strip_yaml_comment_prefix(line) for line in yaml_section.split("\n")]
     yaml_lines.append(f" test_path: '{file.absolute()}'")  # Add test_path to config data
 
     yaml = YAML(typ="safe", pure=True)
@@ -165,18 +186,19 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
         for ext in extension_list:
             if ext in exclude_list:
                 continue
-            for test_file in tests_dir.rglob(f"*/{ext}/*.S"):
+            for suffix in _TEST_FILE_SUFFIXES:
+                for test_file in tests_dir.rglob(f"*/{ext}/*{suffix}"):
+                    config = extract_yaml_config(test_file)
+                    test_file_unique_name = str(test_file.relative_to(tests_dir))
+                    test_list[test_file_unique_name] = config
+    else:
+        for suffix in _TEST_FILE_SUFFIXES:
+            for test_file in tests_dir.rglob(f"*{suffix}"):
+                ext_dir = test_file.parent.name
+                if ext_dir == "env" or ext_dir in exclude_list:
+                    continue
                 config = extract_yaml_config(test_file)
                 test_file_unique_name = str(test_file.relative_to(tests_dir))
                 test_list[test_file_unique_name] = config
-    else:
-        for test_file in tests_dir.rglob("*.S"):
-            # Check if the test file's extension directory is in the exclude list
-            ext_dir = test_file.parent.name
-            if ext_dir in exclude_list:
-                continue
-            config = extract_yaml_config(test_file)
-            test_file_unique_name = str(test_file.relative_to(tests_dir))
-            test_list[test_file_unique_name] = config
 
     return test_list

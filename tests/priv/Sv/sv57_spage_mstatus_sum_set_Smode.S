@@ -76,7 +76,7 @@ RVTEST_BEGIN
 
   // Set mstatus.SUM
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)
+  csrs mstatus, t0
 
   // Adjust offset of VA to point to test region
   .set VA_SHIFT, (\level*9)+12

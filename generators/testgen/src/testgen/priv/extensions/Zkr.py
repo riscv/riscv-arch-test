@@ -71,10 +71,8 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x{src_reg}",
-                    "nop",
                     test_data.add_testcase(f"S_zero_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -87,10 +85,8 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x{src_reg}",
-                    "nop",
                     test_data.add_testcase(f"U_zero_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -176,7 +172,6 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     instr,
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -189,7 +184,6 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     instr,
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]

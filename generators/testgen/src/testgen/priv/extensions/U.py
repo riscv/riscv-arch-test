@@ -32,13 +32,10 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         write_sigupd(10, test_data),
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak                # test ebreak instruction",
-        "nop",
         test_data.add_testcase("mret", coverpoint, covergroup),
         "mret                  # test mret instruction",
-        "nop",
         test_data.add_testcase("sret", coverpoint, covergroup),
         "sret                  # test sret instruction",
-        "nop",
     ]
 
     return lines
@@ -65,7 +62,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRR(x{temp_reg}, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
                 "",
             ]
         )
@@ -86,7 +83,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"CSRW(0x{csr:03x}, x{temp_reg})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
                 "",
             ]
         )

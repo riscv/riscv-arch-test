@@ -11,7 +11,7 @@
 `define COVER_PMPSM
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
 
-covergroup PMPSM_cg with function sample(
+covergroup PMPSm_cg with function sample(
                     ins_t ins,
                     logic [7:0] pmpcfg [63:0],        // Per region config registers
                     logic [`UDB_MXLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
@@ -387,12 +387,8 @@ covergroup PMPSM_cg with function sample(
     bins pmp_cfg_tor1 =  {16'b10001101_10000000}; //L=1 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
   }
 
-  pmp_addr_for_tor: coverpoint {pmpaddr[1],pmpaddr[0]} {
-    bins range = {`NON_STANDARD_REGION+`g_tor,`NON_STANDARD_REGION};
-  }
-
-  pmp_addr_for_tor_bot: coverpoint ((pmpaddr[1]==(`PMP_REGION_START+`g_tor)>>2) &&
-                                    (pmpaddr[0]==(`PMP_REGION_START>>2))) {
+  pmp_addr_for_tor_bot: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK)) &&
+                                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) {
     bins range = {1};
   }
 
@@ -400,11 +396,11 @@ covergroup PMPSM_cg with function sample(
     bins range = {`NON_STANDARD_REGION};
   }
 
-  addr_for_tor_bot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins pmpaddr0_4 = {((`NON_STANDARD_REGION)<<2)-4}; //pmpaddr0-4
-    bins pmpaddr0   = {(`NON_STANDARD_REGION)<<2}; //pmpaddr0
-    bins pmpaddr1_4 = {(`PMP_REGION_START+`g_tor)-4}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
-    bins pmpaddr1   = {`PMP_REGION_START+`g_tor};
+  addr_for_tor_bot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins pmpaddr0_4 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr0-4
+    bins pmpaddr0   = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr0
+    bins pmpaddr1_4 = {((`PMP_REGION_START+`g_tor)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
+    bins pmpaddr1   = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
   }
 
   pmp_addr_for_tor_nonoverlap1: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
@@ -1812,5 +1808,5 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[CSR_PMPCFG0][7]
           };
   `endif
-  PMPSM_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  PMPSm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
 endfunction

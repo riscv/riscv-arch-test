@@ -106,7 +106,7 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr1, t2)
+  csrw pmpaddr1, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

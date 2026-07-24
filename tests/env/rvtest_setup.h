@@ -1068,15 +1068,28 @@
     // Initial signature check to confirm self-checking is working
     canary_check:
     LI(T1, CANARY_VALUE)
+    // The canary check runs in .text.rvmodel, which may be more than a jal away
+    // from the shared failure handler. Preload the handler address into
+    // DEFAULT_DATA_REG, which is reinitialized as the data pointer after this block.
+    LA(DEFAULT_DATA_REG, failedtest_x5_x4)
     #ifdef RVTEST_SELFCHECK
-      // Can't use DEFAULT_*_REG macros here because of macro expansion order
-      // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-      RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
+      .option push
+      .option norvc
+      LREG DEFAULT_TEMP_REG, 0(DEFAULT_SIG_REG)
+      beq DEFAULT_TEMP_REG, T1, 1f
+      // Keep jalr immediately after the compare so the failure reporter can
+      // decode the preceding LREG/beq pair using the DEFAULT_LINK_REG return address.
+      jalr DEFAULT_LINK_REG, 0(DEFAULT_DATA_REG)
+      RVTEST_WORD_PTR canary_check
+      RVTEST_WORD_PTR canary_mismatch
+      1:
+      addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
+      .option pop
     #else
       // Increment sig pointer to skip the CANARY
       addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
-      // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
-      // used in self-check mode (including its embedded pointer words/dwords).
+      // NOPs to keep the emitted code size/bytes aligned with the self-check
+      // sequence above (including its embedded pointer words/dwords).
       nop
       nop
       nop

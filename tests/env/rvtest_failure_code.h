@@ -274,6 +274,39 @@
         li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
+    # vxsat failure entry points (failure_type = 5)
+    failedtest_vxsat_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        li x1, 5
+        sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 5 (vxsat)
+        j failedtest_saveregs
+
+    failedtest_vxsat_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)
+        SREG DEFAULT_TEMP_REG, 32(x7)
+        SREG DEFAULT_LINK_REG, 40(x7)
+        SREG x1, 8(x7)
+        li x1, 5
+        sw x1, 0(x7)                                # failure_type = 5 (vxsat)
+        mv DEFAULT_TEMP_REG, x7
+        mv DEFAULT_LINK_REG, x8
+        j failedtest_saveregs
+
+    failedtest_vxsat_x13_x12:
+        la x12, begin_failure_scratch
+        SREG x13, 104(x12)
+        SREG DEFAULT_TEMP_REG, 32(x12)
+        SREG DEFAULT_LINK_REG, 40(x12)
+        SREG x1, 8(x12)
+        li x1, 5
+        sw x1, 0(x12)                               # failure_type = 5 (vxsat)
+        mv DEFAULT_TEMP_REG, x12
+        mv DEFAULT_LINK_REG, x13
+        j failedtest_saveregs
+
 #endif // RVTEST_VECTOR
 
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
@@ -393,6 +426,8 @@
 #ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
         li x10, 4
         beq x9, x10, failedtest_saveresults_vector
+        li x10, 5
+        beq x9, x10, failedtest_saveresults_vxsat
 #endif // RVTEST_VECTOR
         li x10, 3
         beq x9, x10, failedtest_saveresults_trap
@@ -726,6 +761,27 @@
 
         copy_done:
 
+        j failedtest_saveresults_common
+
+    failedtest_saveresults_vxsat:
+        # Re-read vxsat for bad value (hasn't changed since failure).
+        csrr x6, vxsat
+        SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
+
+        # Extract load instruction at -12 for expected value (same approach as integer)
+        lhu x6, -10(DEFAULT_LINK_REG)
+        lhu x7, -12(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or x6, x6, x7
+        srai x7, x6, 20     # extract immediate (sign-extended)
+        srli x6, x6, 15
+        andi x6, x6, 31     # extract rs1
+        slli x6, x6, 3
+        add x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)      # sigptr register value
+        add x6, x6, x7      # sigptr + offset
+        LREG x6, 0(x6)      # expected value
+        SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
 
 #endif // RVTEST_VECTOR
@@ -1174,6 +1230,8 @@
         beq a0, a1, failedtest_report_fpreg
         li a1, 4
         beq a0, a1, failedtest_report_vecreg
+        li a1, 5
+        beq a0, a1, failedtest_report_vxsat
         # fflags: print "fflags\n"
         LA(a0, fflagsstr)
         call rvmodel_io_write_str
@@ -1194,6 +1252,10 @@
         addi a2, a2, 1
         lw a0, failing_reg
         jal failedtest_dec_to_str
+    failedtest_report_vxsat:
+        LA(a0, vxsatstr)
+        call rvmodel_io_write_str
+        j failedtest_report_after_reg
     failedtest_report_print_regstr:
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -2277,6 +2339,8 @@
     mismatch_mask_str:
         .string "RVCP: Mismatch Mask (one bit per element, up to VLMAX bits):\n"
 #endif
+    vxsatstr:
+        .string "vxsat\n"
     regstr:
         .string "RVCP: Register: "
     badvalstr:

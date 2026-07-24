@@ -786,6 +786,24 @@ def make_fflags_pairs(instruction: str, sew: int) -> None:
                 sew=sew, clear_fflags=(i == 0))
       incrementBasetestCount()
 
+def make_vxsat(instruction, sew):
+  if instruction != "vsmul.vx":
+    # Otherwise, it is covered by other test generation (truncation of rs1 edges
+    # breaks this case)
+    return
+
+  # For this case, we just need to generate something that will overflow
+  rs1_val = 1 << (min(xlen, sew) - 1)
+  vs2_val_ptr = "vs_corner_min_emul1"
+
+  description = "cp_csr_vxsat (vxsat = 1)"
+  cp = "cp_csr_vxsat_1"
+  instruction_data = randomizeVectorInstructionData(
+    instruction, sew, getBaseSuiteTestCount(), rs1_val=rs1_val, vs2_val_pointer=vs2_val_ptr
+  )
+  writeTest(description, instruction, cp, instruction_data, sew=sew)
+  incrementBasetestCount()
+
 ##################################### length suite (vl!=1) test generation #####################################
 
 def getMaxlmul(sew, eew, maxemul):
@@ -1299,6 +1317,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_imm_edges_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_imm_edges_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_csr_vxrm"                  : pass # already tested in cross coverpoints with vs2 and vs1/rs1/imm
+    elif coverpoint == "cp_csr_vxsat"                 : make_vxsat(test, sew) # already tested in natural execution
     ############################ length suite ############################
     elif coverpoint == "cp_masking_edges"             : make_mask_edges(test, sew, getBaseLmul(test, sew))
     elif coverpoint == "cp_vl_0"                        : make_vl_0(test, sew, lmul = getBaseLmul(test, sew))

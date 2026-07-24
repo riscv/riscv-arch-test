@@ -362,8 +362,8 @@
             "amo": "AccessFault"
           },
           "atomic_support": "AMOCASQ",
-          "misaligned_atomicity_granule_size_exp": 4,
-          "vector_misaligned_atomicity_granule_size_exp": 4,
+          "misaligned_atomicity_granule_size_exp": 6,
+          "vector_misaligned_atomicity_granule_size_exp": 6,
           "reservability": "RsrvEventual",
           "supports_cbo_zero": true,
           "supports_pte_read": true,
@@ -603,8 +603,9 @@
     // `misaligned_atomicity_granule_size_exp` for each coherent and
     // cacheable main memory region is 4, otherwise you will get a
     // config validation error.
+    // TODO: Update this comment globally for >= 4 when Sail is updated accordingly.
     "Zama16b": {
-      "supported": true
+      "supported": false // TODO: this should be true, but Sail 0.13 only allows true if misaligned_atomicity_granule_size_exp = 4 rather than >= 4
     },
     "Zawrs": {
       "supported": true,

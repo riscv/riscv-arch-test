@@ -85,9 +85,9 @@ def _generate_machine_tm_tests(test_data: TestData) -> list[str]:
             # set or clear mcounteren.TM to control stimecmp visibility
         ]
         if tm_val:
-            lines += [f"LI(x{r_scratch}, 0x2)", f"CSRS(mcounteren, x{r_scratch})"]
+            lines += [f"LI(x{r_scratch}, 0x2)", f"csrs mcounteren, x{r_scratch}"]
         else:
-            lines += [f"LI(x{r_scratch}, 0x2)", f"CSRC(mcounteren, x{r_scratch})"]
+            lines += [f"LI(x{r_scratch}, 0x2)", f"csrc mcounteren, x{r_scratch}"]
 
         lines.append(test_data.add_testcase(f"tm{tm_val}", coverpoint, covergroup))
         lines += [f"CSRR x{r_scratch}, stimecmp"]
@@ -99,7 +99,7 @@ def _generate_machine_tm_tests(test_data: TestData) -> list[str]:
             ]
         )
         # restore: clear mcounteren.TM
-        lines += [f"LI(x{r_scratch}, 0x2)", f"CSRC(mcounteren, x{r_scratch})"]
+        lines += [f"LI(x{r_scratch}, 0x2)", f"csrc mcounteren, x{r_scratch}"]
 
     test_data.int_regs.return_registers([r_scratch])
     return lines
@@ -174,25 +174,25 @@ def _generate_supervisor_sti_tests(test_data: TestData) -> list[str]:
                             "",
                             f"# {coverpoint}: STCE={stce} MIE={mie} SIE={sie} MIDELEG={mideleg_val} STIE={stie}",
                             "RVTEST_GOTO_MMODE",
-                            "CSRW(mie, zero)",
+                            "csrw mie, zero",
                             "csrci mstatus, 8",
                             "csrci mstatus, 2",
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"CSRC(mip, x{r_scratch})",
+                            f"csrc mip, x{r_scratch}",
                             "csrsi mcounteren, 2",
                         ]
 
                         lines += set_menvcfg_stce(r_stce, bool(stce))
 
                         if mideleg_val:
-                            lines.append(f"CSRW(mideleg, x{r_scratch})")
+                            lines.append(f"csrw mideleg, x{r_scratch}")
                         else:
-                            lines.append("CSRW(mideleg, zero)")
+                            lines.append("csrw mideleg, zero")
 
                         if stie:
-                            lines.append(f"CSRW(mie, x{r_scratch})")
+                            lines.append(f"csrw mie, x{r_scratch}")
 
                         # stimecmp setup last (clobbers r_scratch)
                         if stce:
@@ -251,9 +251,9 @@ def _generate_supervisor_tm_tests(test_data: TestData) -> list[str]:
             # set or clear mcounteren.TM
         ]
         if tm_val:
-            lines += [f"LI(x{r_scratch}, 0x2)", f"CSRS(mcounteren, x{r_scratch})"]
+            lines += [f"LI(x{r_scratch}, 0x2)", f"csrs mcounteren, x{r_scratch}"]
         else:
-            lines += [f"LI(x{r_scratch}, 0x2)", f"CSRC(mcounteren, x{r_scratch})"]
+            lines += [f"LI(x{r_scratch}, 0x2)", f"csrc mcounteren, x{r_scratch}"]
 
         lines += [
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -265,7 +265,7 @@ def _generate_supervisor_tm_tests(test_data: TestData) -> list[str]:
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRC(mcounteren, x{r_scratch})",
+            f"csrc mcounteren, x{r_scratch}",
             *set_menvcfg_stce(r_scratch, False),
         ]
 
@@ -356,23 +356,23 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             "",
                             f"# ---- {coverpoint} bin: {binname} ----",
                             "RVTEST_GOTO_MMODE",
-                            "CSRW(mie, zero)",
+                            "csrw mie, zero",
                             "csrci mstatus, 8",
                             "csrci mstatus, 2",
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"CSRC(mip, x{r_scratch})",
+                            f"csrc mip, x{r_scratch}",
                             *set_menvcfg_stce(r_stce, bool(stce)),
                         ]
 
                         if deleg:
-                            lines.append(f"CSRW(mideleg, x{r_scratch})")
+                            lines.append(f"csrw mideleg, x{r_scratch}")
                         else:
-                            lines.append("CSRW(mideleg, zero)")
+                            lines.append("csrw mideleg, zero")
 
                         if stie:
-                            lines.append(f"CSRW(mie, x{r_scratch})")
+                            lines.append(f"csrw mie, x{r_scratch}")
 
                         # stimecmp setup last (clobbers r_scratch)
                         lines += set_stimecmp_max(r_scratch)
@@ -438,12 +438,12 @@ def _generate_user_tm_tests(test_data: TestData) -> list[str]:
             *set_menvcfg_stce(r_scratch, True),
             # scounteren.TM=1 always; only mcounteren.TM varies
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRS(scounteren, x{r_scratch})",
+            f"csrs scounteren, x{r_scratch}",
         ]
         if tm_val:
-            lines += [f"CSRS(mcounteren, x{r_scratch})"]
+            lines += [f"csrs mcounteren, x{r_scratch}"]
         else:
-            lines += [f"CSRC(mcounteren, x{r_scratch})"]
+            lines += [f"csrc mcounteren, x{r_scratch}"]
 
         lines += [
             "RVTEST_GOTO_LOWER_MODE Umode",
@@ -455,9 +455,9 @@ def _generate_user_tm_tests(test_data: TestData) -> list[str]:
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRC(mcounteren, x{r_scratch})",
+            f"csrc mcounteren, x{r_scratch}",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRC(scounteren, x{r_scratch})",
+            f"csrc scounteren, x{r_scratch}",
             *set_menvcfg_stce(r_scratch, False),
         ]
 
@@ -488,9 +488,9 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
             *set_menvcfg_stce(r_scratch, bool(stce_val)),
             # TM=1 in both counteren so stimecmp access depends only on STCE
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRS(mcounteren, x{r_scratch})",
+            f"csrs mcounteren, x{r_scratch}",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRS(scounteren, x{r_scratch})",
+            f"csrs scounteren, x{r_scratch}",
             "RVTEST_GOTO_LOWER_MODE Umode",
             f"    {test_data.add_testcase(f'stce{stce_val}', coverpoint, covergroup)}",
             f"    CSRR x{r_scratch}, stimecmp",
@@ -500,9 +500,9 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
             # --- return to M-mode and restore ---
             "RVTEST_GOTO_MMODE",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRC(mcounteren, x{r_scratch})",
+            f"csrc mcounteren, x{r_scratch}",
             f"LI(x{r_scratch}, 0x2)",
-            f"CSRC(scounteren, x{r_scratch})",
+            f"csrc scounteren, x{r_scratch}",
             *set_menvcfg_stce(r_scratch, False),
         ]
 
@@ -535,9 +535,9 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
         # initializes mtimecmp to a large default) only sees STIP, causing a mismatch.
         *clr_mtimer_int(r_temp, r_mtcmp),
         # global init: no delegation, clear TW so WFI doesn't trap in lower modes
-        "CSRW(mideleg, zero)",
+        "csrw mideleg, zero",
         f"LI(x{r_temp}, 0x200000)",
-        f"CSRC(mstatus, x{r_temp})",  # clear TW bit
+        f"csrc mstatus, x{r_temp}",  # clear TW bit
         "",
     ]
 

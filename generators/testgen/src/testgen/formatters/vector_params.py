@@ -488,7 +488,8 @@ def generate_random_vector_params(
         and "maskval" in instr_type_config.required_params
         and params.maskval is None
     ):
-        element_count = 1 if suite == "base" else math.ceil((VLEN_MAX / sew) * lmul / sew)
+        # Generate a whole mask worth of data
+        element_count = math.ceil(VLEN_MAX / sew)
         params.maskval = f"maskval_random_{suite}_{test_count:03d}"
         test_data.register_vector_data(
             f"maskval_random_{suite}_{test_count:03d}",

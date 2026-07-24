@@ -215,8 +215,13 @@
         },
         // Similarly, a misaligned AMO currently always faults, and this field
         // can specify either `"AccessFault"` or `"AlignmentException"`.
+        // Wally (mmu.sv) evaluates misaligned-AMO faults AFTER address
+        // translation: a TLB/page-walk miss produces a page fault, and only
+        // then does a cacheable region raise an access fault (non-cacheable
+        // raises an alignment fault).  Use `None` here so the misalignment
+        // decision is deferred to the per-region PMA below, matching hardware.
         "amo": {
-          "Some": "AccessFault"
+          "None": null
         },
         // A misaligned LR/SC currently always faults, and this field can specify
         // whether it generates an access fault (use `"AccessFault"`)
@@ -321,7 +326,7 @@
             "vector": {
               "Some": "AlignmentException"
             },
-            "amo": "AccessFault"
+            "amo": "AlignmentException"
           },
           "atomic_support": "AMONone",
           "misaligned_atomicity_granule_size_exp": 0,

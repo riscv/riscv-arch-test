@@ -259,9 +259,9 @@ def ls_mew(instruction: str) -> None:
                   sew=sew, rs1_addr=True, init_vregs=init)
 
 
-# --------------------------------------------------------------------------
-# Whole-register stores with reserved nf (not 0/1/3/7).
-# --------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
+# Whole-register load/stores with reserved nf (not 0/1/3/7) & unaligned registers.
+# ----------------------------------------------------------------------------------
 
 _VSnR = {"vs1r.v": 0, "vs2r.v": 1, "vs4r.v": 3, "vs8r.v": 7}
 
@@ -274,18 +274,18 @@ _VSnR_NREG = {"vs1r.v": 1, "vs2r.v": 2, "vs4r.v": 4, "vs8r.v": 8}
 @register("cp_ssstrictv_ls_wr_nreg4_vd_unaligned")
 @register("cp_ssstrictv_ls_wr_nreg8_vd_unaligned")
 def ls_wr_nf(instruction: str) -> None:
-    if instruction not in _VSnR:
+    if instruction not in common.whole_register_ls:
         return
     base = encode(instruction)
     if base is None:
         return
-    valid = set(_VSnR.values())
+    valid_nf = { 0, 1, 3, 7 }
 
-    if instruction == "vs1r.v":
+    if instruction == "vs1r.v" or instruction == "vl1re8.v":
         # Reserved-nf encodings (nf not in {0,1,3,7}): emit one test per reserved nf.
         cleared = with_nf(base, 0)
         for nf in range(8):
-            if nf in valid:
+            if nf in valid_nf:
                 continue
             enc = with_vd(cleared, 8)
             enc = with_rs1(enc, 1)
@@ -295,7 +295,10 @@ def ls_wr_nf(instruction: str) -> None:
         return
 
     # vs2r/vs4r/vs8r.v: reserved when vd not aligned to NREG.
-    nreg = _VSnR_NREG[instruction]
+    if instruction in common.whole_register_stores:
+        nreg = _VSnR_NREG[instruction]
+    else:
+        nreg = int(instruction[2])
     cp = f"cp_ssstrictv_ls_wr_nreg{nreg}_vd_unaligned"
     for vd in range(32):
         if vd % nreg == 0:

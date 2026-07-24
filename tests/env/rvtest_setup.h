@@ -97,20 +97,43 @@
     #endif
 
   #ifdef STANDARD_SM_SUPPORTED
-    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-    bne     T4, T5, check_trap_sig_offset
-    jal     T2, failedtest_trap_x7_x9
-    RVTEST_WORD_PTR abort_test
-    RVTEST_WORD_PTR abortstr
-    .word   CSR_MEPC
+    check_trap_sig_overflow:
+      LA(     T4, trap_sig_overflow)
+      bne     T4, T5, check_abort_test
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, trap_sig_overflowstr)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      call rvmodel_halt_fail
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, check_trap_sig_offset
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
 
     // Check trap signature offset to make sure the correct number of traps occurred
     check_trap_sig_offset:
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
       LA(     T2, trap_sigptr)       // Base address of trap signature region
-      sub     T1, T1, T2              // Calculate offset
-      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+      sub     T1, T1, T2              // Calculate DUT trap signature byte count
+      LA(     T3, final_trap_sig_offset)
+    #ifdef RVTEST_SELFCHECK
+      LREG    T4, 0(T3)               // Reference trap signature byte count
+      beq     T4, T1, 1f
+    #else
+      SREG    T1, 0(T3)               // Save reference trap signature byte count
+      beq     x0, x0, 1f
+    #endif
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR check_trap_sig_offset
+      RVTEST_WORD_PTR trap_sig_offset_mismatch
+    1:
   #endif
 
   // Terminate test
@@ -118,6 +141,11 @@
     LA(a0, successstr)
     call rvmodel_io_write_str
     call rvmodel_halt_pass
+
+  // Terminate the test with a failure message indicating the trap signature overflowed
+  trap_sig_overflow:
+    LA(T5, trap_sig_overflow)
+    j       rvtest_code_end // switch to M-mode and clean up and terminate
 
   // Terminate test with a failure message
   abort_test:
@@ -395,6 +423,14 @@
         // Initialize remaining signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
+      // Fixed diagnostic slot for the final trap signature byte count.
+      // sig_modify.py inserts the final_trap_sig_offset label after this canary
+      // in self-checking builds, where the raw signature data is included.
+      final_trap_sig_offset_canary:
+        FINAL_TRAP_OFFSET_CANARY
+      final_trap_sig_offset:
+        .fill (REGWIDTH>>2),4,0xdeadbeef
+
       // Signature region for trap handlers
       tsig_begin_canary:
         TRAP_CANARY
@@ -653,11 +689,11 @@
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // Set up PMP so lower privilege modes can access the full address space.
         LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // all-ones address gives the largest TOR/NAPOT range
+        csrw pmpaddr0, t0   // all-ones address gives the largest TOR/NAPOT range
         #ifdef UDB_PMP_TOR_SUPPORTED
-          CSRW(pmpcfg0, 0x0F)   // configure PMP0 to TOR RWX
+          csrw pmpcfg0, 0x0F   // configure PMP0 to TOR RWX
         #elif defined(UDB_PMP_NAPOT_SUPPORTED)
-          CSRW(pmpcfg0, 0x1F)   // configure PMP0 to NAPOT RWX
+          csrw pmpcfg0, 0x1F   // configure PMP0 to NAPOT RWX
         #else
           #error "PMP initialization requires TOR or NAPOT support"
         #endif

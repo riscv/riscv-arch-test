@@ -67,7 +67,7 @@ main:
 
   // Set mstatus.TVM
   LI(   a0, MSTATUS_TVM)
-  CSRS( mstatus, a0)
+  csrs  mstatus, a0
   tvm:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, tvm, tvm_str)
 

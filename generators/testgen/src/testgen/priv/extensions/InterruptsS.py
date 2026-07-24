@@ -2490,7 +2490,24 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                     lines.append("csrsi mstatus, 2")
 
                 lines.append("# Set timer to fire soon (delayed)")
-                lines.extend(set_mtimer_int_soon(r_mtime, r_stimecmp, r_temp, r_temp2, r_scratch, r_stce))
+                # Arm the timer far enough out that no model's timer can expire
+                # before the U-mode idle loop below: the WFI illegal-instruction
+                # trap handler path is ~300 instructions, so a fast-ticking
+                # reference model (e.g. Sail at 2 instructions/tick) would be
+                # interrupted mid-handler with the default delay, while slower
+                # DUTs are interrupted in the idle loop, making the recorded
+                # MPP/SPIE context diverge.
+                lines.extend(
+                    set_mtimer_int_soon(
+                        r_mtime,
+                        r_stimecmp,
+                        r_temp,
+                        r_temp2,
+                        r_scratch,
+                        r_stce,
+                        delay="(RVMODEL_TIMER_INT_SOON_DELAY * 8)",
+                    )
+                )
 
                 lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
@@ -2502,7 +2519,10 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                         "    nop",
                         "    nop",
                         "# Idle in U-mode until the armed machine timer interrupt is taken,",
-                        f"    RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+                        "# scaled to match the 8x arming delay above",
+                        f"    LI(x{r_scratch}, (RVTEST_TIMER_INT_SOON_DELAY_CYCLES * 8))",
+                        f"    98: addi x{r_scratch}, x{r_scratch}, -1",
+                        f"    bnez x{r_scratch}, 98b",
                     ]
                 )
 

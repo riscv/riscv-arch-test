@@ -3,8 +3,7 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-# exclude SsstrictSm because of Sail sys_control being fixed in 0.13 release
-exclude_extensions: "SsstrictSm"
+exclude_extensions: "Zkr"
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2

@@ -65,6 +65,18 @@
         "base_alignment": 2
       }
     },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers.
@@ -111,9 +123,11 @@
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
-    }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_11"
   },
   "memory": {
+    "physaddr_bits": 32,
     // cv32e40p has no PMP
     "pmp": {
       "grain": 0,
@@ -141,15 +155,11 @@
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
         // AMO opcodes decode as illegal instructions.
         // Value has no effect on DUT comparison.
-        "amo": "AccessFault"
+        "amo": { "Some": "AccessFault" }
       },
-      "allowed_within_exp": 0,
+      "default_allowed_within_exp": 0,
       "byte_by_byte": false,
       "order_decreasing": false
-    },
-    "translation": {
-      // cv32e40p has no MMU (S: false, no virtual memory).
-      "dirty_update": false
     },
     // Address to write DTB to (if provided).
     "dtb_address": {
@@ -189,6 +199,8 @@
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           // SCHEMA-REQUIRED fields below: cv32e40p has no cache management (Zicbom/Zicboz)
           // and no MMU page table support. Values have no effect on DUT comparison.
@@ -230,6 +242,8 @@
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           // SCHEMA-REQUIRED fields below: no RTL counterpart.
           "supports_cbo_zero": false,
@@ -290,7 +304,8 @@
       "supported": false
     },
     "F": {
-      "supported": false
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
       "supported": false
@@ -416,6 +431,9 @@
       "supported": false
     },
     "Zalrsc": {
+      "supported": false
+    },
+    "Zama16b": {
       "supported": false
     },
     "Zawrs": {

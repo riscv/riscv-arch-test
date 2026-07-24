@@ -3,26 +3,37 @@
 normative_rule_definitions:
   # The Svnapot extension depends on the Sv39 extension.
   - name: Svnapot_depends_Sv39
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   - name: Svnapot_pte_N
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
+  # In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a translation
+  # that is part of a range of contiguous virtual-to-physical translations with the
+  # same values for PTE bits 5–0. Such ranges must be of a naturally aligned power-of-2 (NAPOT)
+  # granularity larger than the base page size.
   - name: Svnapot_range_napot
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
   - name: Svnapot_valid_encoding
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
+  # If the encoding in pte is reserved, a page-fault exception must be raised
   - name: Svnapot_reserved_encoding_fault
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_reserved_enc_exec_{s, u}"]
 
+  # If the encoding in pte is valid, implicit reads of a NAPOT PTE return a copy of pte
+  # in which pte.ppn[i][pte.napot_bits-1:0] is replaced by vpn[i][pte.napot_bits-1:0].
   - name: Svnapot_implicit_read_ppn_subst
-    coverpoint: [""]
+    coverpoint: ["Svnapot_cg/Svnapot_legal_enc_exec_{s, u}"]
 
+  # Implicit reads of NAPOT page table entries may create address-translation cache entries
+  # mapping a + j×PTESIZE to a copy of pte in which pte.ppn[i][pte.napot_bits-1:0] is replaced
+  # by vpn[i][pte.napot_bits-1:0], for any or all j such that j >> napot_bits = vpn[i] >> napot_bits,
+  # all for the address space identified in satp as loaded by step 1.
   - name: Svnapot_cache_entries
-    coverpoint: [""]
+    coverpoint: ["Not tested"]
 
-  # If H extension is implemented, Svnapot is also supported in G-stage translation.
+  # If the hypervisor extension is also implemented, Svnapot is also supported in G-stage translation.
   - name: Svnapot_hyp_gstage
-    coverpoint: [""]
+    coverpoint: ["TODO: test in hypervisor tests"]

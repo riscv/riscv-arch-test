@@ -331,7 +331,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ZicsrF", required_extensions=["Zicsr", "F"], march_extensions=["Zicsr", "F", "D", "Zfh"])
+@add_priv_test_generator("ZicsrF", required_extensions=["Zicsr", "F"], march_extensions=["F", "D", "Zfh"])
 def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicsrF unprivileged floating-point fcsr extension."""
     test_chunks: list[TestChunk] = []

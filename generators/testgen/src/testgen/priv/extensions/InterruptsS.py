@@ -2505,7 +2505,7 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                         r_temp2,
                         r_scratch,
                         r_stce,
-                        delay="(RVMODEL_TIMER_INT_SOON_DELAY * 8)",
+                        delay="(RVMODEL_TIMER_INT_SOON_DELAY) * 2",
                     )
                 )
 
@@ -2520,7 +2520,7 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                         "    nop",
                         "# Idle in U-mode until the armed machine timer interrupt is taken,",
                         "# scaled to match the 8x arming delay above",
-                        f"    LI(x{r_scratch}, (RVTEST_TIMER_INT_SOON_DELAY_CYCLES * 8))",
+                        f"    LI(x{r_scratch}, (RVTEST_TIMER_INT_SOON_DELAY_CYCLES)* 2)",
                         f"    98: addi x{r_scratch}, x{r_scratch}, -1",
                         f"    bnez x{r_scratch}, 98b",
                     ]

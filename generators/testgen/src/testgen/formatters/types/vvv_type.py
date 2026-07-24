@@ -13,6 +13,7 @@ from testgen.asm.vector_helpers import (
     reload_vtype,
     write_sigupd_v,
     write_sigupd_v_len,
+    write_sigupd_vxsat,
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
@@ -130,6 +131,9 @@ def format_vvv_sat(
 ) -> tuple[list[str], list[str], list[str]]:
     setup, test, check = format_vvv_like_type(instr_str, test_data, params, "VVV_SAT")
     setup = ["csrwi vxsat, 0"] + setup
+
+    check = write_sigupd_vxsat(test_data) + check
+
     return setup, test, check
 
 

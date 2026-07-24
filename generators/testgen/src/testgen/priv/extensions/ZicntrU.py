@@ -234,13 +234,14 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
-    """ "start in M mode
+    """start in M mode
     read instret and mcounteren = 0s
-    goto S mode
+    goto U mode
     nop
     go back to M mode
     mcounteren = 1s
-    read and sigupd change in instret"
+    go back to U mode
+    read and sigupd change in instret
     """
     covergroup, coverpoint = "ZicntrU_cg", "cp_mcounter_inc_inaccessible"
 

@@ -325,7 +325,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         (
             "medeleg",
             0xDBBFE,
-        ),  # mask off custom bits and reserved bits and bits that should be ROZ (Double trap [16], ecall from M [11]; instr misaligned [0] depends on MISALIGNED_LDST so don't check it
+        ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on MISALIGNED_LDST so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model

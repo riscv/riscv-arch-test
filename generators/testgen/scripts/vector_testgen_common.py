@@ -712,6 +712,8 @@ widening_mac_ins = [
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
+saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx", "vsmul.vv", "vsmul.vx"]
+
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",
 
@@ -1807,6 +1809,37 @@ def writeSIGUPD_F(fd):
     writeLine(f"{str_ptr}:")
     writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {str_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
+def writeSIGUPD_FFLAGS(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_FFLAGS(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check fflags in signature")
+
+def writeSIGUPD_VXSAT(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
+
+
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
 
 # def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
@@ -2474,10 +2507,10 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
         writeLine(reset_vl_post_load, "# reset vl to the previous value")
 
     if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
-      fcsrsaveReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(fcsrsaveReg)
-      writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
-      writeSIGUPD(inst_ptr, fcsrsaveReg)
+      writeSIGUPD_FFLAGS(inst_ptr)
+
+    if test in saturating_ins:
+      writeSIGUPD_VXSAT(inst_ptr)
 
     if skip_sigupd:
       # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.
@@ -2851,6 +2884,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
 
     if instruction in vfloattypes and clear_fflags:
       writeLine("fsflagsi 0b00000", "# clear all fflags")
+
+    if instruction in saturating_ins:
+      writeLine("csrwi vxsat, 0", "# clear vxsat bit")
 
     # If mask value specified, load to v0 (must be before prepBaseV for types that
     # do their own vsetvli, so prepBaseV restores the correct vl/vtype afterward)

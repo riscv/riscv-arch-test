@@ -3,7 +3,7 @@
 # CI configuration for the cve4 family: CV32E40P and CV32E40X
 
 ci_enabled: true
-exclude_extensions: "Sm,SmF,SsstrictSm,Zkr"
+exclude_extensions: "Sm,SmF,SsstrictSm"
 # SmF: cv32e40p-rv32imcf DUT bug - https://github.com/openhwgroup/cv32e40p/issues/1060; SsstrictSm not supported
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"

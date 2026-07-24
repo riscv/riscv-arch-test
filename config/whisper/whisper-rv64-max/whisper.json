@@ -128,7 +128,7 @@
     "trap_non_zero_vstart": true,
     "tt_clear_tval_vl_egs": true,
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
-    "update_whole_mask": false
+    "update_whole_mask": true
   },
 
   "wfi_timeout": 200

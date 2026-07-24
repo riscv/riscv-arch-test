@@ -66,7 +66,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
+  # - { name: Svrsw60t59b, version: "= 1.0.0" } # Imperas ISS does not implement Svrsw60t59b; PTE bits 60:59 remain reserved and page fault
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }

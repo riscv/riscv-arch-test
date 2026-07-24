@@ -2684,7 +2684,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
     writeLine(f"li x{scratch2}, {randvstart}")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % (VLMAX - 2) (0 <= x{scratch2} < VLMAX-2)")
     writeLine(f"bgt x{vstart_reg}, x0, 1f")
-    writeLine(f"addi x{scratch2}, {vstart_reg}, -1",                     f"# x{scratch2} = VLMAX - 3")
+    writeLine(f"addi x{scratch2}, x{vstart_reg}, -1",                    f"# x{scratch2} = VLMAX - 3")
     writeLine("1:")
     writeLine(f"addi x{scratch2}, x{scratch2}, 2",                       f"# 2 <= x{scratch2} < VLMAX")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on

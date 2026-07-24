@@ -101,7 +101,9 @@ def canonicalize_extensions(
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
-    ext_components = required_extensions.copy() if required_extensions else re.findall(r"[A-Z][a-z]*", testsuite)
+    ext_components = (
+        required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
+    )
 
     # Extract parameters
     params: list[str] = []

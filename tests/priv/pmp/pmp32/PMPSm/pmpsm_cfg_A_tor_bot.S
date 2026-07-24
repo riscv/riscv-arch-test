@@ -31,6 +31,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -39,7 +40,7 @@
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -102,7 +103,6 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
     LA (a4, (\ADDRESS-4))
-    LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
     LA(x1, 1f)                                                // Store the return Address in x1
     RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
@@ -149,16 +149,10 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_UPPER_BOUND       ((((PMP_L|PMP_R      |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LOWER_BOUND       ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
 
-    LA(x4, -1)                  // All memory region
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, TEST_FOR_EXECUTION)
     LI(t0, g)

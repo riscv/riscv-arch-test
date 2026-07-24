@@ -23,12 +23,13 @@
 //
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -93,13 +94,11 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPREGION0_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
 #define PMPREGION1_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
 #define PMPREGION2_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT)
 #define PMPREGION3_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -111,12 +110,7 @@ main:
     #define SIZE                (1<<(UDB_PMP_GRANULARITY+1))
 #endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 14
@@ -358,7 +352,7 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
+    .rept (g>>2)                                        // NAPOT region must be g_napot-aligned: g_napot-byte pad puts the region at PMP_NAPOT_REGION_START (0x80005008 at grain 2), so pmpaddr matches STANDARD_REGION and the region does not swallow the pad
     jr ra
     .endr
 

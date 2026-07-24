@@ -30,7 +30,7 @@
 #define SIGUPD_COUNT 100
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -53,6 +53,24 @@ RVTEST_BEGIN
 
 .endm
 
+.macro VERIFICATION_RWX_SUCCESS ADDRESS TEST_CASE
+
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(t2, 100)                                              // Retry counter for constrained LR/SC loop
+\TEST_CASE\()_retry:
+    \TEST_CASE\()_1:
+    lr.w a3, (a5)
+    \TEST_CASE\()_2:
+    sc.w a2, a3, (a5)
+    beqz a2, \TEST_CASE\()_success                          // SC succeeded, skip retry
+    addi t2, t2, -1                                          // Decrement retry count
+    bnez t2, \TEST_CASE\()_retry                             // Retry LR/SC if not exhausted
+\TEST_CASE\()_success:
+    RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_1, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_2, test_2_str)
+
+.endm
+
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
@@ -68,7 +86,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
@@ -76,7 +93,6 @@ main:
 #define PMPREGION_LXWR_1101 ((((PMP_L|PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -86,16 +102,8 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5 (both should fault)
@@ -141,7 +149,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2  (both fault)
 
@@ -186,7 +194,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    VERIFICATION_RWX_SUCCESS    TEST_FOR_EXECUTION, test_6
 
 
     j exit                                                        // Verification Complete, exit the test

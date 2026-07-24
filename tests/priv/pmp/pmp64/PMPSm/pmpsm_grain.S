@@ -23,7 +23,7 @@
 //                as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
 // --------------------------------------------------------------------------------
 
-#define SKIP_MEPC
+
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
@@ -58,22 +58,15 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_OFF          ((((     PMP_R|PMP_W|PMP_X)               &0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_NAPOT     ((((     PMP_R|PMP_W|PMP_X |PMP_NAPOT) &0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_TOR          ((((     PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 #define CHECKERBOARD        0xAAAAAAAAAAAAAAAA
 
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
@@ -110,6 +103,8 @@ main:
     test_2:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write all 0s in NAPOT
 
     LI(x6, PMPREGION_NAPOT)
@@ -123,6 +118,8 @@ main:
     csrw pmpcfg0, x6
     test_3:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_3, test_3_str)
+
+#endif
 
 // Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
@@ -154,6 +151,8 @@ main:
     test_5:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_5, test_5_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write all 0s in OFF
 
     LI(x6, PMPREGION_OFF)
@@ -167,6 +166,8 @@ main:
     csrw pmpcfg0, x6
     test_6:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_6, test_6_str)
+
+#endif
 
 // Test Case 3: Writing all 1s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
@@ -198,6 +199,8 @@ main:
     test_8:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_8, test_8_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write all 1s in NAPOT
 
     LI(x6, PMPREGION_NAPOT)
@@ -212,6 +215,7 @@ main:
     test_9:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_9, test_9_str)
 
+#endif
 
 // Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
@@ -243,6 +247,8 @@ main:
     test_11:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_11, test_11_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write all 1s in OFF
 
     LI(x6, PMPREGION_OFF)
@@ -256,6 +262,8 @@ main:
     csrw pmpcfg0, x6
     test_12:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_12, test_12_str)
+
+#endif
 
 // Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
@@ -287,6 +295,8 @@ main:
     test_14:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_14, test_14_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write checkerboard in NAPOT
 
     LI(x6, PMPREGION_NAPOT)
@@ -301,6 +311,7 @@ main:
     test_15:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_15, test_15_str)
 
+#endif
 
 // Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
@@ -332,6 +343,8 @@ main:
     test_17:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_17, test_17_str)
 
+#ifdef UDB_PMP_TOR_SUPPORTED
+
 // Write checkerboard in OFF
 
     LI(x6, PMPREGION_OFF)
@@ -345,6 +358,8 @@ main:
     csrw pmpcfg0, x6
     test_18:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_18, test_18_str)
+
+#endif
 
     RVTEST_GOTO_MMODE
 

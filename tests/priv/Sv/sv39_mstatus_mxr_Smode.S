@@ -27,7 +27,7 @@
 #define TEST_FILE "sv39_mstatus_mxr_Smode.S"
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 50
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -49,7 +49,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop

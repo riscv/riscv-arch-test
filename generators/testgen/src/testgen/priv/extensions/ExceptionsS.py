@@ -132,7 +132,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             [
                 test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                "LI(x4, 0xACCE)",
             ]
         )
         for rs1_lsb in range(4):
@@ -152,7 +151,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
                 test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                "LI(x4, 0xACCE)",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
                 "#endif",
@@ -273,13 +271,14 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
 
-        # Ecall
+        # Ecall (uses the T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
+        # misinterpreted by the trap handler as a T-SBI instruction-table request)
         lines.extend(
             [
                 test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
-                "ecall",
-                "nop",
-                "nop",
+                "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                write_sigupd(10, test_data),
             ]
         )
 
@@ -332,7 +331,6 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
         [
             "# Instr access fault should trap through stvec",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            "LI(x4, 0xACCE)",
             test_data.add_testcase(f"stvec_iaf_{mode_tag}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             "nop",
@@ -398,8 +396,11 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
                 lines.extend(
                     [
                         test_data.add_testcase(tag, coverpoint, covergroup),
-                        "ecall",
-                        "nop",
+                        # T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
+                        # misinterpreted by the trap handler as a T-SBI instruction-table request
+                        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                        write_sigupd(10, test_data),
                         "RVTEST_GOTO_MMODE",
                     ]
                 )
@@ -421,7 +422,9 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 @add_priv_test_generator(
     "ExceptionsS",
     required_extensions=["S"],
-    extra_defines=["#define SKIP_MEPC"],
+    extra_defines=[
+        "#define TRAP_SIGUPD_COUNT 50000",
+    ],
 )
 def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     """Main entry point for S-mode exception test generation (refactored)."""

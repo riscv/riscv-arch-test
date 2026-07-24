@@ -47,7 +47,7 @@ Zicbom_cbo_inval_cg_cp_rs1_nx0_b1:
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b2:
   cbo.inval (x2) # perform operation
 
-  mv x14, x3 # switch data pointer register to avoid conflict with test
+  mv x12, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x3)
   LA(x3, scratch) # load address of scratch into rs1
   addi x3, x3, 216 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
@@ -106,125 +106,127 @@ Zicbom_cbo_inval_cg_cp_rs1_nx0_b10:
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b11:
   cbo.inval (x11) # perform operation
 
+  mv x16, x12 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
   LA(x12, scratch) # load address of scratch into rs1
-  addi x12, x12, 141 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x12, x12, 135 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b12:
   cbo.inval (x12) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
   LA(x13, scratch) # load address of scratch into rs1
-  addi x13, x13, 63 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x13, x13, 109 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b13:
   cbo.inval (x13) # perform operation
 
-  mv x11, x14 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
   LA(x14, scratch) # load address of scratch into rs1
-  addi x14, x14, 254 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x14, x14, 35 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b14:
   cbo.inval (x14) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
   LA(x15, scratch) # load address of scratch into rs1
-  addi x15, x15, 144 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x15, x15, 125 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b15:
   cbo.inval (x15) # perform operation
 
+  mv x20, x16 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x16)
   LA(x16, scratch) # load address of scratch into rs1
-  addi x16, x16, 184 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x16, x16, 64 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b16:
   cbo.inval (x16) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x17)
   LA(x17, scratch) # load address of scratch into rs1
-  addi x17, x17, 71 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x17, x17, 111 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b17:
   cbo.inval (x17) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x18)
   LA(x18, scratch) # load address of scratch into rs1
-  addi x18, x18, 163 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x18, x18, 51 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b18:
   cbo.inval (x18) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x19)
   LA(x19, scratch) # load address of scratch into rs1
-  addi x19, x19, 160 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x19, x19, 131 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b19:
   cbo.inval (x19) # perform operation
 
+  mv x10, x20 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x20)
   LA(x20, scratch) # load address of scratch into rs1
-  addi x20, x20, 78 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x20, x20, 163 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b20:
   cbo.inval (x20) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x21)
   LA(x21, scratch) # load address of scratch into rs1
-  addi x21, x21, 106 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x21, x21, 160 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b21:
   cbo.inval (x21) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x22)
   LA(x22, scratch) # load address of scratch into rs1
-  addi x22, x22, 199 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x22, x22, 78 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b22:
   cbo.inval (x22) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x23)
   LA(x23, scratch) # load address of scratch into rs1
-  addi x23, x23, 1 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x23, x23, 106 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b23:
   cbo.inval (x23) # perform operation
 
-  mv x20, x24 # switch signature pointer register to avoid conflict with test
+  mv x15, x24 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1_nx0 (Test source rs1 = x24)
   LA(x24, scratch) # load address of scratch into rs1
-  addi x24, x24, 224 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x24, x24, 116 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b24:
   cbo.inval (x24) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x25)
   LA(x25, scratch) # load address of scratch into rs1
-  addi x25, x25, 247 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x25, x25, 32 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b25:
   cbo.inval (x25) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x26)
   LA(x26, scratch) # load address of scratch into rs1
-  addi x26, x26, 223 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x26, x26, 224 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b26:
   cbo.inval (x26) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x27)
   LA(x27, scratch) # load address of scratch into rs1
-  addi x27, x27, 189 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x27, x27, 247 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b27:
   cbo.inval (x27) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x28)
   LA(x28, scratch) # load address of scratch into rs1
-  addi x28, x28, 40 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x28, x28, 223 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b28:
   cbo.inval (x28) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x29)
   LA(x29, scratch) # load address of scratch into rs1
-  addi x29, x29, 58 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x29, x29, 189 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b29:
   cbo.inval (x29) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x30)
   LA(x30, scratch) # load address of scratch into rs1
-  addi x30, x30, 228 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x30, x30, 40 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b30:
   cbo.inval (x30) # perform operation
 
 # Testcase cp_rs1_nx0 (Test source rs1 = x31)
   LA(x31, scratch) # load address of scratch into rs1
-  addi x31, x31, 116 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
+  addi x31, x31, 58 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 Zicbom_cbo_inval_cg_cp_rs1_nx0_b31:
   cbo.inval (x31) # perform operation
 
@@ -237,1443 +239,1443 @@ Zicbom_cbo_inval_cg_cp_rs1_nx0_b31:
 # Testing offset 0 to check behavior across cache line boundaries
   addi x7, x29, 0 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 # Write initial data to memory for word 0
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000101
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000101
   sw x31, 0(x29)
 # Write initial data to memory for word 1
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000102
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000102
   sw x31, 4(x29)
 # Write initial data to memory for word 2
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000103
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000103
   sw x31, 8(x29)
 # Write initial data to memory for word 3
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000104
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000104
   sw x31, 12(x29)
 # Write initial data to memory for word 4
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000105
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000105
   sw x31, 16(x29)
 # Write initial data to memory for word 5
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000106
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000106
   sw x31, 20(x29)
 # Write initial data to memory for word 6
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000107
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000107
   sw x31, 24(x29)
 # Write initial data to memory for word 7
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000108
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000108
   sw x31, 28(x29)
 # Write initial data to memory for word 8
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000109
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000109
   sw x31, 32(x29)
 # Write initial data to memory for word 9
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010a
   sw x31, 36(x29)
 # Write initial data to memory for word 10
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010b
   sw x31, 40(x29)
 # Write initial data to memory for word 11
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010c
   sw x31, 44(x29)
 # Write initial data to memory for word 12
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010d
   sw x31, 48(x29)
 # Write initial data to memory for word 13
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010e
   sw x31, 52(x29)
 # Write initial data to memory for word 14
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010f
   sw x31, 56(x29)
 # Write initial data to memory for word 15
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000110
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000110
   sw x31, 60(x29)
 # Write initial data to memory for word 16
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000111
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000111
   sw x31, 64(x29)
 # Write initial data to memory for word 17
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000112
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000112
   sw x31, 68(x29)
 # Write initial data to memory for word 18
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000113
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000113
   sw x31, 72(x29)
 # Write initial data to memory for word 19
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000114
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000114
   sw x31, 76(x29)
 # Write initial data to memory for word 20
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000115
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000115
   sw x31, 80(x29)
 # Write initial data to memory for word 21
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000116
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000116
   sw x31, 84(x29)
 # Write initial data to memory for word 22
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000117
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000117
   sw x31, 88(x29)
 # Write initial data to memory for word 23
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000118
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000118
   sw x31, 92(x29)
 # Write initial data to memory for word 24
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000119
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000119
   sw x31, 96(x29)
 # Write initial data to memory for word 25
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011a
   sw x31, 100(x29)
 # Write initial data to memory for word 26
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011b
   sw x31, 104(x29)
 # Write initial data to memory for word 27
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011c
   sw x31, 108(x29)
 # Write initial data to memory for word 28
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011d
   sw x31, 112(x29)
 # Write initial data to memory for word 29
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011e
   sw x31, 116(x29)
 # Write initial data to memory for word 30
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011f
   sw x31, 120(x29)
 # Write initial data to memory for word 31
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000120
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000120
   sw x31, 124(x29)
 # Write initial data to memory for word 32
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000121
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000121
   sw x31, 128(x29)
 # Write initial data to memory for word 33
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000122
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000122
   sw x31, 132(x29)
 # Write initial data to memory for word 34
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000123
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000123
   sw x31, 136(x29)
 # Write initial data to memory for word 35
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000124
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000124
   sw x31, 140(x29)
 # Write initial data to memory for word 36
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000125
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000125
   sw x31, 144(x29)
 # Write initial data to memory for word 37
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000126
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000126
   sw x31, 148(x29)
 # Write initial data to memory for word 38
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000127
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000127
   sw x31, 152(x29)
 # Write initial data to memory for word 39
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000128
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000128
   sw x31, 156(x29)
 # Write initial data to memory for word 40
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000129
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000129
   sw x31, 160(x29)
 # Write initial data to memory for word 41
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012a
   sw x31, 164(x29)
 # Write initial data to memory for word 42
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012b
   sw x31, 168(x29)
 # Write initial data to memory for word 43
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012c
   sw x31, 172(x29)
 # Write initial data to memory for word 44
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012d
   sw x31, 176(x29)
 # Write initial data to memory for word 45
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012e
   sw x31, 180(x29)
 # Write initial data to memory for word 46
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012f
   sw x31, 184(x29)
 # Write initial data to memory for word 47
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000130
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000130
   sw x31, 188(x29)
 # Write initial data to memory for word 48
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000131
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000131
   sw x31, 192(x29)
 # Write initial data to memory for word 49
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000132
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000132
   sw x31, 196(x29)
 # Write initial data to memory for word 50
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000133
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000133
   sw x31, 200(x29)
 # Write initial data to memory for word 51
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000134
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000134
   sw x31, 204(x29)
 # Write initial data to memory for word 52
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000135
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000135
   sw x31, 208(x29)
 # Write initial data to memory for word 53
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000136
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000136
   sw x31, 212(x29)
 # Write initial data to memory for word 54
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000137
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000137
   sw x31, 216(x29)
 # Write initial data to memory for word 55
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000138
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000138
   sw x31, 220(x29)
 # Write initial data to memory for word 56
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000139
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000139
   sw x31, 224(x29)
 # Write initial data to memory for word 57
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013a
   sw x31, 228(x29)
 # Write initial data to memory for word 58
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013b
   sw x31, 232(x29)
 # Write initial data to memory for word 59
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013c
   sw x31, 236(x29)
 # Write initial data to memory for word 60
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013d
   sw x31, 240(x29)
 # Write initial data to memory for word 61
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013e
   sw x31, 244(x29)
 # Write initial data to memory for word 62
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013f
   sw x31, 248(x29)
 # Write initial data to memory for word 63
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000140
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000140
   sw x31, 252(x29)
 # Write initial data to memory for word 64
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000141
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000141
   sw x31, 256(x29)
   cbo.clean (x7) # Clean the cache to ensure data is in memory, then write new data
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000001
   sw x31, 0(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000002
   sw x31, 4(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000003
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000003
   sw x31, 8(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000004
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000004
   sw x31, 12(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000005
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000005
   sw x31, 16(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000006
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000006
   sw x31, 20(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000007
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000007
   sw x31, 24(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000008
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000008
   sw x31, 28(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000009
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000009
   sw x31, 32(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000a
   sw x31, 36(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000b
   sw x31, 40(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000c
   sw x31, 44(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000d
   sw x31, 48(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000e
   sw x31, 52(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000f
   sw x31, 56(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000010
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000010
   sw x31, 60(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000011
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000011
   sw x31, 64(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000012
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000012
   sw x31, 68(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000013
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000013
   sw x31, 72(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000014
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000014
   sw x31, 76(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000015
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000015
   sw x31, 80(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000016
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000016
   sw x31, 84(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000017
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000017
   sw x31, 88(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000018
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000018
   sw x31, 92(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000019
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000019
   sw x31, 96(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001a
   sw x31, 100(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001b
   sw x31, 104(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001c
   sw x31, 108(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001d
   sw x31, 112(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001e
   sw x31, 116(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001f
   sw x31, 120(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000020
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000020
   sw x31, 124(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000021
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000021
   sw x31, 128(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000022
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000022
   sw x31, 132(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000023
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000023
   sw x31, 136(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000024
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000024
   sw x31, 140(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000025
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000025
   sw x31, 144(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000026
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000026
   sw x31, 148(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000027
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000027
   sw x31, 152(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000028
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000028
   sw x31, 156(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000029
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000029
   sw x31, 160(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002a
   sw x31, 164(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002b
   sw x31, 168(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002c
   sw x31, 172(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002d
   sw x31, 176(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002e
   sw x31, 180(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002f
   sw x31, 184(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000030
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000030
   sw x31, 188(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000031
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000031
   sw x31, 192(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000032
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000032
   sw x31, 196(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000033
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000033
   sw x31, 200(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000034
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000034
   sw x31, 204(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000035
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000035
   sw x31, 208(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000036
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000036
   sw x31, 212(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000037
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000037
   sw x31, 216(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000038
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000038
   sw x31, 220(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000039
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000039
   sw x31, 224(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003a
   sw x31, 228(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003b
   sw x31, 232(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003c
   sw x31, 236(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003d
   sw x31, 240(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003e
   sw x31, 244(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003f
   sw x31, 248(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000040
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000040
   sw x31, 252(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000041
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000041
   sw x31, 256(x29)
   cbo.inval (x7) # Issue cbo instruction on first line of scratch or at an offset
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_0:
   lw x31, 0(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_0:
   lw x31, 4(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_0:
   lw x31, 8(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_0:
   lw x31, 12(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_0:
   lw x31, 16(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_0:
   lw x31, 20(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_0:
   lw x31, 24(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_0:
   lw x31, 28(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_0:
   lw x31, 32(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_0:
   lw x31, 36(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_0:
   lw x31, 40(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_0:
   lw x31, 44(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_0:
   lw x31, 48(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_0:
   lw x31, 52(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_0:
   lw x31, 56(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_0:
   lw x31, 60(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_0:
   lw x31, 64(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_0:
   lw x31, 68(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_0:
   lw x31, 72(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_0:
   lw x31, 76(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_0:
   lw x31, 80(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_0:
   lw x31, 84(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_0:
   lw x31, 88(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_0:
   lw x31, 92(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_0:
   lw x31, 96(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_0:
   lw x31, 100(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_0:
   lw x31, 104(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_0:
   lw x31, 108(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_0:
   lw x31, 112(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_0:
   lw x31, 116(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_0:
   lw x31, 120(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_0:
   lw x31, 124(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_0:
   lw x31, 128(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_0:
   lw x31, 132(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_0:
   lw x31, 136(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_0:
   lw x31, 140(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_0:
   lw x31, 144(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_0:
   lw x31, 148(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_0:
   lw x31, 152(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_0:
   lw x31, 156(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_0:
   lw x31, 160(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_0:
   lw x31, 164(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_0:
   lw x31, 168(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_0:
   lw x31, 172(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_0:
   lw x31, 176(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_0:
   lw x31, 180(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_0:
   lw x31, 184(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_0:
   lw x31, 188(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_0:
   lw x31, 192(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_0:
   lw x31, 196(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_0:
   lw x31, 200(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_0:
   lw x31, 204(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_0:
   lw x31, 208(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_0:
   lw x31, 212(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_0:
   lw x31, 216(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_0:
   lw x31, 220(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_0:
   lw x31, 224(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_0:
   lw x31, 228(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_0:
   lw x31, 232(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_0:
   lw x31, 236(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_0:
   lw x31, 240(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_0:
   lw x31, 244(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_0:
   lw x31, 248(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_0:
   lw x31, 252(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_0_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_0:
   lw x31, 256(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_0_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_0, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_0_str)
 
 # Testing offset 255 to check behavior across cache line boundaries
   addi x7, x29, 255 # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter
 # Write initial data to memory for word 0
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000101
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000101
   sw x31, 0(x29)
 # Write initial data to memory for word 1
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000102
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000102
   sw x31, 4(x29)
 # Write initial data to memory for word 2
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000103
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000103
   sw x31, 8(x29)
 # Write initial data to memory for word 3
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000104
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000104
   sw x31, 12(x29)
 # Write initial data to memory for word 4
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000105
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000105
   sw x31, 16(x29)
 # Write initial data to memory for word 5
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000106
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000106
   sw x31, 20(x29)
 # Write initial data to memory for word 6
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000107
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000107
   sw x31, 24(x29)
 # Write initial data to memory for word 7
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000108
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000108
   sw x31, 28(x29)
 # Write initial data to memory for word 8
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000109
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000109
   sw x31, 32(x29)
 # Write initial data to memory for word 9
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010a
   sw x31, 36(x29)
 # Write initial data to memory for word 10
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010b
   sw x31, 40(x29)
 # Write initial data to memory for word 11
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010c
   sw x31, 44(x29)
 # Write initial data to memory for word 12
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010d
   sw x31, 48(x29)
 # Write initial data to memory for word 13
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010e
   sw x31, 52(x29)
 # Write initial data to memory for word 14
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000010f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000010f
   sw x31, 56(x29)
 # Write initial data to memory for word 15
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000110
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000110
   sw x31, 60(x29)
 # Write initial data to memory for word 16
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000111
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000111
   sw x31, 64(x29)
 # Write initial data to memory for word 17
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000112
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000112
   sw x31, 68(x29)
 # Write initial data to memory for word 18
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000113
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000113
   sw x31, 72(x29)
 # Write initial data to memory for word 19
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000114
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000114
   sw x31, 76(x29)
 # Write initial data to memory for word 20
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000115
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000115
   sw x31, 80(x29)
 # Write initial data to memory for word 21
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000116
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000116
   sw x31, 84(x29)
 # Write initial data to memory for word 22
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000117
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000117
   sw x31, 88(x29)
 # Write initial data to memory for word 23
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000118
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000118
   sw x31, 92(x29)
 # Write initial data to memory for word 24
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000119
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000119
   sw x31, 96(x29)
 # Write initial data to memory for word 25
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011a
   sw x31, 100(x29)
 # Write initial data to memory for word 26
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011b
   sw x31, 104(x29)
 # Write initial data to memory for word 27
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011c
   sw x31, 108(x29)
 # Write initial data to memory for word 28
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011d
   sw x31, 112(x29)
 # Write initial data to memory for word 29
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011e
   sw x31, 116(x29)
 # Write initial data to memory for word 30
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000011f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000011f
   sw x31, 120(x29)
 # Write initial data to memory for word 31
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000120
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000120
   sw x31, 124(x29)
 # Write initial data to memory for word 32
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000121
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000121
   sw x31, 128(x29)
 # Write initial data to memory for word 33
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000122
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000122
   sw x31, 132(x29)
 # Write initial data to memory for word 34
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000123
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000123
   sw x31, 136(x29)
 # Write initial data to memory for word 35
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000124
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000124
   sw x31, 140(x29)
 # Write initial data to memory for word 36
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000125
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000125
   sw x31, 144(x29)
 # Write initial data to memory for word 37
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000126
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000126
   sw x31, 148(x29)
 # Write initial data to memory for word 38
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000127
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000127
   sw x31, 152(x29)
 # Write initial data to memory for word 39
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000128
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000128
   sw x31, 156(x29)
 # Write initial data to memory for word 40
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000129
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000129
   sw x31, 160(x29)
 # Write initial data to memory for word 41
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012a
   sw x31, 164(x29)
 # Write initial data to memory for word 42
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012b
   sw x31, 168(x29)
 # Write initial data to memory for word 43
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012c
   sw x31, 172(x29)
 # Write initial data to memory for word 44
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012d
   sw x31, 176(x29)
 # Write initial data to memory for word 45
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012e
   sw x31, 180(x29)
 # Write initial data to memory for word 46
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000012f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000012f
   sw x31, 184(x29)
 # Write initial data to memory for word 47
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000130
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000130
   sw x31, 188(x29)
 # Write initial data to memory for word 48
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000131
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000131
   sw x31, 192(x29)
 # Write initial data to memory for word 49
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000132
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000132
   sw x31, 196(x29)
 # Write initial data to memory for word 50
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000133
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000133
   sw x31, 200(x29)
 # Write initial data to memory for word 51
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000134
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000134
   sw x31, 204(x29)
 # Write initial data to memory for word 52
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000135
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000135
   sw x31, 208(x29)
 # Write initial data to memory for word 53
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000136
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000136
   sw x31, 212(x29)
 # Write initial data to memory for word 54
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000137
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000137
   sw x31, 216(x29)
 # Write initial data to memory for word 55
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000138
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000138
   sw x31, 220(x29)
 # Write initial data to memory for word 56
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000139
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000139
   sw x31, 224(x29)
 # Write initial data to memory for word 57
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013a
   sw x31, 228(x29)
 # Write initial data to memory for word 58
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013b
   sw x31, 232(x29)
 # Write initial data to memory for word 59
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013c
   sw x31, 236(x29)
 # Write initial data to memory for word 60
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013d
   sw x31, 240(x29)
 # Write initial data to memory for word 61
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013e
   sw x31, 244(x29)
 # Write initial data to memory for word 62
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000013f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000013f
   sw x31, 248(x29)
 # Write initial data to memory for word 63
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000140
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000140
   sw x31, 252(x29)
 # Write initial data to memory for word 64
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000141
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000141
   sw x31, 256(x29)
   cbo.clean (x7) # Clean the cache to ensure data is in memory, then write new data
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000001
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000001
   sw x31, 0(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000002
   sw x31, 4(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000003
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000003
   sw x31, 8(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000004
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000004
   sw x31, 12(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000005
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000005
   sw x31, 16(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000006
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000006
   sw x31, 20(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000007
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000007
   sw x31, 24(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000008
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000008
   sw x31, 28(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000009
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000009
   sw x31, 32(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000a
   sw x31, 36(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000b
   sw x31, 40(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000c
   sw x31, 44(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000d
   sw x31, 48(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000e
   sw x31, 52(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000000f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000000f
   sw x31, 56(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000010
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000010
   sw x31, 60(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000011
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000011
   sw x31, 64(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000012
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000012
   sw x31, 68(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000013
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000013
   sw x31, 72(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000014
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000014
   sw x31, 76(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000015
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000015
   sw x31, 80(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000016
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000016
   sw x31, 84(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000017
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000017
   sw x31, 88(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000018
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000018
   sw x31, 92(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000019
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000019
   sw x31, 96(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001a
   sw x31, 100(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001b
   sw x31, 104(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001c
   sw x31, 108(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001d
   sw x31, 112(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001e
   sw x31, 116(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000001f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000001f
   sw x31, 120(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000020
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000020
   sw x31, 124(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000021
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000021
   sw x31, 128(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000022
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000022
   sw x31, 132(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000023
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000023
   sw x31, 136(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000024
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000024
   sw x31, 140(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000025
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000025
   sw x31, 144(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000026
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000026
   sw x31, 148(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000027
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000027
   sw x31, 152(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000028
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000028
   sw x31, 156(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000029
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000029
   sw x31, 160(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002a
   sw x31, 164(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002b
   sw x31, 168(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002c
   sw x31, 172(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002d
   sw x31, 176(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002e
   sw x31, 180(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000002f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000002f
   sw x31, 184(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000030
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000030
   sw x31, 188(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000031
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000031
   sw x31, 192(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000032
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000032
   sw x31, 196(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000033
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000033
   sw x31, 200(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000034
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000034
   sw x31, 204(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000035
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000035
   sw x31, 208(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000036
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000036
   sw x31, 212(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000037
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000037
   sw x31, 216(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000038
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000038
   sw x31, 220(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000039
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000039
   sw x31, 224(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003a
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003a
   sw x31, 228(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003b
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003b
   sw x31, 232(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003c
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003c
   sw x31, 236(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003d
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003d
   sw x31, 240(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003e
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003e
   sw x31, 244(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x0000003f
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x0000003f
   sw x31, 248(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000040
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000040
   sw x31, 252(x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x00000041
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x00000041
   sw x31, 256(x29)
   cbo.inval (x7) # Issue cbo instruction on first line of scratch or at an offset
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_255:
   lw x31, 0(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_0_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_255:
   lw x31, 4(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_1_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_255:
   lw x31, 8(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_2_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_255:
   lw x31, 12(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_3_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_255:
   lw x31, 16(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_4_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_255:
   lw x31, 20(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_5_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_255:
   lw x31, 24(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_6_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_255:
   lw x31, 28(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_7_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_255:
   lw x31, 32(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_8_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_255:
   lw x31, 36(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_9_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_255:
   lw x31, 40(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_10_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_255:
   lw x31, 44(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_11_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_255:
   lw x31, 48(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_12_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_255:
   lw x31, 52(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_13_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_255:
   lw x31, 56(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_14_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_255:
   lw x31, 60(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_15_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_255:
   lw x31, 64(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_16_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_255:
   lw x31, 68(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_17_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_255:
   lw x31, 72(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_18_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_255:
   lw x31, 76(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_19_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_255:
   lw x31, 80(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_20_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_255:
   lw x31, 84(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_21_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_255:
   lw x31, 88(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_22_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_255:
   lw x31, 92(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_23_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_255:
   lw x31, 96(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_24_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_255:
   lw x31, 100(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_25_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_255:
   lw x31, 104(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_26_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_255:
   lw x31, 108(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_27_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_255:
   lw x31, 112(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_28_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_255:
   lw x31, 116(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_29_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_255:
   lw x31, 120(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_30_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_255:
   lw x31, 124(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_31_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_255:
   lw x31, 128(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_32_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_255:
   lw x31, 132(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_33_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_255:
   lw x31, 136(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_34_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_255:
   lw x31, 140(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_35_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_255:
   lw x31, 144(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_36_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_255:
   lw x31, 148(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_37_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_255:
   lw x31, 152(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_38_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_255:
   lw x31, 156(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_39_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_255:
   lw x31, 160(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_40_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_255:
   lw x31, 164(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_41_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_255:
   lw x31, 168(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_42_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_255:
   lw x31, 172(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_43_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_255:
   lw x31, 176(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_44_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_255:
   lw x31, 180(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_45_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_255:
   lw x31, 184(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_46_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_255:
   lw x31, 188(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_47_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_255:
   lw x31, 192(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_48_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_255:
   lw x31, 196(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_49_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_255:
   lw x31, 200(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_50_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_255:
   lw x31, 204(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_51_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_255:
   lw x31, 208(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_52_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_255:
   lw x31, 212(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_53_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_255:
   lw x31, 216(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_54_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_255:
   lw x31, 220(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_55_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_255:
   lw x31, 224(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_56_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_255:
   lw x31, 228(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_57_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_255:
   lw x31, 232(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_58_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_255:
   lw x31, 236(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_59_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_255:
   lw x31, 240(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_60_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_255:
   lw x31, 244(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_61_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_255:
   lw x31, 248(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_62_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_255:
   lw x31, 252(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_63_offset_255_str)
 
 Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_255:
   lw x31, 256(x29) # Read back data
   andi x31, x31, ~0x100 # Mask to the bits that should be preserved by cbo.inval
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_255_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x15, x5, x4, x31, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_inval_cg_cp_custom_cbo_word_64_offset_255_str)
 
 
-  mv x2, x20 # restore signature pointer to default register for teardown
+  mv x2, x15 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

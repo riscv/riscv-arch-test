@@ -73,18 +73,19 @@
   .global cleanup_epilogs       // ****ALERT: tests must populate x1 with a point to the end of regular sig area TODO: Is this still true?
   /**** MPRV must be clear here !!! ****/
 
-  // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
   // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
   rvtest_code_end:
-    #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_GOTO_MMODE
-    #endif
 
-  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
+  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
+  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
+  // because cleanup_epilogs is also reached from abort_test and from the default
+  // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
+  // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
+      RVTEST_GOTO_MMODE
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -96,20 +97,43 @@
     #endif
 
   #ifdef STANDARD_SM_SUPPORTED
-    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-    bne     T4, T5, check_trap_sig_offset
-    jal     T2, failedtest_trap_x7_x9
-    RVTEST_WORD_PTR abort_test
-    RVTEST_WORD_PTR abortstr
-    .word   CSR_MEPC
+    check_trap_sig_overflow:
+      LA(     T4, trap_sig_overflow)
+      bne     T4, T5, check_abort_test
+      LA(a0, failstr)
+      call rvmodel_io_write_str
+      LA(a0, trap_sig_overflowstr)
+      call rvmodel_io_write_str
+      LA(a0, endstr)
+      call rvmodel_io_write_str
+      call rvmodel_halt_fail
+
+    check_abort_test:
+      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+      bne     T4, T5, check_trap_sig_offset
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR abort_test
+      RVTEST_WORD_PTR abortstr
+      .word   CSR_MEPC
 
     // Check trap signature offset to make sure the correct number of traps occurred
     check_trap_sig_offset:
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
       LA(     T2, trap_sigptr)       // Base address of trap signature region
-      sub     T1, T1, T2              // Calculate offset
-      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+      sub     T1, T1, T2              // Calculate DUT trap signature byte count
+      LA(     T3, final_trap_sig_offset)
+    #ifdef RVTEST_SELFCHECK
+      LREG    T4, 0(T3)               // Reference trap signature byte count
+      beq     T4, T1, 1f
+    #else
+      SREG    T1, 0(T3)               // Save reference trap signature byte count
+      beq     x0, x0, 1f
+    #endif
+      jal     T2, failedtest_trap_x7_x9
+      RVTEST_WORD_PTR check_trap_sig_offset
+      RVTEST_WORD_PTR trap_sig_offset_mismatch
+    1:
   #endif
 
   // Terminate test
@@ -118,10 +142,15 @@
     call rvmodel_io_write_str
     call rvmodel_halt_pass
 
+  // Terminate the test with a failure message indicating the trap signature overflowed
+  trap_sig_overflow:
+    LA(T5, trap_sig_overflow)
+    j       rvtest_code_end // switch to M-mode and clean up and terminate
+
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
-    j       cleanup_epilogs
+    j       rvtest_code_end // switch to M-mode and clean up and terminate
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
@@ -154,7 +183,10 @@
     #ifdef RVMODEL_IO_INIT
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
+
+    // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
     // always boot to at least M-mode
+    // TODO: RVTEST_BOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
       // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
@@ -217,6 +249,7 @@
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
+    // safe to use T1-T3 because this is only invoked in termination code
     RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
     ret
 
@@ -231,41 +264,41 @@
   // ***DH 4/8/26 check this is proper gating
   #ifdef STANDARD_SM_SUPPORTED
     rvtest_set_msw_int:
-      RVMODEL_SET_MSW_INT(T2, T5)
+      RVMODEL_SET_MSW_INT(a0, a1)
       ret
 
     rvtest_clr_msw_int:
-      RVMODEL_CLR_MSW_INT(T2, T5)
+      RVMODEL_CLR_MSW_INT(a0, a1)
       ret
 
     rvtest_set_mext_int:
-      RVMODEL_SET_MEXT_INT(T2, T5)
+      RVMODEL_SET_MEXT_INT(a0, a1)
       ret
 
     rvtest_clr_mext_int:
-      RVMODEL_CLR_MEXT_INT(T2, T5)
+      RVMODEL_CLR_MEXT_INT(a0, a1)
       ret
   #endif
 
   #ifdef S_SUPPORTED
     rvtest_set_ssw_int:
-      RVMODEL_SET_SSW_INT(T2, T5)
+      RVMODEL_SET_SSW_INT(a0, a1)
       ret
 
     rvtest_clr_ssw_int:
-      RVMODEL_CLR_SSW_INT(T2, T5)
-      li T2, 2
-      csrc mip, T2              /* Always called from M-mode; mip.SSIP must be cleared via mip */
+      RVMODEL_CLR_SSW_INT(a0, a1)
+      li a0, 2
+      csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
       ret
 
     rvtest_set_sext_int:
-      RVMODEL_SET_SEXT_INT(T2, T5)
+      RVMODEL_SET_SEXT_INT(a0, a1)
       ret
 
     rvtest_clr_sext_int:
-      RVMODEL_CLR_SEXT_INT(T2, T5)
-      LI(T3, 512)
-      csrc sip, T3 // clear sip.SEIP
+      RVMODEL_CLR_SEXT_INT(a0, a1)
+      LI(a0, 512)
+      csrc sip, a0 // clear sip.SEIP
       ret
   #endif
 
@@ -389,6 +422,14 @@
         CANARY
         // Initialize remaining signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+
+      // Fixed diagnostic slot for the final trap signature byte count.
+      // sig_modify.py inserts the final_trap_sig_offset label after this canary
+      // in self-checking builds, where the raw signature data is included.
+      final_trap_sig_offset_canary:
+        FINAL_TRAP_OFFSET_CANARY
+      final_trap_sig_offset:
+        .fill (REGWIDTH>>2),4,0xdeadbeef
 
       // Signature region for trap handlers
       tsig_begin_canary:
@@ -638,15 +679,24 @@
       #endif
 
       #ifdef SMRNMI_SUPPORTED
-        // if Resumable NMI supported, also clear all RNMI-related fields, especially mnstatus.NMIE
-        csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
+        // Smrnmi resets with mnstatus.NMIE=0. With NMIE clear, M-mode exceptions
+        // are routed to the RNMI exception vector instead of mtvec. Enable NMIE
+        // so T-SBI ecalls and other M-mode traps use the normal handler.
+        li t0, MNSTATUS_NMIE
+        csrw mnstatus, t0
       #endif
 
       #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
-        // set up PMP so user and supervisor mode can access full address space
-        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+        // Set up PMP so lower privilege modes can access the full address space.
         LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        CSRW(pmpaddr0, t0)   // all-ones address gives the largest TOR/NAPOT range
+        #ifdef UDB_PMP_TOR_SUPPORTED
+          CSRW(pmpcfg0, 0x0F)   // configure PMP0 to TOR RWX
+        #elif defined(UDB_PMP_NAPOT_SUPPORTED)
+          CSRW(pmpcfg0, 0x1F)   // configure PMP0 to NAPOT RWX
+        #else
+          #error "PMP initialization requires TOR or NAPOT support"
+        #endif
         // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
         // memory system and any PMP or address translation caches. sfence.vma should not be
         // performed in a system that does not support virtual memory because it might raise
@@ -767,7 +817,12 @@
     csrw senvcfg, t0
 
     // Boot into S-mode
-    # RVMODEL_GOTO_LOWER_MODE SMODE
+    // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
+    // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    // Also this avoids going to S-mode when the goal is to get to U-mode
+    #ifdef BOOT_TO_SMODE
+      RVTEST_GOTO_LOWER_MODE Smode
+    #endif
   #endif
 .endm
 
@@ -776,6 +831,7 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
+  // dh 7/1/26 temporarily arriving here in M-mode if the goal is to go to U-mode
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_UMODE
@@ -783,12 +839,22 @@
   #else
     rvtest_boot_to_umode:
     // Boot into U-mode
-    #ifdef S_SUPPORTED
-      // RVTEST_GOTO_LOWER_MODE UMODE // *** need a version that works from S-mode
-    #else
-      // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
-      // RVTEST_GOTO_LOWER_MODE UMODE
+    #ifdef BOOT_TO_UMODE
+      RVTEST_GOTO_LOWER_MODE Umode
     #endif
+
+    // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
+    // #ifdef S_SUPPORTED
+    //   // RVTEST_GOTO_LOWER_MODE Umode // *** need a version that works from S-mode
+    // #else
+    //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
+
+    //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
+    //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    //   #ifdef BOOT_TO_UMODE
+    //     RVTEST_GOTO_LOWER_MODE Umode
+    //   #endif
+    // #endif
   #endif
   nop
 .endm

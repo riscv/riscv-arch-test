@@ -66,7 +66,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
+  # - { name: Svrsw60t59b, version: "= 1.0.0" } # Imperas ISS does not implement Svrsw60t59b; PTE bits 60:59 remain reserved and page fault
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
@@ -250,7 +250,6 @@ params:
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
@@ -291,6 +290,10 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 6
+  NUM_USABLE_PMP_ENTRIES: 64
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -567,3 +570,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

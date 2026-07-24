@@ -172,7 +172,7 @@ def make_vill(instruction):
     description = "cp_vill"
     sew = _eff_sew_for_instruction(instruction)
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),
-                                                      vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
+                                                      vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random", lmul=common.getBaseLmul(instruction, sew))
 
     scratch = pickPrivScratch(instruction_data[1])
     vtype_reg = pickPrivScratch(instruction_data[1], exclude=(scratch,))

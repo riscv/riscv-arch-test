@@ -1814,9 +1814,9 @@ def writeSIGUPD_FFLAGS(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
@@ -1829,9 +1829,9 @@ def writeSIGUPD_VXSAT(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")

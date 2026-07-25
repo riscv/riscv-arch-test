@@ -321,11 +321,13 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     csrs = [
         # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
         ("mstatus", 0xFFFFFFCFFFFFFFBF),
-        ("medeleg", 0xFFFFFF),  # mask off custom bits and reserved bits
+        (
+            "medeleg",
+            0xDBBFE,
+        ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
-        # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-        ("mtvec", 0b10),
+        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
@@ -334,35 +336,35 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ("mip", 0xFFFF),  # limit to standard interrupt bits
         ("menvcfg", None),
         ("mcountinhibit", None),
-        ("mhpmevent3", None),
-        ("mhpmevent4", None),
-        ("mhpmevent5", None),
-        ("mhpmevent6", None),
-        ("mhpmevent7", None),
-        ("mhpmevent8", None),
-        ("mhpmevent9", None),
-        ("mhpmevent10", None),
-        ("mhpmevent11", None),
-        ("mhpmevent12", None),
-        ("mhpmevent13", None),
-        ("mhpmevent14", None),
-        ("mhpmevent15", None),
-        ("mhpmevent16", None),
-        ("mhpmevent17", None),
-        ("mhpmevent18", None),
-        ("mhpmevent19", None),
-        ("mhpmevent20", None),
-        ("mhpmevent21", None),
-        ("mhpmevent22", None),
-        ("mhpmevent23", None),
-        ("mhpmevent24", None),
-        ("mhpmevent25", None),
-        ("mhpmevent26", None),
-        ("mhpmevent27", None),
-        ("mhpmevent28", None),
-        ("mhpmevent29", None),
-        ("mhpmevent30", None),
-        ("mhpmevent31", None),
+        ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent6", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent7", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent8", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent9", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent10", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent11", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent12", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent13", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent14", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent15", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent16", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent17", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent18", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent19", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent20", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent21", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent22", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent23", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent24", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent25", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent26", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent27", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent28", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent29", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
+        ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
     # RV32-only high CSRs
     csrs32 = [("mstatush", None), ("menvcfgh", None)]
@@ -972,15 +974,30 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
 
+    tc = test_data.begin_test_chunk("mcause")
     tc.code.extend(_generate_mcause_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("mstatus_sd")
     tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("inst")
     tc.code.extend(_generate_priv_inst_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("xret")
     tc.code.extend(_generate_mret_tests(test_data))
     tc.code.extend(_generate_sret_tests(test_data))
-    tc.code.extend(_generate_mcsr_tests(test_data))
-    tc.code.extend(_generate_mcsr_cntr_tests(test_data))
-
     test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("mcsr")
+    tc.code.extend(_generate_mcsr_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("mcsr_cntr")
+    tc.code.extend(_generate_mcsr_cntr_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
     return test_chunks

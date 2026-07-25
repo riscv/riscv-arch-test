@@ -72,7 +72,7 @@ def set_mtimer_int_soon(
     r_temp2: int,
     r_temp3: int,
     r_temp4: int,
-    delay: int | None = None,
+    delay: int | str | None = None,
 ) -> list[str]:
     """Generate assembly to set timer to fire soon (mtimecmp = mtime + DELAY).
 
@@ -82,7 +82,8 @@ def set_mtimer_int_soon(
         r_mtime: Register for MTIME address
         r_mtimecmp: Register for MTIMECMP address
         r_temp1, r_temp2, r_temp3, r_temp4: Temp registers for calculations
-        delay: Delay in mtime ticks. Defaults to RVMODEL_TIMER_INT_SOON_DELAY macro.
+        delay: Delay in mtime ticks, as a count or C preprocessor expression.
+               Defaults to RVMODEL_TIMER_INT_SOON_DELAY macro.
     """
     delay_val = str(delay) if delay is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [

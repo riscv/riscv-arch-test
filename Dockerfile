@@ -21,7 +21,7 @@
 # Global ARGs - declared before any FROM so they are overridable across all stages.
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-ARG SAIL_VERSION=0.12
+ARG SAIL_VERSION=0.13
 ARG RISCV_TOOLCHAIN_VERSION=2026.07.15
 
 # Stage 1: build riscv-gnu-toolchain

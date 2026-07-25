@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZawrsSU_cg = new(); ZawrsSU_cg.set_inst_name("obj_ZawrsSU");
+    ZawrsS_cg = new(); ZawrsS_cg.set_inst_name("obj_ZawrsS");

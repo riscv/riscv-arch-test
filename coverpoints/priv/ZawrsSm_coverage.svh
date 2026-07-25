@@ -83,7 +83,7 @@ covergroup ZawrsSm_cg with function sample(ins_t ins);
     // main coverpoints
     cp_wrs_sto_timeout:     cross priv_mode_m, wrs_sto, mstatus_tw, mstatus_mie_zero, mie_zeros, lr_w;
     cp_wrs_no_res:          cross priv_mode_m, mstatus_tw, mstatus_mie_zero, mie_zeros, sc_w, wrs_ops;
-    cp_wrs_resume:          cross priv_mode_m, mstatus_tw_zero, mie_mtie_one, mstatus_mie, wrs_nto, lr_w;
+    cp_wrs_resume:          cross priv_mode_m, mstatus_tw, mie_mtie_one, mstatus_mie, wrs_ops, lr_w;
     cp_wrs_no_mie:          cross priv_mode_m, mstatus_tw_zero, mstatus_mie_one, mie_zeros, mip_any_ones, wrs_sto, lr_w;
 
 endgroup

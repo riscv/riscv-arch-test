@@ -8,7 +8,7 @@
 
 """ZicntrS extension test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -363,6 +363,48 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
+    """start in M mode
+    read instret and mcounteren = 0s
+    goto S mode
+    nop
+    go back to M mode
+    mcounteren = 1s
+    go back to S mode
+    read and sigupd change in instret
+    """
+    covergroup, coverpoint = "ZicntrS_cg", "cp_mcounter_inc_inaccessible"
+
+    old_reg, read_reg = test_data.int_regs.get_registers(2)
+
+    lines = [
+        comment_banner(coverpoint, _generate_mcounter_inc_inaccessible_tests.__doc__),
+        "",
+    ]
+    lines.extend(
+        [
+            test_data.add_testcase("S", coverpoint, covergroup),
+            f"csrr x{old_reg}, instret",
+            "# make counter inaccessible in S mode",
+            "csrw mcounteren, zero",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            "nop",
+            "RVTEST_GOTO_MMODE",
+            "# make counter accessible in S mode",
+            f" LI(x{read_reg}, -1)",
+            f"csrw mcounteren, x{read_reg}",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            f"csrr x{read_reg}, instret",
+            f"sub x{read_reg}, x{read_reg}, x{old_reg}",
+            "# SIGUPD the difference in instret",
+            write_sigupd(read_reg, test_data),
+            "RVTEST_GOTO_MMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([old_reg, read_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
@@ -378,5 +420,6 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_scounteren_access_m_tests(test_data))
     tc.code.extend(_generate_scounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
+    tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

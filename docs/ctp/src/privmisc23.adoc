@@ -103,50 +103,59 @@ In Privileged section because it has both unpriv and privileged behaviors.
 //include::{testplansdir}/Zicfiss.adoc[]
 //,===
 
-==== ZawrsSm Machine-Mode Wait on Reservation Set
+==== Zawrs Wait on Reservation Set
 
-These tests only test single hart behavior and run on any configuration with machine mode that supports Zawrs
+Waits until timer interrupt or timeout on a single hart that cannot modify the reservation set.  Tests behave differently in
+different privilege modes, so a suite is defined for each.
 
 [[t-ZawrsSm-coverpoints]]
 .ZawrsSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527
-,===
-
-include::norm/ZawrsSm_norm_rules.adoc[]
-
-==== ZawrsS Supervisor-Mode Wait on Reservation Set
-
-These tests only test single hart behavior and run on any configuration with supervisor mode that supports Zawrs
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527[Google Sheet Testplan]
 
 [[t-ZawrsS-coverpoints]]
 .ZawrsS Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0
-,===
-
-include::norm/ZawrsS_norm_rules.adoc[]
-
-==== ZawrsU User-Mode Wait on Reservation Set
-
-These tests only test single hart behavior and run on any configuration with user mode that supports Zawrs
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0[Google Sheet Testplan]
 
 [[t-ZawrsU-coverpoints]]
 .ZawrsU Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576
-,===
+https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576[Google Sheet Testplan]
+
+include::norm/ZawrsSm_norm_rules.adoc[]
+
+include::norm/ZawrsS_norm_rules.adoc[]
 
 include::norm/ZawrsU_norm_rules.adoc[]
+
+These tests require support for MTI and/or STI interrupts.
+Note that these tests can have race conditions of timeouts, timer interrupts, and spontaneous resumption, and thus may be fussy on different implementations.
 
 ==== Sdtrig Debug Triggers
 
 Located here because it is part of RVA23 and can function without the rest of the https://docs.riscv.org/reference/debug-trace-ras/debug/_attachments/riscv-debug-specification.pdf[Debug Specification].  See <<Debug>> for non-RVA23 debug extensions.
+The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
+Only SdtrigSm is listed here but the others are the same and also cover the same normative rules.
 
-[[t-Sdtrig-coverpoints]]
-.Sdtrig Coverpoints
-//,===
-//include::{testplansdir}/Sdtrig.adoc[]
-//,===
+[[t-SdtrigSm-coverpoints]]
+.SdtrigSm Coverpoints
 
-*** also check the value written to stval and vstval.  Should be the VA of the breakpoint when Sstvala and Shvstvala are supported.  This is automatically checked against the reference model, so there is no need for additional SdtrigSstvala and SdtrigShvstvala test suites.
+https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1209377334#gid=1209377334[Google Sheet Testplan]
+
+include::norm/SdtrigSm_norm_rules.adoc[]
+
+As of 7/24/26, Sdtrig is partially implemented.  Only the mcontrol6 covergroup is fully developed. Coverpoints are incomplete and are in a draft PR.
+Sail does not yet support Sdtrig, so the tests are exercised by running whisper against spike.  QEMU and Imperas do not yet match spike and some issues
+have been filed and are tracked https://docs.google.com/spreadsheets/d/1EuG4LV1TQDx4wTzYDWEAvq0fwaWjNuxenwDARZmrN-E/edit?gid=0#gid=0[here].
+Run with `make whisper-rv64-max-spike-ref EXTENSIONS=SdtrigSm`.
+
+An initial set of parameters for Sdtrig is proposed for https://github.com/riscv/riscv-unified-db/pull/2069[UDB].
+
+Most Sdtrig features are optional, so defining what to test requires many parameters.  UDB_SDTRIG_NUM_TRIGGERS define how many triggers exist.
+For each trigger, each type (mcontrol6, icount, itrigger, etrigger) is optionally supported. Many of the fields in `tdata1` for each type are optional.
+
+`uncertainen` and `uncertain` are vague and implementation-specific and is thus not tested.  `hit` varies based on timing and is
+optional and difficult to check so is presently not tested. Only `action`=0 is tested because the others depend on Sdext or trace or
+implementation-specific external triggers.
+`dmode` is not tested in Sdtrig because it depends on Sdext. `hcontext` is not tested because it depends on Hypervisor.  Non-maskable interrupts
+are not tested because they are not part of RVA23.
+
+`mcontrol` has been replaced by `mcontrol6`.  It is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.

@@ -415,11 +415,11 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    # tc.code.extend(_generate_mcounteren_access_s_tests(test_data))
-    # tc.code.extend(_generate_scounteren_access_s_tests(test_data))
-    # tc.code.extend(_generate_scounteren_access_m_tests(test_data))
-    # tc.code.extend(_generate_scounteren_access_u_tests(test_data))
-    # tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
+    tc.code.extend(_generate_mcounteren_access_s_tests(test_data))
+    tc.code.extend(_generate_scounteren_access_s_tests(test_data))
+    tc.code.extend(_generate_scounteren_access_m_tests(test_data))
+    tc.code.extend(_generate_scounteren_access_u_tests(test_data))
+    tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

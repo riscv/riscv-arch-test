@@ -30,8 +30,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-02.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 200
 
 

@@ -31,7 +31,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 200
 
 

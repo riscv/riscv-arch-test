@@ -30,7 +30,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_spage_mstatus_sum_set_Smode.S"
 #define SIGUPD_COUNT 35
 #define TRAP_SIGUPD_COUNT 60
 

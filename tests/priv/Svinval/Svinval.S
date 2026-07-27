@@ -16,7 +16,6 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei_svinval
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "Svinval.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 

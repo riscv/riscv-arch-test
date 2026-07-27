@@ -96,7 +96,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_zicbom_exceptions_Smode.S"
 #define SIGUPD_COUNT 130
 
 

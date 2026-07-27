@@ -24,7 +24,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_nleaf_pte_DAU_Smode.S"
 #define SIGUPD_COUNT 25
 
 

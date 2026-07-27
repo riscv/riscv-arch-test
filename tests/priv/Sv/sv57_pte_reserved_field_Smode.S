@@ -27,7 +27,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pte_reserved_field_Smode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 100
 

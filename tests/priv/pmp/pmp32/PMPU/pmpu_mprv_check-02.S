@@ -27,7 +27,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_mprv_check-02.S"
 #define SIGUPD_COUNT 50
 #define RVTEST_PRIV_TEST
 

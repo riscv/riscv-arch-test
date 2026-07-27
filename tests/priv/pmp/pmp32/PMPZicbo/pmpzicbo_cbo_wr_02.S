@@ -26,7 +26,6 @@
 # MARCH: rv32i_zicsr_zifencei_zicbom_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzicbo_cbo_wr_02.S"
 #define SIGUPD_COUNT 50
 #define RVTEST_PRIV_TEST
 

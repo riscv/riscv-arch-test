@@ -18,7 +18,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_satp_access_test.S"
 #define SIGUPD_COUNT 80
 #define TRAP_SIGUPD_COUNT 30
 

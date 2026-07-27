@@ -28,7 +28,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_mstatus_mxr_Smode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 60
 

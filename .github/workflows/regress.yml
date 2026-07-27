@@ -17,6 +17,9 @@ env:
   RISCV_TOOLCHAIN_VERSION: "2026.07.15"
   LLVM_VERSION: "22"
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Pre-commit (prek) check

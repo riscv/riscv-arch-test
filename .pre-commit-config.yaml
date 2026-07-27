@@ -78,7 +78,7 @@ repos:
     rev: v3.13.1-1
     hooks:
       - id: shfmt
-        args: [--simplify, --indent, "2"]
+        args: [--write, --simplify, --indent, "2"]
 
   # Use spaces, not tabs
   - repo: https://github.com/Lucas-C/pre-commit-hooks

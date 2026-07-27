@@ -3088,7 +3088,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         # _LMUL (= sig_lmul, capped to integer EMUL since whole-register/mask
         # paths use sig_lmul=1 and fractional groups fit in one register).
         sig_emul = max(int(sig_lmul), 1) if sig_lmul is not None and sig_lmul >= 1 else 1
-        reload_zero_lmul = getLmulFlag(sig_emul)
+        # Whole-register store reloads zero each physical destination register individually.
+        # Use LMUL=1 for that setup so v8/v9/... are all legal vmv.v.i destinations.
+        reload_zero_lmul = 1 if instruction in whole_register_stores else getLmulFlag(sig_emul)
         default_lmul_flag = getLmulFlag(lmul)
         reload_pre_init = [
           f"csrr x{mi_t1}, vl",

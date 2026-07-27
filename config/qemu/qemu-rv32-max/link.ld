@@ -22,9 +22,7 @@ SECTIONS
 {
   ASSERT(TEST_BASE >= ORIGIN(ram) && TEST_BASE < ORIGIN(ram) + LENGTH(ram), "TEST_BASE is outside RAM; update TEST_BASE and RAM_ORIGIN/RAM_LENGTH in link.ld, and the matching memory.regions entry in sail.json")
 
-  . = TEST_BASE;
-
-  .text.init   : { *(.text.init) } > ram
+  .text.init   TEST_BASE : { *(.text.init) } > ram
   .text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) } > ram
 
   . = ALIGN(0x4000);

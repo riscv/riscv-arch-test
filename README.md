@@ -276,7 +276,7 @@ A linker script is needed to place the code and data regions in the appropriate 
 
 - The `ENTRY` point must be `rvtest_entry_point`.
   - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will jump to before anything else.
-- There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
+- There must be a `.text.init` output section that starts at `TEST_BASE`, contains the `.text.init` input section (i.e. `.text.init TEST_BASE : { *(.text.init) }`).
 - There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) }`). This must follow the `.text.init` section.
 - The linker script should define a `MEMORY` region for the RAM used by the test ELF and place all standard ACT sections in that region.
 - There must be `.rodata`, `.data`, and `.bss` output sections. The `.bss` section must define `__bss_start` and `__bss_end` for C test startup.

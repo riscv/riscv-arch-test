@@ -33,6 +33,9 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
 
+# Use this flag to enable the generation of floating-point tests from the cover-float test suite
+COVER_FLOAT ?= True
+
 # VERBOSE implies DEBUG and serializes the build
 ifneq ($(VERBOSE),)
   DEBUG := True
@@ -53,7 +56,6 @@ JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
 # Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
 MAKEFLAGS += --no-print-directory
-
 
 
 ########## Directories ##########
@@ -88,10 +90,16 @@ $(STAMP_DIR):
 MISE := $(shell command -v mise 2> /dev/null)
 UV   := $(shell command -v uv 2> /dev/null)
 
+ifneq ($(COVER_FLOAT),)
+  UV_FLAGS := --group cover-float
+else
+  UV_FLAGS :=
+endif
+
 ifneq ($(MISE),)
-  UV_RUN := $(MISE) exec -- uv run
+  UV_RUN := $(MISE) exec -- uv run $(UV_FLAGS)
 else ifneq ($(UV),)
-  UV_RUN := $(UV) run
+  UV_RUN := $(UV) run $(UV_FLAGS)
 else ifneq ($(VIRTUAL_ENV),)
   # Activated venv without uv/mise: require the three CLIs on PATH.
   MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\
@@ -146,6 +154,7 @@ help:
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'COVER_FLOAT' 		'Enable generation of floating point tests from the cover-float test suite' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
@@ -186,6 +195,9 @@ clean:
 		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' ! -name '.validated' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
 	fi
+	@if [ -d generators/testgen/.coverfloat-work ]; then \
+		rm -rf generators/testgen/.coverfloat-work; \
+	fi
 
 
 
@@ -199,7 +211,7 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(COVER_FLOAT), --with-cover-float)
 	@touch $@
 
 .PHONY: vector-testgen

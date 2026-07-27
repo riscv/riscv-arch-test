@@ -8,6 +8,8 @@
 
 """Package-wide constants for testgen."""
 
+from pathlib import Path
+
 # Assembly indentations
 INDENT = "  "
 
@@ -132,6 +134,9 @@ SKIP_COVERPOINTS = frozenset(
         "cp_fclass",
     }
 )
+
+# Resolves to generators/testgen/.coverfloat-work
+COVERFLOAT_GENERATION_DIR = Path(__file__).resolve().parent.parent.parent / ".coverfloat-work"
 
 # =============================================================================
 # Vector Configuration

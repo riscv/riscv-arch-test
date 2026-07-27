@@ -30,8 +30,8 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from testgen.constants import E_EXTENSION_TESTS
-from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
+from testgen.constants import COVERFLOAT_GENERATION_DIR, E_EXTENSION_TESTS
+from testgen.generate import generate_coverfloat, generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_extensions
 
@@ -49,6 +49,7 @@ class UnprivTask:
     testplan_dir: Path
     output_test_dir: Path
     is_vector: bool
+    with_cover_float: bool
 
 
 @dataclass
@@ -77,6 +78,9 @@ def generate_all_tests(
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
     ] = 0,
+    with_cover_float: Annotated[
+        bool, typer.Option("--with-cover-float", help="Build with floating point tests from cover-float")
+    ] = False,
 ) -> None:
     """
     Generate riscv-arch-test tests.
@@ -126,9 +130,19 @@ def generate_all_tests(
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
                 is_vector = testsuite.startswith(("V", "Zv"))
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector))
+                tasks.append(
+                    UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector, with_cover_float)
+                )
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
+
+    # If we need the cover-float test vectors, build them now, we cannot do them in the individual cp_ibm
+    # calls because we lose all benefits of parallelization, and we run into dangers with multiple calls
+    # to cover-float attempting to generate tests at the same time due to ACT4 parallelization
+    if with_cover_float:
+        success = generate_coverfloat(COVERFLOAT_GENERATION_DIR, jobs)
+        if not success:
+            raise RuntimeError("Failed To Generate Cover-Float")
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
@@ -167,6 +181,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
             is_vector=task.is_vector,
+            with_cover_float=task.with_cover_float,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(

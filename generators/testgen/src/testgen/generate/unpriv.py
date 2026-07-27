@@ -46,7 +46,13 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
 
 
 def generate_unpriv_extension_tests(
-    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_vector: bool = False
+    xlen: int,
+    E_ext: bool,
+    testsuite: str,
+    testplan_dir: Path,
+    output_test_dir: Path,
+    with_cover_float: bool,
+    is_vector: bool = False,
 ) -> None:
     """
     Generate tests for all instructions in a given unprivileged testsuite.
@@ -73,6 +79,9 @@ def generate_unpriv_extension_tests(
     instructions = read_testplan(testplan_dir / f"{testplan}.csv")
     if testsuite == "I" and E_ext:
         testsuite = "E"
+    if not with_cover_float:
+        for instr in instructions:
+            instr.coverpoints = [cp for cp in instr.coverpoints if "cp_ibm" not in cp]
 
     # Create testsuite-wide test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"

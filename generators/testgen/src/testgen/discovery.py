@@ -31,6 +31,8 @@ def discover_and_import_modules(package_dir: Path, base_module: str, *, exclude:
             continue
         if exclude is not None and module_file == exclude:
             continue
+        if "cover-float" in module_file.parts:
+            continue
         relative_path = module_file.relative_to(package_dir)
         module_parts = [*list(relative_path.parts[:-1]), relative_path.stem]
         module_name = base_module + "." + ".".join(module_parts)

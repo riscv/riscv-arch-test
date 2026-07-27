@@ -37,7 +37,6 @@
 #define SIGUPD_COUNT 2000
 
 // Enable trap handler
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 // Include framework macros

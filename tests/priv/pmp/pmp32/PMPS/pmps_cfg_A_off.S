@@ -29,8 +29,6 @@
 
 #define TEST_FILE "pmps_cfg_A_all.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 

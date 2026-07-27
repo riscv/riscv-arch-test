@@ -7,7 +7,7 @@
 /**** RVTEST_BEGIN sets up the test environment and is run before the actual test code. ****/
 /**** - sets up main entry point labels                                                 ****/
 /**** - runs model specific boot code                                                   ****/
-/**** - instantiate prologs using RVTEST_TRAP_PROLOG() if rvtests_xtrap_routine defined ****/
+/**** - instantiates trap prologs when STANDARD_SM_SUPPORTED is defined                 ****/
 /**** - initializes regs                                                                ****/
 /**** - defines rvtest_code_begin global label                                          ****/
 /*******************************************************************************************/
@@ -60,7 +60,7 @@
 /************************************* RVTEST_CODE_END *************************************/
 /**** RVTEST_CODE_END is run after the actual test code.                                ****/
 /**** - Switch to M Mode                                                                ****/
-/**** - Instantiate epilogs using RVTEST_TRAP_EPILOG() if rvtests_xtrap_routine defined ****/
+/**** - instantiates trap epilogs when STANDARD_SM_SUPPORTED is defined                 ****/
 /**** - Instantiate trap handlers for each priv mode                                    ****/
 /**** - Include headers that contain code (not macros) that would throw off the address ****/
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/

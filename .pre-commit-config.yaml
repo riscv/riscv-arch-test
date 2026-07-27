@@ -67,6 +67,19 @@ repos:
     hooks:
       - id: zizmor
 
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+
+  # Shell script formatting
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.1-1
+    hooks:
+      - id: shfmt
+        args: [--simplify, --indent, "2"]
+
   # Use spaces, not tabs
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.6

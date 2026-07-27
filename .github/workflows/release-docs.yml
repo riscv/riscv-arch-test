@@ -14,10 +14,7 @@ on:
       - ".github/workflows/release-docs.yml"
 
 permissions:
-  contents: write
-  actions: read
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
   build-ctp:
@@ -70,6 +67,8 @@ jobs:
   release:
     needs: [build-ctp, build-crd]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download CTP PDF
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
@@ -122,6 +121,10 @@ jobs:
   deploy-pages:
     needs: [build-ctp, build-crd]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

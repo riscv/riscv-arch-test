@@ -17,7 +17,7 @@ on:
         default: true
 
 permissions:
-  contents: write
+  contents: read
 
 # Serialize release creation so concurrent pushes can't race to create the same tag/release.
 concurrency:
@@ -37,8 +37,10 @@ jobs:
 
       - name: Resolve version
         id: version
+        env:
+          REQUESTED_VERSION: ${{ github.event.inputs.version }}
         run: |
-          version="${{ github.event.inputs.version }}"
+          version="$REQUESTED_VERSION"
           if [ -z "$version" ]; then
             version=$(awk -F'[][]' '/^## \[/ { print $2; exit }' CHANGELOG.md)
           fi
@@ -52,9 +54,10 @@ jobs:
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "::notice::Release ${{ steps.version.outputs.version }} already exists; skipping."
+          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo "::notice::Release $RELEASE_VERSION already exists; skipping."
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -64,6 +67,8 @@ jobs:
     needs: check
     if: needs.check.outputs.exists == 'false'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       VERSION: ${{ needs.check.outputs.version }}
     steps:

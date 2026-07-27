@@ -55,6 +55,19 @@ repos:
     hooks:
       - id: uv-lock
 
+  # Check GitHub Actions workflows
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  # Find high-confidence security issues in GitHub Actions workflows
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.28.0
+    hooks:
+      - id: zizmor
+        args: [--min-severity=high, --min-confidence=high]
+
   # Use spaces, not tabs
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.6

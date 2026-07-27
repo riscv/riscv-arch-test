@@ -54,6 +54,13 @@ repos:
         entry: uv run pyright
         language: system
         types: [python]
+      - id: shellcheck
+        name: shellcheck
+        entry: mise exec -- shellcheck
+        language: system
+        types: [shell]
+        require_serial: true
+
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.11.30
@@ -65,18 +72,13 @@ repos:
     rev: v1.7.12
     hooks:
       - id: actionlint
+        args: [-shellcheck=mise exec -- shellcheck]
 
   # Find security issues in GitHub Actions workflows
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: v1.28.0
     hooks:
       - id: zizmor
-
-  # Shell script linting
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
-    hooks:
-      - id: shellcheck
 
   # Shell script formatting
   - repo: https://github.com/scop/pre-commit-shfmt

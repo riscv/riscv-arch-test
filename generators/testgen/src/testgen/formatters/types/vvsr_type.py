@@ -6,10 +6,11 @@
 ##################################
 
 from testgen.asm.vector_helpers import (
-    load_vec_reg,
-    prep_base_v,
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
     prep_mask_v,
-    reload_vtype,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -78,29 +79,13 @@ def format_vvsr_like_type(
     )
 
     setup = []
-    registers = [params.vd, params.vs2, params.vs1]
 
     # Setup Mask
+    load_vd = True
+    mask_copy_reg = None
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True, vd_v0=params.vd == 0))
-
-    # Preload vd at vlmax
-    vd_preloaded = False
-    mask_copy_reg = None
-    # We need to have a special case for vd being the mask, as the initial value of vd doesn't matter
-    # while the mask value does matter.
-    if params.vector_suite == "length" and not (params.vd == 0 and params.maskval):
-        vd_sew = params.sew * (2 if "vd" in widen else 1)
-        setup.extend(
-            load_vec_reg(params.vd, params.vd_val_pointer, params, sew_override=vd_sew, lmul=1, vl_register_or_imm="x0")
-        )
-        test_data.test_chunk.vector_labels.append(
-            (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer])
-        )
-        vd_preloaded = True
-        registers.remove(params.vd)
-    elif params.vd == 0 and params.maskval:
-        if params.vector_suite == "length":
+        if params.vector_suite == "length" and params.vd == 0:
             mask_copy_reg = test_data.vec_regs.get_register(lmul=1)
             setup.extend(
                 [
@@ -110,66 +95,33 @@ def format_vvsr_like_type(
                     f"vmand.mm v{mask_copy_reg}, v0, v0",
                 ]
             )
-        vd_preloaded = True
-        registers.remove(params.vd)
+            load_vd = False
 
-    # vl_register_or_imm is useful if we ever overwrite vl as it allows us to easily restore it
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
-    setup.extend(prep_lines)
+    vd_vl = 1 if params.vector_suite == "base" else "vlmax"
+    vd_sew = params.sew * (2 if "vd" in widen else 1)
+    vs1_sew = params.sew * (2 if "vs1" in widen else 1)
 
-    # Load Registers at the Proper LMULs (loading whole registers if necessary, and tracking changes to vtype)
-    lmul_overwrite: int = int(max(params.lmul, 1))
-
-    vl_overwrite: int | str = vl_register_or_imm
-    if vl_overwrite == 0:  # Loads at vl=0 are a no-op
-        vl_overwrite = 1
-
-    if not vd_preloaded:
-        vd_vl_overwrite = vl_overwrite if "vd" not in widen else 2
-        vd_sew = params.sew * (2 if "vd" in widen else 1)
-        setup.extend(
-            load_vec_reg(
-                params.vd,
-                params.vd_val_pointer,
-                params,
-                sew_override=vd_sew,
-                lmul=1,
-                vl_register_or_imm=vd_vl_overwrite,
-            )
-        )
+    to_load = []
+    if load_vd:
+        to_load.append(VectorLoad(reg="vd", vl=vd_vl, lmul=1, sew=vd_sew))
         test_data.test_chunk.vector_labels.append(
             (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer])
         )
 
-    setup.extend(
-        load_vec_reg(
-            params.vs2,
-            params.vs2_val_pointer,
-            params,
-            lmul=lmul_overwrite,
-            vl_register_or_imm=vl_overwrite,
-        )
+    to_load.extend(
+        [
+            VectorLoad(reg="vs2", widen="vs2" in widen),
+            VectorLoad(reg="vs1", vl=1, lmul=1, sew=vs1_sew),
+        ]
     )
 
-    vs1_vl_overwrite = 1 if "vs1" not in widen else 2
-    vs1_sew = params.sew * (2 if "vs1" in widen else 1)
-    setup.extend(
-        load_vec_reg(
-            params.vs1,
-            params.vs1_val_pointer,
-            params,
-            sew_override=vs1_sew,
-            lmul=1,
-            vl_register_or_imm=vs1_vl_overwrite,
-        )
-    )
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    setup.extend(load_code)
+    setup.append(load_test_vtype(params, random_vl_reg))
 
-    # Ensure vtype is correct for the instruction. We overwrite lmul to 1, so this is necessary
-    setup.append(reload_vtype(params, vl_register_or_imm))
-
-    # Now we are done with the clean up register
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     if params.maskval:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}, v0.t"]
@@ -187,5 +139,7 @@ def format_vvsr_like_type(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(mask_reg)
+
+    handle_lmul_ifdef(params.lmul, setup, check)
 
     return (setup, test, check)

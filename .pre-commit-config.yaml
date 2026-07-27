@@ -29,6 +29,12 @@ repos:
       - id: check-toml
       - id: check-yaml
 
+  # Format pyproject.toml files
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: v2.26.0
+    hooks:
+      - id: pyproject-fmt
+
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -40,7 +46,7 @@ repos:
       # Run the formatter.
       - id: ruff-format
 
-  # Pyright Python type checker
+  # Project-local checks
   - repo: local
     hooks:
       - id: pyright
@@ -48,7 +54,6 @@ repos:
         entry: uv run pyright
         language: system
         types: [python]
-
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.11.30

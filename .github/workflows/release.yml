@@ -34,6 +34,8 @@ jobs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Resolve version
         id: version
@@ -73,6 +75,8 @@ jobs:
       VERSION: ${{ needs.check.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Extract release notes from CHANGELOG.md
         id: notes
@@ -97,6 +101,8 @@ jobs:
 
       - name: Set up mise
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
+        with:
+          cache: false # Don't cache in release workflows
 
       - run: git submodule update --init docs/docs-resources
 

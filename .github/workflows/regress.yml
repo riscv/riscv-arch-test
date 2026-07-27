@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -45,6 +47,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -79,10 +83,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.discover-configs.outputs.matrix) }}
+    env:
+      MATRIX_CONFIG: ${{ matrix.config }}
+      MATRIX_EXTENSIONS: ${{ matrix.extensions }}
+      MATRIX_SIMULATOR: ${{ matrix.simulator }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -90,11 +100,14 @@ jobs:
           udb-gems: "true"
 
       - name: Report shard assignment
+        env:
+          MATRIX_SHARD_INDEX: ${{ matrix.shard_index }}
+          MATRIX_SHARD_TOTAL: ${{ matrix.shard_total }}
         run: |
-          if [ -z "${{ matrix.extensions }}" ]; then
-            echo "::notice::Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} for ${{ matrix.config }} is empty after exclusions; skipping heavy steps."
+          if [ -z "${MATRIX_EXTENSIONS}" ]; then
+            echo "::notice::Shard $((${MATRIX_SHARD_INDEX} + 1))/${MATRIX_SHARD_TOTAL} for ${MATRIX_CONFIG} is empty after exclusions; skipping heavy steps."
           else
-            echo "Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} extensions: ${{ matrix.extensions }}"
+            echo "Shard $((${MATRIX_SHARD_INDEX} + 1))/${MATRIX_SHARD_TOTAL} extensions: ${MATRIX_EXTENSIONS}"
           fi
 
       - name: Install sail-riscv model
@@ -145,9 +158,11 @@ jobs:
 
       - name: Install runtime dependencies
         if: matrix.extensions != '' && matrix.apt_packages != ''
+        env:
+          MATRIX_APT_PACKAGES: ${{ matrix.apt_packages }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y ${{ matrix.apt_packages }}
+          sudo apt-get install -y ${MATRIX_APT_PACKAGES}
 
       - name: Restore cached simulator
         if: matrix.extensions != '' && matrix.cache_key != ''
@@ -159,7 +174,9 @@ jobs:
 
       - name: Install simulator
         if: matrix.extensions != '' && matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
-        run: bash ${{ matrix.install_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        env:
+          MATRIX_INSTALL_SCRIPT: ${{ matrix.install_script }}
+        run: bash ${MATRIX_INSTALL_SCRIPT} ${{ github.workspace }}/${MATRIX_SIMULATOR}
 
       - name: Save cached simulator
         if: matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
@@ -170,30 +187,37 @@ jobs:
 
       - name: Add simulator to PATH
         if: matrix.extensions != '' && matrix.install_script != ''
-        run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/${MATRIX_SIMULATOR}/bin" >> $GITHUB_PATH
 
       - name: Run setup script
         if: matrix.extensions != '' && matrix.setup_script != ''
-        run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        env:
+          MATRIX_SETUP_SCRIPT: ${{ matrix.setup_script }}
+        run: bash ${MATRIX_SETUP_SCRIPT} ${{ github.workspace }}/${MATRIX_SIMULATOR}
 
       - name: Generate tests and coverpoints
         if: matrix.extensions != ''
-        run: EXTENSIONS=${{ matrix.extensions }} make tests --jobs $(nproc)
+        run: EXTENSIONS=${MATRIX_EXTENSIONS} make tests --jobs $(nproc)
 
       - name: Build ELFs
         if: matrix.extensions != ''
+        env:
+          MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
+          MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
         run: |
           FAST=True \
-          EXTENSIONS=${{ matrix.extensions }} \
-          EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
-          CONFIG_FILES=${{ matrix.config_file }} \
+          EXTENSIONS=${MATRIX_EXTENSIONS} \
+          EXCLUDE_EXTENSIONS=${MATRIX_EXCLUDE_EXTENSIONS} \
+          CONFIG_FILES=${MATRIX_CONFIG_FILE} \
           make elfs --jobs $(nproc)
 
       - name: Run tests
         if: matrix.extensions != '' && matrix.run_cmd != ''
         run: |
-          ./run_tests.py "${{ matrix.run_cmd }}" \
-          work/${{ matrix.config }}/elfs
+          ./run_tests.py "${MATRIX_RUN_CMD}" \
+          work/${MATRIX_CONFIG}/elfs
+        env:
+          MATRIX_RUN_CMD: ${{ matrix.run_cmd }}
 
       - name: Upload logs
         if: always() && matrix.extensions != ''
@@ -208,6 +232,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -220,6 +246,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -234,6 +262,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - run: git submodule update --init docs/docs-resources
 
@@ -247,6 +277,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -278,6 +310,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Pin Python version for this job
         run: echo "${{ matrix.python-version }}" > .python-version

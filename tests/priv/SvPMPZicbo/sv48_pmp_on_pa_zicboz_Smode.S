@@ -23,7 +23,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_pmp_on_pa_zicboz_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 #define BOOT_TO_MMODE

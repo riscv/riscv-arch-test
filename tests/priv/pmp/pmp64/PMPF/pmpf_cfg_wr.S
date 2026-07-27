@@ -26,7 +26,6 @@
 # MARCH: rv64ifd_zicsr_zifencei_zfhmin
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpf_cfg_wr.S"
 #define SIGUPD_COUNT 100
 #define RVTEST_PRIV_TEST
 

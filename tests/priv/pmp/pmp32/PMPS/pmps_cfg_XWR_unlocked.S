@@ -27,7 +27,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_cfg_XWR_unlocked.S"
 #define SIGUPD_COUNT 100
 #define RVTEST_PRIV_TEST
 

@@ -27,7 +27,6 @@
 # MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzalrsc_cfg_wrS"
 #define SIGUPD_COUNT 100
 #define RVTEST_PRIV_TEST
 

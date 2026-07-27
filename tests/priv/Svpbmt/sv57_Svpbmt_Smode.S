@@ -44,7 +44,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_Svpbmt_Smode.S"
 #define SIGUPD_COUNT 50
 
 

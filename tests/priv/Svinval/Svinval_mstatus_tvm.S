@@ -20,7 +20,6 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei_svinval
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "Svinval_mstatus_tvm.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 50
 #define BOOT_TO_MMODE

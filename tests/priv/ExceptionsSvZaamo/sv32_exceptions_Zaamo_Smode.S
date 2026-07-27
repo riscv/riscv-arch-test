@@ -32,7 +32,6 @@
 # MARCH: rv32i_zicsr_zifencei_zaamo
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_exceptions_Zaamo_Smode.S"
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 110
 

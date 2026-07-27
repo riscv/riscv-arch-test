@@ -31,7 +31,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_napot_legal_lxwr.S"
 #define SIGUPD_COUNT 150
 #define RVTEST_PRIV_TEST
 

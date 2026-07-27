@@ -44,7 +44,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_exceptions_Umode.S"
 #define SIGUPD_COUNT 115
 #define TRAP_SIGUPD_COUNT 270
 

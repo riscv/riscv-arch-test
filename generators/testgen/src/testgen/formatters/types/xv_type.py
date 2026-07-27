@@ -6,7 +6,13 @@
 ##################################
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.vector_helpers import load_vec_reg, prep_base_v, prep_mask_v, reload_vtype
+from testgen.asm.vector_helpers import (
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
+    prep_mask_v,
+)
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
@@ -42,10 +48,8 @@ def format_xv_like_type(
     assert params.lmul is not None, f"lmul must provided for be {type_name}-type instructions"
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
-    test_data.test_chunk.vector_labels.extend(
-        [
-            (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
-        ]
+    test_data.test_chunk.vector_labels.append(
+        (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer])
     )
 
     # Set up the instructions: Mask, vs2 (at correct lmul), no need to touch rd
@@ -55,16 +59,15 @@ def format_xv_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, [params.vs2])
-    setup.extend(prep_lines)
+    vs2_lmul = params.lmul if not scalar_vs2 else 1
+    vs2_vl = params.vl if not scalar_vs2 else 1
+    load_code, random_vl_reg = load_vec_regs([VectorLoad("vs2", vl=vs2_vl, lmul=vs2_lmul)], params, test_data)
+    setup.extend(load_code)
+    setup.append(load_test_vtype(params, random_vl_reg))
 
-    lmul_override = 1 if scalar_vs2 else None
-    setup.extend(load_vec_reg(params.vs2, params.vs2_val_pointer, params, lmul=lmul_override))
-
-    if lmul_override is not None:
-        setup.append(reload_vtype(params, vl_register_or_imm))
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     if params.maskval:
         test = [f"{instr_str} x{params.rd}, v{params.vs2}, v0.t"]
@@ -76,5 +79,7 @@ def format_xv_like_type(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
+
+    handle_lmul_ifdef(params.lmul, setup, check)
 
     return (setup, test, check)

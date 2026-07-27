@@ -18,7 +18,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_nleaf_pte_DAU_Umode.S"
 #define SIGUPD_COUNT 15
 
 

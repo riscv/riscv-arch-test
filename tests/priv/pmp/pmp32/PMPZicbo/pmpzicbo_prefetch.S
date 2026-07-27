@@ -27,9 +27,7 @@
 # MARCH: rv32i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzicbo_prefetch.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

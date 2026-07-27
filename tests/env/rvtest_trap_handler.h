@@ -1156,6 +1156,14 @@ common_\__MODE__\()entry:                        // common entry for all traps i
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
+
+        // ---- Global trap counter: shared by every privilege mode's handler ----
+        // T1..T4 were just saved above, so they are free scratch here.
+        LA(     T1, rvtest_trap_count)          // T1 = address of trap_count
+        LREG    T2, 0(T1)                        // T2 = current count
+        addi    T2, T2, 1                         // count++
+        SREG    T2, 0(T1)                        // store back
+
         csrr    T5, CSR_XCAUSE                   // T5 = xcause (T5 is x14, so caller's a0 is NOT disturbed)
 
 //==============================================================================
@@ -1594,7 +1602,7 @@ tsbi_instr_table_search_loop:
 found_instr:
         mv      T4, ra                          // preserve caller's ra (T4's live value is already saved; restored by resto)
         LA(     ra, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
-        jr      T2                                   // jump to the matching instruction in the table
+        jr      T2                              // jump to the matching instruction in the table
 tsbi_instr_rtn:
         mv      ra, T4                          // restore caller's ra
         csrr    T3, CSR_XEPC                    // T3 = xepc (ecall address)

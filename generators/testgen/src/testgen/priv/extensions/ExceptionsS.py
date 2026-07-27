@@ -55,7 +55,6 @@ def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
                 f"LI(x{dest_regs[1]}, 0xB0BACAFE)",
                 test_data.add_testcase(test_name, coverpoint, covergroup),
                 f" {instr}",
-                " nop",
                 write_sigupd(dest_regs[1], test_data),
             ]
         )
@@ -80,7 +79,7 @@ def _add_jalr_misaligned_test_fault_addr(
     t_lines = [test_data.add_testcase(label, coverpoint, covergroup)]
 
     for off in offsets_for_lsb[rs1_lsb]:
-        t_lines.extend([f"jalr x1, {off}(x{addr_reg})", "nop"])
+        t_lines.append(f"jalr x1, {off}(x{addr_reg})")
 
     return t_lines
 
@@ -142,7 +141,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                     rs1_lsb, addr_reg, test_data, coverpoint, covergroup, tag_prefix=tag
                 )
             )
-        lines.append("nop")
         lines.append("#endif")
 
         # Instruction access fault
@@ -152,7 +150,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"jalr x1, 0(x{addr_reg})",
-                "nop",
                 "#endif",
             ]
         )
@@ -163,7 +160,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 test_data.add_testcase(f"illegalinstr_zeros_{tag}", coverpoint, covergroup),
                 ".p2align 2",
                 ".word 0x00000000",
-                "nop",
             ]
         )
 
@@ -173,7 +169,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 test_data.add_testcase(f"illegalinstr_ones_{tag}", coverpoint, covergroup),
                 ".p2align 2",
                 ".word 0xFFFFFFFF",
-                "nop",
             ]
         )
 
@@ -182,7 +177,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             [
                 test_data.add_testcase(f"ebreak_{tag}", coverpoint, covergroup),
                 "ebreak",
-                "nop",
             ]
         )
 
@@ -192,18 +186,15 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         )
         for offset in range(8):
             for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-                lines.extend([f"{op} x{check_reg}, {offset}(x{addr_reg})", "nop"])
+                lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
             lines.extend(
                 [
                     "#if __riscv_xlen == 64",
                     f" ld x{check_reg}, {offset}(x{addr_reg})",
-                    " nop",
                     f" lwu x{check_reg}, {offset}(x{addr_reg})",
-                    " nop",
                     "#endif",
                 ]
             )
-        lines.append("nop")
 
         # Load access fault
         lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
@@ -214,16 +205,13 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
         for op in ["lw", "lh", "lhu", "lb", "lbu"]:
-            lines.extend([f"{op} x{check_reg}, 0(x{addr_reg})", "nop"])
+            lines.append(f"{op} x{check_reg}, 0(x{addr_reg})")
         lines.extend(
             [
                 "#if __riscv_xlen == 64",
                 f" ld x{check_reg}, 0(x{addr_reg})",
-                " nop",
                 f" lwu x{check_reg}, 0(x{addr_reg})",
-                " nop",
                 "#endif",
-                "nop",
                 "#endif",
             ]
         )
@@ -238,16 +226,14 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         )
         for offset in range(8):
             for op in ["sw", "sh", "sb"]:
-                lines.extend([f"{op} x{data_reg}, {offset}(x{addr_reg})", "nop"])
+                lines.append(f"{op} x{data_reg}, {offset}(x{addr_reg})")
             lines.extend(
                 [
                     "#if __riscv_xlen == 64",
                     f" sd x{data_reg}, {offset}(x{addr_reg})",
-                    " nop",
                     "#endif",
                 ]
             )
-        lines.append("nop")
 
         # Store access fault
         lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
@@ -259,14 +245,12 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
         for op in ["sw", "sh", "sb"]:
-            lines.extend([f"{op} x{data_reg}, 0(x{addr_reg})", "nop"])
+            lines.append(f"{op} x{data_reg}, 0(x{addr_reg})")
         lines.extend(
             [
                 "#if __riscv_xlen == 64",
                 f" sd x{data_reg}, 0(x{addr_reg})",
-                " nop",
                 "#endif",
-                "nop",
                 "#endif",
             ]
         )

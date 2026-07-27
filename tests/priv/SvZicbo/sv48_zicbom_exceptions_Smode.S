@@ -127,7 +127,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_zicbom_exceptions_Smode.S"
 #define SIGUPD_COUNT 175
 
 
@@ -231,7 +230,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
+  csrs menvcfg, t0                                                      // Allow execution of Zicbom instructions in S-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -285,10 +284,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL3, test5
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
@@ -408,10 +407,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL2, test16
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
@@ -586,10 +585,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test31
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -779,10 +778,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test46
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region

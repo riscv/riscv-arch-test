@@ -295,16 +295,16 @@
         mv DEFAULT_LINK_REG, x8
         j failedtest_saveregs
 
-    failedtest_vxsat_x13_x12:
-        la x12, begin_failure_scratch
-        SREG x13, 104(x12)
-        SREG DEFAULT_TEMP_REG, 32(x12)
-        SREG DEFAULT_LINK_REG, 40(x12)
-        SREG x1, 8(x12)
+    failedtest_vxsat_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 104(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
         li x1, 5
-        sw x1, 0(x12)                               # failure_type = 5 (vxsat)
-        mv DEFAULT_TEMP_REG, x12
-        mv DEFAULT_LINK_REG, x13
+        sw x1, 0(x13)                               # failure_type = 5 (vxsat)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
         j failedtest_saveregs
 
 #endif // RVTEST_VECTOR
@@ -1168,6 +1168,8 @@
     failedtest_report:
       print_failstr:
         LA(a0, failstr)
+        call rvmodel_io_write_str
+        LA(a0, begin_debugstr)
         call rvmodel_io_write_str
 
         # Print test name string
@@ -2217,7 +2219,9 @@
     failstr:
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
-        .asciz "\"\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .asciz "\"\n"
+    begin_debugstr:
+        .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
     trap_sig_overflowstr:

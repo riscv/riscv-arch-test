@@ -1612,8 +1612,6 @@ def getPrivExtraDefines(sew):
     sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
-        "#define rvtest_mtrap_routine",
-        "#define rvtest_strap_routine",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
         f"#define SEWMINSIZE e{minSEW_MIN}",
@@ -1760,7 +1758,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@MARCH@", march.lower())
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
-        .replace("@TEST_FILE_NAME@", f"{test}.S")
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
@@ -1814,9 +1811,9 @@ def writeSIGUPD_FFLAGS(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
@@ -1829,9 +1826,9 @@ def writeSIGUPD_VXSAT(inst_ptr):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
@@ -2475,7 +2472,6 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"vsetivli x0, 1, e{sew}, m{lmulflag}, tu, mu", "# Restore valid vtype after vill test")
 
     if (priv):
-      writeLine("nop",                                           "# nop after possible trap")
       # The test instruction may have trapped or otherwise left mstatus.VS in a
       # state where vector CSR access (csrw vstart) is itself illegal. Restore
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
@@ -3092,7 +3088,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         # _LMUL (= sig_lmul, capped to integer EMUL since whole-register/mask
         # paths use sig_lmul=1 and fractional groups fit in one register).
         sig_emul = max(int(sig_lmul), 1) if sig_lmul is not None and sig_lmul >= 1 else 1
-        reload_zero_lmul = getLmulFlag(sig_emul)
+        # Whole-register store reloads zero each physical destination register individually.
+        # Use LMUL=1 for that setup so v8/v9/... are all legal vmv.v.i destinations.
+        reload_zero_lmul = 1 if instruction in whole_register_stores else getLmulFlag(sig_emul)
         default_lmul_flag = getLmulFlag(lmul)
         reload_pre_init = [
           f"csrr x{mi_t1}, vl",

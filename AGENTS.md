@@ -53,7 +53,7 @@
 
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 - Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.
-- In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique. Instructions that may trap need a skipped instruction after them; use CSR macros (`CSRRW`, `CSRRS`, `CSRR`, etc.) instead of raw CSR instructions because implementations can trap on different CSRs.
+- In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique.
 
 ## Configs And CI
 

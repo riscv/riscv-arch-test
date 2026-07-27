@@ -34,7 +34,6 @@
 
 #define TEST_FILE "pmpzcf_legal_lwxr.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

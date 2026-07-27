@@ -34,8 +34,6 @@
 
 #define TEST_FILE "pmps_napot_legal_lxwr-02.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 

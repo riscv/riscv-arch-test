@@ -29,7 +29,6 @@
 
 #define TEST_FILE "pmpu_cfg_A_all.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

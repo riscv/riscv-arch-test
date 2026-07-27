@@ -30,7 +30,6 @@
 
 #define TEST_FILE "pmpu_cfg_XWR.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

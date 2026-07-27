@@ -28,7 +28,6 @@
 
 #define TEST_FILE "pmpzaamo_cfg_wr.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

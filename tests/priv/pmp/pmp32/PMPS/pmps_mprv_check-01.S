@@ -31,8 +31,6 @@
 
 #define TEST_FILE "pmps_mprv_check-01.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 

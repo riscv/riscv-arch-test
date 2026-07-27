@@ -28,7 +28,6 @@
 
 #define TEST_FILE "pmpzicbo_cbo_wr_01.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

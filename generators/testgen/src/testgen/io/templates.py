@@ -64,7 +64,6 @@ def insert_header_template(
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
         .replace("@PARAMS@", format_params(params, ext_components))
         .replace("@MARCH@", march)

@@ -23,7 +23,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_mstatus_mprv_Umode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
 

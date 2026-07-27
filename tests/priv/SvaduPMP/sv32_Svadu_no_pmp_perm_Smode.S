@@ -29,7 +29,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_Svadu_no_pmp_perm_Smode.S"
 #define SIGUPD_COUNT 30
 #define BOOT_TO_MMODE
 

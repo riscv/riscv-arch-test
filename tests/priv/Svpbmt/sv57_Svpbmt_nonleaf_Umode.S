@@ -38,7 +38,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_Svpbmt_nonleaf_Umode.S"
 #define SIGUPD_COUNT 45
 
 

@@ -25,7 +25,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pmp_on_pa_Smode.S"
 #define SIGUPD_COUNT 55
 #define TRAP_SIGUPD_COUNT 90
 #define BOOT_TO_MMODE

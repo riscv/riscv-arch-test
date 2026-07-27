@@ -27,7 +27,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_global_pte_Smode.S"
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 10
 

@@ -24,7 +24,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_Svadu_Umode.S"
 #define SIGUPD_COUNT 45
 
 

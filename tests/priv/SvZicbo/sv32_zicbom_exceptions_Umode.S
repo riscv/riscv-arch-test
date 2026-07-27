@@ -61,7 +61,6 @@
 # MARCH: rv32i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_zicbom_exceptions_Umode.S"
 #define SIGUPD_COUNT 80
 
 

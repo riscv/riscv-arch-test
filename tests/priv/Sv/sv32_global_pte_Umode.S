@@ -21,7 +21,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_global_pte_Umode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 10
 

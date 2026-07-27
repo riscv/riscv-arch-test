@@ -30,7 +30,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_satp_access_test.S"
 #define SIGUPD_COUNT 55
 #define TRAP_SIGUPD_COUNT 30
 

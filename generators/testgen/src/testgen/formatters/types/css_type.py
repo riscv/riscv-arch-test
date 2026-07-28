@@ -63,8 +63,12 @@ def format_css_type(
 
     check = [
         f"LREG x{params.temp_reg}, 0(x{test_data.int_regs.sig_reg}) # load stored value for checking",
+        f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, SIG_STRIDE # increment signature pointer",
         write_sigupd(params.temp_reg, test_data),
     ]
+
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
 
     if params.rs2 != 2:
         # Return sp if it was allocated specially for this testcase

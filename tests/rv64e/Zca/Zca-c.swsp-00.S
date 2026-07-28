@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 106
+#define SIGUPD_COUNT 202
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -40,6 +40,7 @@ RVTEST_BEGIN
 Zca_c_swsp_cg_cp_rs2_b0:
   c.swsp x0, 32(sp) # perform store
   LREG x14, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x14, Zca_c_swsp_cg_cp_rs2_b0, Zca_c_swsp_cg_cp_rs2_b0_str)
 
@@ -49,6 +50,7 @@ Zca_c_swsp_cg_cp_rs2_b0:
 Zca_c_swsp_cg_cp_rs2_b1:
   c.swsp x1, 64(sp) # perform store
   LREG x7, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x7, Zca_c_swsp_cg_cp_rs2_b1, Zca_c_swsp_cg_cp_rs2_b1_str)
 
@@ -58,6 +60,7 @@ Zca_c_swsp_cg_cp_rs2_b1:
 Zca_c_swsp_cg_cp_rs2_b2:
   c.swsp x2, 132(sp) # perform store
   LREG x6, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x6, Zca_c_swsp_cg_cp_rs2_b2, Zca_c_swsp_cg_cp_rs2_b2_str)
 
@@ -68,6 +71,7 @@ Zca_c_swsp_cg_cp_rs2_b2:
 Zca_c_swsp_cg_cp_rs2_b3:
   c.swsp x3, 120(sp) # perform store
   LREG x12, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x12, Zca_c_swsp_cg_cp_rs2_b3, Zca_c_swsp_cg_cp_rs2_b3_str)
 
@@ -79,6 +83,7 @@ Zca_c_swsp_cg_cp_rs2_b3:
 Zca_c_swsp_cg_cp_rs2_b4:
   c.swsp x4, 12(sp) # perform store
   LREG x5, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x5, Zca_c_swsp_cg_cp_rs2_b4, Zca_c_swsp_cg_cp_rs2_b4_str)
 
@@ -88,6 +93,7 @@ Zca_c_swsp_cg_cp_rs2_b4:
 Zca_c_swsp_cg_cp_rs2_b5:
   c.swsp x5, 204(sp) # perform store
   LREG x12, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x12, Zca_c_swsp_cg_cp_rs2_b5, Zca_c_swsp_cg_cp_rs2_b5_str)
 
@@ -98,6 +104,7 @@ Zca_c_swsp_cg_cp_rs2_b5:
 Zca_c_swsp_cg_cp_rs2_b6:
   c.swsp x6, 252(sp) # perform store
   LREG x7, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x7, Zca_c_swsp_cg_cp_rs2_b6, Zca_c_swsp_cg_cp_rs2_b6_str)
 
@@ -107,6 +114,7 @@ Zca_c_swsp_cg_cp_rs2_b6:
 Zca_c_swsp_cg_cp_rs2_b7:
   c.swsp x7, 104(sp) # perform store
   LREG x5, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x5, Zca_c_swsp_cg_cp_rs2_b7, Zca_c_swsp_cg_cp_rs2_b7_str)
 
@@ -116,6 +124,7 @@ Zca_c_swsp_cg_cp_rs2_b7:
 Zca_c_swsp_cg_cp_rs2_b8:
   c.swsp x8, 200(sp) # perform store
   LREG x15, 0(x9) # load stored value for checking
+  addi x9, x9, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x9, x14, x13, x15, Zca_c_swsp_cg_cp_rs2_b8, Zca_c_swsp_cg_cp_rs2_b8_str)
 
@@ -126,6 +135,7 @@ Zca_c_swsp_cg_cp_rs2_b8:
 Zca_c_swsp_cg_cp_rs2_b9:
   c.swsp x9, 24(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x1, x14, x13, x5, Zca_c_swsp_cg_cp_rs2_b9, Zca_c_swsp_cg_cp_rs2_b9_str)
 
@@ -135,6 +145,7 @@ Zca_c_swsp_cg_cp_rs2_b9:
 Zca_c_swsp_cg_cp_rs2_b10:
   c.swsp x10, 136(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x1, x14, x13, x11, Zca_c_swsp_cg_cp_rs2_b10, Zca_c_swsp_cg_cp_rs2_b10_str)
 
@@ -144,6 +155,7 @@ Zca_c_swsp_cg_cp_rs2_b10:
 Zca_c_swsp_cg_cp_rs2_b11:
   c.swsp x11, 100(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x1, x14, x13, x9, Zca_c_swsp_cg_cp_rs2_b11, Zca_c_swsp_cg_cp_rs2_b11_str)
 
@@ -153,6 +165,7 @@ Zca_c_swsp_cg_cp_rs2_b11:
 Zca_c_swsp_cg_cp_rs2_b12:
   c.swsp x12, 72(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x1, x14, x13, x6, Zca_c_swsp_cg_cp_rs2_b12, Zca_c_swsp_cg_cp_rs2_b12_str)
 
@@ -164,6 +177,7 @@ Zca_c_swsp_cg_cp_rs2_b12:
 Zca_c_swsp_cg_cp_rs2_b13:
   c.swsp x13, 0(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_rs2_b13, Zca_c_swsp_cg_cp_rs2_b13_str)
 
@@ -173,6 +187,7 @@ Zca_c_swsp_cg_cp_rs2_b13:
 Zca_c_swsp_cg_cp_rs2_b14:
   c.swsp x14, 80(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_rs2_b14, Zca_c_swsp_cg_cp_rs2_b14_str)
 
@@ -182,6 +197,7 @@ Zca_c_swsp_cg_cp_rs2_b14:
 Zca_c_swsp_cg_cp_rs2_b15:
   c.swsp x15, 172(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_rs2_b15, Zca_c_swsp_cg_cp_rs2_b15_str)
 
@@ -195,6 +211,7 @@ Zca_c_swsp_cg_cp_rs2_b15:
 Zca_c_swsp_cg_cp_rs2_edges_0x0:
   c.swsp x5, 16(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_rs2_edges_0x0, Zca_c_swsp_cg_cp_rs2_edges_0x0_str)
 
@@ -204,6 +221,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x0:
 Zca_c_swsp_cg_cp_rs2_edges_0x1:
   c.swsp x14, 144(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_rs2_edges_0x1, Zca_c_swsp_cg_cp_rs2_edges_0x1_str)
 
@@ -213,6 +231,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x1:
 Zca_c_swsp_cg_cp_rs2_edges_0x2:
   c.swsp x6, 44(sp) # perform store
   LREG x13, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x13, Zca_c_swsp_cg_cp_rs2_edges_0x2, Zca_c_swsp_cg_cp_rs2_edges_0x2_str)
 
@@ -222,6 +241,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x2:
 Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000000:
   c.swsp x15, 236(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000000, Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000000_str)
 
@@ -231,6 +251,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000000:
 Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000001:
   c.swsp x14, 4(sp) # perform store
   LREG x13, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x13, Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000001, Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000001_str)
 
@@ -240,6 +261,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x8000000000000001:
 Zca_c_swsp_cg_cp_rs2_edges_0x7fffffffffffffff:
   c.swsp x9, 52(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_rs2_edges_0x7fffffffffffffff, Zca_c_swsp_cg_cp_rs2_edges_0x7fffffffffffffff_str)
 
@@ -249,6 +271,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x7fffffffffffffff:
 Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffffffffffe:
   c.swsp x6, 204(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffffffffffe, Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
 
@@ -258,6 +281,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffffffffffe:
 Zca_c_swsp_cg_cp_rs2_edges_0xffffffffffffffff:
   c.swsp x11, 144(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_rs2_edges_0xffffffffffffffff, Zca_c_swsp_cg_cp_rs2_edges_0xffffffffffffffff_str)
 
@@ -267,6 +291,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0xffffffffffffffff:
 Zca_c_swsp_cg_cp_rs2_edges_0xfffffffffffffffe:
   c.swsp x15, 240(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffffffffffe, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffffffffffe_str)
 
@@ -276,6 +301,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0xfffffffffffffffe:
 Zca_c_swsp_cg_cp_rs2_edges_0x5bbc887763ae86f2:
   c.swsp x13, 144(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_rs2_edges_0x5bbc887763ae86f2, Zca_c_swsp_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
 
@@ -285,6 +311,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x5bbc887763ae86f2:
 Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
   c.swsp x11, 252(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
 
@@ -294,6 +321,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
 Zca_c_swsp_cg_cp_rs2_edges_0x5555555555555555:
   c.swsp x4, 228(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_rs2_edges_0x5555555555555555, Zca_c_swsp_cg_cp_rs2_edges_0x5555555555555555_str)
 
@@ -303,6 +331,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x5555555555555555:
 Zca_c_swsp_cg_cp_rs2_edges_0xffffffff:
   c.swsp x10, 212(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_rs2_edges_0xffffffff, Zca_c_swsp_cg_cp_rs2_edges_0xffffffff_str)
 
@@ -312,6 +341,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0xffffffff:
 Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe:
   c.swsp x5, 72(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe_str)
 
@@ -321,6 +351,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe:
 Zca_c_swsp_cg_cp_rs2_edges_0x100000000:
   c.swsp x5, 232(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_rs2_edges_0x100000000, Zca_c_swsp_cg_cp_rs2_edges_0x100000000_str)
 
@@ -330,6 +361,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x100000000:
 Zca_c_swsp_cg_cp_rs2_edges_0x100000001:
   c.swsp x6, 104(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_rs2_edges_0x100000001, Zca_c_swsp_cg_cp_rs2_edges_0x100000001_str)
 
@@ -343,6 +375,7 @@ Zca_c_swsp_cg_cp_rs2_edges_0x100000001:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0:
   c.swsp x9, 0(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0_str)
 
@@ -352,6 +385,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4:
   c.swsp x4, 4(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4_str)
 
@@ -361,6 +395,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8:
   c.swsp x14, 8(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8_str)
 
@@ -370,6 +405,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc:
   c.swsp x11, 12(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x5, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc_str)
 
@@ -379,6 +415,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10:
   c.swsp x12, 16(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10_str)
 
@@ -388,6 +425,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14:
   c.swsp x14, 20(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14_str)
 
@@ -397,6 +435,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18:
   c.swsp x13, 24(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18_str)
 
@@ -406,6 +445,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c:
   c.swsp x13, 28(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c_str)
 
@@ -415,6 +455,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20:
   c.swsp x6, 32(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20_str)
 
@@ -424,6 +465,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24:
   c.swsp x14, 36(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24_str)
 
@@ -433,6 +475,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28:
   c.swsp x15, 40(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28_str)
 
@@ -442,6 +485,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c:
   c.swsp x12, 44(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x5, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c_str)
 
@@ -451,6 +495,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30:
   c.swsp x15, 48(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30_str)
 
@@ -460,6 +505,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34:
   c.swsp x5, 52(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34_str)
 
@@ -469,6 +515,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38:
   c.swsp x12, 56(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x5, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38_str)
 
@@ -478,6 +525,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c:
   c.swsp x0, 60(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c_str)
 
@@ -487,6 +535,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40:
   c.swsp x0, 64(sp) # perform store
   LREG x13, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x13, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40_str)
 
@@ -496,6 +545,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44:
   c.swsp x5, 68(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44_str)
 
@@ -505,6 +555,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48:
   c.swsp x11, 72(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48_str)
 
@@ -514,6 +565,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c:
   c.swsp x12, 76(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c_str)
 
@@ -523,6 +575,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50:
   c.swsp x13, 80(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50_str)
 
@@ -532,6 +585,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54:
   c.swsp x12, 84(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54_str)
 
@@ -541,6 +595,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58:
   c.swsp x14, 88(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58_str)
 
@@ -550,6 +605,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c:
   c.swsp x11, 92(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c_str)
 
@@ -559,6 +615,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60:
   c.swsp x5, 96(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60_str)
 
@@ -568,6 +625,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64:
   c.swsp x0, 100(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64_str)
 
@@ -577,6 +635,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68:
   c.swsp x12, 104(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68_str)
 
@@ -586,6 +645,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c:
   c.swsp x15, 108(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x5, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c_str)
 
@@ -595,6 +655,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70:
   c.swsp x6, 112(sp) # perform store
   LREG x5, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x5 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x5, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70_str)
 
@@ -604,6 +665,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74:
   c.swsp x14, 116(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74_str)
 
@@ -613,6 +675,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78:
   c.swsp x5, 120(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78_str)
 
@@ -622,6 +685,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c:
   c.swsp x2, 124(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c_str)
 
@@ -631,6 +695,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80:
   c.swsp x15, 128(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80_str)
 
@@ -640,6 +705,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84:
   c.swsp x11, 132(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84_str)
 
@@ -649,6 +715,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88:
   c.swsp x9, 136(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88_str)
 
@@ -658,6 +725,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c:
   c.swsp x4, 140(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c_str)
 
@@ -667,6 +735,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90:
   c.swsp x9, 144(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90_str)
 
@@ -676,6 +745,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94:
   c.swsp x6, 148(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94_str)
 
@@ -685,6 +755,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98:
   c.swsp x12, 152(sp) # perform store
   LREG x4, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x4 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98_str)
 
@@ -694,6 +765,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c:
   c.swsp x14, 156(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c_str)
 
@@ -703,6 +775,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0:
   c.swsp x2, 160(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0_str)
 
@@ -712,6 +785,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4:
   c.swsp x5, 164(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4_str)
 
@@ -721,6 +795,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8:
   c.swsp x2, 168(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8_str)
 
@@ -730,6 +805,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac:
   c.swsp x15, 172(sp) # perform store
   LREG x13, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x13 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x13, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac_str)
 
@@ -739,6 +815,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0:
   c.swsp x2, 176(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0_str)
 
@@ -748,6 +825,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4:
   c.swsp x11, 180(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4_str)
 
@@ -757,6 +835,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8:
   c.swsp x15, 184(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8_str)
 
@@ -766,6 +845,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc:
   c.swsp x11, 188(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc_str)
 
@@ -775,6 +855,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0:
   c.swsp x13, 192(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0_str)
 
@@ -784,6 +865,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4:
   c.swsp x5, 196(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4_str)
 
@@ -793,6 +875,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8:
   c.swsp x13, 200(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8_str)
 
@@ -802,6 +885,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc:
   c.swsp x0, 204(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc_str)
 
@@ -811,6 +895,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0:
   c.swsp x15, 208(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0_str)
 
@@ -820,6 +905,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4:
   c.swsp x10, 212(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4_str)
 
@@ -829,6 +915,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8:
   c.swsp x5, 216(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8_str)
 
@@ -838,6 +925,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc:
   c.swsp x12, 220(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc_str)
 
@@ -847,6 +935,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0:
   c.swsp x11, 224(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0_str)
 
@@ -856,6 +945,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4:
   c.swsp x15, 228(sp) # perform store
   LREG x6, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4_str)
 
@@ -865,6 +955,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8:
   c.swsp x12, 232(sp) # perform store
   LREG x9, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x9 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8_str)
 
@@ -874,6 +965,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec:
   c.swsp x10, 236(sp) # perform store
   LREG x11, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x11 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec_str)
 
@@ -883,6 +975,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0:
   c.swsp x4, 240(sp) # perform store
   LREG x12, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x12 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0_str)
 
@@ -892,6 +985,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4:
   c.swsp x5, 244(sp) # perform store
   LREG x15, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x15 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4_str)
 
@@ -901,6 +995,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8:
   c.swsp x11, 248(sp) # perform store
   LREG x10, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x10 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8_str)
 
@@ -910,6 +1005,7 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8:
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc:
   c.swsp x9, 252(sp) # perform store
   LREG x14, 0(x1) # load stored value for checking
+  addi x1, x1, SIG_STRIDE # increment signature pointer
   # Check if x14 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc_str)
 

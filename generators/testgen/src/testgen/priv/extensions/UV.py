@@ -23,9 +23,9 @@ def _enable_vs_and_vector(temp_reg: int) -> list[str]:
     """In M-mode prelude: set mstatus.VS=Dirty and configure a legal vtype/vl."""
     return [
         f"LI(x{temp_reg}, {_VS_MASK})",
-        f"CSRC(mstatus, x{temp_reg})  # clear VS",
+        f"csrc mstatus, x{temp_reg}  # clear VS",
         f"LI(x{temp_reg}, {3 << 9})",
-        f"CSRS(mstatus, x{temp_reg})  # VS=Dirty",
+        f"csrs mstatus, x{temp_reg}  # VS=Dirty",
         f"vsetivli x{temp_reg}, 1, e32, m1, tu, mu",
         "csrw vstart, x0",
     ]
@@ -67,8 +67,8 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "UV",
-    required_extensions=["Sm", "U", "I", "M", "V", "Zicsr"],
-    march_extensions=["I", "M", "V", "Zicsr"],
+    required_extensions=["Sm", "U", "M", "V", "Zicsr"],
+    march_extensions=["M", "V"],
     extra_defines=[
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",

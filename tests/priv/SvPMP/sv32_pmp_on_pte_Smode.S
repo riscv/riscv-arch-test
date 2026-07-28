@@ -27,7 +27,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pmp_on_pte_Smode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 40
 #define BOOT_TO_MMODE
@@ -132,7 +131,7 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_X)
   write_pmpcfg0:
@@ -165,7 +164,7 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 0

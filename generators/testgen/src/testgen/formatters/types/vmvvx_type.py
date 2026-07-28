@@ -6,10 +6,11 @@
 ##################################
 
 from testgen.asm.vector_helpers import (
-    load_vec_reg,
-    prep_base_v,
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
     prep_mask_v,
-    reload_vtype,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -55,34 +56,24 @@ def format_vmvvx_like_type(
 
     # Set up the instructions: Mask, vd (potentially preloaded)
     setup = []
-    registers = [params.vd]
 
     # Setup Mask
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
-    # Preload vd at vlmax
     lmul = params.lmul if not scalar_vd else 1
-    vd_preloaded = False
-    if params.vector_suite == "length":
-        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0"))
-        vd_preloaded = True
-        registers.remove(params.vd)
-
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
-    setup.extend(prep_lines)
-
-    if not vd_preloaded:
-        # This is set if we need to load at a different lmul (e.g. we have a scalar operand)
-        lmul_override = lmul if lmul != params.lmul else None
-        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=lmul_override))
-        if lmul_override is not None:
-            setup.append(reload_vtype(params, vl_register_or_imm))
-
+    vl = params.vl if not scalar_vd else 1
+    vd_vl = vl if params.vector_suite == "base" else "vlmax"
+    load_code, random_vl_reg = load_vec_regs(
+        [VectorLoad("vd", vl=vd_vl, lmul=lmul, no_fractional_load=True)], params, test_data
+    )
+    setup.extend(load_code)
     setup.append(f"LI (x{params.rs1}, {params.rs1val})")
+    setup.append(load_test_vtype(params, random_vl_reg))
 
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     if params.maskval:
         test = [f"{instr_str} v{params.vd}, x{params.rs1}, v0.t"]
@@ -97,5 +88,7 @@ def format_vmvvx_like_type(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
+
+    handle_lmul_ifdef(params.lmul, setup, check)
 
     return (setup, test, check)

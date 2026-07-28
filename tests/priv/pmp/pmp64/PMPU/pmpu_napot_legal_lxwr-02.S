@@ -31,9 +31,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_napot_legal_lxwr.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

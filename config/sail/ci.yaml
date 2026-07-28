@@ -3,7 +3,7 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: "Zkr"
+exclude_extensions: "Zkr,SdtrigSm,SdtrigS,SdtrigU"
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2

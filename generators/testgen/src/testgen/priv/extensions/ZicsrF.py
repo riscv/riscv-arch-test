@@ -199,7 +199,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     ]
     lines.extend(
         [
-            "CSRW(fcsr, zero)    # clear all flags and rounding mode before starting",
+            "csrw fcsr, zero    # clear all flags and rounding mode before starting",
             load_float_reg("0.0", 10, 0x00000000, test_data, "single"),
             load_float_reg("1.0", 11, 0x3F800000, test_data, "single"),
             load_float_reg("3.0", 12, 0x40400000, test_data, "single"),
@@ -331,7 +331,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ZicsrF", required_extensions=["Zicsr", "F"], march_extensions=["Zicsr", "F", "D", "Zfh"])
+@add_priv_test_generator("ZicsrF", required_extensions=["Zicsr", "F"], march_extensions=["F", "D", "Zfh"])
 def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicsrF unprivileged floating-point fcsr extension."""
     test_chunks: list[TestChunk] = []

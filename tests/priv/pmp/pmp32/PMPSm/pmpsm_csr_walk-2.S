@@ -30,12 +30,10 @@
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_csr_walk-02.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 2000
 
 // Enable trap handler
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 // Include framework macros

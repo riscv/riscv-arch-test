@@ -16,7 +16,6 @@
 # MARCH: rv32i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_zicbop_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
 

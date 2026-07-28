@@ -30,7 +30,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pte_reserved_rwx_Smode.S"
 #define SIGUPD_COUNT 20
 #define TRAP_SIGUPD_COUNT 60
 

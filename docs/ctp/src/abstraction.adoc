@@ -249,10 +249,6 @@ testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SU
 
 remove mention of RVTEST_VECTOR  from vector code
 
-DONE: replace rvtest_mtrap_routine with STANDARD_SM_SUPPORTED or many places it gets deleted
-    replace rvtest_strap_routine with S_SUPPORTED if needed
-    replace rvtest_htrap_routine with H_SUPPORTED if needed
-
 Test generator:
     Any test that lists Sm in REQUIRED_EXTENSIONS adds STANDARD_SM_SUPPORTED as a parameter
     DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)

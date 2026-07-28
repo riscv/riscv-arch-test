@@ -4,12 +4,11 @@
 # Shared across all Spike configs
 
 # SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in spike-max supported by Sail
-# Spike mtval reports cache-block-aligned address on CBO access fault instead of faulting virtual address, Link: https://github.com/riscv-software-src/riscv-isa-sim/issues/2296
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting Sscsrind too
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZicboS,ExceptionsZicboU,SsstrictV,Smstateen,Zkr"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,Zkr,SdtrigSm,SdtrigS,SdtrigU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

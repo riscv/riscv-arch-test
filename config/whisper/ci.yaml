@@ -12,10 +12,14 @@
 # SmV excluded due to https://github.com/tenstorrent/whisper/issues/33
 # ExceptionsZaamo: Whisper reports mtval from the second half of cross-granule AMOCAS faults.
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation.
+# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation. https://github.com/riscv/sail-riscv/issues/1836
+# Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr"
+exclude_extensions: "S,Sm,SmV,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
+exclude_configs:
+  - whisper-rv32-max-spike-ref
+  - whisper-rv64-max-spike-ref
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 1

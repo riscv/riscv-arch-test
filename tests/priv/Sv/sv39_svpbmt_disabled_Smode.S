@@ -100,7 +100,7 @@ main:
   sfence.vma                                                             // Flush TLB
   #ifndef SM1P11P0_SUPPORTED
       LI(t0, MENVCFG_PBMTE)
-      CSRC(menvcfg, t0)
+      csrc menvcfg, t0
   #endif
 
 //---------------------------------------------------------------------------------------------------------------------------------

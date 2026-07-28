@@ -12,7 +12,6 @@ from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
@@ -562,16 +561,15 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
     required_extensions=["S", "Zicsr", "Smstateen"],
     march_extensions=["Smstateen", "Zcmt", "Zfinx"],
 )
-def make_smstateen(test_data: TestData) -> list[TestChunk]:
+def make_smstateen(test_data: TestData) -> list[str]:
     """Generate tests for Smstateen state-enable extension testsuite."""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
+    lines: list[str] = []
 
     # Unconditional coverpoints — required by all Smstateen targets
-    tc.code.extend(_generate_csr_illegal_accesses(test_data))
-    tc.code.extend(_generate_walking_ones(test_data))
-    tc.code.append("#ifndef SM1P11P0_SUPPORTED")
-    tc.code.extend(
+    lines.extend(_generate_csr_illegal_accesses(test_data))
+    lines.extend(_generate_walking_ones(test_data))
+    lines.append("#ifndef SM1P11P0_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_envcfg",
@@ -581,11 +579,10 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["senvcfg"],
         )
     )
-
-    tc.code.append("#endif  // !defined(SM1P11P0_SUPPORTED)")
+    lines.append("#endif  // !defined(SM1P11P0_SUPPORTED)")
     # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef IMSIC_SUPPORTED")
-    tc.code.extend(
+    lines.append("#ifdef IMSIC_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_imsic",
@@ -595,11 +592,11 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["stopei", "vstopei"],
         )
     )
-    tc.code.append("#endif  // IMSIC_SUPPORTED")
+    lines.append("#endif  // IMSIC_SUPPORTED")
 
     # cp_aia — only when AIA is present
-    tc.code.append("#ifdef AIA_SUPPORTED")
-    tc.code.extend(
+    lines.append("#ifdef AIA_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_aia",
@@ -610,16 +607,16 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs_rv32=["sieh", "siph"],
         )
     )
-    tc.code.append("#endif  // AIA_SUPPORTED")
+    lines.append("#endif  // AIA_SUPPORTED")
 
     # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(_generate_jvt(test_data))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
+    lines.append("#ifdef ZCMT_SUPPORTED")
+    lines.extend(_generate_jvt(test_data))
+    lines.append("#endif  // ZCMT_SUPPORTED")
 
     # cp_context — only when Sdtrig is present
-    tc.code.append("#ifdef SDTRIG_SUPPORTED")
-    tc.code.extend(
+    lines.append("#ifdef SDTRIG_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_context",
@@ -629,11 +626,11 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["scontext"],
         )
     )
-    tc.code.append("#endif  // SDTRIG_SUPPORTED")
+    lines.append("#endif  // SDTRIG_SUPPORTED")
 
     # cp_p1p13 — only when Sm1p13 + Hypervisor present
-    tc.code.append("#if defined(SM1P13_SUPPORTED) && defined(H_SUPPORTED)")
-    tc.code.extend(
+    lines.append("#if defined(SM1P13_SUPPORTED) && defined(H_SUPPORTED)")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_p1p13",
@@ -643,11 +640,11 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["hedelegh"],
         )
     )
-    tc.code.append("#endif  // SM1P13_SUPPORTED && H_SUPPORTED")
+    lines.append("#endif  // SM1P13_SUPPORTED && H_SUPPORTED")
 
     # cp_srmcfg — only when Ssqosid is present
-    tc.code.append("#ifdef SSQOSID_SUPPORTED")
-    tc.code.extend(
+    lines.append("#ifdef SSQOSID_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_srmcfg",
@@ -657,11 +654,11 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["srmcfg"],
         )
     )
-    tc.code.append("#endif  // SSQOSID_SUPPORTED")
+    lines.append("#endif  // SSQOSID_SUPPORTED")
 
     # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SCTR_SUPPORTED")
-    tc.code.extend(
+    lines.append("#ifdef SCTR_SUPPORTED")
+    lines.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_ctr",
@@ -671,14 +668,14 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["sctrdepth", "sctrstatus"],
         )
     )
-    tc.code.append("#endif  // SCTR_SUPPORTED")
-    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx presen
-    tc.code.append("#ifdef ZFINX_SUPPORTED")
-    tc.code.extend(_generate_fcsr_ro_zero(test_data))
-    tc.code.extend(_generate_fcsr(test_data))
-    tc.code.extend(_generate_fcsr_lower(test_data))
-    tc.code.extend(_generate_fcsr_lower_fp_instrs(test_data))
-    tc.code.append("#endif  // ZFINX_SUPPORTED")
+    lines.append("#endif  // SCTR_SUPPORTED")
 
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx present
+    lines.append("#ifdef ZFINX_SUPPORTED")
+    lines.extend(_generate_fcsr_ro_zero(test_data))
+    lines.extend(_generate_fcsr(test_data))
+    lines.extend(_generate_fcsr_lower(test_data))
+    lines.extend(_generate_fcsr_lower_fp_instrs(test_data))
+    lines.append("#endif  // ZFINX_SUPPORTED")
+
+    return lines

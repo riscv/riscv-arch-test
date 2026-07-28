@@ -3,7 +3,11 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: "Zkr,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions:
+  - Zkr # Blocked by Sail Zkr issue: https://github.com/riscv/sail-riscv/issues/1829
+  - SdtrigSm # Sail does not yet support Sdtrig.
+  - SdtrigS # Sail does not yet support Sdtrig.
+  - SdtrigU # Sail does not yet support Sdtrig.
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2

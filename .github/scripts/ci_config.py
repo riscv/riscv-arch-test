@@ -35,7 +35,7 @@ import heapq
 import json
 import os
 import sys
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from functools import cache
 from pathlib import Path
 
@@ -123,6 +123,26 @@ def load_simulator_ci_yaml(ci_yaml_path: Path) -> dict:
     return data if data else {}
 
 
+def normalize_exclude_extensions(value: object, ci_yaml_path: Path) -> str:
+    """Return exclude_extensions as ACT's comma-separated string."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, Sequence):
+        extensions: list[str] = []
+        for extension in value:
+            if not isinstance(extension, str):
+                raise TypeError(f"{ci_yaml_path}: 'exclude_extensions' entries must be strings, got {extension!r}")
+            extension = extension.strip()
+            if extension:
+                extensions.append(extension)
+        return ",".join(extensions)
+    raise TypeError(
+        f"{ci_yaml_path}: 'exclude_extensions' must be a string or list of strings, got {type(value).__name__}"
+    )
+
+
 def file_hash(path: Path) -> str:
     """Return the first 12 hex chars of the SHA-256 hash of a file's contents."""
     return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
@@ -170,7 +190,7 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
             continue
 
         # Extract settings from ci.yaml
-        exclude_extensions = sim_config.get("exclude_extensions", "")
+        exclude_extensions = normalize_exclude_extensions(sim_config.get("exclude_extensions", ""), sim_ci_yaml)
         install_script = sim_config.get("install_script", "")
         apt_packages = sim_config.get("apt_packages", "")
         setup_script = sim_config.get("setup_script", "")

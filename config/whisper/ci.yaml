@@ -2,19 +2,25 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in whisper-max supported by Sail
-# Smstateen will be added back once issue related srmcfg in whisper is resolved
-# S excluded due to Whisper bug (to be reported upstream): SRET that drops below M-mode must
-# clear mstatus.MPRV (priv spec 3.1.6.3), but whisper's execSret applies the clear through the
-# SSTATUS shadow view whose write mask excludes MPRV, so the clear is silently dropped
-# The MRET path writes MSTATUS directly and is unaffected. The S suite's
-# cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
-# ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation. https://github.com/riscv/sail-riscv/issues/1836
-# Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 ci_enabled: true
-# TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Zkr,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions:
+  - S # Whisper bug: SRET that drops below M-mode must clear mstatus.MPRV, but whisper's execSret applies the clear through the SSTATUS shadow view whose write mask excludes MPRV, so the clear is silently dropped. The cp_sret_m mprv=1 bins catch this: Sail clears MPRV, whisper keeps it.
+  - Sm # Insufficient WARL configuration options.
+  - SsstrictSm # Not all instructions in whisper-max supported by Sail.
+  - SsstrictS # Not all instructions in whisper-max supported by Sail.
+  - SsstrictU # Not all instructions in whisper-max supported by Sail.
+  - ExceptionsSvZalrsc # Whisper reports page faults where Sail expects access faults.
+  - SsstrictV # TODO: Remove when Sail SsstrictV is implemented.
+  - Smstateen # Will be added back once issue related srmcfg in whisper is resolved.
+  - InterruptsSSm # Whisper supports M-mode interrupt delegation and Sail currently only supports S-mode interrupt delegation: https://github.com/riscv/sail-riscv/issues/1836
+  - Zkr # Blocked by Sail Zkr issue: https://github.com/riscv/sail-riscv/issues/1829
+  - Vx8 # https://github.com/tenstorrent/whisper/issues/35
+  - Vx16 # https://github.com/tenstorrent/whisper/issues/35
+  - Vx32 # https://github.com/tenstorrent/whisper/issues/35
+  - Vx64 # https://github.com/tenstorrent/whisper/issues/35
+  - SdtrigSm # Sail does not yet support Sdtrig; exercise with whisper-rv*-max-spike-ref instead.
+  - SdtrigS # Sail does not yet support Sdtrig; exercise with whisper-rv*-max-spike-ref instead.
+  - SdtrigU # Sail does not yet support Sdtrig; exercise with whisper-rv*-max-spike-ref instead.
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

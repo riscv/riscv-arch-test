@@ -17,6 +17,9 @@ env:
   RISCV_TOOLCHAIN_VERSION: "2026.07.15"
   LLVM_VERSION: "22"
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Pre-commit (prek) check
@@ -25,6 +28,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -45,6 +50,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -67,7 +74,7 @@ jobs:
       # Generated tests (e.g. priv) are not checked in but count toward the
       # suite weights used for shard bin-packing, so generate them first.
       - name: Generate tests
-        run: make tests --jobs $(nproc)
+        run: make tests --jobs "$(nproc)"
 
       - name: Discover CI configs
         id: discover
@@ -79,10 +86,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.discover-configs.outputs.matrix) }}
+    env:
+      MATRIX_CONFIG: ${{ matrix.config }}
+      MATRIX_EXTENSIONS: ${{ matrix.extensions }}
+      MATRIX_SIMULATOR: ${{ matrix.simulator }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -90,24 +103,29 @@ jobs:
           udb-gems: "true"
 
       - name: Report shard assignment
+        env:
+          MATRIX_SHARD_INDEX: ${{ matrix.shard_index }}
+          MATRIX_SHARD_TOTAL: ${{ matrix.shard_total }}
         run: |
-          if [ -z "${{ matrix.extensions }}" ]; then
-            echo "::notice::Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} for ${{ matrix.config }} is empty after exclusions; skipping heavy steps."
+          if [ -z "${MATRIX_EXTENSIONS}" ]; then
+            echo "::notice::Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} for ${MATRIX_CONFIG} is empty after exclusions; skipping heavy steps."
           else
-            echo "Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} extensions: ${{ matrix.extensions }}"
+            echo "Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} extensions: ${MATRIX_EXTENSIONS}"
           fi
 
       - name: Install sail-riscv model
         if: matrix.extensions != ''
         run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         if: matrix.extensions != ''
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
@@ -138,16 +156,19 @@ jobs:
           retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
           retry 3 sudo apt-get update
           retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
-            clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+            clang-"$LLVM_VERSION" lld-"$LLVM_VERSION" llvm-"$LLVM_VERSION"
           for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-            sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
+            sudo ln -sf "/usr/bin/${tool}-${LLVM_VERSION}" "/usr/bin/${tool}"
           done
 
       - name: Install runtime dependencies
         if: matrix.extensions != '' && matrix.apt_packages != ''
+        env:
+          MATRIX_APT_PACKAGES: ${{ matrix.apt_packages }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y ${{ matrix.apt_packages }}
+          read -r -a apt_packages <<< "${MATRIX_APT_PACKAGES}"
+          sudo apt-get install -y "${apt_packages[@]}"
 
       - name: Restore cached simulator
         if: matrix.extensions != '' && matrix.cache_key != ''
@@ -159,7 +180,9 @@ jobs:
 
       - name: Install simulator
         if: matrix.extensions != '' && matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
-        run: bash ${{ matrix.install_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        env:
+          MATRIX_INSTALL_SCRIPT: ${{ matrix.install_script }}
+        run: bash "${MATRIX_INSTALL_SCRIPT}" "${GITHUB_WORKSPACE}/${MATRIX_SIMULATOR}"
 
       - name: Save cached simulator
         if: matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
@@ -170,30 +193,37 @@ jobs:
 
       - name: Add simulator to PATH
         if: matrix.extensions != '' && matrix.install_script != ''
-        run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/${MATRIX_SIMULATOR}/bin" >> "$GITHUB_PATH"
 
       - name: Run setup script
         if: matrix.extensions != '' && matrix.setup_script != ''
-        run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        env:
+          MATRIX_SETUP_SCRIPT: ${{ matrix.setup_script }}
+        run: bash "${MATRIX_SETUP_SCRIPT}" "${GITHUB_WORKSPACE}/${MATRIX_SIMULATOR}"
 
       - name: Generate tests and coverpoints
         if: matrix.extensions != ''
-        run: EXTENSIONS=${{ matrix.extensions }} make tests --jobs $(nproc)
+        run: EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
 
       - name: Build ELFs
         if: matrix.extensions != ''
+        env:
+          MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
+          MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
         run: |
           FAST=True \
-          EXTENSIONS=${{ matrix.extensions }} \
-          EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
-          CONFIG_FILES=${{ matrix.config_file }} \
-          make elfs --jobs $(nproc)
+          EXTENSIONS="${MATRIX_EXTENSIONS}" \
+          EXCLUDE_EXTENSIONS="${MATRIX_EXCLUDE_EXTENSIONS}" \
+          CONFIG_FILES="${MATRIX_CONFIG_FILE}" \
+          make elfs --jobs "$(nproc)"
 
       - name: Run tests
         if: matrix.extensions != '' && matrix.run_cmd != ''
         run: |
-          ./run_tests.py "${{ matrix.run_cmd }}" \
-          work/${{ matrix.config }}/elfs
+          ./run_tests.py "${MATRIX_RUN_CMD}" \
+          "work/${MATRIX_CONFIG}/elfs"
+        env:
+          MATRIX_RUN_CMD: ${{ matrix.run_cmd }}
 
       - name: Upload logs
         if: always() && matrix.extensions != ''
@@ -208,18 +238,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
 
       - name: Generate vector tests
-        run: make vector-tests --jobs $(nproc)
+        run: make vector-tests --jobs "$(nproc)"
 
   ctp-build:
     name: Build CTP
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -234,6 +268,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - run: git submodule update --init docs/docs-resources
 
@@ -247,6 +283,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up tools
         uses: ./.github/actions/setup-tools
@@ -256,12 +294,12 @@ jobs:
 
       - name: Check for differences
         run: |
-          dirs="tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage"
-          changed=$(git diff --name-only -- $dirs)
-          untracked=$(git ls-files --others --exclude-standard -- $dirs)
+          dirs=(tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage)
+          changed=$(git diff --name-only -- "${dirs[@]}")
+          untracked=$(git ls-files --others --exclude-standard -- "${dirs[@]}")
           if [ -n "$changed" ] || [ -n "$untracked" ]; then
             echo "::error::Checked-in generated files are out of sync with the generators. Run 'make tests' and commit the results."
-            [ -n "$changed" ] && echo "Changed files:" && git diff -- $dirs
+            [ -n "$changed" ] && echo "Changed files:" && git diff -- "${dirs[@]}"
             [ -n "$untracked" ] && echo "New files:" && echo "$untracked"
             exit 1
           fi
@@ -278,6 +316,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Pin Python version for this job
         run: echo "${{ matrix.python-version }}" > .python-version
@@ -292,13 +332,15 @@ jobs:
 
       - name: Install sail-riscv model
         run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)

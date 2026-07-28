@@ -9,7 +9,7 @@ description: Set up mise and cache uv packages, optionally caching UDB gems
 
 inputs:
   udb-gems:
-    description: Cache UDB gems and set BUNDLE_PATH (for jobs that run UDB via act)
+    description: Cache UDB gems and configure Bundler's install path (for jobs that run UDB via act)
     required: false
     default: "false"
 
@@ -27,10 +27,10 @@ runs:
 
     # Install UDB gems into a dedicated directory so they can be cached
     # independently of the mise-managed Ruby installation.
-    - name: Set BUNDLE_PATH
+    - name: Configure Bundler path
       if: inputs.udb-gems == 'true'
       shell: bash
-      run: echo "BUNDLE_PATH=$GITHUB_WORKSPACE/.bundle-gems" >> "$GITHUB_ENV"
+      run: bundle config set --global path "${GITHUB_WORKSPACE}/.bundle-gems"
 
     # ~/.cache/udb holds the z3/espresso binaries that the udb gem downloads
     # at install time; a restored gem cache skips `bundle install`, so the

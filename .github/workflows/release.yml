@@ -17,7 +17,7 @@ on:
         default: true
 
 permissions:
-  contents: write
+  contents: read
 
 # Serialize release creation so concurrent pushes can't race to create the same tag/release.
 concurrency:
@@ -34,11 +34,15 @@ jobs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Resolve version
         id: version
+        env:
+          REQUESTED_VERSION: ${{ github.event.inputs.version }}
         run: |
-          version="${{ github.event.inputs.version }}"
+          version="$REQUESTED_VERSION"
           if [ -z "$version" ]; then
             version=$(awk -F'[][]' '/^## \[/ { print $2; exit }' CHANGELOG.md)
           fi
@@ -52,9 +56,10 @@ jobs:
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "::notice::Release ${{ steps.version.outputs.version }} already exists; skipping."
+          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo "::notice::Release $RELEASE_VERSION already exists; skipping."
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -64,10 +69,14 @@ jobs:
     needs: check
     if: needs.check.outputs.exists == 'false'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       VERSION: ${{ needs.check.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Extract release notes from CHANGELOG.md
         id: notes
@@ -84,14 +93,14 @@ jobs:
             echo "::error::No release notes found for version '$version' in CHANGELOG.md. Add a '## [$version] - <date>' section before releasing."
             exit 1
           fi
-          {
-            echo "notes<<CHANGELOG_EOF"
-            echo "$notes"
-            echo "CHANGELOG_EOF"
-          } >> "$GITHUB_OUTPUT"
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          printf "%s\n" "$notes" > "$notes_file"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
 
       - name: Set up mise
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
+        with:
+          cache: false # Don't cache in release workflows
 
       - run: git submodule update --init docs/docs-resources
 
@@ -99,16 +108,22 @@ jobs:
         run: cd docs/ctp && make -j2
 
       - name: Create Release
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
-        with:
-          draft: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.draft == 'true' }}
-          prerelease: false
-          make_latest: true
-          tag_name: ${{ env.VERSION }}
-          name: "${{ env.VERSION }}"
-          body: ${{ steps.notes.outputs.notes }}
-          fail_on_unmatched_files: true
-          files: |
-            docs/ctp/build/ctp.pdf
-            docs/ctp/build/ctp.html
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_DRAFT: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.draft == 'true' }}
+          RELEASE_NOTES_FILE: ${{ steps.notes.outputs.notes_file }}
+        run: |
+          release_args=(
+            --title "$VERSION"
+            --notes-file "$RELEASE_NOTES_FILE"
+            --latest
+          )
+          if [ "$RELEASE_DRAFT" = "true" ]; then
+            release_args+=(--draft)
+          fi
+
+          gh release create "$VERSION" \
+            "${release_args[@]}" \
+            docs/ctp/build/ctp.pdf \
+            docs/ctp/build/ctp.html \
             README.md

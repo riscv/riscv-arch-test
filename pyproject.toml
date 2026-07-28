@@ -2,15 +2,12 @@
 # Top-level python project configuration file for riscv-arch-test
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+[dependency-groups]
+dev = [ "pyright==1.1.411", "ruff==0.15.22" ]
 
 [tool.uv]
 exclude-newer = "7 days"
-
-[tool.uv.workspace]
-members = ["framework", "generators/testgen", "generators/coverage"]
-
-[dependency-groups]
-dev = ["pyright==1.1.411", "ruff==0.15.22"]
+workspace.members = [ "framework", "generators/coverage", "generators/testgen" ]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
@@ -19,40 +16,36 @@ extend-exclude = [
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
-
-[tool.ruff.lint]
-preview = true
-
 # Extra rules to enable beyond the default set
-extend-select = [
-  "ANN", # type annotation rules
+lint.extend-select = [
   "A",   # shadow builtins
-  "SIM", # Simplifications
-  "TID", # Tidy imports
-  "PTH", # Use Pathlib
+  "ANN", # type annotation rules
   "I",   # Import related rules (isort)
   "ISC", # Implicit string concatenation
+  "PTH", # Use Pathlib
+  "SIM", # Simplifications
+  "TID", # Tidy imports
 ]
-
-ignore = [
-  "RET504", # Unnecessary assignment to {name} before return statement
+lint.ignore = [
   "N",      # Naming requirements
+  "RET504", # Unnecessary assignment to {name} before return statement
 ]
-
-[tool.ty.src]
-exclude = [
-  "generators/testgen/scripts", # Old scripts that still need to be updated
-]
+lint.preview = true
 
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
 exclude = [
+  "**/.*",
   "**/__pycache__",
   "**/node_modules",
-  "**/.*",
   ".venv",
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
-typeCheckingMode = "standard"
-pythonVersion = "3.10"
+
+[tool.ty]
+src.exclude = [
+  "generators/testgen/scripts", # Old scripts that still need to be updated
+]

@@ -139,25 +139,7 @@ repos:
             generators/testgen/scripts/vector_testgen_common\.py |
             generators/testgen/scripts/vector-testgen-priv\.py |
             generators/testgen/scripts/vector-testgen-unpriv\.py |
-            generators/testgen/src/testgen/formatters/types/csr_type\.py |
-            generators/testgen/src/testgen/formatters/types/csri_type\.py |
             generators/testgen/src/testgen/priv/extensions/ExceptionsF\.py |
             generators/testgen/src/testgen/priv/extensions/Ssccptr\.py |
-            generators/testgen/src/testgen/priv/extensions/Sstvala\.py |
-            tests/rv32e/E/E-jal-00\.S |
-            tests/rv32i/I/I-jal-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrc-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrci-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrs-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrsi-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrw-00\.S |
-            tests/rv32i/Zicsr/Zicsr-csrrwi-00\.S |
-            tests/rv64e/E/E-jal-00\.S |
-            tests/rv64i/I/I-jal-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrc-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrci-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrs-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrsi-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrw-00\.S |
-            tests/rv64i/Zicsr/Zicsr-csrrwi-00\.S
+            generators/testgen/src/testgen/priv/extensions/Sstvala\.py
           )$

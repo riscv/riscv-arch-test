@@ -34,7 +34,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
     # After allocating r_stce, initialize it to 0 as the no-SSSTATEEN default
-    #lines.append(f"li x{r_stce}, 0   # default STCE=0 if SSSTATEEN not supported")
+    # lines.append(f"li x{r_stce}, 0   # default STCE=0 if SSSTATEEN not supported")
     lines = [
         comment_banner(
             "cp_trigger_sti",
@@ -2775,5 +2775,5 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_user_sei_tests(test_data))
     tc.code.extend(_generate_wfi_u_tests(test_data))
     tc.code.extend(_generate_wfi_timeout_u_tests(test_data))
-
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

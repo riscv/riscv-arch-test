@@ -334,7 +334,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
         ("mip", 0xFFFF),  # limit to standard interrupt bits
-        ("menvcfg", None),
         ("mcountinhibit", None),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -366,6 +365,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
+    csr_menvcfg = ("menvcfgh", None)
     # RV32-only high CSRs
     csrs32 = [("mstatush", None), ("menvcfgh", None)]
     # Read-only CSRs
@@ -464,7 +464,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 # Test the write value
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"csrr t0, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
-
             ]
         )
 
@@ -794,64 +793,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-            "Set, clear, write misa.MXL.  Should not change",
-        ),
-    )
-
-    rmisasave, rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(5)
-
-    lines.extend(
-        [
-            "# Save misa",
-            f"csrr x{rmisasave}, misa      # save misa",
-            "# Load 1s into msb and msb-1 corresponding to misa.MXL bitfields",
-            f"LI(x{rmsb}, -1)           # all 1s",
-            f"srli x{rmsb}, x{rmsb}, 1  # all 1s except msb = 0",
-            f"not x{rmsb}, x{rmsb}      # 1 in msb (works regardless of XLEN)",
-            f"srli x{rmsb2}, x{rmsb}, 1 # 1s in msb-1",
-            f"or x{rboth}, x{rmsb}, x{rmsb2} # 1s in both msb and msb-1",
-            "",
-            test_data.add_testcase("csrc_11", coverpoint, covergroup),
-            f"csrc misa, x{rboth}       # attempt to clear both MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            test_data.add_testcase("csrs_11", coverpoint, covergroup),
-            f"csrs misa, x{rboth}       # attempt to set both MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            test_data.add_testcase("csrw_00", coverpoint, covergroup),
-            "csrw misa, zero           # attempt to write 00 to MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            test_data.add_testcase("csrw_01", coverpoint, covergroup),
-            f"csrw misa, x{rmsb2}       # attempt to write 01 to MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            test_data.add_testcase("csrw_10", coverpoint, covergroup),
-            f"csrw misa, x{rmsb}        # attempt to write 10 to MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            test_data.add_testcase("csrw_11", coverpoint, covergroup),
-            f"csrw misa, x{rboth}       # attempt to write 11 to MXL bits",
-            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
-            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
-            write_sigupd(rr, test_data),
-            "",
-            f"csrw misa, x{rmisasave}    # restore misa",
-        ]
-    )
-
     test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
+    lines.append("#endif // SM1P13P0_SUPPORTED")
+
+    return lines
 
     ######################################
     coverpoint = "cp_misa_dependencies"
@@ -953,7 +898,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"csrs misa, x{rc}     # set misa.C if possible",
             f"csrr x{r1}, misa          # read misa to check if misa.C was set",
             f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
-            ".align 2 # 4-byte alignment",
+            ".p2align 2 # 4-byte alignment",
             test_data.add_testcase("pc_1_0", coverpoint, covergroup),
             f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 4-byte aligned",
             f"csrr x{r2}, misa          # read misa to check misa.C changed if writable",
@@ -965,12 +910,12 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"csrs misa, x{rc}     # set misa.C if possible",
             f"csrr x{r1}, misa          # read misa to check if misa.C was set",
             f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
-            ".align 2 # 4-byte alignment",
+            ".p2align 2 # 4-byte alignment",
             ".half 0x0001            # c.nop, can't write that directly because Zca not enabled for Sm",
             test_data.add_testcase("pc_1_1", coverpoint, covergroup),
             f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 2-byte aligned",
             f"csrr x{r2}, misa          # read misa to check misa.C didn't change",
-            ".align 2",
+            ".p2align 2",
             f"and x{r2}, x{r2}, x{rc} # mask off all but C bit",
             f"xor x{r2}, x{r2}, x{r1} # check if misa.C differed before and after clear attempt; should be 0 because writing misa.C is not allowed to differ when PC is 2-byte aligned",
             write_sigupd(r2, test_data),
@@ -1276,6 +1221,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r1, r2])
     return lines
+
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
 def make_sm(test_data: TestData) -> list[TestChunk]:

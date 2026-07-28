@@ -474,7 +474,7 @@
 .macro RVTEST_TSBI_GOTO_MMODE
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_GOTO_MMODE                      // a0 = 1 (GOTO_MMODE operation code)
+  LI(a0, TSBI_GOTO_MMODE)  // a0 = 1 (GOTO_MMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=M, mrets
   .option pop
 .endm
@@ -484,7 +484,7 @@
 .macro RVTEST_TSBI_GOTO_SMODE
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_GOTO_SMODE                      // a0 = 2 (GOTO_SMODE operation code)
+  LI(a0, TSBI_GOTO_SMODE)  // a0 = 2 (GOTO_SMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=S, mrets
   .option pop
 .endm
@@ -494,7 +494,7 @@
 .macro RVTEST_TSBI_GOTO_UMODE
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_GOTO_UMODE                      // a0 = 3 (GOTO_UMODE operation code)
+  LI(a0, TSBI_GOTO_UMODE)  // a0 = 3 (GOTO_UMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=U, mrets
   .option pop
 .endm
@@ -505,7 +505,7 @@
 .macro RVTEST_TSBI_ECALL_TEST
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_ECALL_TEST                      // a0 = 0x73 (ECALL_TEST operation code)
+  LI(a0, TSBI_ECALL_TEST)  // a0 = 0x73 (ECALL_TEST operation code)
   ecall                                          // trap to handler; handler reads xEPC into a0
   // a0 now contains the address of the ecall instruction above
   .option pop
@@ -530,7 +530,7 @@
 // Example: Set mstatus.TVM via csrrs x0, mstatus, a1 (a1 has bit 20 set)
 //   Encoding: imm=0x300, rs1=01011(a1), funct3=010, rd=00000(x0), opcode=1110011
 //   Binary:   0011_0000_0000_01011_010_00000_1110011 = 0x3005A073
-//   Usage:    li t0, (1 << 20)
+//   Usage:    LI(t0, (1 << 20))
 //             RVTEST_TSBI_CSR_ACCESS 0x3005A073, t0
 .macro RVTEST_TSBI_CSR_ACCESS encoding, arg=zero
   .option push
@@ -548,7 +548,7 @@
 .macro RVTEST_TSBI_GOTO_VSMODE
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_GOTO_VSMODE                     // a0 = 4 (GOTO_VSMODE operation code)
+  LI(a0, TSBI_GOTO_VSMODE)  // a0 = 4 (GOTO_VSMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=S, MPV=1, mrets
   .option pop
 .endm
@@ -558,7 +558,7 @@
 .macro RVTEST_TSBI_GOTO_VUMODE
   .option push
   .option norvc                                  // ensure consistent code size
-  li   a0, TSBI_GOTO_VUMODE                     // a0 = 5 (GOTO_VUMODE operation code)
+  LI(a0, TSBI_GOTO_VUMODE)  // a0 = 5 (GOTO_VUMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=U, MPV=1, mrets
   .option pop
 .endm
@@ -612,18 +612,18 @@
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc                                  // disable compressed instructions for consistent code size
-  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE to handler
+  LI(a0, 0)  // set a0=0 to signal GOTO_MMODE to handler
   GOTO_M_OP                                      // ecall: traps to M-mode handler
-  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
+  LI(a0, -1)  // handler returns HERE (in M-mode): kill the a0==0 signal
   .option pop
 .endm
 
 .macro  RVTEST_GOTO_DELEGATED_MMODE
   .option push
   .option norvc                                  // disable compressed instructions
-  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE
+  LI(a0, 0)  // set a0=0 to signal GOTO_MMODE
   ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
-  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
+  LI(a0, -1)  // handler returns HERE (in M-mode): kill the a0==0 signal
   .option pop
 .endm
 
@@ -631,9 +631,9 @@
   .option push
   .option norvc                                  // disable compressed instructions
   #ifdef  S_SUPPORTED
-    li   a0, 0                                  // set a0=0 to signal GOTO_SMODE
+    LI(a0, 0)  // set a0=0 to signal GOTO_SMODE
     GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
-    li   a0, -1                                 // handler returns HERE (in S-mode): kill the a0==0 signal
+    LI(a0, -1)  // handler returns HERE (in S-mode): kill the a0==0 signal
   #endif
   .option pop
 .endm
@@ -904,7 +904,7 @@ init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its
 
 //---------- Save and clear exception delegation ----------
 init_\__MODE__\()edeleg:
-        li      T2, 0                             // T2 = 0 (value to write to xedeleg)
+        LI(T2, 0)  // T2 = 0 (value to write to xedeleg)
   .ifc \__MODE__ , M
     #ifdef S_SUPPORTED
         csrrw   T2, CSR_XEDELEG, T2              // M-mode: save medeleg, write 0 (no delegation during init)
@@ -1229,7 +1229,7 @@ tsbi_\__MODE__\()dispatch:
 
         // --- Check for GOTO_xMODE (a0 == 1..5) ---
         addi    T4, a0, -1                        // T4 = caller_a0 - 1 (maps [1..5] to [0..4])
-        li      T2, 5                              // T2 = 5 (upper bound)
+        LI(T2, 5)  // T2 = 5 (upper bound)
         bltu    T4, T2, tsbi_\__MODE__\()goto_mode // if (a0-1) < 5 -> a0 in [1..5] -> GOTO_xMODE dispatch
 
         // --- Check for ECALL_TEST (a0 == 0x00000073) ---
@@ -1276,19 +1276,19 @@ tsbi_\__MODE__\()goto_mode:
         csrw    CSR_XEPC, T4                         // mepc = mepc + 4
 
         // Dispatch based on caller's a0 (still live in a0 from the ecall)
-        li      T2, TSBI_GOTO_MMODE                  // T2 = 1
+        LI(T2, TSBI_GOTO_MMODE)  // T2 = 1
         beq     a0, T2, tsbi_\__MODE__\()goto_m     // a0==1 -> GOTO_MMODE
-        li      T2, TSBI_GOTO_SMODE                  // T2 = 2
+        LI(T2, TSBI_GOTO_SMODE)  // T2 = 2
         beq     a0, T2, tsbi_\__MODE__\()goto_s     // a0==2 -> GOTO_SMODE
-        li      T2, TSBI_GOTO_UMODE                  // T2 = 3
+        LI(T2, TSBI_GOTO_UMODE)  // T2 = 3
         beq     a0, T2, tsbi_\__MODE__\()goto_u     // a0==3 -> GOTO_UMODE
   #ifdef H_SUPPORTED
-        li      T2, TSBI_GOTO_VSMODE                 // T2 = 4
+        LI(T2, TSBI_GOTO_VSMODE)  // T2 = 4
         beq     a0, T2, tsbi_\__MODE__\()goto_vs    // a0==4 -> GOTO_VSMODE
-        li      T2, TSBI_GOTO_VUMODE                 // T2 = 5
+        LI(T2, TSBI_GOTO_VUMODE)  // T2 = 5
         beq     a0, T2, tsbi_\__MODE__\()goto_vu    // a0==5 -> GOTO_VUMODE
   #endif
-        li      a0, TSBI_RESERVED_RET                // shouldn't reach here (range checked above), but return -1
+        LI(a0, TSBI_RESERVED_RET)  // shouldn't reach here (range checked above), but return -1
         j       resto_\__MODE__\()rtn               // restore and mret
 
         //--- GOTO M-mode: set MPP=11 (M), clear MPV ---
@@ -1429,7 +1429,7 @@ tsbi_\__MODE__\()dispatch:
 
         // Check for GOTO_xMODE (a0 == 1..5)
         addi    T4, a0, -1                         // T4 = a0 - 1
-        li      T2, 5                               // T2 = 5
+        LI(T2, 5)  // T2 = 5
         bltu    T4, T2, tsbi_\__MODE__\()goto_mode // a0 in [1..5] -> GOTO dispatch
 
         // Check for ECALL_TEST (a0 == 0x73)
@@ -1446,7 +1446,7 @@ tsbi_\__MODE__\()dispatch:
         j       tsbi_\__MODE__\()csr_access         // valid CSR encoding -> CSR_ACCESS
 
 tsbi_\__MODE__\()reserved:                        // Unrecognized SBI operation
-        li      a0, TSBI_RESERVED_RET              // a0 = -1 (error)
+        LI(a0, TSBI_RESERVED_RET)  // a0 = -1 (error)
         csrr    T3, CSR_XEPC                        // T3 = sepc
         addi    T3, T3, 4                            // skip ecall
         csrw    CSR_XEPC, T3                         // sepc += 4
@@ -1466,23 +1466,23 @@ tsbi_\__MODE__\()goto_mode:
         csrw    CSR_XEPC, T4                         // sepc += 4
 
         // a0 still holds the caller's operation code
-        li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
+        LI(T2, TSBI_GOTO_MMODE)  // can't handle GOTO_MMODE from S-mode
         beq     a0, T2, tsbi_\__MODE__\()forward_to_m // -> forward to M-mode
 
-        li      T2, TSBI_GOTO_SMODE                  // GOTO_SMODE: return to S-mode
+        LI(T2, TSBI_GOTO_SMODE)  // GOTO_SMODE: return to S-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_s
 
-        li      T2, TSBI_GOTO_UMODE                  // GOTO_UMODE: return to U-mode
+        LI(T2, TSBI_GOTO_UMODE)  // GOTO_UMODE: return to U-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_u
 
   #ifdef H_SUPPORTED
-        li      T2, TSBI_GOTO_VSMODE                 // GOTO_VSMODE: needs M-mode
+        LI(T2, TSBI_GOTO_VSMODE)  // GOTO_VSMODE: needs M-mode
         beq     a0, T2, tsbi_\__MODE__\()forward_to_m
-        li      T2, TSBI_GOTO_VUMODE                 // GOTO_VUMODE: needs M-mode
+        LI(T2, TSBI_GOTO_VUMODE)  // GOTO_VUMODE: needs M-mode
         beq     a0, T2, tsbi_\__MODE__\()forward_to_m
   #endif
 
-        li      a0, TSBI_RESERVED_RET                // shouldn't reach here, return -1
+        LI(a0, TSBI_RESERVED_RET)  // shouldn't reach here, return -1
         j       resto_\__MODE__\()rtn
 
 tsbi_\__MODE__\()goto_s:                          // Return to S-mode via sret
@@ -1520,7 +1520,7 @@ tsbi_\__MODE__\()csr_access:
         // Check if CSR address indicates M-mode CSR: addr bits [11:10] in encoding bits [31:30]
         srli    T2, a0, 28                          // T2 = encoding[31:28] (top 4 bits)
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
-        li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
+        LI(T4, 3)  // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
         beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
         // TODO: Replace this with dispatch table, remove code below
 
@@ -1608,7 +1608,7 @@ tsbi_instr_not_found:
         LA(a0, tsbi_instr_not_found_str)
         call    rvmodel_io_write_str
         mv      a0, T4                             // restore TSBI call code to a0
-        li      a1, 32                             // print encoding as 32-bit hex
+        LI(a1, 32)  // print encoding as 32-bit hex
         jal     failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call    rvmodel_io_write_str
@@ -1695,14 +1695,14 @@ tsbi_instr_table:
 //==============================================================================
 
 \__MODE__\()trapsig_ptr_upd:                     // pre-update trap signature pointer
-        li      T2, 4*REGWIDTH                    // T2 = default entry size (4 words for exceptions)
+        LI(T2, 4*REGWIDTH)  // T2 = default entry size (4 words for exceptions)
         bgez    T5, \__MODE__\()xcpt_sig_sv       // if xcause MSB=0 -> exception, keep 4-word size
 
 \__MODE__\()int_sig_sv:                          // interrupt path: determine 3 or 4 word entry
         slli    T3, T5, 1                          // T3 = xcause << 1 (remove MSB)
         addi    T3, T3, -(IRQ_M_TIMER)<<1          // compare against timer interrupt threshold
         bgez    T3, \__MODE__\()trap_sig_sv        // if cause >= timer -> external int (4 words, keep T2)
-        li      T2, 3*REGWIDTH                    // cause < timer -> SW or timer int (3 words)
+        LI(T2, 3*REGWIDTH)  // cause < timer -> SW or timer int (3 words)
         j       \__MODE__\()trap_sig_sv            // go to pointer update
 
 \__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
@@ -1711,11 +1711,11 @@ tsbi_instr_table:
         csrr    T1, CSR_MISA
         slli    T1, T1, UDB_MXLEN-8             // shift H bit into msb
         bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
-        li      T2, 6*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 6*regsz
+        LI(T2, 6*REGWIDTH)  // Hmode implemented &  Mmode trap, override preinc to be 6*regsz
 #endif
 .else
   .ifc \__MODE__ , H
-        li      T2, 6*REGWIDTH                    // HS-mode: always 6-word exception entries
+        LI(T2, 6*REGWIDTH)  // HS-mode: always 6-word exception entries
   .endif
 .endif
 
@@ -1766,7 +1766,7 @@ sv_\__MODE__\()vect:
         addi    T6, T6, \__MODE__\()MODE_SIG       // merge mode into bits 1:0
 
         bgez    T5, 1f                              // if exception (MSB=0) -> skip IE/IP extraction
-        li      T3, 0xf                             // T3 = mask for cause[3:0]
+        LI(T3, 0xf)  // T3 = mask for cause[3:0]
         and     T3, T5, T3                          // T3 = cause number (low 4 bits)
         csrr    T4, CSR_XIE                         // T4 = xIE register
         srl     T4, T4, T3                          // shift xIE so cause bit is at position 0
@@ -1799,7 +1799,7 @@ sv_\__MODE__\()vect:
         #ifndef SM1P11P0_SUPPORTED
           csrr    T4, CSR_MSTATUSH
         #else
-          li      T4, 0                   // no H: GVA/MPV/xPV always 0
+          LI(T4, 0)  // no H: GVA/MPV/xPV always 0
         #endif
   #endif
 .else
@@ -1829,7 +1829,7 @@ common_\__MODE__\()excpt_handler:
         // Save original xEPC before adj_Mepc advances it past the faulting instruction.
         // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
         // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
-        la      T2, saved_mepc
+        LA(T2, saved_mepc)
         SREG    T3, 0(T2)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
@@ -1875,7 +1875,7 @@ common_\__MODE__\()excpt_handler:
           #ifndef SM1P11P0_SUPPORTED
                 csrr    T6, CSR_MSTATUSH
           #else
-            li      T6, 0                   // no H: MPV always 0
+            LI(T6, 0)  // no H: MPV always 0
           #endif
         #endif
         slli    T2, T6, WDSZ-MPV_LSB-1               // MPV to MSB
@@ -1991,7 +1991,7 @@ adj_\__MODE__\()epc_rtn:
         // load read execute-only (R=0,X=1) pages. Relies on mstatus.MPP
         // still holding the trapped privilege (don't write MPP before here).
         csrr    T6, CSR_MSTATUS                      // save full mstatus
-        li      T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB)
+        LI(T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB))
         csrs    CSR_MSTATUS, T2
         lhu     T2, 0(T3)                            // fetch via trapped context
         csrw    CSR_MSTATUS, T6                      // restore mstatus verbatim
@@ -2000,7 +2000,7 @@ adj_\__MODE__\()epc_rtn:
         // active satp, so no MPRV. Still need SUM (read U pages) and MXR
         // (read execute-only pages).
         csrr    T6, CSR_SSTATUS                      // save full sstatus
-        li      T2, (1 << SUM_LSB) | (1 << MXR_LSB)
+        LI(T2, (1 << SUM_LSB) | (1 << MXR_LSB))
         csrs    CSR_SSTATUS, T2
         lhu     T2, 0(T3)
         csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
@@ -2049,7 +2049,7 @@ chk_\__MODE__\()trapsig_overrun:
         add     T1, T1, T2                          // T1 = sig end address
         bgtu    T4, T1, abort_test                  // if trap sig ptr > sig end -> overrun -> abort
 
-        li      T2, int_hndlr_tblsz                // T2 = offset to exception dispatch table
+        LI(T2, int_hndlr_tblsz)  // T2 = offset to exception dispatch table
         j       spcl_\__MODE__\()handler           // jump to special handler dispatcher
 
 //==============================================================================
@@ -2080,7 +2080,7 @@ chk_\__MODE__\()trapsig_overrun:
 //==============================================================================
 
 common_\__MODE__\()int_handler:
-        li      T3, 1                               // T3 = 1 (for creating single-bit mask)
+        LI(T3, 1)  // T3 = 1 (for creating single-bit mask)
         andi    T2, T5, INT_CAUSE_MSK                // T2 = cause[4:0] (interrupt cause index)
         sll     T3, T3, T2                           // T3 = 1 << cause (bit mask for this interrupt)
         csrrc   T4, CSR_XIE, T3                      // read xIE, then clear this interrupt's enable bit
@@ -2206,9 +2206,9 @@ excpt_\__MODE__\()hndlr_tbl:
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Mtmr_int:                            // M-mode timer interrupt: write max to mtimecmp
-        li T5, -1
+        LI(T5, -1)
         #ifdef RVMODEL_MTIMECMP_ADDRESS
-                la T2, RVMODEL_MTIMECMP_ADDRESS
+                LA(T2, RVMODEL_MTIMECMP_ADDRESS)
                 SREG T5, 0(T2)
         #endif
         #if(UDB_MXLEN == 32)
@@ -2224,16 +2224,16 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
         .ifc \__MODE__ , M
-            li T2, 2                                  // SSIP bit
+            LI(T2, 2)  // SSIP bit
             csrc mip, T2                              // M-mode: clear via mip (sip.SSIP is read-only from M)
             RVMODEL_CLR_SSW_INT(T2, T5)
         .else
                 .ifc \__MODE__ , S
-                        li T2, 2
+                        LI(T2, 2)
                         csrc sip, T2                  // S-mode: clear via sip (writable when delegated)
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .else
-                        li T2, 2
+                        LI(T2, 2)
                         csrc sip, T2
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
@@ -2254,7 +2254,7 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
         .ifc \__MODE__ , M
-            li T3, 0x200
+            LI(T3, 0x200)
             csrc mip, T3                             // Clear mip.SEIP
             csrr T3, mip
         .else
@@ -2266,16 +2266,16 @@ excpt_\__MODE__\()hndlr_tbl:
                         // so its use here is invisible to the test.
                         mv   T5, a0               // save a0 (T5 survives the nested trap: the
                                                   // M-handler restores it from its save slot)
-                        li   a0, 0                // a0==0 signals legacy GOTO_MMODE
+                        LI(a0, 0)  // a0==0 signals legacy GOTO_MMODE
                         ecall                     // trap to M-mode; returns here in M-mode
                         mv   a0, T5               // restore a0
-                        li T3, 0x200
+                        LI(T3, 0x200)
                         csrc mip, T3
                         csrr T3, mip
                         RVTEST_GOTO_LOWER_MODE Smode
                 .endif
         .endif
-        li T1, 0x800
+        LI(T1, 0x800)
         and T3, T3, T1
         beq T1, T3, 1f
         RVMODEL_CLR_SEXT_INT(T2, T5)
@@ -2308,7 +2308,7 @@ excpt_\__MODE__\()hndlr_tbl:
         andi    T4, T4,  MMODE_SIG                    // T4 = MPP value
         addi    T3, T4, -MMODE_SIG                    // T3 = 0 if caller was in M-mode
         csrr    T2, CSR_MEPC                           // T2 = mepc (ecall address)
-        li      T4, 0                                 // T4 = 0 (relocation offset for M-mode)
+        LI(T4, 0)  // T4 = 0 (relocation offset for M-mode)
         beqz    T3, rtn_fm_mmode                      // if already M-mode -> skip relocation
 
         addi    sp, sp, sv_area_sz                    // adjust sp to access other save areas
@@ -2317,7 +2317,7 @@ excpt_\__MODE__\()hndlr_tbl:
         #ifndef SM1P11P0_SUPPORTED
           csrr    T2, CSR_MSTATUSH        /* find Vbit  if RV32                   */
         #else
-          li      T2, 0                   // no H: V always 0
+          LI(T2, 0)  // no H: V always 0
         #endif
   #else
         csrr    T2, CSR_MSTATUS                        // RV64: MPV in upper mstatus

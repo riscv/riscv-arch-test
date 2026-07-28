@@ -7,7 +7,7 @@
 .macro RVTEST_FAILURE_CODE
     # Log failure. DEFAULT_LINK_REG (x5) contains return address of jal from the failure and DEFAULT_TEMP_REG (x4) is a vacant temporary register
     failedtest_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG) # store return address
         SREG x1, 8(DEFAULT_TEMP_REG)                # save x1 early (used for failure_type)
         sw zero, 0(DEFAULT_TEMP_REG)                # failure_type = 0 (integer)
@@ -15,7 +15,7 @@
 
     # Log failure. x8 contains return address of jal from the failure and x7 is a vacant temporary register
     failedtest_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)               # store return address
         SREG DEFAULT_TEMP_REG, 32(x7) # save DEFAULT_TEMP_REG
         SREG DEFAULT_LINK_REG, 40(x7) # save DEFAULT_LINK_REG
@@ -28,7 +28,7 @@
 
     # Log failure. x14 contains return address of jal from the failure and x13 is a vacant temporary register
     failedtest_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)              # store return address
         SREG DEFAULT_TEMP_REG, 32(x13)  # save DEFAULT_TEMP_REG
         SREG DEFAULT_LINK_REG, 40(x13)  # save DEFAULT_LINK_REG
@@ -42,56 +42,56 @@
     # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
     # This is the trap handler failure entry point
     failedtest_trap_x7_x9:
-        la x9, begin_failure_scratch
+        LA(x9, begin_failure_scratch)
         SREG x7, 104(x9)               # store return address
         SREG DEFAULT_TEMP_REG, 32(x9)  # save DEFAULT_TEMP_REG
         SREG DEFAULT_LINK_REG, 40(x9)  # save DEFAULT_LINK_REG
         SREG x1, 8(x9)                 # save x1 early
-        li x1, 3
+        LI(x1, 3)
         sw x1, 0(x9)                   # failure_type = 3 (trap handler)
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         csrr x1, mcause
-        la x9, saved_mcause
+        LA(x9, saved_mcause)
         SREG x1, 0(x9)
         csrr x1, mtval
-        la x9, saved_mtval
+        LA(x9, saved_mtval)
         SREG x1, 0(x9)
         csrr x1, mstatus
-        la x9, saved_mstatus
+        LA(x9, saved_mstatus)
         SREG x1, 0(x9)
         j failedtest_saveregs
 
 #ifdef F_SUPPORTED
     # FP failure entry points (failure_type = 1)
     failedtest_fp_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 1
+        LI(x1, 1)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 1 (fp)
         j failedtest_saveregs
 
     failedtest_fp_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 1
+        LI(x1, 1)
         sw x1, 0(x7)                                # failure_type = 1 (fp)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
         j failedtest_saveregs
 
     failedtest_fp_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 1
+        LI(x1, 1)
         sw x1, 0(x13)                               # failure_type = 1 (fp)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
@@ -99,32 +99,32 @@
 
     # fflags failure entry points (failure_type = 2)
     failedtest_fflags_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 2
+        LI(x1, 2)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 2 (fflags)
         j failedtest_saveregs
 
     failedtest_fflags_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 2
+        LI(x1, 2)
         sw x1, 0(x7)                                # failure_type = 2 (fflags)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
         j failedtest_saveregs
 
     failedtest_fflags_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 2
+        LI(x1, 2)
         sw x1, 0(x13)                               # failure_type = 2 (fflags)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
@@ -135,146 +135,146 @@
 
     # -------- ACTIVE --------
     failedtest_vec_active_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        li x1, 0                                    # vector mismatch region = 0 (active)
+        LI(x1, 0)  # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     failedtest_vec_active_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        li x1, 0                                    # vector mismatch region = 0 (active)
+        LI(x1, 0)  # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     failedtest_vec_active_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x13)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
-        li x1, 0                                    # vector mismatch region = 0 (active)
+        LI(x1, 0)  # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     # -------- TAIL --------
     failedtest_vec_tail_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        li x1, 1                                    # vector mismatch region = 1 (tail)
+        LI(x1, 1)  # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     failedtest_vec_tail_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        li x1, 1                                    # vector mismatch region = 1 (tail)
+        LI(x1, 1)  # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     failedtest_vec_tail_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x13)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
-        li x1, 1                                    # vector mismatch region = 1 (tail)
+        LI(x1, 1)  # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     # -------- MASK --------
     failedtest_vec_mask_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        li x1, 2                                    # vector mismatch region = 2 (mask)
+        LI(x1, 2)  # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     failedtest_vec_mask_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        li x1, 2                                    # vector mismatch region = 2 (mask)
+        LI(x1, 2)  # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     failedtest_vec_mask_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x13)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
-        li x1, 2                                    # vector mismatch region = 2 (mask)
+        LI(x1, 2)  # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     # -------- BASE --------
     failedtest_vec_base_x5_x4:
-        la DEFAULT_TEMP_REG, begin_failure_scratch
+        LA(DEFAULT_TEMP_REG, begin_failure_scratch)
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
         SREG x1, 8(DEFAULT_TEMP_REG)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        li x1, 3                                    # vector mismatch region = 3 (base)
+        LI(x1, 3)  # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
     failedtest_vec_base_x8_x7:
-        la x7, begin_failure_scratch
+        LA(x7, begin_failure_scratch)
         SREG x8, 64(x7)
         SREG DEFAULT_TEMP_REG, 32(x7)
         SREG DEFAULT_LINK_REG, 40(x7)
         SREG x1, 8(x7)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        li x1, 3                                    # vector mismatch region = 3 (base)
+        LI(x1, 3)  # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
     failedtest_vec_base_x14_x13:
-        la x13, begin_failure_scratch
+        LA(x13, begin_failure_scratch)
         SREG x14, 112(x13)
         SREG DEFAULT_TEMP_REG, 32(x13)
         SREG DEFAULT_LINK_REG, 40(x13)
         SREG x1, 8(x13)
-        li x1, 4
+        LI(x1, 4)
         sw x1, 0(x13)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x13
         mv DEFAULT_LINK_REG, x14
-        li x1, 3                                    # vector mismatch region = 3 (base)
+        LI(x1, 3)  # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
 #endif // RVTEST_VECTOR
@@ -318,7 +318,7 @@
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         LI (x6, 0x600)
         csrs mstatus, x6
-        la x6, vecreg_scratch              # vecreg_scratch base address
+        LA(x6, vecreg_scratch)  # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
         vs1r.v v1, (x6)
@@ -388,16 +388,16 @@
         # Dispatch based on failure type
         lw x9, failure_type
 #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
-        li x10, 1
+        LI(x10, 1)
         beq x9, x10, failedtest_saveresults_fp
-        li x10, 2
+        LI(x10, 2)
         beq x9, x10, failedtest_saveresults_fflags
 #endif // F_SUPPORTED
 #ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
-        li x10, 4
+        LI(x10, 4)
         beq x9, x10, failedtest_saveresults_vector
 #endif // RVTEST_VECTOR
-        li x10, 3
+        LI(x10, 3)
         beq x9, x10, failedtest_saveresults_trap
 
     failedtest_saveresults_int:
@@ -476,12 +476,12 @@
         # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
         # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
         # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
-        la x6, scratch
+        LA(x6, scratch)
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, REGWIDTH(x6)
-        la x8, failing_value_upper
+        LA(x8, failing_value_upper)
         SREG x7, 0(x8)                    # failing_value upper half
     #endif
 
@@ -501,7 +501,7 @@
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, SIG_STRIDE(x6)
-        la x8, expected_value_upper
+        LA(x8, expected_value_upper)
         SREG x7, 0(x8)                    # expected_value upper half
     #endif
         j failedtest_saveresults_common
@@ -527,19 +527,19 @@
         lhu x8, 2(x6)       # 32-bit: fetch upper half
         slli x8, x8, 16
         or x7, x7, x8
-        la x8, failing_instruction
+        LA(x8, failing_instruction)
         sw x7, 0(x8)                      # record failing instruction (16 or 32 bits)
 
         # Extract vd (rd field)
         srli x7, x7, 7
         andi x7, x7, 31
-        la x8, failing_reg
+        LA(x8, failing_reg)
         sw x7, 0(x8)                      # failing_reg (vd)
 
         # --------------------------------------------------
         # Load mismatch index & region
         # --------------------------------------------------
-        li a1, 3
+        LI(a1, 3)
         beq x1, a1, base_mismatchindex   # if mismatch region is vector base, skip loading mismatch index since it is not valid
 
         lhu x18, -14(DEFAULT_LINK_REG)   # mv, instruction which copies mismatch index to _TEMP_REG2
@@ -555,17 +555,17 @@
         add  x19, DEFAULT_TEMP_REG, x19
         LREG x8, 0(x19)                    # where _TEMP_REG2 (mismatch vd index) is stored in scratch
 
-        la x19, failing_index
+        LA(x19, failing_index)
         sw x8, 0(x19)                      # store mismatch index
-        la x19, failing_region
+        LA(x19, failing_region)
         sw x1, 0(x19)                      # store region
         j vlvtype_store
 
         base_mismatchindex:
-        li x8, 0
-        la x19, failing_index
+        LI(x8, 0)
+        LA(x19, failing_index)
         sw x8, 0(x19)                      # store mismatch index = 0
-        la x19, failing_region
+        LA(x19, failing_region)
         sw x1, 0(x19)                      # store region
 
         # --------------------------------------------------
@@ -575,9 +575,9 @@
         csrr x10, vl
         csrr x11, vtype
 
-        la x12, failing_vl
+        LA(x12, failing_vl)
         SREG x10, 0(x12)                   # save vl
-        la x12, failing_vtype
+        LA(x12, failing_vtype)
         SREG x11, 0(x12)                   # save vtype
 
         // vtype[5:3] = vsew encoding: 0->e8, 1->e16, 2->e32, 3->e64
@@ -586,7 +586,7 @@
         slli x6, x6, 16
         or   x6, x6, x7
 
-        li a1, 3
+        LI(a1, 3)
         beq x1, a1, base_vdeew             # if mismatch region is base, extract VD_EEW from vle##_VD_EEW.v, encoded in width ([12:10])
         srli x16, x6, 23
         andi x16, x16, 7                   # vsew field
@@ -597,10 +597,10 @@
         andi x16, x16, 3                   # vector element is encoded as 1XX in width, where XX is EEW of elements
 
         vsew_mask:
-        li   x17, 1
+        LI(x17, 1)
         sll  x17, x17, x16                 # eew_bytes = 1 << vsew
         slli x18 ,x17, 3                   # element size in bits = eew_bytes * 8
-        la x19, failing_sew_bits
+        LA(x19, failing_sew_bits)
         sw x18, 0(x19)                     # save sew_bits for later use in expected/actual value extraction
 
         # --------------------------------------------------
@@ -626,10 +626,10 @@
         add  x6, x6, x8
 
         # store SEW-length expected value bytewise
-        li x14, 0
-        li x15, 0
-        li x18, 0                         # bit shift counter
-        la x19, expected_value
+        LI(x14, 0)
+        LI(x15, 0)
+        LI(x18, 0)  # bit shift counter
+        LA(x19, expected_value)
 
         badvalue_byte_loop:
             bge x15, x17, badvalue_byte_done
@@ -652,11 +652,11 @@
         # --------------------------------------------------
         # Extract actual value from saved vd
         # --------------------------------------------------
-        la x7, failing_reg
+        LA(x7, failing_reg)
         lw x6, 0(x7)                      # vd index
-        li   x7, VLEN_BYTES
+        LI(x7, VLEN_BYTES)
         mul  x6, x6, x7                   # offset of vd in bytes = vd_index * vlen_bytes
-        la x7, vecreg_scratch
+        LA(x7, vecreg_scratch)
         add  x6, x7, x6
 
         # offset by mismatch index
@@ -664,10 +664,10 @@
         add  x6, x6, x8
 
         # store SEW-length expected value bytewise
-        li x14, 0
-        li x15, 0
-        li x18, 0                         # bit shift counter
-        la x19, failing_value             # actual value address
+        LI(x14, 0)
+        LI(x15, 0)
+        LI(x18, 0)  # bit shift counter
+        LA(x19, failing_value)  # actual value address
 
         actual_byte_loop:
             bge x15, x17, actual_byte_done
@@ -690,7 +690,7 @@
         # --------------------------------------------------
         # Store failing mask
         # --------------------------------------------------
-        li a1, 3
+        LI(a1, 3)
         beq x1, a1, copy_done    # if mismatch region is vector base, skip copying failing mask since it is not valid
 
         lhu x18, -30(DEFAULT_LINK_REG)    # vmv.v.v, instruction which moves failing mask to _MTMP2/_VTMP
@@ -703,13 +703,13 @@
         andi x19, x19, 31
 
         # --- compute src = vecreg_scratch + vd * vlenb ---
-        la x6, vecreg_scratch
-        li   x7, VLEN_BYTES
+        LA(x6, vecreg_scratch)
+        LI(x7, VLEN_BYTES)
         mul  x19, x19, x7                   # offset of vd in bytes = vd_index * vlen_bytes
         add x6, x6, x19                   # offset to where mismatch register is saved in scratch
 
         # --- dst = failing_mask_vec ---
-        la x7, failing_mask_vec
+        LA(x7, failing_mask_vec)
 
         # --- copy loop (word-wise for RV32) ---
         csrr x8, vlenb          # x8 = bytes per vector register
@@ -767,7 +767,7 @@
     #else
         lw x6, REGWIDTH(DEFAULT_LINK_REG)
     #endif
-        la x16, trap_diag_fail_str_ptr
+        LA(x16, trap_diag_fail_str_ptr)
         SREG x6, 0(x16)                            # save for later printing
 
         //--------------------------------------------------------------
@@ -789,11 +789,11 @@
         // This tells us which word of the trap signature mismatched and
         // which privilege mode the trap was being handled in.
         //--------------------------------------------------------------
-        la x16, trap_diag_fail_str_ptr
+        LA(x16, trap_diag_fail_str_ptr)
         LREG x6, 0(x16)                             # reload fail string ptr
 
         // ---- Check for trap_sig_offset_mismatch (from RVTEST_CODE_END) ----
-        la x7, trap_sig_offset_mismatch
+        LA(x7, trap_sig_offset_mismatch)
         beq x6, x7, trap_diag_offset_mismatch
 
         // ---- Determine mode from string pointer ----
@@ -802,174 +802,174 @@
         // We determine mode and field by checking each known string address
 
         // Default: unknown subtype, just record the string and skip to common print
-        li x8, 0                                     # subtype = 0 (unknown)
-        la x16, trap_diag_subtype
+        LI(x8, 0)  # subtype = 0 (unknown)
+        LA(x16, trap_diag_subtype)
         sw x8, 0(x16)
 
         //--- M-mode trap signature field checks ---
-        la x7, sv_Mvect_str
+        LA(x7, sv_Mvect_str)
         bne x6, x7, 1f
-        li x8, 1                                     # subtype: vect+mode word
-        li x9, 0                                     # mode: M
+        LI(x8, 1)  # subtype: vect+mode word
+        LI(x9, 0)  # mode: M
         j trap_diag_field_identified
     1:
-        la x7, sv_Mcause_str
+        LA(x7, sv_Mcause_str)
         bne x6, x7, 1f
-        li x8, 2                                     # subtype: xcause
-        li x9, 0
+        LI(x8, 2)  # subtype: xcause
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, sv_Mepc_str
+        LA(x7, sv_Mepc_str)
         bne x6, x7, 1f
-        li x8, 3                                     # subtype: xepc
-        li x9, 0
+        LI(x8, 3)  # subtype: xepc
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, sv_Mtval_str
+        LA(x7, sv_Mtval_str)
         bne x6, x7, 1f
-        li x8, 4                                     # subtype: xtval
-        li x9, 0
+        LI(x8, 4)  # subtype: xtval
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, sv_Mip_str
+        LA(x7, sv_Mip_str)
         bne x6, x7, 1f
-        li x8, 5                                     # subtype: xip (interrupt)
-        li x9, 0
+        LI(x8, 5)  # subtype: xip (interrupt)
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, sv_Mtval2_str
+        LA(x7, sv_Mtval2_str)
         bne x6, x7, 1f
-        li x8, 6                                     # subtype: mtval2
-        li x9, 0
+        LI(x8, 6)  # subtype: mtval2
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, sv_Mtinst_str
+        LA(x7, sv_Mtinst_str)
         bne x6, x7, 1f
-        li x8, 7                                     # subtype: mtinst
-        li x9, 0
+        LI(x8, 7)  # subtype: mtinst
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
 
         //--- S-mode trap signature field checks ---
-        la x7, sv_Svect_str
+        LA(x7, sv_Svect_str)
         bne x6, x7, 1f
-        li x8, 1
-        li x9, 1                                     # mode: S
+        LI(x8, 1)
+        LI(x9, 1)  # mode: S
         j trap_diag_field_identified
     1:
-        la x7, sv_Scause_str
+        LA(x7, sv_Scause_str)
         bne x6, x7, 1f
-        li x8, 2
-        li x9, 1
+        LI(x8, 2)
+        LI(x9, 1)
         j trap_diag_field_identified
     1:
-        la x7, sv_Sepc_str
+        LA(x7, sv_Sepc_str)
         bne x6, x7, 1f
-        li x8, 3
-        li x9, 1
+        LI(x8, 3)
+        LI(x9, 1)
         j trap_diag_field_identified
     1:
-        la x7, sv_Stval_str
+        LA(x7, sv_Stval_str)
         bne x6, x7, 1f
-        li x8, 4
-        li x9, 1
+        LI(x8, 4)
+        LI(x9, 1)
         j trap_diag_field_identified
     1:
-        la x7, sv_Sip_str
+        LA(x7, sv_Sip_str)
         bne x6, x7, 1f
-        li x8, 5
-        li x9, 1
+        LI(x8, 5)
+        LI(x9, 1)
         j trap_diag_field_identified
     1:
 
         //--- HS-mode trap signature field checks ---
-        la x7, sv_Hvect_str
+        LA(x7, sv_Hvect_str)
         bne x6, x7, 1f
-        li x8, 1
-        li x9, 2                                     # mode: HS
+        LI(x8, 1)
+        LI(x9, 2)  # mode: HS
         j trap_diag_field_identified
     1:
-        la x7, sv_Hcause_str
+        LA(x7, sv_Hcause_str)
         bne x6, x7, 1f
-        li x8, 2
-        li x9, 2
+        LI(x8, 2)
+        LI(x9, 2)
         j trap_diag_field_identified
     1:
-        la x7, sv_Hepc_str
+        LA(x7, sv_Hepc_str)
         bne x6, x7, 1f
-        li x8, 3
-        li x9, 2
+        LI(x8, 3)
+        LI(x9, 2)
         j trap_diag_field_identified
     1:
-        la x7, sv_Htval_str
+        LA(x7, sv_Htval_str)
         bne x6, x7, 1f
-        li x8, 4
-        li x9, 2
+        LI(x8, 4)
+        LI(x9, 2)
         j trap_diag_field_identified
     1:
-        la x7, sv_Hip_str
+        LA(x7, sv_Hip_str)
         bne x6, x7, 1f
-        li x8, 5
-        li x9, 2
+        LI(x8, 5)
+        LI(x9, 2)
         j trap_diag_field_identified
     1:
 
         //--- VS-mode trap signature field checks ---
-        la x7, sv_Vvect_str
+        LA(x7, sv_Vvect_str)
         bne x6, x7, 1f
-        li x8, 1
-        li x9, 3                                     # mode: VS
+        LI(x8, 1)
+        LI(x9, 3)  # mode: VS
         j trap_diag_field_identified
     1:
-        la x7, sv_Vcause_str
+        LA(x7, sv_Vcause_str)
         bne x6, x7, 1f
-        li x8, 2
-        li x9, 3
+        LI(x8, 2)
+        LI(x9, 3)
         j trap_diag_field_identified
     1:
-        la x7, sv_Vepc_str
+        LA(x7, sv_Vepc_str)
         bne x6, x7, 1f
-        li x8, 3
-        li x9, 3
+        LI(x8, 3)
+        LI(x9, 3)
         j trap_diag_field_identified
     1:
-        la x7, sv_Vtval_str
+        LA(x7, sv_Vtval_str)
         bne x6, x7, 1f
-        li x8, 4
-        li x9, 3
+        LI(x8, 4)
+        LI(x9, 3)
         j trap_diag_field_identified
     1:
-        la x7, sv_Vip_str
+        LA(x7, sv_Vip_str)
         bne x6, x7, 1f
-        li x8, 5
-        li x9, 3
+        LI(x8, 5)
+        LI(x9, 3)
         j trap_diag_field_identified
     1:
 
         //--- External interrupt ID mismatch checks ---
         // These use Xclr_Yext_int_str format
-        la x7, Mclr_Mext_int_str
+        LA(x7, Mclr_Mext_int_str)
         bne x6, x7, 1f
-        li x8, 8                                     # subtype: ext intID
-        li x9, 0
+        LI(x8, 8)  # subtype: ext intID
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, Mclr_Sext_int_str
+        LA(x7, Mclr_Sext_int_str)
         bne x6, x7, 1f
-        li x8, 8
-        li x9, 0
+        LI(x8, 8)
+        LI(x9, 0)
         j trap_diag_field_identified
     1:
-        la x7, Sclr_Sext_int_str
+        LA(x7, Sclr_Sext_int_str)
         bne x6, x7, 1f
-        li x8, 8
-        li x9, 1
+        LI(x8, 8)
+        LI(x9, 1)
         j trap_diag_field_identified
     1:
-        la x7, Hclr_Sext_int_str
+        LA(x7, Hclr_Sext_int_str)
         bne x6, x7, 1f
-        li x8, 8
-        li x9, 2
+        LI(x8, 8)
+        LI(x9, 2)
         j trap_diag_field_identified
     1:
         // Fall through: unknown string, use generic handler
@@ -981,8 +981,8 @@
         // than the reference model.
         //--------------------------------------------------------------
     trap_diag_offset_mismatch:
-        li x8, 9                                     # subtype: offset mismatch
-        la x16, trap_diag_subtype
+        LI(x8, 9)  # subtype: offset mismatch
+        LA(x16, trap_diag_subtype)
         sw x8, 0(x16)
 
         // The actual offset was stored as the failing SIGUPD value.
@@ -1001,7 +1001,7 @@
         slli x6, x8, 3
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)                              # actual offset value
-        la x16, trap_diag_actual_offset
+        LA(x16, trap_diag_actual_offset)
         SREG x6, 0(x16)
 
         // Extract expected value (from ld before beq)
@@ -1017,7 +1017,7 @@
         LREG x6, 0(x6)                              # base register value
         add x6, x6, x7                              # base + offset
         LREG x6, 0(x6)                              # expected offset value
-        la x16, trap_diag_expected_offset
+        LA(x16, trap_diag_expected_offset)
         SREG x6, 0(x16)
 
         j failedtest_saveresults_common
@@ -1026,9 +1026,9 @@
         // FIELD IDENTIFIED: subtype in x8, mode in x9
         //--------------------------------------------------------------
     trap_diag_field_identified:
-        la x16, trap_diag_subtype
+        LA(x16, trap_diag_subtype)
         sw x8, 0(x16)
-        la x16, trap_diag_mode
+        LA(x16, trap_diag_mode)
         sw x9, 0(x16)
 
         // For field mismatches, extract actual and expected the same way
@@ -1045,7 +1045,7 @@
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)
         SREG x6, 272(DEFAULT_TEMP_REG)              # failing_value = actual
-        la x16, trap_diag_actual_value
+        LA(x16, trap_diag_actual_value)
         SREG x6, 0(x16)
 
         // Expected value (from ld before beq)
@@ -1062,14 +1062,14 @@
         add x6, x6, x7
         LREG x6, 0(x6)
         SREG x6, 280(DEFAULT_TEMP_REG)              # expected_value
-        la x16, trap_diag_expected_value
+        LA(x16, trap_diag_expected_value)
         SREG x6, 0(x16)
 
         j failedtest_saveresults_common
 
     trap_diag_generic_report:
         // Unknown trap failure string -- fall through to common with subtype 0
-        la x16, trap_diag_subtype
+        LA(x16, trap_diag_subtype)
         sw zero, 0(x16)
         j failedtest_saveresults_common
 
@@ -1094,7 +1094,7 @@
         # Check bottom 2 bits: if inst[1:0] != 0b11, it's a 16-bit compressed instruction
         lhu x7, 0(x6)       # get lower half of the failing instruction
         andi x8, x7, 3
-        li x9, 3
+        LI(x9, 3)
         bne x8, x9, 1f      # compressed: only lower half needed
         lhu x8, 2(x6)       # 32-bit: fetch upper half
         slli x8, x8, 16
@@ -1132,18 +1132,18 @@
 
         # Dispatch to trap-specific reporting if failure_type == 3
         lw a0, failure_type
-        li a1, 3
+        LI(a1, 3)
         beq a0, a1, failedtest_report_trap_detailed
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(a0, inststr)
         call rvmodel_io_write_str
         lw a0, failing_instruction
-        li a1, 32            # assume 32-bit instruction
+        LI(a1, 32)  # assume 32-bit instruction
         andi a2, a0, 3
-        li a3, 3
+        LI(a3, 3)
         beq a2, a3, 2f
-        li a1, 16            # compressed: print as 16-bit
+        LI(a1, 16)  # compressed: print as 16-bit
     2:
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1153,7 +1153,7 @@
         LA(a0, addrstr)
         call rvmodel_io_write_str
         LREG a0, failing_addr
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1163,11 +1163,11 @@
         call rvmodel_io_write_str
         lw a0, failure_type
         beqz a0, 1f
-        li a1, 3    # Trap handler also uses int regs
+        LI(a1, 3)  # Trap handler also uses int regs
         bne a0, a1, failedtest_report_not_intreg
         # Integer: write "x" + decimal register number
         1:
-        li a1, 'x'
+        LI(a1, 'x')
         LA(a2, ascii_buffer)
         sb a1, 0(a2)
         addi a2, a2, 1
@@ -1175,9 +1175,9 @@
         jal failedtest_dec_to_str
         j failedtest_report_print_regstr
     failedtest_report_not_intreg:
-        li a1, 1
+        LI(a1, 1)
         beq a0, a1, failedtest_report_fpreg
-        li a1, 4
+        LI(a1, 4)
         beq a0, a1, failedtest_report_vecreg
         # fflags: print "fflags\n"
         LA(a0, fflagsstr)
@@ -1185,7 +1185,7 @@
         j failedtest_report_after_reg
     failedtest_report_fpreg:
         # FP: write "f" + decimal register number
-        li a1, 'f'
+        LI(a1, 'f')
         LA(a2, ascii_buffer)
         sb a1, 0(a2)
         addi a2, a2, 1
@@ -1193,7 +1193,7 @@
         jal failedtest_dec_to_str
         j failedtest_report_print_regstr
     failedtest_report_vecreg:
-        li a1, 'v'
+        LI(a1, 'v')
         LA(a2, ascii_buffer)
         sb a1, 0(a2)
         addi a2, a2, 1
@@ -1206,7 +1206,7 @@
     #ifdef RVTEST_VECTOR
         // ---- Vector-specific fields (only printed for failure_type == 4) ----
         lw a0, failure_type
-        li a1, 4
+        LI(a1, 4)
         bne a0, a1, failedtest_report_vec_done
 
         // Print region (active / tail / mask)
@@ -1214,9 +1214,9 @@
         call rvmodel_io_write_str
         lw a0, failing_region
         beqz a0, 1f
-        li a1, 1
+        LI(a1, 1)
         beq  a0, a1, 2f
-        li a1, 2
+        LI(a1, 2)
         beq  a0, a1, 3f
         LA(a0, region_base_str)
         j 4f
@@ -1240,7 +1240,7 @@
         LA(a0, vlstr)
         call rvmodel_io_write_str
         LREG a0, failing_vl
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1249,7 +1249,7 @@
         LA(a0, vtypestr)
         call rvmodel_io_write_str
         LREG a0, failing_vtype
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1258,10 +1258,10 @@
         LA(a0, badvalstr)
         call rvmodel_io_write_str
         lw t0, failing_sew_bits
-        li t1, UDB_MXLEN
+        LI(t1, UDB_MXLEN)
         ble t0, t1, failing_value_normal_print
         # 64-bit case on RV32
-        la t0, failing_value   # load address of failing_value
+        LA(t0, failing_value)  # load address of failing_value
         lw a1, 0(t0)           # lower 32 bits
         lw a0, 4(t0)           # upper 32 bits
         jal failedtest_combined_hex_to_str
@@ -1278,10 +1278,10 @@
         LA(a0, expvalstr)
         call rvmodel_io_write_str
         lw t0, failing_sew_bits
-        li t1, UDB_MXLEN
+        LI(t1, UDB_MXLEN)
         ble t0, t1, expected_value_normal_print
         # 64-bit case on RV32
-        la t0, expected_value   # load address of expected_value
+        LA(t0, expected_value)  # load address of expected_value
         lw a1, 0(t0)            # lower 32 bits
         lw a0, 4(t0)            # upper 32 bits
         jal failedtest_combined_hex_to_str
@@ -1295,7 +1295,7 @@
         call rvmodel_io_write_str
 
         lw a0, failing_region
-        li a1, 3
+        LI(a1, 3)
         beq a0, a1, failedtest_report_end   # if mismatch region is vector base, skip printing mismatch mask since it is not valid
 
         // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
@@ -1313,7 +1313,7 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str   # prints "0x"
 
-        li a1, 8                    # print 8 bits (1 byte) at a time
+        LI(a1, 8)  # print 8 bits (1 byte) at a time
         csrr x31, vlenb
         LA(x30, failing_mask_vec)       # address of mismatch mask
         add x30, x30, x31
@@ -1324,7 +1324,7 @@
 
         LA(a2, ascii_buffer)           # reuse buffer for one rendered byte at a time
         lbu a0, 0(x30)                 # load byte
-        li a3, 8                       # a3 = bit count
+        LI(a3, 8)  # a3 = bit count
         jal failedtest_hex_to_str_loop
         sb zero, 0(a2)                 # null terminate after the two hex chars
         LA(a0, ascii_buffer)
@@ -1352,7 +1352,7 @@
         LA(a0, badvalstr)
         call rvmodel_io_write_str
         lw a0, failure_type
-        li a1, 1
+        LI(a1, 1)
         bne a0, a1, failedtest_report_badval_not_fp
     #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
         # FP with CONFIG_FLEN > UDB_MXLEN: combined hex "0xUPPER_LOWER"
@@ -1362,14 +1362,14 @@
     #else
         # FP with CONFIG_FLEN <= UDB_MXLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, failing_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
     #endif
         j failedtest_report_badval_done
     failedtest_report_badval_not_fp:
         # Integer or fflags: standard UDB_MXLEN-bit hex
         LREG a0, failing_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
     failedtest_report_badval_done:
         LA(a0, ascii_buffer)
@@ -1379,7 +1379,7 @@
         LA(a0, expvalstr)
         call rvmodel_io_write_str
         lw a0, failure_type
-        li a1, 1
+        LI(a1, 1)
         bne a0, a1, failedtest_report_expval_not_fp
     #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
         # FP with CONFIG_FLEN > UDB_MXLEN: combined hex "0xUPPER_LOWER"
@@ -1389,14 +1389,14 @@
     #else
         # FP with CONFIG_FLEN <= UDB_MXLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, expected_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
     #endif
         j failedtest_report_expval_done
     failedtest_report_expval_not_fp:
         # Integer or fflags: standard UDB_MXLEN-bit hex
         LREG a0, expected_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
     failedtest_report_expval_done:
         LA(a0, ascii_buffer)
@@ -1424,7 +1424,7 @@
         // Print the original failure description string
         LA(a0, trap_diag_origstr_label)
         call rvmodel_io_write_str
-        la x16, trap_diag_fail_str_ptr
+        LA(x16, trap_diag_fail_str_ptr)
         LREG a0, 0(x16)
         call rvmodel_io_write_str
         LA(a0, newlinestr)
@@ -1434,7 +1434,7 @@
         lw x8, trap_diag_subtype
 
         // ---- Subtype 9: Trap signature offset mismatch ----
-        li x9, 9
+        LI(x9, 9)
         beq x8, x9, trap_report_offset_mismatch
 
         // ---- Subtype 0: Unknown / generic ----
@@ -1455,7 +1455,7 @@
         LA(a0, trap_diag_expected_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_expected_offset
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1464,7 +1464,7 @@
         LA(a0, trap_diag_actual_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_actual_offset
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1491,7 +1491,7 @@
         LREG x6, trap_diag_actual_offset
         LREG x7, trap_diag_expected_offset
         sub a0, x6, x7
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1511,7 +1511,7 @@
         LREG x6, trap_diag_expected_offset
         LREG x7, trap_diag_actual_offset
         sub a0, x6, x7
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1530,11 +1530,11 @@
         call rvmodel_io_write_str
         lw a0, trap_diag_mode
         beqz a0, trap_mode_m
-        li a1, 1
+        LI(a1, 1)
         beq a0, a1, trap_mode_s
-        li a1, 2
+        LI(a1, 2)
         beq a0, a1, trap_mode_h
-        li a1, 3
+        LI(a1, 3)
         beq a0, a1, trap_mode_v
         LA(a0, trap_diag_mode_unknown_str)
         j trap_mode_print
@@ -1556,21 +1556,21 @@
         LA(a0, trap_diag_field_str)
         call rvmodel_io_write_str
         lw a0, trap_diag_subtype
-        li a1, 1
+        LI(a1, 1)
         beq a0, a1, trap_field_vect
-        li a1, 2
+        LI(a1, 2)
         beq a0, a1, trap_field_cause
-        li a1, 3
+        LI(a1, 3)
         beq a0, a1, trap_field_epc
-        li a1, 4
+        LI(a1, 4)
         beq a0, a1, trap_field_tval
-        li a1, 5
+        LI(a1, 5)
         beq a0, a1, trap_field_ip
-        li a1, 6
+        LI(a1, 6)
         beq a0, a1, trap_field_tval2
-        li a1, 7
+        LI(a1, 7)
         beq a0, a1, trap_field_tinst
-        li a1, 8
+        LI(a1, 8)
         beq a0, a1, trap_field_intid
         LA(a0, trap_diag_field_unknown_str)
         j trap_field_print
@@ -1604,7 +1604,7 @@
         LA(a0, trap_diag_expected_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_expected_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1613,14 +1613,14 @@
         LA(a0, trap_diag_actual_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_actual_value
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
         // For xcause mismatches, decode and print the cause name
         lw a0, trap_diag_subtype
-        li a1, 2
+        LI(a1, 2)
         bne a0, a1, trap_field_not_cause
 
         // Print expected cause name
@@ -1644,35 +1644,35 @@
 
         // Print diagnostic hints based on the mismatch type
         lw a0, trap_diag_subtype
-        li a1, 1
+        LI(a1, 1)
         bne a0, a1, 1f
         // vect+mode mismatch hints
         LA(a0, trap_diag_hint_vect_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
-        li a1, 2
+        LI(a1, 2)
         bne a0, a1, 1f
         // xcause mismatch hints
         LA(a0, trap_diag_hint_cause_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
-        li a1, 3
+        LI(a1, 3)
         bne a0, a1, 1f
         // xepc mismatch hints
         LA(a0, trap_diag_hint_epc_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
-        li a1, 4
+        LI(a1, 4)
         bne a0, a1, 1f
         // xtval mismatch hints
         LA(a0, trap_diag_hint_tval_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
-        li a1, 5
+        LI(a1, 5)
         bne a0, a1, 1f
         // xip mismatch hints
         LA(a0, trap_diag_hint_ip_str)
@@ -1694,14 +1694,14 @@
         call rvmodel_io_write_str  // Print "Instruction that trapped:"
 
         lhu a0, 0(a2)       // a0 = lower half of instruction, which might not be word aligned
-        li a1, 16           // assume 16-bit instruction
+        LI(a1, 16)          // assume 16-bit instruction
         andi x8, a0, 3      // check bottom 2 bits of instruction
-        li x9, 3            // if 11, it's a 32-bit instruction
+        LI(x9, 3)           // if 11, it's a 32-bit instruction
         bne x8, x9, 1f      // No: keep a1=16
         lhu x8, 2(a2)       // load upper half of instruction
         slli x8, x8, 16     // shift upper half into position
         or a0, a0, x8       // combine into 32-bit instruction
-        li a1, 32           // set a1=32 for 32-bit instruction
+        LI(a1, 32)          // set a1=32 for 32-bit instruction
     1:
         jal failedtest_hex_to_str   # Call failedtest_hex_to_str(a0, a1) with a0 = instruction, a1 = instruction length in bits
         LA(a0, ascii_buffer)
@@ -1726,11 +1726,11 @@
 
     trap_cause_exception:
         // Exception causes (MSB=0)
-        li a1, 24                                # max known exception cause
+        LI(a1, 24)  # max known exception cause
         bge a0, a1, trap_cause_unknown
 
         // Index into exception name pointer table
-        la a1, trap_excpt_name_tbl
+        LA(a1, trap_excpt_name_tbl)
         slli a2, a0, 2                           # cause * 4 (pointer size on RV32)
     #ifdef UDB_MXLEN_64
         slli a2, a0, 3                           # cause * 8 (pointer size on RV64)
@@ -1741,13 +1741,13 @@
 
     trap_cause_interrupt:
         // Interrupt causes (MSB=1), mask off MSB
-        li a1, 1
+        LI(a1, 1)
         slli a1, a1, (UDB_MXLEN-1)
         xor a0, a0, a1                           # clear MSB to get cause number
-        li a1, 16                                # max known interrupt cause
+        LI(a1, 16)  # max known interrupt cause
         bge a0, a1, trap_cause_unknown
 
-        la a1, trap_int_name_tbl
+        LA(a1, trap_int_name_tbl)
         slli a2, a0, 2
     #ifdef UDB_MXLEN_64
         slli a2, a0, 3
@@ -1775,13 +1775,13 @@
     # could corrupt the live CSRs (e.g. PMP faults from rvmodel_io_write_str).
     # Saves and restores ra via csr_context_ret_addr so callers can use 'call'.
     failedtest_print_csr_context:
-        la a2, csr_context_ret_addr
+        LA(a2, csr_context_ret_addr)
         SREG ra, 0(a2)
 
         LA(a0, mepcstr)
         call rvmodel_io_write_str
         LREG a0, saved_mepc
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1789,7 +1789,7 @@
         LA(a0, mcausestr)
         call rvmodel_io_write_str
         LREG a0, saved_mcause
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1797,7 +1797,7 @@
         LA(a0, mtvalstr)
         call rvmodel_io_write_str
         LREG a0, saved_mtval
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1805,12 +1805,12 @@
         LA(a0, mstatusstr)
         call rvmodel_io_write_str
         LREG a0, saved_mstatus
-        li a1, UDB_MXLEN
+        LI(a1, UDB_MXLEN)
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        la a2, csr_context_ret_addr
+        LA(a2, csr_context_ret_addr)
         LREG ra, 0(a2)
         ret
 
@@ -1857,21 +1857,21 @@
     # a0: register number (0-31)
     # a2: buffer pointer (writes digits + '\n' + '\0')
     failedtest_dec_to_str:
-        li a3, 10
+        LI(a3, 10)
         blt a0, a3, 1f         # single digit
         addi a0, a0, -10
-        li a4, '1'
+        LI(a4, '1')
         blt a0, a3, 2f
         addi a0, a0, -10
-        li a4, '2'
+        LI(a4, '2')
         blt a0, a3, 2f
         addi a0, a0, -10
-        li a4, '3'
+        LI(a4, '3')
     2:  sb a4, 0(a2)            # tens digit
         addi a2, a2, 1
     1:  addi a0, a0, '0'        # ones digit
         sb a0, 0(a2)
-        li a3, 10               # '\n'
+        LI(a3, 10)  # '\n'
         sb a3, 1(a2)
         sb zero, 2(a2)          # null terminator
         ret
@@ -1889,7 +1889,7 @@
         sb a3, 1(a2)
         addi a2, a2, 2          # past "0x"
         # Convert upper half nibbles
-        li a3, UDB_MXLEN
+        LI(a3, UDB_MXLEN)
     failedtest_combined_upper_loop:
         addi a3, a3, -4
         srl a4, a0, a3
@@ -1906,7 +1906,7 @@
         bnez a3, failedtest_combined_upper_loop
         # Convert lower half nibbles
         mv a0, a1
-        li a3, UDB_MXLEN
+        LI(a3, UDB_MXLEN)
     failedtest_combined_lower_loop:
         addi a3, a3, -4
         srl a4, a0, a3

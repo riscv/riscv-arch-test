@@ -144,12 +144,6 @@ repos:
             generators/testgen/src/testgen/priv/extensions/ExceptionsF\.py |
             generators/testgen/src/testgen/priv/extensions/Ssccptr\.py |
             generators/testgen/src/testgen/priv/extensions/Sstvala\.py |
-            tests/env/rvtest_failure_code\.h |
-            tests/env/rvtest_pmp_macros\.h |
-            tests/env/rvtest_setup\.h |
-            tests/env/rvtest_trap_handler\.h |
-            tests/env/sail_macros\.h |
-            tests/env/signature\.h |
             tests/rv32e/E/E-jal-00\.S |
             tests/rv32i/I/I-jal-00\.S |
             tests/rv32i/Zicsr/Zicsr-csrrc-00\.S |

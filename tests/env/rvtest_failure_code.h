@@ -39,16 +39,18 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-    # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
-    # This is the trap handler failure entry point
+    # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register.
+    # x6 contains the actual value and x4 contains the expected value.
     failedtest_trap_x7_x9:
         la x9, begin_failure_scratch
         SREG x7, 104(x9)               # store return address
-        SREG DEFAULT_TEMP_REG, 32(x9)  # save DEFAULT_TEMP_REG
+        SREG DEFAULT_TEMP_REG, 32(x9)  # save expected value currently in x4
         SREG DEFAULT_LINK_REG, 40(x9)  # save DEFAULT_LINK_REG
         SREG x1, 8(x9)                 # save x1 early
         li x1, 3
-        SREG x1, 0(x9)                   # failure_type = 3 (trap handler)
+        SREG x1, 0(x9)                 # failure_type = 3 (trap handler)
+        SREG x6, 272(x9)               # failing_value = actual value
+        SREG DEFAULT_TEMP_REG, 280(x9) # expected_value = expected value
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
@@ -797,15 +799,17 @@
     //       offset REGWIDTH:        RVTEST_WORD_PTR <string> (failure description string)
     //       offset 2*REGWIDTH:      .word <CSR_XEPC>         (only for some callers)
     //
-    // For trap signature offset mismatches (from check_trap_sig_offset in
-    // RVTEST_CODE_END), the actual and expected offsets are available as the
-    // mismatching signature value vs. the preloaded reference value.
+    // TRAP_SIGUPD and check_trap_sig_offset copy their already-available actual
+    // and expected values before jumping to their failure entry points. The
+    // diagnostic code below should not reconstruct and dereference those pointers;
+    // if the trap signature state is corrupt, the diagnostic load can take a
+    // secondary trap and hide the original failure cause.
     //
     // Strategy: identify which trap signature word mismatched by examining the
     // failure string pointer. The string encodes both the mode (M/S/H/V) and
     // the field (vect/cause/epc/tval/ip/intID/mtval2/mtinst). We compare
-    // against the known string addresses to determine the subtype, then load
-    // the corresponding expected/actual values from the trap signature region.
+    // against the known string addresses to determine the subtype, then report
+    // the already-recorded expected/actual values from the common failure slots.
     //==========================================================================
 
     failedtest_saveresults_trap:
@@ -1038,39 +1042,6 @@
         la x16, trap_diag_subtype
         sw x8, 0(x16)
 
-        // Extract the compared values from the final trap-count check:
-        // the beq compared the DUT trap signature byte count against the
-        // reference byte count loaded from final_trap_sig_offset.
-
-        // Extract actual value (rs2 of beq = the value being compared)
-        lhu x6, -6(DEFAULT_LINK_REG)
-        lhu x7, -8(DEFAULT_LINK_REG)
-        slli x6, x6, 16
-        or x6, x6, x7
-        srli x8, x6, 20
-        andi x8, x8, 31                             # rs2 of beq
-        slli x6, x8, 3
-        add x6, DEFAULT_TEMP_REG, x6
-        LREG x6, 0(x6)                              # actual offset value
-        la x16, trap_diag_actual_offset
-        SREG x6, 0(x16)
-
-        // Extract expected value (from ld before beq)
-        lhu x6, -10(DEFAULT_LINK_REG)
-        lhu x7, -12(DEFAULT_LINK_REG)
-        slli x6, x6, 16
-        or x6, x6, x7
-        srai x7, x6, 20                             # immediate
-        srli x6, x6, 15
-        andi x6, x6, 31                             # rs1 (base reg)
-        slli x6, x6, 3
-        add x6, DEFAULT_TEMP_REG, x6
-        LREG x6, 0(x6)                              # base register value
-        add x6, x6, x7                              # base + offset
-        LREG x6, 0(x6)                              # expected offset value
-        la x16, trap_diag_expected_offset
-        SREG x6, 0(x16)
-
         j failedtest_saveresults_common
 
         //--------------------------------------------------------------
@@ -1081,41 +1052,6 @@
         sw x8, 0(x16)
         la x16, trap_diag_mode
         sw x9, 0(x16)
-
-        // For field mismatches, extract actual and expected the same way
-        // as integer failures (from beq rs2 and ld)
-
-        // Actual value (rs2 of beq)
-        lhu x6, -6(DEFAULT_LINK_REG)
-        lhu x7, -8(DEFAULT_LINK_REG)
-        slli x6, x6, 16
-        or x6, x6, x7
-        srli x14, x6, 20
-        andi x14, x14, 31                           # rs2 of beq
-        slli x6, x14, 3
-        add x6, DEFAULT_TEMP_REG, x6
-        LREG x6, 0(x6)
-        SREG x6, 272(DEFAULT_TEMP_REG)              # failing_value = actual
-        la x16, trap_diag_actual_value
-        SREG x6, 0(x16)
-
-        // Expected value (from ld before beq)
-        lhu x6, -10(DEFAULT_LINK_REG)
-        lhu x7, -12(DEFAULT_LINK_REG)
-        slli x6, x6, 16
-        or x6, x6, x7
-        srai x7, x6, 20
-        srli x6, x6, 15
-        andi x6, x6, 31
-        slli x6, x6, 3
-        add x6, DEFAULT_TEMP_REG, x6
-        LREG x6, 0(x6)
-        add x6, x6, x7
-        LREG x6, 0(x6)
-        SREG x6, 280(DEFAULT_TEMP_REG)              # expected_value
-        la x16, trap_diag_expected_value
-        SREG x6, 0(x16)
-
         j failedtest_saveresults_common
 
     trap_diag_generic_report:
@@ -1509,7 +1445,7 @@
     trap_report_offset_mismatch:
         LA(a0, trap_diag_expected_offset_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_expected_offset
+        LREG a0, expected_value
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1517,15 +1453,15 @@
 
         LA(a0, trap_diag_actual_offset_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_actual_offset
+        LREG a0, failing_value
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
         // Determine if extra or missing traps. Offsets are unsigned byte counts.
-        LREG x6, trap_diag_actual_offset
-        LREG x7, trap_diag_expected_offset
+        LREG x6, failing_value
+        LREG x7, expected_value
         bltu x6, x7, trap_report_missing_traps
 
     trap_report_extra_traps:
@@ -1534,8 +1470,8 @@
 
         LA(a0, trap_diag_diff_bytes_str)
         call rvmodel_io_write_str
-        LREG x6, trap_diag_actual_offset
-        LREG x7, trap_diag_expected_offset
+        LREG x6, failing_value
+        LREG x7, expected_value
         sub a0, x6, x7
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
@@ -1552,8 +1488,8 @@
 
         LA(a0, trap_diag_diff_bytes_str)
         call rvmodel_io_write_str
-        LREG x6, trap_diag_expected_offset
-        LREG x7, trap_diag_actual_offset
+        LREG x6, expected_value
+        LREG x7, failing_value
         sub a0, x6, x7
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
@@ -1646,7 +1582,7 @@
         // Print expected value
         LA(a0, trap_diag_expected_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_expected_value
+        LREG a0, expected_value
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1655,7 +1591,7 @@
         // Print actual value
         LA(a0, trap_diag_actual_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_actual_value
+        LREG a0, failing_value
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1669,14 +1605,14 @@
         // Print expected cause name
         LA(a0, trap_diag_expected_cause_name_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_expected_value
+        LREG a0, expected_value
         jal trap_cause_to_str
         call rvmodel_io_write_str
 
         // Print actual cause name
         LA(a0, trap_diag_actual_cause_name_str)
         call rvmodel_io_write_str
-        LREG a0, trap_diag_actual_value
+        LREG a0, failing_value
         jal trap_cause_to_str
         call rvmodel_io_write_str
 
@@ -2028,14 +1964,6 @@
         .word 0
     trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
         .word 0
-    trap_diag_actual_value:                      # actual trap sig value (DUT)
-        .fill 2, 4, 0
-    trap_diag_expected_value:                    # expected trap sig value (reference)
-        .fill 2, 4, 0
-    trap_diag_actual_offset:                     # actual trap sig pointer offset
-        .fill 2, 4, 0
-    trap_diag_expected_offset:                   # expected trap sig pointer offset
-        .fill 2, 4, 0
     trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context

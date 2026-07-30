@@ -47,12 +47,15 @@
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
 // failedtest_trap_x7_x9 in case of a mismatch.
-// In failedtest_trap_x7_x9, x7/T2 is LINK_REG & x9/T4 is TEMP_REG
+// On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
+// expected value, x7/T2 is the link register, and x9/T4 is scratch.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -62,6 +65,8 @@
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\

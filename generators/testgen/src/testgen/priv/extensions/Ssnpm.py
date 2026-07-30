@@ -160,6 +160,18 @@ coverpoint = "cp_pmlen_masking"
 # ---------------------------------------------------------------------------
 
 
+def _arch_guard(instr: str, exts: list[str]) -> list[str]:
+    """Bracket a single instruction with `.option arch, +ext...` (no-op if exts empty)."""
+    if not exts:
+        return [instr]
+    adds = ", ".join(f"+{e.strip().lower()}" for e in exts)
+    return [".option push", f".option arch, {adds}", instr, ".option pop"]
+
+
+def _amo_ext(amo_mn: str) -> str:
+    return "zabha" if amo_mn.endswith((".b", ".h")) else "zaamo"
+
+
 def _li(reg: int, val: int) -> str:
     """LI() accepts arbitrarily large hex literals directly"""
     return f"LI(x{reg}, {hex(val)})"
@@ -358,7 +370,7 @@ def _emit_read_test(
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {load_mn}   x{REG_DATA}, 0(x{REG_A})",
+        *_arch_guard(f"{load_mn} x{REG_DATA}, 0(x{REG_A})", []),
         write_sigupd(REG_DATA, test_data),
     ]
     return lines
@@ -380,8 +392,8 @@ def _emit_write_test(
     lines += [
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {store_mn}   x{REG_DATA}, 0(x{REG_A})",
-        f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
+        *_arch_guard(f"{store_mn} x{REG_DATA}, 0(x{REG_A})", []),
+        *_arch_guard(f"{load_mn} x{REG_DATA}, 0(x{REG_BASE})", []),
         write_sigupd(REG_DATA, test_data),
     ]
     return lines
@@ -403,8 +415,8 @@ def _emit_amo_test(
     lines += [
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {amo_mn}   x0, x{REG_DATA}, (x{REG_A})",
-        f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
+        *_arch_guard(f"{amo_mn} x0, x{REG_DATA}, (x{REG_A})", [_amo_ext(amo_mn)]),
+        *_arch_guard(f"{load_mn} x{REG_DATA}, 0(x{REG_BASE})", []),
         write_sigupd(REG_DATA, test_data),
     ]
     return lines
@@ -427,7 +439,7 @@ def _emit_zacas_test(
         f"    {_li(REG_RD, VALUE_OLD)}     # comparand: must match scratch's current value",
         f"    {_li(REG_RS2, VALUE_NEW)}    # value written on successful compare",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {amo_mn}   x{REG_RD}, x{REG_RS2}, (x{REG_A})",
+        *_arch_guard(f"{amo_mn} x{REG_RD}, x{REG_RS2}, (x{REG_A})", ["zacas"]),
         f"    ld    x{REG_RD}, 0(x{REG_BASE})",
         write_sigupd(REG_RD, test_data),
     ]
@@ -443,7 +455,7 @@ def _emit_cbo_zero_test(test_id: str, test_data: TestData, REG_A: int, REG_BASE:
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    cbo.zero   0(x{REG_A})",
+        *_arch_guard(f"cbo.zero 0(x{REG_A})", ["zicboz"]),
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -460,7 +472,7 @@ def _emit_cbom_test(
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {cbo_mn}   0(x{REG_A})",
+        *_arch_guard(f"{cbo_mn} 0(x{REG_A})", ["zicbom"]),
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -476,7 +488,7 @@ def _emit_cbo_inval_test(test_id: str, test_data: TestData, REG_A: int, REG_BASE
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    cbo.inval   0(x{REG_A})",
+        *_arch_guard(f"cbo.inval 0(x{REG_A})", ["zicbom"]),
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -493,7 +505,7 @@ def _emit_prefetch_test(
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {pf_mn}   0(x{REG_A})",
+        *_arch_guard(f"{pf_mn} 0(x{REG_A})", ["zicbop"]),
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -515,7 +527,7 @@ def _emit_fp_read_test(
       masking worked  -> load hits scratch     -> f{REG_FP} = VALUE_OLD
     """
     lines += [f"    # ── READ {load_mn} [{test_id}] ──"]
-    _reseed_scratch(REG_BASE, REG_DATA)
+    lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
         f"    {test_data.add_testcase(test_id, 'cp_pmlen_masking', 'Ssnpm_cg')}",
         f"    {load_mn}   f{REG_FP}, 0(x{REG_A})",
@@ -538,7 +550,7 @@ def _emit_fp_test(
     FP WRITE test (fsw/fsd only -- fsq is not yet supported, see _FP_OPS).
     """
     lines += [f"    # ── WRITE {store_mn}/{load_mn} [{test_id}] ──"]
-    _reseed_scratch(REG_BASE, REG_DATA)
+    lines += _reseed_scratch(REG_BASE, REG_DATA)
 
     mv_to_fp, _ = _FP_MVX[store_mn]
     lines += [
@@ -569,7 +581,7 @@ def _emit_c_read_cl_test(
     lines += [
         f"    mv    x{REG_TMP}, x{REG_A}    # tagged address -> x8-x15 reg (CL-format base restriction)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {load_mn}   x{REG_DATA}, 0(x{REG_TMP})",
+        *_arch_guard(f"{load_mn} x{REG_DATA}, 0(x{REG_TMP})", ["zca"]),
         write_sigupd(REG_DATA, test_data),
     ]
 
@@ -592,7 +604,7 @@ def _emit_c_write_cs_test(
         f"    mv    x{REG_TMP}, x{REG_A}    # tagged address -> x8-x15 reg (CS-format base restriction)",
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {store_mn}   x{REG_DATA}, 0(x{REG_TMP})",
+        *_arch_guard(f"{store_mn} x{REG_DATA}, 0(x{REG_TMP})", ["zca"]),
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -614,7 +626,7 @@ def _emit_c_read_sp_test(
         f"    mv    x{REG_TMP}, sp       # save sp",
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {load_mn}   x{REG_DATA}, 0(sp)",
+        *_arch_guard(f"{load_mn} x{REG_DATA}, 0(sp)", ["zca"]),
         f"    mv    sp, x{REG_TMP}       # restore sp immediately",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -638,7 +650,7 @@ def _emit_c_write_sp_test(
         f"    mv    x{REG_TMP}, sp       # save sp",
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {store_mn}   x{REG_DATA}, 0(sp)",
+        *_arch_guard(f"{store_mn} x{REG_DATA}, 0(sp)", ["zca"]),
         f"    mv    sp, x{REG_TMP}       # restore sp immediately",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
@@ -657,7 +669,7 @@ def _emit_cd_read_sp_test(
         f"    mv    x{c_savesp}, sp",
         f"    mv    sp, x{REG_A}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    c.fldsp   f{c_fp}, 0(sp)",
+        *_arch_guard(f"c.fldsp f{c_fp}, 0(sp)", ["zcd"]),
         f"    mv    sp, x{c_savesp}",
         write_sigupd(c_fp, test_data, "float"),
     ]
@@ -679,7 +691,7 @@ def _emit_cd_write_sp_test(
         f"    mv    x{c_savesp}, sp",
         f"    mv    sp, x{REG_A}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    c.fsdsp   f{c_fp}, 0(sp)",
+        *_arch_guard(f"c.fsdsp f{c_fp}, 0(sp)", ["zcd"]),
         f"    mv    sp, x{c_savesp}",
         f"    fld   f{c_fp}, 0(x{REG_BASE})",
         write_sigupd(c_fp, test_data, "float"),
@@ -842,7 +854,7 @@ def _emit_pmm_satp_block(
 @add_priv_test_generator(
     "Ssnpm",
     required_extensions=["Ssnpm", "Zicsr", "S"],
-    march_extensions=["Zicsr", "Zaamo", "Zabha", "Zacas", "F", "D", "Zca", "Zcd", "C", "Zicbom", "Zicboz", "Zicbop"],
+    march_extensions=["f", "d"],
 )
 def make_ssnpm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []

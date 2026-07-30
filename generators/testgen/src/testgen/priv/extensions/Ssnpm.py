@@ -359,7 +359,6 @@ def _emit_read_test(
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {load_mn}   x{REG_DATA}, 0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         write_sigupd(REG_DATA, test_data),
     ]
     return lines
@@ -382,7 +381,6 @@ def _emit_write_test(
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {store_mn}   x{REG_DATA}, 0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -406,7 +404,6 @@ def _emit_amo_test(
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {amo_mn}   x0, x{REG_DATA}, (x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -431,7 +428,6 @@ def _emit_zacas_test(
         f"    {_li(REG_RS2, VALUE_NEW)}    # value written on successful compare",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {amo_mn}   x{REG_RD}, x{REG_RS2}, (x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    ld    x{REG_RD}, 0(x{REG_BASE})",
         write_sigupd(REG_RD, test_data),
     ]
@@ -448,7 +444,6 @@ def _emit_cbo_zero_test(test_id: str, test_data: TestData, REG_A: int, REG_BASE:
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    cbo.zero   0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -466,7 +461,6 @@ def _emit_cbom_test(
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {cbo_mn}   0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -483,7 +477,6 @@ def _emit_cbo_inval_test(test_id: str, test_data: TestData, REG_A: int, REG_BASE
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    cbo.inval   0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -501,7 +494,6 @@ def _emit_prefetch_test(
     lines += [
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {pf_mn}   0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps (should never fire: hints never trap)",
         f"    ld    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -527,7 +519,6 @@ def _emit_fp_read_test(
     lines += [
         f"    {test_data.add_testcase(test_id, 'cp_pmlen_masking', 'Ssnpm_cg')}",
         f"    {load_mn}   f{REG_FP}, 0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         write_sigupd(REG_FP, test_data, "float"),
     ]
 
@@ -555,7 +546,6 @@ def _emit_fp_test(
         f"    {mv_to_fp}   f{REG_FP}, x{REG_DATA}",
         f"    {test_data.add_testcase(test_id, 'cp_pmlen_masking', 'Ssnpm_cg')}",
         f"    {store_mn}  f{REG_FP}, 0(x{REG_A})",
-        "    nop                     # trap handler skips next instr if this traps",
         f"    {load_mn}   f{REG_FP}, 0(x{REG_BASE})",
         write_sigupd(REG_FP, test_data, "float"),
     ]
@@ -580,9 +570,6 @@ def _emit_c_read_cl_test(
         f"    mv    x{REG_TMP}, x{REG_A}    # tagged address -> x8-x15 reg (CL-format base restriction)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {load_mn}   x{REG_DATA}, 0(x{REG_TMP})",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes (ExceptionsZc.py)",
         write_sigupd(REG_DATA, test_data),
     ]
 
@@ -606,9 +593,6 @@ def _emit_c_write_cs_test(
         f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {store_mn}   x{REG_DATA}, 0(x{REG_TMP})",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -631,9 +615,6 @@ def _emit_c_read_sp_test(
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {load_mn}   x{REG_DATA}, 0(sp)",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    mv    sp, x{REG_TMP}       # restore sp immediately",
         write_sigupd(REG_DATA, test_data),
     ]
@@ -658,9 +639,6 @@ def _emit_c_write_sp_test(
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    {store_mn}   x{REG_DATA}, 0(sp)",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    mv    sp, x{REG_TMP}       # restore sp immediately",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
@@ -680,9 +658,6 @@ def _emit_cd_read_sp_test(
         f"    mv    sp, x{REG_A}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    c.fldsp   f{c_fp}, 0(sp)",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    mv    sp, x{c_savesp}",
         write_sigupd(c_fp, test_data, "float"),
     ]
@@ -705,9 +680,6 @@ def _emit_cd_write_sp_test(
         f"    mv    sp, x{REG_A}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
         f"    c.fsdsp   f{c_fp}, 0(sp)",
-        "    c.nop",
-        "    c.nop",
-        "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    mv    sp, x{c_savesp}",
         f"    fld   f{c_fp}, 0(x{REG_BASE})",
         write_sigupd(c_fp, test_data, "float"),

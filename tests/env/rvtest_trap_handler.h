@@ -2001,8 +2001,29 @@ data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
         LREG    T6, data_seg_siz(T4)
         add     T6, T6, T2
-        bgeu    T3, T6, abort_test                    // EPC beyond all known segments -> abort
-        bltu    T3, T2, abort_test                    // EPC before data segment -> abort
+        bgeu    T3, T6, oos_\__MODE__\()epc           // EPC beyond all known segments
+        bgeu    T3, T2,  adj_\__MODE__\()epc          // EPC inside data segment -> relocate
+                                                      // else EPC is before the data segment -> fall through
+
+// --- Out-of-segment xEPC ---
+// A fetch access/page fault at a deliberately bogus target has an xEPC equal to
+// that raw target address, which cannot be expressed as a segment-relative
+// offset. Pointer-masking tests rely on exactly this to show that masking does
+// NOT apply to instruction fetch (JALR through a tagged pointer), and the Sv/PMP
+// execute-permission probes take the same shape whenever their target lands
+// outside every segment. The address is a test-chosen constant, identical on the
+// DUT and the reference model, so recording it raw is deterministic -- and the
+// fetch-fault return path below rewrites xEPC from ra regardless. Any OTHER
+// cause arriving here is a genuine runaway EPC and still aborts.
+oos_\__MODE__\()epc:
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_FETCH_ACCESS)
+        beq     T2, T6, sv_\__MODE__\()epc            // fetch access fault -> record raw xEPC
+        LI(     T6, CAUSE_FETCH_PAGE_FAULT)
+        beq     T2, T6, sv_\__MODE__\()epc            // fetch page fault -> record raw xEPC
+        LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
+        beq     T2, T6, sv_\__MODE__\()epc            // fetch guest-page fault -> record raw xEPC
+        j       abort_test                            // runaway EPC -> abort as before
 
 adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)

@@ -22,7 +22,17 @@ ci_enabled: true
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # ZicntrS and ZicntrU fail on qemu because ecall increments instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4087
-exclude_extensions: "Sm,S,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU"
+# Ssnpm: the pointer-masking probes sweep every instruction class that takes a masked
+#        effective address, which walks into two QEMU defects:
+#        1. Zicbom cbo.clean/flush/inval do not fault on an inaccessible address --
+#           the same defect already excluding ExceptionsZicboU/S and SvZicbo
+#           (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
+#        2. ssamoswap.w/d succeeds against ordinary memory. Zicfiss requires a
+#           store/AMO access fault when the effective privilege is below M and either
+#           satp.MODE is Bare or the page is not a shadow-stack (R=0,W=1) page;
+#           QEMU's SS_MMU_INDEX path performs neither check.
+#        Without those two instruction classes all four Ssnpm files pass on QEMU.
+exclude_extensions: "Sm,S,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU,Ssnpm"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

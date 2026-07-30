@@ -50,7 +50,7 @@ _CANONICAL_ONES_VA: dict[str, int] = {
     "sv57": 0xFF00000000000000,
 }
 
-VALUE_OLD: int = 0xDEAD_BEEF_DEAD_BEEF  # pre-loaded in scratch
+VALUE_OLD: int = 0xABCD_1234_ABCD_1234  # pre-loaded in scratch
 VALUE_DIFF: int = 0xCAFE_BABE_CAFE_BABE  # pre-loaded in other_page
 VALUE_NEW: int = 0xA5A5_A5A5_A5A5_A5A5  # written by store tests
 

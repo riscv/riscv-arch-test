@@ -3,7 +3,7 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 [dependency-groups]
-dev = [ "pyright==1.1.411", "ruff==0.15.22" ]
+dev = [ "pyright==1.1.411", "ruff==0.16.0" ]
 
 [tool.uv]
 exclude-newer = "7 days"
@@ -20,17 +20,19 @@ extend-exclude = [
 lint.extend-select = [
   "A",   # shadow builtins
   "ANN", # type annotation rules
-  "I",   # Import related rules (isort)
   "ISC", # Implicit string concatenation
   "PTH", # Use Pathlib
   "SIM", # Simplifications
   "TID", # Tidy imports
 ]
 lint.ignore = [
-  "N",      # Naming requirements
-  "RET504", # Unnecessary assignment to {name} before return statement
+  "N", # Naming requirements
 ]
 lint.preview = true
+
+##### PYPROJECT-FMT CONFIG #####
+[tool.pyproject-fmt]
+keep_full_version = true
 
 ##### PYRIGHT CONFIG #####
 [tool.pyright]

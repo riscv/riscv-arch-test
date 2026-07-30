@@ -18,6 +18,7 @@ ci_enabled: true
 #        (https://gitlab.com/qemu-project/qemu/-/work_items/3493)
 # ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
 #        but cross-granule word/doubleword AMOs execute instead of trapping.
+# Zkr: QEMU sign-extends the CSR read of seed on RV64 (https://gitlab.com/qemu-project/qemu/-/work_items/4121)
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080

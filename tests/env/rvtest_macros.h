@@ -18,6 +18,8 @@
 #define LEVEL3 0x03
 #define LEVEL4 0x04
 
+
+#define sv32 0x10
 #define sv39 0x00
 #define sv48 0x01
 #define sv57 0x02

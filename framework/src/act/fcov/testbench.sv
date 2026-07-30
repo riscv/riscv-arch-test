@@ -60,6 +60,7 @@ module testbench;
   logic [(XLEN-1):0]     virt_adr_i, virt_adr_d;
   logic [(PA_BITS-1):0]  phys_adr_i, phys_adr_d;
   logic [(XLEN-1):0]     pte_i, pte_d;
+  logic [(XLEN-1):0]     vs_pte_i, vs_pte_d, g_pte_i, g_pte_d;
   logic [(PPN_BITS-1):0] ppn_i, ppn_d;
   logic [1:0]            page_type_i, page_type_d;
   logic read_access, write_access, execute_access;
@@ -145,7 +146,8 @@ module testbench;
     {valid, insn, trap, debug_mode, pc_rdata, mode, mode_virt,
     m_ext_intr, s_ext_intr, m_timer_intr, m_soft_intr,
     virt_adr_i, virt_adr_d, phys_adr_i, phys_adr_d,
-    pte_i, pte_d, ppn_i, ppn_d, page_type_i, page_type_d,
+    pte_i, pte_d, vs_pte_i, vs_pte_d, g_pte_i, g_pte_d,
+    ppn_i, ppn_d, page_type_i, page_type_d,
     read_access, write_access, execute_access,
     x_wb, f_wb, v_wb, csr_wb, x_wdata, f_wdata, v_wdata} = 0;
 
@@ -181,6 +183,10 @@ module testbench;
           "PHYS_ADR_D":     num = $sscanf(val, "%h", phys_adr_d);
           "PTE_I":          num = $sscanf(val, "%h", pte_i);
           "PTE_D":          num = $sscanf(val, "%h", pte_d);
+          "VS_PTE_I":       num = $sscanf(val, "%h", vs_pte_i);
+          "VS_PTE_D":       num = $sscanf(val, "%h", vs_pte_d);
+          "G_PTE_I":        num = $sscanf(val, "%h", g_pte_i);
+          "G_PTE_D":        num = $sscanf(val, "%h", g_pte_d);
           "PPN_I":          num = $sscanf(val, "%h", ppn_i);
           "PPN_D":          num = $sscanf(val, "%h", ppn_d);
           "PAGE_TYPE_I":    num = $sscanf(val, "%b", page_type_i);
@@ -252,6 +258,10 @@ module testbench;
   assign rvvi.phys_adr_d[0][0] = phys_adr_d;
   assign rvvi.pte_i[0][0] = pte_i;
   assign rvvi.pte_d[0][0] = pte_d;
+  assign rvvi.vs_pte_i[0][0] = vs_pte_i;
+  assign rvvi.vs_pte_d[0][0] = vs_pte_d;
+  assign rvvi.g_pte_i[0][0] = g_pte_i;
+  assign rvvi.g_pte_d[0][0] = g_pte_d;
   assign rvvi.ppn_i[0][0] = ppn_i;
   assign rvvi.ppn_d[0][0] = ppn_d;
   assign rvvi.page_type_i[0][0] = page_type_i;

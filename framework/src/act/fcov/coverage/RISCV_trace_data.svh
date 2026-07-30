@@ -82,6 +82,10 @@ class riscvTraceData
   logic [(PA_BITS-1):0]  phys_adr_d;           // Data physical address
   logic [(XLEN-1):0]     pte_i;         // Instruction page table entry
   logic [(XLEN-1):0]     pte_d;         // Data page table entry
+  logic [(XLEN-1):0]     vs_pte_i;      // VS-stage instruction PTE (hypervisor)
+  logic [(XLEN-1):0]     vs_pte_d;      // VS-stage data PTE
+  logic [(XLEN-1):0]     g_pte_i;       // G-stage instruction PTE
+  logic [(XLEN-1):0]     g_pte_d;       // G-stage data PTE
   logic [(PPN_BITS-1):0] ppn_i;         // Instruction physical page number
   logic [(PPN_BITS-1):0] ppn_d;         // Data physical page number
   logic [1:0]            page_type_i;    // Instruction page type

@@ -116,7 +116,11 @@
       "fetch_access_fault": true,
       "fetch_page_fault": true,
       "software_check": true,
-      "reserved_exceptions": false
+      "reserved_exceptions": false,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true
     },
     "reserved_behavior": {
       // The configuration option determines how to handle the reserved behavior `amocas_odd_registers`.
@@ -166,7 +170,23 @@
     // Note that currently, not all functionality for these versions
     // is available currently, and not all versions of the privileged
     // ISA can be specified.
-    "privileged_isa_version": "Privileged_ISA_1_13"
+    "privileged_isa_version": "Privileged_ISA_1_13",
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_00fc_b7FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    }
   },
   "memory": {
     // This specifies the number of implemented physical address bits.
@@ -839,6 +859,9 @@
       "supported": false
     },
     "Svvptc": {
+      "supported": true
+    },
+    "H": {
       "supported": true
     }
   }

@@ -41,6 +41,15 @@ covergroup SvH_cg with function sample(ins_t ins);
 
     vs_pte_rsw: coverpoint ins.current.vs_pte_d[9:8];
     g_pte_rsw: coverpoint ins.current.g_pte_d[9:8];
+    vsatp: coverpoint ins.current.insn[31:20] {
+        bins vsatp = {CSR_VSATP};
+    }
+    hgatp: coverpoint ins.current.insn[31:20] {
+        bins hgatp = {CSR_HGATP};
+    }
+    satp: coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
 
     `ifdef UDB_MXLEN_64
         mode_field_values: coverpoint ins.current.rs1_val[63:60] {
@@ -52,26 +61,14 @@ covergroup SvH_cg with function sample(ins_t ins);
             bins sv39 = {8};
         }
 
-        vsatp: coverpoint ins.current.insn[31:20] {
-            bins vsatp = {CSR_VSATP};
-        }
-
         mode_hgatp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
             bins bare = {0};
             bins sv39x4 = {8};
         }
 
-        hgatp: coverpoint ins.current.insn[31:20] {
-            bins hgatp = {CSR_HGATP};
-        }
-
         mode_satp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
             bins bare = {0};
             bins sv39 = {8};
-        }
-
-        satp: coverpoint ins.current.insn[31:20] {
-            bins satp = {CSR_SATP};
         }
 
         pbmte_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "pbmte") {
@@ -280,8 +277,8 @@ covergroup SvH_cg with function sample(ins_t ins);
     mstatus_mpv_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
         bins mpv_set = {1};
     }
-    mstatus_mpv_unset: get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
-        bins mpv_unset = {0}
+    mstatus_mpv_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
+        bins mpv_unset = {0};
     }
 
     mpp_mstatus_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpp") {
@@ -423,82 +420,112 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
+         // Coverpoint: cp_vsatp_mode_field
         cp_vsatp_mode_field: cross priv_mode_hs, mode_vsatp, csrrw, vsatp, mode_field_values;
+        // Coverpoint: cp_satp_mode_field
         cp_satp_mode_field:  cross priv_mode_vs, mode_satp, csrrw, satp, mode_field_values;
+        // Coverpoint: cp_hgatp_mode_field
         cp_hgatp_mode_field: cross priv_mode_hs, mode_hgatp, csrrw, hgatp, mode_field_values;
 
+        // Coverpoint: cp_vsatp_svpbmt
         cp_vsatp_svpbmt_rw: cross priv_mode_hs, vsatp_mode, pbmte_menvcfg, vs_pte_d_svpbmt, read_write_acc;
         cp_vsatp_svpbmt_x:  cross priv_mode_hs, vsatp_mode, pbmte_menvcfg, vs_pte_i_svpbmt, exec_acc;
 
+        // Coverpoint: cp_hgatp_svpbmt
         cp_hgatp_svpbmt_rw: cross priv_mode_hs, hgatp_mode, pbmte_menvcfg, g_pte_d_svpbmt, read_write_acc;
         cp_hgatp_svpbmt_x:  cross priv_mode_hs, hgatp_mode, pbmte_menvcfg, g_pte_i_svpbmt, exec_acc;
 
+        // Coverpoint: cp_vsatp_reserved_fields
         cp_vsatp_reserved_fields_rw: cross priv_mode_hs, vsatp_mode, vs_pte_d_reserved, read_write_acc;
         cp_vsatp_reserved_fields_x : cross priv_mode_hs, vsatp_mode, vs_pte_i_reserved, exec_acc;
 
+        // Coverpoint: cp_hgatp_reserved_fields
         cp_hgatp_reserved_fields_rw : cross priv_mode_hs, hgatp_mode, g_pte_d_reserved, read_write_acc;
         cp_hgatp_reserved_fields_x  : cross priv_mode_hs, hgatp_mode, g_pte_i_reserved, exec_acc;
     `endif
 
+    // Coverpoint: cp_vsatp_ppn_field
     cp_vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
+    // Coverpoint: cp_vsatp_asidlen_detect
     cp_vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
 
+    // Coverpoint: cp_hgatp_ppn_field
     cp_hgatp_ppn_field:      cross priv_mode_hs, hgatp_mode, csrrw, hgatp, ppn_field_values;
+    // Coverpoint: cp_hgatp_vmidlen_detect
     cp_hgatp_vmidlen_detect: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, vmid_field_value;
 
+    // Coverpoint: cp_vsatp_mprv_effects
     cp_vsatp_mprv_effects_s: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, vs_pte_xwr100_s_d, read_write_acc;
     cp_vsatp_mprv_effects_u: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, vs_pte_xwr100_u_d, read_write_acc;
 
+    // Coverpoint: cp_hgatp_mprv_effects
     cp_hgatp_mprv_effects_m:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_m, hgatp_mode, g_pte_xwr100_d, acc_instr;
     cp_hgatp_mprv_effects_hs: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, mstatus_mpv_unset, hgatp_mode, g_pte_xwr100_d, acc_instr;
     cp_hgatp_mprv_effects_vs: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, mstatus_mpv_set  , hgatp_mode, g_pte_xwr100_d, acc_instr;
     cp_hgatp_mprv_effects_u:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, mstatus_mpv_unset, hgatp_mode, g_pte_xwr100_d, acc_instr;
     cp_hgatp_mprv_effects_vu: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, mstatus_mpv_set  , hgatp_mode, g_pte_xwr100_d, acc_instr;
 
+    // Coverpoint: cp_vsatp_endianess
     cp_vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, vs_pte_xwr111_d, read_write_acc;
+    // Coverpoint: cp_hgatp_tvm_effects
     cp_hgatp_tvm_effects: cross priv_mode_hs, tvm_mstatus, csrrw, hgatp;
 
+    // Coverpoint: cp_vsatp_pte_rsw
     cp_vsatp_pte_rsw: cross priv_mode_vs, vsatp_mode, vs_pte_rsw, read_write_acc;
+    // Coverpoint: cp_hgatp_pte_rsw
     cp_hgatp_pte_rsw: cross priv_mode_hs, hgatp_mode, g_pte_rsw, read_write_acc;
 
+    // Coverpoint: cp_vsatp_invalid_pte
     cp_vsatp_invalid_pte_rw: cross priv_mode_hs, vsatp_mode, vs_pte_d_inv, read_write_acc;
     cp_vsatp_invalid_pte_x:  cross priv_mode_hs, vsatp_mode, vs_pte_i_inv, exec_acc;
 
+    // Coverpoint: cp_hgatp_invalid_pte
     cp_hgatp_invalid_pte_rw: cross priv_mode_hs, hgatp_mode, g_pte_d_inv, read_write_acc;
     cp_hgatp_invalid_pte_x:  cross priv_mode_hs, hgatp_mode, g_pte_i_inv, exec_acc;
 
+    // Coverpoint: cp_vsatp_sum_effects  (+ sheet row vsatp_sum_set subsumed here)
     cp_vsatp_sum_effects_rw: cross priv_mode_vs, sum_vsstatus, vs_pte_xwr111_u_d, read_write_acc;
     cp_vsatp_sum_effects_x : cross priv_mode_vs, sum_vsstatus, vs_pte_xwr111_u_i, exec_acc;
 
+    // Coverpoint: cp_vsatp_nonleaf_lvl0
     cp_vsatp_nonleaf_lvl0_rw: cross priv_mode_vs, vsatp_mode, vs_pte_nonleaf_lvl0_d, read_write_acc;
     cp_vsatp_nonleaf_lvl0_x:  cross priv_mode_vs, vsatp_mode, vs_pte_nonleaf_lvl0_i, exec_acc;
 
+    // Coverpoint: cp_hgatp_nonleaf_lvl0
     cp_hgatp_nonleaf_lvl0_rw: cross priv_mode_hs, hgatp_mode, g_pte_nonleaf_lvl0_d, read_write_acc;
     cp_hgatp_nonleaf_lvl0_x:  cross priv_mode_hs, hgatp_mode, g_pte_nonleaf_lvl0_i, exec_acc;
 
+    // Coverpoint: cp_vsstatus_mxr_sum
     cp_vsstatus_mxr_sum_rw: cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, vs_pte_xwr_comb_d, read_write_acc;
     cp_vsstatus_mxr_sum_x:  cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, vs_pte_xwr_comb_i, exec_acc;
 
+    // Coverpoint: cp_vsatp_spages_sum_rwx
     cp_vsatp_spages_sum_rw: cross priv_mode_vs, vsatp_mode, sum_vsstatus, vs_pte_legal_xwr_d, read_write_acc;
     cp_vsatp_spages_sum_x:  cross priv_mode_vs, vsatp_mode, sum_vsstatus, vs_pte_legal_xwr_i, exec_acc;
 
+    // Coverpoint: cp_vsatp_perm_checks
     cp_vsatp_perm_checks_rw: cross priv_mode_vs_vu, vsatp_mode, vs_pte_uxwr_perm_d, read_write_acc;
     cp_vsatp_perm_checks_x:  cross priv_mode_vs_vu, vsatp_mode, vs_pte_uxwr_perm_i, exec_acc;
 
+    // Coverpoint: cp_hgatp_perm_checks
     cp_hgatp_perm_checks_rw: cross priv_mode_vs_vu, hgatp_mode, g_pte_uxwr_perm_d, read_write_acc;
     cp_hgatp_perm_checks_x:  cross priv_mode_vs_vu, hgatp_mode, g_pte_uxwr_perm_i, exec_acc;
 
+    // Coverpoint: cp_hgatp_adbit_behavior
     cp_hgatp_adbit_behavior: cross priv_mode_hs, g_pte_ad_unset, vs_pte_ad, read_write_acc;
+    // Coverpoint: cp_hgatp_vmid_scoping
     cp_hgatp_vmid_scoping:   cross priv_mode_hs, hgatp_mode, read_after_write, hgatp, vmid_field_value;
 
+    // Coverpoint: cp_hgatp_u_mode_access
     cp_hgatp_u_mode_access_rw: cross priv_mode_hs, hgatp_mode, vsatp_bare, g_pte_d_u, read_write_acc;
     cp_hgatp_u_mode_access_x:  cross priv_mode_hs, hgatp_mode, vsatp_bare, g_pte_i_u, exec_acc;
 
+    // Coverpoint: hgatp_pte_g_bit
     cp_hgatp_pte_g_bit_rw: cross priv_mode_hs, hgatp_mode, g_pte_d_g_set, read_write_acc;
     cp_hgatp_pte_g_bit_x:  cross priv_mode_hs, hgatp_mode, g_pte_i_g_set, exec_acc;
 
 endgroup
 
-function void vmh_sample(int hart, int issue, ins_t ins);
+function void svh_sample(int hart, int issue, ins_t ins);
     SvH_cg.sample(ins);
 endfunction

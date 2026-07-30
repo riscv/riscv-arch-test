@@ -125,6 +125,11 @@ interface rvviTrace
   wire [(PA_BITS-1):0]  phys_adr_d     [(NHART-1):0][(RETIRE-1):0]; // Data physical address
   wire [(XLEN-1):0]     pte_i          [(NHART-1):0][(RETIRE-1):0]; // Instruction page table entry
   wire [(XLEN-1):0]     pte_d          [(NHART-1):0][(RETIRE-1):0]; // Data page table entry
+  // Hypervisor two-stage PTEs (VS-stage + G-stage); used by SvH coverpoints
+  wire [(XLEN-1):0]     vs_pte_i       [(NHART-1):0][(RETIRE-1):0];
+  wire [(XLEN-1):0]     vs_pte_d       [(NHART-1):0][(RETIRE-1):0];
+  wire [(XLEN-1):0]     g_pte_i        [(NHART-1):0][(RETIRE-1):0];
+  wire [(XLEN-1):0]     g_pte_d        [(NHART-1):0][(RETIRE-1):0];
   wire [(PPN_BITS-1):0] ppn_i          [(NHART-1):0][(RETIRE-1):0]; // Instruction physical page number
   wire [(PPN_BITS-1):0] ppn_d          [(NHART-1):0][(RETIRE-1):0]; // Data physical page number
   wire [1:0]            page_type_i    [(NHART-1):0][(RETIRE-1):0]; // Instruction page type

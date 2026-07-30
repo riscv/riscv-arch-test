@@ -32,6 +32,10 @@ lint.ignore = [
 ]
 lint.preview = true
 
+##### PYPROJECT-FMT CONFIG #####
+[tool.pyproject-fmt]
+keep_full_version = true
+
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
 pythonVersion = "3.10"

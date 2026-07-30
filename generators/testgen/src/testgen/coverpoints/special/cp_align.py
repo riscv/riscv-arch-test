@@ -8,7 +8,6 @@
 """cp_align coverpoint generator."""
 
 from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
-from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -69,7 +68,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     test_data.add_testcase(f"b{alignment}", coverpoint),
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
-                    "#ifdef RVTEST_SELFCHECK",
                     f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
                     write_sigupd(params.temp_reg, test_data),
                 ]
@@ -82,19 +80,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                         write_sigupd(params.temp_reg, test_data),
                     ]
                 )
-            tc.code.extend(
-                [
-                    "#else",
-                    f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # repeat store so it is available for checking",
-                    f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # adjust base address for offset",
-                    f"{INDENT}# nops to ensure length matches SELFCHECK",
-                    "nop",
-                    "nop",
-                    "nop",
-                    "#endif",
-                    "",
-                ]
-            )
+            tc.code.append("")
 
         elif instr_type == "A":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0])

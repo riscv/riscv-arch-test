@@ -2,20 +2,24 @@
 # testgen python project configuration file for riscv-arch-test
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9.4,<0.12" ]
 
 [project]
 name = "testgen"
 version = "0.5.0"
 description = "RISC-V Architectural Certification Test Generator"
 # readme = "README.md"
-authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
+authors = [ { name = "Jordan Carlin", email = "jcarlin@hmc.edu" } ]
 requires-python = ">=3.10"
-dependencies = ["typer>=0.23.1", "rich>=14.3.4"]
-
-[project.scripts]
-testgen = "testgen.cli:main"
-
-##### BUILD #####
-[build-system]
-requires = ["uv_build>=0.9.4,<0.12.0"]
-build-backend = "uv_build"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [ "rich>=14.3.4", "typer>=0.23.1" ]
+scripts.testgen = "testgen.cli:main"

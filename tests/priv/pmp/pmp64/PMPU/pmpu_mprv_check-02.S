@@ -27,9 +27,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_mprv_check-02.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 

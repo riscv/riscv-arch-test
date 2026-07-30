@@ -6,10 +6,11 @@
 ##################################
 
 from testgen.asm.vector_helpers import (
-    load_vec_reg,
-    prep_base_v,
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
     prep_mask_v,
-    reload_vtype,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -90,7 +91,6 @@ def format_vv_like_type(
 
     # Set up the instructions: Mask, vd (potentially preloaded), vs2 (at correct lmul)
     setup = []
-    registers = [params.vd, params.vs2]
 
     # Setup Mask
     if params.maskval:
@@ -100,48 +100,23 @@ def format_vv_like_type(
     # This must be true because above we asserted, params.lmul is not None or lmul_override is not None
     assert lmul is not None
 
-    # Preload vd at vlmax
-    vd_preloaded = False
-    if params.vector_suite == "length":
-        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0"))
-        vd_preloaded = True
-        registers.remove(params.vd)
-
-    # Whole register moves don't care about vl, so they need to be loaded at vlmax in all length suite cases
-    vs2_preloaded = False
-    if params.vector_suite == "length" and preload_vs2:
-        setup.extend(
-            load_vec_reg(params.vs2, params.vs2_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0")
-        )
-        vs2_preloaded = True
-        registers.remove(params.vs2)
-
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
-    setup.extend(prep_lines)
-
-    if not vd_preloaded:
-        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=lmul_override))
-
+    vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
+    vs2_vl = params.vl if params.vector_suite == "base" or not preload_vs2 else "vlmax"
     vs2_lmul = max(lmul * vs2_lmul_multiplier, 1) if not vs2_mask else 1
-    if vs2_lmul == lmul or vs2_preloaded:
-        vs2_lmul = None  # Don't override anything
     vs2_sew = int(params.sew * vs2_lmul_multiplier)
 
-    if not vs2_preloaded:
-        setup.extend(
-            load_vec_reg(
-                params.vs2,
-                params.vs2_val_pointer,
-                params,
-                sew_override=vs2_sew,
-                lmul=vs2_lmul,
-            )
-        )
+    to_load = [
+        VectorLoad(reg="vd", vl=vd_vl, lmul=lmul, no_fractional_load=True),
+        VectorLoad(reg="vs2", vl=vs2_vl, lmul=vs2_lmul, sew=vs2_sew),
+    ]
 
-    if vs2_lmul is not None or lmul_override is not None:  # Then we overrode lmul in the vs2 load
-        setup.append(reload_vtype(params, vl_register_or_imm))
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    setup.extend(load_code)
+    setup.append(load_test_vtype(params, random_vl_reg))
+
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     if params.maskval:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v0.t"]
@@ -156,5 +131,7 @@ def format_vv_like_type(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
+
+    handle_lmul_ifdef(lmul, setup, check)
 
     return (setup, test, check)

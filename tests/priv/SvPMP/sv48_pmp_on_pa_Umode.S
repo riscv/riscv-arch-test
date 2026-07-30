@@ -25,7 +25,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_pmp_on_pa_Umode.S"
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 80
 #define BOOT_TO_MMODE
@@ -103,7 +102,7 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr1, t2)
+  csrw pmpaddr1, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

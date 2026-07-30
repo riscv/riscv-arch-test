@@ -3,8 +3,9 @@
 [tools]
 prek = "0.4.10"
 ruby = "3.4.10"
-uv = "0.11.29"
-"gem:bundler" = "4.0.16"
+shellcheck = "0.11.0"
+uv = "0.11.31"
+"gem:bundler" = "4.0.17"
 
 [settings.ruby]
 compile = false

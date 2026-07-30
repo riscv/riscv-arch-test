@@ -23,6 +23,7 @@ from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
+VectorInstructionFormatter = Callable[[str, TestData, InstructionParams, str], tuple[list[str], list[str], list[str]]]
 
 
 class MissingInstructionFormatterError(MissingRegistryItemError):

@@ -118,7 +118,7 @@ GEM
     rubyzip (3.4.1)
     securerandom (0.4.1)
     simpleidn (0.2.3)
-    sorbet-runtime (0.6.13342)
+    sorbet-runtime (0.6.13363)
     strings (0.2.1)
       strings-ansi (~> 0.2)
       unicode-display_width (>= 1.5, < 3.0)
@@ -273,7 +273,7 @@ CHECKSUMS
   rubyzip (3.4.1) sha256=0a79e745b5c25872ebd148457df5665da8530ed8626c993b01457128f173ca02
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   simpleidn (0.2.3) sha256=08ce96f03fa1605286be22651ba0fc9c0b2d6272c9b27a260bc88be05b0d2c29
-  sorbet-runtime (0.6.13342) sha256=dbeb9892597f593ed2b29e38018912787f6c4e0c4b736d8af0d6bd3c63bde3c3
+  sorbet-runtime (0.6.13363) sha256=f1f0b2e946fb3cd76b9d8e3d85459cdaf7f5466331a400cafcf008e508b6d2c3
   strings (0.2.1) sha256=933293b3c95cf85b81eb44b3cf673e3087661ba739bbadfeadf442083158d6fb
   strings-ansi (0.2.0) sha256=90262d760ea4a94cc2ae8d58205277a343409c288cbe7c29416b1826bd511c88
   terminal-table (4.0.0) sha256=f504793203f8251b2ea7c7068333053f0beeea26093ec9962e62ea79f94301d2
@@ -304,4 +304,4 @@ RUBY VERSION
   ruby 3.4.10
 
 BUNDLED WITH
-  4.0.16
+  4.0.17

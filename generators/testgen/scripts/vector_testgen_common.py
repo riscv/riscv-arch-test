@@ -712,6 +712,8 @@ widening_mac_ins = [
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
+saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx", "vsmul.vv", "vsmul.vx"]
+
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",
 
@@ -1610,8 +1612,6 @@ def getPrivExtraDefines(sew):
     sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
-        "#define rvtest_mtrap_routine",
-        "#define rvtest_strap_routine",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
         f"#define SEWMINSIZE e{minSEW_MIN}",
@@ -1758,7 +1758,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@MARCH@", march.lower())
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
-        .replace("@TEST_FILE_NAME@", f"{test}.S")
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
@@ -1806,6 +1805,37 @@ def writeSIGUPD_F(fd):
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
     writeLine(f"{str_ptr}:")
     writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {str_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
+
+def writeSIGUPD_FFLAGS(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 14)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_FFLAGS(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check fflags in signature")
+
+def writeSIGUPD_VXSAT(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 14)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
+
 
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
 
@@ -2442,7 +2472,6 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"vsetivli x0, 1, e{sew}, m{lmulflag}, tu, mu", "# Restore valid vtype after vill test")
 
     if (priv):
-      writeLine("nop",                                           "# nop after possible trap")
       # The test instruction may have trapped or otherwise left mstatus.VS in a
       # state where vector CSR access (csrw vstart) is itself illegal. Restore
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
@@ -2474,10 +2503,10 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
         writeLine(reset_vl_post_load, "# reset vl to the previous value")
 
     if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
-      fcsrsaveReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(fcsrsaveReg)
-      writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
-      writeSIGUPD(inst_ptr, fcsrsaveReg)
+      writeSIGUPD_FFLAGS(inst_ptr)
+
+    if test in saturating_ins:
+      writeSIGUPD_VXSAT(inst_ptr)
 
     if skip_sigupd:
       # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.
@@ -2852,6 +2881,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
     if instruction in vfloattypes and clear_fflags:
       writeLine("fsflagsi 0b00000", "# clear all fflags")
 
+    if instruction in saturating_ins:
+      writeLine("csrwi vxsat, 0", "# clear vxsat bit")
+
     # If mask value specified, load to v0 (must be before prepBaseV for types that
     # do their own vsetvli, so prepBaseV restores the correct vl/vtype afterward)
     if maskval is not None and maskval != "zeroes":
@@ -3056,7 +3088,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         # _LMUL (= sig_lmul, capped to integer EMUL since whole-register/mask
         # paths use sig_lmul=1 and fractional groups fit in one register).
         sig_emul = max(int(sig_lmul), 1) if sig_lmul is not None and sig_lmul >= 1 else 1
-        reload_zero_lmul = getLmulFlag(sig_emul)
+        # Whole-register store reloads zero each physical destination register individually.
+        # Use LMUL=1 for that setup so v8/v9/... are all legal vmv.v.i destinations.
+        reload_zero_lmul = 1 if instruction in whole_register_stores else getLmulFlag(sig_emul)
         default_lmul_flag = getLmulFlag(lmul)
         reload_pre_init = [
           f"csrr x{mi_t1}, vl",

@@ -31,7 +31,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_global_pte_Smode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 10
 
@@ -126,7 +125,7 @@ main:
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL3, test1_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -147,7 +146,7 @@ main:
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL2, test2_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -169,7 +168,7 @@ main:
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test3_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
@@ -192,7 +191,7 @@ main:
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test4_access1
 
-  CSRR( t0, satp)                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
+  csrr  t0, satp                                          // Extract ASID (Sv48, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)

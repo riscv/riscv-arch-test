@@ -23,7 +23,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_pmp_on_pa_zicbom_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 60
 #define BOOT_TO_MMODE
@@ -88,7 +87,7 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_X)
   pmpcfg0_x:
@@ -121,8 +120,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of Zicbom instructions in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

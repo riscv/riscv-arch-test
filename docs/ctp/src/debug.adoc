@@ -7,6 +7,8 @@ External debug needs to be able to perform register I/O to the debug module, suc
 
 A suggested approach is to require all of DM, DTM, and Sdext supported together for systems with External Debug, and to have a testbench send JTAG commands via DTM to the DTM to exercise Debug Mode.
 
+Note that Sdtrig is described in <<Sdtrig Debug Triggers>>.
+
 ==== DM Debug Module
 
 ==== DTM Debug Transport Module

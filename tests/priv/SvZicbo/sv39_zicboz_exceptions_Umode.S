@@ -84,7 +84,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_zicboz_exceptions_Umode.S"
 #define SIGUPD_COUNT 40
 
 
@@ -176,8 +175,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBZE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of cbo.zero in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

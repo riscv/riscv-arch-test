@@ -1156,6 +1156,14 @@ common_\__MODE__\()entry:                        // common entry for all traps i
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
+
+        // ---- Global trap counter: shared by every privilege mode's handler ----
+        // T1..T4 were just saved above, so they are free scratch here.
+        LA(     T1, rvtest_trap_count)          // T1 = address of trap_count
+        LREG    T2, 0(T1)                        // T2 = current count
+        addi    T2, T2, 1                         // count++
+        SREG    T2, 0(T1)                        // store back
+
         csrr    T5, CSR_XCAUSE                   // T5 = xcause (T5 is x14, so caller's a0 is NOT disturbed)
 
 //==============================================================================
@@ -1594,7 +1602,7 @@ tsbi_instr_table_search_loop:
 found_instr:
         mv      T4, ra                          // preserve caller's ra (T4's live value is already saved; restored by resto)
         LA(     ra, tsbi_instr_rtn)             // table entries end in ret: link them to the epilogue below
-        jr      T2                                   // jump to the matching instruction in the table
+        jr      T2                              // jump to the matching instruction in the table
 tsbi_instr_rtn:
         mv      ra, T4                          // restore caller's ra
         csrr    T3, CSR_XEPC                    // T3 = xepc (ecall address)
@@ -1658,6 +1666,16 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
         TSBI_CSR_INSTR_TABLE(0x180) // satp
+        TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
+        TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
+        TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2
+        TSBI_CSR_INSTR_TABLE(0x7A3) // tdata3
+        TSBI_CSR_INSTR_TABLE(0x7A4) // tinfo
+        TSBI_CSR_INSTR_TABLE(0x7A5) // tcontrol
+        TSBI_CSR_INSTR_TABLE(0x7A8) // mcontext
+        TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
+        TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
+        TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
         // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
         lw a0, 0(a1)
         ret
@@ -1990,7 +2008,13 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
+#ifdef SDTRIG_IMPRECISE_XEPC
+        csrr    T2, CSR_XCAUSE                        // breakpoint-trigger epc differs across DUTs (trigger fires
+        LI(     T6, CAUSE_BREAKPOINT)                 //   at a slightly different instr) -> don't record xEPC for
+        beq     T2, T6, skpsv_\__MODE__\()epc         //   mcause==3, else self-check mismatches on word 2
+#endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
+skpsv_\__MODE__\()epc:
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
 
         csrr    T2, CSR_XCAUSE

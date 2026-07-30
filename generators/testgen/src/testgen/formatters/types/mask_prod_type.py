@@ -6,10 +6,11 @@
 ##################################
 
 from testgen.asm.vector_helpers import (
-    load_vec_reg,
-    prep_base_v,
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
     prep_mask_v,
-    reload_vtype,
     write_sigupd_v,
     write_sigupd_v_len,
     write_sigupd_v_mask_prod,
@@ -203,86 +204,61 @@ def format_mask_producing_type(
     setup = []
 
     # Setup Mask
+    mask_copy_reg = None
+    load_vd = True
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True, vd_v0=params.vd == 0))
         if 0 in vec_regs_to_setup:
             vec_regs_to_setup.remove(0)
 
-    # vl_register_or_imm is useful if we ever overwrite vl as it allows us to easily restore it
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, vec_regs_to_setup)
-    setup.extend(prep_lines)
+        if params.vd == 0 and params.vector_suite == "length":
+            mask_copy_reg = test_data.vec_regs.get_register(lmul=1)
+            setup.extend(
+                [
+                    "# Because vd = v0, we will not overwrite it with a mask value, instead because the",
+                    f"# operation will overwrite v0, we will store a copy of the mask in v{mask_copy_reg}",
+                    f"vmand.mm v{mask_copy_reg}, v0, v0",
+                ]
+            )
+            load_vd = False
 
-    testline = f"{instr_str} "
-
-    #########
-    # Load vd as a mask, unless it is v0
-    #########
-    mask_copy_reg = None  # In length suite, when vd = v0 we need a copy of the mask
-    if not (params.maskval is not None and params.vd == 0):
+    to_load = []
+    # Load vd
+    if load_vd:
         assert params.vd is not None and params.vd_val_pointer is not None, (
             f"vd and vd_val_pointer must be provided for {type_name}-type instructions"
         )
         assert "vd" in mask_registers, f"vd must be a mask register for {type_name}-type instructions"
-        setup.extend(
-            load_vec_reg(
-                params.vd,
-                params.vd_val_pointer,
-                params,
-                lmul=1,
-                vl_register_or_imm="x0",
-            )
-        )
+        to_load.append(VectorLoad(reg="vd", lmul=1, vl="vlmax"))
         test_data.test_chunk.vector_labels.append(
             (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer]),
         )
-    elif params.vector_suite == "length" and params.maskval is not None:
-        mask_copy_reg = test_data.vec_regs.get_register(lmul=1)
-        setup.extend(
-            [
-                "# Because vd = v0, we will not overwrite it with a mask value, instead because the",
-                f"# operation will overwrite v0, we will store a copy of the mask in v{mask_copy_reg}",
-                f"vmand.mm v{mask_copy_reg}, v0, v0",
-            ]
-        )
-    testline += f"v{params.vd}"
 
-    ##############
-    # Load vs2, and respect it if it is used as a mask
-    #############
+    # vs2 is always loaded
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
         f"vs2 and vs2_val_pointer must be provided for {type_name}-type instructions"
     )
     assert "vs2" in registers, "VS2 must be in registers for a mask producing operation"
     vs2_lmul = 1 if "vs2" in mask_registers else max(params.lmul, 1)
-    vs2_vl = "x0" if "vs2" in mask_registers else vl_register_or_imm
-    setup.extend(
-        load_vec_reg(
-            params.vs2,
-            params.vs2_val_pointer,
-            params,
-            lmul=vs2_lmul,
-            vl_register_or_imm=vs2_vl,
-        )
-    )
+    vs2_vl = "vlmax" if "vs2" in mask_registers else params.vl
+    to_load.append(VectorLoad(reg="vs2", lmul=vs2_lmul, vl=vs2_vl))
     test_data.test_chunk.vector_labels.append(
-        (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
+        (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer])
     )
-    testline += f", v{params.vs2}"
 
-    ###############
-    # Load the third operand (rs1 or vs1)
-    ###############
+    # Load a third operand (if present)
+    testline = f"{instr_str} v{params.vd}, v{params.vs2}"
     if "vs1" in registers:
         assert params.vs1 is not None and params.vs1_val_pointer is not None, (
             f"vs1 and vs1_val_pointer must be provided for {type_name}-type instructions"
         )
         vs1_lmul = 1 if "vs1" in mask_registers else max(params.lmul, 1)
-        vs1_vl = "x0" if "vs1" in mask_registers else vl_register_or_imm
-        setup.extend(load_vec_reg(params.vs1, params.vs1_val_pointer, params, lmul=vs1_lmul, vl_register_or_imm=vs1_vl))
+        vs1_vl = "vlmax" if "vs1" in mask_registers else params.vl
+        to_load.append(VectorLoad(reg="vs1", lmul=vs1_lmul, vl=vs1_vl))
+        testline += f", v{params.vs1}"
         test_data.test_chunk.vector_labels.append(
             (params.vs1_val_pointer, *test_data.vector_labels[params.vs1_val_pointer]),
         )
-        testline += f", v{params.vs1}"
     elif "rs1" in registers:
         assert params.rs1 is not None and params.rs1val is not None, (
             f"rs1 and rs1val must be provided for {type_name}-type instructions"
@@ -292,10 +268,10 @@ def format_mask_producing_type(
     elif "immval" in registers:
         assert params.immval is not None, f"immval must be provided for {type_name}-type instructions"
         testline += f", {params.immval}"
-    # MM operations don't have a third operand
 
-    # Ensure vtype is correct for the instruction
-    setup.append(reload_vtype(params, vl_register_or_imm))
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    setup.extend(load_code)
+    setup.append(load_test_vtype(params, random_vl_reg))
 
     if params.maskval and not no_dot_t:
         test = [f"{testline}, v0.t"]
@@ -312,9 +288,12 @@ def format_mask_producing_type(
             recover_mask = [f"vmand.mm v0, v{mask_reg}, v{mask_reg}"]
 
         if force_full_length_check:
-            vlmax_vsetvli = f"# The spec says for mask-logical and vmsbf, vmsif, and vmsof, that the vlmax check is run at LMUL=8, SEW=8\nvsetvli x{params.temp_reg}, x0, e8, m8, tu, mu"
+            vlmax_vsetvli = [
+                "# The spec says for mask-logical and vmsbf, vmsif, and vmsof, that the vlmax check is run at LMUL=8, SEW=8",
+                f"vsetvli x{params.temp_reg}, x0, e8, m8, tu, mu",
+            ]
         else:
-            vlmax_vsetvli = reload_vtype(params, "x0")
+            vlmax_vsetvli = [load_test_vtype(params, random_vl_reg, force_vlmax=True)]
 
         check = [
             *write_sigupd_v_len(test_data, params, 1, lmul=1, mask_producing=True, mask_reg=mask_reg),
@@ -323,7 +302,7 @@ def format_mask_producing_type(
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",
             "# So, we may have to recover that value.",
             *recover_mask,
-            vlmax_vsetvli,
+            *vlmax_vsetvli,
             test[0],
             "# This sigupd variant saves this result to the signature in non-selfcheck mode, and no-ops in selfcheck mode",
             *write_sigupd_v_mask_prod(test_data, params),
@@ -338,8 +317,10 @@ def format_mask_producing_type(
     if params.maskval and params.vd != 0:
         test_data.vec_regs.return_register(0)
 
-    # Now we are done with the vl register
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
+
+    handle_lmul_ifdef(params.lmul, setup, check)
 
     return (setup, test, check)

@@ -37,10 +37,10 @@ git init "$INSTALL_DIR/cv32e20-dv"
 
 # 3. Verilate the rv32imc config (RTL hash pinned in sim/ExternalRepos.mk).
 make -C "$INSTALL_DIR/cv32e20-dv/sim/core" \
-    verilate \
-    TEST=certification \
-    -j"$(nproc)"
+  verilate \
+  TEST=certification \
+  -j"$(nproc)"
 
 # 4. Install the cv32e20 per-test wrapper.
 install -m 0755 "$INSTALL_DIR/cv32e20-dv/.github/scripts/run-cv32e20.sh" \
-                "$INSTALL_DIR/bin/run-cv32e20.sh"
+  "$INSTALL_DIR/bin/run-cv32e20.sh"

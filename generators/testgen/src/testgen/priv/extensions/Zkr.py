@@ -71,10 +71,8 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x{src_reg}",
-                    "nop",
                     test_data.add_testcase(f"S_zero_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -87,10 +85,8 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x{src_reg}",
-                    "nop",
                     test_data.add_testcase(f"U_zero_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -176,7 +172,6 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     instr,
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -189,7 +184,6 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     instr,
-                    "nop",
                     "RVTEST_GOTO_MMODE",
                     "#endif",
                 ]
@@ -237,16 +231,16 @@ def _generate_seed_entropy_zero_non_es16_tests(test_data: TestData) -> list[str]
             f"LI(x{entropy_reg}, 0xFFFF)",
             "# Check OPST value",
             f"LI(x{cmp_reg}, 0x2)",
-            f"bne x{opst_reg}, x{cmp_reg}, 1f",
+            f"bne x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_non_es16",
             "# SIGUPD 0x0BADBEEF if OPST is ES16",
             f"LI(x{cmp_reg}, 0xB0BA)",
             write_sigupd(cmp_reg, test_data),
-            "j 2f",
-            "1:",
+            "j .Lzkr_seed_entropy_done",
+            ".Lzkr_seed_entropy_non_es16:",
             "# If OPST is not ES16",
             f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
             write_sigupd(entropy_reg, test_data),
-            "2:",
+            ".Lzkr_seed_entropy_done:",
         ]
     )
 

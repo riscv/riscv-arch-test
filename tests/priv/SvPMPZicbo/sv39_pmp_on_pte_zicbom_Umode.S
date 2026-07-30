@@ -31,7 +31,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_pmp_on_pte_zicbom_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 50
 #define BOOT_TO_MMODE
@@ -114,8 +113,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of Zicbom instructions in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -127,7 +126,7 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_X)
   write_pmpcfg0:
@@ -160,7 +159,7 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 1
@@ -186,7 +185,7 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 0

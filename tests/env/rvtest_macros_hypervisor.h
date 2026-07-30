@@ -10,6 +10,8 @@
 #define sv48x4 0x02
 #define sv57x4 0x03
 
+// VS-stage modes sv32/sv39/sv48/sv57 live in rvtest_macros.h
+
 #define PA  0x0
 #define GPA 0x1
 

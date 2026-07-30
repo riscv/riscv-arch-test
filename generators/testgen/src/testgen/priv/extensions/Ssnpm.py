@@ -296,16 +296,16 @@ def _emit_vm_teardown(mode: str) -> list[str]:
 
 def _set_pmm(pmm_val: int, pmlen: int, tmp_reg: int) -> list[str]:
     """
-    Set senvcfg.PMM using the register-form CSRC/CSRS macros
+    Set senvcfg.PMM = pmm_val (00=disabled, 10=PMLEN=7, 11=PMLEN=16)
     """
     mask = 0b11 << _SENVCFG_PMM_SHIFT
     field = pmm_val << _SENVCFG_PMM_SHIFT
     return [
         f"    # Set senvcfg.PMM = {pmm_val:#04b} (PMLEN={pmlen})",
         f"    {_li(tmp_reg, mask)}",
-        f"    CSRC(senvcfg, x{tmp_reg})       # clear PMM bits [33:32]",
+        f"    csrc senvcfg, x{tmp_reg}       # clear PMM bits [33:32]",
         f"    {_li(tmp_reg, field)}",
-        f"    CSRS(senvcfg, x{tmp_reg})       # set PMM field",
+        f"    csrs senvcfg, x{tmp_reg}        # set PMM field",
     ]
 
 
@@ -323,9 +323,9 @@ def _enable_cbo_envcfg(tmp_reg: int) -> list[str]:
     return [
         "    # Permit cbo.zero/cbo.clean/cbo.flush/cbo.inval in U-mode",
         f"    {_li(tmp_reg, mask)}",
-        f"    CSRC(senvcfg, x{tmp_reg})       # clear CBIE/CBCFE/CBZE fields",
+        f"    csrc senvcfg, x{tmp_reg}        # clear CBIE/CBCFE/CBZE fields",
         f"    {_li(tmp_reg, field)}",
-        f"    CSRS(senvcfg, x{tmp_reg})       # CBIE=11, CBCFE=1, CBZE=1",
+        f"    csrs senvcfg, x{tmp_reg}        # CBIE=11, CBCFE=1, CBZE=1",
     ]
 
 
@@ -413,31 +413,28 @@ def _emit_amo_test(
     return lines
 
 
-def _emit_zacas_test(amo_mn: str, test_id: str, test_data: TestData, REG_A: int, REG_BASE: int) -> list[str]:
+def _emit_zacas_test(
+    amo_mn: str, test_id: str, test_data: TestData, REG_A: int, REG_BASE: int, REG_RD: int, REG_RS2: int
+) -> list[str]:
     """
-    amocas.w/d needs rd AND rs2 to each be even-numbered.
-
-    set rd (comparand) = VALUE_OLD, rs2 (new value) = VALUE_NEW.
-    masking worked -> A resolves to scratch, whose content we just
-                    reseeded to VALUE_OLD -> compare succeeds ->
-                    rs2 (VALUE_NEW) gets written -> readback=VALUE_NEW
+    amocas.w/amocas.d (RV64): operand width (32b/64b) fits within a single
+    XLEN=64 register, so rd/rs2 do NOT need to be an even/odd register pair.
+    That pairing rule only applies to amocas.q (128b), which is not emitted
+    here (see _ZACAS_AMOS). Reuse REG_RD/REG_RS2, already reserved for this
+    block, instead of allocating a fresh pair -- the priv register pool is
+    too small (6 regs total after priv.py's exclusions) to spare a pair.
     """
-    even_reg = test_data.int_regs.get_register_pair()
-    rd = even_reg
-    rs2 = even_reg + 1
-
     lines = [f"    # ---- AMO {amo_mn} (Zacas) [{test_id}] ----"]
-    lines += _reseed_scratch(REG_BASE, rd)
+    lines += _reseed_scratch(REG_BASE, REG_RD)
     lines += [
-        f"    {_li(rd, VALUE_OLD)}     # comparand: must match scratch's current value",
-        f"    {_li(rs2, VALUE_NEW)}    # value written on successful compare",
+        f"    {_li(REG_RD, VALUE_OLD)}     # comparand: must match scratch's current value",
+        f"    {_li(REG_RS2, VALUE_NEW)}    # value written on successful compare",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {amo_mn}   x{rd}, x{rs2}, (x{REG_A})",
+        f"    {amo_mn}   x{REG_RD}, x{REG_RS2}, (x{REG_A})",
         "    nop                     # trap handler skips next instr if this traps",
-        f"    ld    x{rd}, 0(x{REG_BASE})",
-        write_sigupd(rd, test_data),
+        f"    ld    x{REG_RD}, 0(x{REG_BASE})",
+        write_sigupd(REG_RD, test_data),
     ]
-    test_data.int_regs.return_register_pair(even_reg)
     return lines
 
 
@@ -565,24 +562,29 @@ def _emit_fp_test(
 
 
 def _emit_c_read_cl_test(
-    load_mn: str, test_id: str, lines: list[str], test_data: TestData, REG_A: int, REG_BASE: int, REG_DATA: int
+    load_mn: str,
+    test_id: str,
+    lines: list[str],
+    test_data: TestData,
+    REG_A: int,
+    REG_BASE: int,
+    REG_TMP: int,
+    REG_DATA: int,
 ) -> None:
-    """
-    Zca READ test (c.lw/c.ld, CL format). rd'/rs1' both need x8-x15.
-    """
-    c_base, c_data = test_data.int_regs.get_registers(2, reg_range=list(range(8, 16)))
+    """Zca READ test (c.lw/c.ld, CL format). rd'/rs1' both need x8-x15.
+    Reuses REG_TMP/REG_DATA (pinned to x8-x15 in make_ssnpm) instead of
+    allocating fresh registers -- the priv pool has none to spare."""
     lines += [f"    # ── READ {load_mn} [{test_id}] ──"]
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
-        f"    mv    x{c_base}, x{REG_A}    # tagged address -> x8-x15 reg (CL-format base restriction)",
+        f"    mv    x{REG_TMP}, x{REG_A}    # tagged address -> x8-x15 reg (CL-format base restriction)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {load_mn}   x{c_data}, 0(x{c_base})",
+        f"    {load_mn}   x{REG_DATA}, 0(x{REG_TMP})",
         "    c.nop",
         "    c.nop",
         "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes (ExceptionsZc.py)",
-        write_sigupd(c_data, test_data),
+        write_sigupd(REG_DATA, test_data),
     ]
-    test_data.int_regs.return_registers([c_base, c_data])
 
 
 def _emit_c_write_cs_test(
@@ -593,47 +595,48 @@ def _emit_c_write_cs_test(
     test_data: TestData,
     REG_A: int,
     REG_BASE: int,
+    REG_TMP: int,
     REG_DATA: int,
 ) -> None:
-    """Zca WRITE test (c.sw/c.sd, CS format). rs1'/rs2' both need x8-x15;
-    readback is a normal load from REG_BASE so REG_BASE has no such restriction."""
-    c_base, c_data = test_data.int_regs.get_registers(2, reg_range=list(range(8, 16)))
+    """Zca WRITE test (c.sw/c.sd, CS format). rs1'/rs2' both need x8-x15."""
     lines += [f"    # ── WRITE {store_mn}/{load_mn} [{test_id}] ──"]
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
-        f"    mv    x{c_base}, x{REG_A}    # tagged address -> x8-x15 reg (CS-format base restriction)",
-        f"    {_li(c_data, VALUE_NEW)}",
+        f"    mv    x{REG_TMP}, x{REG_A}    # tagged address -> x8-x15 reg (CS-format base restriction)",
+        f"    {_li(REG_DATA, VALUE_NEW)}",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {store_mn}   x{c_data}, 0(x{c_base})",
+        f"    {store_mn}   x{REG_DATA}, 0(x{REG_TMP})",
         "    c.nop",
         "    c.nop",
         "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
-    test_data.int_regs.return_registers([c_base, c_data])
 
 
 def _emit_c_read_sp_test(
-    load_mn: str, test_id: str, lines: list[str], test_data: TestData, REG_A: int, REG_BASE: int, REG_DATA: int
+    load_mn: str,
+    test_id: str,
+    lines: list[str],
+    test_data: TestData,
+    REG_A: int,
+    REG_BASE: int,
+    REG_TMP: int,
+    REG_DATA: int,
 ) -> None:
-    """Zca READ test (c.lwsp/c.ldsp, CI format). Base hardwired to sp --
-    repoint sp at A, execute, restore sp immediately."""
-    c_savesp, c_data = test_data.int_regs.get_registers(2, reg_range=list(range(8, 16)))
     lines += [f"    # ── READ {load_mn} [{test_id}] ──"]
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
-        f"    mv    x{c_savesp}, sp       # save sp",
+        f"    mv    x{REG_TMP}, sp       # save sp",
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {load_mn}   x{c_data}, 0(sp)",
+        f"    {load_mn}   x{REG_DATA}, 0(sp)",
         "    c.nop",
         "    c.nop",
         "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
-        f"    mv    sp, x{c_savesp}       # restore sp immediately",
-        write_sigupd(c_data, test_data),
+        f"    mv    sp, x{REG_TMP}       # restore sp immediately",
+        write_sigupd(REG_DATA, test_data),
     ]
-    test_data.int_regs.return_registers([c_savesp, c_data])
 
 
 def _emit_c_write_sp_test(
@@ -644,26 +647,24 @@ def _emit_c_write_sp_test(
     test_data: TestData,
     REG_A: int,
     REG_BASE: int,
+    REG_TMP: int,
     REG_DATA: int,
 ) -> None:
-    """Zca WRITE test (c.swsp/c.sdsp, CSS format). Same sp-swap technique."""
-    c_savesp, c_data = test_data.int_regs.get_registers(2, reg_range=list(range(8, 16)))
     lines += [f"    # ── WRITE {store_mn}/{load_mn} [{test_id}] ──"]
     lines += _reseed_scratch(REG_BASE, REG_DATA)
     lines += [
-        f"    {_li(c_data, VALUE_NEW)}",
-        f"    mv    x{c_savesp}, sp       # save sp",
+        f"    {_li(REG_DATA, VALUE_NEW)}",
+        f"    mv    x{REG_TMP}, sp       # save sp",
         f"    mv    sp, x{REG_A}          # sp := tagged address A (temporary)",
         f"    {test_data.add_testcase(test_id, coverpoint, covergroup)}",
-        f"    {store_mn}   x{c_data}, 0(sp)",
+        f"    {store_mn}   x{REG_DATA}, 0(sp)",
         "    c.nop",
         "    c.nop",
         "    c.nop                   # trap handler skips 4 bytes; two c.nops == 4 bytes",
-        f"    mv    sp, x{c_savesp}       # restore sp immediately",
+        f"    mv    sp, x{REG_TMP}       # restore sp immediately",
         f"    {load_mn}    x{REG_DATA}, 0(x{REG_BASE})",
         write_sigupd(REG_DATA, test_data),
     ]
-    test_data.int_regs.return_registers([c_savesp, c_data])
 
 
 def _emit_cd_read_sp_test(
@@ -776,7 +777,7 @@ def _emit_pmm_satp_block(
         lines.append("#ifdef ZACAS_SUPPORTED")
         for amo_mn in _ZACAS_AMOS:
             tid_amo = f"{tid}_{amo_mn.replace('.', '_')}"
-            lines += _emit_zacas_test(amo_mn, tid_amo, test_data, REG_A, REG_BASE)
+            lines += _emit_zacas_test(amo_mn, tid_amo, test_data, REG_A, REG_BASE, REG_TMP, REG_SENV)
         lines.append("#endif  // ZACAS_SUPPORTED")
         lines.append("#endif  // ZAAMO_SUPPORTED")
 
@@ -796,19 +797,35 @@ def _emit_pmm_satp_block(
         lines.append("#ifdef ZCA_SUPPORTED")
         for load_mn in _ZCA_READS_CL:
             _emit_c_read_cl_test(
-                load_mn, f"{tid}_{load_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_DATA
+                load_mn, f"{tid}_{load_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_TMP, REG_DATA
             )
         for store_mn, load_mn in _ZCA_WRITES_CS:
             _emit_c_write_cs_test(
-                store_mn, load_mn, f"{tid}_{store_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_DATA
+                store_mn,
+                load_mn,
+                f"{tid}_{store_mn.replace('.', '_')}",
+                lines,
+                test_data,
+                REG_A,
+                REG_BASE,
+                REG_TMP,
+                REG_DATA,
             )
         for load_mn in _ZCA_READS_SP:
             _emit_c_read_sp_test(
-                load_mn, f"{tid}_{load_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_DATA
+                load_mn, f"{tid}_{load_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_TMP, REG_DATA
             )
         for store_mn, load_mn in _ZCA_WRITES_SP:
             _emit_c_write_sp_test(
-                store_mn, load_mn, f"{tid}_{store_mn.replace('.', '_')}", lines, test_data, REG_A, REG_BASE, REG_DATA
+                store_mn,
+                load_mn,
+                f"{tid}_{store_mn.replace('.', '_')}",
+                lines,
+                test_data,
+                REG_A,
+                REG_BASE,
+                REG_TMP,
+                REG_DATA,
             )
 
         lines.append("#ifdef ZCD_SUPPORTED")
@@ -862,7 +879,8 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
     lines: list[str] = _generate_data_section()
     lines.append(comment_banner("cp_pmlen_masking — Ssnpm (load/store step)"))
 
-    REG_BASE, REG_A, REG_TMP, REG_DATA, REG_SENV = test_data.int_regs.get_registers(5, exclude_regs=[])
+    REG_TMP, REG_DATA = test_data.int_regs.get_registers(2, reg_range=list(range(8, 16)))
+    REG_BASE, REG_A, REG_SENV = test_data.int_regs.get_registers(3, exclude_regs=[])
 
     REG_FP = test_data.float_regs.get_register()
 

@@ -195,7 +195,14 @@ _ZICBOP_OPS: list[str] = ["prefetch.r", "prefetch.w", "prefetch.i"]
 # Zicfiss shadow-stack atomics. Enabled through menvcfg.SSE + senvcfg.SSE; the
 # probe pages are ordinary data pages, so these are expected to fault -- what is
 # under test is that the address they fault on has been masked.
-_ZICFISS_AMOS: list[tuple[str, str]] = [("ssamoswap.w", "lw"), ("ssamoswap.d", "ld")]
+# (mnemonic, read-back load, funct3). Emitted as raw `.insn` rather than by
+# mnemonic: Zicfiss is still an *experimental* extension in LLVM (19 through at
+# least 20), so naming it in the march string or in a `.option arch` makes clang
+# reject the whole file with "requires '-menable-experimental-extensions'".
+# `.insn` encodes the bits directly and needs no extension enabled, while GNU as
+# and LLVM both accept it. The probes stay inside `#ifdef ZICFISS_SUPPORTED`, so
+# they are only emitted for configs that actually implement Zicfiss.
+_ZICFISS_AMOS: list[tuple[str, str, int]] = [("ssamoswap.w", "lw", 0x2), ("ssamoswap.d", "ld", 0x3)]
 
 # Vector loads: (mnemonic, SEW used to set vtype, asm template).
 # `{a}` is the tagged base register, `{t}` a scratch integer register.
@@ -264,28 +271,21 @@ def _li(reg: int, val: int) -> str:
     return f"LI(x{reg}, {hex(val)})"
 
 
-def _fixed(instr: str, arch: list[str] | None = None) -> list[str]:
+def _fixed(instr: str) -> list[str]:
     """Emit one instruction with a pinned 32-bit encoding.
 
-    ``norvc`` matters here: several probes put the base address in x8-x15, which
-    is exactly what lets the assembler fold e.g. ``ld x9, 0(x8)`` into ``c.ld``.
-    That would move the hit from the ``ld`` bin of ``pm_insn`` to the ``c_ld``
-    bin and silently leave a hole in the cross.
+
+    Extension availability comes from the suite's ``march_extensions`` rather
+    than a local ``.option arch``: no other suite in the repo uses that
+    directive, and its extension-name vocabulary varies between binutils and
+    LLVM releases, so relying on it makes the tests toolchain-sensitive.
     """
-    lines = [".option push", ".option norvc"]
-    if arch:
-        lines.append(f".option arch, {', '.join('+' + e for e in arch)}")
-    lines += [instr, ".option pop"]
-    return lines
+    return [".option push", ".option norvc", instr, ".option pop"]
 
 
-def _compressed(instr: str, arch: list[str]) -> list[str]:
+def _compressed(instr: str) -> list[str]:
     """Emit one instruction that must keep its 16-bit encoding."""
-    return [".option push", ".option rvc", f".option arch, {', '.join('+' + e for e in arch)}", instr, ".option pop"]
-
-
-def _amo_arch(mnemonic: str) -> list[str]:
-    return ["zabha"] if mnemonic.endswith((".b", ".h")) else ["zaamo"]
+    return [".option push", ".option rvc", instr, ".option pop"]
 
 
 def _guard_open(macro: str | None) -> list[str]:
@@ -533,7 +533,7 @@ def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs) -> li
         *_seed(regs),
         _li(regs.data, VALUE_NEW),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_fixed(f"{mn} x0, x{regs.data}, (x{regs.a})", _amo_arch(mn)),
+        *_fixed(f"{mn} x0, x{regs.data}, (x{regs.a})"),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
@@ -546,24 +546,30 @@ def _probe_zacas(mn: str, tid: str, td: TestData, regs: Regs) -> list[str]:
         f"{_li(regs.chk, VALUE_OLD)}   # comparand matches the seeded value",
         _li(regs.data, VALUE_NEW),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})", ["zacas"]),
+        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})"),
         *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
 
 
-def _probe_zicfiss(mn: str, readback: str, tid: str, td: TestData, regs: Regs) -> list[str]:
+def _probe_zicfiss(mn: str, readback: str, funct3: int, tid: str, td: TestData, regs: Regs) -> list[str]:
     """Zicfiss shadow-stack AMO through a tagged pointer.
 
     The probe page is an ordinary data page, not a shadow-stack page, so this is
     expected to fault; the point is that it faults on the *masked* address.
+
+    Encoded with `.insn` (AMO opcode 0x2f, funct7 0x24 = funct5 01001 with
+    aq=rl=0) instead of the mnemonic -- see `_ZICFISS_AMOS` for why.
     """
     return [
         *_seed(regs),
         _li(regs.data, VALUE_NEW),
         *_sentinel(regs),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})", ["zimop", "zicfiss"]),
+        *_fixed(
+            f".insn r 0x2f, {funct3:#x}, 0x24, x{regs.chk}, x{regs.a}, x{regs.data}"
+            f"   # {mn} x{regs.chk}, x{regs.data}, (x{regs.a})"
+        ),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
@@ -604,7 +610,7 @@ def _probe_c_load_cl(mn: str, tid: str, td: TestData, regs: Regs) -> list[str]:
         *_seed(regs),
         *_sentinel(regs),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"{mn} x{regs.chk}, 0(x{regs.a})", ["zca"]),
+        *_compressed(f"{mn} x{regs.chk}, 0(x{regs.a})"),
         write_sigupd(regs.chk, td),
     ]
 
@@ -615,7 +621,7 @@ def _probe_c_store_cs(mn: str, readback: str, tid: str, td: TestData, regs: Regs
         *_seed(regs),
         _li(regs.data, VALUE_NEW),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"{mn} x{regs.data}, 0(x{regs.a})", ["zca"]),
+        *_compressed(f"{mn} x{regs.data}, 0(x{regs.a})"),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
@@ -632,7 +638,7 @@ def _probe_c_load_sp(mn: str, tid: str, td: TestData, regs: Regs) -> list[str]:
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"{mn} x{regs.chk}, 0(sp)", ["zca"]),
+        *_compressed(f"{mn} x{regs.chk}, 0(sp)"),
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.chk, td),
     ]
@@ -645,7 +651,7 @@ def _probe_c_store_sp(mn: str, readback: str, tid: str, td: TestData, regs: Regs
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"{mn} x{regs.data}, 0(sp)", ["zca"]),
+        *_compressed(f"{mn} x{regs.data}, 0(sp)"),
         f"mv sp, x{regs.tmp}",
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
@@ -660,7 +666,7 @@ def _probe_cd_load_sp(tid: str, td: TestData, regs: Regs) -> list[str]:
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"c.fldsp f{regs.fp_c}, 0(sp)", ["zcd"]),
+        *_compressed(f"c.fldsp f{regs.fp_c}, 0(sp)"),
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.fp_c, td, "float"),
     ]
@@ -674,7 +680,7 @@ def _probe_cd_store_sp(tid: str, td: TestData, regs: Regs) -> list[str]:
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_compressed(f"c.fsdsp f{regs.fp_c}, 0(sp)", ["zcd"]),
+        *_compressed(f"c.fsdsp f{regs.fp_c}, 0(sp)"),
         f"mv sp, x{regs.tmp}",
         *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
@@ -684,7 +690,7 @@ def _probe_cd_store_sp(tid: str, td: TestData, regs: Regs) -> list[str]:
 # --- cache management --------------------------------------------------------
 
 
-def _probe_cbo(mn: str, tid: str, td: TestData, regs: Regs, arch: list[str]) -> list[str]:
+def _probe_cbo(mn: str, tid: str, td: TestData, regs: Regs) -> list[str]:
     """cbo.*/prefetch.* take their address in rs1 with no data operand.
 
     cbo.zero is the only one with an architectural memory effect, so the
@@ -695,7 +701,7 @@ def _probe_cbo(mn: str, tid: str, td: TestData, regs: Regs, arch: list[str]) -> 
     return [
         *_seed(regs),
         td.add_testcase(tid, CP_MASKING, COVERGROUP),
-        *_fixed(f"{mn} 0(x{regs.a})", arch),
+        *_fixed(f"{mn} 0(x{regs.a})"),
         *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
@@ -731,7 +737,6 @@ def _probe_vec_load(mn: str, sew: int, template: str, tid: str, td: TestData, re
                 f"vmv.x.s x{regs.chk}, v2",
                 "csrw vstart, x0",
             ],
-            ["v"],
         ),
         write_sigupd(regs.chk, td),
     ]
@@ -749,22 +754,15 @@ def _probe_vec_store(mn: str, sew: int, template: str, readback: str, tid: str, 
                 template.format(a=regs.a),
                 "csrw vstart, x0",
             ],
-            ["v"],
         ),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
 
 
-def _fixed_block(body: list[str], arch: list[str]) -> list[str]:
+def _fixed_block(body: list[str]) -> list[str]:
     """`.option` wrapper around a multi-instruction block (labels included)."""
-    return [
-        ".option push",
-        ".option norvc",
-        f".option arch, {', '.join('+' + e for e in arch)}",
-        *body,
-        ".option pop",
-    ]
+    return [".option push", ".option norvc", *body, ".option pop"]
 
 
 # ---------------------------------------------------------------------------
@@ -822,20 +820,20 @@ def _pass_a_all_instructions(prefix: str, td: TestData, regs: Regs) -> list[str]
         lines += _guard_close("ZCA_SUPPORTED")
 
         lines += _guard_open("ZICBOZ_SUPPORTED")
-        lines += _probe_cbo("cbo.zero", _tid(prefix, upper, "cbo.zero"), td, regs, ["zicboz"])
+        lines += _probe_cbo("cbo.zero", _tid(prefix, upper, "cbo.zero"), td, regs)
         lines += _guard_close("ZICBOZ_SUPPORTED")
         lines += _guard_open("ZICBOM_SUPPORTED")
         for mn in _ZICBOM_OPS:
-            lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs, ["zicbom"])
+            lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs)
         lines += _guard_close("ZICBOM_SUPPORTED")
         lines += _guard_open("ZICBOP_SUPPORTED")
         for mn in _ZICBOP_OPS:
-            lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs, ["zicbop"])
+            lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs)
         lines += _guard_close("ZICBOP_SUPPORTED")
 
         lines += _guard_open("ZICFISS_SUPPORTED")
-        for mn, rb in _ZICFISS_AMOS:
-            lines += _probe_zicfiss(mn, rb, _tid(prefix, upper, mn), td, regs)
+        for mn, rb, f3 in _ZICFISS_AMOS:
+            lines += _probe_zicfiss(mn, rb, f3, _tid(prefix, upper, mn), td, regs)
         lines += _guard_close("ZICFISS_SUPPORTED")
 
         lines += _guard_open("ZVL32B_SUPPORTED")
@@ -999,7 +997,10 @@ def _emit_mode_file(mode: str, td: TestData, regs: Regs) -> list[str]:
 @add_priv_test_generator(
     "Ssnpm",
     required_extensions=["Ssnpm", "Zicsr", "S", "U"],
-    march_extensions=["f", "d"],
+    # Every extension a probe can emit must be in the march string. Other suites
+    # do the same; a local `.option arch` would be the only use of that directive
+    # in the repo and its extension-name vocabulary differs across toolchains.
+    march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_ssnpm(test_data: TestData) -> list[TestChunk]:
     """One TestChunk (hence one test file) per satp mode."""

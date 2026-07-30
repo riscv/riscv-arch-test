@@ -454,13 +454,25 @@
         LREG x6, 0(x6)      # value of rs2 (bad result of operation)
         SREG x6, 272(DEFAULT_TEMP_REG)    # record bad value
 
-        # Reconstruct and extract information from the load
-        # The ld loads from an offset of a base register, extract base register and offset
+        # Reconstruct and extract information from the load.
         lhu x6, -10(DEFAULT_LINK_REG)     # get upper half of the ld instruction
         lhu x7, -12(DEFAULT_LINK_REG)     # get lower half of the ld
         slli x6, x6, 16     # reassemble ld
         or x6, x6, x7
-        # ld format: imm[11:0] at bits [31:20], rs1 at bits [19:15]
+        # Check that the reconstructed instruction is an LREG
+        mv x10, x6          # fallback diagnostic if this is not an LREG
+        andi x8, x6, 0x7F   # opcode[6:0]
+        li x9, 0x03         # LOAD opcode
+        bne x8, x9, failedtest_saveresults_bad_instr
+        srli x8, x6, 12
+        andi x8, x8, 7     # extract funct3 from load instruction
+    #if UDB_MXLEN == 32
+        li x9, 2            # lw funct3
+    #elif UDB_MXLEN == 64
+        li x9, 3            # ld funct3
+    #endif
+        bne x8, x9, failedtest_saveresults_bad_instr
+        # LREG format: imm[11:0] at bits [31:20], rs1 at bits [19:15]
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31     # extract rs1 (base register)
@@ -469,6 +481,14 @@
         add x6, DEFAULT_TEMP_REG, x6      # address of sigptr register
         LREG x6, 0(x6)      # get sigptr register value
         add x6, x6, x7      # sigptr + offset = address of expected value
+        # Check that sigptr is aligned and in the signature region
+        andi x8, x6, (REGWIDTH-1)
+        bnez x8, failedtest_saveresults_bad_ptr
+        LA(x8, begin_signature)
+        bltu x6, x8, failedtest_saveresults_bad_ptr
+        LA(x8, end_signature)
+        addi x8, x8, -REGWIDTH
+        bltu x8, x6, failedtest_saveresults_bad_ptr
         LREG x6, 0(x6)      # load expected value
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
@@ -484,6 +504,19 @@
         lhu x7, -12(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or x6, x6, x7
+        # Check that the reconstructed instruction is an LREG
+        mv x10, x6          # fallback diagnostic if this is not an LREG
+        andi x8, x6, 0x7F   # opcode[6:0]
+        li x9, 0x03         # LOAD opcode
+        bne x8, x9, failedtest_saveresults_bad_instr
+        srli x8, x6, 12
+        andi x8, x8, 7      # extract funct3 from load instruction
+    #if UDB_MXLEN == 32
+        li x9, 2            # lw funct3
+    #elif UDB_MXLEN == 64
+        li x9, 3            # ld funct3
+    #endif
+        bne x8, x9, failedtest_saveresults_bad_instr
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31     # extract rs1
@@ -491,6 +524,14 @@
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)      # sigptr register value
         add x6, x6, x7      # sigptr + offset
+        # Check that sigptr is aligned and in the signature region
+        andi x8, x6, (REGWIDTH-1)
+        bnez x8, failedtest_saveresults_bad_ptr
+        LA(x8, begin_signature)
+        bltu x6, x8, failedtest_saveresults_bad_ptr
+        LA(x8, end_signature)
+        addi x8, x8, -REGWIDTH
+        bltu x8, x6, failedtest_saveresults_bad_ptr
         LREG x6, 0(x6)      # expected value
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
@@ -519,26 +560,54 @@
         SREG x7, 0(x8)                    # failing_value upper half
     #endif
 
-        # Extract sigptr base register from load instruction at -12
-        # (use rs1 only, ignore immediate — we load both halves from the base)
+        # Extract sigptr base register from load instruction at -12.
+        # Validate the LREG, then use rs1 only and ignore the immediate because
+        # the report loads the full FP value from the base signature entry.
         lhu x6, -10(DEFAULT_LINK_REG)
         lhu x7, -12(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or x6, x6, x7
+        # Check that the reconstructed instruction is an LREG
+        mv x10, x6          # fallback diagnostic if this is not an LREG
+        andi x8, x6, 0x7F   # opcode[6:0]
+        li x9, 0x03         # LOAD opcode
+        bne x8, x9, failedtest_saveresults_bad_instr
+        srli x8, x6, 12
+        andi x8, x8, 7      # extract funct3 from load instruction
+    #if UDB_MXLEN == 32
+        li x9, 2            # lw funct3
+    #elif UDB_MXLEN == 64
+        li x9, 3            # ld funct3
+    #endif
+        bne x8, x9, failedtest_saveresults_bad_instr
         srli x6, x6, 15
         andi x6, x6, 31                   # rs1 (sigptr register number)
         slli x6, x6, 3
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)                    # sigptr value (base of FP signature entry)
+        # Check that sigptr is aligned and in the signature region
+        andi x8, x6, (REGWIDTH-1)
+        bnez x8, failedtest_saveresults_bad_ptr
+        LA(x8, begin_signature)
+        bltu x6, x8, failedtest_saveresults_bad_ptr
+        LA(x8, end_signature)
+        addi x8, x8, -REGWIDTH
+    #if CONFIG_FLEN > UDB_MXLEN
+        addi x9, x6, SIG_STRIDE
+        bltu x8, x9, failedtest_saveresults_bad_ptr
+    #else
+        bltu x8, x6, failedtest_saveresults_bad_ptr
+    #endif
         # Load full expected FP value from signature
         LREG x7, 0(x6)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
     #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, SIG_STRIDE(x6)
-        la x8, expected_value_upper
+        LA(x8, expected_value_upper)
         SREG x7, 0(x8)                    # expected_value upper half
     #endif
         j failedtest_saveresults_common
+
 #endif // F_SUPPORTED
 
 #ifdef RVTEST_VECTOR
@@ -775,6 +844,19 @@
         lhu x7, -12(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or x6, x6, x7
+        # Check that the reconstructed instruction is an LREG
+        mv x10, x6          # fallback diagnostic if this is not an LREG
+        andi x8, x6, 0x7F   # opcode[6:0]
+        li x9, 0x03         # LOAD opcode
+        bne x8, x9, failedtest_saveresults_bad_instr
+        srli x8, x6, 12
+        andi x8, x8, 7
+    #if UDB_MXLEN == 32
+        li x9, 2            # lw funct3
+    #elif UDB_MXLEN == 64
+        li x9, 3            # ld funct3
+    #endif
+        bne x8, x9, failedtest_saveresults_bad_instr
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31     # extract rs1
@@ -782,11 +864,33 @@
         add x6, DEFAULT_TEMP_REG, x6
         LREG x6, 0(x6)      # sigptr register value
         add x6, x6, x7      # sigptr + offset
+        # Check that the reconstructed sigptr is aligned and within the signature region
+        andi x8, x6, (REGWIDTH-1)
+        bnez x8, failedtest_saveresults_bad_ptr
+        LA(x8, begin_signature)
+        bltu x6, x8, failedtest_saveresults_bad_ptr
+        LA(x8, end_signature)
+        addi x8, x8, -REGWIDTH
+        bltu x8, x6, failedtest_saveresults_bad_ptr
         LREG x6, 0(x6)      # expected value
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
 
 #endif // RVTEST_VECTOR
+
+    failedtest_saveresults_bad_instr:
+        li x8, 1
+        LA(x9, failure_diag_type)
+        sw x8, 0(x9)
+        SREG x10, 280(DEFAULT_TEMP_REG)   # record raw reconstructed instruction
+        j failedtest_saveresults_common
+
+    failedtest_saveresults_bad_ptr:
+        li x8, 2
+        LA(x9, failure_diag_type)
+        sw x8, 0(x9)
+        SREG x6, 280(DEFAULT_TEMP_REG)    # record invalid expected-value pointer
+        j failedtest_saveresults_common
 
     //==========================================================================
     // TRAP FAILURE RESULT EXTRACTION (failure_type == 3)
@@ -1370,6 +1474,9 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
+        lw a0, failure_diag_type
+        bnez a0, failedtest_report_diag
+
         # Print expected value — type-aware
         LA(a0, expvalstr)
         call rvmodel_io_write_str
@@ -1397,6 +1504,29 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
+        j failedtest_report_end
+
+    failedtest_report_diag:
+        li a1, 1
+        bne a0, a1, failedtest_report_bad_pointer_diag
+    failedtest_report_bad_instr_diag:
+        LA(a0, failure_diag_bad_instr_str)
+        call rvmodel_io_write_str
+        LREG a0, expected_value
+        li a1, 32
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+
+    failedtest_report_bad_pointer_diag:
+        LA(a0, failure_diag_bad_ptr_str)
+        call rvmodel_io_write_str
+        LREG a0, expected_value
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
         j failedtest_report_end
 
     //==========================================================================
@@ -1932,6 +2062,8 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
+    failure_diag_type:                         # 0=none, 1=bad reconstructed LREG, 2=bad expected pointer
+        .word 0
 #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
@@ -2279,6 +2411,10 @@
         .string "RVCP: Bad Value:      "
     expvalstr:
         .string "RVCP: Expected Value: "
+    failure_diag_bad_instr_str:
+        .string "RVCP: Expected value unavailable: reconstructed signature load is not LREG. Raw instruction: "
+    failure_diag_bad_ptr_str:
+        .string "RVCP: Expected value unavailable: reconstructed signature pointer is invalid. Pointer: "
     endstr:
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:

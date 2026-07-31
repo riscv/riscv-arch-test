@@ -100,7 +100,7 @@ main:
   sfence.vma                                                             // Flush TLB
   #ifndef SM1P11P0_SUPPORTED
       LI(t0, MENVCFG_PBMTE)
-      csrc menvcfg, t0
+      csrc menvcfg, t0                                                  // Clear menvcfg.PBMTE (Disable SVPBMT)
   #endif
 
 //---------------------------------------------------------------------------------------------------------------------------------

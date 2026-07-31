@@ -82,6 +82,7 @@
   #else
     #error "PMP background region requires NAPOT or TOR support"
   #endif
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 .endm
 
 // PMP_VERIFICATION_X_C: compressed execute-only check.

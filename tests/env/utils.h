@@ -60,6 +60,13 @@
   #endif
 #endif
 
+// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+.macro RVTEST_SFENCE_VMA_IF_SUPPORTED
+  #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+    sfence.vma
+  #endif
+.endm
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only

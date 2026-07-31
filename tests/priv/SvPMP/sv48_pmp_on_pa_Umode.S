@@ -103,6 +103,7 @@ main:
 
   or t2, t2, t1
   csrw pmpaddr1, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -139,7 +140,7 @@ main:
   LI (t2, PMP1CFG_RX)
   pmpcfg0_rx:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rx, pmpcfg0_rx_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -196,7 +197,7 @@ main:
   LI (t2, PMP1CFG_RW)
   pmpcfg0_rw:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rw, pmpcfg0_rw_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -253,7 +254,7 @@ main:
   LI (t2, PMP1CFG_X)
   pmpcfg0_x:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------

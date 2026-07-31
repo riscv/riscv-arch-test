@@ -133,6 +133,7 @@ main:
     csrw pmpcfg0, x4
     LI(x5, (PMPREGION_LXWR_1000_6|PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
     csrw pmpcfg1, x5
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 
 //                                          Verification Section
 // Test Case: 1 : Accessing at end of region 0 (size 1x) with No Permissions

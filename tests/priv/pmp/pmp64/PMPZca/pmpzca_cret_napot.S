@@ -87,6 +87,7 @@ main:
     LA(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
      //Test case1
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 

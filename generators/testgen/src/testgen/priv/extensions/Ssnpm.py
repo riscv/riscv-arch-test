@@ -195,14 +195,16 @@ _ZICBOP_OPS: list[str] = ["prefetch.r", "prefetch.w", "prefetch.i"]
 # Zicfiss shadow-stack atomics. Enabled through menvcfg.SSE + senvcfg.SSE; the
 # probe pages are ordinary data pages, so these are expected to fault -- what is
 # under test is that the address they fault on has been masked.
-# (mnemonic, read-back load, funct3). Emitted as raw `.insn` rather than by
-# mnemonic: Zicfiss is still an *experimental* extension in LLVM (19 through at
-# least 20), so naming it in the march string or in a `.option arch` makes clang
-# reject the whole file with "requires '-menable-experimental-extensions'".
-# `.insn` encodes the bits directly and needs no extension enabled, while GNU as
-# and LLVM both accept it. The probes stay inside `#ifdef ZICFISS_SUPPORTED`, so
-# they are only emitted for configs that actually implement Zicfiss.
-_ZICFISS_AMOS: list[tuple[str, str, int]] = [("ssamoswap.w", "lw", 0x2), ("ssamoswap.d", "ld", 0x3)]
+# Zicfiss shadow-stack AMOs are DISABLED. `ssamoswap` is part of the `pm_insn`
+# coverage model, but it is not currently usable as a portable probe:
+# Re-enabling therefore buys 24 of 9600 cross bins (0.25% of cp_pmlen_masking)
+# while costing Ssnpm CI coverage on two of four DUTs. Restore by putting the
+# two entries back once the coverage front-end parses the operands and the DUT
+# bugs are fixed:
+#   [("ssamoswap.w", "lw", 0x2), ("ssamoswap.d", "ld", 0x3)]
+# `_probe_zicfiss` below is kept intact and still emits the `.insn` form, which
+# needs no experimental extension enabled in the assembler.
+_ZICFISS_AMOS: list[tuple[str, str, int]] = []
 
 # Vector loads: (mnemonic, SEW used to set vtype, asm template).
 # `{a}` is the tagged base register, `{t}` a scratch integer register.

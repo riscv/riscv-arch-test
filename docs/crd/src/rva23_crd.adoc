@@ -27,7 +27,7 @@ a| * Initial draft
 a| * Do not test traps into M-mode except ecall from S-mode
 | July 31, 2026
 | 0.3
-a| Removed "custom M-mode" made clarifications 
+a| Removed "custom M-mode" made clarifications
 
 |===
 
@@ -187,7 +187,7 @@ LCOFI is mandatory because it is part of the Sscofpmf extension, which is requir
 === User Requirements
 // KAD: It appears that this list is incomplete which can cause confusion
 // This should provide a reference to the CTP which can provide
-// the one complete and official list of DUT configuration information  
+// the one complete and official list of DUT configuration information
 // If we want to reiterate what the developer needs to provide for the SEE
 // we need to provide broad categories (with links) rather than partial specifics
 

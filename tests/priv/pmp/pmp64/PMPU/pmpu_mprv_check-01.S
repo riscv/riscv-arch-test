@@ -80,6 +80,7 @@ main:
 
     LI(x4, PMPREGION_LXWR_0000)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 //-------------------------------------
 
 //                                            Verification Section
@@ -111,6 +112,7 @@ main:
 
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 //-------------------------------------
 
 // Test Case: 3 : mstatus.MPRV = 0, L = 1, mstatus.MPP = 00 and No Permissions given to the PMP Region 0

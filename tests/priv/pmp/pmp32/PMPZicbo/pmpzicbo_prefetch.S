@@ -111,6 +111,7 @@ main:
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region
@@ -126,6 +127,7 @@ main:
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region
@@ -141,6 +143,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region
@@ -156,6 +159,7 @@ main:
     LI(x4, PMPREGION_LXWR_1100)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region
@@ -171,6 +175,7 @@ main:
     LI(x4, PMPREGION_LXWR_1101)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_5
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region
@@ -186,6 +191,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_6
 
     j exit                                        // Verification Complete, exit the test

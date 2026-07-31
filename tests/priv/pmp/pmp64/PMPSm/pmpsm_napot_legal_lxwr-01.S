@@ -99,6 +99,7 @@ main:
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
@@ -114,6 +115,7 @@ main:
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
@@ -129,6 +131,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_NAPOT_SM_RV64    TEST_FOR_EXECUTION, test_3
 
     j exit                                                        // Verification Complete, exit the test

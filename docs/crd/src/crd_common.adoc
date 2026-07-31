@@ -1,17 +1,12 @@
 === What's a CRD?
 
-Certification Requirements Documents (CRDs) list requirements an implementation MUST meet
-to obtain an associated RVI (RISC-V International) certificate.
+Certification Requirements Documents (CRDs) list test requirements an implementation MUST pass
+as one of the requirements to obtain a RISC-V International certificate.
 CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
 with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
 
-The CRDs refer to and augment information provided in existing ratified RVI standards.
-
-There are a variety of certificates offered by RVI to accommodate the various RVI standards.
-There are certificates for processors, non-processor system IP (e.g., IOMMU),
-and system platforms (processor + system IP) hardware standards.
-There are multiple classes of processor certificates available to accommodate the wide range of
-RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
+The CRDs are based on the requirements of ratified RISC-V standards that are
+included is the standard (e.g., profile) for which certification is being offered.
 
 Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
 Note that not all behaviors allowed in RISC-V standards are supported by a particular CRD.

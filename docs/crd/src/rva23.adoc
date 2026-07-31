@@ -28,80 +28,133 @@ a| * Initial draft
 
 == Introduction
 
-The RVA23 processor certificate is based on the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23s64_profile[RVA23S64] and RVA23U64 profiles. To
-qualify for a certificate, the processor must implement the RV64I base instruction set and all of the mandatory
-extensions of the profile.  It may implement any of the optional features of
-the profile.  It may implement ratified extensions that are not part of the profile. It may implement other unratified extensions, but must not implement
-unratified extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented. Extensions outside the profile are not tested during
-certification.
+The RVA23 processor certificate is based on compliance with the
+https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles [RVA23
+Profiles] which is comprised of the RVA23S64
+and RVA23U64 profiles. As described in these profile specifications,
+compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
+implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions
+of the base ISA and these extensions may be implemented, but if they are
+implemented, they must be implemented in their entirety.
 
-NOTE: The profiles already explain what is required and what is optional. Restating the requirements here can lead to confusion.
+There is no prohibition against implementing other RISC-V ratified base ISAs or
+extensions, custom extensions, or even non-conforming as
+long as they don't interfere with the proper functioning of the RVA23 mandatory
+and optional extensions. However, these other base ISAs and extensions will not be tested as
+part of RVA23 Certification.
 
+////
 NOTE: While it is permitted for an implementation to also support RV32I instructions, this is neither a mandated requirement nor explicitly specified option. Therefore, there are no RV32I tests included in RVA23 certification. We encourage those who have implemented RV32I instructions in their processor to test these with the appropriate RISC-V ACTs.
+////
+
+NOTE: We encourage those who have implemented other base ISAs or extensions to
+run the appropriate RISC-V ACTs to help ensure compliance.
 
 === Related Specifications
 
 * https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
 * https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
 
+////
 == Discussion
 
 The RVA23S64 profile implies requirements that might not be immediately
 obvious.  This section explains them in detail.
+////
 
-=== Custom M-mode
-
-The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
-Therefore, certification does not run M-mode code directly.
-
-Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
-
-RVA23 does not place any specific requirements on M-mode implementations as it is not required that M-mode code is portable for compliant designs. Instead, in order to be able to run portable code for modes below M-mode, the processor must interface with a Supervisor Execution Environment (SEE).  The RISC-V SBI specification provides an example of a SEE.  Certification tests do not exercise the RISC-V SBI, but provide a simpler Test Supervisor Binary Interface (T-SBI) to access the execution environment.
-
-NOTE: The abstraction is not just for custom M-mode ISAs. It allows for hiding differences in implementations as well as allowing lower privileges to make requests to M-mode. Furthermore, it is common for implementations to comply with the RISC-V M-Mode ISA while adding implementation-defined features.
+=== Abstraction of M-Mode and implementation specific behavior
 
 === Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
-Nevertheless, RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select PMLEN.
+Application-processor families, including RVA23, purposefully do not include a
+machine mode profile as there is no
+intention that M-mode code be portable. Therefore, RVA23 Certification does
+not test M-mode instructions or CSRs. Any required interaction with M-mode is
+abstracted away by a Test Supervisor Binary Interface (T-SBI) and a Test
+Supervisor Execution Environment (T-SEE), which are analogous to the RISC-V
+Supervisor Binary Interface  and OpenSBI software respectively;
+however, they are developed specifically for certification. The T-SEE is also
+responsible for invoking the implementation's
+boot code as well as setting up the initial M-mode-controlled environment for
+the certification tests. All certification tests run under the T-SEE.
 
-RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements a test SBI (described below). If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which delivers the interrupt to S-mode.
+As part of the certification test collateral, a reference implementation of
+the T-SEE is provided along with a full
+specification of the T-SBI. Just like with OpenSBI,
+it is up to the designer to modify the T-SEE, as necessary, for their
+implementation. The T-SBI specification is especially useful
+for those who have created an M-mode that differs substantially from M-mode 1.13
+as defined in the RISC-V Privileged Architecture.
 
-As defined in the Unprivileged ISA, the SEE, which will typically include M-mode hardware, must be able to provide certain capabilities to the underlying lower privileged implementation. For example, an SBI can be used to request that some or all traps be delegated to be directly handled in S-mode. Which traps can be delegated is up to the SEE.
+When the T-SEE receives a trap from M-mode, it invokes the appropriate handler.
+When it is necessary to execute M-mode instructions or access a Machine-mode
+ISA CSR in order to properly set up the environment for lower privilege tests, a
+T-SBI-defined `ECALL` is made. This `ECALL`'s trap handler executes the
+necessary M-mode code need to complete the requested action. One such need for a
+T-SBI call is necessary to fufill a requirement of RVA23's defined Sspm
+extension which requires an execution environment to provide a means to select
+PMLEN. Another need is for the tests to be able to request that specific traps are
+delegated away from M- mode.
 
 NOTE: There is no requirement that any traps can be delegated. But if they can be, the SEE must provide a means to request that they are and a means to determine which requested traps have been delegated.
 
-The execution environment must provide a Test Supervisor Binary Interface (T-SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`.
+=== M-mode Trap Handler Requirements
 
-=== M-Mode Trap Handler Requirements
+All traps default to M-mode. Most traps can be delegated to S-mode, with the following exceptions:
 
-Most traps default to being delegated to S-mode, with the following exceptions:
-
-* `ecall` from S-mode must not be delegated because the T-SBI must trap to M-mode to handle these calls.
-* Machine interrupts MEI, MSI, MTI are not delegated because they normally go to M-mode.
+* `ECALL` from S-mode must not be delegated because the T-SBI must trap to
+M-mode to handle these calls.
 * Any trap cause that should be handled invisibly by the firmware must not be delegated.
-* Trap causes that hardware cannot delegate (e.g., bits of `m*deleg` that are read-only zero.)
+* Trap causes that hardware cannot delegate (e.g., bits of `m*deleg` that are
+read-only zero.)
 * Intentionally testing traps to M-mode.
 
+NOTE: Machine interrupts MEI, MSI, MTI are normally not delegated because they
+usually go to M-mode. For purposes of testing, it fine to delegate them to
+S-mode when allowed.
+
 Invisible traps are traps to emulate a function in firmware that is not implemented in hardware.  An example of an invisible trap is to fix a `fdiv` instruction that malfunctions for certain input values.
-If a system required invisible traps to produce correct RVA23 behavior, the user must provide custom firmware to handle these traps, and the certification tests rely on this firmware.
+If a system requires invisible traps to produce correct RVA23 behavior, the user must provide custom firmware to handle these traps, and the certification tests rely on this firmware.
 
-The M-mode trap handler performs the following functions:
+The m-mode trap handler performs the following functions:
 
-. Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
-. Call custom firmware, if any exists, to handle invisible traps.  The custom firmware will save registers relative to `sp`, inspect machine state to see if the trap is an invisible trap, and if so, perform the function, clean up, and return to the appropriate place (perhaps the instruction after the one that trapped, or an S-mode handler if the custom firmware expects S-mode to receive the trap next).  If the trap is not an invisible trap, the custom firmware will return to the next step of the M-mode trap handler.
-. Check if the trap is a test of undelegated traps to M-mode, and if so, write/compare a trap signature of the standard values expected in `mepc`, `mcause`, `mtval` and `mstatus.MPV/MPP/MPIE/MPELP`.
-. Set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the machine-mode trap CSRs, and return to the S-mode trap handler to effectively delegate to S-mode.
+. Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ECALL`.
+. Call custom firmware, if any exists, to handle invisible traps.  The custom
+firmware will save registers relative to `sp`, inspect machine state to see if
+the trap is an invisible trap, and if so, perform the function, clean up, and
+return to the appropriate place (perhaps the instruction after the one that
+trapped, or an S-mode handler if the custom firmware expects S-mode to receive
+the trap next).  If the trap is not an invisible trap, the custom firmware will
+return to the next step of the m-mode trap handler.
+. Check if the trap is a test of non-delegated traps to M-mode, and if so, 
+////
+write/compare a trap signature of the standard values expected in `mepc`,
+`mcause`, `mtval` and `mstatus.MPV/MPP/MPIE/MPELP`.
+////
+set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the machine-mode trap CSRs, and return to the S-mode trap handler to effectively delegate to S-mode.
 
-=== SBI Control of M-mode CSRs
 
-RVA23 certification requires that the SBI provide methods of emulating every writable standard M-mode CSR field that can affect the behavior of lower privilege modes.  With a standard M-mode, the SBI may just write bitfields in the M-mode registers.  With custom M-mode, the SBI must make it appear to S-mode software that the field holds the value written by the SBI, even though the implementation might be different. These CSRs and memory-mapped I/O registers are:
+////
+NB: The RISC-V SBI specifies the function to be performed (e.g., delegate
+misaligned) not the bitfield of a specific register
+=== SBI Control of m-mode CSRs
+
+RVA23 certification requires that the SBI provide methods of emulating every
+writable standard m-mode CSR field that can affect the behavior of
+lower-privilege modes.  With a standard m-mode, the SBI may just write bitfields
+in the m-mode registers.  With custom m-mode, the SBI must make it appear to
+S-mode software that the field holds the value written by the SBI, even though
+the implementation might be different. 
+////
+
+These CSRs and memory-mapped I/O registers are:
 
 [options=header]
 [cols="1,5"]
 |===
 | CSR | Notes
 | `mstatus` | TSR, TW, TVM
-| `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
+| `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower-privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
 | `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to `mip`.
 | `mie` | MEIE, MSIE, MTIE control whether these interrupts are enabled.
@@ -149,13 +202,26 @@ The following M-mode CSRs/fields are OUT-OF-SCOPE and not tested:
 
 All interrupts taken from S and U-mode are IN-SCOPE for testing.  MTI, MEI, and MSI are only tested without delegation to S-mode, while the other interrupts are tested with and without delegation, if `mideleg` supports this.
 
+
+////
+NB: Except for the DUT configuration information, this is already defined above
+including addition cases
+NB: The DUT configuration needs to be described in greater detail. It does not
+need to be here.  
+
 === User Requirements
 
 The user must provide:
 
 * DUT configuration information described in the CTP, including UDB description, linker file describing memory map, sail.json configured to match DUT, RVMODEL macros specific to DUT.
-* Custom firmware, if any, to handle invisible traps.
-* Custom boot code, if standard M-mode boot code does not run on the DUT or if additional configuration is necessary.
+* Implementation-specific firmware, as necessary
+* Implementation-specific boot code, as necessary
+
+if standard M-mode boot code does not run on the DUT or if additional
+configuration is necessary.
+
+NB: Implementations tend to have their own boot code
+////
 
 === Notes
 

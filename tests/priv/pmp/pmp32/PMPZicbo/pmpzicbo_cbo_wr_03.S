@@ -84,6 +84,7 @@ main:
     LI(x4, PMPCFG_0)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     j exit                                        // Verification Complete, exit the test

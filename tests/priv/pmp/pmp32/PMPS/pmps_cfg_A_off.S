@@ -62,6 +62,7 @@ main:
 
     csrw pmpcfg0, x0        // pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE

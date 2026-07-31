@@ -14,16 +14,15 @@ on:
       - ".github/workflows/release-docs.yml"
 
 permissions:
-  contents: write
-  actions: read
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
   build-ctp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up mise
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4
@@ -49,6 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - run: git submodule update --init docs/docs-resources
 
@@ -70,6 +71,8 @@ jobs:
   release:
     needs: [build-ctp, build-crd]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download CTP PDF
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
@@ -95,33 +98,52 @@ jobs:
           name: crd-html
           path: ./
 
-      - name: Get current date
+      - name: Get release metadata
+        id: release_metadata
         run: |
-          echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
-          echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
+          current_date=$(date +'%Y-%m-%d-%H-%M')
+          short_sha=${GITHUB_SHA::7}
+          echo "current_date=$current_date" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
 
       - name: Create Release
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
-        with:
-          draft: false
-          prerelease: ${{ github.event_name != 'workflow_dispatch' }}
-          make_latest: true
-          tag_name: cert-docs-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
-          name: "Certification Documents ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
-          body: "Automated release of the certification documents (CTP & CRD) built on ${{ env.CURRENT_DATE }} from commit ${{ env.SHORT_SHA }}."
-          files: |
-            ctp.pdf
-            ctp.html
-            rvi20_crd.pdf
-            rvi20_crd.html
-            mc100_crd.pdf
-            mc100_crd.html
-            rva23_crd.pdf
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ github.event_name != 'workflow_dispatch' }}
+          CURRENT_DATE: ${{ steps.release_metadata.outputs.current_date }}
+          SHORT_SHA: ${{ steps.release_metadata.outputs.short_sha }}
+        run: |
+          tag_name="cert-docs-${CURRENT_DATE}-${SHORT_SHA}"
+          release_name="Certification Documents ${CURRENT_DATE}: ${SHORT_SHA}"
+          release_body="Automated release of the certification documents (CTP & CRD) built on ${CURRENT_DATE} from commit ${SHORT_SHA}."
+
+          release_args=(
+            --title "$release_name"
+            --notes "$release_body"
+            --latest
+          )
+          if [ "$PRERELEASE" = "true" ]; then
+            release_args+=(--prerelease)
+          fi
+
+          gh release create "$tag_name" \
+            "${release_args[@]}" \
+            ctp.pdf \
+            ctp.html \
+            rvi20_crd.pdf \
+            rvi20_crd.html \
+            mc100_crd.pdf \
+            mc100_crd.html \
+            rva23_crd.pdf \
             rva23_crd.html
 
   deploy-pages:
     needs: [build-ctp, build-crd]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -129,6 +151,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           sparse-checkout: docs/pages
+          persist-credentials: false
 
       - name: Download CTP HTML
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8

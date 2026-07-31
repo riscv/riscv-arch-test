@@ -100,6 +100,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and No Permissions given to the PMP Region 13
@@ -111,6 +112,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and No Permissions given to the PMP Region 12
@@ -122,6 +124,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and No Permissions given to the PMP Region 11
@@ -133,6 +136,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 10
@@ -144,6 +148,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and No Permissions given to the PMP Region 9
@@ -155,6 +160,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 : L -> 1 and No Permissions given to the PMP Region 8
@@ -166,6 +172,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 1 and No Permissions given to the PMP Region 7
@@ -177,6 +184,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 1 and No Permissions given to the PMP Region 6
@@ -188,6 +196,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 1 and No Permissions given to the PMP Region 5
@@ -199,6 +208,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 1 and No Permissions given to the PMP Region 4
@@ -210,6 +220,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 1 and No Permissions given to the PMP Region 3
@@ -221,6 +232,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 1 and No Permissions given to the PMP Region 2
@@ -232,6 +244,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 1 and No Permissions given to the PMP Region 1
@@ -243,6 +256,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 1 and No Permissions given to the PMP Region 0
@@ -254,6 +268,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 RVTEST_CODE_END
 

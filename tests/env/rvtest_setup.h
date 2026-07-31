@@ -110,7 +110,10 @@
       call rvmodel_io_write_str
       call rvmodel_halt_fail
 
-    // Check trap signature offset to make sure the correct number of traps occurred
+    // Check trap signature offset to make sure the correct number of traps occurred.
+    // This is a trap-framework diagnostic, not a normal signature check. Pass the
+    // already-available actual and expected offsets to the trap failure entry before
+    // any diagnostic code can fault and overwrite trap CSRs.
     check_trap_sig_offset:
     #ifndef RVTEST_NOSIG
       LA(     T1, Mtrap_sig)
@@ -119,8 +122,8 @@
       sub     T1, T1, T2              // Calculate DUT trap signature byte count
       LA(     T3, final_trap_sig_offset)
     #ifdef RVTEST_SELFCHECK
-      LREG    T4, 0(T3)               // Reference trap signature byte count
-      beq     T4, T1, check_abort_test
+      LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
+      beq     DEFAULT_TEMP_REG, T1, check_abort_test
     #else
       SREG    T1, 0(T3)               // Save reference trap signature byte count
       beq     x0, x0, check_abort_test

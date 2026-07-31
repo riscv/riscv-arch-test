@@ -271,6 +271,13 @@ $(foreach f,$(RUN_CMD_FILES),\
   $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
     $(eval _TARGETS_$(d) += $(f))))
 
+# Keep spike-reference comparison configs available as explicit targets, but
+# exclude them from the aggregate `make whisper` target.
+WHISPER_RUN_TARGET_EXCLUDES := \
+  config/whisper/whisper-rv32-max-spike-ref/run_cmd.txt \
+  config/whisper/whisper-rv64-max-spike-ref/run_cmd.txt
+_TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisper))
+
 # Collect all unique target names
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\
   $(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f))))))

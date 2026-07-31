@@ -37,19 +37,20 @@ def _generate_minh_inhibits_mmode_tests(test_data: TestData) -> list[str]:
     for minh_val in [0, 1]:
         binname = f"minh_{minh_val}"
 
-        # Build RVMODEL_MHPMEVENT_VAL with OF=0 (bit 63), minh=minh_val (bit 62)
         lines.extend(
             [
                 f"# Testcase: minh = {minh_val}",
                 f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {minh_val} << 62)",
-                f"CSRW(RVMODEL_MHPMEVENT, x{r_val})",
-                "CSRW(RVMODEL_MHPMCOUNTER, zero)   # reset counter to 0 before running",
+                f"csrw RVMODEL_MHPMEVENT, x{r_val}",
+                "csrw RVMODEL_MHPMCOUNTER, zero   # reset counter to 0 before running",
                 "",
                 "# Run in M-mode (no mode switch needed, already M-mode here)",
-                "RVMODEL_MHPMEVENT_CODE",
+                f"LA(x{r_temp}, scratch)",
+                "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                f"CSRR(x{r_temp}, RVMODEL_MHPMCOUNTER)   # sample point for hpmcounter_nonzero",
+                f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero",
                 "",
             ]
         )
@@ -65,7 +66,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_of_set_on_overflow"
     ######################################
 
-    r_val, r_temp, r_lcofip = test_data.int_regs.get_registers(3, exclude_regs=[0, 31])
+    r_val, r_temp, r_lcofip, r_addr = test_data.int_regs.get_registers(4, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
@@ -78,8 +79,8 @@ def _generate_of_set_on_overflow_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Setup: disable interrupts globally for controlled testing",
-        "CSRW(mip, zero)   # clear LCOFIP and other pending bits",
-        "CSRW(mie, zero)   # disable interrupts",
+        "csrw mip, zero   # clear LCOFIP and other pending bits",
+        "csrw mie, zero   # disable interrupts",
         "",
     ]
 
@@ -90,24 +91,26 @@ def _generate_of_set_on_overflow_tests(test_data: TestData) -> list[str]:
             [
                 f"# Testcase: M-mode, OF initial = {of_initial}",
                 f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | (0b11100 << 58) | ({of_initial} << 63))",
-                f"CSRW(RVMODEL_MHPMEVENT, x{r_val})",
+                f"csrw RVMODEL_MHPMEVENT, x{r_val}",
                 f"LI(x{r_temp}, -1)",
-                f"CSRW(RVMODEL_MHPMCOUNTER, x{r_temp})   # all 1s -> next count overflows",
+                f"csrw RVMODEL_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows",
                 "",
-                "RVMODEL_MHPMEVENT_CODE",
-                "RVMODEL_MHPMEVENT_CODE   # run at least twice per spec",
+                f"LA(x{r_addr}, scratch)",
+                "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+                f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})   # run at least twice per spec",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                f"CSRR(x{r_temp}, RVMODEL_MHPMEVENT)   # sample point for mhpmevent_of",
-                f"CSRR(x{r_temp}, RVMODEL_MHPMCOUNTER)   # sample point for hpmcounter_nonzero/non-all-1s",
+                f"csrr x{r_temp}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of",
+                f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s",
                 "",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
-                f"CSRR(x{r_lcofip}, mip)   # sample point for mip_lcofip",
+                f"csrr x{r_lcofip}, mip   # sample point for mip_lcofip",
                 "",
             ]
         )
 
-    test_data.int_regs.return_registers([r_val, r_temp, r_lcofip])
+    test_data.int_regs.return_registers([r_val, r_temp, r_lcofip, r_addr])
     return lines
 
 
@@ -130,9 +133,9 @@ def _generate_overflow_hw_only_tests(test_data: TestData) -> list[str]:
             "causing wraparound, not a direct CSR write.",
         ),
         "",
-        "CSRW(RVMODEL_MHPMEVENT, zero)",
-        "CSRW(mip, zero)   # clear LCOFIE",
-        "CSRW(mie, zero)   # disable interrupts",
+        "csrw RVMODEL_MHPMEVENT, zero",
+        "csrw mip, zero   # clear LCOFIE",
+        "csrw mie, zero   # disable interrupts",
         "",
     ]
 
@@ -142,10 +145,10 @@ def _generate_overflow_hw_only_tests(test_data: TestData) -> list[str]:
             [
                 f"# Testcase: software write RVMODEL_MHPMCOUNTER = {step_name}",
                 f"LI(x{r_val}, {load_val})",
-                f"CSRW(RVMODEL_MHPMCOUNTER, x{r_val})",
+                f"csrw RVMODEL_MHPMCOUNTER, x{r_val}",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                f"CSRR(x{r_of}, RVMODEL_MHPMEVENT)   # sample point -- OF (bit 63) must read 0",
+                f"csrr x{r_of}, RVMODEL_MHPMEVENT   # sample point -- OF (bit 63) must read 0",
                 "",
             ]
         )
@@ -161,7 +164,7 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_scountovf_mcounteren"
     ######################################
 
-    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENTH{n}" for n in range(3, 32)]  # RV32: 29 registers
+    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENT{n}H" for n in range(3, 32)]  # RV32: 29 registers
     MHPMEVENT_CSRS = [f"CSR_MHPMEVENT{n}" for n in range(3, 32)]  # RV64: 29 registers
 
     lines = [
@@ -188,14 +191,14 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData) -> list[str]:
         lines.append(f"LI(x{r_of_bit}, {1 << 31})   # OF bit (bit 31 of mhpmeventh, RV32)")
         lines.append(f"# --- Write OF pattern: {of_name} across mhpmeventh3..31 (RV32) ---")
         for i, csr_name in enumerate(MHPMEVENTH_CSRS):
-            op = "CSRS" if of_bit_fn(i) else "CSRC"
-            lines.append(f"{op}({csr_name}, x{r_of_bit})   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
+            op = "csrs" if of_bit_fn(i) else "csrc"
+            lines.append(f"{op} {csr_name}, x{r_of_bit}   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
         lines.append("#else")
         lines.append(f"LI(x{r_of_bit}, {1 << 63})   # OF bit (bit 63 of mhpmevent, RV64)")
         lines.append(f"# --- Write OF pattern: {of_name} across mhpmevent3..31 (RV64) ---")
         for i, csr_name in enumerate(MHPMEVENT_CSRS):
-            op = "CSRS" if of_bit_fn(i) else "CSRC"
-            lines.append(f"{op}({csr_name}, x{r_of_bit})   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
+            op = "csrs" if of_bit_fn(i) else "csrc"
+            lines.append(f"{op} {csr_name}, x{r_of_bit}   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}")
         lines.append("#endif")
         lines.append("")
 
@@ -214,7 +217,7 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData) -> list[str]:
 
         # Acquire only for the final sample read
         r_scountovf = test_data.int_regs.get_register(exclude_regs=[0, 31])
-        lines.append(f"CSRR(x{r_scountovf}, scountovf)   # sample point")
+        lines.append(f"csrr x{r_scountovf}, scountovf   # sample point")
         lines.append("")
         test_data.int_regs.return_registers([r_scountovf])
 
@@ -245,22 +248,22 @@ def _generate_sscofpmf_access_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
             if access == "read":
-                lines.append(f"CSRR(x{r_val}, {csr_name})")
+                lines.append(f"csrr x{r_val}, {csr_name}")
             elif access == "write_ones":
-                lines.extend([f"LI(x{r_val}, -1)", f"CSRW({csr_name}, x{r_val})"])
+                lines.extend([f"LI(x{r_val}, -1)", f"csrw {csr_name}, x{r_val}"])
             elif access == "write_zeros":
-                lines.append(f"CSRW({csr_name}, zero)")
+                lines.append(f"csrw {csr_name}, zero")
             elif access == "set":
-                lines.extend([f"LI(x{r_val}, -1)", f"CSRS({csr_name}, x{r_val})"])
+                lines.extend([f"LI(x{r_val}, -1)", f"csrs {csr_name}, x{r_val}"])
             elif access == "clear":
-                lines.extend([f"LI(x{r_val}, -1)", f"CSRC({csr_name}, x{r_val})"])
+                lines.extend([f"LI(x{r_val}, -1)", f"csrc {csr_name}, x{r_val}"])
             lines.append("")
 
     emit_accesses("scountovf")
 
     lines.append("#if __riscv_xlen == 32")
     for n in range(3, 32):
-        emit_accesses(f"CSR_MHPMEVENTH{n}")
+        emit_accesses(f"CSR_MHPMEVENT{n}H")
     lines.append("#endif")
 
     test_data.int_regs.return_registers([r_val])
@@ -291,7 +294,7 @@ def _generate_lcofip_priority_tests(test_data: TestData) -> list[str]:
         "# Setup: mstatus.MIE=1, mstatus.SIE=1",
         "csrsi mstatus, 0x8   # MIE",
         "csrsi mstatus, 0x2   # SIE",
-        "CSRW(mie, zero)      # mie = all 0s initially",
+        "csrw mie, zero      # mie = all 0s initially",
         "",
     ]
 
@@ -304,7 +307,7 @@ def _generate_lcofip_priority_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                f"CSRS(mip, x{r_scratch})   # set mip.LCOFIP directly",
+                f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly",
             ]
         )
 
@@ -320,13 +323,13 @@ def _generate_lcofip_priority_tests(test_data: TestData) -> list[str]:
         elif other_int == "stip":
             lines.extend(set_stimer_mmode(r_scratch))
         elif other_int == "ssip":
-            lines.extend([f"LI(x{r1}, 0x2)", f"CSRS(mip, x{r1})"])
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrs mip, x{r1}"])
         # "none" -- no competing interrupt triggered
 
         lines.extend(
             [
                 f"LI(x{r_temp}, -1)",
-                f"CSRW(mie, x{r_temp})   # mie = all 1s",
+                f"csrw mie, x{r_temp}   # mie = all 1s",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
@@ -346,13 +349,13 @@ def _generate_lcofip_priority_tests(test_data: TestData) -> list[str]:
         elif other_int == "stip":
             lines.extend(clr_stimer_mmode(r_scratch))
         elif other_int == "ssip":
-            lines.extend([f"LI(x{r1}, 0x2)", f"CSRC(mip, x{r1})"])
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrc mip, x{r1}"])
 
         lines.extend(
             [
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                f"CSRC(mip, x{r_scratch})   # clear LCOFIP for next iteration",
-                "CSRW(mie, zero)",
+                f"csrc mip, x{r_scratch}   # clear LCOFIP for next iteration",
+                "csrw mie, zero",
                 "",
             ]
         )
@@ -361,7 +364,7 @@ def _generate_lcofip_priority_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sscofpmf", required_extensions=["Sscofpmf"])
+@add_priv_test_generator("SscofpmfSm", required_extensions=["Sscofpmf"])
 def make_sscofpmf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sscofpmf performance counter overflow/interrupt support."""
     tc = test_data.begin_test_chunk()

@@ -29,8 +29,7 @@ a| * Initial draft
 == Introduction
 
 The RVA23 processor certificate is based on compliance with the
-https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles [RVA23
-Profiles] which is comprised of the RVA23S64
+https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23 Profiles], which comprise the RVA23S64
 and RVA23U64 profiles. As described in these profile specifications,
 compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
 implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions

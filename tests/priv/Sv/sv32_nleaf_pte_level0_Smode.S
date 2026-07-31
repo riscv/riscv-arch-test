@@ -24,7 +24,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_nleaf_pte_level0_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 

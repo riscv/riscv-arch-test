@@ -30,7 +30,7 @@ a| * Do not test traps into M-mode except ecall from S-mode
 
 == Introduction
 
-This document describes the requirements for a processor to be eligible for a RVA23 certificate.
+This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
 
 The RVA23 processor certificate is based on the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23s64_profile[RVA23S64] and RVA23U64 profiles. To
 qualify for a certificate, the processor must implement the RV64I base instruction set and all of the mandatory
@@ -50,7 +50,7 @@ NOTE: While it is permitted for an implementation to also support RV32I instruct
 
 == Discussion
 
-The primary goal of RVA23 is to provide binary compatibility for S- and U-mode operating system and application code.  It does not impose requirements on M-mode firmware.  Certification deliberately avoids imposing requirements on M-mode behavior except where called out in the profile or where M-mode controls behaviors of lower privilege modes.
+The primary goal of RVA23 is to provide binary compatibility for S- and U-mode operating system and application code, and RVA23 only specifies profiles for these modes.  Certification deliberately avoids imposing requirements on M-mode behavior except where called out in the profile or where M-mode controls behaviors of lower privilege modes.
 
 === Custom M-mode
 
@@ -62,9 +62,9 @@ RVA23 does not place any specific requirements on M-mode implementations as it i
 
 === Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
-Nevertheless, RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select `PMLEN`.
+RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select `PMLEN`.
 
-RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements the T-SBI described below. If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which may in turn deliver the interrupt to S-mode.
+RVA23 certification tests require that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements the T-SBI described below. If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which may in turn deliver the interrupt to S-mode.
 
 The execution environment must provide a Test Supervisor Binary Interface (T-SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`. See the Certification Test Plan (CTP) for details. The certification suite provides a reference T-SBI implementation that runs on standard M-mode, but custom M-mode that differs significantly from standard M-mode might have to provide its own T-SBI implementation.
 
@@ -102,8 +102,8 @@ RVA23 certification requires that the T-SBI provide methods of emulating every w
 | `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE may be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that ADUE may be read-only zero because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01 and/or 11. CDE, DTE are OUT-OF-SCOPE because they do not relate to RVA23 features. FIOM is OUT-OF-SCOPE because I/O memory is not required by the RVA23 profile. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
 | `mseccfg` | SSEED and USEED must be controllable if Zkr is supported; otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are OUT-OF-SCOPE because they do not relate to RVA23 features.  Note `mseccfg.PMM` affects Smmpm, which is not part of RVA23.
 | `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
-| `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a user-supplied M-mode trap handler intercepts invisible traps and logs the rest or relays them to S-mode.
-| `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a user-supplied M-mode trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
+| `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a user-supplied M-mode trap handler intercepts invisible traps and relays the rest to S-mode.
+| `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, the trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
 |===
 
 The following CSRs and memory-mapped I/O registers are only read during RVA23 certification.
@@ -143,11 +143,9 @@ The following M-mode CSRs/fields are OUT-OF-SCOPE and not tested:
 
 === Interrupts
 
-All supervisor interrupts (SEI, STI, SSI, and LCOFI) are IN-SCOPE for testing. Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also IN-SCOPE. Machine interrupts are OUT-OF-SCOPE.
+All supervisor interrupts (SEI, STI, SSI, and LCOFI) are IN-SCOPE for testing. Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also IN-SCOPE. Machine interrupts (MEI, MTI, MSI) are OUT-OF-SCOPE for RVA23.
 
 LCOFI is mandatory because it is part of the Sscofpmf extension, which is required by the profile. STI and VSTI are mandatory because Sstc is a required part of the profile. The other supervisor interrupts (SEI, SSI) are optional per the supervisor specification: "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."  SGEI is optional because GEILEN can be 0.  The other hypervisor interrupts (VSEI, VSSI) are vague in the specification but are treated as optional because their supervisor counterparts are optional.
-
-Machine interrupts (MEI, MTI, MSI) are outside the RVA23 profile and are OUT-OF-SCOPE for certification.
 
 === User Requirements
 

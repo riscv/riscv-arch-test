@@ -6,6 +6,8 @@
 
 """Smstateen privileged extension test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
@@ -20,7 +22,7 @@ from testgen.priv.registry import add_priv_test_generator
 MSTATEEN_CSRS_64 = ["mstateen0", "mstateen1", "mstateen2", "mstateen3"]
 MSTATEEN_CSRS_H = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
 
-CSR_OPS = ["CSRRW", "CSRRS", "CSRRC", "CSRR"]
+CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 
 # RVTEST mode-switch macros, emitted as plain assembly (see other priv generators).
@@ -40,10 +42,10 @@ _MODES_MUS = [
 
 
 def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
-    """Emit a single CSR instruction line. CSRR is read-only and only takes (rd, csr)."""
-    if op == "CSRR":
-        return f"{op}(x{rd}, {csr})"
-    return f"{op}(x{rd}, {csr}, x{rs1})"
+    """Emit a single CSR instruction line. csrr is read-only and only takes (rd, csr)."""
+    if op == "csrr":
+        return f"{op} x{rd}, {csr}"
+    return f"{op} x{rd}, {csr}, x{rs1}"
 
 
 # ---------------------------------------------------------------------------
@@ -76,7 +78,6 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
-                    "nop",
                 ]
             )
 
@@ -88,7 +89,6 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
-                    "nop",
                 ]
             )
     lines.append("#endif  // __riscv_xlen == 32")
@@ -106,7 +106,6 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
-                    "nop",
                 ]
             )
 
@@ -118,7 +117,6 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
                     "",
                     test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
                     _csr_insn(op, temp_reg, csr, temp_reg),
-                    "nop",
                 ]
             )
     lines.append("#endif  // __riscv_xlen == 32")
@@ -225,7 +223,6 @@ def _generate_bit_controlled(
                             f"{csr}_{op.lower()}_{bit_name}{state}_{mode_label}", coverpoint, covergroup
                         ),
                         _csr_insn(op, temp_reg, csr, ones_reg),
-                        "nop",
                     ]
                 )
         return out
@@ -233,17 +230,17 @@ def _generate_bit_controlled(
     lines.append(f"LI(x{ones_reg}, -1)")
 
     for state in (0, 1):
-        bit_action = "CSRS" if state else "CSRC"
+        bit_action = "csrs" if state else "csrc"
         lines.extend(
             [
                 "",
                 f"{INDENT}# mstateen0.{bit_name} = {state} (bit {bit})",
                 "#if __riscv_xlen == 64",
                 f"LI(x{temp_reg}, {mask_64})",
-                f"{bit_action}(mstateen0, x{temp_reg})",
+                f"{bit_action} mstateen0, x{temp_reg}",
                 "#else",
                 f"LI(x{temp_reg}, {mask_32})",
-                f"{bit_action}(mstateen0h, x{temp_reg})",
+                f"{bit_action} mstateen0h, x{temp_reg}",
                 "#endif",
             ]
         )
@@ -297,7 +294,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
-            bit_action = "CSRC" if state == 0 else "CSRS"
+            bit_action = "csrc" if state == 0 else "csrs"
             lines.extend(
                 [
                     "",
@@ -317,7 +314,6 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                             covergroup,
                         ),
                         _csr_insn(op, temp_reg, "jvt", ones_reg),
-                        "nop",
                     ]
                 )
             lines.append(GOTO_MMODE)
@@ -355,12 +351,12 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
             f"LI(x{ones_reg}, -1)",
             "",
             f"{INDENT}# Ensure misa.F is set (read misa, verify F bit, then proceed)",
-            f"CSRR(x{temp_reg}, misa)",
+            f"csrr x{temp_reg}, misa",
             f"{INDENT}# bit 5 = F; test proceeds assuming F is present per MARCH",
             "",
             f"{INDENT}# Clear mstateen0.fcsr so fcsr reads zero",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRC(mstateen0, x{temp_reg})",
+            f"csrc mstateen0, x{temp_reg}",
         ]
     )
 
@@ -404,7 +400,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             f"{INDENT}# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRS(mstateen0, x{temp_reg})",
+            f"csrs mstateen0, x{temp_reg}",
         ]
     )
     for op in CSR_OPS:
@@ -422,7 +418,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             f"{INDENT}# mstateen0.fcsr = 0",
             f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"CSRC(mstateen0, x{temp_reg})",
+            f"csrc mstateen0, x{temp_reg}",
         ]
     )
     for op in CSR_OPS:
@@ -468,7 +464,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
-            bit_action = "CSRC" if state == 0 else "CSRS"
+            bit_action = "csrc" if state == 0 else "csrs"
             lines.extend(
                 [
                     "",
@@ -489,7 +485,6 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                                 covergroup,
                             ),
                             _csr_insn(op, temp_reg, csr, ones_reg),
-                            "nop",
                         ]
                     )
             lines.append(GOTO_MMODE)
@@ -533,7 +528,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         if needs_guard:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
-            bit_action = "CSRC" if state == 0 else "CSRS"
+            bit_action = "csrc" if state == 0 else "csrs"
             lines.extend(
                 [
                     "",
@@ -549,7 +544,6 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                         "",
                         test_data.add_testcase(f"{label}_fcsr{state}_{mode_label}", coverpoint, covergroup),
                         insn,
-                        "nop",
                     ]
                 )
             lines.append(GOTO_MMODE)
@@ -568,7 +562,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Smstateen",
     required_extensions=["S", "Zicsr", "Smstateen"],
-    march_extensions=["S", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
+    march_extensions=["Smstateen", "Zcmt", "Zfinx"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Smstateen state-enable extension testsuite."""

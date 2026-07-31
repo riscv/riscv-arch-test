@@ -62,7 +62,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_upage_mstatus_sum_set_Smode.S"
 #define SIGUPD_COUNT 80
 #define TRAP_SIGUPD_COUNT 190
 
@@ -96,7 +95,7 @@ RVTEST_BEGIN
 
   // Set mstatus.SUM
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)
+  csrs mstatus, t0
 
   // Adjust offset of VA to point to test region
   .set VA_SHIFT, (\level*9)+12

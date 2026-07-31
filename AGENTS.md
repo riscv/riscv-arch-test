@@ -30,7 +30,7 @@
 - `make spike-rv64-max`, `make spike`, `make qemu-rv32-max`: build ELFs and run configs discovered from `run_cmd.txt`.
 - `./run_tests.py "$(cat config/spike/spike-rv64-max/run_cmd.txt)" work/spike-rv64-max/elfs`: rerun already-built ELFs for one config.
 - `FAST=True make`: skip objdump for faster ELF builds. `DEBUG=True make EXTENSIONS=<suite>` emits signature objdump, Sail traces, and trap reports. `VERBOSE=True` implies debug and serializes jobs.
-- `JOBS=1 make ...` is useful for hangs; `make -jN` is also honored.
+- Do not specify `JOBS` or `--jobs` for normal validation; let the project choose parallelism. Use `JOBS=1 make ...` only when debugging a hang or another issue where parallelism seems to be the cause; `make -jN` is also honored.
 - `make coverage EXTENSIONS=<suite>`: focused coverage build. Full `make coverage` is expensive and uses `COVERAGE_CONFIG_FILES` (`config/sail/sail-rv64-max` and `sail-rv32-max`).
 - `make vector-tests`: run the standalone vector generators. `EXTENSIONS`/`EXCLUDE_EXTENSIONS` only filter unpriv vector generation; priv vector tests are always generated.
 - `make lint`, `make lint-fix`, `make format`: Ruff/Pyright checks and formatting.
@@ -53,7 +53,7 @@
 
 - Do not hand-edit `framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh`; it is generated from `riscv-opcodes`.
 - Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.
-- In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique. Instructions that may trap need a skipped instruction after them; use CSR macros (`CSRRW`, `CSRRS`, `CSRR`, etc.) instead of raw CSR instructions because implementations can trap on different CSRs.
+- In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique.
 
 ## Configs And CI
 

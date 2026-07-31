@@ -36,7 +36,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_Svadu_Umode.S"
 #define SIGUPD_COUNT 80
 
 
@@ -156,7 +155,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_ADUE)
-  CSRS(menvcfg, t0)                                                      // Enable Svadu
+  csrs menvcfg, t0                                                      // Enable Svadu
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

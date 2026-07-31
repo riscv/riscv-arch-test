@@ -14,8 +14,11 @@ covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  rs1_in_region: coverpoint ins.current.rs1_val {
-    bins at_region = {`PMP_REGION_START};
+  // The region-under-test sits at a fixed offset inside a 0x4000-aligned .data block, but its
+  // absolute address drifts with test code size, so match on the invariant low bits
+  // (PMP_ADDR_LOWMASK) instead of the absolute PMP_REGION_START.
+  rs1_in_region: coverpoint (ins.current.rs1_val & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   atomic_intrs: coverpoint ins.current.insn {
@@ -75,7 +78,9 @@ function void pmpzalrsc_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `STANDARD_REGION) || (pmpaddr[k] == `NON_STANDARD_REGION);
+    // Match on the code-size-invariant low bits; the absolute region address drifts with test size.
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) ||
+                 ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
   PMPZalrsc_cg.sample(ins, pmpcfg, pmp_hit);

@@ -27,12 +27,10 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-07.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 400
 
 
@@ -61,7 +59,6 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPREGION_XWR_000   ((PMP_L|                  PMP_NAPOT)&0xFF)
 #define PMPREGION_XWR_100   ((PMP_L|            PMP_X|PMP_NAPOT)&0xFF)
 #define PMPREGION_XWR_001   ((PMP_L|PMP_R|            PMP_NAPOT)&0xFF)
@@ -69,7 +66,6 @@ main:
 #define PMPREGION_XWR_011   ((PMP_L|PMP_R|PMP_W      |PMP_NAPOT)&0xFF)
 #define PMPREGION_XWR_111   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define PMPADDRESS            TEST_FOR_EXECUTION                              // Test section address
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -80,12 +76,7 @@ main:
 #endif
 
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, PMPADDRESS)
     srl x4, x4, PMP_SHIFT
@@ -109,6 +100,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_16
 
     RVTEST_GOTO_MMODE
@@ -118,6 +110,7 @@ main:
     LI(x4, (PMPREGION_XWR_100 << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_17
 
     RVTEST_GOTO_MMODE
@@ -127,6 +120,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_18
 
     RVTEST_GOTO_MMODE
@@ -136,6 +130,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_19
 
     RVTEST_GOTO_MMODE
@@ -145,6 +140,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_20
 
     RVTEST_GOTO_MMODE
@@ -154,6 +150,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_21
 
     RVTEST_GOTO_MMODE
@@ -163,6 +160,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_22
 
     RVTEST_GOTO_MMODE
@@ -172,6 +170,7 @@ main:
     LI(x4, (PMPREGION_XWR_100 << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_23
 
     RVTEST_GOTO_MMODE
@@ -181,6 +180,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION , test_24
 
     RVTEST_GOTO_MMODE

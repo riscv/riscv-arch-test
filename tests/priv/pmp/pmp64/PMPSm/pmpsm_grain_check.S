@@ -27,12 +27,10 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_grain_check.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -58,17 +56,10 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT

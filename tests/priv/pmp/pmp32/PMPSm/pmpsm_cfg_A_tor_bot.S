@@ -31,13 +31,11 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_A_tor_bot.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -150,16 +148,10 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_UPPER_BOUND       ((((PMP_L|PMP_R      |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LOWER_BOUND       ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
 
-    LA(x4, -1)                  // All memory region
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, TEST_FOR_EXECUTION)
     LI(t0, g)
@@ -176,6 +168,7 @@ main:
     LI(x4, PMPREGION_UPPER_BOUND)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2
@@ -185,6 +178,7 @@ main:
     LI(x4, PMPREGION_LOWER_BOUND)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE

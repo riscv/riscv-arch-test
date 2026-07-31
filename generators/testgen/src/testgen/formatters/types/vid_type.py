@@ -6,8 +6,10 @@
 ##################################
 
 from testgen.asm.vector_helpers import (
-    load_vec_reg,
-    prep_base_v,
+    VectorLoad,
+    handle_lmul_ifdef,
+    load_test_vtype,
+    load_vec_regs,
     prep_mask_v,
     write_sigupd_v,
     write_sigupd_v_len,
@@ -37,30 +39,20 @@ def format_vid(
 
     # Set up the instructions: Mask, vd (potentially preloaded)
     setup = []
-    registers = [params.vd]
 
     # Setup Mask
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
     # Preload vd at vlmax
-    vd_preloaded = False
-    if params.vector_suite == "length":
-        setup.extend(
-            load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0")
-        )
-        vd_preloaded = True
-        registers.remove(params.vd)
+    vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
+    load_code, random_vl_reg = load_vec_regs([VectorLoad("vd", vl=vd_vl, no_fractional_load=True)], params, test_data)
+    setup.extend(load_code)
+    setup.append(load_test_vtype(params, random_vl_reg))
 
-    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
-    setup.extend(prep_lines)
-
-    if not vd_preloaded:
-        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params))
-
-    # No need to reset vtype as there is one vector operand
-    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
-        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+    # We don't need random_vl_reg anymore
+    if random_vl_reg.startswith("x"):
+        test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     test = [f"{instr_str} v{params.vd}, v0.t"] if params.maskval else [f"{instr_str} v{params.vd}"]
 
@@ -72,5 +64,7 @@ def format_vid(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
+
+    handle_lmul_ifdef(params.lmul, setup, check)
 
     return (setup, test, check)

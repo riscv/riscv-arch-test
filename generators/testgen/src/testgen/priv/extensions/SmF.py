@@ -20,9 +20,9 @@ def _gen_fs_init(fs: int, temp_reg: int) -> str:
     """Initialize mstatus.FS"""
     lines = [
         f"LI(x{temp_reg}, {3 << 13})  # 11 in bits 14:13",
-        f"CSRC(mstatus, x{temp_reg}) # Clear mstatus.FS=00",
+        f"csrc mstatus, x{temp_reg} # Clear mstatus.FS=00",
         f"LI(x{temp_reg}, {fs << 13})  # put fs in bits 14:13",
-        f"CSRS(mstatus, x{temp_reg}) # Set mstatus.FS to {fs}",
+        f"csrs mstatus, x{temp_reg} # Set mstatus.FS to {fs}",
     ]
     return "\n".join(lines)
 
@@ -31,9 +31,9 @@ def _gen_fp_csr_init(csr_name: str, value: int, temp_reg: int) -> str:
     """Initialize an FP CSR while mstatus.FS is Dirty."""
     lines = [
         f"LI(x{temp_reg}, {3 << 13})",
-        f"CSRS(mstatus, x{temp_reg}) # Set mstatus.FS to dirty",
+        f"csrs mstatus, x{temp_reg} # Set mstatus.FS to dirty",
         f"LI(x{temp_reg}, {value})",
-        f"CSRW({csr_name}, x{temp_reg}) # Initialize {csr_name}",
+        f"csrw {csr_name}, x{temp_reg} # Initialize {csr_name}",
     ]
     return "\n".join(lines)
 
@@ -67,33 +67,33 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                 [
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 1s",
                     _gen_fs_init(fs, temp_reg),
-                    f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
+                    f"csrr x{save_reg}, {csr_name}    # Save CSR",
                     test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint_full, covergroup),
-                    f"CSRW({csr_name}, x{ones_reg})    # Write all 1s to CSR",
+                    f"csrw {csr_name}, x{ones_reg}    # Write all 1s to CSR",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 0s",
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint_full, covergroup),
-                    f"CSRW({csr_name}, zero)   # Write all 0s to CSR",
+                    f"csrw {csr_name}, zero   # Write all 0s to CSR",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: set all bits",
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{csr_name}_csrs_all", coverpoint_full, covergroup),
-                    f"CSRS({csr_name}, x{ones_reg})    # Set all CSR bits",
+                    f"csrs {csr_name}, x{ones_reg}    # Set all CSR bits",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
                     f"# Testcase: {csr_name} access with mstatus.FS={fs}: clear all bits",
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint_full, covergroup),
-                    f"CSRC({csr_name}, x{ones_reg})    # Clear all CSR bits",
+                    f"csrc {csr_name}, x{ones_reg}    # Clear all CSR bits",
                     gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
-                    f"CSRW({csr_name}, x{save_reg})       # Restore CSR",
+                    f"csrw {csr_name}, x{save_reg}       # Restore CSR",
                     "",
                 ]
             )

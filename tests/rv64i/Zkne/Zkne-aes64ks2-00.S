@@ -15,8 +15,7 @@
 # MARCH: rv64i_zicsr_zifencei_zkne
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zkne-aes64ks2-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 522
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

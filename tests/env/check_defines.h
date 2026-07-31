@@ -5,7 +5,7 @@
 
 ########## test.S CHECKS ##########
 #ifndef TEST_FILE
-  #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
+  #error "TEST_FILE not defined. It should be passed on the compiler command line."
 #endif
 
 #ifndef SIGUPD_COUNT
@@ -115,5 +115,12 @@
   #endif
   #ifndef RVMODEL_MHPMEVENT_CODE
     #error "RVMODEL_MHPMEVENT_CODE not defined. Make sure to define it in rvmodel_macros.h."
+##### Configuration Limitations #####
+#if UDB_NUM_PMP_ENTIRES > 0
+  #ifndef UDB_PMP_NAPOT_SUPPORTED
+    #error "DUTs with PMP but without NAPOT support are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
+  #endif
+  #if UDB_NUM_USABLE_PMP_ENTRIES < 8
+    #error "DUTs with fewer than 8 usable PMP entries are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
 #endif

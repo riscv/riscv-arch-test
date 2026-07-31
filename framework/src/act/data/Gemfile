@@ -2,7 +2,7 @@
 
 # SPDX-License-Identifier: Apache-2.0
 
-source "https://rubygems.org"
+source "https://rubygems.org", cooldown: 7
 
 # By default we pull the UDB Ruby gems from rubygems.org. To develop against
 # a local riscv-unified-db checkout (e.g. to pick up unpublished changes such

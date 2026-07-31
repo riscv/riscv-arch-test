@@ -41,7 +41,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_exceptions_mprv_Mmode.S"
 #define SIGUPD_COUNT 115
 #define TRAP_SIGUPD_COUNT 180
 #define BOOT_TO_MMODE
@@ -97,7 +96,7 @@ RVTEST_BEGIN
   VERIFICATION_RWX \TEST_CASE
 
   LI(   t0, MSTATUS_MPRV)
-  CSRC( mstatus, t0)          // Clear mstatus.MPRV
+  csrc  mstatus, t0          // Clear mstatus.MPRV
 
   // Signature Update
   RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
@@ -107,11 +106,11 @@ RVTEST_BEGIN
 
 .macro SET_REQ_MSTATUS_VAL
   LI(   t0, MSTATUS_MPRV)
-  CSRS( mstatus, t0)
+  csrs  mstatus, t0
   LI(   t0, 0x1800)
-  CSRC( mstatus, t0)
+  csrc  mstatus, t0
   LI(   t0, 0x800)
-  CSRS( mstatus, t0)          // Set to Smode
+  csrs  mstatus, t0          // Set to Smode
 .endm
 
 main:
@@ -211,7 +210,7 @@ main:
 
   // Test case 9-10: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 2 faults
   li a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test9
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test10
@@ -219,7 +218,7 @@ main:
 
   // Test case 11-12: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[1] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test11
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test12
@@ -227,7 +226,7 @@ main:
 
   // Test case 13-14: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[2] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test13
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test14
@@ -235,7 +234,7 @@ main:
 
   // Test case 15-16: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[3] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test15
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test16
@@ -243,7 +242,7 @@ main:
 
   // Test case 17-18: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[4] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test17
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test18
@@ -251,7 +250,7 @@ main:
 
   // Test case 19-20: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[5] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test19
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test20
@@ -259,7 +258,7 @@ main:
 
   // Test case 21-22: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[6] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test21
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test22
@@ -267,7 +266,7 @@ main:
 
   // Test case 23-24: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[7] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test23
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test24
@@ -275,7 +274,7 @@ main:
 
   // Test case 25-26: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[8] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test25
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test26
@@ -283,7 +282,7 @@ main:
 
   // Test case 27-28: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[9] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test27
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test28
@@ -291,7 +290,7 @@ main:
 
   // Test case 29-30: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[12] set | expected = 2 faults
   slli a1, a1, 3
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test29
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test30
@@ -299,7 +298,7 @@ main:
 
   // Test case 31-32: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[13] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test31
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test32
@@ -307,7 +306,7 @@ main:
 
   // Test case 33-34: Test in M-Mode | Valid & Invalid PTEs | RWX set | medeleg[15] set | expected = 2 faults
   slli a1, a1, 2
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test33
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test34
@@ -315,7 +314,7 @@ main:
 
   // Test case 35-36: Test in M-Mode | Valid & Invalid PTEs | RWX set | set medeleg = 0xB1FF | expected = 2 faults
   LI(a1, 0xB1FF)
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Mmode, va_data, LEVEL1, test35
   sfence.vma
   TEST_CASES_RUNNER Mmode, va_data_inv, LEVEL1, test36

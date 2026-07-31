@@ -8,7 +8,7 @@
 
 """ZicntrS extension test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -26,7 +26,7 @@ def _helper_scounteren_access(
     lines.extend(
         [
             f"LI(x{ones_reg}, -1)",
-            f"CSRW(mcounteren, x{ones_reg})  # enable all counters in M-mode",
+            f"csrw mcounteren, x{ones_reg}  # enable all counters in M-mode",
             f"LI(x{walk_reg}, 1)",
         ]
     )
@@ -34,8 +34,8 @@ def _helper_scounteren_access(
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(scounteren, zero)  # clear all bits",
-                f"CSRS(scounteren, x{walk_reg})  # set current bit",
+                "csrw scounteren, zero  # clear all bits",
+                f"csrs scounteren, x{walk_reg}  # set current bit",
             ]
         )
         if mode != "Mmode":
@@ -43,11 +43,9 @@ def _helper_scounteren_access(
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -55,11 +53,9 @@ def _helper_scounteren_access(
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in {mode}",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in {mode}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in {mode}",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in {mode}",
                     "#endif",
                     "#endif",
                 ]
@@ -73,15 +69,15 @@ def _helper_scounteren_access(
     lines.extend(
         [
             f"LI(x{walk_reg}, 1)",
-            f"CSRW(mcounteren, x{ones_reg})  # enable all counters in M-mode",
+            f"csrw mcounteren, x{ones_reg}  # enable all counters in M-mode",
         ]
     )
     for i in range(32):
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(scounteren, x{ones_reg})  # set all bits",
-                f"CSRC(scounteren, x{walk_reg})  # clear current bit",
+                f"csrs scounteren, x{ones_reg}  # set all bits",
+                f"csrc scounteren, x{walk_reg}  # clear current bit",
             ]
         )
         if mode != "Mmode":
@@ -89,11 +85,9 @@ def _helper_scounteren_access(
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -101,11 +95,9 @@ def _helper_scounteren_access(
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in {mode}",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in {mode}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in {mode}",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in {mode}",
                     "#endif",
                     "#endif",
                 ]
@@ -140,19 +132,17 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Smode",
             ]
         )
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -160,11 +150,9 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in S-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in S-mode",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in S-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in S-mode",
                     "#endif",
                     "#endif",
                 ]
@@ -188,19 +176,17 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Smode",
             ]
         )
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -208,11 +194,9 @@ def _generate_mcounteren_access_s_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in S-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in S-mode",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in S-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in S-mode",
                     "#endif",
                     "#endif",
                 ]
@@ -295,21 +279,19 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
-                "CSRW(mcounteren, zero)  # clear all bits",
-                f"CSRS(mcounteren, x{walk_reg})  # set current bit",
-                "CSRW(scounteren, zero)  # clear all bits",
-                f"CSRS(scounteren, x{walk_reg})  # set current bit",
+                "csrw mcounteren, zero  # clear all bits",
+                f"csrs mcounteren, x{walk_reg}  # set current bit",
+                "csrw scounteren, zero  # clear all bits",
+                f"csrs scounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -317,11 +299,9 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in U-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in U-mode",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in U-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in U-mode",
                     "#endif",
                     "#endif",
                 ]
@@ -345,21 +325,19 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
-                f"CSRS(mcounteren, x{ones_reg})  # set all bits",
-                f"CSRC(mcounteren, x{walk_reg})  # clear current bit",
-                f"CSRS(scounteren, x{ones_reg})  # set all bits",
-                f"CSRC(scounteren, x{walk_reg})  # clear current bit",
+                f"csrs mcounteren, x{ones_reg}  # set all bits",
+                f"csrc mcounteren, x{walk_reg}  # clear current bit",
+                f"csrs scounteren, x{ones_reg}  # set all bits",
+                f"csrc scounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
         )
         if i < 3:
             lines.extend(
                 [
-                    f"CSRR(x{read_reg}, {reg_list[i]})",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, {reg_list[i]}h)",
-                    "nop",
+                    f"csrr x{read_reg}, {reg_list[i]}h",
                     "#endif",
                 ]
             )
@@ -367,11 +345,9 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "#ifdef ZIHPM_SUPPORTED",
-                    f"CSRR(x{read_reg}, hpmcounter{i}) # read from hpmcounter{i} in U-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i} # read from hpmcounter{i} in U-mode",
                     "#if __riscv_xlen == 32",
-                    f"CSRR(x{read_reg}, hpmcounter{i}h) # read from hpmcounter{i} in U-mode",
-                    "nop",
+                    f"csrr x{read_reg}, hpmcounter{i}h # read from hpmcounter{i} in U-mode",
                     "#endif",
                     "#endif",
                 ]
@@ -387,10 +363,52 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
+    """start in M mode
+    read instret and mcounteren = 0s
+    goto S mode
+    nop
+    go back to M mode
+    mcounteren = 1s
+    go back to S mode
+    read and sigupd change in instret
+    """
+    covergroup, coverpoint = "ZicntrS_cg", "cp_mcounter_inc_inaccessible"
+
+    old_reg, read_reg = test_data.int_regs.get_registers(2)
+
+    lines = [
+        comment_banner(coverpoint, _generate_mcounter_inc_inaccessible_tests.__doc__),
+        "",
+    ]
+    lines.extend(
+        [
+            test_data.add_testcase("S", coverpoint, covergroup),
+            f"csrr x{old_reg}, instret",
+            "# make counter inaccessible in S mode",
+            "csrw mcounteren, zero",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            "nop",
+            "RVTEST_GOTO_MMODE",
+            "# make counter accessible in S mode",
+            f" LI(x{read_reg}, -1)",
+            f"csrw mcounteren, x{read_reg}",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            f"csrr x{read_reg}, instret",
+            f"sub x{read_reg}, x{read_reg}, x{old_reg}",
+            "# SIGUPD the difference in instret",
+            write_sigupd(read_reg, test_data),
+            "RVTEST_GOTO_MMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([old_reg, read_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
-    march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
+    march_extensions=["Zicntr", "Zihpm"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrS coverpoints"""
@@ -402,5 +420,6 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_scounteren_access_m_tests(test_data))
     tc.code.extend(_generate_scounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
+    tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

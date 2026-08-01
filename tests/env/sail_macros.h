@@ -12,7 +12,18 @@
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H
 
-#define SAIL_CLINT_BASE_ADDRESS 0x02000000
+#ifndef SAIL_CLINT_BASE_ADDRESS
+  #error "SAIL_CLINT_BASE_ADDRESS is not defined, should have been passed by the ACT compilation framework."
+#endif
+
+#ifndef SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS
+  #error "SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS is not defined, should have been passed by the ACT compilation framework."
+#endif
+
+#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
+#define SAIL_MTIMECMP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x4000)
+#define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
+#define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
@@ -89,11 +100,20 @@
 
 ##### Machine Timer #####
 
-#undef RVMODEL_MTIMECMP_ADDRESS
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
+#ifdef RVMODEL_MTIMECMP_ADDRESS
+  #undef RVMODEL_MTIMECMP_ADDRESS
+  #define RVMODEL_MTIMECMP_ADDRESS SAIL_MTIMECMP_ADDRESS
+#endif
 
-#undef RVMODEL_MTIME_ADDRESS
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
+#ifdef RVMODEL_MTIME_ADDRESS
+  #undef RVMODEL_MTIME_ADDRESS
+  #define RVMODEL_MTIME_ADDRESS SAIL_MTIME_ADDRESS
+#endif
+
+#ifdef RVMODEL_MSIP_ADDRESS
+  #undef RVMODEL_MSIP_ADDRESS
+  #define RVMODEL_MSIP_ADDRESS SAIL_MSIP_ADDRESS
+#endif
 
 ##### Machine Interrupts #####
 
@@ -104,7 +124,6 @@
 #undef RVMODEL_TIMER_INT_SOON_DELAY
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-#define SAIL_SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 11);               \
@@ -118,7 +137,6 @@
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
-#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \

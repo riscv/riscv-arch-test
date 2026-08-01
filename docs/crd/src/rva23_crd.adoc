@@ -35,9 +35,7 @@ a| Removed "custom M-mode" made clarifications
 
 This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
 
-The RVA23 processor certificate is based on compliance with the
-https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles [RVA23
-Profiles] which is comprised of the RVA23S64 and RVA23U64 profiles. As described in these profile specifications,
+The RVA23 processor certificate is based on compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23 Profiles], which is comprised of the RVA23S64 and RVA23U64 profiles. As described in these profile specifications,
 compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
 implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions
 of the base ISA and these extensions may be implemented, but if they are

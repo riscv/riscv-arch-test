@@ -57,7 +57,7 @@
             `ifdef ZACAS_SUPPORTED
                 wildcard bins amocas_w = {AMOCAS_W};
                 wildcard bins amocas_d = {AMOCAS_D};
-                wildcard bins amocas_q = {AMOCAS_Q};
+                //wildcard bins amocas_q = {AMOCAS_Q}; Not supported
             `endif // ZACAS_SUPPORTED
             // Zabha byte/halfword atomics
             `ifdef ZABHA_SUPPORTED
@@ -104,12 +104,12 @@
             wildcard bins c_ld   = {C_LD};
             wildcard bins c_lwsp = {C_LWSP};
             wildcard bins c_ldsp = {C_LDSP};
-        `endif // ZCA_SUPPORTED
-        // Zcd compressed double-precision FP store and load
+            // Zcd compressed double-precision FP store and load
         `ifdef ZCD_SUPPORTED
             wildcard bins c_fsdsp = {C_FSDSP};
             wildcard bins c_fldsp = {C_FLDSP};
         `endif // ZCD_SUPPORTED
+        `endif // ZCA_SUPPORTED
         // Zicboz cache-block zero (write, address in rs1)
         `ifdef ZICBOZ_SUPPORTED
             wildcard bins cbo_zero = {CBO_ZERO};
@@ -128,12 +128,12 @@
         `endif
         // Zicfiss shadow-stack stores and loads
         `ifdef ZICFISS_SUPPORTED
-            wildcard bins sspush      = {SSPUSH};
-            wildcard bins c_sspush    = {C_SSPUSH};
+            //wildcard bins sspush      = {SSPUSH}; in framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh we have localparam [31:0]  SSPUSH_X1  and SSPUSH_X5
+            //wildcard bins c_sspush    = {C_SSPUSH};
             wildcard bins ssamoswap_w = {SSAMOSWAP_W};
             wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-            wildcard bins sspopchk    = {SSPOPCHK};
-            wildcard bins c_sspopchk  = {C_SSPOPCHK};
+            //wildcard bins sspopchk    = {SSPOPCHK};
+            //wildcard bins c_sspopchk  = {C_SSPOPCHK};
         `endif // ZICFISS_SUPPORTED
         // RVV 1.0 vector stores and loads (ZVL32B minimum)
         `ifdef ZVL32B_SUPPORTED
@@ -188,7 +188,7 @@
             bins sv57 = {4'b1010};
         `endif
     }
-    a_upper_bits: coverpoint (ins.current.rs1_val + ins.current.imm)[63:48] {
+    a_upper_bits: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
         bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7
@@ -209,18 +209,24 @@
     }
 
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
+    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 2'b11) {
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
     // ---- Misalign common cross dimensions ----
-    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;
+    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Exception should write xtval with masked version of pointer.
-        illegal_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[47:0] {
+        // Match on the UNMASKED low 48 bits only: the probe forms its address as
+        // (tag << 48) | RVMODEL_ACCESS_FAULT_ADDRESS, so every a_upper_bits tag
+        // shares the same low half. Masking the compare to 48 bits is what lets
+        // this coverpoint cross with all 8 a_upper_bits bins; comparing the whole
+        // address (or its high bits) would restrict pm_fault to the upper_0000 bin.
+        // Part-selecting an expression is illegal in SystemVerilog, hence the AND.
+        illegal_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 48'hFFFF_FFFF_FFFF) {
             type_option.weight = 0;
-            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS[47:0]};
+            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS& 48'hFFFF_FFFF_FFFF};
         }
         pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif

@@ -2054,11 +2054,15 @@ adj_\__MODE__\()epc_rtn:
         lhu     T2, 0(T3)
         csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
   .endif
+#ifdef ZCA_SUPPORTED
         andi    T2, T2, 3                            // bits[1:0]
         addi    T2, T2, 1                            // ==4 iff bits were 0b11
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
         addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
         slli    T2, T2, 1                            // advance = 4 or 2
+#else
+        li      T2, 4                                // IALIGN=32 requires a 4-byte advance
+#endif
         add     T3, T3, T2                           // next instruction (raw xEPC + width)
         csrw    CSR_XEPC, T3
 

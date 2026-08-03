@@ -112,6 +112,7 @@ implemented_extensions:
   - { name: Zvkt, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
+  - { name: Smnpm, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.0.0" }

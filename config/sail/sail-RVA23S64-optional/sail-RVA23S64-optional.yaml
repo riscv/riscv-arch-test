@@ -110,6 +110,7 @@ implemented_extensions:
   - { name: Zvks, version: "= 1.0.0" }
   - { name: Zkr, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
+  - { name: Smnpm, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.0.0" }
   - { name: Sv57, version: "= 1.0.0" }

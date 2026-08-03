@@ -2028,6 +2028,7 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
+#ifdef ZCA_SUPPORTED
         // Advance xEPC past the trapping instruction by its true width.
         // Read the low halfword of the instruction at xEPC (T3), in the
         // addressing/permission context of the code that trapped, then
@@ -2054,7 +2055,6 @@ adj_\__MODE__\()epc_rtn:
         lhu     T2, 0(T3)
         csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
   .endif
-#ifdef ZCA_SUPPORTED
         andi    T2, T2, 3                            // bits[1:0]
         addi    T2, T2, 1                            // ==4 iff bits were 0b11
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed

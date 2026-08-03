@@ -354,9 +354,31 @@
 // Note: S and HS modes share the same CSR names (stvec, sepc, scause, etc.)
 // because HS-mode uses the S-mode CSR space. VS-mode has its own CSRs
 // (vstvec, vsepc, vscause, etc.)
+//
+// V-mode needs TWO name sets, because which name is legal depends on where
+// the code runs, not on which register it means:
+//
+//   XCSR_RENAME V         — for code EXECUTING in VS-mode (the V trap handler).
+//                           With V=1, the hardware transparently aliases every
+//                           S-mode CSR access to its VS counterpart, so `sepc`
+//                           IS `vsepc`. Naming vsepc explicitly from VS-mode is
+//                           a virtual instruction exception, which re-enters the
+//                           handler and livelocks. So: use the S-mode names.
+//
+//   XCSR_RENAME_FROM_M V  — for M-mode code REACHING INTO VS-mode (prolog and
+//                           epilog, which both run in M-mode). No aliasing
+//                           applies there, so the VS CSRs must be named
+//                           explicitly or the S-mode CSRs get clobbered instead.
+//
+// Every other mode names its own CSRs the same way from either context, so
+// XCSR_RENAME_FROM_M just defers to XCSR_RENAME for M, S and H.
 //==============================================================================
 
 .macro _XCSR_RENAME_V
+  _XCSR_RENAME_S                                // running in VS-mode: S-mode names alias to VS
+.endm
+
+.macro _XCSR_RENAME_V_FROM_M
   .set CSR_XSTATUS, CSR_VSSTATUS                // vsstatus — VS-mode status register
   .set CSR_XIE,     CSR_VSIE                    // vsie — VS-mode interrupt enable
   .set CSR_XIP,     CSR_VSIP                    // vsip — VS-mode interrupt pending
@@ -447,7 +469,21 @@
        _XCSR_RENAME_S                           //   set CSR_X* to S-mode CSR names
   .endif
   .ifc  \__MODE__ ,  V                          // if mode == V (VS-mode)
-       _XCSR_RENAME_V                           //   set CSR_X* to VS-mode CSR names
+       _XCSR_RENAME_V                           //   set CSR_X* to S-mode names (aliased to VS when V=1)
+  .endif
+.endm
+
+//==============================================================================
+// XCSR_RENAME_FROM_M — same, but for M-mode code that manipulates another
+// mode's CSRs (the prolog and epilog). Only V differs: no S->VS aliasing
+// happens from M-mode, so the VS CSRs must be named explicitly.
+//==============================================================================
+
+.macro XCSR_RENAME_FROM_M __MODE__
+  .ifc   \__MODE__ , V                          // if mode == V (VS-mode)
+       _XCSR_RENAME_V_FROM_M                    //   set CSR_X* to explicit VS-mode CSR names
+  .else
+       XCSR_RENAME \__MODE__                    //   M/S/H: identical from either context
   .endif
 .endm
 
@@ -873,7 +909,7 @@
 .option norvc                                    // no compressed instructions in handler code
 
 .global \__MODE__\()trampoline                   // make trampoline label globally visible
-        XCSR_RENAME \__MODE__                    // set CSR_X* aliases for this mode
+        XCSR_RENAME_FROM_M \__MODE__             // set CSR_X* aliases for this mode (prolog runs in M-mode)
 
         LA(     T1, \__MODE__\()tramptbl_sv)     // T1 = address of this mode's save area in .data
 
@@ -2722,7 +2758,7 @@ fast_Sothertrap:
 .option push
 .option norvc
 
-        XCSR_RENAME \__MODE__                     // set CSR aliases for this mode
+        XCSR_RENAME_FROM_M \__MODE__              // set CSR aliases for this mode (epilog runs in M-mode)
         LI(T3, actual_tramp_sz)                   // T3 = trampoline size (used as loop bound)
 
 exit_\__MODE__\()cleanup:                         // entry point (also used by abort path)

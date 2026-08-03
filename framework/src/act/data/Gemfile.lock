@@ -190,7 +190,7 @@ GEM
     write_xlsx (1.15.0)
       nkf
       rubyzip (>= 2.4.0, < 4.0)
-    z3 (0.0.20251017)
+    z3 (0.0.20260727)
       ffi (~> 1.17)
 
 PLATFORMS
@@ -298,7 +298,7 @@ CHECKSUMS
   unicode_utils (1.4.0) sha256=b922d0cf2313b6b7136ada6645ce7154ffc86418ca07d53b058efe9eb72f2a40
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
   write_xlsx (1.15.0) sha256=67cfc1cc7361802e6088cdef5cec02addc8c788a4eb79914545f7032373b439a
-  z3 (0.0.20251017) sha256=7a10f6aed89760d347e6ec293a37280eacdf5c0616194bb615538b2358edd1e4
+  z3 (0.0.20260727) sha256=ac928b93b432611f597b0f5ff8bb29ea754256d9491e8f8ff351a9c5ce52f980
 
 RUBY VERSION
   ruby 3.4.10

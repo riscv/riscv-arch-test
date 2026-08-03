@@ -33,8 +33,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_sti"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
-    # After allocating r_stce, initialize it to 0 as the no-SSSTATEEN default
-    # lines.append(f"li x{r_stce}, 0   # default STCE=0 if SSSTATEEN not supported")
+
     lines = [
         comment_banner(
             "cp_trigger_sti",
@@ -95,6 +94,8 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
                     f"    srli x{r_stce}, x{r_stce}, 31",
                     "#endif",
                     f"andi x{r_stce}, x{r_stce}, 0x1",
+                    "#else",
+                    f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
                     "#endif",
                 ]
             )
@@ -109,16 +110,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
 
             lines.append("# 8. Set STIP: stimecmp=0 fires immediately (mtime>0 always); legacy: direct mip write")
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-            lines.extend(
-                [
-                    "#ifndef SM1P11P0_SUPPORTED",
-                    *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
-                    "#else",
-                    f"LI(x{r_scratch}, 0x20)",
-                    f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
-                    "#endif",
-                ]
-            )
+            lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
 
             lines.extend(
                 [
@@ -598,30 +590,22 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
         [
             "#ifndef SM1P11P0_SUPPORTED",
             "# Read STCE",
-            f"CSRR x{r_stce}, menvcfg",
+            f"csrr x{r_stce}, menvcfg",
             "#if __riscv_xlen == 64",
             f"    srli x{r_stce}, x{r_stce}, 63",
             "#else",
             f"    srli x{r_stce}, x{r_stce}, 31",
             "#endif",
             f"andi x{r_stce}, x{r_stce}, 0x1",
+            "#else",
+            f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
             "#endif",
         ]
     )
 
     lines.append("# Set STIP in M-mode")
     lines.append(test_data.add_testcase("changingtos_sti", coverpoint, covergroup))
-    lines.extend(
-        [
-            "#ifndef SM1P11P0_SUPPORTED",
-            *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
-            "#else",
-            # priv 1.11 fallback: set STIP directly via mip since stimecmp/STCE don't exist
-            f"LI(x{r_scratch}, 0x20)",
-            f"CSRS(mip, x{r_scratch})             # set mip.STIP directly",
-            "#endif",
-        ]
-    )
+    lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
 
     lines.extend(
         [
@@ -925,19 +909,12 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                                 f"    srli x{r_stce}, x{r_stce}, 31",
                                 "#endif",
                                 f"andi x{r_stce}, x{r_stce}, 0x1",
-                                "#endif",
-                            ]
-                        )
-                        lines.extend(
-                            [
-                                "#ifndef SM1P11P0_SUPPORTED",
-                                *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
                                 "#else",
-                                f"LI(x{r_scratch}, 0x20)",
-                                f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
+                                f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
                                 "#endif",
                             ]
                         )
+                        lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
                     else:  # mtip
                         lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
                 else:
@@ -1092,19 +1069,12 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                             f"    srli x{r_stce}, x{r_stce}, 31",
                             "#endif",
                             f"andi x{r_stce}, x{r_stce}, 0x1",
-                            "#endif",
-                        ]
-                    )
-                    lines.extend(
-                        [
-                            "#ifndef SM1P11P0_SUPPORTED",
-                            *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
                             "#else",
-                            f"LI(x{r_scratch}, 0x20)",
-                            f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
+                            f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
                             "#endif",
                         ]
                     )
+                    lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
                 else:
                     lines.append("# mtip")
                     lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
@@ -2775,5 +2745,6 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_user_sei_tests(test_data))
     tc.code.extend(_generate_wfi_u_tests(test_data))
     tc.code.extend(_generate_wfi_timeout_u_tests(test_data))
+
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

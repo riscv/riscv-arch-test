@@ -205,20 +205,24 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             wildcard bins fclass_s = {FCLASS_S};
         }
     `endif
-    `ifdef UDB_MXLEN_64
-        envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][62] {
-                bins envcfg_disabled = {1'b0};
-                bins envcfg_enabled  = {1'b1};
-        }
-    `else
-        envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][30] {
-                bins envcfg_disabled = {1'b0};
-                bins envcfg_enabled  = {1'b1};
-        }
+
+    // cp_envcfg: Only present when Sm > 1.11 is supported
+    `ifndef SM1P11P0_SUPPORTED
+      `ifdef UDB_MXLEN_64
+          envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][62] {
+                  bins envcfg_disabled = {1'b0};
+                  bins envcfg_enabled  = {1'b1};
+          }
+      `else
+          envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][30] {
+                  bins envcfg_disabled = {1'b0};
+                  bins envcfg_enabled  = {1'b1};
+          }
+      `endif
+      senvcfg_csr: coverpoint ins.current.insn[31:20] {
+                  bins senvcfg = {CSR_SENVCFG};
+      }
     `endif
-    senvcfg_csr: coverpoint ins.current.insn[31:20] {
-                bins senvcfg = {CSR_SENVCFG};
-    }
 
     // ── Zcmt-dependent coverpoints (cp_jvt_access) ──────────
 `ifdef ZCMT_SUPPORTED
@@ -309,8 +313,10 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     }
 `endif
 
-    // Row 8: Always present (envcfg always in mstateen0)
-    cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
+    // Row 8: Sm > 1.11 only
+    `ifndef SM1P11P0_SUPPORTED
+      cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
+    `endif
 
     // Row 7: Zcmt only
 `ifdef ZCMT_SUPPORTED

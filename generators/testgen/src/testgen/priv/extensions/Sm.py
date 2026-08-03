@@ -367,7 +367,8 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ]
     csr_menvcfg = ("menvcfg", None)
     # RV32-only high CSRs
-    csrs32 = ("mstatush", None)
+    csr_mstatush = ("mstatush", None)
+    csr_menvcfgh = ("menvcfgh", None)
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
@@ -404,7 +405,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    lines.extend(csr_access_test(test_data, csrs32, covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint))
 
     lines.append("\n#ifndef SM1P11P0_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("menvcfgh", None), covergroup, coverpoint))
@@ -445,10 +446,11 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    lines.extend(csr_walk_test(test_data, csrs32, covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint))
     lines.append("\n#ifndef SM1P11P0_SUPPORTED")
-    lines.extend(csr_walk_test(test_data, ("menvcfgh", None), covergroup, coverpoint))
-    lines.append("#endif")
+    lines.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint))
+    lines.append("#endif // !SM1P11P0_SUPPORTED")
+    lines.append("#endif // __riscv_xlen == 32")
 
     ######################################
     coverpoint = "cp_csr_insufficient_priv"
@@ -794,7 +796,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
+    test_data.int_regs.return_registers([r_msip, r_msipaddr])
     lines.append("#endif // SM1P13P0_SUPPORTED")
 
     return lines

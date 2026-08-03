@@ -9,6 +9,18 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Sheet source: Hypervisor (10x) - Gap Highlighted.xlsx → sheet "SvH-US"
+// (also exported in hypervisor-10x-test-plan.md / .json)
+//
+// Legend on crosses below:
+//   // Coverpoint: <sheet ColA name>  — already present in this covergroup
+//   Sheet rows often map 1→N here as _rw/_x (or _s/_u / MPRV mode splits).
+//
+// Gap summary (2026-08-02): P0 + cp_two_stage_mxr crosses added; PPN extracted.
+//   Remaining MISS: see TODO block (P2+ / HFENCE / OBS).
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SVH
 covergroup SvH_cg with function sample(ins_t ins);
@@ -35,12 +47,15 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
 
-    read_after_write: coverpoint {ins.prev.insn, ins.current.insn} {
-        wildcard bins read_after_write = {CSRRW, CSRR};
+    // CSRRW then CSRR (csrrs rd,csr,x0) — VMID readback after write
+    raw_csrrw_csrr: coverpoint {ins.prev.insn[14:12], ins.current.insn[14:12]} {
+        bins raw = {6'b001_010};
     }
 
     vs_pte_rsw: coverpoint ins.current.vs_pte_d[9:8];
     g_pte_rsw: coverpoint ins.current.g_pte_d[9:8];
+
+    // CSR address bins (needed on RV32 and RV64; crosses reference these)
     vsatp: coverpoint ins.current.insn[31:20] {
         bins vsatp = {CSR_VSATP};
     }
@@ -143,80 +158,84 @@ covergroup SvH_cg with function sample(ins_t ins);
         `endif
     }
 
-    ppn_field_values: coverpoint ins.current.rs1_val {
+    // PPN field alone (not full rs1) — MODE/ASID/VMID must not poison bins
+`ifdef UDB_MXLEN_32
+    ppn_field_values: coverpoint ins.current.rs1_val[21:0] {
         bins all_zeros = {0};
-        `ifdef UDB_MXLEN_32
-            bins all_ones        = {22'b1111111111111111111111};
-            bins walking_ones_0  = {22'b0000000000000000000001};
-            bins walking_ones_1  = {22'b0000000000000000000010};
-            bins walking_ones_2  = {22'b0000000000000000000100};
-            bins walking_ones_3  = {22'b0000000000000000001000};
-            bins walking_ones_4  = {22'b0000000000000000010000};
-            bins walking_ones_5  = {22'b0000000000000000100000};
-            bins walking_ones_6  = {22'b0000000000000001000000};
-            bins walking_ones_7  = {22'b0000000000000010000000};
-            bins walking_ones_8  = {22'b0000000000000100000000};
-            bins walking_ones_9  = {22'b0000000000001000000000};
-            bins walking_ones_10 = {22'b0000000000010000000000};
-            bins walking_ones_11 = {22'b0000000000100000000000};
-            bins walking_ones_12 = {22'b0000000001000000000000};
-            bins walking_ones_13 = {22'b0000000010000000000000};
-            bins walking_ones_14 = {22'b0000000100000000000000};
-            bins walking_ones_15 = {22'b0000001000000000000000};
-            bins walking_ones_16 = {22'b0000010000000000000000};
-            bins walking_ones_17 = {22'b0000100000000000000000};
-            bins walking_ones_18 = {22'b0001000000000000000000};
-            bins walking_ones_19 = {22'b0010000000000000000000};
-            bins walking_ones_20 = {22'b0100000000000000000000};
-            bins walking_ones_21 = {22'b1000000000000000000000};
-        `else
-            bins all_ones        = {44'b11111111111111111111111111111111111111111111};
-            bins walking_ones_0  = {44'b00000000000000000000000000000000000000000001};
-            bins walking_ones_1  = {44'b00000000000000000000000000000000000000000010};
-            bins walking_ones_2  = {44'b00000000000000000000000000000000000000000100};
-            bins walking_ones_3  = {44'b00000000000000000000000000000000000000001000};
-            bins walking_ones_4  = {44'b00000000000000000000000000000000000000010000};
-            bins walking_ones_5  = {44'b00000000000000000000000000000000000000100000};
-            bins walking_ones_6  = {44'b00000000000000000000000000000000000001000000};
-            bins walking_ones_7  = {44'b00000000000000000000000000000000000010000000};
-            bins walking_ones_8  = {44'b00000000000000000000000000000000000100000000};
-            bins walking_ones_9  = {44'b00000000000000000000000000000000001000000000};
-            bins walking_ones_10 = {44'b00000000000000000000000000000000010000000000};
-            bins walking_ones_11 = {44'b00000000000000000000000000000000100000000000};
-            bins walking_ones_12 = {44'b00000000000000000000000000000001000000000000};
-            bins walking_ones_13 = {44'b00000000000000000000000000000010000000000000};
-            bins walking_ones_14 = {44'b00000000000000000000000000000100000000000000};
-            bins walking_ones_15 = {44'b00000000000000000000000000001000000000000000};
-            bins walking_ones_16 = {44'b00000000000000000000000000010000000000000000};
-            bins walking_ones_17 = {44'b00000000000000000000000000100000000000000000};
-            bins walking_ones_18 = {44'b00000000000000000000000001000000000000000000};
-            bins walking_ones_19 = {44'b00000000000000000000000010000000000000000000};
-            bins walking_ones_20 = {44'b00000000000000000000000100000000000000000000};
-            bins walking_ones_21 = {44'b00000000000000000000001000000000000000000000};
-            bins walking_ones_22 = {44'b00000000000000000000010000000000000000000000};
-            bins walking_ones_23 = {44'b00000000000000000000100000000000000000000000};
-            bins walking_ones_24 = {44'b00000000000000000001000000000000000000000000};
-            bins walking_ones_25 = {44'b00000000000000000010000000000000000000000000};
-            bins walking_ones_26 = {44'b00000000000000000100000000000000000000000000};
-            bins walking_ones_27 = {44'b00000000000000001000000000000000000000000000};
-            bins walking_ones_28 = {44'b00000000000000010000000000000000000000000000};
-            bins walking_ones_29 = {44'b00000000000000100000000000000000000000000000};
-            bins walking_ones_30 = {44'b00000000000001000000000000000000000000000000};
-            bins walking_ones_31 = {44'b00000000000010000000000000000000000000000000};
-            bins walking_ones_32 = {44'b00000000000100000000000000000000000000000000};
-            bins walking_ones_33 = {44'b00000000001000000000000000000000000000000000};
-            bins walking_ones_34 = {44'b00000000010000000000000000000000000000000000};
-            bins walking_ones_35 = {44'b00000000100000000000000000000000000000000000};
-            bins walking_ones_36 = {44'b00000001000000000000000000000000000000000000};
-            bins walking_ones_37 = {44'b00000010000000000000000000000000000000000000};
-            bins walking_ones_38 = {44'b00000100000000000000000000000000000000000000};
-            bins walking_ones_39 = {44'b00001000000000000000000000000000000000000000};
-            bins walking_ones_40 = {44'b00010000000000000000000000000000000000000000};
-            bins walking_ones_41 = {44'b00100000000000000000000000000000000000000000};
-            bins walking_ones_42 = {44'b01000000000000000000000000000000000000000000};
-            bins walking_ones_43 = {44'b10000000000000000000000000000000000000000000};
-        `endif
+        bins all_ones        = {22'b1111111111111111111111};
+        bins walking_ones_0  = {22'b0000000000000000000001};
+        bins walking_ones_1  = {22'b0000000000000000000010};
+        bins walking_ones_2  = {22'b0000000000000000000100};
+        bins walking_ones_3  = {22'b0000000000000000001000};
+        bins walking_ones_4  = {22'b0000000000000000010000};
+        bins walking_ones_5  = {22'b0000000000000000100000};
+        bins walking_ones_6  = {22'b0000000000000001000000};
+        bins walking_ones_7  = {22'b0000000000000010000000};
+        bins walking_ones_8  = {22'b0000000000000100000000};
+        bins walking_ones_9  = {22'b0000000000001000000000};
+        bins walking_ones_10  = {22'b0000000000010000000000};
+        bins walking_ones_11  = {22'b0000000000100000000000};
+        bins walking_ones_12  = {22'b0000000001000000000000};
+        bins walking_ones_13  = {22'b0000000010000000000000};
+        bins walking_ones_14  = {22'b0000000100000000000000};
+        bins walking_ones_15  = {22'b0000001000000000000000};
+        bins walking_ones_16  = {22'b0000010000000000000000};
+        bins walking_ones_17  = {22'b0000100000000000000000};
+        bins walking_ones_18  = {22'b0001000000000000000000};
+        bins walking_ones_19  = {22'b0010000000000000000000};
+        bins walking_ones_20  = {22'b0100000000000000000000};
+        bins walking_ones_21  = {22'b1000000000000000000000};
     }
+`else
+    ppn_field_values: coverpoint ins.current.rs1_val[43:0] {
+        bins all_zeros = {0};
+        bins all_ones        = {44'b11111111111111111111111111111111111111111111};
+        bins walking_ones_0  = {44'b00000000000000000000000000000000000000000001};
+        bins walking_ones_1  = {44'b00000000000000000000000000000000000000000010};
+        bins walking_ones_2  = {44'b00000000000000000000000000000000000000000100};
+        bins walking_ones_3  = {44'b00000000000000000000000000000000000000001000};
+        bins walking_ones_4  = {44'b00000000000000000000000000000000000000010000};
+        bins walking_ones_5  = {44'b00000000000000000000000000000000000000100000};
+        bins walking_ones_6  = {44'b00000000000000000000000000000000000001000000};
+        bins walking_ones_7  = {44'b00000000000000000000000000000000000010000000};
+        bins walking_ones_8  = {44'b00000000000000000000000000000000000100000000};
+        bins walking_ones_9  = {44'b00000000000000000000000000000000001000000000};
+        bins walking_ones_10  = {44'b00000000000000000000000000000000010000000000};
+        bins walking_ones_11  = {44'b00000000000000000000000000000000100000000000};
+        bins walking_ones_12  = {44'b00000000000000000000000000000001000000000000};
+        bins walking_ones_13  = {44'b00000000000000000000000000000010000000000000};
+        bins walking_ones_14  = {44'b00000000000000000000000000000100000000000000};
+        bins walking_ones_15  = {44'b00000000000000000000000000001000000000000000};
+        bins walking_ones_16  = {44'b00000000000000000000000000010000000000000000};
+        bins walking_ones_17  = {44'b00000000000000000000000000100000000000000000};
+        bins walking_ones_18  = {44'b00000000000000000000000001000000000000000000};
+        bins walking_ones_19  = {44'b00000000000000000000000010000000000000000000};
+        bins walking_ones_20  = {44'b00000000000000000000000100000000000000000000};
+        bins walking_ones_21  = {44'b00000000000000000000001000000000000000000000};
+        bins walking_ones_22  = {44'b00000000000000000000010000000000000000000000};
+        bins walking_ones_23  = {44'b00000000000000000000100000000000000000000000};
+        bins walking_ones_24  = {44'b00000000000000000001000000000000000000000000};
+        bins walking_ones_25  = {44'b00000000000000000010000000000000000000000000};
+        bins walking_ones_26  = {44'b00000000000000000100000000000000000000000000};
+        bins walking_ones_27  = {44'b00000000000000001000000000000000000000000000};
+        bins walking_ones_28  = {44'b00000000000000010000000000000000000000000000};
+        bins walking_ones_29  = {44'b00000000000000100000000000000000000000000000};
+        bins walking_ones_30  = {44'b00000000000001000000000000000000000000000000};
+        bins walking_ones_31  = {44'b00000000000010000000000000000000000000000000};
+        bins walking_ones_32  = {44'b00000000000100000000000000000000000000000000};
+        bins walking_ones_33  = {44'b00000000001000000000000000000000000000000000};
+        bins walking_ones_34  = {44'b00000000010000000000000000000000000000000000};
+        bins walking_ones_35  = {44'b00000000100000000000000000000000000000000000};
+        bins walking_ones_36  = {44'b00000001000000000000000000000000000000000000};
+        bins walking_ones_37  = {44'b00000010000000000000000000000000000000000000};
+        bins walking_ones_38  = {44'b00000100000000000000000000000000000000000000};
+        bins walking_ones_39  = {44'b00001000000000000000000000000000000000000000};
+        bins walking_ones_40  = {44'b00010000000000000000000000000000000000000000};
+        bins walking_ones_41  = {44'b00100000000000000000000000000000000000000000};
+        bins walking_ones_42  = {44'b01000000000000000000000000000000000000000000};
+        bins walking_ones_43  = {44'b10000000000000000000000000000000000000000000};
+    }
+`endif
 
     asid_field_value: coverpoint ins.current.rs1_val {
         `ifdef UDB_MXLEN_32
@@ -226,6 +245,14 @@ covergroup SvH_cg with function sample(ins_t ins);
         `endif
     }
     vmid_field_value: coverpoint ins.current.rs1_val {
+        `ifdef UDB_MXLEN_32
+            wildcard bins all_ones = {32'b???_1111111_??????????????????????};
+        `else
+            wildcard bins all_ones = {64'b??????_11111111111111_????????????????????????????????????????????};
+        `endif
+    }
+    // For read-after-write scoping: VMID is in prev CSRRW's rs1
+    vmid_field_prev: coverpoint ins.prev.rs1_val {
         `ifdef UDB_MXLEN_32
             wildcard bins all_ones = {32'b???_1111111_??????????????????????};
         `else
@@ -274,12 +301,23 @@ covergroup SvH_cg with function sample(ins_t ins);
         bins satp_bare = {0};
     }
 
-    mstatus_mpv_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
+    `ifdef UDB_MXLEN_32
+    // RV32: MPV lives in mstatush[7]. Sample PREV so trap CSR updates on the
+    // faulting insn do not clear MPV before the coverpoint sees it.
+    mstatus_mpv_set: coverpoint ins.prev.csr[CSR_MSTATUSH][7] {
         bins mpv_set = {1};
     }
-    mstatus_mpv_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
+    mstatus_mpv_unset: coverpoint ins.prev.csr[CSR_MSTATUSH][7] {
         bins mpv_unset = {0};
     }
+    `else
+    mstatus_mpv_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpv") {
+        bins mpv_set = {1};
+    }
+    mstatus_mpv_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpv") {
+        bins mpv_unset = {0};
+    }
+    `endif
 
     mpp_mstatus_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpp") {
         bins m_mode = {2'b11};
@@ -419,13 +457,37 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins g_bit_set = {8'b1???1111};
     }
 
+    // Execute-only leaf (X=1,R=0,W=0,V=1); U/A/D/G wildcard
+    vs_pte_xonly_d: coverpoint ins.current.vs_pte_d[7:0] {
+        wildcard bins xonly = {8'b????1001};
+    }
+    g_pte_xonly_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins xonly = {8'b????1001};
+    }
+
+    // HS sstatus.MXR (sheet: two-stage MXR uses HS sstatus)
+    mxr_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstatus", "mxr") {
+        bins unset = {0};
+        bins set = {1};
+    }
+
+    // Acc opcodes split for MPRV×hgatp (HLV/HSV unaffected by MPRV)
+    acc_lw_sw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+    }
+    acc_hlv_hsv: coverpoint ins.current.insn {
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
+    }
+
     `ifdef UDB_MXLEN_64
-         // Coverpoint: cp_vsatp_mode_field
-        cp_vsatp_mode_field: cross priv_mode_hs, mode_vsatp, csrrw, vsatp, mode_field_values;
+        // Coverpoint: cp_vsatp_mode_field
+        cp_vsatp_mode_field: cross priv_mode_hs, csrrw, vsatp, mode_field_values;
         // Coverpoint: cp_satp_mode_field
-        cp_satp_mode_field:  cross priv_mode_vs, mode_satp, csrrw, satp, mode_field_values;
+        cp_satp_mode_field:  cross priv_mode_vs, csrrw, satp, mode_field_values;
         // Coverpoint: cp_hgatp_mode_field
-        cp_hgatp_mode_field: cross priv_mode_hs, mode_hgatp, csrrw, hgatp, mode_field_values;
+        cp_hgatp_mode_field: cross priv_mode_hs, csrrw, hgatp, mode_field_values;
 
         // Coverpoint: cp_vsatp_svpbmt
         cp_vsatp_svpbmt_rw: cross priv_mode_hs, vsatp_mode, pbmte_menvcfg, vs_pte_d_svpbmt, read_write_acc;
@@ -450,20 +512,48 @@ covergroup SvH_cg with function sample(ins_t ins);
     cp_vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
 
     // Coverpoint: cp_hgatp_ppn_field
-    cp_hgatp_ppn_field:      cross priv_mode_hs, hgatp_mode, csrrw, hgatp, ppn_field_values;
+    // Sv*x4 WARL forces PPN[1:0]=0 — ignore those walking bins
+    cp_hgatp_ppn_field:      cross priv_mode_hs, hgatp_mode, csrrw, hgatp, ppn_field_values {
+        // Sv*x4 WARL: PPN[1:0]=0; all-ones PPN not implementable with MODE set
+        ignore_bins align0 = binsof(ppn_field_values.walking_ones_0);
+        ignore_bins align1 = binsof(ppn_field_values.walking_ones_1);
+        ignore_bins all1   = binsof(ppn_field_values.all_ones);
+    }
     // Coverpoint: cp_hgatp_vmidlen_detect
     cp_hgatp_vmidlen_detect: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, vmid_field_value;
 
+    // R/W S/U leaves for MPRV×vsatp (translated loads — not X-only)
+    vs_pte_rw_s_d: coverpoint ins.current.vs_pte_d[7:0] {
+        wildcard bins rw_s = {8'b11?00111};
+    }
+    vs_pte_rw_u_d: coverpoint ins.current.vs_pte_d[7:0] {
+        wildcard bins rw_u = {8'b11?10111};
+    }
+    g_pte_rw_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins rw = {8'b????0111};
+    }
+
     // Coverpoint: cp_vsatp_mprv_effects
-    cp_vsatp_mprv_effects_s: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, vs_pte_xwr100_s_d, read_write_acc;
-    cp_vsatp_mprv_effects_u: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, vs_pte_xwr100_u_d, read_write_acc;
+    // MPRV=1: data uses vsatp; MPRV=0: negative (no VS translate)
+    cp_vsatp_mprv_effects_s: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, vs_pte_rw_s_d, read_write_acc {
+        ignore_bins writes = binsof(read_write_acc.write_acc);
+    }
+    cp_vsatp_mprv_effects_u: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, vs_pte_rw_u_d, read_write_acc {
+        ignore_bins writes = binsof(read_write_acc.write_acc);
+    }
+    cp_vsatp_mprv_effects_off: cross priv_mode_m, mstatus_mprv_unset, vsatp_mode, hgatp_bare, satp_bare, read_write_acc {
+        ignore_bins writes = binsof(read_write_acc.write_acc);
+    }
 
     // Coverpoint: cp_hgatp_mprv_effects
-    cp_hgatp_mprv_effects_m:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_m, hgatp_mode, g_pte_xwr100_d, acc_instr;
-    cp_hgatp_mprv_effects_hs: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, mstatus_mpv_unset, hgatp_mode, g_pte_xwr100_d, acc_instr;
-    cp_hgatp_mprv_effects_vs: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, mstatus_mpv_set  , hgatp_mode, g_pte_xwr100_d, acc_instr;
-    cp_hgatp_mprv_effects_u:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, mstatus_mpv_unset, hgatp_mode, g_pte_xwr100_d, acc_instr;
-    cp_hgatp_mprv_effects_vu: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, mstatus_mpv_set  , hgatp_mode, g_pte_xwr100_d, acc_instr;
+    // lw under MPRV+MPV uses G (X-only deny); HLV uses R/W G leaf (ignores MPRV)
+    cp_hgatp_mprv_effects_vs: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, mstatus_mpv_set, hgatp_mode, g_pte_xwr100_d, acc_lw_sw {
+        ignore_bins stores = binsof(acc_lw_sw.sw);
+    }
+    cp_hgatp_mprv_effects_hlv: cross priv_mode_m, mstatus_mprv_set, hgatp_mode, g_pte_rw_d, acc_hlv_hsv {
+        ignore_bins hsv = binsof(acc_hlv_hsv.hsv_w);
+    }
+
 
     // Coverpoint: cp_vsatp_endianess
     cp_vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, vs_pte_xwr111_d, read_write_acc;
@@ -514,7 +604,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     // Coverpoint: cp_hgatp_adbit_behavior
     cp_hgatp_adbit_behavior: cross priv_mode_hs, g_pte_ad_unset, vs_pte_ad, read_write_acc;
     // Coverpoint: cp_hgatp_vmid_scoping
-    cp_hgatp_vmid_scoping:   cross priv_mode_hs, hgatp_mode, read_after_write, hgatp, vmid_field_value;
+    cp_hgatp_vmid_scoping:   cross priv_mode_hs, hgatp_mode, raw_csrrw_csrr, hgatp, vmid_field_prev;
 
     // Coverpoint: cp_hgatp_u_mode_access
     cp_hgatp_u_mode_access_rw: cross priv_mode_hs, hgatp_mode, vsatp_bare, g_pte_d_u, read_write_acc;
@@ -523,6 +613,52 @@ covergroup SvH_cg with function sample(ins_t ins);
     // Coverpoint: hgatp_pte_g_bit
     cp_hgatp_pte_g_bit_rw: cross priv_mode_hs, hgatp_mode, g_pte_d_g_set, read_write_acc;
     cp_hgatp_pte_g_bit_x:  cross priv_mode_hs, hgatp_mode, g_pte_i_g_set, exec_acc;
+
+
+    //--------------------------------------------------------------------------
+    // P0 — two-stage success / Bare / G-walk of VS PT
+    //--------------------------------------------------------------------------
+    // Coverpoint: two_stage_read
+    two_stage_read:  cross priv_mode_vs, vsatp_mode, hgatp_mode, read_write_acc {
+        ignore_bins writes = binsof(read_write_acc.write_acc);
+    }
+    // Coverpoint: two_stage_write
+    two_stage_write: cross priv_mode_vs, vsatp_mode, hgatp_mode, read_write_acc {
+        ignore_bins reads = binsof(read_write_acc.read_acc);
+    }
+    // Coverpoint: two_stage_ifetch
+    two_stage_ifetch: cross priv_mode_vs, vsatp_mode, hgatp_mode, exec_acc;
+    // Coverpoint: stage_both_bare
+    stage_both_bare: cross priv_mode_vs, vsatp_bare, hgatp_bare, read_write_acc;
+    // Coverpoint: cp_hgatp_bare_trans
+    cp_hgatp_bare_trans: cross priv_mode_vs, vsatp_mode, hgatp_bare, read_write_acc;
+    // Coverpoint: cp_h_vm_gstagetrans
+    cp_h_vm_gstagetrans: cross priv_mode_vs, vsatp_mode, hgatp_mode, read_write_acc;
+
+    //--------------------------------------------------------------------------
+    // P1 — two-stage MXR (distinct from cp_vsstatus_mxr_sum)
+    //--------------------------------------------------------------------------
+    // Coverpoint: cp_two_stage_mxr
+    // Stimulus: VS+G X-only; MXR=0 faults, MXR=1 loads. sstatus↔vsstatus track together.
+    cp_two_stage_mxr: cross priv_mode_vs, vsatp_mode, hgatp_mode, mxr_vsstatus, vs_pte_xonly_d, read_write_acc {
+        ignore_bins writes = binsof(read_write_acc.write_acc);
+    }
+
+    //--------------------------------------------------------------------------
+    // TODO Coverpoint — remaining MISS (P2+) — not P0/P1
+    //--------------------------------------------------------------------------
+    // TODO Coverpoint: cp_vsatp_speculative_a_bit (OBS — squash)
+    // TODO Coverpoint: cp_hgatp_gpa_width_checks (RV64)
+    // TODO Coverpoint: hgatp_misaligned_superpage
+    // TODO Coverpoint: hgatp_root_table_alignment_and_size
+    // TODO Coverpoint: hgatp_exception_reporting (needs cause/TRAP bins)
+    // TODO Coverpoint: mprv_sum_effect_hs_two_stage
+    // TODO Coverpoint: VM_permission_invalid
+    // TODO Coverpoint: RWX access on Umode pages in Umode
+    // TODO Coverpoint: PTE X=1 MXR=0 HS/VS/VU/G (sheet X-only rows; ≠ cp_two_stage_mxr)
+    // TODO Coverpoint: cp_hfence_functionality / cp_hfence_vvma_operand
+    // TODO Coverpoint: cp_hgatp_mode_change_hfence / cp_hfence_gvma_operand
+    //--------------------------------------------------------------------------
 
 endgroup
 

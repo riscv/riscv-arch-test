@@ -40,24 +40,20 @@ main:
 
   RVTEST_GOTO_LOWER_MODE HSmode                 // leave M; enter HS (can write vsatp)
 
-  // --- MODE = Sv32; read back ---
-  LI(t0, (SATP_MODE_SV32 << 31))                // RV32: MODE lives in bit 31
+  // --- MODE = Sv32, PPN=0 (one write; covers mode + zero-PPN) ---
+  LI(t0, (SATP_MODE_SV32 << 31))                // RV32: MODE bit 31, PPN clear
   csrw vsatp, t0                                // write guest page-table CSR
-  csrr a3, vsatp                                // read back → save in a3
-
-  // --- PPN = 0 with Sv32 ---
-  LI(t0, (SATP_MODE_SV32 << 31))                // MODE=Sv32, PPN field all 0
-  csrw vsatp, t0                                // write vsatp (guest page-table CSR)
-  csrr a4, vsatp                                // read back zero-PPN case
+  csrr a3, vsatp                                // MODE+PPN0 sample → a3
 
   // --- ASID all-1s (see which bits stick = ASIDLEN) ---
   LI(t0, (SATP_MODE_SV32 << 31) | SATP32_ASID)  // set every ASID bit
   csrw vsatp, t0                                // write vsatp (guest page-table CSR)
   csrr a5, vsatp                                // readback shows legal ASID width
 
-  // --- PPN all-1s (22 bits on Sv32) ---
+  // --- PPN all-1s (22 bits on Sv32); read back before walk overwrites ---
   LI(t0, (SATP_MODE_SV32 << 31) | 0x3FFFFF)     // MODE + PPN ones
   csrw vsatp, t0                                // write vsatp (guest page-table CSR)
+  csrr a7, vsatp                                // read back all-1s PPN → a7
 
   // --- PPN walking-1: bit0, bit1, … bit21 ---
   LI(t3, 0)                                     // bit index
@@ -77,13 +73,13 @@ ppn_walk:
 
   // --- Answer sheet (signature) ---
 sig_mode:
-  RVTEST_SIGUPD(x2, x5, x4, a3, sig_mode, sig_mode_str)   // save MODE readback
-sig_ppn0:
-  RVTEST_SIGUPD(x2, x5, x4, a4, sig_ppn0, sig_ppn0_str)   // save PPN0 readback
+  RVTEST_SIGUPD(x2, x5, x4, a3, sig_mode, sig_mode_str)   // MODE + PPN0
 sig_asid:
-  RVTEST_SIGUPD(x2, x5, x4, a5, sig_asid, sig_asid_str)   // save ASID readback
+  RVTEST_SIGUPD(x2, x5, x4, a5, sig_asid, sig_asid_str)   // ASIDLEN
+sig_ppn_ones:
+  RVTEST_SIGUPD(x2, x5, x4, a7, sig_ppn_ones, sig_ppn_ones_str) // PPN all-1s
 sig_ppn1:
-  RVTEST_SIGUPD(x2, x5, x4, a6, sig_ppn1, sig_ppn1_str)   // save after PPN walk
+  RVTEST_SIGUPD(x2, x5, x4, a6, sig_ppn1, sig_ppn1_str)   // after PPN walk
 
 done:
   addi a2, a2, 1                                // a2 bump = reached end
@@ -91,10 +87,10 @@ done:
 
 RVTEST_CODE_END                                 // end executable code
 RVTEST_DATA_BEGIN                               // start data / tables
-sig_mode_str: .string "\"cp_vsatp_mode_field\""
-sig_ppn0_str: .string "\"cp_vsatp_ppn_field zero\""
-sig_asid_str: .string "\"cp_vsatp_asidlen_detect\""
-sig_ppn1_str: .string "\"cp_vsatp_ppn_field walk\""
-done_str:     .string "\"done\""
+sig_mode_str:     .string "\"cp_vsatp_mode_field + ppn zero\""
+sig_asid_str:     .string "\"cp_vsatp_asidlen_detect\""
+sig_ppn_ones_str: .string "\"cp_vsatp_ppn_field all-ones\""
+sig_ppn1_str:     .string "\"cp_vsatp_ppn_field walk\""
+done_str:         .string "\"done\""
 RVTEST_DATA_END                                 // end data section
 RVTEST_SIG_SETUP                                // allocate signature memory

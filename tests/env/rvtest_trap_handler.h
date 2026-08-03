@@ -1092,12 +1092,9 @@ rvtest_\__MODE__\()prolog_done:
 #endif
 .endif
 .ifc \__MODE__,V
-.balign 64
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-#endif
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.balign 4
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
 .endif
 .option pop

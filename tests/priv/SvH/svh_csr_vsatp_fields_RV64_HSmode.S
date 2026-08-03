@@ -62,13 +62,14 @@ mode_walk:
   csrw vsatp, t0                                // write vsatp (guest page-table CSR)
   csrr a5, vsatp                                // which ASID bits stuck?
 
-  // --- PPN all-1s (44 bits) + Sv39 ---
+  // --- PPN all-1s (44 bits) + Sv39; read back before walk overwrites ---
   LI(t0, (SATP_MODE_SV39 << 60))                // t0 = MODE Sv39 only
   LI(t1, -1)                                    // t1 = all ones
   slli t1, t1, 20                               // shift to isolate high bits
   srli t1, t1, 20                               // keep low 44 bits = 1
   or   t0, t0, t1                               // merge MODE with PPN/bit
   csrw vsatp, t0                                // write vsatp (guest page-table CSR)
+  csrr a7, vsatp                                // read back all-1s PPN → a7
 
   // --- PPN walking-1 bits 0..43 ---
   LI(t3, 0)                                     // bit/index = 0
@@ -92,6 +93,8 @@ sig_m1:
   RVTEST_SIGUPD(x2, x5, x4, a4, sig_m1, sig_m1_str)      // MODE=1 sample
 sig_asid:
   RVTEST_SIGUPD(x2, x5, x4, a5, sig_asid, sig_asid_str)  // ASIDLEN sample
+sig_ppn_ones:
+  RVTEST_SIGUPD(x2, x5, x4, a7, sig_ppn_ones, sig_ppn_ones_str) // PPN all-1s readback
 sig_ppn:
   RVTEST_SIGUPD(x2, x5, x4, a6, sig_ppn, sig_ppn_str)    // PPN walk end
 
@@ -101,10 +104,11 @@ done:
 
 RVTEST_CODE_END                                 // end executable code
 RVTEST_DATA_BEGIN                               // start data / tables
-sig_mode_str: .string "\"cp_vsatp_mode_field Sv39\""
-sig_m1_str:   .string "\"cp_vsatp_mode_field MODE1\""
-sig_asid_str: .string "\"cp_vsatp_asidlen_detect\""
-sig_ppn_str:  .string "\"cp_vsatp_ppn_field\""
-done_str:     .string "\"done\""
+sig_mode_str:     .string "\"cp_vsatp_mode_field Sv39\""
+sig_m1_str:       .string "\"cp_vsatp_mode_field MODE1\""
+sig_asid_str:     .string "\"cp_vsatp_asidlen_detect\""
+sig_ppn_ones_str: .string "\"cp_vsatp_ppn_field all-ones\""
+sig_ppn_str:      .string "\"cp_vsatp_ppn_field walk\""
+done_str:         .string "\"done\""
 RVTEST_DATA_END                                 // end data section
 RVTEST_SIG_SETUP                                // allocate signature answer sheet

@@ -61,7 +61,7 @@ mode_walk:
   csrr a5, hgatp                                // VMIDLEN sample
   csrr a6, hgatp                                // scoping sample
 
-  // --- PPN all-1s but clear [1:0] (Sv*x4 root align) ---
+  // --- PPN all-1s but clear [1:0] (Sv*x4 root align); read before walk ---
   LI(t0, (HGATP_MODE_SV39X4 << 60))             // t0 = MODE Sv39x4 only
   LI(t1, -1)                                    // t1 = all ones
   slli t1, t1, 20                               // shift to isolate high bits
@@ -69,6 +69,7 @@ mode_walk:
   andi t1, t1, -4                               // force PPN[1:0]=0
   or   t0, t0, t1                               // merge MODE with PPN/bit
   csrw hgatp, t0                                // write hgatp (G-stage CSR)
+  csrr s1, hgatp                                // all-1s PPN sample → s1 (survives GOTO_MMODE)
 
   // --- PPN walking-1 bits 2..43 ---
   LI(t3, 2)                                     // start PPN walk at bit 2 (bits 1:0 often WARL-0)
@@ -82,20 +83,22 @@ ppn_walk:
   LI(t4, 44)                                    // loop until PPN bits done (44)
   blt t3, t4, ppn_walk                          // repeat until all PPN bits tried
 
-  csrr a7, hgatp                                // read hgatp → a7
+  csrr a7, hgatp                                // after walk → a7
 
   RVTEST_GOTO_MMODE                             // return to M-mode
 
 sig_mode:
-  RVTEST_SIGUPD(x2, x5, x4, a3, sig_mode, sig_mode_str)  // save register onto signature answer sheet
+  RVTEST_SIGUPD(x2, x5, x4, a3, sig_mode, sig_mode_str)  // Sv39x4 MODE sample
 sig_m1:
-  RVTEST_SIGUPD(x2, x5, x4, a4, sig_m1, sig_m1_str)  // save register onto signature answer sheet
+  RVTEST_SIGUPD(x2, x5, x4, a4, sig_m1, sig_m1_str)  // MODE=1 sample
 sig_vmid:
-  RVTEST_SIGUPD(x2, x5, x4, a5, sig_vmid, sig_vmid_str)  // save register onto signature answer sheet
+  RVTEST_SIGUPD(x2, x5, x4, a5, sig_vmid, sig_vmid_str)  // VMIDLEN
 sig_vmid2:
-  RVTEST_SIGUPD(x2, x5, x4, a6, sig_vmid2, sig_vmid2_str)  // save register onto signature answer sheet
+  RVTEST_SIGUPD(x2, x5, x4, a6, sig_vmid2, sig_vmid2_str)  // VMID scoping
+sig_ppn_ones:
+  RVTEST_SIGUPD(x2, x5, x4, s1, sig_ppn_ones, sig_ppn_ones_str)  // PPN all-1s
 sig_ppn:
-  RVTEST_SIGUPD(x2, x5, x4, a7, sig_ppn, sig_ppn_str)  // save register onto signature answer sheet
+  RVTEST_SIGUPD(x2, x5, x4, a7, sig_ppn, sig_ppn_str)  // after PPN walk
 
 done:
   addi a2, a2, 1                                // bump end marker
@@ -103,11 +106,12 @@ done:
 
 RVTEST_CODE_END                                 // end executable code
 RVTEST_DATA_BEGIN                               // start data / tables
-sig_mode_str:  .string "\"cp_hgatp_mode_field Sv39x4\""
-sig_m1_str:    .string "\"cp_hgatp_mode_field MODE1\""
-sig_vmid_str:  .string "\"cp_hgatp_vmidlen_detect\""
-sig_vmid2_str: .string "\"cp_hgatp_vmid_scoping\""
-sig_ppn_str:   .string "\"cp_hgatp_ppn_field\""
-done_str:      .string "\"done\""
+sig_mode_str:     .string "\"cp_hgatp_mode_field Sv39x4\""
+sig_m1_str:       .string "\"cp_hgatp_mode_field MODE1\""
+sig_vmid_str:     .string "\"cp_hgatp_vmidlen_detect\""
+sig_vmid2_str:    .string "\"cp_hgatp_vmid_scoping\""
+sig_ppn_ones_str: .string "\"cp_hgatp_ppn_field all-ones\""
+sig_ppn_str:      .string "\"cp_hgatp_ppn_field walk\""
+done_str:         .string "\"done\""
 RVTEST_DATA_END                                 // end data section
 RVTEST_SIG_SETUP                                // allocate signature answer sheet

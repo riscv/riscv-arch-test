@@ -1080,19 +1080,19 @@ rvtest_\__MODE__\()prolog_done:
 #endif
 .endif
 .ifc \__MODE__,S
-.balign 4
+.balign 64
 #ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
 .endif
 .ifc \__MODE__,H
-.balign 4
+.balign 64
 #ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
 .endif
 .ifc \__MODE__,V
-.balign 4
+.balign 64
 #ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
@@ -2581,7 +2581,7 @@ fast_Mothertrap:
 // ── Fast S-mode handler (stvec) ─────────────────────────────────────────────
 // Align to the core's WARL stvec BASE boundary so the prolog's write of the
 // handler address into stvec survives.
-.balign 4
+.balign 64
 #ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif

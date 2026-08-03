@@ -980,6 +980,22 @@ init_\__MODE__\()tramp:
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
+// Self-overwrite guard: the copy destination [T2,T3) starts at the xTVEC base and
+// grows upward. If it covers this prolog's own instructions, the copy loop
+// overwrites itself mid-flight: it exits early, leaves a partially written
+// trampoline, and the test silently runs twice (SELFCHECK failure) instead of
+// reporting anything. Abort cleanly instead — a DUT whose fixed xTVEC target
+// lands on the init code simply cannot host the trampoline there, and a visible
+// abort beats silent corruption. Nothing has been written yet at this point, so
+// the abort path leaves xTVEC exactly as the boot code left it.
+// Disjoint iff dest starts at/after the protected range, or ends at/before it.
+        LA(     T5, overwt_tt_\__MODE__\()loop)    // T5 = first instruction that must survive
+        LA(     T6, rvtest_\__MODE__\()prolog_done) // T6 = end of protected range (exclusive)
+        bgeu    T2, T6, ovlpok_\__MODE__\()tramp   // dest begins after protected code -> disjoint
+        bgeu    T5, T3, ovlpok_\__MODE__\()tramp   // protected code begins after dest  -> disjoint
+        j       abort\__MODE__\()test              // overlap -> cannot copy here; abort
+ovlpok_\__MODE__\()tramp:
+
 overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read original instruction at xTVEC target
         sw      T6, 0(T1)                          // save it in trampoline save area

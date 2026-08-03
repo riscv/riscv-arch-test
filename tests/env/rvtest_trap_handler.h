@@ -2090,6 +2090,7 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
+#ifdef ZCA_SUPPORTED
         // Advance xEPC past the trapping instruction by its true width.
         // Read the low halfword of the instruction at xEPC (T3), in the
         // addressing/permission context of the code that trapped, then
@@ -2121,6 +2122,9 @@ adj_\__MODE__\()epc_rtn:
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
         addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
         slli    T2, T2, 1                            // advance = 4 or 2
+#else
+        li      T2, 4                                // IALIGN=32 requires a 4-byte advance
+#endif
         add     T3, T3, T2                           // next instruction (raw xEPC + width)
         csrw    CSR_XEPC, T3
 

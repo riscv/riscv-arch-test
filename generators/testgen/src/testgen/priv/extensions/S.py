@@ -451,13 +451,13 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("stvec", 0b10),
         ("scounteren", None),
-        # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
-        ("senvcfg", None),
         ("sscratch", None),
         ("sepc", None),
         ("stval", None),
         ("sip", None),
     ]
+    # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
+    csr_senvcfg = ("senvcfg", None)
     # Floating-point CSRs
     csrf = [("fflags", None), ("frm", None), ("fcsr", None)]
     # Vector CSRs
@@ -483,6 +483,9 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
+    lines.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_ucsr_from_s"
@@ -515,15 +518,15 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     for csr in csrs:
-        if csr[0] == "senvcfg":
-            # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
-            # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
-            # legalize to any legal value, so those iterations check that the field is legal
-            # instead of exact-matching the reference model.
-            warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, warl_fields=warl_fields))
-        else:
-            lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
+    # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
+    # legalize to any legal value, so those iterations check that the field is legal
+    # instead of exact-matching the reference model.
+    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
+    lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
+    lines.extend(["", "#endif"])
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -630,6 +633,9 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
+    lines.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_shadow"

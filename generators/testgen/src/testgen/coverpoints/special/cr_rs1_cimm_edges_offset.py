@@ -23,7 +23,7 @@ def make_cr_rs1_cimm_edges_offset(
     tc = test_data.begin_test_chunk()
 
     rs1_edges = get_general_edges(test_data.xlen)
-    cimm_edges = (-1,) + IMMEDIATE_EDGES.imm_5bit[1:]  # exclude cimm field 0; add effective value -1 (Zibi)
+    cimm_edges = (-1,) + IMMEDIATE_EDGES.imm_5bit_zibi[1:]  # exclude cimm field 0; add effective value -1 (Zibi)
 
     for edge_val1 in rs1_edges:
         for imm_val in cimm_edges:

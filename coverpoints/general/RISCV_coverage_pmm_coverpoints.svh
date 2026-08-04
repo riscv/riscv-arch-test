@@ -128,12 +128,14 @@
         `endif
         // Zicfiss shadow-stack stores and loads
         `ifdef ZICFISS_SUPPORTED
-            //wildcard bins sspush      = {SSPUSH}; in framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh we have localparam [31:0]  SSPUSH_X1  and SSPUSH_X5
-            //wildcard bins c_sspush    = {C_SSPUSH};
+            wildcard bins sspush_x1      = {SSPUSH_X1};
+            wildcard bins sspush_x5      = {SSPUSH_X5};
+            wildcard bins c_sspush_x1    = {C_SSPUSH_X1};
             wildcard bins ssamoswap_w = {SSAMOSWAP_W};
             wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-            //wildcard bins sspopchk    = {SSPOPCHK};
-            //wildcard bins c_sspopchk  = {C_SSPOPCHK};
+            wildcard bins sspopchk_x1    = {SSPOPCHK_X1};
+            wildcard bins sspopchk_x5    = {SSPOPCHK_X5};
+            wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
         `endif // ZICFISS_SUPPORTED
         // RVV 1.0 vector stores and loads (ZVL32B minimum)
         `ifdef ZVL32B_SUPPORTED

@@ -1016,6 +1016,17 @@ init_\__MODE__\()tramp:
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
+// If the copy destination [T2,T3) overlaps the code below, the loop clobbers
+// itself and leaves a half-written trampoline, which shows up later as a bogus
+// SELFCHECK failure. Bail out instead; nothing has been written yet, so xTVEC
+// is still as the boot code left it.
+        LA(     T5, overwt_tt_\__MODE__\()loop)    // T5 = first instruction that must survive
+        LA(     T6, rvtest_\__MODE__\()prolog_done) // T6 = end of protected range (exclusive)
+        bgeu    T2, T6, ovlpok_\__MODE__\()tramp   // dest begins after protected code -> disjoint
+        bgeu    T5, T3, ovlpok_\__MODE__\()tramp   // protected code begins after dest  -> disjoint
+        j       abort\__MODE__\()test              // overlap -> cannot copy here; abort
+ovlpok_\__MODE__\()tramp:
+
 overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read original instruction at xTVEC target
         sw      T6, 0(T1)                          // save it in trampoline save area

@@ -17,7 +17,7 @@ from testgen.priv.extensions.ZpmCommon import (
     VALUE_OLD,
     Regs,
     _li,
-    enable_envcfg_cbo_sse,
+    enable_cascaded_envcfg_cbo_sse,
     pass_a_all_instructions,
     pass_c_misaligned,
     pass_clear_on_xlen_change,
@@ -61,7 +61,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         "",
     ]
 
-    lines += enable_envcfg_cbo_sse(regs, "menvcfg")
+    lines += enable_cascaded_envcfg_cbo_sse(regs)
     lines += [
         "",
         "# FP and vector state must be enabled for the FP/vector probes to be legal.",

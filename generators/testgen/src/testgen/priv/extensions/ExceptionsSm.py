@@ -76,7 +76,7 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r_tmp}, 0)                      # Load 0 (enable all counters)",
-            f"CSRW(mcountinhibit, x{r_tmp})        # Clear inhibit register",
+            f"csrw mcountinhibit, x{r_tmp}        # Clear inhibit register",
             "nop\nnop\nnop",
         ]
     )
@@ -89,9 +89,9 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("ecall", coverpoint, covergroup),
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
         ]
@@ -105,10 +105,10 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("ebreak", coverpoint, covergroup),
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             "ebreak",
             "nop",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
         ]
@@ -123,10 +123,10 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
             "",
             ".p2align 2",
             test_data.add_testcase("illegal", coverpoint, covergroup),
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             ".word 0xFFFFFFFF",
             "nop",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
         ]
@@ -143,9 +143,9 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             test_data.add_testcase("load_access_fault", coverpoint, covergroup),
             f"LA(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             f"lw x{r_tmp}, 0(x{r_addr})",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
@@ -164,9 +164,9 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("load_misaligned", coverpoint, covergroup),
             f"LA(x{r_addr}, scratch)",
             f"addi x{r_addr}, x{r_addr}, 1  # misalign by 1 byte",
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             f"lw x{r_tmp}, 0(x{r_addr})",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
         ]

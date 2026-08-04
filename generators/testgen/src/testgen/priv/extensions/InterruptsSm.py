@@ -471,11 +471,11 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("minstret_wfi_timeout", coverpoint, covergroup),
-            "CSRW(mie, zero)              # nothing enabled, nothing pending",
-            "CSRCI mstatus, 8             # mstatus.MIE = 0",
-            f"CSRR(x{r_before}, minstret)",
+            f"csrw mie, zero              # nothing enabled, nothing pending",
+            f"csrci mstatus, 8             # mstatus.MIE = 0",
+            f"csrr x{r_before}, minstret",
             "wfi                          # no event armed; must eventually fall through per spec",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
         ]
@@ -496,7 +496,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("minstret_wfi_pending", coverpoint, covergroup),
-            "CSRW(mie, zero)                        # MIE bits off; we only need MTIP pending, not taken",
+            f"csrw mie, zero                        # MIE bits off; we only need MTIP pending, not taken",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
         ]
     )
@@ -504,7 +504,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r_scratch}, 0x80)",
-            f"CSRS(mie, x{r_scratch})                # enable MTIE so mip.MTIP can go pending",
+            f"csrs mie, x{r_scratch}                # enable MTIE so mip.MTIP can go pending",
             f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
         ]
     )
@@ -513,9 +513,9 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             "wfi                          # interrupt already pending, retires immediately, mstatus.MIE=0 so no trap",
-            f"CSRR(x{r_after}, minstret)",
+            f"csrr x{r_after}, minstret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             *clr_mtimer_int(r_t0, r_mtimecmp),
@@ -532,8 +532,8 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("minstret_wfi_taken", coverpoint, covergroup),
-            "CSRW(mie, zero)",
-            "CSRCI mstatus, 8                       # MIE=0 while arming, avoid trapping before wfi is reached",
+            f"csrw mie, zero",
+            f"csrci mstatus, 8                       # MIE=0 while arming, avoid trapping before wfi is reached",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
         ]
     )
@@ -541,8 +541,8 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r_scratch}, 0x80)",
-            f"CSRS(mie, x{r_scratch})                # enable MTIE",
-            "CSRSI mstatus, 8                       # MIE=1: interrupt will be taken once wfi is reached",
+            f"csrs mie, x{r_scratch}                # enable MTIE",
+            f"csrsi mstatus, 8                       # MIE=1: interrupt will be taken once wfi is reached",
         ]
     )
     test_data.int_regs.return_registers([r_scratch])
@@ -550,10 +550,10 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"CSRR(x{r_before}, minstret)",
+            f"csrr x{r_before}, minstret",
             "wfi                          # interrupt taken here; traps, handler runs, returns after wfi",
-            f"CSRR(x{r_after}, minstret)",
-            "CSRCI mstatus, 8",
+            f"csrr x{r_after}, minstret",
+            f"csrci mstatus, 8",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             *clr_mtimer_int(r_t0, r_mtimecmp),
@@ -571,8 +571,8 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("minstret_wrs_nto_taken", coverpoint, covergroup),
-            "CSRW(mie, zero)",
-            "CSRCI mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.nto is reached",
+            f"csrw mie, zero",
+            f"csrci mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.nto is reached",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
         ]
     )
@@ -580,7 +580,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r_scratch}, 0x80)",
-            f"CSRS(mie, x{r_scratch})",
+            f"csrs mie, x{r_scratch}",
             f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
         ]
     )
@@ -590,11 +590,11 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"lr.w x{r_before}, (sp)              # establish reservation; loaded value unused",
-            f"CSRR(x{r_before}, minstret)",
-            "CSRSI mstatus, 8                       # MIE=1, immediately before wrs.nto so the trap lands there",
+            f"csrr x{r_before}, minstret",
+            f"csrsi mstatus, 8                       # MIE=1, immediately before wrs.nto so the trap lands there",
             "wrs.nto                     # interrupt taken here; traps, handler runs, returns after wrs.nto",
-            f"CSRR(x{r_after}, minstret)",
-            "CSRCI mstatus, 8",
+            f"csrr x{r_after}, minstret",
+            f"csrci mstatus, 8",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             *clr_mtimer_int(r_t02, r_mtimecmp2),
@@ -613,8 +613,8 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             test_data.add_testcase("minstret_wrs_sto_taken", coverpoint, covergroup),
-            "CSRW(mie, zero)",
-            "CSRCI mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.sto is reached",
+            f"csrw mie, zero",
+            f"csrci mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.sto is reached",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
         ]
     )
@@ -622,7 +622,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r_scratch}, 0x80)",
-            f"CSRS(mie, x{r_scratch})",
+            f"csrs mie, x{r_scratch}",
             f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
         ]
     )
@@ -632,11 +632,11 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"lr.w x{r_before}, (sp)              # establish reservation; loaded value unused",
-            f"CSRR(x{r_before}, minstret)",
-            "CSRSI mstatus, 8                       # MIE=1, immediately before wrs.sto so the trap lands there",
+            f"csrr x{r_before}, minstret",
+            f"csrsi mstatus, 8                       # MIE=1, immediately before wrs.sto so the trap lands there",
             "wrs.sto                     # interrupt taken here; traps, handler runs, returns after wrs.sto",
-            f"CSRR(x{r_after}, minstret)",
-            "CSRCI mstatus, 8",
+            f"csrr x{r_after}, minstret",
+            f"csrci mstatus, 8",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             *clr_mtimer_int(r_t02, r_mtimecmp2),

@@ -262,13 +262,18 @@ Most new extension testplans will be able to reuse existing coverpoints and inst
 
 ### Adding Instructions to the Decoder
 
-Unprivileged instructions are decoded in [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh).
+All instructions are decoded in [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh).
 All new instructions need to be added to the case statement.
 [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh) translates the encoding
 into an instruction mnemonic and instruction arguments. The encodings themselves come
 from the auto-generated [`RISCV_imported_decode_pkg.svh`](../framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh) header.
 This header is generated using [riscv-opcodes](https://github.com/riscv/riscv-opcodes)
 and should not be manually modified. <!-- TODO: Update this to use a header generated from UDB -->
+
+Some instructions do not have an unprivileged testplan row. Add these instructions,
+their type, and their supported XLENs to
+[`instruction_formats.csv`](../testplans/coverage/instruction_formats.csv) so the coverage
+generator knows how to parse their operands.
 
 ### Adding New Coverpoints
 

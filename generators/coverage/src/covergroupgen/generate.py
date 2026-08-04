@@ -841,14 +841,15 @@ def write_coverage_headers(
 
 def _merge_instruction_testplans(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
 ) -> dict[tuple[str, str], list[str]]:
-    """Merge all testplans into a single mapping with unique instruction entries.
+    """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
 
     Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
     instruction appears in multiple testplan variants.  Merging first-occurrence-wins
     collapses those duplicates before the instruction sample file is generated.
     """
-    merged: dict[tuple[str, str], list[str]] = {}
+    merged = dict(instruction_formats)
     for arch in sorted(test_plans.keys()):
         if arch == "E":
             continue  # E is a duplicate of I
@@ -861,6 +862,7 @@ def _merge_instruction_testplans(
 
 def write_instruction_sample_file(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
     templates: dict[str, str],
     output_dir: Path,
 ) -> None:
@@ -872,7 +874,7 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    merged_tp = _merge_instruction_testplans(test_plans)
+    merged_tp = _merge_instruction_testplans(test_plans, instruction_formats)
     instr_keys = sorted(merged_tp.keys())
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
@@ -942,6 +944,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
+    instruction_formats = _parse_testplan_csv(testplan_dir / "coverage" / "instruction_formats.csv")
 
     jobs = _plan_unpriv_jobs(test_plans, output_dir)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
@@ -952,5 +955,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
             progress.advance(task_id)
 
     write_coverage_headers(all_test_plans, output_dir, templates)
-    write_instruction_sample_file(all_test_plans, templates, output_dir)
+    write_instruction_sample_file(all_test_plans, instruction_formats, templates, output_dir)
     rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

@@ -110,6 +110,28 @@ function string disassemble (logic [31:0] instrRaw);
   `endif
     // NOP
     NOP:     $sformat(decoded, "nop");
+    // Zicfiss Extension
+    // Must precede the Zimop and Zcmop instructions
+  `ifdef ZICFISS_SUPPORTED
+    `ifndef ZCMOP_COVERAGE
+      C_SSPUSH_X1:   $sformat(decoded, "c.sspush %s", rd);
+      C_SSPOPCHK_X5: $sformat(decoded, "c.sspopchk %s", rd);
+    `endif
+    `ifndef ZIMOP_COVERAGE
+      SSPUSH_X1:     $sformat(decoded, "sspush %s", rs2);
+      SSPUSH_X5:     $sformat(decoded, "sspush %s", rs2);
+      SSPOPCHK_X1:   $sformat(decoded, "sspopchk %s", rs1);
+      SSPOPCHK_X5:   $sformat(decoded, "sspopchk %s", rs1);
+      SSRDP:          $sformat(decoded, "ssrdp %s", rd);
+    `endif
+  `endif
+  // Zicfilp Extension
+  // Must precede AUIPC
+  `ifdef ZICFILP_SUPPORTED
+    `ifndef I_COVERAGE
+      LPAD:    $sformat(decoded, "lpad %0d", immUType);
+    `endif
+  `endif
     // Zimop Extension
     MOP_R_0: $sformat(decoded, "mop.r.0 %s, %s", rd, rs1);
     MOP_R_1: $sformat(decoded, "mop.r.1 %s, %s", rd, rs1);
@@ -286,6 +308,12 @@ function string disassemble (logic [31:0] instrRaw);
     AMOXOR_D:  $sformat(decoded, "amoxor.d %s, %s, (%s)", rd, rs2, rs1);
   `endif
 
+    // Zicfiss Extension
+    SSAMOSWAP_W: $sformat(decoded, "ssamoswap.w %s, %s, (%s)", rd, rs2, rs1);
+  `ifdef UDB_MXLEN_64
+    SSAMOSWAP_D: $sformat(decoded, "ssamoswap.d %s, %s, (%s)", rd, rs2, rs1);
+  `endif
+
     // Zabha Extension
     AMOADD_B:  $sformat(decoded, "amoadd.b %s, %s, (%s)", rd, rs2, rs1);
     AMOAND_B:  $sformat(decoded, "amoand.b %s, %s, (%s)", rd, rs2, rs1);
@@ -417,8 +445,8 @@ function string disassemble (logic [31:0] instrRaw);
     FCVT_Q_W:  $sformat(decoded, "fcvt.q.w %s, %s, %s", fd, rs1, get_frm_string(frm));
     FCVT_Q_WU: $sformat(decoded, "fcvt.q.wu %s, %s, %s", fd, rs1, get_frm_string(frm));
     FCVT_S_Q:  $sformat(decoded, "fcvt.s.q %s, %s, %s", fd, fs1, get_frm_string(frm));
-    FCVT_W_Q:  $sformat(decoded, "fcvt.w.q %s, %s, %s", fd, rs1, get_frm_string(frm));
-    FCVT_WU_Q: $sformat(decoded, "fcvt.wu.q %s, %s, %s", fd, rs1, get_frm_string(frm));
+    FCVT_W_Q:  $sformat(decoded, "fcvt.w.q %s, %s, %s", rd, fs1, get_frm_string(frm));
+    FCVT_WU_Q: $sformat(decoded, "fcvt.wu.q %s, %s, %s", rd, fs1, get_frm_string(frm));
   `ifdef UDB_MXLEN_64
     FCVT_L_Q:  $sformat(decoded, "fcvt.l.q %s, %s, %s", rd, fs1, get_frm_string(frm));
     FCVT_LU_Q: $sformat(decoded, "fcvt.lu.q %s, %s, %s", rd, fs1, get_frm_string(frm));

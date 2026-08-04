@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Ellen Yu ellyu@hmc.edu June 2026
+// Written: Ellen Yu ellyu@hmc.edu July 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -10,8 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZAWRSSU
-covergroup ZawrsSU_cg with function sample(ins_t ins);
+`define COVER_ZAWRSS
+covergroup ZawrsS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -77,84 +77,79 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef S_SUPPORTED
-        mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-            bins zero = {0};
-            bins one  = {1};
-        }
-        mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-            bins zero = {0};
-        }
-        mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-            bins one = {1};
-        }
-    `endif
+    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        bins zero = {0};
+        bins one  = {1};
+    }
+    mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        bins zero = {0};
+    }
+    mstatus_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        bins one = {1};
+    }
     mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
+    `ifdef SSTC_SUPPORTED
+    sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
+        bins one = {1};
+    }
+    `else
     mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
         bins one = {1};
     }
+    `endif
 
     `ifdef H_SUPPORTED
         hstatus_vtw_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
             bins one = {1};
         }
+        hedeleg_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hedeleg", "hedeleg")) {
+            bins zeros = {0}; // zero in all 6 interrupt enable bits
+        }
+    `endif
+
+
+    `ifdef SSTC_SUPPORTED
+        `ifdef UDB_MXLEN_64
+        menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
+            bins one  = {1};
+        }
+        `else
+        menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
+            bins one  = {1};
+        }
+        `endif
     `endif
 
 
 
-
-
-
     // main coverpoints
-    cp_wrs_sto_timeout:     cross wrs_sto, mstatus_tw, mstatus_mie_zero,
-                        `ifdef S_SUPPORTED
-                            mstatus_sie_zero, priv_mode_s_u,
-                        `else
-                            priv_mode_u,
-                        `endif
-                            mie_zeros, lr_w;
-    cp_wrs_no_res:          cross mstatus_tw, mstatus_mie_zero,
-                        `ifdef S_SUPPORTED
-                            mstatus_sie_zero, priv_mode_s_u,
-                        `else
-                            priv_mode_u,
-                        `endif
-                        mie_zeros, sc_w, wrs_ops;
-    cp_wrs_resume:          cross mstatus_tw_zero, mie_mtie_one, mstatus_mie,
-                        `ifdef S_SUPPORTED
-                            mstatus_sie, priv_mode_s_u,
-                        `else
-                            priv_mode_u,
-                        `endif
-                        wrs_nto, lr_w;
+    cp_wrs_sto_timeout:     cross wrs_sto, mstatus_tw, mstatus_mie_zero, mstatus_sie_zero, priv_mode_s, mie_zeros, lr_w;
 
-    cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero,
-                        `ifdef S_SUPPORTED
-                            mstatus_sie_zero, priv_mode_s_u,
-                        `else
-                            priv_mode_u,
-                        `endif
-                        mie_zeros, wrs_nto, lr_w;
+    cp_wrs_no_res:          cross mstatus_tw_zero, mstatus_mie_zero, mstatus_sie_zero, priv_mode_s, mie_zeros, sc_w, wrs_ops;
 
-    cp_wrs_no_mie:     cross mstatus_tw_one, mstatus_mie_one, mip_any_ones,
-                        `ifdef S_SUPPORTED
-                            mstatus_sie_one, priv_mode_s_u,
-                        `else
-                            priv_mode_u,
-                        `endif
-                        mie_zeros, wrs_ops, lr_w;
+    cp_wrs_resume:          cross mstatus_tw_zero,
+        `ifdef SSTC_SUPPORTED
+            sie_stie_one, menvcfg_STCE_one,
+        `else
+            mie_mtie_one,
+        `endif
+        mstatus_mie, mstatus_sie, priv_mode_s, wrs_ops, lr_w;
 
-    // if H supported
+    cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero, mstatus_sie_zero, priv_mode_s, mie_zeros, wrs_nto, lr_w;
+
+    cp_wrs_no_mie:     cross mstatus_tw_one, mstatus_mie_one, mip_any_ones, mstatus_sie_one, priv_mode_s, mie_zeros, wrs_ops, lr_w;
+
+    // if Hypervisor supported
     `ifdef H_SUPPORTED
-        cp_wrs_nto_timeout_h:   cross priv_mode_vs_vu, mstatus_tw, mstatus_mie_zero, mstatus_sie_zero, mie_zeros, hstatus_vtw_enabled, wrs_nto, lr_w;
+        cp_wrs_nto_timeout_h:   cross priv_mode_vs_vu, mstatus_tw, mstatus_mie_zero, mstatus_sie_zero, mie_zeros, hstatus_vtw_enabled, wrs_nto, lr_w, hedeleg_zeros;
     `endif
 
 
 endgroup
 
 // ---------------------
-function void zawrssu_sample(int hart, int issue, ins_t ins);
-    ZawrsSU_cg.sample(ins);
+function void zawrss_sample(int hart, int issue, ins_t ins);
+    ZawrsS_cg.sample(ins);
 endfunction

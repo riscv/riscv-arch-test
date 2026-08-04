@@ -16,3 +16,9 @@ normative_rule_definitions:
   # set, access to the corresponding register is permitted.
   - name: scounteren_op
     coverpoint: ["ZicntrS_cg/cp_scounteren_access_u"]
+
+  # The settings in this register only control accessibility. The act of reading or
+  # writing this register does not affect the underlying counters, which continue to
+  # increment even when not accessible.
+  - name: mcounteren_inc_inaccessible
+    coverpoint: ["ZicntrS_cg/cp_mcounteren_inc_inaccessible"]

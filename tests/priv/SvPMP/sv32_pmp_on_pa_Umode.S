@@ -25,7 +25,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pmp_on_pa_Umode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 50
 #define BOOT_TO_MMODE
@@ -106,7 +105,8 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr1, t2)
+  csrw pmpaddr1, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -143,7 +143,7 @@ main:
   LI (t2, PMP1CFG_RX)
   pmpcfg0_rx:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rx, pmpcfg0_rx_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ main:
   LI (t2, PMP1CFG_RW)
   pmpcfg0_rw:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rw, pmpcfg0_rw_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ main:
   LI (t2, PMP1CFG_X)
   pmpcfg0_x:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------

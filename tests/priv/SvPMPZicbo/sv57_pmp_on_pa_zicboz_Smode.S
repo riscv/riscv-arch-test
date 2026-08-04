@@ -25,7 +25,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pmp_on_pa_zicboz_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
 #define BOOT_TO_MMODE
@@ -84,12 +83,12 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
   LI (t2, PMP0CFG_X)
   pmpcfg0_x:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBZE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
+  csrs menvcfg, t0                                                      // Allow execution of cbo.zero in S-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

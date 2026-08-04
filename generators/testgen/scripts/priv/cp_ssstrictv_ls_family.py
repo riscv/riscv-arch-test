@@ -7,6 +7,7 @@ Covers the high-impact load/store reserved-encoding families:
 - ``cp_ssstrictv_ls_emul_nfields_16`` — segment LS with NF*LMUL == 16
 - ``cp_ssstrictv_ls_seg_vd_overflow`` — segment LS with vd+NF > 32 at LMUL=1
 - ``cp_ssstrictv_ls_seg_vd_overflow_emulgt1`` — segment LS with vd+NF*LMUL > 32
+- ``cp_ssstrictv_ls_eew_lt_sewmin`` - EEW in the width field is less than min supported eew
 
 Encoding-bit families (``ls_mew_reserved``, ``ls_wr_nf_reserved``) require
 ``.4byte`` raw encoding because the assembler does not accept the relevant
@@ -20,7 +21,7 @@ from random import seed as set_seed
 import vector_testgen_common as common
 from priv_coverpoint_registry import register
 from ._ssstrictv_helpers import (build_testline, init_operand_regs, sig_params,
-                                  SKIP_COVERPOINTS)
+                                  SKIP_COVERPOINTS, override_registers)
 
 
 def _emit_vsetvli_str(scratch: int, vl: int, sew: int, lmul_flag: str) -> None:
@@ -33,20 +34,30 @@ def _emit_vsetvli_str(scratch: int, vl: int, sew: int, lmul_flag: str) -> None:
 
 def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
              vl: int = 1,
+             vstart: int | None = None,
              override_vd: int | None = None,
-             addr_offset: int = 0) -> None:
+             addr_offset: int = 0,
+             if_guard: str = "") -> None:
     """Run one LS test with the given vsetivli + optional address offset."""
     set_seed(common.myhash(instruction + cp + lmul_flag + str(addr_offset) + str(override_vd)))
 
+    eff_sew = sew if isinstance(sew, int) else 64
+
     instruction_data = common.randomizeVectorInstructionData(
-        instruction, sew, common.getBaseSuiteTestCount(),
+        instruction, eff_sew, common.getBaseSuiteTestCount(),
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
-    common.writeLine(f"\n# Testcase {cp} (sew={sew}, lmul={lmul_flag}, vd_off={override_vd}, addr_off={addr_offset})")
+    if if_guard != "":
+        common.writeLine(f"\n#if {if_guard}")
+        common.tab_count += 1
+    else:
+        common.writeLine("\n")
+
+    common.writeLine(f"# Testcase {cp} (sew={sew}, lmul={lmul_flag}, vd_off={override_vd}, addr_off={addr_offset})")
     scratch = common.pickPrivScratch(instruction_data[1])
 
     _emit_vsetvli_str(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
@@ -61,13 +72,17 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     if override_vd is not None:
         overrides["override_vd"] = override_vd
         overrides["override_vs3"] = override_vd
+    override_registers(instruction_data, **overrides)
 
-    testline, vd, rd = build_testline(instruction, instruction_data,
-                                       addr_label=addr_label, **overrides)
+    testline, vd, rd = build_testline(instruction, instruction_data, addr_label=addr_label)
 
     if addr_offset:
         common.writeLine(f"addi x{rs1_reg}, x{rs1_reg}, {addr_offset}",
                           f"# misalign rs1 by {addr_offset} bytes")
+
+    if vstart is not None:
+        common.writeLine(f"LI (x{scratch}, {vstart})")
+        common.writeLine(f"csrw vstart, x{scratch}", f"# Set vstart={vstart}")
 
     sig_lmul = 1
     sig_wr = True
@@ -78,6 +93,10 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
         sig_lmul=sig_lmul, sig_whole_register_store=sig_wr,
         priv=True, skip_sigupd=True,
     )
+
+    if if_guard != "":
+        common.tab_count -= 1
+        common.writeLine("#endif")
 
 
 def _is_segment_ls(instruction: str) -> bool:
@@ -242,3 +261,25 @@ def make_nf_eew_emul4(instruction: str) -> None:
 @register("cp_ssstrict_ls_nf_eew_emul8")
 def make_nf_eew_emul8(instruction: str) -> None:
     _make_nf_eew(instruction, 8)
+
+@register("cp_ssstrictv_ls_eew_lt_sewmin")
+def make_eew_lt_sewmin(instruction: str) -> None:
+    # Cover the EEW in the width field being less than SEWMIN
+    width_encoded_eew = None
+    if instruction in common.eew8_ins:
+        width_encoded_eew = 8
+    elif instruction in common.eew16_ins:
+        width_encoded_eew = 16
+    elif instruction in common.eew32_ins:
+        width_encoded_eew = 32
+    elif instruction in common.eew64_ins:
+        width_encoded_eew = 64
+    else:
+        return
+
+    cp = "cp_ssstrictv_ls_eew_lt_sewmin"
+    for possible_sew_min in (8, 16, 32, 64):
+        if width_encoded_eew < possible_sew_min:
+            _ls_test(instruction, cp, possible_sew_min, "m1", if_guard=f"UDB_SEW_MIN == {possible_sew_min}")
+            _ls_test(instruction, cp, possible_sew_min, "m1", vl=0, if_guard=f"UDB_SEW_MIN == {possible_sew_min}")
+            _ls_test(instruction, cp, possible_sew_min, "m1", vl=1, vstart=1, if_guard=f"UDB_SEW_MIN == {possible_sew_min}")

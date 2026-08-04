@@ -31,9 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_napot_legal_lxwr.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -279,6 +277,7 @@ main:
     LI(t1, PMPREGION_LXWR_1000)
     csrw pmpcfg1, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
@@ -296,6 +295,7 @@ main:
     LI(t1, PMPREGION_LXWR_1000|PMPREGION_LXWR_1001)
     csrw pmpcfg1, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
@@ -313,6 +313,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011)
     csrw pmpcfg0, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE

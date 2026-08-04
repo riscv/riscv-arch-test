@@ -31,8 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_all_entries_check.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 360
 
 
@@ -162,6 +161,7 @@ main:
     csrw pmpaddr62, x5
     LI(x4, PMP_REGION_62)
     csrw pmpcfg15, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 
@@ -175,6 +175,7 @@ main:
     csrw pmpaddr61, x5
     LI(x4, PMP_REGION_61)
     csrw pmpcfg15, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 
@@ -188,6 +189,7 @@ main:
     csrw pmpaddr60, x5
     LI(x4, PMP_REGION_60)
     csrw pmpcfg15, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 
@@ -201,6 +203,7 @@ main:
     csrw pmpaddr59, x5
     LI(x4, PMP_REGION_59)
     csrw pmpcfg14, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 
@@ -214,6 +217,7 @@ main:
     csrw pmpaddr58, x5
     LI(x4, PMP_REGION_58)
     csrw pmpcfg14, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 
@@ -227,6 +231,7 @@ main:
     csrw pmpaddr57, x5
     LI(x4, PMP_REGION_57)
     csrw pmpcfg14, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 
@@ -240,6 +245,7 @@ main:
     csrw pmpaddr56, x5
     LI(x4, PMP_REGION_56)
     csrw pmpcfg14, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 
@@ -253,6 +259,7 @@ main:
     csrw pmpaddr55, x5
     LI(x4, PMP_REGION_55)
     csrw pmpcfg13, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 
@@ -266,6 +273,7 @@ main:
     csrw pmpaddr54, x5
     LI(x4, PMP_REGION_54)
     csrw pmpcfg13, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 
@@ -279,6 +287,7 @@ main:
     csrw pmpaddr53, x5
     LI(x4, PMP_REGION_53)
     csrw pmpcfg13, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 
@@ -292,6 +301,7 @@ main:
     csrw pmpaddr52, x5
     LI(x4, PMP_REGION_52)
     csrw pmpcfg13, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 
@@ -305,6 +315,7 @@ main:
     csrw pmpaddr51, x5
     LI(x4, PMP_REGION_51)
     csrw pmpcfg12, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 
@@ -318,6 +329,7 @@ main:
     csrw pmpaddr50, x5
     LI(x4, PMP_REGION_50)
     csrw pmpcfg12, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 
@@ -331,6 +343,7 @@ main:
     csrw pmpaddr49, x5
     LI(x4, PMP_REGION_49)
     csrw pmpcfg12, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 
@@ -344,6 +357,7 @@ main:
     csrw pmpaddr48, x5
     LI(x4, PMP_REGION_48)
     csrw pmpcfg12, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 
@@ -357,6 +371,7 @@ main:
     csrw pmpaddr47, x5
     LI(x4, PMP_REGION_47)
     csrw pmpcfg11, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
 
 
@@ -370,6 +385,7 @@ main:
     csrw pmpaddr46, x5
     LI(x4, PMP_REGION_46)
     csrw pmpcfg11, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
 
 
@@ -383,6 +399,7 @@ main:
     csrw pmpaddr45, x5
     LI(x4, PMP_REGION_45)
     csrw pmpcfg11, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
 
 
@@ -396,6 +413,7 @@ main:
     csrw pmpaddr44, x5
     LI(x4, PMP_REGION_44)
     csrw pmpcfg11, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
 
 
@@ -409,6 +427,7 @@ main:
     csrw pmpaddr43, x5
     LI(x4, PMP_REGION_43)
     csrw pmpcfg10, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
 
 
@@ -422,6 +441,7 @@ main:
     csrw pmpaddr42, x5
     LI(x4, PMP_REGION_42)
     csrw pmpcfg10, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
 
 
@@ -435,6 +455,7 @@ main:
     csrw pmpaddr41, x5
     LI(x4, PMP_REGION_41)
     csrw pmpcfg10, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
 
 
@@ -448,6 +469,7 @@ main:
     csrw pmpaddr40, x5
     LI(x4, PMP_REGION_40)
     csrw pmpcfg10, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
 
 
@@ -461,6 +483,7 @@ main:
     csrw pmpaddr39, x5
     LI(x4, PMP_REGION_39)
     csrw pmpcfg9, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
 
 
@@ -474,6 +497,7 @@ main:
     csrw pmpaddr38, x5
     LI(x4, PMP_REGION_38)
     csrw pmpcfg9, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
 
 
@@ -487,6 +511,7 @@ main:
     csrw pmpaddr37, x5
     LI(x4, PMP_REGION_37)
     csrw pmpcfg9, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
 
 
@@ -500,6 +525,7 @@ main:
     csrw pmpaddr36, x5
     LI(x4, PMP_REGION_36)
     csrw pmpcfg9, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
 
 
@@ -513,6 +539,7 @@ main:
     csrw pmpaddr35, x5
     LI(x4, PMP_REGION_35)
     csrw pmpcfg8, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
 
 
@@ -526,6 +553,7 @@ main:
     csrw pmpaddr34, x5
     LI(x4, PMP_REGION_34)
     csrw pmpcfg8, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
 
 
@@ -539,6 +567,7 @@ main:
     csrw pmpaddr33, x5
     LI(x4, PMP_REGION_33)
     csrw pmpcfg8, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
 
 
@@ -552,6 +581,7 @@ main:
     csrw pmpaddr32, x5
     LI(x4, PMP_REGION_32)
     csrw pmpcfg8, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_31
 
 
@@ -565,6 +595,7 @@ main:
     csrw pmpaddr31, x5
     LI(x4, PMP_REGION_31)
     csrw pmpcfg7, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_32
 
 
@@ -578,6 +609,7 @@ main:
     csrw pmpaddr30, x5
     LI(x4, PMP_REGION_30)
     csrw pmpcfg7, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_33
 
 
@@ -591,6 +623,7 @@ main:
     csrw pmpaddr29, x5
     LI(x4, PMP_REGION_29)
     csrw pmpcfg7, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_34
 
 
@@ -604,6 +637,7 @@ main:
     csrw pmpaddr28, x5
     LI(x4, PMP_REGION_28)
     csrw pmpcfg7, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_35
 
 
@@ -617,6 +651,7 @@ main:
     csrw pmpaddr27, x5
     LI(x4, PMP_REGION_27)
     csrw pmpcfg6, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_36
 
 
@@ -630,6 +665,7 @@ main:
     csrw pmpaddr26, x5
     LI(x4, PMP_REGION_26)
     csrw pmpcfg6, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_37
 
 
@@ -643,6 +679,7 @@ main:
     csrw pmpaddr25, x5
     LI(x4, PMP_REGION_25)
     csrw pmpcfg6, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_38
 
 
@@ -656,6 +693,7 @@ main:
     csrw pmpaddr24, x5
     LI(x4, PMP_REGION_24)
     csrw pmpcfg6, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_39
 
 
@@ -669,6 +707,7 @@ main:
     csrw pmpaddr23, x5
     LI(x4, PMP_REGION_23)
     csrw pmpcfg5, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_40
 
 
@@ -682,6 +721,7 @@ main:
     csrw pmpaddr22, x5
     LI(x4, PMP_REGION_22)
     csrw pmpcfg5, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_41
 
 
@@ -695,6 +735,7 @@ main:
     csrw pmpaddr21, x5
     LI(x4, PMP_REGION_21)
     csrw pmpcfg5, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_42
 
 
@@ -708,6 +749,7 @@ main:
     csrw pmpaddr20, x5
     LI(x4, PMP_REGION_20)
     csrw pmpcfg5, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_43
 
 
@@ -721,6 +763,7 @@ main:
     csrw pmpaddr19, x5
     LI(x4, PMP_REGION_19)
     csrw pmpcfg4, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_44
 
 
@@ -734,6 +777,7 @@ main:
     csrw pmpaddr18, x5
     LI(x4, PMP_REGION_18)
     csrw pmpcfg4, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_45
 
 
@@ -747,6 +791,7 @@ main:
     csrw pmpaddr17, x5
     LI(x4, PMP_REGION_17)
     csrw pmpcfg4, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_46
 
 
@@ -760,6 +805,7 @@ main:
     csrw pmpaddr16, x5
     LI(x4, PMP_REGION_16)
     csrw pmpcfg4, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
 
 // Test Case: 48 : PMP Region 15
@@ -772,6 +818,7 @@ main:
     csrw pmpaddr15, x5
     LI(x4, PMP_REGION_15)
     csrw pmpcfg3, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
 #endif
 
@@ -785,6 +832,7 @@ main:
     csrw pmpaddr14, x5
     LI(x4, PMP_REGION_14)
     csrw pmpcfg3, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
 
 // Test Case: 50 : PMP Region 13
@@ -797,6 +845,7 @@ main:
     csrw pmpaddr13, x5
     LI(x4, PMP_REGION_13)
     csrw pmpcfg3, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
 
 // Test Case: 51 : PMP Region 12
@@ -809,6 +858,7 @@ main:
     csrw pmpaddr12, x5
     LI(x4, PMP_REGION_12)
     csrw pmpcfg3, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
 
 // Test Case: 52 : PMP Region 11
@@ -821,6 +871,7 @@ main:
     csrw pmpaddr11, x5
     LI(x4, PMP_REGION_11)
     csrw pmpcfg2, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
 
 // Test Case: 53 : PMP Region 10
@@ -833,6 +884,7 @@ main:
     csrw pmpaddr10, x5
     LI(x4, PMP_REGION_10)
     csrw pmpcfg2, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
 
 // Test Case: 54 : PMP Region 9
@@ -845,6 +897,7 @@ main:
     csrw pmpaddr9, x5
     LI(x4, PMP_REGION_9)
     csrw pmpcfg2, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
 
 // Test Case: 55 : PMP Region 8
@@ -857,6 +910,7 @@ main:
     csrw pmpaddr8, x5
     LI(x4, PMP_REGION_8)
     csrw pmpcfg2, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
 
 // Test Case: 56 : PMP Region 7
@@ -869,6 +923,7 @@ main:
     csrw pmpaddr7, x5
     LI(x4, PMP_REGION_7)
     csrw pmpcfg1, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
 
 // Test Case: 57 : PMP Region 6
@@ -881,6 +936,7 @@ main:
     csrw pmpaddr6, x5
     LI(x4, PMP_REGION_6)
     csrw pmpcfg1, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
 
 // Test Case: 58 : PMP Region 5
@@ -893,6 +949,7 @@ main:
     csrw pmpaddr5, x5
     LI(x4, PMP_REGION_5)
     csrw pmpcfg1, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
 
 // Test Case: 59 : PMP Region 4
@@ -905,6 +962,7 @@ main:
     csrw pmpaddr4, x5
     LI(x4, PMP_REGION_4)
     csrw pmpcfg1, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
 
 // Test Case: 60 : PMP Region 3
@@ -917,6 +975,7 @@ main:
     csrw pmpaddr3, x5
     LI(x4, PMP_REGION_3)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
 
 // Test Case: 61 : PMP Region 2
@@ -929,6 +988,7 @@ main:
     csrw pmpaddr2, x5
     LI(x4, PMP_REGION_2)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
 
 // Test Case: 62 : PMP Region 1
@@ -941,6 +1001,7 @@ main:
     csrw pmpaddr1, x5
     LI(x4, PMP_REGION_1)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
 
 // Test Case: 63 : PMP Region 0
@@ -953,6 +1014,7 @@ main:
     csrw pmpaddr0, x5
     LI(x4, PMP_REGION_0)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_63
 
 

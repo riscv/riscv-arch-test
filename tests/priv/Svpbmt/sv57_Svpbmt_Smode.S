@@ -44,7 +44,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_Svpbmt_Smode.S"
 #define SIGUPD_COUNT 50
 
 
@@ -126,7 +125,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_PBMTE)
-  CSRS(menvcfg, t0)                                                      // Enable Svpbmt
+  csrs menvcfg, t0                                                      // Enable Svpbmt
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

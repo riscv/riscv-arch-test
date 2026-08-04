@@ -31,9 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_na4_legal_lxwr.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -78,6 +76,7 @@ main:
     LI(x5, PMPREGION_LXWR_0000)
     csrw pmpcfg1, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
@@ -90,6 +89,7 @@ main:
     LI(x5, PMPREGION_LXWR_0001)
     csrw pmpcfg1, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
@@ -102,6 +102,7 @@ main:
     LI(x5, PMPREGION_LXWR_0011)
     csrw pmpcfg0, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
@@ -114,6 +115,7 @@ main:
     LI(x5, PMPREGION_LXWR_0100)
     csrw pmpcfg0, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
@@ -126,6 +128,7 @@ main:
     LI(x5, PMPREGION_LXWR_0101)
     csrw pmpcfg0, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
@@ -138,6 +141,7 @@ main:
     LI(x5, PMPREGION_LXWR_0111)
     csrw pmpcfg0, x5
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_NA4_RV32    TEST_FOR_EXECUTION, test_6
 exit:

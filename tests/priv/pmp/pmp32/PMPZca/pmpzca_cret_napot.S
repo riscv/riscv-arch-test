@@ -31,8 +31,7 @@
 # MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_cret_napot.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -88,6 +87,7 @@ main:
 
     LA(x4, PMP0CFG)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 
     //Test case1
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1

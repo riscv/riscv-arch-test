@@ -26,9 +26,7 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzicbo_cbo_wr_01.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -87,6 +85,7 @@ main:
     LI(x4, PMPCFG_0)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     j exit                                        // Verification Complete, exit the test

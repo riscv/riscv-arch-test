@@ -30,8 +30,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-04.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 400
 
 
@@ -102,6 +101,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP5_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_25
 
     RVTEST_GOTO_MMODE
@@ -111,6 +111,7 @@ main:
     LI(x4, (PMPREGION_XWR_100 << PMP4_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_26
 
     RVTEST_GOTO_MMODE
@@ -120,6 +121,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_27
 
     RVTEST_GOTO_MMODE
@@ -129,6 +131,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_28
 
     RVTEST_GOTO_MMODE
@@ -138,6 +141,7 @@ main:
     LI(x4, (PMPREGION_XWR_011 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_29
 
     RVTEST_GOTO_MMODE
@@ -147,6 +151,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION,test_30
 
     RVTEST_GOTO_MMODE

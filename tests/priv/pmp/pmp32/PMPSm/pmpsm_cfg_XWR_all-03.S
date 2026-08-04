@@ -30,8 +30,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-03.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 400
 
 
@@ -101,6 +100,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 -- R Permissions given to the PMP Region 13
@@ -108,6 +108,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 -- XR Permissions given to the PMP Region 12
@@ -115,6 +116,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 -- R Permissions given to the PMP Region 11
@@ -122,6 +124,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 -- X Permissions given to the PMP Region 10
@@ -129,6 +132,7 @@ main:
     LI(x4, (PMPREGION_XWR_100 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 -- No Permissions given to the PMP Region 9
@@ -136,6 +140,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 -- XWR Permissions given to the PMP Region 8
@@ -143,6 +148,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 -- R Permissions given to the PMP Region 7
@@ -150,6 +156,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 -- XR Permissions given to the PMP Region 6
@@ -157,6 +164,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 -- R Permissions given to the PMP Region 5
@@ -164,6 +172,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 -- XR Permissions given to the PMP Region 4
@@ -171,6 +180,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 -- No Permissions given to the PMP Region 3
@@ -178,6 +188,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 -- XWR Permissions given to the PMP Region 2
@@ -185,6 +196,7 @@ main:
     LI(x4, (PMPREGION_XWR_111 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 -- R Permissions given to the PMP Region 1
@@ -192,6 +204,7 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 -- XR Permissions given to the PMP Region 0
@@ -199,6 +212,7 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_15
 
 

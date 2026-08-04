@@ -36,7 +36,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_Svade_Smode.S"
 #define SIGUPD_COUNT 45
 #define TRAP_SIGUPD_COUNT 100
 
@@ -119,7 +118,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_ADUE)
-  CSRC(menvcfg, t0)                                                      // Enable Svade
+  csrc menvcfg, t0                                                      // Enable Svade
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

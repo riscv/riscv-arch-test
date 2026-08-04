@@ -28,8 +28,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_A_tor_zero.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -142,6 +141,7 @@ main:
     LI(x4, PMPREGION_TOR)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE

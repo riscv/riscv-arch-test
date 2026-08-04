@@ -31,7 +31,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 200
 
 
@@ -207,254 +206,317 @@ main:
 
 // Test Case: 1 — slot 62, pmpcfg14
     SET_PMP_ENTRY pmpaddr62, pmpcfg14, PMP_REGION_62
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 — slot 61, pmpcfg14
     SET_PMP_ENTRY pmpaddr61, pmpcfg14, PMP_REGION_61
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 — slot 60, pmpcfg14
     SET_PMP_ENTRY pmpaddr60, pmpcfg14, PMP_REGION_60
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 — slot 59, pmpcfg14
     SET_PMP_ENTRY pmpaddr59, pmpcfg14, PMP_REGION_59
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 — slot 58, pmpcfg14
     SET_PMP_ENTRY pmpaddr58, pmpcfg14, PMP_REGION_58
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 — slot 57, pmpcfg14
     SET_PMP_ENTRY pmpaddr57, pmpcfg14, PMP_REGION_57
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 — slot 56, pmpcfg14
     SET_PMP_ENTRY pmpaddr56, pmpcfg14, PMP_REGION_56
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 — slot 55, pmpcfg12
     SET_PMP_ENTRY pmpaddr55, pmpcfg12, PMP_REGION_55
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 — slot 54, pmpcfg12
     SET_PMP_ENTRY pmpaddr54, pmpcfg12, PMP_REGION_54
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 — slot 53, pmpcfg12
     SET_PMP_ENTRY pmpaddr53, pmpcfg12, PMP_REGION_53
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 — slot 52, pmpcfg12
     SET_PMP_ENTRY pmpaddr52, pmpcfg12, PMP_REGION_52
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 — slot 51, pmpcfg12
     SET_PMP_ENTRY pmpaddr51, pmpcfg12, PMP_REGION_51
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 — slot 50, pmpcfg12
     SET_PMP_ENTRY pmpaddr50, pmpcfg12, PMP_REGION_50
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 — slot 49, pmpcfg12
     SET_PMP_ENTRY pmpaddr49, pmpcfg12, PMP_REGION_49
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 — slot 48, pmpcfg12
     SET_PMP_ENTRY pmpaddr48, pmpcfg12, PMP_REGION_48
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 // Test Case: 16 — slot 47, pmpcfg10
     SET_PMP_ENTRY pmpaddr47, pmpcfg10, PMP_REGION_47
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
 
 // Test Case: 17 — slot 46, pmpcfg10
     SET_PMP_ENTRY pmpaddr46, pmpcfg10, PMP_REGION_46
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
 
 // Test Case: 18 — slot 45, pmpcfg10
     SET_PMP_ENTRY pmpaddr45, pmpcfg10, PMP_REGION_45
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
 
 // Test Case: 19 — slot 44, pmpcfg10
     SET_PMP_ENTRY pmpaddr44, pmpcfg10, PMP_REGION_44
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
 
 // Test Case: 20 — slot 43, pmpcfg10
     SET_PMP_ENTRY pmpaddr43, pmpcfg10, PMP_REGION_43
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
 
 // Test Case: 21 — slot 42, pmpcfg10
     SET_PMP_ENTRY pmpaddr42, pmpcfg10, PMP_REGION_42
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
 
 // Test Case: 22 — slot 41, pmpcfg10
     SET_PMP_ENTRY pmpaddr41, pmpcfg10, PMP_REGION_41
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
 
 // Test Case: 23 — slot 40, pmpcfg10
     SET_PMP_ENTRY pmpaddr40, pmpcfg10, PMP_REGION_40
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
 
 // Test Case: 24 — slot 39, pmpcfg8
     SET_PMP_ENTRY pmpaddr39, pmpcfg8, PMP_REGION_39
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
 
 // Test Case: 25 — slot 38, pmpcfg8
     SET_PMP_ENTRY pmpaddr38, pmpcfg8, PMP_REGION_38
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
 
 // Test Case: 26 — slot 37, pmpcfg8
     SET_PMP_ENTRY pmpaddr37, pmpcfg8, PMP_REGION_37
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
 
 // Test Case: 27 — slot 36, pmpcfg8
     SET_PMP_ENTRY pmpaddr36, pmpcfg8, PMP_REGION_36
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
 
 // Test Case: 28 — slot 35, pmpcfg8
     SET_PMP_ENTRY pmpaddr35, pmpcfg8, PMP_REGION_35
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
 
 // Test Case: 29 — slot 34, pmpcfg8
     SET_PMP_ENTRY pmpaddr34, pmpcfg8, PMP_REGION_34
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
 
 // Test Case: 30 — slot 33, pmpcfg8
     SET_PMP_ENTRY pmpaddr33, pmpcfg8, PMP_REGION_33
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
 
 // Test Case: 31 — slot 32, pmpcfg8
     SET_PMP_ENTRY pmpaddr32, pmpcfg8, PMP_REGION_32
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_31
 
 // Test Case: 32 — slot 31, pmpcfg6
     SET_PMP_ENTRY pmpaddr31, pmpcfg6, PMP_REGION_31
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_32
 
 // Test Case: 33 — slot 30, pmpcfg6
     SET_PMP_ENTRY pmpaddr30, pmpcfg6, PMP_REGION_30
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_33
 
 // Test Case: 34 — slot 29, pmpcfg6
     SET_PMP_ENTRY pmpaddr29, pmpcfg6, PMP_REGION_29
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_34
 
 // Test Case: 35 — slot 28, pmpcfg6
     SET_PMP_ENTRY pmpaddr28, pmpcfg6, PMP_REGION_28
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_35
 
 // Test Case: 36 — slot 27, pmpcfg6
     SET_PMP_ENTRY pmpaddr27, pmpcfg6, PMP_REGION_27
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_36
 
 // Test Case: 37 — slot 26, pmpcfg6
     SET_PMP_ENTRY pmpaddr26, pmpcfg6, PMP_REGION_26
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_37
 
 // Test Case: 38 — slot 25, pmpcfg6
     SET_PMP_ENTRY pmpaddr25, pmpcfg6, PMP_REGION_25
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_38
 
 // Test Case: 39 — slot 24, pmpcfg6
     SET_PMP_ENTRY pmpaddr24, pmpcfg6, PMP_REGION_24
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_39
 
 // Test Case: 40 — slot 23, pmpcfg4
     SET_PMP_ENTRY pmpaddr23, pmpcfg4, PMP_REGION_23
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_40
 
 // Test Case: 41 — slot 22, pmpcfg4
     SET_PMP_ENTRY pmpaddr22, pmpcfg4, PMP_REGION_22
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_41
 
 // Test Case: 42 — slot 21, pmpcfg4
     SET_PMP_ENTRY pmpaddr21, pmpcfg4, PMP_REGION_21
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_42
 
 // Test Case: 43 — slot 20, pmpcfg4
     SET_PMP_ENTRY pmpaddr20, pmpcfg4, PMP_REGION_20
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_43
 
 // Test Case: 44 — slot 19, pmpcfg4
     SET_PMP_ENTRY pmpaddr19, pmpcfg4, PMP_REGION_19
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_44
 
 // Test Case: 45 — slot 18, pmpcfg4
     SET_PMP_ENTRY pmpaddr18, pmpcfg4, PMP_REGION_18
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_45
 
 // Test Case: 46 — slot 17, pmpcfg4
     SET_PMP_ENTRY pmpaddr17, pmpcfg4, PMP_REGION_17
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_46
 
 // Test Case: 47 — slot 16, pmpcfg4
     SET_PMP_ENTRY pmpaddr16, pmpcfg4, PMP_REGION_16
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
 
 // Test Case: 48 — slot 15, pmpcfg2
     SET_PMP_ENTRY pmpaddr15, pmpcfg2, PMP_REGION_15
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
 
 // Test Case: 49 — slot 14, pmpcfg2
     SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
 
 // Test Case: 50 — slot 13, pmpcfg2
     SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
 
 // Test Case: 51 — slot 12, pmpcfg2
     SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
 
 // Test Case: 52 — slot 11, pmpcfg2
     SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
 
 // Test Case: 53 — slot 10, pmpcfg2
     SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
 
 // Test Case: 54 — slot 9, pmpcfg2
     SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
 
 // Test Case: 55 — slot 8, pmpcfg2
     SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
 
 // Test Case: 56 — slot 7, pmpcfg0
     SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
 
 // Test Case: 57 — slot 6, pmpcfg0
     SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
 
 // Test Case: 58 — slot 5, pmpcfg0
     SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
 
 // Test Case: 59 — slot 4, pmpcfg0
     SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
 
 // Test Case: 60 — slot 3, pmpcfg0
     SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
 
 // Test Case: 61 — slot 2, pmpcfg0
     SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
 
 // Test Case: 62 — slot 1, pmpcfg0
     SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
 
 // Test Case: 63 — slot 0, pmpcfg0
     SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_63
 
 #endif  // UDB_NUM_PMP_ENTRIES == 64
@@ -469,62 +531,77 @@ main:
 
 // Test Case: 1 — slot 14, pmpcfg2
     SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 — slot 13, pmpcfg2
     SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 — slot 12, pmpcfg2
     SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 — slot 11, pmpcfg2
     SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 — slot 10, pmpcfg2
     SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 — slot 9, pmpcfg2
     SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 — slot 8, pmpcfg2
     SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 — slot 7, pmpcfg0
     SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 — slot 6, pmpcfg0
     SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 — slot 5, pmpcfg0
     SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 — slot 4, pmpcfg0
     SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 — slot 3, pmpcfg0
     SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 — slot 2, pmpcfg0
     SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 — slot 1, pmpcfg0
     SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 — slot 0, pmpcfg0
     SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 #endif  // UDB_NUM_PMP_ENTRIES == 16

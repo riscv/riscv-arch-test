@@ -27,8 +27,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_A_off_all.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -80,6 +79,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE
@@ -97,6 +97,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
@@ -114,6 +115,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
     RVTEST_GOTO_MMODE
@@ -131,6 +133,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
     RVTEST_GOTO_MMODE
@@ -148,6 +151,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
     RVTEST_GOTO_MMODE
@@ -165,6 +169,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
     RVTEST_GOTO_MMODE
@@ -182,6 +187,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
     RVTEST_GOTO_MMODE
@@ -199,6 +205,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
     RVTEST_GOTO_MMODE
@@ -216,6 +223,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
     RVTEST_GOTO_MMODE
@@ -233,6 +241,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
     RVTEST_GOTO_MMODE
@@ -250,6 +259,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
     RVTEST_GOTO_MMODE
@@ -267,6 +277,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
     RVTEST_GOTO_MMODE
@@ -284,6 +295,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
     RVTEST_GOTO_MMODE
@@ -301,6 +313,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
     RVTEST_GOTO_MMODE
@@ -318,6 +331,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
     RVTEST_GOTO_MMODE

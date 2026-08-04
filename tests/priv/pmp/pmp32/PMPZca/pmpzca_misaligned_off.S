@@ -31,8 +31,7 @@
 # MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_misaligned_off.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -94,6 +93,7 @@ main:
 
     LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1

@@ -34,8 +34,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_priority.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 200
 
 
@@ -131,6 +130,7 @@ main:
     // Set NAPOT cfg for all 7 regions in pmpcfg0
     LI(x4, (PMPREGION_LXWR_1000_6|PMPREGION_LXWR_1111|PMPREGION_LXWR_1001|PMPREGION_LXWR_1100|PMPREGION_LXWR_1011|PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 
 //                                            Verification Section
 // Test Case: 1 : Accessing at end of region 0 (size 1x) with No Permissions

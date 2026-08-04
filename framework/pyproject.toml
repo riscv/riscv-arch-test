@@ -2,26 +2,30 @@
 # act framework python project configuration file for riscv-arch-test
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9.4,<0.12" ]
 
 [project]
 name = "act"
 version = "0.3.0"
 description = "RISC-V Architecture Certification Test Framework"
 readme = "../README.md"
-authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
+authors = [ { name = "Jordan Carlin", email = "jcarlin@hmc.edu" } ]
 requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
 dependencies = [
   "pydantic>=2.12.5",
-  "pyjson5>=2.0.0",
+  "pyjson5>=2",
   "rich>=14.3.4",
   "ruamel-yaml>=0.18.16",
   "typer>=0.23.1",
 ]
-
-[project.scripts]
-act = "act.act:main"
-
-##### BUILD #####
-[build-system]
-requires = ["uv_build>=0.9.4,<0.12.0"]
-build-backend = "uv_build"
+scripts.act = "act.act:main"

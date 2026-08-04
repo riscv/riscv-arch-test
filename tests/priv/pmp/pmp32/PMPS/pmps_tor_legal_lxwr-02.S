@@ -30,10 +30,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_tor_legal_lxwr.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -229,6 +226,7 @@ main:
     LI(x4, PMPREGION_LXWR_0100)
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
@@ -246,6 +244,7 @@ main:
     LI(x4, PMPREGION_LXWR_0101)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
@@ -263,6 +262,7 @@ main:
     LI(x4, PMPREGION_LXWR_0111)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
     RVTEST_GOTO_MMODE

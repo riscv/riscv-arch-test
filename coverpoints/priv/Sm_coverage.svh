@@ -208,7 +208,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        bins menvcfg    = {CSR_MENVCFG};
+        `ifndef SM1P11P0_SUPPORTED
+          bins menvcfg    = {CSR_MENVCFG};
+        `endif
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
@@ -244,7 +246,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
         `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
-            bins menvcfgh = {CSR_MENVCFGH};
+            `ifndef SM1P11P0_SUPPORTED
+              bins menvcfgh = {CSR_MENVCFGH};
+            `endif
             `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif

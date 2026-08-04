@@ -34,8 +34,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_tor_all.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -153,6 +152,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION_0 , test_1
     VERIFICATION_RWX    TEST_FOR_EXECUTION_1 , test_2
     VERIFICATION_RWX    TEST_FOR_EXECUTION_2 , test_3

@@ -500,5 +500,7 @@ def generate_random_vector_params(
     params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     params.sew = sew
     params.vector_suite = suite
+    if params.vl is None:
+        params.vl = 1
 
     return params

@@ -130,6 +130,7 @@ def run_act(
                 debug,
                 fast,
                 verbose,
+                dry_run,
             )
         )
 

@@ -27,10 +27,7 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_mprv_check-01.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -119,6 +116,7 @@ main:
 
     LI(x4, PMPREGION_LXWR_0000)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 //-------------------------------------
 
 //                                            Verification Section
@@ -173,6 +171,7 @@ main:
 
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
+RVTEST_SFENCE_VMA_IF_SUPPORTED
 //-------------------------------------
 
 // Test Case: 3 : mstatus.MPRV = 0, L = 1, mstatus.MPP = 01 and No Permissions given to the PMP Region 0

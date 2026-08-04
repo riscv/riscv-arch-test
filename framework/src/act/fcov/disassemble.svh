@@ -252,6 +252,29 @@ function string disassemble (logic [31:0] instrRaw);
     SFENCE_INVAL_IR: $sformat(decoded, "sfence.inval.ir");
     SFENCE_W_INVAL:  $sformat(decoded, "sfence.w.inval");
     SINVAL_VMA:      $sformat(decoded, "sinval.vma %s, %s", rs1, rs2);
+    // Zawrs Extension
+    WRS_NTO: $sformat(decoded, "wrs.nto");
+    WRS_STO: $sformat(decoded, "wrs.sto");
+    // Hypervisor Extension
+    HFENCE_GVMA: $sformat(decoded, "hfence.gvma %s, %s", rs1, rs2);
+    HFENCE_VVMA: $sformat(decoded, "hfence.vvma %s, %s", rs1, rs2);
+    HINVAL_GVMA: $sformat(decoded, "hinval.gvma %s, %s", rs1, rs2);
+    HINVAL_VVMA: $sformat(decoded, "hinval.vvma %s, %s", rs1, rs2);
+    HLV_B:       $sformat(decoded, "hlv.b %s, (%s)", rd, rs1);
+    HLV_BU:      $sformat(decoded, "hlv.bu %s, (%s)", rd, rs1);
+    HLV_H:       $sformat(decoded, "hlv.h %s, (%s)", rd, rs1);
+    HLV_HU:      $sformat(decoded, "hlv.hu %s, (%s)", rd, rs1);
+    HLV_W:       $sformat(decoded, "hlv.w %s, (%s)", rd, rs1);
+    HLVX_HU:     $sformat(decoded, "hlvx.hu %s, (%s)", rd, rs1);
+    HLVX_WU:     $sformat(decoded, "hlvx.wu %s, (%s)", rd, rs1);
+    HSV_B:       $sformat(decoded, "hsv.b %s, (%s)", rs2, rs1);
+    HSV_H:       $sformat(decoded, "hsv.h %s, (%s)", rs2, rs1);
+    HSV_W:       $sformat(decoded, "hsv.w %s, (%s)", rs2, rs1);
+  `ifdef UDB_MXLEN_64
+    HLV_WU:      $sformat(decoded, "hlv.wu %s, (%s)", rd, rs1);
+    HLV_D:       $sformat(decoded, "hlv.d %s, (%s)", rd, rs1);
+    HSV_D:       $sformat(decoded, "hsv.d %s, (%s)", rs2, rs1);
+  `endif
     // Zicboz Extension
     CBO_ZERO: $sformat(decoded, "cbo.zero (%s)", rs1);
     // Zicbom Extension

@@ -1141,6 +1141,71 @@
             ins.current.inst_category = INST_CAT_STORE;
             ins.add_mem_address();
         end
+        "hfence.gvma"     : begin
+            ins.add_rs1(0);
+            ins.add_rs2(1);
+        end
+        "hfence.vvma"     : begin
+            ins.add_rs1(0);
+            ins.add_rs2(1);
+        end
+        "hinval.gvma"     : begin
+            ins.add_rs1(0);
+            ins.add_rs2(1);
+        end
+        "hinval.vvma"     : begin
+            ins.add_rs1(0);
+            ins.add_rs2(1);
+        end
+        "hlv.b"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlv.bu"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlv.h"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlv.hu"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlv.w"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlvx.hu"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlvx.wu"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hsv.b"     : begin
+            ins.add_rs2(0);
+            ins.add_mem_offset(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_STORE;
+            ins.add_mem_address();
+        end
+        "hsv.h"     : begin
+            ins.add_rs2(0);
+            ins.add_mem_offset(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_STORE;
+            ins.add_mem_address();
+        end
+        "hsv.w"     : begin
+            ins.add_rs2(0);
+            ins.add_mem_offset(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_STORE;
+            ins.add_mem_address();
+        end
         "jal"     : begin
             ins.add_rd(0);
             ins.add_imm_addr(1);
@@ -6030,6 +6095,10 @@
         end
         "wfi"     : begin
         end
+        "wrs.nto"     : begin
+        end
+        "wrs.sto"     : begin
+        end
         "xnor"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -6393,6 +6462,21 @@
         "fmv.x.d"     : begin
             ins.add_rd(0);
             ins.add_fs1(1);
+        end
+        "hlv.d"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hlv.wu"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
+        "hsv.d"     : begin
+            ins.add_rs2(0);
+            ins.add_mem_offset(1);
+            ins.add_rs1(2);
+            ins.current.inst_category = INST_CAT_STORE;
+            ins.add_mem_address();
         end
         "ld"     : begin
             ins.add_rd(0);

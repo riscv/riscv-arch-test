@@ -22,7 +22,10 @@ from testgen.data.random import random_int, random_range
 class IMMEDIATE_EDGES:
     """Edge values for immediates of various widths."""
 
-    # 5-bit unsigned immediate (BEQI, BNEI instructions in Zibi extension)
+    # 5-bit unsigned immediate (BEQI, BNEI instructions in Zibi extension).
+    # In Zibi the cimm field is not sign-extended: field 0 encodes the value -1
+    # and fields 1..31 encode 1..31. The n0 (nonzero) variants therefore drop the
+    # field value 0 and add the effective value -1 instead (see cp_imm_edges.py).
     imm_5bit = (0, 1, 2, 3, 4, 8, 16, 30, 31)
 
     # 6-bit signed immediate (compressed instructions)

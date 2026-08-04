@@ -40,9 +40,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         elif instr_type == "BI":
             assert params.rs1 is not None and params.immval is not None
             if instr_name == "beqi":
-                test_lines.append(f"LI(x{params.rs1}, 1) # setup for taken branch")
+                tc.code.append(f"LI(x{params.rs1}, 1) # setup for taken branch (cimm == 1)")
             else:  # bnei
-                test_lines.append(f"LI(x{params.rs1}, 2) # setup for taken branch")
+                tc.code.append(f"LI(x{params.rs1}, 2) # setup for taken branch (rs1 != cimm == 1)")
         else:  # CB
             branch_val = 0 if instr_name == "c.beqz" else 1  # set value to ensure branch is taken
             tc.code.append(f"LI(x{params.rs1}, {branch_val}) # initialize rs1 to {branch_val} for taken branch")
@@ -58,13 +58,13 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         )
 
         if instr_type != "BI":
-            test_lines.append(
+            tc.code.append(
                 f"2: {instr_name} x{params.rs1}, {f'x{params.rs2},' if params.rs2 is not None else ''} 1b # backward branch"
             )
         else:
-            test_lines.append(f"2: {instr_name} x{params.rs1}, 1, 1b # backward branch")
+            tc.code.append(f"2: {instr_name} x{params.rs1}, 1, 1b # backward branch (cimm == 1)")
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # branch not taken, decrement check value",
                 "3:  # done with sequence",

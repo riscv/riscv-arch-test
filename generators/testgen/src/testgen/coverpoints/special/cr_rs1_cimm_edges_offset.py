@@ -23,13 +23,10 @@ def make_cr_rs1_cimm_edges_offset(
     tc = test_data.begin_test_chunk()
 
     rs1_edges = get_general_edges(test_data.xlen)
-    cimm_edges = (-1,) + IMMEDIATE_EDGES.imm_5bit[1:]  # exclude imm=0
-
-    test_lines: list[str] = []
+    cimm_edges = (-1,) + IMMEDIATE_EDGES.imm_5bit[1:]  # exclude cimm field 0; add effective value -1 (Zibi)
 
     for edge_val1 in rs1_edges:
         for imm_val in cimm_edges:
-            test_lines.append("")
             params = generate_random_params(
                 test_data,
                 instr_type,
@@ -40,29 +37,37 @@ def make_cr_rs1_cimm_edges_offset(
             assert params.rs1 is not None
             assert params.rs1val is not None
             assert params.immval is not None
+            assert params.temp_reg is not None
 
-            test_lines.extend(
+            # Exercise both a backward (negative offset) and a forward (positive
+            # offset) branch with the same condition. A marker register records
+            # which branches were taken (bit 1 = backward, bit 0 = forward) and a
+            # single signature update at the end captures the result.
+            #
+            # The only backward branch (at label 2) targets label 1, which
+            # immediately jumps forward, so control always makes forward progress:
+            # even if the DUT mispredicts a branch the test cannot infinite loop,
+            # and any wrong branch direction changes the marker and shows up as a
+            # signature mismatch against the reference model.
+            tc.code.extend(
                 [
+                    "",
                     test_data.add_testcase(
                         f"rs1_{test_data.xlen_format_str.format(edge_val1)}_cimm_{imm_val}", coverpoint
                     ),
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} cimm = {imm_val})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-                    "0: # destination for backwards branch that is never taken",
-                    f"{instr_name} x{params.rs1}, {params.immval}, 3f # forward branch, if taken",
-                    "1: # goes here if not taken",
-                    f"{instr_name} x{params.rs1}, {params.immval}, 0b # backward branch, never taken",
-                    write_sigupd(0, test_data),  # signature 0 for not taken
-                    "j 4f # done with test",
-                    "2: # goes here during backward branch if taken",
-                    f"LI(x{params.rs1}, 1)",
-                    write_sigupd(params.rs1, test_data) + " # signature 1 for taken",
-                    "j 4f # done with test",
-                    "3: # goes here during forward branch if taken",
-                    f"{instr_name} x{params.rs1}, {params.immval}, 2b # backward branch, definitely taken",
-                    "4: # done with test",
+                    f"LI(x{params.temp_reg}, 0) # marker: records which branches are taken",
+                    "j 2f # enter the test past the backward-branch target",
+                    f"1: ori x{params.temp_reg}, x{params.temp_reg}, 2 # backward branch (negative offset) taken",
+                    "j 3f # jump forward; the backward branch is never re-executed (no infinite loop)",
+                    f"2: {instr_name} x{params.rs1}, {params.immval}, 1b # backward branch, negative offset",
+                    f"3: {instr_name} x{params.rs1}, {params.immval}, 4f # forward branch, positive offset",
+                    "j 5f # forward branch not taken",
+                    f"4: ori x{params.temp_reg}, x{params.temp_reg}, 1 # forward branch (positive offset) taken",
+                    "5: # done with test",
+                    write_sigupd(params.temp_reg, test_data),
                 ]
             )
             return_test_regs(test_data, params)
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

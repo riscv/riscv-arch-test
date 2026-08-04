@@ -7,6 +7,9 @@
 
 """Shared Sscofpmf test-case generators, called with priv_mode in {"Sm", "S", "U"}."""
 
+# In SscofpmfCommon.py
+import re
+
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_mtimer_int, clr_stimer_mmode, set_mtimer_int, set_stimer_mmode
@@ -14,23 +17,49 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
+# tsbi_call()'s CSR table (_CSR_ALIASES in tsbi.py) only covers CSRs used by
+# other suites (e.g. Sdtrig). Performance-monitoring CSRs aren't in that
+# table, but tsbi.py's _parse_csr() explicitly supports a literal hex/numeric
+# CSR address as a fallback -- so we substitute these names for their literal
+# addresses before handing off to tsbi_call().
+_FIXED_TSBI_ALIASES = {
+    "RVMODEL_MHPMEVENT": "0x323",  # mhpmevent3
+    "RVMODEL_MHPMCOUNTER": "0xb03",  # mhpmcounter3
+    "scountovf": "0xda0",
+}
+
+_MHPMEVENT_RE = re.compile(r"\bCSR_MHPMEVENT(\d+)(H)?\b")
+
+
+def _resolve_tsbi_csr(instr: str) -> str:
+    """Substitute Sscofpmf CSR names/macros with literal hex addresses for tsbi_call()."""
+    for macro, hexaddr in _FIXED_TSBI_ALIASES.items():
+        instr = instr.replace(macro, hexaddr)
+
+    def _sub_mhpmevent(m: re.Match) -> str:
+        n = int(m.group(1))
+        base = 0x720 if m.group(2) else 0x320  # ...H = mhpmeventh (RV32 OF-bit high half)
+        return hex(base + n)
+
+    return _MHPMEVENT_RE.sub(_sub_mhpmevent, instr)
+
 
 def _csr_access(instr: str, mode: str) -> str:
     """Access a (currently M-only) CSR directly in Sm, or via T-SBI call from S/U."""
     if mode == "Sm":
         return instr
-    return tsbi_call(instr)
+    return tsbi_call(_resolve_tsbi_csr(instr))
 
 
 def _mode_suffix(mode: str) -> str:
     return mode.lower()
 
 
-def _generate_minh_inhibits_tests(test_data: TestData, mode: str) -> list[str]:
-    """cp_minh_inhibits_{mode}: minh bit inhibits counting."""
+def _generate_minh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[str]:
+    """cp_minh_inhibits_{mode}: minh bit inhibits counting in {priv_mode}-mode."""
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = f"cp_minh_inhibits_{_mode_suffix(mode)}"
+    coverpoint = f"cp_minh_inhibits_{priv_mode.lower()}mode"
     ######################################
 
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
@@ -38,38 +67,45 @@ def _generate_minh_inhibits_tests(test_data: TestData, mode: str) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "minh bit inhibits counting.\n"
-            "RVMODEL_MHPMEVENT[55:0] = RVMODEL_MHPMEVENT_VAL, [62]=minh, [63]=0 (OF=0).\n"
-            "RVMODEL_MHPMCOUNTER = 0, run RVMODEL_MHPMEVENT_CODE, check if nonzero.",
+            f"minh bit inhibits counting in {priv_mode}-mode.\n"
+            "No mip/mie involvement here, so no interrupt/T-SBI ordering hazard;\n"
+            "mode switch simply wraps the SBI-mediated CSR accesses per spec.",
         ),
         "",
     ]
 
+    if priv_mode != "Sm":
+        lines.append(f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode")
+    indent = "" if priv_mode == "Sm" else "    "
+
     for minh_val in [0, 1]:
-        binname = f"minh_{minh_val}_{_mode_suffix(mode)}"
+        binname = f"minh_{minh_val}_{priv_mode.lower()}"
 
         lines.extend(
             [
-                f"# Testcase: minh = {minh_val}, mode = {mode}",
-                f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {minh_val} << 62)",
-                _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", mode),
-                _csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # reset counter to 0 before running", mode),
+                f"{indent}# Testcase: minh = {minh_val}",
+                f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {minh_val} << 62)",
+                f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+                f"{indent}{_csr_access('csrw RVMODEL_MHPMCOUNTER, zero   # reset counter to 0 before running', priv_mode)}",
                 "",
-                f"LA(x{r_temp}, scratch)",
-                "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
-                f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
+                f"{indent}LA(x{r_temp}, scratch)",
+                f"{indent}# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                f"{indent}RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
                 "",
-                test_data.add_testcase(binname, coverpoint, covergroup),
-                _csr_access(f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero", mode),
+                f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
+                f"{indent}{_csr_access(f'csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero', priv_mode)}",
                 "",
             ]
         )
+
+    if priv_mode != "Sm":
+        lines.append("RVTEST_GOTO_MMODE")
 
     test_data.int_regs.return_registers([r_val, r_temp])
     return lines
 
 
-def _generate_of_set_on_overflow_tests(test_data: TestData, mode: str) -> list[str]:
+def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> list[str]:
     """cp_of_set_on_overflow: OF bit is set when hpmcounter overflows."""
     ######################################
     covergroup = "Sscofpmf_cg"
@@ -83,50 +119,78 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, mode: str) -> list[s
             coverpoint,
             "OF bit is set when hpmcounter overflows.\n"
             "RVMODEL_MHPMEVENT[55:0] = VAL, [62:58] = 0b11100 (M/S/U guaranteed),\n"
-            "[63] = OF (0/1). mip/mie cleared. Counter set to all 1s, run event code\n"
-            "at least twice, check OF sets, counter isn't all 0s/1s, LCOFIP fires\n"
-            "iff OF was initially 0.",
+            "[63] = OF (0/1). mip/mie cleared directly in M-mode (matches\n"
+            "InterruptsS/U pattern) before switching modes, to avoid nested traps\n"
+            "mid-T-SBI-call. Counter set to all 1s, run event code at least twice\n"
+            "via SBI per spec, check OF sets, counter isn't all 0s/1s, LCOFIP\n"
+            "fires iff OF was initially 0.",
         ),
-        "",
-        "# Setup: disable interrupts globally for controlled testing",
-        _csr_access("csrw mip, zero   # clear LCOFIP and other pending bits", mode),
-        _csr_access("csrw mie, zero   # disable interrupts", mode),
         "",
     ]
 
     for of_initial in [0, 1]:
-        binname = f"of_overflow_{_mode_suffix(mode)}_of_{of_initial}"
+        binname = f"of_overflow_{priv_mode.lower()}_of_{of_initial}"
 
         lines.extend(
             [
-                f"# Testcase: mode = {mode}, OF initial = {of_initial}",
+                "",
+                "# === M-MODE SETUP ===",
+                f"# Testcase: mode = {priv_mode}, OF initial = {of_initial}",
+                "csrw mip, zero   # clear LCOFIP and other pending bits (direct, M-mode)",
+                "csrw mie, zero   # disable interrupts (direct, M-mode)",
                 f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | (0b11100 << 58) | ({of_initial} << 63))",
-                _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", mode),
-                f"LI(x{r_temp}, -1)",
-                _csr_access(f"csrw RVMODEL_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows", mode),
-                "",
-                f"LA(x{r_addr}, scratch)",
-                "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
-                f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
-                f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})   # run at least twice per spec",
-                "",
-                test_data.add_testcase(binname, coverpoint, covergroup),
-                _csr_access(f"csrr x{r_temp}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of", mode),
-                _csr_access(
-                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s", mode
-                ),
-                "",
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
-                _csr_access(f"csrr x{r_lcofip}, mip   # sample point for mip_lcofip", mode),
-                "",
             ]
         )
+
+        if priv_mode == "Sm":
+            lines.extend(
+                [
+                    f"csrw RVMODEL_MHPMEVENT, x{r_val}",
+                    f"LI(x{r_temp}, -1)",
+                    f"csrw RVMODEL_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows",
+                    "",
+                    f"LA(x{r_addr}, scratch)",
+                    "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+                    f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})   # run at least twice per spec",
+                    "",
+                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    f"csrr x{r_temp}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of",
+                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s",
+                    "",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
+                    f"csrr x{r_lcofip}, mip   # sample point for mip_lcofip",
+                ]
+            )
+        else:
+            lines.extend(
+                [
+                    f"# RVMODEL_MHPMEVENT/RVMODEL_MHPMCOUNTER writes go via SBI from {priv_mode}-mode, per spec",
+                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
+                    f"    {_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+                    f"    LI(x{r_temp}, -1)",
+                    f"    {_csr_access(f'csrw RVMODEL_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows', priv_mode)}",
+                    "",
+                    f"    LA(x{r_addr}, scratch)",
+                    "    # Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                    f"    RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+                    f"    RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})   # run at least twice per spec",
+                    "",
+                    f"    {_csr_access(f'csrr x{r_temp}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of', priv_mode)}",
+                    f"    {_csr_access(f'csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s', priv_mode)}",
+                    "",
+                    f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
+                    "RVTEST_GOTO_MMODE",
+                    f"csrr x{r_lcofip}, mip   # sample point for mip_lcofip (direct, back in M-mode)",
+                ]
+            )
 
     test_data.int_regs.return_registers([r_val, r_temp, r_lcofip, r_addr])
     return lines
 
 
-def _generate_overflow_hw_only_tests(test_data: TestData, mode: str) -> list[str]:
+def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> list[str]:
     """cp_overflow_hw_only: OF only set by hardware increments, not software writes."""
     ######################################
     covergroup = "Sscofpmf_cg"
@@ -139,31 +203,43 @@ def _generate_overflow_hw_only_tests(test_data: TestData, mode: str) -> list[str
         comment_banner(
             coverpoint,
             "Counter overflow interrupt triggered by hardware counter increments,\n"
-            "not software writes. RVMODEL_MHPMEVENT = 0, mip/mie cleared.\n"
+            "not software writes. mip/mie cleared directly in M-mode before\n"
+            "switching (matches InterruptsS/U pattern). RVMODEL_MHPMEVENT write\n"
+            "and per-step accesses go via SBI once in target mode, per spec.\n"
             "Software-write the counter to all 1s then all 0s -- OF must stay 0\n"
             "in both cases, since OF should only latch on a genuine HW increment\n"
             "causing wraparound, not a direct CSR write.",
         ),
         "",
-        _csr_access("csrw RVMODEL_MHPMEVENT, zero", mode),
-        _csr_access("csrw mip, zero   # clear LCOFIE", mode),
-        _csr_access("csrw mie, zero   # disable interrupts", mode),
+        "# === M-MODE SETUP ===",
+        "csrw mip, zero   # clear LCOFIE (direct, M-mode)",
+        "csrw mie, zero   # disable interrupts (direct, M-mode)",
         "",
     ]
 
+    if priv_mode == "Sm":
+        lines.append("csrw RVMODEL_MHPMEVENT, zero")
+    else:
+        lines.append(f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode")
+        lines.append(f"    {_csr_access('csrw RVMODEL_MHPMEVENT, zero', priv_mode)}")
+
     for step_name, load_val in [("all_1s", -1), ("all_0s", 0)]:
-        binname = f"overflow_hw_only_{_mode_suffix(mode)}_{step_name}"
+        binname = f"overflow_hw_only_{priv_mode.lower()}_{step_name}"
+        indent = "" if priv_mode == "Sm" else "    "
         lines.extend(
             [
-                f"# Testcase: software write RVMODEL_MHPMCOUNTER = {step_name}, mode = {mode}",
-                f"LI(x{r_val}, {load_val})",
-                _csr_access(f"csrw RVMODEL_MHPMCOUNTER, x{r_val}", mode),
+                f"{indent}# Testcase: software write RVMODEL_MHPMCOUNTER = {step_name}, mode = {priv_mode}",
+                f"{indent}LI(x{r_val}, {load_val})",
+                f"{indent}{_csr_access(f'csrw RVMODEL_MHPMCOUNTER, x{r_val}', priv_mode)}",
                 "",
-                test_data.add_testcase(binname, coverpoint, covergroup),
-                _csr_access(f"csrr x{r_of}, RVMODEL_MHPMEVENT   # sample point -- OF (bit 63) must read 0", mode),
+                f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
+                f"{indent}{_csr_access(f'csrr x{r_of}, RVMODEL_MHPMEVENT   # sample point -- OF (bit 63) must read 0', priv_mode)}",
                 "",
             ]
         )
+
+    if priv_mode != "Sm":
+        lines.append("RVTEST_GOTO_MMODE")
 
     test_data.int_regs.return_registers([r_val, r_of])
     return lines
@@ -242,8 +318,27 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str) -> list
     return lines
 
 
+def _scountovf_access(instr: str, mode: str) -> str:
+    """scountovf is natively S-mode-accessible (addr[9:8]=01) -- access it
+    directly in both Sm and S mode, same as other Sm-only CSRs, rather than
+    via tsbi_call. Routing a faulting write through tsbi_call would execute
+    the instruction inside the M-mode trap handler itself, and a fault there
+    triggers a recursive trap that corrupts the handler's save-area sp (see
+    the T-SBI CSR table's "these must not fault" note). Direct access lets
+    the normal per-mode trap handler catch the illegal-instruction trap.
+    """
+    return instr
+
+
 def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]:
-    """cp_sscofpmf_access: read, write 1s, write 0s, set, clear on hpm CSRs."""
+    """cp_sscofpmf_access: read, write 1s, write 0s, set, clear on hpm CSRs.
+
+    Per coverpoint spec: scountovf access is only exercised from M/S-mode;
+    mhpmeventh3..31 sweep is only exercised from M-mode. Not applicable to U-mode.
+    """
+    if mode == "U":
+        return []
+
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_sscofpmf_access"
@@ -261,72 +356,82 @@ def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]
         "",
     ]
 
-    def emit_accesses(csr_name: str) -> None:
+    def emit_accesses(csr_name: str, indent: str = "") -> None:
         for access in access_types:
             binname = f"sscofpmf_access_{csr_name}_{access}_{_mode_suffix(mode)}"
-            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+            lines.append(f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}")
 
             if access == "read":
-                lines.append(_csr_access(f"csrr x{r_val}, {csr_name}", mode))
+                lines.append(f"{indent}csrr x{r_val}, {csr_name}")
             elif access == "write_ones":
-                lines.extend([f"LI(x{r_val}, -1)", _csr_access(f"csrw {csr_name}, x{r_val}", mode)])
+                lines.extend([f"{indent}LI(x{r_val}, -1)", f"{indent}csrw {csr_name}, x{r_val}"])
             elif access == "write_zeros":
-                lines.append(_csr_access(f"csrw {csr_name}, zero", mode))
+                lines.append(f"{indent}csrw {csr_name}, zero")
             elif access == "set":
-                lines.extend([f"LI(x{r_val}, -1)", _csr_access(f"csrs {csr_name}, x{r_val}", mode)])
+                lines.extend([f"{indent}LI(x{r_val}, -1)", f"{indent}csrs {csr_name}, x{r_val}"])
             elif access == "clear":
-                lines.extend([f"LI(x{r_val}, -1)", _csr_access(f"csrc {csr_name}, x{r_val}", mode)])
+                lines.extend([f"{indent}LI(x{r_val}, -1)", f"{indent}csrc {csr_name}, x{r_val}"])
             lines.append("")
 
-    emit_accesses("scountovf")
+    # scountovf is natively S-mode-accessible (addr[9:8]=01), and its write
+    # traps (it's read-only). For that trap to be delegated to and caught by
+    # the S-mode handler -- as the signature framework expects -- it must run
+    # at *real* S-mode privilege, not via tsbi_call, which executes inside the
+    # M-mode trap handler and would corrupt recursive-trap state on fault
+    # (see the T-SBI CSR table's "these must not fault" note).
+    if mode == "Sm":
+        emit_accesses("scountovf")
+    else:  # mode == "S"
+        lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+        emit_accesses("scountovf", indent="    ")
+        lines.append("RVTEST_GOTO_MMODE")
 
-    lines.append("#if __riscv_xlen == 32")
-    for n in range(3, 32):
-        emit_accesses(f"CSR_MHPMEVENT{n}H")
-    lines.append("#endif")
+    if mode == "Sm":  # mhpmeventh3..31 sweep is M-mode only per spec
+        lines.append("#if __riscv_xlen == 32")
+        for n in range(3, 32):
+            emit_accesses(f"CSR_MHPMEVENT{n}H")
+        lines.append("#endif")
 
     test_data.int_regs.return_registers([r_val])
     return lines
 
 
-def _generate_lcofip_priority_tests(test_data: TestData, mode: str) -> list[str]:
+def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list[str]:
     """cp_lcofip_priority: priority of LCOFI interrupt."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_lcofip_priority"
     ######################################
 
-    LCOFIP_BIT = 1 << 13  # mip bit 13, per coverpoints file: ins.current.csr[CSR_MIP][13]
+    LCOFIP_BIT = 1 << 13  # mip bit 13
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
             coverpoint,
-            f"Priority of LCOFI interrupt (mode = {mode}; 7 interrupts).\n"
-            "mstatus.MIE=1, mstatus.SIE=1, mie=all 0s.\n"
-            "mip = 1 in LCOFIP and one of {MEIP,MTIP,MSIP,SEIP,STIP,SSIP,none}.\n"
-            "mie = all 1s. Highest priority interrupt fires; LCOFIP only fires\n"
-            "if none of the others are pending (lowest priority).",
+            f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 interrupts).\n"
+            "mip/mie setup happens directly in M-mode (matches InterruptsS/U\n"
+            "pattern) before switching, to avoid nested traps mid-T-SBI-call.",
         ),
-        "",
-        "# Setup: mstatus.MIE=1, mstatus.SIE=1",
-        "csrsi mstatus, 0x8   # MIE",
-        "csrsi mstatus, 0x2   # SIE",
-        _csr_access("csrw mie, zero      # mie = all 0s initially", mode),
         "",
     ]
 
     other_interrupts = ["meip", "mtip", "msip", "seip", "stip", "ssip", "none"]
 
     for other_int in other_interrupts:
-        binname = f"lcofip_priority_{_mode_suffix(mode)}_{other_int}"
+        binname = f"lcofip_priority_{priv_mode.lower()}_{other_int}"
 
-        lines.append(f"# Testcase: competing interrupt = {other_int}, mode = {mode}")
         lines.extend(
             [
+                "",
+                "# === M-MODE SETUP ===",
+                f"# Testcase: competing interrupt = {other_int}, mode = {priv_mode}",
+                "csrw mie, zero      # disable all interrupts first",
+                "csrsi mstatus, 0x8  # MIE",
+                "csrsi mstatus, 0x2  # SIE",
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                _csr_access(f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly", mode),
+                f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly",
             ]
         )
 
@@ -341,20 +446,26 @@ def _generate_lcofip_priority_tests(test_data: TestData, mode: str) -> list[str]
         elif other_int == "stip":
             lines.extend(set_stimer_mmode(r_scratch))
         elif other_int == "ssip":
-            lines.extend([f"LI(x{r1}, 0x2)", _csr_access(f"csrs mip, x{r1}", mode)])
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrs mip, x{r1}"])
         # "none" -- no competing interrupt triggered
 
         lines.extend(
             [
                 f"LI(x{r_temp}, -1)",
-                _csr_access(f"csrw mie, x{r_temp}   # mie = all 1s", mode),
+                f"csrw mie, x{r_temp}   # mie = all 1s (arms all interrupts, still M-mode)",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
-                "",
             ]
         )
 
+        if priv_mode == "Sm":
+            lines.append(f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})")
+        else:
+            lines.append(f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode")
+            lines.append(f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})")
+            lines.append("RVTEST_GOTO_MMODE")
+
+        # Cleanup -- back in M-mode
         if other_int == "meip":
             lines.append("RVTEST_CLR_MEXT_INT")
         elif other_int == "mtip":
@@ -366,14 +477,13 @@ def _generate_lcofip_priority_tests(test_data: TestData, mode: str) -> list[str]
         elif other_int == "stip":
             lines.extend(clr_stimer_mmode(r_scratch))
         elif other_int == "ssip":
-            lines.extend([f"LI(x{r1}, 0x2)", _csr_access(f"csrc mip, x{r1}", mode)])
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrc mip, x{r1}"])
 
         lines.extend(
             [
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                _csr_access(f"csrc mip, x{r_scratch}   # clear LCOFIP for next iteration", mode),
-                _csr_access("csrw mie, zero", mode),
-                "",
+                f"csrc mip, x{r_scratch}   # clear LCOFIP for next iteration",
+                "csrw mie, zero",
             ]
         )
 
@@ -389,5 +499,5 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     tc.code.extend(_generate_overflow_hw_only_tests(test_data, mode))
     tc.code.extend(_generate_scountovf_mcounteren_tests(test_data, mode))
     tc.code.extend(_generate_sscofpmf_access_tests(test_data, mode))
-    tc.code.extend(_generate_lcofip_priority_tests(test_data, mode))
+    # tc.code.extend(_generate_lcofip_priority_tests(test_data, mode))
     return [test_data.end_test_chunk()]

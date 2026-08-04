@@ -1676,6 +1676,68 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
         TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
         TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
+        //TSBI_CSR_INSTR_TABLE(0x323) // mhpmevent3
+        TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
+        TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
+        // Sscofpmf performance-monitoring CSRs
+        TSBI_CSR_INSTR_TABLE(0x323) // mhpmevent3
+        TSBI_CSR_INSTR_TABLE(0x324) // mhpmevent4
+        TSBI_CSR_INSTR_TABLE(0x325) // mhpmevent5
+        TSBI_CSR_INSTR_TABLE(0x326) // mhpmevent6
+        TSBI_CSR_INSTR_TABLE(0x327) // mhpmevent7
+        TSBI_CSR_INSTR_TABLE(0x328) // mhpmevent8
+        TSBI_CSR_INSTR_TABLE(0x329) // mhpmevent9
+        TSBI_CSR_INSTR_TABLE(0x32A) // mhpmevent10
+        TSBI_CSR_INSTR_TABLE(0x32B) // mhpmevent11
+        TSBI_CSR_INSTR_TABLE(0x32C) // mhpmevent12
+        TSBI_CSR_INSTR_TABLE(0x32D) // mhpmevent13
+        TSBI_CSR_INSTR_TABLE(0x32E) // mhpmevent14
+        TSBI_CSR_INSTR_TABLE(0x32F) // mhpmevent15
+        TSBI_CSR_INSTR_TABLE(0x330) // mhpmevent16
+        TSBI_CSR_INSTR_TABLE(0x331) // mhpmevent17
+        TSBI_CSR_INSTR_TABLE(0x332) // mhpmevent18
+        TSBI_CSR_INSTR_TABLE(0x333) // mhpmevent19
+        TSBI_CSR_INSTR_TABLE(0x334) // mhpmevent20
+        TSBI_CSR_INSTR_TABLE(0x335) // mhpmevent21
+        TSBI_CSR_INSTR_TABLE(0x336) // mhpmevent22
+        TSBI_CSR_INSTR_TABLE(0x337) // mhpmevent23
+        TSBI_CSR_INSTR_TABLE(0x338) // mhpmevent24
+        TSBI_CSR_INSTR_TABLE(0x339) // mhpmevent25
+        TSBI_CSR_INSTR_TABLE(0x33A) // mhpmevent26
+        TSBI_CSR_INSTR_TABLE(0x33B) // mhpmevent27
+        TSBI_CSR_INSTR_TABLE(0x33C) // mhpmevent28
+        TSBI_CSR_INSTR_TABLE(0x33D) // mhpmevent29
+        TSBI_CSR_INSTR_TABLE(0x33E) // mhpmevent30
+        TSBI_CSR_INSTR_TABLE(0x33F) // mhpmevent31
+        TSBI_CSR_INSTR_TABLE(0x723) // mhpmevent3h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x724) // mhpmevent4h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x725) // mhpmevent5h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x726) // mhpmevent6h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x727) // mhpmevent7h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x728) // mhpmevent8h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x729) // mhpmevent9h  (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72A) // mhpmevent10h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72B) // mhpmevent11h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72C) // mhpmevent12h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72D) // mhpmevent13h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72E) // mhpmevent14h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x72F) // mhpmevent15h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x730) // mhpmevent16h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x731) // mhpmevent17h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x732) // mhpmevent18h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x733) // mhpmevent19h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x734) // mhpmevent20h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x735) // mhpmevent21h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x736) // mhpmevent22h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x737) // mhpmevent23h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x738) // mhpmevent24h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x739) // mhpmevent25h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73A) // mhpmevent26h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73B) // mhpmevent27h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73C) // mhpmevent28h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73D) // mhpmevent29h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73E) // mhpmevent30h (RV32)
+        TSBI_CSR_INSTR_TABLE(0x73F) // mhpmevent31h (RV32)
         // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
         lw a0, 0(a1)
         ret

@@ -1,7 +1,7 @@
 ##################################
-# priv/extensions/SscofpmfSm.py
+# priv/extensions/SscofpmfS.py
 # Written by: Ayesha Anwar, ayesha.anwaar2005@gmail.com
-# Sscofpmf M-mode test generator.
+# Sscofpmf S-mode test generator.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -12,11 +12,13 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 @add_priv_test_generator(
-    "SscofpmfSm",
-    required_extensions=["Sm", "Sscofpmf"],
+    "SscofpmfS",
+    required_extensions=["S", "Sscofpmf"],
     march_extensions=[],
-    extra_defines=[],
+    extra_defines=[
+        "#define RVTEST_TEMP_BOOT_TO_S",
+    ],
 )
-def make_sscofpmfsm(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for the SscofpmfSm performance-counter-overflow testsuite."""
-    return generate_sscofpmf_suite(test_data, "Sm")
+def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
+    """Generate tests for the SscofpmfS performance-counter-overflow testsuite."""
+    return generate_sscofpmf_suite(test_data, "S")

@@ -535,95 +535,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_2:
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x00000000
   LI(x16, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 14, 1b # backward branch, negative offset
-3: bnei x15, 14, 4f # forward branch, positive offset
+2: bnei x15, 3, 1b # backward branch, negative offset
+3: bnei x15, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x16 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000000
   LI(x30, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, 15, 1b # backward branch, negative offset
-3: bnei x14, 15, 4f # forward branch, positive offset
+2: bnei x14, 4, 1b # backward branch, negative offset
+3: bnei x14, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x00000000
   LI(x17, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, -1, 1b # backward branch, negative offset
-3: bnei x28, -1, 4f # forward branch, positive offset
+2: bnei x28, 8, 1b # backward branch, negative offset
+3: bnei x28, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x00000000
   LI(x6, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, -2, 1b # backward branch, negative offset
-3: bnei x23, -2, 4f # forward branch, positive offset
+2: bnei x23, 16, 1b # backward branch, negative offset
+3: bnei x23, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x00000000
   LI(x13, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, -15, 1b # backward branch, negative offset
-3: bnei x11, -15, 4f # forward branch, positive offset
+2: bnei x11, 30, 1b # backward branch, negative offset
+3: bnei x11, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000000 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x00000000
   LI(x30, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, -16, 1b # backward branch, negative offset
-3: bnei x29, -16, 4f # forward branch, positive offset
+2: bnei x29, 31, 1b # backward branch, negative offset
+3: bnei x29, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = -1)
@@ -670,95 +670,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_2:
   # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000001
   LI(x17, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 14, 1b # backward branch, negative offset
-3: bnei x25, 14, 4f # forward branch, positive offset
+2: bnei x25, 3, 1b # backward branch, negative offset
+3: bnei x25, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x00000001
   LI(x10, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x10, x10, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x20, 15, 1b # backward branch, negative offset
-3: bnei x20, 15, 4f # forward branch, positive offset
+2: bnei x20, 4, 1b # backward branch, negative offset
+3: bnei x20, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x10, x10, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x10, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x10, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x00000001
   LI(x22, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, -1, 1b # backward branch, negative offset
-3: bnei x11, -1, 4f # forward branch, positive offset
+2: bnei x11, 8, 1b # backward branch, negative offset
+3: bnei x11, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x22 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x00000001
   LI(x28, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, -2, 1b # backward branch, negative offset
-3: bnei x22, -2, 4f # forward branch, positive offset
+2: bnei x22, 16, 1b # backward branch, negative offset
+3: bnei x22, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x00000001
   LI(x19, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x19, x19, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, -15, 1b # backward branch, negative offset
-3: bnei x24, -15, 4f # forward branch, positive offset
+2: bnei x24, 30, 1b # backward branch, negative offset
+3: bnei x24, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x19, x19, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x19 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000001 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0x00000001
   LI(x8, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x3, -16, 1b # backward branch, negative offset
-3: bnei x3, -16, 4f # forward branch, positive offset
+2: bnei x3, 31, 1b # backward branch, negative offset
+3: bnei x3, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = -1)
@@ -805,95 +805,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_2:
   # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x00000002
   LI(x23, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 14, 1b # backward branch, negative offset
-3: bnei x27, 14, 4f # forward branch, positive offset
+2: bnei x27, 3, 1b # backward branch, negative offset
+3: bnei x27, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x23 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x00000002
   LI(x18, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, 15, 1b # backward branch, negative offset
-3: bnei x13, 15, 4f # forward branch, positive offset
+2: bnei x13, 4, 1b # backward branch, negative offset
+3: bnei x13, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x00000002
   LI(x29, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, -1, 1b # backward branch, negative offset
-3: bnei x25, -1, 4f # forward branch, positive offset
+2: bnei x25, 8, 1b # backward branch, negative offset
+3: bnei x25, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x00000002
   LI(x28, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, -2, 1b # backward branch, negative offset
-3: bnei x14, -2, 4f # forward branch, positive offset
+2: bnei x14, 16, 1b # backward branch, negative offset
+3: bnei x14, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x00000002
   LI(x20, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x20, x20, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, -15, 1b # backward branch, negative offset
-3: bnei x29, -15, 4f # forward branch, positive offset
+2: bnei x29, 30, 1b # backward branch, negative offset
+3: bnei x29, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x20, x20, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x00000002 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x00000002
   LI(x27, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, -16, 1b # backward branch, negative offset
-3: bnei x28, -16, 4f # forward branch, positive offset
+2: bnei x28, 31, 1b # backward branch, negative offset
+3: bnei x28, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = -1)
@@ -940,95 +940,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_2:
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x80000000
   LI(x21, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 14, 1b # backward branch, negative offset
-3: bnei x22, 14, 4f # forward branch, positive offset
+2: bnei x22, 3, 1b # backward branch, negative offset
+3: bnei x22, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x80000000
   LI(x15, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 15, 1b # backward branch, negative offset
-3: bnei x24, 15, 4f # forward branch, positive offset
+2: bnei x24, 4, 1b # backward branch, negative offset
+3: bnei x24, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x80000000
   LI(x7, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, -1, 1b # backward branch, negative offset
-3: bnei x12, -1, 4f # forward branch, positive offset
+2: bnei x12, 8, 1b # backward branch, negative offset
+3: bnei x12, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x80000000
   LI(x29, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, -2, 1b # backward branch, negative offset
-3: bnei x11, -2, 4f # forward branch, positive offset
+2: bnei x11, 16, 1b # backward branch, negative offset
+3: bnei x11, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0x80000000
   LI(x17, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, -15, 1b # backward branch, negative offset
-3: bnei x21, -15, 4f # forward branch, positive offset
+2: bnei x21, 30, 1b # backward branch, negative offset
+3: bnei x21, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x17, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000000 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0x80000000
   LI(x19, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x19, x19, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, -16, 1b # backward branch, negative offset
-3: bnei x12, -16, 4f # forward branch, positive offset
+2: bnei x12, 31, 1b # backward branch, negative offset
+3: bnei x12, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x19, x19, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x19 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = -1)
@@ -1075,95 +1075,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_2:
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x80000001
   LI(x22, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 14, 1b # backward branch, negative offset
-3: bnei x26, 14, 4f # forward branch, positive offset
+2: bnei x26, 3, 1b # backward branch, negative offset
+3: bnei x26, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x22 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x80000001
   LI(x12, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x12, x12, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 15, 1b # backward branch, negative offset
-3: bnei x6, 15, 4f # forward branch, positive offset
+2: bnei x6, 4, 1b # backward branch, negative offset
+3: bnei x6, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x12, x12, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x12, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x12, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x80000001
   LI(x16, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, -1, 1b # backward branch, negative offset
-3: bnei x30, -1, 4f # forward branch, positive offset
+2: bnei x30, 8, 1b # backward branch, negative offset
+3: bnei x30, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x16 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0x80000001
   LI(x15, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, -2, 1b # backward branch, negative offset
-3: bnei x25, -2, 4f # forward branch, positive offset
+2: bnei x25, 16, 1b # backward branch, negative offset
+3: bnei x25, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x80000001
   LI(x23, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, -15, 1b # backward branch, negative offset
-3: bnei x8, -15, 4f # forward branch, positive offset
+2: bnei x8, 30, 1b # backward branch, negative offset
+3: bnei x8, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x23 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x80000001 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x80000001
   LI(x7, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, -16, 1b # backward branch, negative offset
-3: bnei x28, -16, 4f # forward branch, positive offset
+2: bnei x28, 31, 1b # backward branch, negative offset
+3: bnei x28, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = -1)
@@ -1210,95 +1210,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_2:
   # Check if x19 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x7fffffff
   LI(x3, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 14, 1b # backward branch, negative offset
-3: bnei x22, 14, 4f # forward branch, positive offset
+2: bnei x22, 3, 1b # backward branch, negative offset
+3: bnei x22, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x7fffffff
   LI(x23, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 15, 1b # backward branch, negative offset
-3: bnei x17, 15, 4f # forward branch, positive offset
+2: bnei x17, 4, 1b # backward branch, negative offset
+3: bnei x17, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x23 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs1: x8 = 0x7fffffff
   LI(x22, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, -1, 1b # backward branch, negative offset
-3: bnei x8, -1, 4f # forward branch, positive offset
+2: bnei x8, 8, 1b # backward branch, negative offset
+3: bnei x8, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x22 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0x7fffffff
   LI(x8, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, -2, 1b # backward branch, negative offset
-3: bnei x23, -2, 4f # forward branch, positive offset
+2: bnei x23, 16, 1b # backward branch, negative offset
+3: bnei x23, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x7fffffff
   LI(x18, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, -15, 1b # backward branch, negative offset
-3: bnei x26, -15, 4f # forward branch, positive offset
+2: bnei x26, 30, 1b # backward branch, negative offset
+3: bnei x26, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7fffffff cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0x7fffffff
   LI(x14, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, -16, 1b # backward branch, negative offset
-3: bnei x11, -16, 4f # forward branch, positive offset
+2: bnei x11, 31, 1b # backward branch, negative offset
+3: bnei x11, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = -1)
@@ -1345,95 +1345,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_2:
   # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x7ffffffe
   LI(x27, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 14, 1b # backward branch, negative offset
-3: bnei x2, 14, 4f # forward branch, positive offset
+2: bnei x2, 3, 1b # backward branch, negative offset
+3: bnei x2, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x7ffffffe
   LI(x8, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 15, 1b # backward branch, negative offset
-3: bnei x27, 15, 4f # forward branch, positive offset
+2: bnei x27, 4, 1b # backward branch, negative offset
+3: bnei x27, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x7ffffffe
   LI(x6, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, -1, 1b # backward branch, negative offset
-3: bnei x2, -1, 4f # forward branch, positive offset
+2: bnei x2, 8, 1b # backward branch, negative offset
+3: bnei x2, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x7ffffffe
   LI(x24, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x24, x24, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, -2, 1b # backward branch, negative offset
-3: bnei x14, -2, 4f # forward branch, positive offset
+2: bnei x14, 16, 1b # backward branch, negative offset
+3: bnei x14, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x24, x24, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x24, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x24, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0x7ffffffe
   LI(x3, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, -15, 1b # backward branch, negative offset
-3: bnei x2, -15, 4f # forward branch, positive offset
+2: bnei x2, 30, 1b # backward branch, negative offset
+3: bnei x2, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x7ffffffe cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0x7ffffffe
   LI(x22, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, -16, 1b # backward branch, negative offset
-3: bnei x26, -16, 4f # forward branch, positive offset
+2: bnei x26, 31, 1b # backward branch, negative offset
+3: bnei x26, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x22 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x22, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = -1)
@@ -1480,95 +1480,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_2:
   # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xffffffff
   LI(x19, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x19, x19, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 14, 1b # backward branch, negative offset
-3: bnei x10, 14, 4f # forward branch, positive offset
+2: bnei x10, 3, 1b # backward branch, negative offset
+3: bnei x10, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x19, x19, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x19 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xffffffff
   LI(x20, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x20, x20, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 15, 1b # backward branch, negative offset
-3: bnei x25, 15, 4f # forward branch, positive offset
+2: bnei x25, 4, 1b # backward branch, negative offset
+3: bnei x25, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x20, x20, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x20, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xffffffff
   LI(x7, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, -1, 1b # backward branch, negative offset
-3: bnei x21, -1, 4f # forward branch, positive offset
+2: bnei x21, 8, 1b # backward branch, negative offset
+3: bnei x21, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xffffffff
   LI(x14, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, -2, 1b # backward branch, negative offset
-3: bnei x25, -2, 4f # forward branch, positive offset
+2: bnei x25, 16, 1b # backward branch, negative offset
+3: bnei x25, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xffffffff
   LI(x18, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, -15, 1b # backward branch, negative offset
-3: bnei x29, -15, 4f # forward branch, positive offset
+2: bnei x29, 30, 1b # backward branch, negative offset
+3: bnei x29, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xffffffff cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xffffffff
   LI(x6, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, -16, 1b # backward branch, negative offset
-3: bnei x21, -16, 4f # forward branch, positive offset
+2: bnei x21, 31, 1b # backward branch, negative offset
+3: bnei x21, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x6, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = -1)
@@ -1615,95 +1615,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_2:
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xfffffffe
   LI(x24, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x24, x24, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 14, 1b # backward branch, negative offset
-3: bnei x26, 14, 4f # forward branch, positive offset
+2: bnei x26, 3, 1b # backward branch, negative offset
+3: bnei x26, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x24, x24, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x24, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x24, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xfffffffe
   LI(x31, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 15, 1b # backward branch, negative offset
-3: bnei x22, 15, 4f # forward branch, positive offset
+2: bnei x22, 4, 1b # backward branch, negative offset
+3: bnei x22, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0xfffffffe
   LI(x16, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, -1, 1b # backward branch, negative offset
-3: bnei x10, -1, 4f # forward branch, positive offset
+2: bnei x10, 8, 1b # backward branch, negative offset
+3: bnei x10, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x16 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xfffffffe
   LI(x26, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, -2, 1b # backward branch, negative offset
-3: bnei x12, -2, 4f # forward branch, positive offset
+2: bnei x12, 16, 1b # backward branch, negative offset
+3: bnei x12, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x26 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x26, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x26, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xfffffffe
   LI(x19, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x19, x19, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, -15, 1b # backward branch, negative offset
-3: bnei x21, -15, 4f # forward branch, positive offset
+2: bnei x21, 30, 1b # backward branch, negative offset
+3: bnei x21, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x19, x19, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x19 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x19, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xfffffffe cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xfffffffe
   LI(x25, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, -16, 1b # backward branch, negative offset
-3: bnei x21, -16, 4f # forward branch, positive offset
+2: bnei x21, 31, 1b # backward branch, negative offset
+3: bnei x21, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x25 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x25, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x25, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = -1)
@@ -1750,95 +1750,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_2:
   # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x5bbc8872
   LI(x28, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 14, 1b # backward branch, negative offset
-3: bnei x31, 14, 4f # forward branch, positive offset
+2: bnei x31, 3, 1b # backward branch, negative offset
+3: bnei x31, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x5bbc8872
   LI(x13, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 15, 1b # backward branch, negative offset
-3: bnei x17, 15, 4f # forward branch, positive offset
+2: bnei x17, 4, 1b # backward branch, negative offset
+3: bnei x17, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x5bbc8872
   LI(x29, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, -1, 1b # backward branch, negative offset
-3: bnei x15, -1, 4f # forward branch, positive offset
+2: bnei x15, 8, 1b # backward branch, negative offset
+3: bnei x15, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0x5bbc8872
   LI(x8, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, -2, 1b # backward branch, negative offset
-3: bnei x15, -2, 4f # forward branch, positive offset
+2: bnei x15, 16, 1b # backward branch, negative offset
+3: bnei x15, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs1: x10 = 0x5bbc8872
   LI(x28, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, -15, 1b # backward branch, negative offset
-3: bnei x10, -15, 4f # forward branch, positive offset
+2: bnei x10, 30, 1b # backward branch, negative offset
+3: bnei x10, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x28, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x5bbc8872 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x5bbc8872
   LI(x14, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, -16, 1b # backward branch, negative offset
-3: bnei x13, -16, 4f # forward branch, positive offset
+2: bnei x13, 31, 1b # backward branch, negative offset
+3: bnei x13, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = -1)
@@ -1885,95 +1885,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_2:
   # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0xaaaaaaaa
   LI(x27, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 14, 1b # backward branch, negative offset
-3: bnei x23, 14, 4f # forward branch, positive offset
+2: bnei x23, 3, 1b # backward branch, negative offset
+3: bnei x23, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0xaaaaaaaa
   LI(x27, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x19, 15, 1b # backward branch, negative offset
-3: bnei x19, 15, 4f # forward branch, positive offset
+2: bnei x19, 4, 1b # backward branch, negative offset
+3: bnei x19, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0xaaaaaaaa
   LI(x13, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, -1, 1b # backward branch, negative offset
-3: bnei x31, -1, 4f # forward branch, positive offset
+2: bnei x31, 8, 1b # backward branch, negative offset
+3: bnei x31, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x13, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0xaaaaaaaa
   LI(x21, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x19, -2, 1b # backward branch, negative offset
-3: bnei x19, -2, 4f # forward branch, positive offset
+2: bnei x19, 16, 1b # backward branch, negative offset
+3: bnei x19, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x21, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xaaaaaaaa
   LI(x7, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, -15, 1b # backward branch, negative offset
-3: bnei x15, -15, 4f # forward branch, positive offset
+2: bnei x15, 30, 1b # backward branch, negative offset
+3: bnei x15, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x7 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x7, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0xaaaaaaaa cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0xaaaaaaaa
   LI(x14, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, -16, 1b # backward branch, negative offset
-3: bnei x23, -16, 4f # forward branch, positive offset
+2: bnei x23, 31, 1b # backward branch, negative offset
+3: bnei x23, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_31_str)
 
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1:
 # cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = -1)
@@ -2020,95 +2020,95 @@ Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_2:
   # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_2_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_14:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 14)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_3:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x55555555
   LI(x23, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 14, 1b # backward branch, negative offset
-3: bnei x27, 14, 4f # forward branch, positive offset
+2: bnei x27, 3, 1b # backward branch, negative offset
+3: bnei x27, 3, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x23 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_14, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_14_str)
+  RVTEST_SIGUPD(x9, x5, x4, x23, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_3_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_4:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0x55555555
   LI(x27, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x19, 15, 1b # backward branch, negative offset
-3: bnei x19, 15, 4f # forward branch, positive offset
+2: bnei x19, 4, 1b # backward branch, negative offset
+3: bnei x19, 4, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x27, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_4, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_4_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = -1)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_8:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 8)
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0x55555555
   LI(x29, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, -1, 1b # backward branch, negative offset
-3: bnei x31, -1, 4f # forward branch, positive offset
+2: bnei x31, 8, 1b # backward branch, negative offset
+3: bnei x31, 8, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1_str)
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_8, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_8_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m2:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = -2)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_16:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 16)
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x55555555
   LI(x18, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, -2, 1b # backward branch, negative offset
-3: bnei x30, -2, 4f # forward branch, positive offset
+2: bnei x30, 16, 1b # backward branch, negative offset
+3: bnei x30, 16, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m2, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m2_str)
+  RVTEST_SIGUPD(x9, x5, x4, x18, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_16_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m15:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = -15)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_30:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 30)
   RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0x55555555
   LI(x3, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, -15, 1b # backward branch, negative offset
-3: bnei x28, -15, 4f # forward branch, positive offset
+2: bnei x28, 30, 1b # backward branch, negative offset
+3: bnei x28, 30, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m15, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m15_str)
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_30, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_30_str)
 
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m16:
-# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = -16)
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_31:
+# cr_rs1_cimm_edges_offset (Test source rs1 = 0x55555555 cimm = 31)
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x55555555
   LI(x3, 0) # marker: records which branches are taken
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, -16, 1b # backward branch, negative offset
-3: bnei x27, -16, 4f # forward branch, positive offset
+2: bnei x27, 31, 1b # backward branch, negative offset
+3: bnei x27, 31, 4f # forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
   # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m16, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m16_str)
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_31, Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_31_str)
 
 /////////////////////////////////
 // cp_offset
@@ -2382,111 +2382,111 @@ Zibi_bnei_cg_cp_rs1_edges_0x55555555_str: .string "\"test: 44; cg: Zibi_bnei_cg;
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m1_str: .string "\"test: 45; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_1_str: .string "\"test: 46; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_2_str: .string "\"test: 47; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_14_str: .string "\"test: 48; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_15_str: .string "\"test: 49; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m1_str: .string "\"test: 50; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m2_str: .string "\"test: 51; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m15_str: .string "\"test: 52; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_m16_str: .string "\"test: 53; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_3_str: .string "\"test: 48; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_4_str: .string "\"test: 49; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_8_str: .string "\"test: 50; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_16_str: .string "\"test: 51; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_30_str: .string "\"test: 52; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000000_cimm_31_str: .string "\"test: 53; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000000_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1_str: .string "\"test: 54; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_1_str: .string "\"test: 55; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_2_str: .string "\"test: 56; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_14_str: .string "\"test: 57; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_15_str: .string "\"test: 58; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m1_str: .string "\"test: 59; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m2_str: .string "\"test: 60; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m15_str: .string "\"test: 61; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_m16_str: .string "\"test: 62; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_3_str: .string "\"test: 57; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_4_str: .string "\"test: 58; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_8_str: .string "\"test: 59; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_16_str: .string "\"test: 60; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_30_str: .string "\"test: 61; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000001_cimm_31_str: .string "\"test: 62; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000001_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1_str: .string "\"test: 63; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_1_str: .string "\"test: 64; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_2_str: .string "\"test: 65; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_14_str: .string "\"test: 66; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_15_str: .string "\"test: 67; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m1_str: .string "\"test: 68; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m2_str: .string "\"test: 69; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m15_str: .string "\"test: 70; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_m16_str: .string "\"test: 71; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_3_str: .string "\"test: 66; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_4_str: .string "\"test: 67; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_8_str: .string "\"test: 68; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_16_str: .string "\"test: 69; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_30_str: .string "\"test: 70; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x00000002_cimm_31_str: .string "\"test: 71; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x00000002_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1_str: .string "\"test: 72; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_1_str: .string "\"test: 73; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_2_str: .string "\"test: 74; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_14_str: .string "\"test: 75; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_15_str: .string "\"test: 76; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m1_str: .string "\"test: 77; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m2_str: .string "\"test: 78; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m15_str: .string "\"test: 79; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_m16_str: .string "\"test: 80; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_3_str: .string "\"test: 75; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_4_str: .string "\"test: 76; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_8_str: .string "\"test: 77; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_16_str: .string "\"test: 78; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_30_str: .string "\"test: 79; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000000_cimm_31_str: .string "\"test: 80; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000000_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1_str: .string "\"test: 81; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_1_str: .string "\"test: 82; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_2_str: .string "\"test: 83; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_14_str: .string "\"test: 84; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_15_str: .string "\"test: 85; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m1_str: .string "\"test: 86; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m2_str: .string "\"test: 87; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m15_str: .string "\"test: 88; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_m16_str: .string "\"test: 89; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_3_str: .string "\"test: 84; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_4_str: .string "\"test: 85; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_8_str: .string "\"test: 86; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_16_str: .string "\"test: 87; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_30_str: .string "\"test: 88; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x80000001_cimm_31_str: .string "\"test: 89; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x80000001_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1_str: .string "\"test: 90; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_1_str: .string "\"test: 91; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_2_str: .string "\"test: 92; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_14_str: .string "\"test: 93; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_15_str: .string "\"test: 94; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m1_str: .string "\"test: 95; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m2_str: .string "\"test: 96; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m15_str: .string "\"test: 97; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_m16_str: .string "\"test: 98; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_3_str: .string "\"test: 93; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_4_str: .string "\"test: 94; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_8_str: .string "\"test: 95; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_16_str: .string "\"test: 96; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_30_str: .string "\"test: 97; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7fffffff_cimm_31_str: .string "\"test: 98; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7fffffff_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1_str: .string "\"test: 99; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_1_str: .string "\"test: 100; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_2_str: .string "\"test: 101; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_14_str: .string "\"test: 102; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_15_str: .string "\"test: 103; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m1_str: .string "\"test: 104; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m2_str: .string "\"test: 105; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m15_str: .string "\"test: 106; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_m16_str: .string "\"test: 107; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_3_str: .string "\"test: 102; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_4_str: .string "\"test: 103; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_8_str: .string "\"test: 104; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_16_str: .string "\"test: 105; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_30_str: .string "\"test: 106; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x7ffffffe_cimm_31_str: .string "\"test: 107; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x7ffffffe_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1_str: .string "\"test: 108; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_1_str: .string "\"test: 109; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_2_str: .string "\"test: 110; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_14_str: .string "\"test: 111; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_15_str: .string "\"test: 112; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m1_str: .string "\"test: 113; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m2_str: .string "\"test: 114; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m15_str: .string "\"test: 115; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_m16_str: .string "\"test: 116; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_3_str: .string "\"test: 111; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_4_str: .string "\"test: 112; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_8_str: .string "\"test: 113; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_16_str: .string "\"test: 114; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_30_str: .string "\"test: 115; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xffffffff_cimm_31_str: .string "\"test: 116; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xffffffff_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1_str: .string "\"test: 117; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_1_str: .string "\"test: 118; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_2_str: .string "\"test: 119; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_14_str: .string "\"test: 120; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_15_str: .string "\"test: 121; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m1_str: .string "\"test: 122; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m2_str: .string "\"test: 123; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m15_str: .string "\"test: 124; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_m16_str: .string "\"test: 125; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_3_str: .string "\"test: 120; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_4_str: .string "\"test: 121; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_8_str: .string "\"test: 122; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_16_str: .string "\"test: 123; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_30_str: .string "\"test: 124; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xfffffffe_cimm_31_str: .string "\"test: 125; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xfffffffe_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1_str: .string "\"test: 126; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_1_str: .string "\"test: 127; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_2_str: .string "\"test: 128; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_14_str: .string "\"test: 129; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_15_str: .string "\"test: 130; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m1_str: .string "\"test: 131; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m2_str: .string "\"test: 132; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m15_str: .string "\"test: 133; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_m16_str: .string "\"test: 134; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_3_str: .string "\"test: 129; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_4_str: .string "\"test: 130; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_8_str: .string "\"test: 131; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_16_str: .string "\"test: 132; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_30_str: .string "\"test: 133; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x5bbc8872_cimm_31_str: .string "\"test: 134; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x5bbc8872_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1_str: .string "\"test: 135; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_1_str: .string "\"test: 136; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_2_str: .string "\"test: 137; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_14_str: .string "\"test: 138; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_15_str: .string "\"test: 139; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m1_str: .string "\"test: 140; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m2_str: .string "\"test: 141; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m15_str: .string "\"test: 142; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_m16_str: .string "\"test: 143; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_3_str: .string "\"test: 138; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_4_str: .string "\"test: 139; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_8_str: .string "\"test: 140; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_16_str: .string "\"test: 141; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_30_str: .string "\"test: 142; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0xaaaaaaaa_cimm_31_str: .string "\"test: 143; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0xaaaaaaaa_cimm_31\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1_str: .string "\"test: 144; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_-1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_1_str: .string "\"test: 145; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_1\""
 Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_2_str: .string "\"test: 146; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_14_str: .string "\"test: 147; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_14\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_15_str: .string "\"test: 148; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m1_str: .string "\"test: 149; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_-1\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m2_str: .string "\"test: 150; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_-2\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m15_str: .string "\"test: 151; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_-15\""
-Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_m16_str: .string "\"test: 152; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_-16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_3_str: .string "\"test: 147; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_3\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_4_str: .string "\"test: 148; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_4\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_8_str: .string "\"test: 149; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_8\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_16_str: .string "\"test: 150; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_16\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_30_str: .string "\"test: 151; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_30\""
+Zibi_bnei_cg_cr_rs1_cimm_edges_offset_rs1_0x55555555_cimm_31_str: .string "\"test: 152; cg: Zibi_bnei_cg; cp: cr_rs1_cimm_edges_offset; bin: rs1_0x55555555_cimm_31\""
 Zibi_bnei_cg_cp_offset_neg_str: .string "\"test: 153; cg: Zibi_bnei_cg; cp: cp_offset; bin: neg\""
 
 // End of test data section and model specific data

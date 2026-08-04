@@ -10,10 +10,6 @@
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.interrupts import (
-    clr_mtimer_int,
-    set_mtimer_int_soon,
-)
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -976,6 +972,104 @@ def _generate_minstret_insn_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "Sm_mcsr_cg", "cp_minstret_insn"
 
     lines = [comment_banner(coverpoint, "Read minstret before/after normally-retiring instructions")]
+
+    r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
+
+    ######################################
+    # Ensure counters are running
+    ######################################
+    lines.append(comment_banner("Enable Counters", "Ensure mcountinhibit is 0 so counters can run"))
+    lines.extend(
+        [
+            f"LI(x{r_tmp}, 0)                      # Load 0 (enable all counters)",
+            f"CSRW(mcountinhibit, x{r_tmp})        # Clear inhibit register",
+            "nop\nnop\nnop",
+        ]
+    )
+
+    ######################################
+    # add: retires normally
+    ######################################
+    lines.extend(
+        [
+            "",
+            "# add: retires normally, no trap",
+            test_data.add_testcase("add", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            f"add x{r_tmp}, x{r_before}, zero   # instruction under test",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    # mret: force MPP=M, jump straight to 1: with no trap handler involved
+    ######################################
+    r_save, r_mask = test_data.int_regs.get_registers(2)
+    lines.extend(
+        [
+            "",
+            "# mret: retires normally",
+            test_data.add_testcase("mret", coverpoint, covergroup),
+            f"CSRR(x{r_save}, mstatus)        # save mstatus",
+            f"LI(x{r_mask}, 0x1800)           # MPP = 11 (M-mode)",
+            f"or x{r_mask}, x{r_mask}, x{r_save}",
+            f"CSRW(mstatus, x{r_mask})",
+            f"LA(x{r_mask}, 1f)               # return address after mret",
+            f"CSRW(mepc, x{r_mask})",
+            f"CSRR(x{r_before}, minstret)",
+            "mret                     # test mret instruction",
+            "1:                         # mret should return to here",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            f"CSRW(mstatus, x{r_save})        # restore mstatus",
+        ]
+    )
+    test_data.int_regs.return_registers([r_save, r_mask])
+
+    ######################################
+    # sret: retires normally if S_SUPPORTED, else traps (illegal instr) and must NOT retire
+    ######################################
+    lines.extend(
+        [
+            "",
+            "#ifdef S_SUPPORTED",
+            "# sret: retires normally when S-mode exists.",
+            test_data.add_testcase("sret", coverpoint, covergroup),
+            f"LA(x{r_diff}, 1f)               # return address after sret",
+            f"CSRW(sepc, x{r_diff})",
+            f"CSRR(x{r_before}, minstret)",
+            "sret                     # test sret instruction",
+            "1:",
+            "RVTEST_GOTO_MMODE        # return to M-mode BEFORE touching minstret again",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "#else",
+            "# sret: traps as illegal instruction when S-mode does not exist; delta reflects",
+            test_data.add_testcase("sret_illegal", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            "sret",
+            "nop",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "#endif // S_SUPPORTED",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
+
+    return lines
+
+def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
+    """
+    Generate minstret retirement counting tests. For each instruction, read minstret before and after, and log the raw delta.
+    """
+    covergroup = "Sm_mcsr_cg"
+    coverpoint = "cp_minstret_insn"
 
     r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
 

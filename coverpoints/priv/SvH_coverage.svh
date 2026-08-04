@@ -533,23 +533,40 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins rw = {8'b????0111};
     }
 
-    // Coverpoint: cp_vsatp_mprv_effects
+    // Coverpoint: cp_vsatp_mprv_effects (Test only does lw. Don’t require sw thus added ignore_bins writes)
     // MPRV=1: data uses vsatp; MPRV=0: negative (no VS translate)
+    //Data access as VS → vsatp translates
     cp_vsatp_mprv_effects_s: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, vs_pte_rw_s_d, read_write_acc {
         ignore_bins writes = binsof(read_write_acc.write_acc);
     }
+    //Data access as VU → vsatp translates
     cp_vsatp_mprv_effects_u: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, vs_pte_rw_u_d, read_write_acc {
         ignore_bins writes = binsof(read_write_acc.write_acc);
     }
+    //Data access does not take the MPRV→VS/VU path → vsatp not used
     cp_vsatp_mprv_effects_off: cross priv_mode_m, mstatus_mprv_unset, vsatp_mode, hgatp_bare, satp_bare, read_write_acc {
         ignore_bins writes = binsof(read_write_acc.write_acc);
     }
 
     // Coverpoint: cp_hgatp_mprv_effects
-    // lw under MPRV+MPV uses G (X-only deny); HLV uses R/W G leaf (ignores MPRV)
+    // Sheet: MPRV=1 × {M,HS,VS,U,VU} × lw; HLV/HSV ignore MPRV (separate cross).
+    // VS/VU (MPV=1): G walked → X-only leaf deny. M/HS/U (MPV=0 or MPP=M): no G walk.
+    cp_hgatp_mprv_effects_m: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_m, hgatp_mode, acc_lw_sw {
+        ignore_bins stores = binsof(acc_lw_sw.sw);
+    }
+    cp_hgatp_mprv_effects_hs: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, mstatus_mpv_unset, hgatp_mode, acc_lw_sw {
+        ignore_bins stores = binsof(acc_lw_sw.sw);
+    }
     cp_hgatp_mprv_effects_vs: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_s, mstatus_mpv_set, hgatp_mode, g_pte_xwr100_d, acc_lw_sw {
         ignore_bins stores = binsof(acc_lw_sw.sw);
     }
+    cp_hgatp_mprv_effects_u: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, mstatus_mpv_unset, hgatp_mode, acc_lw_sw {
+        ignore_bins stores = binsof(acc_lw_sw.sw);
+    }
+    cp_hgatp_mprv_effects_vu: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_u, mstatus_mpv_set, hgatp_mode, g_pte_xwr100_d, acc_lw_sw {
+        ignore_bins stores = binsof(acc_lw_sw.sw);
+    }
+    // HLV ignores MPRV; R/W G leaf allow (not the X-only deny story)
     cp_hgatp_mprv_effects_hlv: cross priv_mode_m, mstatus_mprv_set, hgatp_mode, g_pte_rw_d, acc_hlv_hsv {
         ignore_bins hsv = binsof(acc_hlv_hsv.hsv_w);
     }
@@ -638,7 +655,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     //--------------------------------------------------------------------------
     // P1 — two-stage MXR (distinct from cp_vsstatus_mxr_sum)
     //--------------------------------------------------------------------------
-    // Coverpoint: cp_two_stage_mxr
+    // Coverpoint: cp_two_stage_mxr (MXR only affects loads of X-only pages)
     // Stimulus: VS+G X-only; MXR=0 faults, MXR=1 loads. sstatus↔vsstatus track together.
     cp_two_stage_mxr: cross priv_mode_vs, vsatp_mode, hgatp_mode, mxr_vsstatus, vs_pte_xonly_d, read_write_acc {
         ignore_bins writes = binsof(read_write_acc.write_acc);

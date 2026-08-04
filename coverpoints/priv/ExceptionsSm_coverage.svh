@@ -146,6 +146,14 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         cp_misaligned_priority_store:            cross priv_mode_m, storeops, adr_LSBs, illegal_address_priority;
     `endif
 
+    cp_minstret_ecall:           cross priv_mode_m, ecall;
+    cp_minstret_ebreak:          cross priv_mode_m, ebreak;
+    cp_minstret_illegal:         cross priv_mode_m, illegalops;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_minstret_load_fault:  cross priv_mode_m, loadops, illegal_address;
+    `endif
+    cp_minstret_load_misaligned: cross priv_mode_m, loadops, adr_LSBs;
+
 endgroup
 
 

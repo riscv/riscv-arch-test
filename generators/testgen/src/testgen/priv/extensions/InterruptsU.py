@@ -9,7 +9,7 @@
 
 """InterruptsU privileged extension test generator for user-mode interrupts."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -310,8 +310,175 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch])
     return lines
 
+def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
+    """instret retirement checks around wfi and wrs.nto/wrs.sto in U-mode."""
+    covergroup = "InterruptsU_cg"
+    lines = ["", "#ifdef ZICNTR_SUPPORTED"]
 
-@add_priv_test_generator("InterruptsU", required_extensions=["U"])
+    r_temp = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            f"LI(x{r_temp}, 0x4)                    # mcounteren.IR (bit 2)",
+            f"CSRS(mcounteren, x{r_temp})            # allow U-mode instret reads for this whole function",
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp])
+    
+    ######################################
+    coverpoint = "cp_uinstret_wfi_timeout"
+    ######################################
+    lines.append(comment_banner(coverpoint, "wfi in U-mode, TW=0, nothing armed: must fall through"))
+    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            "",
+            "CSRW(mie, zero)                      # nothing enabled, nothing pending",
+            f"LI(x{r_scratch}, 0x200000)",
+            f"CSRC(mstatus, x{r_scratch})          # TW=0",
+            *clr_mtimer_int(r_temp, r_mtimecmp),
+            "RVTEST_GOTO_LOWER_MODE Umode",
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp, r_scratch])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            test_data.add_testcase("uinstret_wfi_timeout", coverpoint, covergroup),
+            f"CSRR(x{r_before}, instret)",
+            "wfi  # no event armed; must eventually fall through",
+            "nop",
+            f"CSRR(x{r_after}, instret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "RVTEST_GOTO_MMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_temp])
+
+    ######################################
+    coverpoint = "cp_uinstret_wfi_taken"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "wfi in U-mode: pending timer interrupt always taken (undelegated, MIE doesn't gate)",
+        )
+    )
+    r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            "CSRW(mie, zero)",
+            f"LI(x{r_scratch}, 0x200000)",
+            f"CSRC(mstatus, x{r_scratch})          # TW=0",
+            f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
+            f"CSRS(mstatus, x{r_scratch})          # MIE=1 once mret enters U-mode",
+            f"LI(x{r_scratch}, 0x80)               # enable MTIE",
+            f"CSRW(mie, x{r_scratch})",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
+            "RVTEST_GOTO_LOWER_MODE Umode",
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            test_data.add_testcase("uinstret_wfi_taken", coverpoint, covergroup),
+            f"CSRR(x{r_before}, instret)",
+            "wfi                                  # interrupt taken here; traps to M-mode, resumes after wfi",
+            f"CSRR(x{r_after}, instret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "RVTEST_GOTO_MMODE",
+            *clr_mtimer_int(r_temp, r_mtimecmp),
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch, r_before, r_after, r_diff])
+
+    lines.append("\n#ifdef ZAWRS_SUPPORTED")
+
+    ######################################
+    coverpoint = "cp_uinstret_wrs_nto_taken"
+    ######################################
+    lines.append(comment_banner(coverpoint, "wrs.nto: instret delta, interrupt taken during the wait"))
+    r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            "CSRW(mie, zero)",
+            f"LI(x{r_scratch}, 0x200000)",
+            f"CSRC(mstatus, x{r_scratch})          # TW=0",
+            f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
+            f"CSRS(mstatus, x{r_scratch})          # MIE=1 once mret enters U-mode",
+            f"LI(x{r_scratch}, 0x80)               # enable MTIE",
+            f"CSRW(mie, x{r_scratch})",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
+            "RVTEST_GOTO_LOWER_MODE Umode",
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"lr.w x{r_before}, (sp)               # establish reservation in U-mode; loaded value unused",
+            f"CSRR(x{r_before}, instret)",
+            test_data.add_testcase("uinstret_wrs_nto_taken", coverpoint, covergroup),
+            "wrs.nto                              # interrupt taken here; traps to M-mode, resumes after wrs.nto",
+            f"CSRR(x{r_after}, instret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "RVTEST_GOTO_MMODE",
+            *clr_mtimer_int(r_temp, r_mtimecmp),
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch, r_before, r_after, r_diff])
+
+    ######################################
+    coverpoint = "cp_uinstret_wrs_sto_taken"
+    ######################################
+    lines.append(comment_banner(coverpoint, "wrs.sto: instret delta, interrupt already pending, taken not timed out"))
+    r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            "CSRW(mie, zero)",
+            f"LI(x{r_scratch}, 0x200000)",
+            f"CSRC(mstatus, x{r_scratch})          # TW=0",
+            f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
+            f"CSRS(mstatus, x{r_scratch})          # MIE=1 once mret enters U-mode",
+            f"LI(x{r_scratch}, 0x80)               # enable MTIE",
+            f"CSRW(mie, x{r_scratch})",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
+            "RVTEST_GOTO_LOWER_MODE Umode",
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"lr.w x{r_before}, (sp)               # establish reservation in U-mode; loaded value unused",
+            f"CSRR(x{r_before}, instret)",
+            test_data.add_testcase("uinstret_wrs_sto_taken", coverpoint, covergroup),
+            "wrs.sto                              # interrupt taken here; traps to M-mode, resumes after wrs.sto",
+            f"CSRR(x{r_after}, instret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "RVTEST_GOTO_MMODE",
+            *clr_mtimer_int(r_temp, r_mtimecmp),
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch, r_before, r_after, r_diff])
+
+    lines.append("#endif // ZAWRS_SUPPORTED")
+    lines.append("#endif // ZICNTR_SUPPORTED")
+
+    return lines
+
+@add_priv_test_generator("InterruptsU", required_extensions=["U"], march_extensions=["U", "Zawrs", "Zalrsc"],)
 def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
     test_chunks: list[TestChunk] = []
@@ -333,6 +500,7 @@ def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_user_mei_tests(test_data))
     tc.code.extend(_generate_user_wfi_tests(test_data))
     tc.code.extend(_generate_user_wfi_timeout_tests(test_data))
+    tc.code.extend(_generate_uinstret_wfi_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

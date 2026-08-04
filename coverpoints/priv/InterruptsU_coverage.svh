@@ -69,6 +69,28 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw_zero, mie_mtie_one;
     cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw_one, mie_mtie;
 
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+
+    `ifdef ZICNTR_SUPPORTED
+        cp_uinstret_wfi_timeout: cross priv_mode_u, wfi, mip_mtip {
+            ignore_bins ig_pending = binsof(mip_mtip) intersect {1};
+        }
+        cp_uinstret_wfi_taken: cross priv_mode_u, wfi, mip_mtip {
+            ignore_bins ig_not_pending = binsof(mip_mtip) intersect {0};
+        }        
+        `ifdef ZAWRS_SUPPORTED
+            cp_uinstret_wrs_nto_taken: cross priv_mode_u, wrs_nto;
+            cp_uinstret_wrs_sto_taken: cross priv_mode_u, wrs_sto;
+        `endif
+    `endif
+
 endgroup
 
 function void interruptsu_sample(int hart, int issue, ins_t ins);

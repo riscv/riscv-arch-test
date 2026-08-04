@@ -466,30 +466,20 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `endif // S1P13P0_SUPPORTED
 
     retiring_insns: coverpoint ins.current.insn {
-        wildcard bins add    = {ADD};
-        wildcard bins ecall  = {ECALL};
-        wildcard bins ebreak = {EBREAK};
-        wildcard bins mret   = {MRET};
-        wildcard bins wfi    = {WFI};
+        wildcard bins add  = {ADD};
+        wildcard bins mret = {MRET};
+    }
+    
+    sret_insn: coverpoint ins.current.insn {
+        wildcard bins sret = {SRET};
     }
 
-    `ifdef ZAWRS_SUPPORTED
-        wrs_nto: coverpoint ins.current.insn {
-            bins wrs_nto = {WRS_NTO};
-        }
-    `endif
+    cp_minstret_insn: cross priv_mode_m, retiring_insns;
+    
+    `ifdef S_SUPPORTED
+        cp_minstret_sret: cross priv_mode_m, sret_insn;
+    `endif 
 
-    illegal_trap: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcause", "int") {
-        bins illegal_insn = {64'd2};   // mcause = 2: illegal instruction exception
-    }
-
-    cp_minstret_insn:    cross priv_mode_m, retiring_insns;
-
-    `ifdef ZAWRS_SUPPORTED
-        cp_minstret_wrs:     cross priv_mode_m, wrs_nto;
-    `endif
-
-    cp_minstret_illegal: cross priv_mode_m, illegal_trap;
 
 endgroup
 

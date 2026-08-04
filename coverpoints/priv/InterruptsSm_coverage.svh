@@ -95,6 +95,24 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     cp_vectored:         cross priv_mode_m, mstatus_mie_one, mtvec_vectored, mip_walking, mie_ones;
     cp_priority:         cross priv_mode_m, mstatus_mie_one, mie_meie_mtie_msie, mip_meip_mtip_msip;
     cp_wfi:              cross priv_mode_m, wfi, mstatus_mie, mstatus_tw, mie_mtie_one, mip_mtip_one;
+
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+
+    cp_minstret_wfi_timeout: cross priv_mode_m, wfi;
+    cp_minstret_wfi_pending: cross priv_mode_m, wfi, mstatus_mie;
+    cp_minstret_wfi_taken:   cross priv_mode_m, wfi, mstatus_mie_one;
+    `ifdef ZAWRS_SUPPORTED
+        cp_minstret_wrs_nto: cross priv_mode_m, wrs_nto;
+        cp_minstret_wrs_sto: cross priv_mode_m, wrs_sto;
+    `endif
+
 endgroup
 
 

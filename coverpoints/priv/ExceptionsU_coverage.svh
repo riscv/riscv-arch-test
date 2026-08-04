@@ -132,6 +132,15 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         cp_store_access_fault:                   cross priv_mode_u, storeops, illegal_address;
     `endif
 
+    `ifdef ZICNTR_SUPPORTED
+        cp_uinstret_ecall:           cross priv_mode_u, ecall;
+        cp_uinstret_ebreak:          cross priv_mode_u, ebreak;
+        cp_uinstret_illegal:         cross priv_mode_u, illegalops;
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+            cp_uinstret_load_fault:  cross priv_mode_u, loadops, illegal_address;
+        `endif
+        cp_uinstret_load_misaligned: cross priv_mode_u, loadops, adr_LSBs;
+    `endif
 
 endgroup
 

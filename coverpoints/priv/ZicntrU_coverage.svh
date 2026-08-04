@@ -168,6 +168,12 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
     // main coverpoints
     cp_mcounteren_access_u: cross csrr, counters_mcounteren, priv_mode_u;
     cp_mcounteren_access_m: cross csrr, counters_mcounteren, priv_mode_m;
+
+    insn_add_u: coverpoint ins.current.insn {
+      wildcard bins add = {ADD};
+    }
+    cp_uinstret_add: cross priv_mode_u, insn_add_u;
+
 endgroup
 
 

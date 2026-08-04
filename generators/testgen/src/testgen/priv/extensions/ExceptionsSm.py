@@ -62,6 +62,119 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([save_reg, mask_reg, arg_reg])
     return lines
 
+def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
+    """minstret must NOT increment for instructions that trap before retiring."""
+    covergroup = _CG
+    r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
+
+    lines = []
+
+    ######################################
+    # Ensure counters are running
+    ######################################
+    lines.append(comment_banner("Enable Counters", "Ensure mcountinhibit is 0 so counters can run"))
+    lines.extend(
+        [
+            f"LI(x{r_tmp}, 0)                      # Load 0 (enable all counters)",
+            f"CSRW(mcountinhibit, x{r_tmp})        # Clear inhibit register",
+            "nop\nnop\nnop",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_ecall"
+    ######################################
+    lines.append(comment_banner(coverpoint, "ecall: traps before retiring, minstret must not increment"))
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("ecall", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_ebreak"
+    ######################################
+    lines.append(comment_banner(coverpoint, "ebreak: traps before retiring, minstret must not increment"))
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("ebreak", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            "ebreak",
+            "nop",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_illegal"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Illegal instruction: traps before retiring, minstret must not increment"))
+    lines.extend(
+        [
+            "",
+            ".p2align 2",
+            test_data.add_testcase("illegal", coverpoint, covergroup),
+            f"CSRR(x{r_before}, minstret)",
+            ".word 0xFFFFFFFF",
+            "nop",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_load_fault"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Load access fault: traps before retiring, minstret must not increment"))
+    r_addr = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            "",
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+            test_data.add_testcase("load_access_fault", coverpoint, covergroup),
+            f"LA(x{r_addr}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"CSRR(x{r_before}, minstret)",
+            f"lw x{r_tmp}, 0(x{r_addr})",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+        ]
+    )
+    test_data.int_regs.return_registers([r_addr])
+
+    ######################################
+    coverpoint = "cp_minstret_load_misaligned"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Load address misaligned: traps before retiring, minstret must not increment"))
+    r_addr = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("load_misaligned", coverpoint, covergroup),
+            f"LA(x{r_addr}, scratch)",
+            f"addi x{r_addr}, x{r_addr}, 1  # misalign by 1 byte",
+            f"CSRR(x{r_before}, minstret)",
+            f"lw x{r_tmp}, 0(x{r_addr})",
+            f"CSRR(x{r_after}, minstret)",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+        ]
+    )
+    test_data.int_regs.return_registers([r_addr])
+
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
+    return lines
 
 @add_priv_test_generator(
     "ExceptionsSm",
@@ -98,6 +211,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
+    tc.code.extend(_generate_minstret_trap_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

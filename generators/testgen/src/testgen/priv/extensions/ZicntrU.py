@@ -8,7 +8,7 @@
 
 """ZicntrU extension test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -232,6 +232,32 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg])
     return lines
 
+def _generate_uinstret_add_tests(test_data: TestData) -> list[str]:
+    """Generate instret-increments-correctly test for a normally-retiring instruction in U-mode."""
+    covergroup, coverpoint = "ZicntrU_cg", "cp_uinstret_add"
+
+    r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Read instret before/after a normally-retiring instruction (add) in U-mode",
+        ),
+        "",
+        test_data.add_testcase("add", coverpoint, covergroup),
+        "RVTEST_GOTO_LOWER_MODE Umode",
+        "",
+        f"CSRR(x{r_before}, instret)",
+        f"add x{r_tmp}, x{r_before}, zero   # instruction under test",
+        f"CSRR(x{r_after}, instret)",
+        f"sub x{r_diff}, x{r_after}, x{r_before}",
+        write_sigupd(r_diff, test_data),
+        "",
+        "RVTEST_GOTO_MMODE",
+    ]
+
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
+    return lines
 
 @add_priv_test_generator(
     "ZicntrU",
@@ -255,6 +281,7 @@ def make_zicntru(test_data: TestData) -> list[TestChunk]:
         ]
     )
 
+    tc.code.extend(_generate_uinstret_add_tests(test_data))
     tc.code.extend(_generate_mcounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mcounteren_access_m_tests(test_data))
 

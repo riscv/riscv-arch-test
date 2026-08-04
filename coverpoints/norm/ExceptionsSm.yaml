@@ -255,3 +255,12 @@ normative_rule_definitions:
       [
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
       ]
+
+  # ECALL and EBREAK do not increment minstret, since they are not "retired" the
+  # normal way - control transfers to the trap handler instead.
+  - names: [ecall_no_minstret_inc, ebreak_no_minstret_inc]
+    coverpoint:
+      [
+        "ExceptionsSm_cg/cp_minstret_ecall",
+        "ExceptionsSm_cg/cp_minstret_ebreak",
+      ]

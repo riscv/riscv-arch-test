@@ -1,11 +1,11 @@
-
 === H Hypervisor
 
 The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, endian, and virtual memory.
 
-[[t-H-normative-rules]]
 .Hypervisor Normative Rules
 ***
+
+include::norm/H_norm_rules.adoc[]
 
 ==== H Hypervisor CSRs and Instructions
 

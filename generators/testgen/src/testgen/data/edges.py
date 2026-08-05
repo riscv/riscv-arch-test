@@ -77,11 +77,8 @@ class IMMEDIATE_EDGES:
     # 5-bit Unsigned Immediates (Vector Instructions)
     imm_5bit_u = (0, 1, 2, 15, 16, 30, 31)
 
-    # 5-bit cimm field (BEQI, BNEI instructions in Zibi extension).
-    # In Zibi the cimm field is not sign-extended: field 0 encodes the value -1
-    # and fields 1..31 encode 1..31. The nonzero coverpoints therefore drop the
-    # field value 0 and add the effective value -1 instead (see cp_imm_edges.py).
-    imm_5bit_zibi = (0, 1, 2, 3, 4, 8, 16, 30, 31)
+    # 5-bit Zibi immediate edges (the all-zero cimm field encodes -1)
+    imm_5bit_u_n0 = (-1, 1, 2, 3, 4, 8, 16, 30, 31)
 
 
 # ==============================================================================

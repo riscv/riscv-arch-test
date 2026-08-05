@@ -27,11 +27,8 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
         edges_imm = IMMEDIATE_EDGES.imm_6bit
     elif coverpoint.endswith("_6bit_n0"):
         edges_imm = IMMEDIATE_EDGES.imm_6bit[1:]  # exclude imm=0
-    elif coverpoint.endswith("_5bit"):
-        edges_imm = IMMEDIATE_EDGES.imm_5bit
     elif coverpoint.endswith("_5bit_u_n0"):
-        # Zibi cimm: drop field value 0 and add effective value -1 (field 0 encodes -1).
-        edges_imm = (-1,) + IMMEDIATE_EDGES.imm_5bit_zibi[1:]
+        edges_imm = IMMEDIATE_EDGES.imm_5bit_u_n0
     else:
         raise ValueError(f"Unknown cp_imm_edges coverpoint variant: {coverpoint} for {instr_name}")
 

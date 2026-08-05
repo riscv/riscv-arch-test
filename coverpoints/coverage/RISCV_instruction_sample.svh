@@ -211,7 +211,7 @@
         end
         "beqi"     : begin
             ins.add_rs1(0);
-            ins.add_cimm(1);
+            ins.add_imm2(1);
             ins.add_imm_addr(2);
         end
         "bext"     : begin
@@ -261,7 +261,7 @@
         end
         "bnei"     : begin
             ins.add_rs1(0);
-            ins.add_cimm(1);
+            ins.add_imm2(1);
             ins.add_imm_addr(2);
         end
         "brev8"     : begin

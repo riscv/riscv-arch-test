@@ -217,8 +217,6 @@ function string disassemble (logic [31:0] instrRaw);
     BLT:     $sformat(decoded, "blt %s, %s, %0d", rs1, rs2, immBType);
     BLTU:    $sformat(decoded, "bltu %s, %s, %0d", rs1, rs2, immBType);
     BNE:     $sformat(decoded, "bne %s, %s, %0d", rs1, rs2, immBType);
-    BEQI: $sformat(decoded, "beqi %s, %0d, %0d", rs1, cimm5, immBType);
-    BNEI: $sformat(decoded, "bnei %s, %0d, %0d", rs1, cimm5, immBType);
     EBREAK:  $sformat(decoded, "ebreak");
     ECALL:   $sformat(decoded, "ecall");
     MRET:    $sformat(decoded, "mret");
@@ -296,6 +294,9 @@ function string disassemble (logic [31:0] instrRaw);
     CSRRCI: $sformat(decoded, "csrrci %s, %0d, %0d", rd, csr, rs1Bits);
     // Zifencei Extension
     FENCE_I: $sformat(decoded, "fence.i");
+    // Zibi Extension
+    BEQI: $sformat(decoded, "beqi %s, %0d, %0d", rs1, cimm5, immBType);
+    BNEI: $sformat(decoded, "bnei %s, %0d, %0d", rs1, cimm5, immBType);
     // M Extension
     MUL:    $sformat(decoded, "mul %s, %s, %s", rd, rs1, rs2);
     MULH:   $sformat(decoded, "mulh %s, %s, %s", rd, rs1, rs2);

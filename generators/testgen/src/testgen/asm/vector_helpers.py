@@ -18,7 +18,7 @@ from testgen.data.random import random_int
 from testgen.data.state import TestData
 
 
-def _lmul_flag(lmul: float) -> str:
+def get_lmul_flag(lmul: float) -> str:
     """
     Simple Helper to Make an LMUL flag for a vset(i)vl(i) instruction.
     """
@@ -211,7 +211,7 @@ def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> st
     Resets the vtype to the state that prep_base_v left it.
     """
     assert params.lmul is not None, "lmul must be set for vector instructions"
-    lmul_flag = "m" + _lmul_flag(params.lmul)
+    lmul_flag = "m" + get_lmul_flag(params.lmul)
 
     mask_flags = ""
     mask_flags += ", ta" if params.ta else ", tu"
@@ -238,9 +238,9 @@ def prep_base_v(
 
     if lmul_override is None:
         assert params.lmul is not None
-        lmul_flag = "m" + _lmul_flag(params.lmul)
+        lmul_flag = "m" + get_lmul_flag(params.lmul)
     else:
-        lmul_flag = "m" + _lmul_flag(lmul_override)
+        lmul_flag = "m" + get_lmul_flag(lmul_override)
 
     mask_flags = ""
     mask_flags += ", ta" if params.ta else ", tu"
@@ -373,7 +373,7 @@ def prep_mask_v(
             v0 and do not claim it from the register file.
     """
     assert params.lmul is not None, "LMUL is Required When Setting a Mask Value"
-    lmul_flag = _lmul_flag(params.lmul)
+    lmul_flag = get_lmul_flag(params.lmul)
 
     if not vd_v0:
         test_data.vec_regs.consume_registers([0])  # Ensure that we can actually use the mask register
@@ -537,7 +537,7 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
         [
             "# Load vl=random",
             f"LI(x{temp_reg}, {randomVl})",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{_lmul_flag(params.lmul)}, tu, mu",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu",
             f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
         ]
     )
@@ -552,7 +552,7 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
 
 def load_test_vtype(params: InstructionParams, random_vl_reg: str, *, force_vlmax: bool = False) -> str:
     assert params.lmul is not None, "params.lmul must be set for a vector test"
-    lmul_flag = "m" + _lmul_flag(params.lmul)
+    lmul_flag = "m" + get_lmul_flag(params.lmul)
 
     mask_flags = ""
     mask_flags += ", ta" if params.ta else ", tu"
@@ -623,7 +623,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
     vlmax_vtypes = [vtype for vtype in vtype_code if vtype[0] == "vlmax"]
     for vl, sew, lmul in vlmax_vtypes:
         code.append(
-            f"vsetvli x{params.temp_reg}, x0, e{sew}, m{_lmul_flag(lmul)}, tu, mu",
+            f"vsetvli x{params.temp_reg}, x0, e{sew}, m{get_lmul_flag(lmul)}, tu, mu",
         )
         code.extend(vtype_code[(vl, sew, lmul)])
 
@@ -637,7 +637,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
 
     for vl, sew, lmul in random_vtypes:
         code.append(
-            f"vsetvli x{params.temp_reg}, {random_vl_reg}, e{sew}, m{_lmul_flag(lmul)}, tu, mu",
+            f"vsetvli x{params.temp_reg}, {random_vl_reg}, e{sew}, m{get_lmul_flag(lmul)}, tu, mu",
         )
         code.extend(vtype_code[(vl, sew, lmul)])
 
@@ -645,7 +645,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
     integer_vtypes = [vtype for vtype in vtype_code if isinstance(vtype[0], int)]
     for vl, sew, lmul in integer_vtypes:
         code.append(
-            f"vsetivli x{params.temp_reg}, {vl}, e{sew}, m{_lmul_flag(lmul)}, tu, mu",
+            f"vsetivli x{params.temp_reg}, {vl}, e{sew}, m{get_lmul_flag(lmul)}, tu, mu",
         )
         code.extend(vtype_code[(vl, sew, lmul)])
 

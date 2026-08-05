@@ -88,7 +88,7 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
-    instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
+    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented"]] = field(default_factory=list)
     vector_data: VectorTypeConfig | None = None
 
 

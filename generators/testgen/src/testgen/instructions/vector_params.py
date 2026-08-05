@@ -148,8 +148,9 @@ def randomize_registers(
 
     if "rs2" in registers:
         new_params.rs2 = randomize_register("rs2", test_data, instr_type_config, lmul, info, new_params.rs2)
-        if new_params.rs2val is not None:
-            if info.load_store_eew is not None:
+        if new_params.rs2val is None:
+            if "strided" in instr_type_config.instruction_class:
+                assert info.load_store_eew is not None
                 new_params.rs2val = random_range(-2, 2 + 1) * int(info.load_store_eew / 8)
             else:
                 new_params.rs2val = random_int(test_data.config.xlen)
@@ -427,7 +428,7 @@ def generate_random_vector_params(
             for register in sorted(registers):
                 if params_dict[register] != preset_params_dict[register]:
                     if register.startswith("v"):
-                        pass  # We haven't taketen these from the register file yet
+                        pass  # We haven't taken these from the register file yet
                     elif register.startswith("r"):
                         test_data.int_regs.return_register(params_dict[register])
                     elif register.startswith("f"):

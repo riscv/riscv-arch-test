@@ -6,13 +6,14 @@
 ##################################
 
 import math
+import re
 
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_instruction, format_single_testcase
+from testgen.formatters import format_instruction, format_single_testcase, get_instruction_type_config
 from testgen.instructions.vector import parse_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
@@ -148,6 +149,205 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     tc = test_data.end_test_chunk()
 
     test_data.int_regs.return_register(check_reg)
+    return_testcase_registers(test_data, params)
+
+    return [tc]
+
+
+@add_coverpoint_generator("cp_custom_ls_indexed_truncated")
+def make_cp_custom_ls_indexed_truncated(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Runs a test confirming that at XLEN=32, INDEX EEW=64, the index values are truncated to XLEN bits.
+    """
+
+    info = parse_instruction_info(instr_name, instr_type)
+    eew = info.index_eew
+
+    assert eew is not None, f"Unable to extract index-eew for instruction {instr_name}"
+    assert eew == 64, f"EEW must be 64 for {coverpoint}"
+
+    label = "custom_idx_trunc_eew64"
+    test_data.register_vector_data(label, 64, elements=[0xFFFFFFFF00000000])
+
+    params = generate_random_vector_params(
+        test_data, instr_name, instr_type, 1, additional_no_overlap={("vd", "vs2")}, vs2_val_pointer=label
+    )
+    desc = "Index Value Truncation"
+    bin_name = "truncate_xlen32_eew64"
+
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+    return_testcase_registers(test_data, params)
+
+    return [tc]
+
+
+@add_coverpoint_generator("cp_custom_indexed_overlap")
+def make_cp_custom_indexed_overlap(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Covers vd/vs2 or vs3/vs2 overlaps for non-segment indexed load/stores.
+
+    Valid src/dest overlaps include
+        (a) EEW_dest == EEW_sew --> Always allowed
+        (b) EEW_dest < EEW_src --> Overlaps are only allowed in the lowest part of the source register
+        (c) EEW_dest > EEW_src, EMUL_src >= 1 --> overlap is allowed in the highest part of the dest register
+
+    Src/src overlaps are only valid when the EEWs are the same
+    """
+
+    config = get_instruction_type_config(instr_type)
+    assert "segmented" not in config.instruction_class, "Overlaps are prohibited for segmented load/stores"
+
+    info = parse_instruction_info(instr_name, instr_type)
+    index_eew = info.index_eew
+    assert index_eew is not None, f"Could not extract index EEW from {instr_name}"
+
+    res = re.search(r"_eew(\d+)", coverpoint)
+    if res:
+        expected_eew = int(res.group(1))
+        assert index_eew == expected_eew, (
+            f"Extracted incorrect eew {index_eew} from {instr_name} for coverpoint {coverpoint}"
+        )
+
+    result_eew = test_data.config.sew
+    assert result_eew is not None, "SEW must be provided for vector instructions"
+
+    test_chunks = []
+    for lmul in (1, 2, 4, 8):
+        data_emul = lmul
+        index_emul = lmul * (index_eew / result_eew)
+        if index_emul > 8:
+            continue  # This is an index EMUL > 8
+
+        if result_eew == index_eew:
+            # Then all overlaps are legal
+            for reg in range(0, test_data.vec_regs.reg_count, lmul):
+                if "store" in config.instruction_class:
+                    test_data.vec_regs.allocate_operand("vs3", reg, lmul)
+                    test_data.vec_regs.allocate_operand("vs2", reg, lmul, suppress_overlap=True)
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vs3=reg, vs2=reg)
+                else:
+                    test_data.vec_regs.allocate_operand("vd", reg, lmul)
+                    test_data.vec_regs.allocate_operand("vs2", reg, lmul, suppress_overlap=True)
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vd=reg, vs2=reg)
+
+                desc = "Index Register Overlap"
+                bin_name = f"_v{reg}_lmul{lmul}"
+                test_chunks.append(
+                    format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                )
+                return_testcase_registers(test_data, params)
+        elif result_eew < index_eew:
+            # Then the dest is allowed to overlap the lowest part of the register
+            if "store" in config.instruction_class:
+                continue  # This type of overlap is illegal for src/src cases
+
+            alignment = int(max(index_emul, data_emul))
+            for reg in range(0, test_data.vec_regs.reg_count, alignment):
+                test_data.vec_regs.allocate_operand("vd", reg, data_emul)
+                test_data.vec_regs.allocate_operand("vs2", reg, int(max(index_emul, 1)), suppress_overlap=True)
+                params = generate_random_vector_params(test_data, instr_name, instr_type, data_emul, vd=reg, vs2=reg)
+
+                desc = "Index Register Overlap"
+                bin_name = f"_v{reg}_lmul{lmul}"
+                test_chunks.append(
+                    format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                )
+                return_testcase_registers(test_data, params)
+        else:
+            # Then we have an index only at the highest part of the dest group
+            if "store" in config.instruction_class:
+                continue  # This type of overlap is illegal for src/src cases
+            if index_emul < 1:
+                continue  # This type of overlap only works with integer emul
+
+            vs2_offset = int(data_emul - index_emul)
+            assert vs2_offset > 0 and vs2_offset % index_emul == 0
+
+            for reg in range(0, test_data.vec_regs.reg_count, data_emul):
+                vs2_reg = reg + vs2_offset
+                test_data.vec_regs.allocate_operand("vd", reg, data_emul)
+                test_data.vec_regs.allocate_operand("vs2", vs2_reg, int(max(index_emul, 1)), suppress_overlap=True)
+                params = generate_random_vector_params(
+                    test_data, instr_name, instr_type, data_emul, vd=reg, vs2=vs2_reg
+                )
+
+                desc = "Index Register Overlap"
+                bin_name = f"_vd_{reg}_vs2_{vs2_reg}_lmul{lmul}"
+                test_chunks.append(
+                    format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                )
+                return_testcase_registers(test_data, params)
+
+    return test_chunks
+
+
+@add_coverpoint_generator("cp_custom_indexed_emul_data_only")
+def make_cp_custom_indexed_emul_data_only(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Runs a test at the maximum lmul for an instruction, to verify that the emul * nf constraint only applies
+    to the data register and not to the index register.
+    """
+
+    min_sew = 0
+    if res := re.search(r"sew_ge(\d+)", coverpoint):
+        min_sew = int(res.group(1))
+
+    sew = test_data.config.sew
+    assert sew is not None, "SEW must be provided for vector instructions"
+    if sew < min_sew:
+        return []
+
+    info = parse_instruction_info(instr_name, instr_type)
+    segments = info.segments
+
+    targets = {8: 1, 4: 2, 2: 4}  # Maps segments to the required lmul
+
+    if segments not in targets:
+        return []
+
+    lmul = targets[segments]
+
+    index_eew = info.index_eew
+    assert index_eew is not None, f"Unable to extract index eew from {instr_name}"
+
+    index_emul = index_eew * lmul // sew
+    if index_emul > 8:
+        return []  # This is just an illegal instruction
+
+    desc = "EMUl x NF Constraint Only Applies to Data Register"
+    bin_name = f"lmul_{lmul}"
+    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul)
+
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+    return_testcase_registers(test_data, params)
+
+    return [tc]
+
+
+@add_coverpoint_generator("cp_custom_ordered_index_overlap")
+def make_cp_custom_ordered_index_overlap(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Tests a data overlap in the index register for the ordered case.
+    """
+
+    assert test_data.config.sew is not None, "SEW must be set for vector instructions"
+    label = "custom_index_overlap"
+    test_data.register_vector_data(label, test_data.config.sew, elements=[0, 0])
+
+    desc = "Data Overlap of Index Elements"
+    bin_name = "zeros"
+    params = generate_random_vector_params(
+        test_data, instr_name, instr_type, 1, vl=2, suite="length", vs2_val_pointer=label
+    )
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
     return_testcase_registers(test_data, params)
 
     return [tc]

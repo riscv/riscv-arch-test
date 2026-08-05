@@ -578,6 +578,11 @@ class VECTOR_EDGES:
         "sNaN_payload1": 0x7F81,  # signaling NaN with lsb set
     }
 
+    load_store_rs2_e8 = (-2, -1, 0, 1, 2)
+    load_store_rs2_e16 = (-4, -2, 0, 2, 4)
+    load_store_rs2_e32 = (-8, -4, 0, 4, 8)
+    load_store_rs2_e64 = (-16, -8, 0, 8, 16)
+
     @staticmethod
     def edge_value(edge: str, eew: int) -> int:
         if edge == "zero" or edge == "zero_emul8":

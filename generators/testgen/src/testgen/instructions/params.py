@@ -1,15 +1,16 @@
 ##################################
-# formatters/params.py
+# instructions/params.py
 #
 # Random parameter generation for instructions.
 # jcarlin@hmc.edu Jan 2026
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """
 Random parameter generation for instructions.
 
-This module uses metadata declared in instruction formatters to automatically
+This module uses registered instruction-type metadata to automatically
 generate the correct parameters for each instruction type.
 
 When you add a new instruction formatter in formatters/types/, declare its
@@ -39,7 +40,7 @@ from typing import Any
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
-from testgen.formatters.registry import get_instr_type_config
+from testgen.formatters import get_instruction_type_config
 
 
 def generate_random_params(
@@ -73,8 +74,8 @@ def generate_random_params(
     if params.frm == "dyn" and params.csr_frm_val is None:
         params.csr_frm_val = random_range(0, 4)
 
-    # Get the required parameters for this instruction type (extracted from formatters)
-    instr_type_config = get_instr_type_config(instr_type)
+    # Get the required parameters for this instruction type (extracted from formatters).
+    instr_type_config = get_instruction_type_config(instr_type)
     required_params = instr_type_config.required_params
     if required_params is None:
         raise ValueError(

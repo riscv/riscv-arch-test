@@ -17,7 +17,7 @@ from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.data.test_chunk import group_test_chunks
 from testgen.io.writer import write_test_file
-from testgen.priv.registry import (
+from testgen.priv import (
     get_priv_test_defines,
     get_priv_test_generator,
     get_priv_test_march_extensions,

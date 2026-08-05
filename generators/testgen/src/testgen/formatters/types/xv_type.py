@@ -6,13 +6,7 @@
 ##################################
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.vector_helpers import (
-    VectorLoad,
-    handle_lmul_ifdef,
-    load_test_vtype,
-    load_vec_regs,
-    prep_mask_v,
-)
+from testgen.asm.vector_helpers import VectorLoad, handle_lmul_ifdef, load_test_vtype, load_vec_regs, prep_mask_v
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter

@@ -7,12 +7,11 @@
 
 import math
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 def _shift_upper_bits_mask(xlen: int, sew: int) -> int:
@@ -62,7 +61,7 @@ def _make_shift_upperbits_test(
     bin_name = f"cp_custom_vshift{suffix}_upperbits_vs1_ones"
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 
@@ -116,7 +115,7 @@ def _make_shift_upperbits_rs1_test(
     bin_name = f"cp_custom_vshift{suffix}_upperbits_rs1_ones"
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [tc]
 
 

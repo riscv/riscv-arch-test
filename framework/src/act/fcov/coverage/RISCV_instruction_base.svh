@@ -505,6 +505,19 @@ class RISCV_instruction
     current.mem_addr = current.rs1_val + current.imm;
   endfunction
 
+  virtual function void add_zilx_mem_address();
+    bit [(XLEN-1):0] index;
+
+    index = current.rs1_val;
+    if (current.insn[31:27] == 5'b11110) begin
+      index = current.rs1_val[31:0];
+    end
+    if (current.insn[31:27] != 5'b10010) begin
+      index = index << current.insn[13:12];
+    end
+    current.mem_addr = current.rs2_val + index;
+  endfunction
+
   virtual function void add_fd(int offset, int finx=0);
     current.has_fd = 1;
     current.fd = ops[offset].key;

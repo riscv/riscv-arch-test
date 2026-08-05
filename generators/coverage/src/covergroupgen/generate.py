@@ -360,7 +360,10 @@ def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[
     templates: dict[str, str] = {}
     for item in importlib.resources.files(package).iterdir():
         if item.is_file() and item.name.endswith(".sv"):
-            templates[item.name.removesuffix(".sv")] = item.read_text()
+            content = item.read_text()
+            if content.startswith("// SPDX-License-Identifier:"):
+                content = content.partition("\n")[2]
+            templates[item.name.removesuffix(".sv")] = content
         elif item.is_dir() and not item.name.startswith("__"):
             templates.update(read_covergroup_templates(f"{package}.{item.name}"))
     return templates

@@ -81,7 +81,14 @@ def generate_unpriv_extension_tests(
     generated_files: set[Path] = set()
 
     flen = get_flen_for_extension(testsuite)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    test_config = TestConfig(
+        xlen=xlen,
+        flen=flen,
+        testsuite=testsuite,
+        E_ext=E_ext,
+        sew=sew,
+        march_extensions=[] if testsuite == "Zilx" else None,
+    )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:

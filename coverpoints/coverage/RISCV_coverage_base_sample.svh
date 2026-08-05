@@ -472,6 +472,9 @@
     `ifdef COVER_ZIHPM
         zihpm_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZILX
+        zilx_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZIMOP
         zimop_sample(hart, issue, ins);
     `endif

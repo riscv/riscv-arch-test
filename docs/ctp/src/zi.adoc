@@ -93,6 +93,25 @@ include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
 
+==== Zilx Indexed Integer Loads
+
+Zilx loads use `rs2` as the base register and `rs1` as the index register.
+The test suite covers unscaled, scaled, and RV64-only scaled unsigned-word-index addressing modes.
+
+include::{testplansdir}/Zilx.adoc[]
+
+include::norm/Zilx_norm_rules.adoc[]
+
+[[t-Zilx-coverpoint-definitions]]
+.Zilx Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_align_zilx_byte|8|All values of effective address bits [2:0] for byte loads.
+|cp_align_zilx_hword|4|All values of effective address bits [2:1] for aligned halfword loads.
+|cp_align_zilx_word|2|All values of effective address bit [2] for aligned word loads.
+|===
+
 
 
 ==== Zicntr Counters

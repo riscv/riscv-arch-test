@@ -11,22 +11,34 @@ from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
 def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for alignment coverpoints."""
-    tc = test_data.begin_test_chunk()
-    if coverpoint == "cp_align_byte":
+    if coverpoint in ("cp_align_byte", "cp_align_zilx_byte"):
         alignments = [0, 1, 2, 3, 4, 5, 6, 7]
-    elif coverpoint == "cp_align_hword":
+    elif coverpoint in ("cp_align_hword", "cp_align_zilx_hword"):
         alignments = [0, 2, 4, 6]
-    elif coverpoint == "cp_align_word":
+    elif coverpoint in ("cp_align_word", "cp_align_zilx_word"):
         alignments = [0, 4]
     else:
         raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
 
+    if instr_type == "XL":
+        test_chunks: list[TestChunk] = []
+        for alignment in alignments:
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)
+            desc = f"{coverpoint} (address[2:0] = {alignment:03b})"
+            test_chunks.append(
+                format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{alignment}", coverpoint)
+            )
+            return_testcase_registers(test_data, params)
+        return test_chunks
+
+    tc = test_data.begin_test_chunk()
     for alignment in alignments:
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)

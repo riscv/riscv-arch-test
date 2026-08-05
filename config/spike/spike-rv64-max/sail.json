@@ -7,7 +7,7 @@
     // raise an illegal instruction exception.
     "E": false,
     "writable_misa": true,
-    "writable_fiom": false,
+    "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding
     // HPM counters (hpmcounter31 .. hpmcounter3) are supported
     // (i.e. are not read-only zero). A set bit specifies that the
@@ -48,6 +48,10 @@
     // can range from a minimum of 2 upto a maximum of 24. If
     // unaligned values are written to these CSRs, the lowest bits
     // will be zeroed to respect the specified alignment.
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
     "mtvec": {
       "direct": {
         "supported": true,
@@ -82,7 +86,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FE"
+        "value": "0x0000_0000_000c_b3FF"
       }
     },
     "mideleg": {
@@ -96,12 +100,24 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_0000_0000_2222"
+        "value": "0x0000_0000_0000_2AAA"
       }
     },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers.
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_00fc_b7FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_0000_0000_2222"
+      }
+    },
     "xtval_nonzero": {
       "illegal_instruction": true,
       "software_breakpoint": true,
@@ -116,7 +132,11 @@
       "fetch_access_fault": true,
       "fetch_page_fault": true,
       "software_check": true,
-      "reserved_exceptions": false
+      "reserved_exceptions": false,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true
     },
     "reserved_behavior": {
       // The configuration option determines how to handle the reserved behavior `amocas_odd_registers`.
@@ -239,7 +259,7 @@
       // 2^default_allowed_within_exp sized regions will be split into
       // multiple memory operations. 0 means all misaligned accesses
       // will be split.  The maximum value is 12 (one page).
-      "default_allowed_within_exp": 12,
+      "default_allowed_within_exp": 0,
       // If the access gets split due to `allowed_within_exp` then the size
       // of the operations will be one byte if `byte_by_byte` is set, otherwise
       // they will be the maximum size possible based on the alignment. For
@@ -375,7 +395,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 5,
+    "archid": 0,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -389,7 +409,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": true,
+      "require_exact_reservation_addr": false,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within
@@ -421,7 +441,7 @@
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
-    "wfi_available_to_user_mode": false,
+    "wfi_available_to_user_mode": true,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its
     // wait. It is not possible to wait indefinitely.
@@ -474,7 +494,7 @@
       // `vlen_exp` and `elen_exp` should be between 3 and 16,
       // inclusive.  If `support_level` is `"Disabled"`, then these
       // should be left as 3 (or any other legal value).
-      "vlen_exp": 7,
+      "vlen_exp": 10,
       "elen_exp": 6,
       "reserved_behavior": {
         // This determines how to handle attempts by vsetvli, vsetivli,
@@ -778,7 +798,7 @@
       "supported": true
     },
     "Svrsw60t59b": {
-      "supported": false
+      "supported": true
     },
     "Svnapot": {
       "supported": true
@@ -828,7 +848,7 @@
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": false,
+      "supported": true,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).
@@ -839,6 +859,9 @@
       "supported": true
     },
     "Svvptc": {
+      "supported": true
+    },
+    "H": {
       "supported": true
     }
   }

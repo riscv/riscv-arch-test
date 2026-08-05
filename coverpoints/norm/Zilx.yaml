@@ -1,0 +1,206 @@
+# SPDX-License-Identifier: Apache-2.0
+# Normative rule to coverpoint mappings for Zilx version 0.1.
+
+normative_rule_definitions:
+  - name: Zilx_no_new_state
+    coverpoint: ["Not tested - no new architectural state"]
+
+  - name: Zilx_operand_roles
+    coverpoint: ["Zilx_lxh_cg/{cp_rs1, cp_rs2_nx0, cp_rd}"]
+
+  - name: Zilx_addr_width
+    coverpoint: ["Zilx_lxh_cg/cp_rs1_edges"]
+
+  - name: Zilx_unscaled_ea
+    coverpoint: ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_zilx_hword}"]
+
+  - name: Zilx_scaled_ea
+    coverpoint:
+      [
+        "Zilx_lxsb_cg/{cp_rs1_edges, cp_align_zilx_byte}",
+        "Zilx_lxsh_cg/{cp_rs1_edges, cp_align_zilx_hword}",
+        "Zilx_lxsw_cg/{cp_rs1_edges, cp_align_zilx_word}",
+      ]
+
+  - name: Zilx_uw_index
+    coverpoint:
+      [
+        "{Zilx_lxsuwb_cg, Zilx_lxsuwh_cg, Zilx_lxsuww_cg, Zilx_lxsuwd_cg}/cp_rs1_edges",
+      ]
+
+  - name: Zilx_rd_x0
+    coverpoint: ["Zilx_lxh_cg/cp_rd"]
+
+  - name: Zilx_load_semantics
+    coverpoint:
+      [
+        "Zilx_lxsb_cg/cp_memval_byte",
+        "Zilx_lxh_cg/cp_memval_hword",
+        "Zilx_lxw_cg/cp_memval_word",
+        "Zilx_lxd_cg/cp_memval_double",
+      ]
+
+  - name: Zilx_sign_zero_extension
+    coverpoint:
+      [
+        "{Zilx_lxsb_cg, Zilx_lxsbu_cg}/cp_memval_byte",
+        "{Zilx_lxh_cg, Zilx_lxhu_cg}/cp_memval_hword",
+        "{Zilx_lxw_cg, Zilx_lxwu_cg}/cp_memval_word",
+      ]
+
+  - name: Zilx_exceptions_ordering
+    coverpoint: ["Not tested - unprivileged tests do not install trap handlers"]
+
+  - name: Zilx_common_encoding
+    coverpoint: ["Zilx_lxh_cg/cp_asm_count"]
+
+  - name: Zilx_aqrl_zero
+    coverpoint: ["Zilx_lxh_cg/cp_asm_count"]
+
+  - name: Zilx_mode_encoding
+    coverpoint:
+      [
+        "{Zilx_lxh_cg, Zilx_lxsh_cg, Zilx_lxsuwh_cg}/cp_asm_count",
+      ]
+
+  - name: Zilx_mode_rsv
+    coverpoint: ["Not tested - reserved encodings"]
+
+  - name: Zilx_funct3_rsv
+    coverpoint: ["Not tested - reserved encodings"]
+
+  - name: Zilx_no_unscaled_byte
+    coverpoint: ["Not tested - reserved encodings"]
+
+  - name: Zilx_rv32_rsv
+    coverpoint: ["Not tested - reserved encodings"]
+
+  - name: lxh_op
+    coverpoint:
+      ["Zilx_lxh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxh_enc
+    coverpoint: ["Zilx_lxh_cg/cp_asm_count"]
+
+  - name: lxw_op
+    coverpoint:
+      ["Zilx_lxw_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxw_enc
+    coverpoint: ["Zilx_lxw_cg/cp_asm_count"]
+
+  - name: lxd_op
+    coverpoint: ["Zilx_lxd_cg/{cp_rs1_edges, cp_memval_double}"]
+
+  - name: lxd_enc
+    coverpoint: ["Zilx_lxd_cg/cp_asm_count"]
+
+  - name: lxhu_op
+    coverpoint:
+      ["Zilx_lxhu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxhu_enc
+    coverpoint: ["Zilx_lxhu_cg/cp_asm_count"]
+
+  - name: lxwu_op
+    coverpoint:
+      ["Zilx_lxwu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxwu_enc
+    coverpoint: ["Zilx_lxwu_cg/cp_asm_count"]
+
+  - name: lxsb_op
+    coverpoint:
+      ["Zilx_lxsb_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+
+  - name: lxsb_enc
+    coverpoint: ["Zilx_lxsb_cg/cp_asm_count"]
+
+  - name: lxsh_op
+    coverpoint:
+      ["Zilx_lxsh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxsh_enc
+    coverpoint: ["Zilx_lxsh_cg/cp_asm_count"]
+
+  - name: lxsw_op
+    coverpoint:
+      ["Zilx_lxsw_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxsw_enc
+    coverpoint: ["Zilx_lxsw_cg/cp_asm_count"]
+
+  - name: lxsd_op
+    coverpoint: ["Zilx_lxsd_cg/{cp_rs1_edges, cp_memval_double}"]
+
+  - name: lxsd_enc
+    coverpoint: ["Zilx_lxsd_cg/cp_asm_count"]
+
+  - name: lxsbu_op
+    coverpoint:
+      ["Zilx_lxsbu_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+
+  - name: lxsbu_enc
+    coverpoint: ["Zilx_lxsbu_cg/cp_asm_count"]
+
+  - name: lxshu_op
+    coverpoint:
+      ["Zilx_lxshu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxshu_enc
+    coverpoint: ["Zilx_lxshu_cg/cp_asm_count"]
+
+  - name: lxswu_op
+    coverpoint:
+      ["Zilx_lxswu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxswu_enc
+    coverpoint: ["Zilx_lxswu_cg/cp_asm_count"]
+
+  - name: lxsuwb_op
+    coverpoint:
+      ["Zilx_lxsuwb_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+
+  - name: lxsuwb_enc
+    coverpoint: ["Zilx_lxsuwb_cg/cp_asm_count"]
+
+  - name: lxsuwh_op
+    coverpoint:
+      ["Zilx_lxsuwh_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxsuwh_enc
+    coverpoint: ["Zilx_lxsuwh_cg/cp_asm_count"]
+
+  - name: lxsuww_op
+    coverpoint:
+      ["Zilx_lxsuww_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxsuww_enc
+    coverpoint: ["Zilx_lxsuww_cg/cp_asm_count"]
+
+  - name: lxsuwd_op
+    coverpoint: ["Zilx_lxsuwd_cg/{cp_rs1_edges, cp_memval_double}"]
+
+  - name: lxsuwd_enc
+    coverpoint: ["Zilx_lxsuwd_cg/cp_asm_count"]
+
+  - name: lxsuwbu_op
+    coverpoint:
+      ["Zilx_lxsuwbu_cg/{cp_rs1_edges, cp_align_zilx_byte, cp_memval_byte}"]
+
+  - name: lxsuwbu_enc
+    coverpoint: ["Zilx_lxsuwbu_cg/cp_asm_count"]
+
+  - name: lxsuwhu_op
+    coverpoint:
+      ["Zilx_lxsuwhu_cg/{cp_rs1_edges, cp_align_zilx_hword, cp_memval_hword}"]
+
+  - name: lxsuwhu_enc
+    coverpoint: ["Zilx_lxsuwhu_cg/cp_asm_count"]
+
+  - name: lxsuwwu_op
+    coverpoint:
+      ["Zilx_lxsuwwu_cg/{cp_rs1_edges, cp_align_zilx_word, cp_memval_word}"]
+
+  - name: lxsuwwu_enc
+    coverpoint: ["Zilx_lxsuwwu_cg/cp_asm_count"]

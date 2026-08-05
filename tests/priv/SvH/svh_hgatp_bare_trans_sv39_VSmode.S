@@ -1,18 +1,19 @@
-// SPDX-License-Identifier: Apache-2.0
-//
+// --------------------------------------------------------------------------------------------------------------------------------
 // svh_hgatp_bare_trans_sv39_VSmode.S
-//   Config : sail-rv64-max | VS=Sv39 ON, hgatp=Bare
-//   Pair   : svh_hgatp_bare_trans_VSmode.S
-//
+// Config: sail-rv64-max | VS=Sv39 ON, hgatp=Bare
+// Pair:   svh_hgatp_bare_trans_VSmode.S
+// Coverpoints mapped (SvH_cg): cp_hgatp_bare_trans
 // What this proves (one line):
-//   Same as RV32: VS paging ON + hgatp Bare ⇒ GVA→GPA used as SPA (Sv39 tables).
+//   With hgatp Bare, VS Sv39 alone turns GVA into the real physical address.
+// --------------------------------------------------------------------------------------------------------------------------------
+// Test cases are as follows:
+// --------------------------------------------------------------------------------------------------------------------------------
+//  1. VS sw/lw through VS Sv39 paging with hgatp=Bare → Successful
+//  2. M-mode SPA readback confirms VS store → Successful
+//  3. hgatp readback still Bare → Successful
 //
-// Flow:
-//   build Sv39 VS maps (PPNs=PA) → hgatp=0 → VS sw/lw → check SPA + hgatp==0
-//
-// Coverpoints mapped (SvH_cg):
-//   cp_hgatp_bare_trans
-//
+// Total Expected Faults :: 0
+// --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, H, Sv39]
@@ -20,22 +21,20 @@
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "svh_hgatp_bare_trans_sv39_VSmode.S"
-#define SIGUPD_COUNT 8
+#define SIGUPD_COUNT 3
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
 #include "riscv_arch_test.h"
 
-RVTEST_BEGIN                                    // start test (.text + framework setup)
+RVTEST_BEGIN
 
 main:
-  LI(a2, 0x257A0030)                            // seed payload
-
   .set va_data, 0x0000000080010000              // guest VA for data
   .set va_code, 0x0000000090000000              // guest VA for code
 
-  // --- VS Sv39 only (3 levels); hgatp Bare ⇒ targets are real PAs ---
-
+  // ---- VS-stage (vsatp Sv39): GVA -> GPA; hgatp Bare ⇒ GPA==SPA ----
+  // PTE targets are real PAs (not GPAs) because G-stage is off
   VS_PTE_SETUP(sv39, PA, rvtest_vlvl1_pg_tbl, (PTE_V), va_code, LEVEL2)  // non-leaf → mid table
   SUPERPAGE_VS_PTE_SETUP(sv39, rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_code, LEVEL1)  // 2 MiB leaf: va_code → PA(code)
 
@@ -46,60 +45,66 @@ main:
   VS_PTE_SETUP(sv39, PA, rvtest_vlvl0_pg_tbl, (PTE_V), va_data, LEVEL1)  // VS non-leaf: → VS L0 table
   VS_PTE_SETUP(sv39, PA, test_region, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)  // leaf: va_data → PA(test_region)
 
-  VSATP_SETUP(sv39, PA)                         // VS on
-  csrw hgatp, x0                                // G Bare
-  hfence.vvma                                   // flush VS-stage TLB
-  hfence.gvma                                   // flush G-stage TLB
+  VSATP_SETUP(sv39, PA)                         // turn on VS Sv39 (root at PA)
+  csrw hgatp, x0                                // G Bare — GPA from VS walk used directly as SPA
+  hfence.vvma                                   // flush VS TLB
+  hfence.gvma                                   // flush G TLB (hgatp changed to Bare)
 
   LI(t0, 0xDEADBEEF)                            // poison pattern
-  la t1, test_region                            // t1 = real address of test_region
-  sw t0, 0(t1)                                  // store pattern to memory
+  la t1, test_region                            // SPA of data page
+  sw t0, 0(t1)                                  // preload poison at SPA before guest access
 
-  LI(a5, va_data)                               // a5 = address/pointer for guest access
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS (guest)
-  addi a2, a2, 1                                // bump end marker
-  sw   a2, 0(a5)                                // store via VS only
-  nop                                           // pad (trap handler may skip prior insn)
-  lw   a3, 0(a5)                                // load from a5 → a3
-  nop                                           // pad (trap handler may skip prior insn)
+  LI(a5, va_data)                               // a5 = guest VA pointer
+  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Test case 1: VS sw/lw with hgatp=Bare | Expected: Successful
+//---------------------------------------------------------------------------------------------------------------------------------
+  LI(a2, 0x257A0031)                            // value to store
+  sw   a2, 0(a5)                                // cp_hgatp_bare_trans: GVA→GPA (VS only; GPA==SPA)
+  nop                                           // trap-skip padding if previous access faults
+  lw   a3, 0(a5)                                // load back through VS paging
+  nop                                           // trap-skip padding if previous access faults
   RVTEST_GOTO_MMODE                             // return to M-mode
 
-  la t1, test_region                            // t1 = real address of test_region
-  lw t2, 0(t1)                                  // expect store visible
-  csrr t3, hgatp                                // expect 0
+  test1_vs:
+  RVTEST_SIGUPD(x2, x5, x4, a3, test1_vs, test1_vs_str)  // record result in signature
 
-sig_vs:
-  RVTEST_SIGUPD(x2, x5, x4, a3, sig_vs, sig_vs_str)  // save register onto signature answer sheet
-sig_pa:
-  RVTEST_SIGUPD(x2, x5, x4, t2, sig_pa, sig_pa_str)  // save register onto signature answer sheet
-sig_hgatp:
-  RVTEST_SIGUPD(x2, x5, x4, t3, sig_hgatp, sig_hgatp_str)  // save register onto signature answer sheet
+//---------------------------------------------------------------------------------------------------------------------------------
+// Test case 2: M-mode SPA readback | Expected: Successful
+//---------------------------------------------------------------------------------------------------------------------------------
+  la t1, test_region                            // SPA of data page
+  lw t2, 0(t1)                                  // SPA expect 0x257A0031
+  test2_spa:
+  RVTEST_SIGUPD(x2, x5, x4, t2, test2_spa, test2_spa_str)  // record result in signature
 
-done:
-  addi a2, a2, 1                                // bump end marker
-  RVTEST_SIGUPD(x2, x5, x4, a2, done, done_str) // save register onto signature answer sheet
+//---------------------------------------------------------------------------------------------------------------------------------
+// Test case 3: hgatp readback still Bare | Expected: Successful
+//---------------------------------------------------------------------------------------------------------------------------------
+  test3_hgatp:
+  RVTEST_SIGUPD_CSR_READ(hgatp, a4, test3_hgatp, test3_hgatp_str)  // record hgatp CSR in signature
 
-RVTEST_CODE_END                                 // end executable code
-RVTEST_DATA_BEGIN                               // start data / tables
+//---------------------------------------------------------------------------------------------------------------------------------
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
 
-.align 12                                       // align to 4 KiB page
-test_region:
-  .word 0                                       // data word (initially 0)
-  .word 0                                       // data word (initially 0)
-  .word 0                                       // data word (initially 0)
-  .word 0                                       // data word (initially 0)
+.align 12                                      // 4 KiB page align
+test_region:                                  // SPA backing for va_data leaf
+  .word 0                                     // payload word (initially poisoned in M)
+  .word 0                                     // padding in same page
+  .word 0                                     // padding in same page
+  .word 0                                     // padding in same page
 
-.align 12                                       // align to 4 KiB page
-rvtest_vlvl1_pg_tbl:
-  .zero(4096)                                   // 4 KiB page-table storage
-.align 12                                       // align to 4 KiB page
-rvtest_vlvl0_pg_tbl:
-  .zero(4096)                                   // 4 KiB page-table storage
+.align 12                                      // 4 KiB page align
+rvtest_vlvl1_pg_tbl:                          // VS-stage L1 PTE storage (4 KiB)
+  .zero(4096)                                  // reserve 4 KiB page-table storage
+.align 12                                      // 4 KiB page align
+rvtest_vlvl0_pg_tbl:                          // VS-stage L0 PTE storage (4 KiB)
+  .zero(4096)                                  // reserve 4 KiB page-table storage
 
-sig_vs_str:    .string "\"cp_hgatp_bare_trans: VS lw==sw\""
-sig_pa_str:    .string "\"cp_hgatp_bare_trans: SPA==sw\""
-sig_hgatp_str: .string "\"cp_hgatp_bare_trans: hgatp==0\""
-done_str:      .string "\"done\""
+test1_vs_str:    .string "\"Mismatch on VS lw after sw (hgatp Bare) in Test Case 1!\""
+test2_spa_str:   .string "\"Mismatch on SPA readback after VS store in Test Case 2!\""
+test3_hgatp_str: .string "\"Mismatch on hgatp readback (expect Bare) in Test Case 3!\""
 
-RVTEST_DATA_END                                 // end data section
-RVTEST_SIG_SETUP                                // allocate signature answer sheet
+RVTEST_DATA_END
+RVTEST_SIG_SETUP

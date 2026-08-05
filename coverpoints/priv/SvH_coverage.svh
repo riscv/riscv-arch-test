@@ -9,18 +9,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Sheet source: Hypervisor (10x) - Gap Highlighted.xlsx → sheet "SvH-US"
-// (also exported in hypervisor-10x-test-plan.md / .json)
-//
-// Legend on crosses below:
-//   // Coverpoint: <sheet ColA name>  — already present in this covergroup
-//   Sheet rows often map 1→N here as _rw/_x (or _s/_u / MPRV mode splits).
-//
-// Gap summary (2026-08-02): P0 + cp_two_stage_mxr crosses added; PPN extracted.
-//   Remaining MISS: see TODO block (P2+ / HFENCE / OBS).
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SVH
 covergroup SvH_cg with function sample(ins_t ins);
@@ -465,7 +453,7 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins xonly = {8'b????1001};
     }
 
-    // HS sstatus.MXR (sheet: two-stage MXR uses HS sstatus)
+    // HS sstatus.MXR (two-stage MXR samples HS sstatus)
     mxr_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstatus", "mxr") {
         bins unset = {0};
         bins set = {1};
@@ -549,7 +537,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     // Coverpoint: cp_hgatp_mprv_effects
-    // Sheet: MPRV=1 × {M,HS,VS,U,VU} × lw; HLV/HSV ignore MPRV (separate cross).
+    // MPRV=1 × {M,HS,VS,U,VU} × lw; HLV/HSV ignore MPRV (separate cross).
     // VS/VU (MPV=1): G walked → X-only leaf deny. M/HS/U (MPV=0 or MPP=M): no G walk.
     cp_hgatp_mprv_effects_m: cross priv_mode_m, mstatus_mprv_set, mpp_mstatus_m, hgatp_mode, acc_lw_sw {
         ignore_bins stores = binsof(acc_lw_sw.sw);
@@ -590,7 +578,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     cp_hgatp_invalid_pte_rw: cross priv_mode_hs, hgatp_mode, g_pte_d_inv, read_write_acc;
     cp_hgatp_invalid_pte_x:  cross priv_mode_hs, hgatp_mode, g_pte_i_inv, exec_acc;
 
-    // Coverpoint: cp_vsatp_sum_effects  (+ sheet row vsatp_sum_set subsumed here)
+    // Coverpoint: cp_vsatp_sum_effects
     cp_vsatp_sum_effects_rw: cross priv_mode_vs, sum_vsstatus, vs_pte_xwr111_u_d, read_write_acc;
     cp_vsatp_sum_effects_x : cross priv_mode_vs, sum_vsstatus, vs_pte_xwr111_u_i, exec_acc;
 
@@ -633,7 +621,7 @@ covergroup SvH_cg with function sample(ins_t ins);
 
 
     //--------------------------------------------------------------------------
-    // P0 — two-stage success / Bare / G-walk of VS PT
+    // Two-stage success / Bare / G-walk of VS PT
     //--------------------------------------------------------------------------
     // Coverpoint: two_stage_read
     two_stage_read:  cross priv_mode_vs, vsatp_mode, hgatp_mode, read_write_acc {
@@ -653,7 +641,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     cp_h_vm_gstagetrans: cross priv_mode_vs, vsatp_mode, hgatp_mode, read_write_acc;
 
     //--------------------------------------------------------------------------
-    // P1 — two-stage MXR (distinct from cp_vsstatus_mxr_sum)
+    // Two-stage MXR (distinct from cp_vsstatus_mxr_sum)
     //--------------------------------------------------------------------------
     // Coverpoint: cp_two_stage_mxr (MXR only affects loads of X-only pages)
     // Stimulus: VS+G X-only; MXR=0 faults, MXR=1 loads. sstatus↔vsstatus track together.
@@ -662,7 +650,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     //--------------------------------------------------------------------------
-    // TODO Coverpoint — remaining MISS (P2+) — not P0/P1
+    // TODO — not yet implemented
     //--------------------------------------------------------------------------
     // TODO Coverpoint: cp_vsatp_speculative_a_bit (OBS — squash)
     // TODO Coverpoint: cp_hgatp_gpa_width_checks (RV64)
@@ -672,7 +660,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     // TODO Coverpoint: mprv_sum_effect_hs_two_stage
     // TODO Coverpoint: VM_permission_invalid
     // TODO Coverpoint: RWX access on Umode pages in Umode
-    // TODO Coverpoint: PTE X=1 MXR=0 HS/VS/VU/G (sheet X-only rows; ≠ cp_two_stage_mxr)
+    // TODO Coverpoint: PTE X=1 MXR=0 HS/VS/VU/G (broader X-only cases; ≠ cp_two_stage_mxr)
     // TODO Coverpoint: cp_hfence_functionality / cp_hfence_vvma_operand
     // TODO Coverpoint: cp_hgatp_mode_change_hfence / cp_hfence_gvma_operand
     //--------------------------------------------------------------------------

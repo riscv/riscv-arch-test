@@ -57,7 +57,7 @@ def format_vid(
     test = [f"{instr_str} v{params.vd}, v0.t"] if params.maskval else [f"{instr_str} v{params.vd}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
+        check = [*write_sigupd_v_len(test_data, params, params.lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 

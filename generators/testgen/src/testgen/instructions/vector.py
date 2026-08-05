@@ -17,10 +17,21 @@ from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 @dataclass
 class InstructionInfo:
     """
-    Information parsed from an individual vector instruction name.
+    Information about individual vector instructions.
 
-    Formatter-aware callers add ``widened_regs`` after parsing; it defaults to
-    an empty set here because widening is not encoded in the instruction name.
+    This information can be derived from the instruction name and type, and is general information
+    necessary for randomization and test generation. This includes the number of segments in a
+    segmented load/store or the eew of an index register.
+
+    Attributes
+        segments: The number of segments that this instruction uses (e.g. 5 for vlseg5e8.v)
+        load_store_eew: The eew of the data for this instruction (e.g. 8 for vle8.v)
+        index_eew: The eew of the index register (e.g. 16 for vrgatherei16.vv)
+        vext_multiplier: The fractional value that a vext instruction uses to calculate its eew
+            (e.g. 0.125 for vzext.vf8)
+        widen_vs2: Boolean for whether or not vs2 is widened
+        widen_vs1: Boolean for whether or not vs1 is widened
+        widen_vd: Boolean for whether or not vd is widened
     """
 
     segments: int
@@ -96,5 +107,7 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
     info = parse_instruction_info(instruction, instr_type)
     if info.index_eew is not None and sew < info.index_eew:
         return sew / info.index_eew
+    elif info.load_store_eew is not None and sew < info.load_store_eew:
+        return sew / info.load_store_eew
 
     return 1

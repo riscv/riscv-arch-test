@@ -124,7 +124,7 @@ def format_vv_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, lmul)]
+        check = [*write_sigupd_v_len(test_data, params, lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 

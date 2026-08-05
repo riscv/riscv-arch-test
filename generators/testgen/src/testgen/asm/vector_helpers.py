@@ -35,11 +35,16 @@ def vector_sigupd_bytes(max_bytes: int, test_data: TestData, vdsew: int) -> int:
 
 
 def write_sigupd_v(
-    test_data: TestData, params: InstructionParams, *, mask_producing: bool = False, widen_vd: bool = False
+    test_data: TestData,
+    params: InstructionParams,
+    *,
+    mask_producing: bool = False,
+    widen_vd: bool = False,
+    sew_override: int | None = None,
 ) -> list[str]:
     """
     Write a base suite SIGUPD macro, correctly handling the use of a different check instruction for mask producing
-    instructions and handles the widening of vd in base suite.
+    instructions, handles the widening of vd in base suite, and handles preset sews.
     """
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
@@ -48,7 +53,7 @@ def write_sigupd_v(
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
     label = test_data.current_testcase_label
-    vdsew = params.sew * (2 if widen_vd else 1)
+    vdsew = params.sew * (2 if widen_vd else 1) if sew_override is None else sew_override
 
     # Count the number of bytes the sigupd macro will consume. This is going to be the size of the element
     # group that we are checking in the first index, plus 4 bytes for padding, and then rounded to the nearest
@@ -88,7 +93,6 @@ def write_sigupd_v(
 def write_sigupd_v_len(
     test_data: TestData,
     params: InstructionParams,
-    segments: int,
     lmul: float,
     *,
     widen_vd: bool = False,
@@ -96,6 +100,8 @@ def write_sigupd_v_len(
     mask_producing: bool = False,
     scalar_dest: bool = False,
     mask_reg: int = 0,
+    segments: int = 1,
+    sew_override: int | None = None,
 ) -> list[str]:
     """
     Write a length-suite vector SIGUPD macro.
@@ -103,8 +109,6 @@ def write_sigupd_v_len(
     Args:
         test_data: TestData for the instruction under test
         params: Parameters for the instruction under test (used to extract SEW)
-        segments: The number of segments used in the instruction. When there are multiple, the sigupd
-            macro may have to be emitted multiple times. (TODO: make this an optional arg)
         lmul: The lmul that this sigupd should check. Note that this can be different from the test lmul
 
     Optional Args:
@@ -114,19 +118,22 @@ def write_sigupd_v_len(
         scalar_dest: Active when vd only contains one element and needs different handling.
         mask_reg: Set to the value where the mask register lies (0 by default). Used when the mask is overwritten
             by the instruction under test.
+        segments: The number of segments used in the instruction. When there are multiple, the sigupd
+            macro may have to be emitted multiple times.
+        sew_override: Set to a non-null value to override params.sew (used for instructions like vle16.v)
     """
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
-    vdsew = params.sew * (2 if widen_vd else 1)
+    vdsew = params.sew * (2 if widen_vd else 1) if sew_override is None else sew_override
 
     # Count the number of bytes the sigupd macro will consume. This is going to be the size of the largest supported
     # VLEN * EMUL, plus 4 bytes for padding, and then rounded to the nearest multiple of 8 (+7 & ~8 achieves this).
     # This computation is mirrored in RVTEST_SIGUPD_V_ADVANCE
     emul_for_bytes = int(max(1, lmul)) if not mask_producing else 8
     max_bytes = VLEN_MAX * emul_for_bytes // 8
-    sig_sew = vdsew if mask_producing else 8
-    test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, sig_sew)
+    sig_sew = vdsew if not mask_producing else 8
+    test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, sig_sew) * segments
 
     sig_reg = test_data.int_regs.sig_reg
     link_reg = test_data.int_regs.link_reg
@@ -146,13 +153,23 @@ def write_sigupd_v_len(
     scalar_dst_flag = 1 if scalar_dest else 0
 
     lines = [
-        # TODO: SEGMENTS
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg}, x{temp_reg2}, and x{temp_reg3} are a temp regs.",
         f"# v{vtmp} will hold the signature result, v{mtmp3}, v{mtmp2}, and v{mtmp} are temporary mask registers holding the masks to aid error detection. v{vs1} was VS1 in the instruction",
         f"# under test and is used to compute the evl for vcompress, v{mask_reg} is the register holding the mask for the instruction under test. In order the flags are: mask_producing,",
         f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, and finally a flag for if the destinitation register is used as a scalar vector register.",
-        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {label}, {label}_str)",
     ]
+
+    if segments != 1:
+        lines.append(
+            f"# Do this for each segment of the result, incrementing by {int(max(lmul, 1))} register(s) each time"
+        )
+
+    for i in range(segments):
+        assert params.vd is not None
+        register_to_check: int = params.vd + i * int(max(lmul, 1))
+        lines.append(
+            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {label}, {label}_str)",
+        )
 
     test_data.int_regs.return_registers([temp_reg2, temp_reg3])
     test_data.vec_regs.return_registers([vtmp, mtmp, mtmp2, mtmp3])
@@ -474,6 +491,7 @@ class VectorLoad:
         lmul: Provides an override value for params.lmul
         sew: Provides an override value for params.sew
         no_fractional_load: If true, all loads must be at integer lmuls
+        segments: Number of segments to be loaded
     """
 
     reg: Literal["vd", "vs1", "vs2", "vs3"]
@@ -482,6 +500,7 @@ class VectorLoad:
     lmul: int | float | None = None
     sew: int | float | None = None
     no_fractional_load: bool = False
+    segments: int = 1
 
 
 def unpack_register(reg: Literal["vd", "vs1", "vs2", "vs3"], params: InstructionParams) -> tuple[int, str]:
@@ -582,18 +601,22 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
             lmul = max(lmul, 1)
 
         # Load what is required at the right vl
-        vtype_code[(vl, sew, lmul)].extend(
-            [
-                f"LA (x{params.temp_reg}, {val_pointer})",
-                f"vle{sew}.v v{reg_num}, (x{params.temp_reg})",
-            ]
+        vtype_code[(vl, sew, lmul)].append(
+            f"LA (x{params.temp_reg}, {val_pointer})",
         )
+        for i in range(reg.segments):
+            reg_to_load = reg_num + int(max(1, lmul)) * i
+            vtype_code[(vl, sew, lmul)].append(
+                f"vle{sew}.v v{reg_to_load}, (x{params.temp_reg})",
+            )
 
         if vl != "vlmax":
             # Create a deterministic tail at vlmax
-            vtype_code[("vlmax", sew, max(lmul, 1))].append(
-                f"vmv.v.i v{reg_num}, 0xd",
-            )
+            for i in range(reg.segments):
+                reg_to_load = reg_num + int(max(1, lmul)) * i
+                vtype_code[("vlmax", sew, max(lmul, 1))].append(
+                    f"vmv.v.i v{reg_to_load}, 0xd",
+                )
 
     code: list[str] = []
     # First handle everything at vlmax

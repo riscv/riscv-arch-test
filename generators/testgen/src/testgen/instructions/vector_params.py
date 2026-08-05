@@ -155,17 +155,19 @@ def randomize_registers(
                 new_params.rs2val = random_int(test_data.config.xlen)
     if "rs1" in registers:
         new_params.rs1 = randomize_register("rs1", test_data, instr_type_config, lmul, info, new_params.rs1)
-        if new_params.rs1val_pointer is not None and (
+        if new_params.rs1val_pointer is None and (
             "load" in instr_type_config.instruction_class or "store" in instr_type_config.instruction_class
         ):
-            new_params.rs1val_pointer = "vector_ls_random_base"
+            random_ptr = "vector_ls_random_base"
+            new_params.rs1val_pointer = random_ptr
 
             assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
-            test_data.register_vector_data(
-                "vector_ls_random_base",
-                test_data.config.sew,
-                random_elements=VLEN_MAX // test_data.config.sew,
-            )
+            if random_ptr not in test_data.vector_labels:
+                test_data.register_vector_data(
+                    "vector_ls_random_base",
+                    test_data.config.sew,
+                    random_elements=VLEN_MAX // test_data.config.sew,
+                )
         elif new_params.rs1val is None:
             new_params.rs1val = random_int(test_data.config.xlen)
     if "rd" in registers:
@@ -448,11 +450,7 @@ def generate_random_vector_params(
     for register in sorted(registers):
         if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
             segments = info.segments
-            if (
-                instr_type_config.instruction_class
-                and "indexed" not in instr_type_config.instruction_class
-                and register != "vs2"
-            ):
+            if "indexed" in instr_type_config.instruction_class and register == "vs2":
                 segments = 1
 
             width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments

@@ -130,9 +130,7 @@ def format_vvsr_like_type(
 
     mask_reg = 0 if mask_copy_reg is None else mask_copy_reg
     if params.vector_suite == "length":
-        check = [
-            *write_sigupd_v_len(test_data, params, 1, 1, widen_vd="vd" in widen, scalar_dest=True, mask_reg=mask_reg)
-        ]
+        check = [*write_sigupd_v_len(test_data, params, 1, widen_vd="vd" in widen, scalar_dest=True, mask_reg=mask_reg)]
     else:
         check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
 

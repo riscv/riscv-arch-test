@@ -296,7 +296,7 @@ def format_mask_producing_type(
             vlmax_vsetvli = [load_test_vtype(params, random_vl_reg, force_vlmax=True)]
 
         check = [
-            *write_sigupd_v_len(test_data, params, 1, lmul=1, mask_producing=True, mask_reg=mask_reg),
+            *write_sigupd_v_len(test_data, params, lmul=1, mask_producing=True, mask_reg=mask_reg),
             "# After a length suite sigupd, we need to do the operation as if vl=vlmax as that is a valid behavior",
             "# in the tail, according to the spec. None of the registers involved in the operation could have been",
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",

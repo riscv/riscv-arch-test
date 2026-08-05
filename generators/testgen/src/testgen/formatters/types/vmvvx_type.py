@@ -81,7 +81,7 @@ def format_vmvvx_like_type(
         test = [f"{instr_str} v{params.vd}, x{params.rs1}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, lmul, scalar_dest=scalar_vd)]
+        check = [*write_sigupd_v_len(test_data, params, lmul, scalar_dest=scalar_vd)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 

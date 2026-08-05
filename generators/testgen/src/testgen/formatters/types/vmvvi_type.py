@@ -60,7 +60,7 @@ def format_vmvvi(
         test = [f"{instr_str} v{params.vd}, {params.immval}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
+        check = [*write_sigupd_v_len(test_data, params, params.lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 

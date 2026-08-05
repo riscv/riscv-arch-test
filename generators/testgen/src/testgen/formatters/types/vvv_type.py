@@ -229,7 +229,7 @@ def format_vvv_like_type(
     if params.vector_suite == "length":
         vcompress = type_name == "VCOMPRESS"
         sig_lmul = params.lmul * (2 if "vd" in widen else 1)
-        check = [*write_sigupd_v_len(test_data, params, 1, sig_lmul, widen_vd="vd" in widen, vcompress=vcompress)]
+        check = [*write_sigupd_v_len(test_data, params, sig_lmul, widen_vd="vd" in widen, vcompress=vcompress)]
     else:
         check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
 

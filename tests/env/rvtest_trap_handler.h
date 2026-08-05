@@ -1746,7 +1746,6 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
         TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
         TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
-        //TSBI_CSR_INSTR_TABLE(0x323) // mhpmevent3
         TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
         TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
         // Sscofpmf performance-monitoring CSRs
@@ -2352,8 +2351,14 @@ clrint_\__MODE__\()tbl:
   #endif
 #endif
 
+.set causeidx, 0xC
  .rept NUM_SPECD_INTCAUSES-0xC
-        .dword  1                                    // causes 12..23: reserved -> default return
+   .if causeidx == 13
+        .dword  \__MODE__\()clr_Lcofi_int             // cause 13: LCOFI (Sscofpmf) -> real clear routine
+   .else
+        .dword  1                                    // other reserved causes: default return
+   .endif
+   .set causeidx, causeidx+1
  .endr
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
@@ -2465,6 +2470,16 @@ excpt_\__MODE__\()hndlr_tbl:
         beq T1, T3, 1f
         RVMODEL_CLR_SEXT_INT(T2, T5)
     1:
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
+\__MODE__\()clr_Lcofi_int:                           // Local counter-overflow interrupt (Sscofpmf), cause 13
+        .ifc \__MODE__ , M
+            li T2, (1<<13)
+            csrc mip, T2                              // M-mode: mip is accessible directly
+        .else
+            li T2, (1<<13)
+            csrc sip, T2                               // S/H/V-mode: must clear via sip (mip is M-only)
+        .endif
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

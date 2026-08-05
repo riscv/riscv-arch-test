@@ -422,7 +422,6 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
     LCOFI_BIT = 1 << 13  # mip/mie/mideleg bit 13
     MIE_BIT = 0x8  # mstatus bit 3
     SIE_BIT = 0x2  # mstatus bit 1
-    MPIE_BIT = 0x80  # mstatus bit 7
 
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
@@ -431,16 +430,15 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
             coverpoint,
             f"Interrupt pending and enable, mode = {priv_mode}.\n"
             "mstatus.MIE=0, mstatus.SIE=1 (fixed); sweep mip.LCOFIP x mie.LCOFIE\n"
-            "x mideleg.LCOFI. mip/mie/mideleg setup happens directly in M-mode\n"
-            "(matches InterruptsS/U pattern) before switching down.\n"
-            "IMPORTANT: when mideleg.LCOFI=0, the interrupt stays pending at\n"
-            "M-level. RVTEST_GOTO_LOWER_MODE executes an mret, which restores\n"
-            "mstatus.MIE from mstatus.MPIE -- if MPIE were left set, an\n"
-            "undelegated-but-armed LCOFI would fire immediately on mret,\n"
-            "hijacking the mode switch itself instead of landing where the\n"
-            "coverpoint expects. We explicitly force MPIE=0 before every\n"
-            "switch so mret always restores MIE=0, and the interrupt only\n"
-            "ever surfaces inside the deliberate IDLE_FOR_INTERRUPT wait.",
+            "x mideleg.LCOFI. Setup happens directly in M-mode before switching\n"
+            "down (matches InterruptsS/U pattern).\n"
+            "When LCOFIP=1 and LCOFIE=1, the interrupt is pending+enabled\n"
+            "before RVTEST_GOTO_LOWER_MODE's mret. Per spec, an interrupt to\n"
+            "mode X fires whenever current_mode < X -- MIE only gates M-level\n"
+            "interrupts while still in M-mode, and this generator never lands\n"
+            "back in M during the eligible window. So the trap fires exactly\n"
+            "at the mret boundary, not during an idle wait -- hence plain\n"
+            "nops here instead of RVTEST_IDLE_FOR_INTERRUPT.",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -468,13 +466,13 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
                         f"{'csrs' if lcofie else 'csrc'} mie, x{r_temp}   # mie.LCOFIE = {lcofie}",
                         f"{'csrs' if mideleg_bit else 'csrc'} mideleg, x{r_temp}   # mideleg.LCOFI = {mideleg_bit}",
                         "",
-                        f"LI(x{r_temp}, {hex(MPIE_BIT)})",
-                        f"csrc mstatus, x{r_temp}   # force MPIE = 0 -- prevents mret from re-arming",
-                        "                          # M-level MIE on undelegated/pending LCOFI",
-                        "",
                         test_data.add_testcase(binname, coverpoint, covergroup),
                         f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
-                        f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                        "    # Fires here immediately if LCOFIP=1 & LCOFIE=1; else falls through.",
+                        "    nop",
+                        "    nop",
+                        "    nop",
+                        "    nop",
                         "RVTEST_GOTO_MMODE",
                     ]
                 )
@@ -483,9 +481,10 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
         [
             "",
             "# === M-MODE CLEANUP ===",
-            f"csrc mip, x{r_temp}",
-            f"csrc mie, x{r_temp}",
-            f"csrc mideleg, x{r_temp}",
+            f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
+            f"csrc mip, x{r_temp}      # clear LCOFIP",
+            f"csrc mie, x{r_temp}      # clear LCOFIE",
+            f"csrc mideleg, x{r_temp}  # clear mideleg.LCOFI",
             f"LI(x{r_val}, {hex(SIE_BIT)})",
             f"csrc mstatus, x{r_val}   # mstatus.SIE = 0",
         ]
@@ -503,15 +502,23 @@ def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list
     ######################################
 
     LCOFIP_BIT = 1 << 13  # mip bit 13
+    MIE_BIT = 0x8  # mstatus bit 3
+    MPIE_BIT = 0x80  # mstatus bit 7
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
             coverpoint,
-            f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 interrupts).\n"
-            "mip/mie setup happens directly in M-mode (matches InterruptsS/U\n"
-            "pattern) before switching, to avoid nested traps mid-T-SBI-call.",
+            f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 competing interrupts).\n"
+            "mip/mie setup happens directly in M-mode before switching (matches\n"
+            "InterruptsS/U pattern), avoiding nested traps mid-switch.\n"
+            "For Sm: MIE is set directly, so priority is tested in M-mode itself.\n"
+            "For S/U: MIE is left 0 and MPIE=1 is set instead, so mret's\n"
+            "MIE<-MPIE transfer only enables interrupts the instant we land in\n"
+            "the target mode -- otherwise the M-level competing interrupts\n"
+            "(meip/mtip/msip) fire during M-mode setup, before the switch ever\n"
+            "happens, and 'priority after switching' is never actually tested.",
         ),
         "",
     ]
@@ -527,7 +534,7 @@ def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list
                 "# === M-MODE SETUP ===",
                 f"# Testcase: competing interrupt = {other_int}, mode = {priv_mode}",
                 "csrw mie, zero      # disable all interrupts first",
-                "csrsi mstatus, 0x8  # MIE",
+                "csrci mstatus, 0x8  # MIE=0 (set later: direct for Sm, via MPIE for S/U)",
                 "csrsi mstatus, 0x2  # SIE",
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
                 f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly",
@@ -551,18 +558,38 @@ def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list
         lines.extend(
             [
                 f"LI(x{r_temp}, -1)",
-                f"csrw mie, x{r_temp}   # mie = all 1s (arms all interrupts, still M-mode)",
-                "",
-                test_data.add_testcase(binname, coverpoint, covergroup),
+                f"csrw mie, x{r_temp}   # mie = all 1s; MIE still 0, safe while in M-mode",
             ]
         )
 
         if priv_mode == "Sm":
-            lines.append(f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})")
+            lines.extend(
+                [
+                    f"LI(x{r_temp2}, {hex(MIE_BIT)})",
+                    f"csrs mstatus, x{r_temp2}   # MIE=1 -- fires immediately, still in M-mode",
+                    "",
+                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    "    nop",
+                    "    nop",
+                    "    nop",
+                    "    nop",
+                ]
+            )
         else:
-            lines.append(f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode")
-            lines.append(f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})")
-            lines.append("RVTEST_GOTO_MMODE")
+            lines.extend(
+                [
+                    f"LI(x{r_temp2}, {hex(MPIE_BIT)})",
+                    f"csrs mstatus, x{r_temp2}   # MPIE=1 -> mret sets MIE=1 only after landing in {priv_mode}mode",
+                    "",
+                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
+                    "    nop",
+                    "    nop",
+                    "    nop",
+                    "    nop",
+                    "RVTEST_GOTO_MMODE",
+                ]
+            )
 
         # Cleanup -- back in M-mode
         if other_int == "meip":

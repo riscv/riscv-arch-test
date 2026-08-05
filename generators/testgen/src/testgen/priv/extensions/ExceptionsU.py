@@ -62,6 +62,7 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([save_reg, mask_reg])
     return lines
 
+
 def _generate_uinstret_trap_tests(test_data: TestData) -> list[str]:
     """instret delta checks from U-mode for instructions that trap before retiring."""
     covergroup = _CG
@@ -106,9 +107,7 @@ def _generate_uinstret_trap_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_uinstret_illegal"
     ######################################
     lines.append(
-        comment_banner(
-            coverpoint, "Illegal instruction from U-mode: traps before retiring, instret must not increment"
-        )
+        comment_banner(coverpoint, "Illegal instruction from U-mode: traps before retiring, instret must not increment")
     )
     lines.extend(
         [
@@ -128,9 +127,7 @@ def _generate_uinstret_trap_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_uinstret_load_fault"
     ######################################
     lines.append(
-        comment_banner(
-            coverpoint, "Load access fault from U-mode: traps before retiring, instret must not increment"
-        )
+        comment_banner(coverpoint, "Load access fault from U-mode: traps before retiring, instret must not increment")
     )
     r_addr = test_data.int_regs.get_register()
     lines.extend(
@@ -174,6 +171,7 @@ def _generate_uinstret_trap_tests(test_data: TestData) -> list[str]:
     lines.append("#endif // ZICNTR_SUPPORTED")
 
     return lines
+
 
 @add_priv_test_generator(
     "ExceptionsU",

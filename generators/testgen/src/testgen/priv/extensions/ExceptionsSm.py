@@ -62,6 +62,7 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([save_reg, mask_reg, arg_reg])
     return lines
 
+
 def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
     """minstret must NOT increment for instructions that trap before retiring."""
     covergroup = _CG
@@ -156,7 +157,9 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_minstret_load_misaligned"
     ######################################
-    lines.append(comment_banner(coverpoint, "Load address misaligned: traps before retiring, minstret must not increment"))
+    lines.append(
+        comment_banner(coverpoint, "Load address misaligned: traps before retiring, minstret must not increment")
+    )
     r_addr = test_data.int_regs.get_register()
     lines.extend(
         [
@@ -175,6 +178,7 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
     return lines
+
 
 @add_priv_test_generator(
     "ExceptionsSm",

@@ -84,7 +84,7 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
         }
         cp_uinstret_wfi_taken: cross priv_mode_u, wfi, mip_mtip {
             ignore_bins ig_not_pending = binsof(mip_mtip) intersect {0};
-        }        
+        }
         `ifdef ZAWRS_SUPPORTED
             cp_uinstret_wrs_nto_taken: cross priv_mode_u, wrs_nto;
             cp_uinstret_wrs_sto_taken: cross priv_mode_u, wrs_sto;

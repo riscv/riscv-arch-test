@@ -232,6 +232,7 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg])
     return lines
 
+
 def _generate_uinstret_add_tests(test_data: TestData) -> list[str]:
     """Generate instret-increments-correctly test for a normally-retiring instruction in U-mode."""
     covergroup, coverpoint = "ZicntrU_cg", "cp_uinstret_add"
@@ -258,6 +259,55 @@ def _generate_uinstret_add_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
     return lines
+
+
+def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
+    """start in M mode
+    read instret and mcounteren = 0s
+    goto U mode
+    nop
+    go back to M mode
+    mcounteren = 1s
+    go back to U mode
+    read and sigupd change in instret
+    """
+    covergroup, coverpoint = "ZicntrU_cg", "cp_mcounter_inc_inaccessible"
+
+    old_reg, read_reg = test_data.int_regs.get_registers(2)
+
+    lines = [
+        comment_banner(coverpoint, _generate_mcounter_inc_inaccessible_tests.__doc__),
+        "",
+    ]
+    lines.extend(
+        [
+            test_data.add_testcase("U", coverpoint, covergroup),
+            f"csrr x{old_reg}, instret",
+            "# make counter inaccessible in U mode",
+            "csrw mcounteren, zero",
+            "#ifdef S_SUPPORTED",
+            "csrw scounteren, zero",
+            "#endif",
+            "RVTEST_GOTO_LOWER_MODE Umode",
+            "nop",
+            "RVTEST_GOTO_MMODE",
+            "# make counter accessible in U mode",
+            f" LI(x{read_reg}, -1)",
+            f"csrw mcounteren, x{read_reg}",
+            "#ifdef S_SUPPORTED",
+            f"csrw scounteren, x{read_reg}",
+            "#endif",
+            "RVTEST_GOTO_LOWER_MODE Umode",
+            f"csrr x{read_reg}, instret",
+            f"sub x{read_reg}, x{read_reg}, x{old_reg}",
+            "# SIGUPD the difference in instret",
+            write_sigupd(read_reg, test_data),
+            "RVTEST_GOTO_MMODE",
+        ]
+    )
+    test_data.int_regs.return_registers([old_reg, read_reg])
+    return lines
+
 
 @add_priv_test_generator(
     "ZicntrU",

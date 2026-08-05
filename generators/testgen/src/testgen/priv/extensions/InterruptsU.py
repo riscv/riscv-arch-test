@@ -310,6 +310,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch])
     return lines
 
+
 def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     """instret retirement checks around wfi and wrs.nto/wrs.sto in U-mode."""
     covergroup = "InterruptsU_cg"
@@ -323,7 +324,7 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
         ]
     )
     test_data.int_regs.return_registers([r_temp])
-    
+
     ######################################
     coverpoint = "cp_uinstret_wfi_timeout"
     ######################################
@@ -332,7 +333,7 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"csrw mie, zero                      # nothing enabled, nothing pending",
+            "csrw mie, zero                      # nothing enabled, nothing pending",
             f"LI(x{r_scratch}, 0x200000)",
             f"csrc mstatus, x{r_scratch}          # TW=0",
             *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -369,7 +370,7 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"csrw mie, zero",
+            "csrw mie, zero",
             f"LI(x{r_scratch}, 0x200000)",
             f"csrc mstatus, x{r_scratch}          # TW=0",
             f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
@@ -407,7 +408,7 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"csrw mie, zero",
+            "csrw mie, zero",
             f"LI(x{r_scratch}, 0x200000)",
             f"csrc mstatus, x{r_scratch}          # TW=0",
             f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
@@ -478,7 +479,12 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
 
     return lines
 
-@add_priv_test_generator("InterruptsU", required_extensions=["U"], march_extensions=["U", "Zawrs", "Zalrsc"],)
+
+@add_priv_test_generator(
+    "InterruptsU",
+    required_extensions=["U"],
+    march_extensions=["U", "Zawrs", "Zalrsc"],
+)
 def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
     test_chunks: list[TestChunk] = []

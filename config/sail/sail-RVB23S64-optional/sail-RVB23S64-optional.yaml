@@ -112,6 +112,7 @@ implemented_extensions:
   - { name: Zvkt, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
+  - { name: Smnpm, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.0.0" }
@@ -217,8 +218,8 @@ params:
       true,
       true,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
@@ -410,8 +411,7 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
+  VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 63

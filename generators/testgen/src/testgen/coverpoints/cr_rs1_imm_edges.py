@@ -20,7 +20,7 @@ from testgen.instructions.params import generate_random_params
 def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cross-product of rs1 and immediate edge values."""
     if coverpoint.endswith("_5bit_u_n0_offset"):
-        return make_cr_rs1_imm_edges_offset(instr_name, instr_type, coverpoint, test_data)
+        return make_cr_rs1_imm_edges_5bit_u_n0_offset(instr_name, instr_type, coverpoint, test_data)
 
     edges_reg = get_general_edges(test_data.xlen)
     if coverpoint == "cr_rs1_imm_edges":
@@ -54,7 +54,7 @@ def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     return test_chunks
 
 
-def make_cr_rs1_imm_edges_offset(
+def make_cr_rs1_imm_edges_5bit_u_n0_offset(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """Generate Zibi tests crossing rs1 and immediate edges with branch direction."""

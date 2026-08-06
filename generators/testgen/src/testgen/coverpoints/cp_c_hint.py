@@ -7,12 +7,11 @@
 
 """cp_c_hint coverpoint generator for compressed instruction hint encodings."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.registry import format_single_testcase
+from testgen.formatters import format_single_testcase
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_c_hint")
@@ -30,7 +29,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint
             )
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     # c.addi x{rd}, 0 (rd != 0). rs1 == rd in the CI encoding.
     elif coverpoint == "cp_c_hint_addi":
@@ -43,7 +42,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     # c.li x0, imm for all 6-bit signed immediates.
     elif coverpoint == "cp_c_hint_li":
@@ -53,7 +52,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint
             )
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     # c.lui x0, imm for all 6-bit signed immediates (excluding 0).
     elif coverpoint == "cp_c_hint_lui":
@@ -65,7 +64,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint
             )
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     # {c.mv, c.add} x0, x{rs2} (rs2 != 0). rs1 serves as rd in the CR encoding.
     elif coverpoint in ("cp_c_hint_mv", "cp_c_hint_add"):
@@ -78,7 +77,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     else:
         raise ValueError(f"Unknown cp_c_hint variant: {coverpoint}")

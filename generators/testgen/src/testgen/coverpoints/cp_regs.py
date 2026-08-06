@@ -7,15 +7,14 @@
 
 """Register coverpoint handlers (cp_rd, cp_rs1, cp_rs2)"""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import get_base_lmul
 from testgen.data.random import random_range
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.instructions.params import generate_random_params
+from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 def get_zacas_mask(instr_name: str, instr_type: str, test_data: TestData) -> int:
@@ -114,7 +113,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -194,7 +193,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -262,6 +261,6 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
             if asm_setup:
                 tc.code.insert(0, asm_setup)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks

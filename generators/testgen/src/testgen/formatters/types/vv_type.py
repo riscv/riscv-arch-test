@@ -14,10 +14,10 @@ from testgen.asm.vector_helpers import (
     write_sigupd_v,
     write_sigupd_v_len,
 )
-from testgen.coverpoints.vector.vector_helpers import extract_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.instructions.vector import parse_instruction_info
 
 vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
 vext_config = InstructionTypeConfig(
@@ -46,7 +46,7 @@ def format_vmvr_type(
 def format_vext_type(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    info = extract_instruction_info(instr_str, "VEXT")
+    info = parse_instruction_info(instr_str, "VEXT")
     assert info.vext_multiplier is not None, f"Unable to extract multiplier for VEXT-type instruction {instr_str}"
     return format_vv_like_type(instr_str, test_data, params, "VEXT", vs2_lmul_multiplier=info.vext_multiplier)
 

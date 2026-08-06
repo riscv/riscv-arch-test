@@ -12,6 +12,8 @@ import importlib.resources
 from collections import defaultdict
 from pathlib import Path
 
+import pyjson5
+
 from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
@@ -36,6 +38,47 @@ _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
+    platform = data.get("platform")
+    if not isinstance(platform, dict):
+        raise TypeError(f"Sail config {path} is missing the `platform` object.")
+
+    device = platform.get(name)
+    if not isinstance(device, dict):
+        raise TypeError(f"Sail config {path} is missing the `platform.{name}` object.")
+
+    if device.get("supported") is not True:
+        raise ValueError(
+            f"Sail config {path} must set `platform.{name}.supported` to true. "
+            "ACT signature generation requires this Sail device even when the DUT uses a different "
+            "interrupt mechanism or does not provide the same device. Enable the device in the sail "
+            "config and place it in an IO memory region. Select an address that does not map to DUT "
+            "memory, or it may overlap the DUT's own IO memory."
+        )
+
+    base = device.get("base")
+    if not isinstance(base, int):
+        raise TypeError(f"Sail config {path} must set `platform.{name}.base` to an integer.")
+    return base
+
+
+def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
+    """Build compiler defines for Sail platform devices used by sail_macros.h."""
+    if not sail_config_path.exists():
+        raise FileNotFoundError(f"Sail config file not found: {sail_config_path}")
+
+    config_data = pyjson5.loads(sail_config_path.read_text())
+    if not isinstance(config_data, dict):
+        raise TypeError(f"Sail config {sail_config_path} must contain a JSON object.")
+
+    clint_base = _sail_platform_base(config_data, "clint", sail_config_path)
+    sig_base = _sail_platform_base(config_data, "simple_interrupt_generator", sail_config_path)
+    return (
+        f"-DSAIL_CLINT_BASE_ADDRESS=0x{clint_base:x}",
+        f"-DSAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS=0x{sig_base:x}",
+    )
 
 
 def _compiler_cmd(config: Config, xlen: int, tests_dir: Path, udb_header_dir: Path) -> list[str]:
@@ -101,6 +144,7 @@ def gen_compile_tasks(
     xlen: int,
     config: Config,
     compiler_cmd: list[str],
+    signature_compile_flags: tuple[str, ...] = (),
     compile_inputs: tuple[Path, ...] = (),
     c_runtime_sources: tuple[Path, ...] = (),
     ref_model_inputs: tuple[Path, ...] = (),
@@ -164,6 +208,7 @@ def gen_compile_tasks(
             f"-march={march}",
             f"-mabi={mabi}",
             "-DSIGNATURE",
+            *signature_compile_flags,
             f"-DTEST_FLEN={test_flen}",
             f'-DTEST_FILE="{test_name.name}"',
             *test_sources,
@@ -524,10 +569,11 @@ def generate_build_plan(
 
     # Sail config affects reference model output (Spike has no equivalent file).
     ref_model_inputs: tuple[Path, ...] = ()
+    signature_compile_flags: tuple[str, ...] = ()
     if config.ref_model_type == RefModelType.SAIL:
         sail_config = config.dut_include_dir / "sail.json"
-        if sail_config.exists():
-            ref_model_inputs = (sail_config.absolute(),)
+        signature_compile_flags = _sail_platform_defines(sail_config)
+        ref_model_inputs = (sail_config.absolute(),)
 
     for test_name_str, test_metadata in sorted(selected_tests.items()):
         test_name = Path(test_name_str)
@@ -541,6 +587,7 @@ def generate_build_plan(
                 xlen,
                 config,
                 compiler_cmd,
+                signature_compile_flags,
                 compile_inputs,
                 c_runtime_sources,
                 ref_model_inputs,

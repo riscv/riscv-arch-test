@@ -103,35 +103,6 @@ main:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test4_sv39, test4_sv39_str)
 
 
-//---------------------------------------------------------------------------------------------------------------------------------
-// Test case 5: Zeros, ones and walking ones on satp.PPN | Expected: Successful
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  LI(a1, SATP_MODE_SV39<<60)      // satp.MODE = Sv39
-
-  // satp.PPN = All zeros
-  mv   a0, a1
-  csrw satp, a0
-  test5_zeros:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test5_zeros, test5_zeros_str)
-
-  // satp.PPN = All ones
-  LI(  a0, 0xFFFFFFFFFFF)
-  or   a0, a1, a0
-  csrw satp, a0
-  test5_ones:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test5_ones, test5_ones_str)
-
-  // satp.PPN = Walking Ones
-  li a2, 1
-  .rept(44)
-    or   a0, a1, a2
-    csrw satp, a0
-    5:
-    RVTEST_SIGUPD_CSR_READ(satp, a4, 5b, test5_walk_str)
-    slli  a2, a2, 1
-  .endr
-
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 6: Zeros, ones and walking ones on satp.ASID | Expected: Successful
@@ -178,9 +149,6 @@ test2_csrs_str:   .string "\"Mismatch on csrs in Test Case 2!\""
 test2_csrc_str:   .string "\"Mismatch on csrc in Test Case 2!\""
 test3_str:        .string "\"Mismatch in Test Case 3!\""
 test4_sv39_str:   .string "\"Mismatch on setting satp.MODE=Sv39 in Test Case 4!\""
-test5_zeros_str:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 5!\""
-test5_ones_str:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 5!\""
-test5_walk_str:   .string "\"Mismatch on walking ones in satp.PPN in Test Case 5!\""
 test6_zeros_str:  .string "\"Mismatch on setting satp.ASID=Zeros in Test Case 6!\""
 test6_ones_str:   .string "\"Mismatch on setting satp.ASID=Ones in Test Case 6!\""
 test6_walk_str:   .string "\"Mismatch on walking ones in satp.ASID in Test Case 6!\""

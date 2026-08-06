@@ -73,10 +73,6 @@ def add_coverpoint_generator(*patterns: str) -> Callable[[CoverpointGenerator], 
     return decorator
 
 
-# Discover and import coverpoint generators at module load
-discover_and_import_modules(Path(__file__).parent, "testgen.coverpoints", exclude=Path(__file__))
-
-
 def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:
     """Select generator using longest-prefix matching."""
     for pattern, generator in _COVERPOINT_GENERATORS:
@@ -103,3 +99,7 @@ def generate_tests_for_coverpoint(
         test_chunks[0].section_header = comment_banner(coverpoint)
 
     return test_chunks
+
+
+# Discover and import coverpoint generator plugins at module load.
+discover_and_import_modules(Path(__file__).parent, "testgen.coverpoints", exclude=Path(__file__))

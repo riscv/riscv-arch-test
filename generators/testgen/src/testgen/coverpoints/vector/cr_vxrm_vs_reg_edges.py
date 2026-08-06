@@ -7,15 +7,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import make_and_register_edge_label
+from testgen.coverpoints.vector.helpers import make_and_register_edge_label
 from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
-from testgen.formatters.registry import get_instr_type_config
-from testgen.formatters.vector_params import generate_random_vector_params
+from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.vector_params import generate_random_vector_params
 
 _VXRM_MODES = ["rnu", "rne", "rdn", "rod"]
 
@@ -60,7 +58,7 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
-                return_test_regs(test_data, params)
+                return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -100,7 +98,7 @@ def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
-                return_test_regs(test_data, params)
+                return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -116,7 +114,7 @@ def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
     # "_wi" suffix: vs2 is the widened source (VWI type, emul2)
     suffix = "emul2" if coverpoint.endswith("_wi") else "emul1"
-    config = get_instr_type_config(instr_type)
+    config = get_instruction_type_config(instr_type)
     imm_edges = IMMEDIATE_EDGES.imm_5bit if config.imm_signed else IMMEDIATE_EDGES.imm_5bit_u
 
     test_chunks = []
@@ -140,6 +138,6 @@ def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
-                return_test_regs(test_data, params)
+                return_testcase_registers(test_data, params)
 
     return test_chunks

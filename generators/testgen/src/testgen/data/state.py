@@ -11,6 +11,7 @@ import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
+from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
@@ -259,3 +260,14 @@ class TestData:
             )
 
         self._vector_labels[label] = (elements, sew)
+
+
+def return_testcase_registers(test_data: TestData, params: InstructionParams) -> None:
+    """Return every register allocated for a testcase to its register file."""
+    test_data.int_regs.return_registers(params.used_int_regs)
+    test_data.float_regs.return_registers(params.used_float_regs)
+    test_data.vec_regs.deallocate_operands()
+    assert len(test_data.vec_regs.reg_list) == 32, (
+        f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are "
+        f"{test_data.vec_regs.reg_list}"
+    )

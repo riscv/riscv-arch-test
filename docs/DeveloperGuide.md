@@ -382,7 +382,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         test_chunks.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     # Return the list of TestChunk objects. The framework will use these to split test chunks
     # across test files (based on num_testcases counts) and combine their data for the final output.

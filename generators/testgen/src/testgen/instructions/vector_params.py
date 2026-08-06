@@ -1,11 +1,12 @@
 ##################################
-# formatters/vector_params.py
+# instructions/vector_params.py
 #
 # Random parameter generation for vector instructions.
 # rwolk@hmc.edu June 2026
 #
 # Refactored From vector_testgen_common.py: James Kaden Cassidy kacassidy@hmc.edu 25 Jun 2025
 #
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -17,11 +18,12 @@ import random
 from typing import Any, Literal
 
 from testgen.constants import VLEN_MAX
-from testgen.coverpoints.vector.vector_helpers import InstructionInfo, extract_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, get_instr_type_config
+from testgen.formatters import get_instruction_type_config
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig
+from testgen.instructions.vector import InstructionInfo, parse_instruction_info
 
 
 def get_register_emul(
@@ -371,11 +373,12 @@ def generate_random_vector_params(
 
     preset_params = InstructionParams(**fixed_params)
 
-    instr_type_config = get_instr_type_config(instr_type)
+    instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, (
         f"Vector Data must be provided for vector instruction type {instr_type}"
     )
-    info = extract_instruction_info(instruction, instr_type)
+    info = parse_instruction_info(instruction, instr_type)
+    info.widened_regs = instr_type_config.vector_data.widened_regs
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:

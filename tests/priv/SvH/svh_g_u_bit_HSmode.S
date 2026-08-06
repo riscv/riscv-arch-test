@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -51,7 +55,7 @@ main:
 
   LI(t1, gpa_data)                              // t1 = GPA pointer for all HS HLV cases
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS once; cases 2–3 bounce M↔HS to rewrite PTEs
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: G leaf U=1 R/W HS HLV | Expected: Successful
@@ -67,10 +71,10 @@ main:
 // Test case 2: G leaf U=0 R/W HS HLV | Expected: Expected Fault
 // cp_hgatp_u_mode_access_rw bin: g_pte_d_u=0 → guest-page fault on HLV
 //---------------------------------------------------------------------------------------------------------------------------------
-  RVTEST_GOTO_MMODE                             // back to M to rewrite G PTE safely
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
   G_PTE_SETUP(sv32x4, test_region, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), gpa_data, LEVEL0)  // strip U bit; keep R/W
   hfence.gvma                                   // flush G TLB before HS retries HLV
-  RVTEST_GOTO_LOWER_MODE HSmode                 // re-enter HS for HLV retry
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
 
   LI(a4, 0)                                     // sentinel: stays 0 if trap fires
   LI(t1, gpa_data)                              // reload GPA pointer (M-mode may clobber t1)
@@ -83,10 +87,10 @@ main:
 // Test case 3: Restore G leaf U=1 R/W HS HLV | Expected: Successful
 // cp_hgatp_u_mode_access_rw bin: back to g_pte_d_u=1
 //---------------------------------------------------------------------------------------------------------------------------------
-  RVTEST_GOTO_MMODE                             // back to M to restore G PTE
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
   G_PTE_SETUP(sv32x4, test_region, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), gpa_data, LEVEL0)  // restore U=1
   hfence.gvma                                   // flush G TLB so next access rewalks
-  RVTEST_GOTO_LOWER_MODE HSmode                 // re-enter HS for final HLV
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
 
   LI(a7, 0)                                     // clear result register before load
   hlv.w a7, (t1)                                // expect 0x257A0231 again
@@ -94,7 +98,7 @@ main:
   test3_restore:
   RVTEST_SIGUPD(x2, x5, x4, a7, test3_restore, test3_restore_str)  // record result in signature
 
-  RVTEST_GOTO_MMODE                             // return to M-mode for test teardown
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END

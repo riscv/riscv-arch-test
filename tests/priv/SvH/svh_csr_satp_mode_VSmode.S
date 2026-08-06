@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 32
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -45,10 +49,10 @@ main:
 // Test case 1: Read satp/vsatp alias with MODE=Sv39 | Expected: Successful
 //---------------------------------------------------------------------------------------------------------------------------------
   // cp_satp_mode_field bin: satp and vsatp are aliases in VS (both must read Sv39)
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter guest VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   csrr a3, satp                                 // guest sees satp (should be Sv39)
   csrr a4, vsatp                                // vsatp must match (alias)
-  RVTEST_GOTO_MMODE                             // return to M for signature compare
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_satp:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_satp, test1_satp_str)  // signature: satp read in VS (Sv39)
@@ -60,7 +64,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   // cp_satp_mode_field bin: WARL walk 0..15; restore Sv39 each iter so PC stays mapped
   // Walk MODE 0..15 but keep same PPN; restore Sv39 each time so PC stays mapped
-  RVTEST_GOTO_LOWER_MODE VSmode                 // re-enter VS for MODE WARL walk
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   csrr t2, satp                                 // save current satp
   li   t0, ~((0xF) << 60)                       // mask to clear MODE nibble
   and  t2, t2, t0                               // strip MODE; keep PPN/ASID
@@ -76,7 +80,7 @@ mode_walk:
   addi t3, t3, 1                                // next bit/index
   LI(t4, 16)                                    // loop until 16 MODE values tried
   blt  t3, t4, mode_walk                        // repeat until all MODE values tried
-  RVTEST_GOTO_MMODE                             // return to M after walk (a5 holds last sample)
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_mode_walk:
   RVTEST_SIGUPD(x2, x5, x4, a5, test2_mode_walk, test2_mode_walk_str)  // signature: last WARL MODE sample from walk
@@ -84,9 +88,9 @@ mode_walk:
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 3: Final satp read after MODE walk | Expected: Successful
 //---------------------------------------------------------------------------------------------------------------------------------
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS for final satp read
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   csrr a6, satp                                 // final satp after loop
-  RVTEST_GOTO_MMODE                             // return to M for signature
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_final:
   RVTEST_SIGUPD(x2, x5, x4, a6, test3_final, test3_final_str)  // signature: final satp after MODE walk

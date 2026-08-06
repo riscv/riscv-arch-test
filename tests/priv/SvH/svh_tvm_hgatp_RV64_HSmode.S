@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 256
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -41,12 +45,12 @@ main:
   // cp_hgatp_tvm_effects bin: TVM=0 allows HS to write hgatp
   LI(t0, MSTATUS_TVM)                           // t0 = TVM bit mask
   csrc mstatus, t0                              // clear TVM bit
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS (host supervisor)
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(t0, (HGATP_MODE_SV39X4 << 60))             // t0 = MODE Sv39x4 only (RV64 MODE in [63:60])
   csrw hgatp, t0                                // should succeed under TVM=0
   test1_hgatp:
   RVTEST_SIGUPD_CSR_READ(hgatp, a4, test1_hgatp, test1_hgatp_str)  // signature: read hgatp after TVM=0 write
-  RVTEST_GOTO_MMODE                             // return to M-mode
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 2: TVM=1 write hgatp illegal | Expected: Expected Fault
@@ -55,11 +59,11 @@ main:
   LI(t0, MSTATUS_TVM)                           // t0 = TVM bit mask
   csrs mstatus, t0                              // set TVM
   LI(a4, 0x257A0131)                            // marker: stays 0x257A0131 if csrw is skipped by trap
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS (host supervisor)
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   csrw hgatp, x0                                // illegal; trap handler skips this insn
   nop                                           // pad after possible skip
   addi a4, a4, 1                                // if we continued → 0x257A0132
-  RVTEST_GOTO_MMODE                             // return to M-mode
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   LI(t0, MSTATUS_TVM)                           // t0 = TVM bit mask
   csrc mstatus, t0                              // clear TVM again (tidy)

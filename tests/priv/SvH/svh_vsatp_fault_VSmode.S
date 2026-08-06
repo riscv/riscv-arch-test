@@ -25,6 +25,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -67,10 +71,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_inv)                                // a5 = GVA of V=0 leaf
   LI(a3, 0)                                     // a3 stays 0 if lw is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // V=0 leaf → load-page-fault; insn skipped
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_v0:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_v0, test1_v0_str)  // record case 1 fault sentinel in signature
@@ -80,10 +84,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_nleaf)                              // a5 = GVA pointing at L0 non-leaf PTE
   LI(a4, 0)                                     // a4 stays 0 if lw is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a4, 0(a5)                                // non-leaf at L0 → load-page-fault; insn skipped
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_nleaf:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_nleaf, test2_nleaf_str)  // record case 2 fault sentinel in signature
@@ -95,10 +99,10 @@ main:
   csrs hstatus, t0                              // SPVP=1 → HLV uses VS-stage translation (same as guest)
   LI(a5, va_inv)                                // a5 = GVA of same V=0 leaf as case 1
   LI(a6, 0)                                     // a6 stays 0 if hlv.w is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE HSmode                 // M -> HS (hypervisor load path)
+  RVTEST_GOTO_LOWER_MODE HSmode                 // M→HSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   hlv.w a6, (a5)                                // HS hypervisor load through vsatp → same invalid PTE fault
   nop                                           // trap-skip padding after hlv.w
-  RVTEST_GOTO_MMODE                             // HS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   LI(t0, HSTATUS_SPVP)                          // t0 = SPVP bit mask (hstatus[8])
   csrc hstatus, t0                              // clear SPVP (tidy for harness)
@@ -110,10 +114,10 @@ main:
 // Test case 4: Valid leaf VS lw | Expected: Successful
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_ok)                                  // a5 = GVA of valid R/W leaf
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a7, 0(a5)                                // valid leaf → load succeeds; expect 0x257A0310
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test4_ok:
   RVTEST_SIGUPD(x2, x5, x4, a7, test4_ok, test4_ok_str)  // record case 4 lw result in signature

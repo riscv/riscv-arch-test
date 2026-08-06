@@ -25,6 +25,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -86,12 +90,12 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_rwx)                                // a5 = GVA of full-permission S-page
   LI(t0, 0x257A0401)                            // store value for case 1 R/W/X S-page
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   t0, 0(a5)                                // store through R/W/X S-page → SPA
   nop                                           // trap-skip padding after store
   lw   a3, 0(a5)                                // load back; expect 0x257A0401
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_rwx:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_rwx, test1_rwx_str)  // record case 1 lw result in signature
@@ -101,10 +105,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_xonly)                              // a5 = GVA of X-only S-page
   LI(a4, 0)                                     // a4 stays 0 if lw is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a4, 0(a5)                                // no read perm on X-only leaf → load-page-fault
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_xonly:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_xonly, test2_xonly_str)  // record case 2 fault sentinel in signature
@@ -113,13 +117,13 @@ main:
 // Test case 3: S-page R-only VS lw OK, VS sw fault | Expected: lw Successful, sw Expected Fault
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_ronly)                              // a5 = GVA of R-only S-page
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // R-only load permitted → success (0x257A0403)
   nop                                           // trap-skip padding after load
   LI(a4, 0)                                     // a4 stays 0 if sw is skipped by trap handler
   sw   a4, 0(a5)                                // no write perm on R-only leaf → store-page-fault
   nop                                           // trap-skip padding after store
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_lw:
   RVTEST_SIGUPD(x2, x5, x4, a3, test3_lw, test3_lw_str)  // record case 3 lw result in signature
@@ -129,10 +133,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a5, va_u_rwx)                              // a5 = GVA of U=1 page (SUM still 0)
   LI(a6, 0)                                     // a6 stays 0 if lw is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a6, 0(a5)                                // U-page with SUM=0 → load-page-fault; insn skipped
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test4_u:
   RVTEST_SIGUPD(x2, x5, x4, a6, test4_u, test4_u_str)  // record case 4 fault sentinel in signature

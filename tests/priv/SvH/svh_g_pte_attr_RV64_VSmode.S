@@ -27,6 +27,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -57,11 +61,11 @@ main:
 // Test case 1: G leaf RSW=00 HS HLV | Expected: Successful
 // cp_hgatp_pte_rsw bin: g_pte_rsw=00, priv_mode HS
 //---------------------------------------------------------------------------------------------------------------------------------
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(a3, 0)                                     // clear result register before HLV
   hlv.w a3, (t1)                                // HS load via G-stage; baseline RSW=00
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_rsw00:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_rsw00, test1_rsw00_str)  // record result in signature
@@ -73,11 +77,11 @@ main:
   G_PTE_SETUP(sv39x4, test_region, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V | PTE_SOFT), gpa_data, LEVEL0)  // set RSW[1:0]=11
   hfence.gvma                                   // flush G TLB so next access rewalks
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(a6, 0)                                     // clear result register before HLV
   hlv.w a6, (t1)                                // HS load; RSW=11 must not affect access
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_rsw11:
   RVTEST_SIGUPD(x2, x5, x4, a6, test2_rsw11, test2_rsw11_str)  // record result in signature
@@ -89,11 +93,11 @@ main:
   G_PTE_SETUP(sv39x4, test_region, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V | PTE_RSVD), gpa_data, LEVEL0)  // set RSVD pattern
   hfence.gvma                                   // flush G TLB so next access rewalks
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(a4, 0)                                     // sentinel: stays 0 if trap fires
   hlv.w a4, (t1)                                // HS load; Sail may fault on reserved bits
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_rsvd:
   RVTEST_SIGUPD(x2, x5, x4, a4, test3_rsvd, test3_rsvd_str)  // record result in signature
@@ -107,11 +111,11 @@ main:
   G_PTE_SETUP(sv39x4, test_region, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V | _RISCV_ULL(0x1000000000000000)), gpa_data, LEVEL0)  // PBMT field non-zero
   hfence.gvma                                   // flush G TLB so next access rewalks
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(a7, 0)                                     // dump register (pass or fault)
   hlv.w a7, (t1)                                // HS load; Sail behavior impl-dependent
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test4_pbmt:
   RVTEST_SIGUPD(x2, x5, x4, a7, test4_pbmt, test4_pbmt_str)  // record result in signature
@@ -123,11 +127,11 @@ main:
   G_PTE_SETUP(sv39x4, test_region, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), gpa_data, LEVEL0)  // clean RSW/RSVD/PBMT
   hfence.gvma                                   // flush G TLB so next access rewalks
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(s2, 0)                                     // clear result register before HLV
   hlv.w s2, (t1)                                // expect 0x257A0241
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test5_restore:
   RVTEST_SIGUPD(x2, x5, x4, s2, test5_restore, test5_restore_str)  // record result in signature

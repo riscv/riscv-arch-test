@@ -218,6 +218,9 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
 
             # ============================================================
             # Access flags: was this a read, a write, or both?
+            # The reason for the extra HLV/HSV checks is that they are encoded as SYSTEM instructions (opcode = 0x73)
+            # rather than normal LOAD (0x03) or STORE (0x23) instructions. Without checking funct3 and funct7,
+            # the parser would incorrectly mark them as neither read nor write operations.
             # ============================================================
             # LOAD opcode 0x03 → READ; STORE 0x23 or any mem[W] → WRITE.
             # HLV/HSV are SYSTEM (0x73) with funct3=100; include them so
@@ -245,11 +248,11 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
             # Decide which leaf is VS-stage and which is G-stage
             # ============================================================
             # A "leaf" has R/W/X bits [3:1] non-zero.
-            # A "vonly" entry has V=1 and R/W/X=000 (non-leaf, e.g. L0 pointer).
-            # vonly matters for invalid/nonleaf fault bins when no leaf exists.
+            # A "non_leaf" entry has V=1 and R/W/X=000 (non-leaf, e.g. L0 pointer).
+            # non_leaf matters for invalid/nonleaf fault bins when no leaf exists.
             #
-            #   vsatp only  -> last leaf (or vonly) is VS
-            #   hgatp only  -> last leaf (or vonly) is G
+            #   vsatp only  -> last leaf (or non_leaf) is VS
+            #   hgatp only  -> last leaf (or non_leaf) is G
             #   both on     -> normally 2nd-to-last = VS, last = G
             #
             # Fault quirk: sometimes Sail never walks a G data leaf. Then the
@@ -257,7 +260,7 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
             # it is G's map of that VS PTE (R+W). Swap so labels stay correct.
             def stage(ptes: list[int]) -> tuple[int, int]:
                 leaves = [p for p in ptes if (p & 0xE) != 0]    # leaf: any of R/W/X set
-                vonly = [p for p in ptes if (p & 1) and (p & 0xE) == 0]  # V=1, no R/W/X
+                non_leaf = [p for p in ptes if (p & 1) and (p & 0xE) == 0]  # V=1, no R/W/X
 
                 if vsatp_on and hgatp_on and len(leaves) >= 2:  # two-stage walk with both leaves
                     vs_leaf = leaves[-2]                        # assume VS then G
@@ -270,14 +273,14 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 if vsatp_on and not hgatp_on:                   # VS-stage only
                     if leaves:
                         return leaves[-1], 0                    # (VS leaf, no G)
-                    if vonly:
-                        return vonly[-1], 0                     # nonleaf/invalid VS for fault bins
+                    if non_leaf:
+                        return non_leaf[-1], 0                     # nonleaf/invalid VS for fault bins
                     return 0, 0
                 if hgatp_on:                                    # G-stage (alone or with no VS leaf)
                     if leaves:
                         return 0, leaves[-1]                    # (no VS, G leaf)
-                    if vonly:
-                        return 0, vonly[-1]                     # nonleaf/invalid G for fault bins
+                    if non_leaf:
+                        return 0, non_leaf[-1]                     # nonleaf/invalid G for fault bins
                     return 0, 0
                 return 0, 0                                     # no paging stage on
 

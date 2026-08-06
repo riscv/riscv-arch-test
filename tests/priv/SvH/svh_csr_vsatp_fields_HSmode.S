@@ -26,6 +26,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -34,7 +38,7 @@ main:
   // Partner stage off (sheet: vsatp CSR tests use hgatp Bare)
   csrw hgatp, x0                                // hgatp=0 → G-stage Bare (isolate vsatp field bins)
   hfence.gvma                                   // flush old G TLB after hgatp clear
-  RVTEST_GOTO_LOWER_MODE HSmode                 // HS can write vsatp (not VS)
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: Set vsatp.MODE=Sv32, PPN=0 | Expected: Successful
@@ -80,7 +84,7 @@ ppn_walk:
   LI(t4, 22)                                    // stop after bits 0..21 (22 iterations)
   blt t3, t4, ppn_walk                          // bits 0..21
 
-  RVTEST_GOTO_MMODE                             // return to M for next case / SIGUPD
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END

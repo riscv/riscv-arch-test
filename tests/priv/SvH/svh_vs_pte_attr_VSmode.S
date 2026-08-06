@@ -25,6 +25,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -56,12 +60,12 @@ main:
   la t1, test_region                            // t1 = SPA
   sw t0, 0(t1)                                  // poison SPA before guest access (M-mode baseline)
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   t0, 0(a5)                                // VS store through RSW=00 leaf
   nop                                           // trap-skip padding after store
   lw   a3, 0(a5)                                // VS load; expect 0x257A0301 (RSW must not break access)
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_rsw00:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_rsw00, test1_rsw00_str)  // record case 1 lw result in signature
@@ -76,12 +80,12 @@ main:
   la t1, test_region                            // t1 = SPA
   sw t0, 0(t1)                                  // poison SPA with new expected value
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   t0, 0(a5)                                // VS store through RSW=01 leaf
   nop                                           // trap-skip padding after store
   lw   a4, 0(a5)                                // VS load; expect 0x257A0302
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_rsw01:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_rsw01, test2_rsw01_str)  // record case 2 lw result in signature
@@ -96,12 +100,12 @@ main:
   la t1, test_region                            // t1 = SPA
   sw t0, 0(t1)                                  // poison SPA with new expected value
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   t0, 0(a5)                                // VS store through RSW=10 leaf
   nop                                           // trap-skip padding after store
   lw   a6, 0(a5)                                // expect 0x257A0303
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_rsw10:
   RVTEST_SIGUPD(x2, x5, x4, a6, test3_rsw10, test3_rsw10_str)  // record case 3 lw result in signature
@@ -116,12 +120,12 @@ main:
   la t1, test_region                            // t1 = SPA
   sw t0, 0(t1)                                  // poison SPA with new expected value
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   t0, 0(a5)                                // VS store through RSW=11 leaf
   nop                                           // trap-skip padding after store
   lw   a7, 0(a5)                                // expect 0x257A0304
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test4_rsw11:
   RVTEST_SIGUPD(x2, x5, x4, a7, test4_rsw11, test4_rsw11_str)  // record case 4 lw result in signature

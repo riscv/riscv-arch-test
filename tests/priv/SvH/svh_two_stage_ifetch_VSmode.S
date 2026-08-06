@@ -23,6 +23,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -52,7 +56,7 @@ main:
   hfence.vvma                                      // invalidate VS-stage TLB entries
   hfence.gvma                                      // invalidate G-stage TLB entries
 
-  RVTEST_GOTO_LOWER_MODE VSmode                    // M -> VS; first mret ifetch is GVA->GPA->SPA
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: VS instruction fetch through two-stage translation | Expected: Successful
@@ -61,7 +65,7 @@ main:
   addi a2, a2, 1                                   // a2 = 0x257A0011 — two_stage_ifetch bin
   nop                                              // another two-stage ifetch retire
   nop                                              // pad (trap handler may skip prior insn)
-  RVTEST_GOTO_MMODE                                // VS -> M via ecall to test handler
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_ifetch:
   RVTEST_SIGUPD(x2, x5, x4, a2, test1_ifetch, test1_ifetch_str)  // record case 1 ifetch result in signature

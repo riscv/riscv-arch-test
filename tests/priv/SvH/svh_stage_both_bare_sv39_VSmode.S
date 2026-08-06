@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -40,7 +44,7 @@ main:
   sw t0, 0(t1)                                  // store pattern to memory
 
   la a5, test_region                            // Bare: this VA is the SPA
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS (guest)
+  RVTEST_TSBI_GOTO_VSMODE                      // T-SBI: ecall a0=4 → VS (code at PA / identity)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: VS sw/lw with both stages Bare | Expected: Successful
@@ -53,7 +57,7 @@ main:
   test1_vs:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_vs, test1_vs_str)  // record case 1 VS lw result in signature
 
-  RVTEST_GOTO_MMODE                             // return to M-mode
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 2: M-mode SPA readback | Expected: Successful

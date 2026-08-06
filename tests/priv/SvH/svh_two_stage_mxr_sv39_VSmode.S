@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -80,10 +84,10 @@ main:
   csrc sstatus, t0                              // clear HS MXR setting
   csrc vsstatus, t0                             // clear VS MXR setting
   LI(a3, 0)                                     // a3 stays 0 if the load faults and is skipped
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode to run the guest load
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // expect fault -> skipped
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // return from VS to M-mode test code
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_mxr0:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_mxr0, test1_mxr0_str)  // record case 1 fault sentinel in signature
@@ -97,10 +101,10 @@ main:
   csrs vsstatus, t0                             // set VS MXR setting
   hfence.vvma                                   // status change may affect TLB perm cache; flush VS TLB
   LI(a4, 0)                                     // a4 should receive the real memory value
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode for the allowed load
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a4, 0(a5)                                // expect 0x257A0101
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // return from VS to M-mode test code
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_mxr1:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_mxr1, test2_mxr1_str)  // record case 2 lw result in signature

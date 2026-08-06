@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -55,10 +59,10 @@ main:
 // cp_hgatp_adbit_behavior bin: g_pte_ad_unset — A=0 on G leaf faults before access under Svade
 //---------------------------------------------------------------------------------------------------------------------------------
   LI(a3, 0)                                     // sentinel: stays 0 if trap fires
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS for Bare GPA load
+  RVTEST_TSBI_GOTO_VSMODE                      // T-SBI: ecall a0=4 → VS (code at PA / identity)
   lw   a3, 0(a5)                                // A=0 → guest-page fault under Svade (no silent A-set)
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after VS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_ad_unset:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_ad_unset, test1_ad_unset_str)  // record result in signature
@@ -71,11 +75,11 @@ main:
   hfence.gvma                                   // flush so walk sees updated A/D bits
 
   LI(a4, 0)                                     // clear result register before load
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS for Bare GPA load
+  RVTEST_TSBI_GOTO_VSMODE                      // T-SBI: ecall a0=4 → VS (code at PA / identity)
   hfence.gvma                                   // force fresh G walk (G_PTE_D with A=1 visible in .rvvi)
   lw   a4, 0(a5)                                // expect 0x257A0251
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after VS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_ad_set:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_ad_set, test2_ad_set_str)  // record result in signature
@@ -87,12 +91,12 @@ main:
   G_PTE_SETUP(sv32x4, test_region, (PTE_U | PTE_W | PTE_R | PTE_V), gpa_data, LEVEL0)  // clear A/D again
   hfence.gvma                                   // flush G TLB so next access rewalks
 
-  RVTEST_GOTO_LOWER_MODE HSmode                 // enter HS for hypervisor load
+  RVTEST_TSBI_GOTO_SMODE                       // T-SBI: ecall a0=2 → HS/S (code at PA / identity)
   LI(a7, 0)                                     // sentinel: stays 0 if trap fires
   LI(t1, gpa_data)                              // t1 = GPA pointer for HLV
   hlv.w a7, (t1)                                // A=0 → guest-page fault under Svade even from HS
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode after HS case
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_hlv_ad_unset:
   RVTEST_SIGUPD(x2, x5, x4, a7, test3_hlv_ad_unset, test3_hlv_ad_unset_str)  // record result in signature

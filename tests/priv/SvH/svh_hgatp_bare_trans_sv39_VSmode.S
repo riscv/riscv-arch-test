@@ -25,6 +25,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -55,7 +59,7 @@ main:
   sw t0, 0(t1)                                  // preload poison at SPA before guest access
 
   LI(a5, va_data)                               // a5 = guest VA pointer
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: VS sw/lw with hgatp=Bare | Expected: Successful
@@ -65,7 +69,7 @@ main:
   nop                                           // trap-skip padding if previous access faults
   lw   a3, 0(a5)                                // load back through VS paging
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return to M-mode
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_vs:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_vs, test1_vs_str)  // record result in signature

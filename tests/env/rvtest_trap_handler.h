@@ -1348,6 +1348,10 @@ tsbi_\__MODE__\()ecall_test:
         //   don't need relocation because they set MPP/MPV and let mret handle it.
         //--------------------------------------------------------------
 tsbi_\__MODE__\()goto_mode:
+        // Problem: a0==1 (GOTO_MMODE) used goto_m + mret, which resumes at a guest VA.
+        // Solution: route a0==1 to rtn2mmode (VA→PA) before mepc is bumped below.
+        li      T2, TSBI_GOTO_MMODE                  // T2 = 1
+        beq     a0, T2, \__MODE__\()rtn2mmode        // a0==1 -> rtn2mmode (same as legacy a0==0)
         // First, bump mepc past the ecall instruction
         csrr    T4, CSR_XEPC                        // T4 = mepc (caller's ecall address)
         addi    T4, T4, 4                            // T4 = mepc + 4 (instruction after ecall)

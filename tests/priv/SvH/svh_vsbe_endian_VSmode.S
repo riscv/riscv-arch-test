@@ -32,6 +32,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -66,15 +70,15 @@ main:
   la t1, test_region                            // t1 = SPA (M-mode always sees LE byte order)
   sw x0, 0(t1)                                  // zero SPA before guest store (baseline)
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   s1, 0(a5)                                // VS LE store of 0xA1B2C3D4 into SPA
   nop                                           // trap-skip padding after store
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
   hfence.vvma                                   // re-walk for next VS load (coverpoint sampling)
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS again
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // VS LE load; architectural value expect 0xA1B2C3D4
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_vsbe0_lw:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_vsbe0_lw, test1_vsbe0_lw_str)  // record case 1 VS lw result in signature
@@ -102,15 +106,15 @@ main:
   la t1, test_region                            // t1 = SPA
   sw x0, 0(t1)                                  // clear SPA again for a clean BE/LE comparison
 
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS (VSBE may still be 0 on Sail)
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   s1, 0(a5)                                // VS store under current hstatus.VSBE
   nop                                           // trap-skip padding after store
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
   hfence.vvma                                   // re-walk for next VS load
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a4, 0(a5)                                // VS load — same architectural value if BE not implemented
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test4_vsbe1_lw:
   RVTEST_SIGUPD(x2, x5, x4, a4, test4_vsbe1_lw, test4_vsbe1_lw_str)  // record case 4 VS lw result in signature

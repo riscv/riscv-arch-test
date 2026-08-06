@@ -24,6 +24,10 @@
 #define TRAP_SIGUPD_COUNT 16
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -73,10 +77,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: G allows VS-PT GPA walk | Expected: Successful
 //---------------------------------------------------------------------------------------------------------------------------------
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode to run the guest load
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // cp_h_vm_gstagetrans: VS walk hits G-mapped VS L0 PT GPA
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return from VS to M-mode test code
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_allow:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_allow, test1_allow_str)  // record result in signature
@@ -90,10 +94,10 @@ main:
   hfence.gvma                                   // flush G TLB so next access rewalks
 
   LI(a4, 0)                                     // sentinel: stays 0 if trap fires
-  RVTEST_GOTO_LOWER_MODE VSmode                 // enter VS mode to retry the load
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a4, 0(a5)                                // expect guest-page fault (handler skips)
   nop                                           // trap-skip padding if previous access faults
-  RVTEST_GOTO_MMODE                             // return from VS to M-mode test code
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test2_deny:
   RVTEST_SIGUPD(x2, x5, x4, a4, test2_deny, test2_deny_str)  // record result in signature

@@ -25,6 +25,10 @@
 #define TRAP_SIGUPD_COUNT 64
 #define RVTEST_HYPERVISOR
 
+// Mode hops (T-SBI) — return-to-M always uses RVTEST_TSBI_GOTO_MMODE (ecall a0=1;
+//   handler rtn2mmode relocates EPC VA→PA). Enter:
+//   • Code at PA / identity: RVTEST_TSBI_GOTO_VSMODE / _SMODE (ecall a0=4/2)
+//   • Guest code VA≠PA (V_SAVE_AREA_*): RVTEST_GOTO_LOWER_MODE (mret + PA↔VA relocate)
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
@@ -63,12 +67,12 @@ main:
   csrc vsstatus, t0                             // clear VS SUM — guest cannot touch U=1 pages
   LI(a3, 0)                                     // a3 stays 0 if lw is skipped by trap handler
   LI(a4, 0)                                     // a4 stays 0 if sw is skipped by trap handler
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS (mret via framework)
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a3, 0(a5)                                // U=1 page with SUM=0 → load-page-fault; insn skipped
   nop                                           // trap-skip padding after load
   sw   a4, 0(a5)                                // same leaf → store-page-fault; insn skipped
   nop                                           // trap-skip padding after store
-  RVTEST_GOTO_MMODE                             // VS -> M via ecall to test handler
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test1_sum0_lw:
   RVTEST_SIGUPD(x2, x5, x4, a3, test1_sum0_lw, test1_sum0_lw_str)  // record case 1 fault sentinel in signature
@@ -93,17 +97,17 @@ main:
   hfence.vvma                                   // flush stale TLB entries after SUM change
 
   LI(a6, 0x257A0201)                            // value to store through U=1 page
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   sw   a6, 0(a5)                                // SUM=1 store through U=1 leaf → SPA
   nop                                           // trap-skip padding after store
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   hfence.vvma                                   // force next VS load to page-walk (coverpoint sampling)
   LI(a7, 0)                                     // a7 will hold VS load result
-  RVTEST_GOTO_LOWER_MODE VSmode                 // M -> VS again (fresh walk)
+  RVTEST_GOTO_LOWER_MODE VSmode                 // M→VSmode mret + PA↔VA relocate (guest code VA≠PA; T-SBI enter lacks relocate)
   lw   a7, 0(a5)                                // SUM=1 load of U=1 page; expect 0x257A0201
   nop                                           // trap-skip padding after load
-  RVTEST_GOTO_MMODE                             // VS -> M
+  RVTEST_TSBI_GOTO_MMODE                       // T-SBI: ecall a0=1 → M (rtn2mmode VA→PA relocate)
 
   test3_sum1_lw:
   RVTEST_SIGUPD(x2, x5, x4, a7, test3_sum1_lw, test3_sum1_lw_str)  // record case 3 lw result in signature

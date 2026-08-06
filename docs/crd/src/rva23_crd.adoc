@@ -25,7 +25,7 @@ a| * Initial draft
 | July 27, 2026
 | 0.2
 a| * Do not test traps into M-mode except ecall from S-mode
-| July 31, 2026
+| August 6, 2026
 | 0.3
 a| * Removed "custom M-mode"; made clarifications
 
@@ -35,7 +35,7 @@ a| * Removed "custom M-mode"; made clarifications
 
 This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
 
-The RVA23 processor certificate is based on compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23 Profiles], which is comprised of the RVA23S64 and RVA23U64 profiles. As described in these profile specifications,
+The RVA23 processor certification requires compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23 Profiles], which is comprised of the RVA23S64 and RVA23U64 profiles. As described in these profile specifications,
 compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
 implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions
 of the base ISA and these extensions may be implemented, but if they are
@@ -46,6 +46,9 @@ extensions, custom extensions, or even non-conforming extensions as
 long as they don't interfere with the proper functioning of the RVA23 mandatory
 and implemented optional extensions. However, these other base ISAs and extensions will not be tested as
 part of RVA23 Certification.
+
+NOTE: This document does not restate individual profile constraints such as Ssstrict.
+Those requirements are defined normatively in the RVA23 Profiles and are unchanged for certification.
 
 NOTE: We encourage those who have implemented other base ISAs or extensions to
 run the appropriate RISC-V ACTs to help ensure compliance.
@@ -139,10 +142,6 @@ These CSRs and memory-mapped I/O registers are:
 | `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
 | `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a designer-supplied M-mode trap handler intercepts invisible traps and relays the rest to S-mode.
 | `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, the trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
-
-////
-The following CSRs and memory-mapped I/O registers are only read during RVA23 certification.
-////
 | `mhartid` | Must be readable to influence the behavior of multicore tests.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
 |===

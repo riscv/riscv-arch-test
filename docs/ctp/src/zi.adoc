@@ -4,6 +4,28 @@
 
 This section includes a variety of unprivileged extensions.
 
+==== Zibi Branch with Immediate
+
+The Zibi extension adds the `beqi` and `bnei` instructions, which compare an
+integer register with a small immediate value and conditionally branch.
+
+include::{testplansdir}/Zibi.adoc[]
+
+[[t-Zibi-modified-coverpoints]]
+.Zibi Modified Coverpoints
+[cols="3, 1, 6" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cp_imm_edges_5bit_u_n0|9|The Zibi comparison constants -1, 1, 2, 3, 4, 8, 16, 30, and 31. The value -1 exercises the all-zero `cimm` encoding.
+|cr_rs1_imm_edges_5bit_u_n0_offset|RV32: 216; RV64: 288|Cross-product of `rs1` edge values, `cp_imm_edges_5bit_u_n0`, and positive and negative branch offsets.
+|===
+
+The instruction-address-misaligned exception rule uses the general conditional
+branch tests in `ExceptionsSm`, which check both taken branches that trap and
+not-taken branches that do not trap.
+
+include::norm/Zibi_norm_rules.adoc[]
+
 ==== Zicsr Control/Status Register Instructions
 
 include::{testplansdir}/Zicsr.adoc[]

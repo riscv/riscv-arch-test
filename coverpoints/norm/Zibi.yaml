@@ -1,0 +1,67 @@
+# Mapping of normative rules to coverpoints for the Zibi test suite
+
+normative_rule_definitions:
+  # BEQI and BNEI use the B-type format. Their signed branch offsets are
+  # multiples of two bytes, are sign-extended, and are relative to the
+  # instruction address. cp_offset covers both offset directions, while the
+  # cross checks each direction with all selected rs1 and cimm edge values.
+  - name: zibi_btype_offset
+    coverpoint:
+      [
+        "{Zibi_beqi_cg, Zibi_bnei_cg}/{cp_offset, cr_rs1_imm_edges_5bit_u_n0_offset}",
+      ]
+
+  # In the B-type encoding, bits 24:20 carry the 5-bit cimm field instead of
+  # rs2. Executing both instructions causes their encodings to be decoded and
+  # counted by the corresponding instruction covergroups.
+  - name: zibi_enc
+    coverpoint: ["{Zibi_beqi_cg, Zibi_bnei_cg}/cp_asm_count"]
+
+  # All cimm encodings are valid. The field is not sign-extended: cimm=0
+  # represents -1, and cimm=1..31 represents the corresponding positive
+  # constant. The immediate coverpoint includes -1 and selected positive edge
+  # values; the cross also checks those values against rs1 edge values.
+  - name: zibi_cimm_decode
+    coverpoint:
+      [
+        "{Zibi_beqi_cg, Zibi_bnei_cg}/{cp_imm_edges_5bit_u_n0, cr_rs1_imm_edges_5bit_u_n0_offset}",
+      ]
+
+  # BEQI and BNEI neither write an integer register nor access memory. The
+  # self-checking branch tests exercise both taken and not-taken paths and
+  # verify the control-flow marker without relying on an instruction result.
+  - name: zibi_no_state
+    coverpoint:
+      [
+        "{Zibi_beqi_cg, Zibi_bnei_cg}/{cp_imm_edges_5bit_u_n0, cr_rs1_imm_edges_5bit_u_n0_offset}",
+      ]
+
+  # An instruction-address-misaligned exception is generated only when the
+  # branch condition is true and its target is not IALIGN-bit aligned. Zibi
+  # follows the general conditional-branch exception behavior, which is tested
+  # in M-mode for both taken and not-taken branches.
+  - name: zibi_misaligned_exception
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_branch_nottaken}",
+      ]
+
+  # BEQI branches when rs1 equals the XLEN-bit comparison constant decoded
+  # from cimm; otherwise execution continues sequentially. The listed
+  # coverpoints cover every rs1 register, rs1 edge values, cimm edge values,
+  # and both positive and negative branch offsets.
+  - name: zibi_beqi_op
+    coverpoint:
+      [
+        "Zibi_beqi_cg/{cp_rs1, cp_rs1_edges, cp_imm_edges_5bit_u_n0, cp_offset, cr_rs1_imm_edges_5bit_u_n0_offset}",
+      ]
+
+  # BNEI branches when rs1 differs from the XLEN-bit comparison constant
+  # decoded from cimm; otherwise execution continues sequentially. The listed
+  # coverpoints cover every rs1 register, rs1 edge values, cimm edge values,
+  # and both positive and negative branch offsets.
+  - name: zibi_bnei_op
+    coverpoint:
+      [
+        "Zibi_bnei_cg/{cp_rs1, cp_rs1_edges, cp_imm_edges_5bit_u_n0, cp_offset, cr_rs1_imm_edges_5bit_u_n0_offset}",
+      ]

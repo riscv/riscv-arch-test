@@ -791,6 +791,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "cbie" : val = (val >> 4) & 'h3;
       "cbcfe" : val = (val >> 6) & 'h1;
       "cbze" : val = (val >> 7) & 'h1;
+      "ukte" : val = (val >> 8) & 'h1;
 `ifdef UDB_MXLEN_64
       "pmm" : val = (val >> 32) & 64'h3;
 `endif

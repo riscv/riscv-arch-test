@@ -24,10 +24,10 @@ History of documentation changes that eventually lead to releases.
 a| * Initial draft
 | July 27, 2026
 | 0.2
-a| * Do not test traps into M-mode except ecall from S-mode
+a| * Do not test traps into M-mode except ecall from S-mode.
 | August 6, 2026
 | 0.3
-a| * Removed "custom M-mode"; made clarifications
+a| * Removed "custom M-mode"; made clarifications.
 
 |===
 
@@ -193,7 +193,7 @@ The developer is responsible for providing many things including:
 
 * DUT configuration information described in the CTP, including UDB description, linker file describing memory map, sail.json configured to match DUT, RVMODEL macros specific to DUT.
 * Custom trap handler, if any, to handle invisible traps.
-* implementation specific boot code, as needed
+* Implementation specific boot code, as needed.
 
 // if standard M-mode boot code does not run on the DUT or if additional
 // configuration is necessary.

@@ -16,31 +16,25 @@ csri_config = InstructionTypeConfig(required_params={"rd", "rs2", "rs2val", "imm
 
 def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
-    # Use writable unprivileged extension CSRs if any exist,
-    # else use mepc if U is not supported
-    # else use instret (which is not writable, but at least can be accessed)
+    # The CSR is selected once via RVTEST_TEST_CSR (see utils.h), which also pins the test
+    # to a privilege mode where the CSR is writable. A read-only choice (instret) sets
+    # RVTEST_READ_ONLY_TEST_CSR and needs special handling since it cannot be written.
 
     # instret requires special treatment because it is not writable, and the value is not initialized
     if instr_name in ["csrrw", "csrrwi"] or rs2 == 0 or rd == 0:
-        instret_access = f"li x{rd}, 0 # avoid write to read-only instret, or inconsistent result with rs2 or rd = 0"
+        read_only_access = f"li x{rd}, 0 # avoid write to read-only CSR, or inconsistent result with rs2 or rd = 0"
     else:
-        instret_access = (
-            f"{instr_name} x{rs2}, instret, 0\n"
-            f"{instr_name} x{rd}, instret, 0\n"
-            f"sub x{rd}, x{rd}, x{rs2}  # check that instret value has incremented\n"
+        read_only_access = (
+            f"{instr_name} x{rs2}, RVTEST_TEST_CSR, 0\n"
+            f"{instr_name} x{rd}, RVTEST_TEST_CSR, 0\n"
+            f"sub x{rd}, x{rd}, x{rs2}  # check that the read-only CSR value has incremented\n"
         )
 
     return (
-        "#if defined(F_SUPPORTED)\n"
-        f"{instr_name} x{rd}, fflags, {immval}\n"
-        "#elif defined(V_SUPPORTED)\n"
-        f"{instr_name} x{rd}, vxsat, {immval}\n"
-        "#elif !defined(U_SUPPORTED)\n"
-        f"{instr_name} x{rd}, mepc, {immval}\n"
-        "#elif defined(ZICNTR_SUPPORTED)\n"
-        f"{instret_access}\n"
+        "#ifdef RVTEST_READ_ONLY_TEST_CSR\n"
+        f"{read_only_access}\n"
         "#else\n"
-        f"  #error no CSR known for testing\n"
+        f"{instr_name} x{rd}, RVTEST_TEST_CSR, {immval}\n"
         "#endif\n"
     )
 

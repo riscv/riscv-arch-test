@@ -1,0 +1,87 @@
+# Mapping of normative rules to coverpoints for the Zvabd test suite
+#
+# Zvabd provides vector integer absolute-difference instructions. vabd and vabdu write an
+# SEW-wide result and are defined for SEW of 8, 16 and 32 (and 64 with Zve64x); vwabda and
+# vwabdau accumulate into a 2*SEW-wide result and are defined only for SEW=8 and SEW=16.
+# Each instruction has both .vv and .vx forms. vabs.v is an assembly pseudoinstruction for
+# vabd.vx vd, vs2, x0 and has no encoding of its own, so it is not covered here.
+
+# Remove once Zvabd's rules are tagged in the ISA manual snapshot
+untagged_upstream: Zvabd is not yet in riscv/riscv-isa-manual
+
+normative_rule_definitions:
+  # The Zvabd extension depends upon ext:zve32x[].
+  - name: Zvabd_dependent_Zve32x
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the signed integer SEW-bit
+  # `Op1` and `Op2` elements, writing the result into the SEW-bit elements in vd.
+  - name: vabd_op
+    coverpoint: [""]
+
+  # vabd provides support for SEW of 8, 16, and 32. If ext:zve64x[] is supported, then
+  # vabd also adds support for SEW 64.
+  - name: vabd_sew_defined
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the unsigned integer SEW-bit
+  # `Op1` and `Op2` elements, writing the result into the SEW-bit elements in vd.
+  - name: vabdu_op
+    coverpoint: [""]
+
+  # vabdu provides support for SEW of 8, 16, and 32. If ext:zve64x[] is supported, then
+  # vabdu also adds support for SEW 64.
+  - name: vabdu_sew_defined
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  #
+  # The Ssstrict funct6 x vsew sweeps execute every OP-V funct6, including vwabda's
+  # 0x3D, at SEW=8/16/32/64 in each privilege-mode group, so the reserved-SEW
+  # encodings are exercised for both the .vv (OPIVV) and .vx (OPIVX) forms.
+  - name: vwabda_sew_rsv
+    coverpoint:
+      [
+        "Ssstrict_Sm_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_S_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_U_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_Sm_instr_cg/cp_v_IVX_f6",
+        "Ssstrict_S_instr_cg/cp_v_IVX_f6",
+        "Ssstrict_U_instr_cg/cp_v_IVX_f6",
+      ]
+
+  # This instruction computes the absolute difference between the signed integer SEW-bit
+  # `Op1` and `Op2` elements, and accumulates the results into the 2*SEW-bit accumulator
+  # elements in vd.
+  - name: vwabda_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction encoding
+  # is reserved.
+  - name: vwabda_sew_defined
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  #
+  # Same funct6-exhaustive sweeps as vwabda_sew_rsv; they cover vwabdau's 0x3E too.
+  - name: vwabdau_sew_rsv
+    coverpoint:
+      [
+        "Ssstrict_Sm_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_S_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_U_instr_cg/cp_v_IVV_f6",
+        "Ssstrict_Sm_instr_cg/cp_v_IVX_f6",
+        "Ssstrict_S_instr_cg/cp_v_IVX_f6",
+        "Ssstrict_U_instr_cg/cp_v_IVX_f6",
+      ]
+
+  # This instruction computes the absolute difference between the unsigned integer SEW-bit
+  # `Op1` and `Op2` elements, and accumulates the results into the 2*SEW-bit accumulator
+  # elements in vd.
+  - name: vwabdau_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction encoding
+  # is reserved.
+  - name: vwabdau_sew_defined
+    coverpoint: [""]

@@ -6,9 +6,6 @@ description: Report a problem with tests or supporting code.
 title: "[Bug] "
 labels: [bug]
 body:
-  - type: markdown
-    attributes:
-      value: Please include enough detail for a maintainer to reproduce the problem.
   - type: dropdown
     id: affected-area
     attributes:
@@ -40,7 +37,7 @@ body:
     id: reproduction
     attributes:
       label: Steps to reproduce
-      description: Include the command and relevant DUT details. Attach configuration files below.
+      description: Include the command and relevant DUT details. Attach relevant configuration files, logs, ELFs, or traces.
       placeholder: |
         1. Run ...
         2. Observe ...
@@ -58,8 +55,3 @@ body:
       label: Actual behavior
     validations:
       required: true
-  - type: textarea
-    id: logs
-    attributes:
-      label: Attachments
-      description: Drag and drop logs, configuration files, ELFs, traces, or screenshots. Remove sensitive information.

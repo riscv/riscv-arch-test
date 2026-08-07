@@ -762,7 +762,7 @@
       "supported_pmlen_16": false
     },
     "Smcntrpmf": {
-      "supported": false
+      "supported": true
     },
     "Svbare": {
       "supported": true,

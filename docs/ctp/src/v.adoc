@@ -341,3 +341,12 @@ include::norm/Zvksh_norm_rules.adoc[]
 ==== Zvkt Constant-Time Vector Instructions
 
 Not tested yet.
+
+=== Zvabd Vector Integer Absolute Difference Extension
+
+Zvabd is organized by SEW like other unprivileged vector extensions. vwabda and vwabdau
+apply only to SEW=8 and SEW=16.
+
+include::{testplansdir}/Zvabd.adoc[]
+
+include::norm/Zvabd_norm_rules.adoc[]

@@ -422,7 +422,7 @@ def generate_random_vector_params(
             if instr_type_config.required_params is not None:
                 registers &= instr_type_config.required_params
 
-            for register in registers:
+            for register in sorted(registers):
                 if params_dict[register] != preset_params_dict[register]:
                     if register.startswith("v"):
                         pass  # We haven't taketen these from the register file yet
@@ -445,7 +445,7 @@ def generate_random_vector_params(
     if instr_type_config.required_params is not None:
         registers &= instr_type_config.required_params
 
-    for register in registers:
+    for register in sorted(registers):
         if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
             segments = info.segments
             if (

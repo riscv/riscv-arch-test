@@ -638,6 +638,22 @@
         `cover_info("//      Zmmul - Enabled");
         `include "Zmmul_coverage_init.svh"
     `endif
+    `ifdef COVER_ZVABD16
+        `cover_info("//      Zvabd16 - Enabled");
+        `include "Zvabd16_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVABD32
+        `cover_info("//      Zvabd32 - Enabled");
+        `include "Zvabd32_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVABD64
+        `cover_info("//      Zvabd64 - Enabled");
+        `include "Zvabd64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVABD8
+        `cover_info("//      Zvabd8 - Enabled");
+        `include "Zvabd8_coverage_init.svh"
+    `endif
     `ifdef COVER_ZVBB16
         `cover_info("//      Zvbb16 - Enabled");
         `include "Zvbb16_coverage_init.svh"

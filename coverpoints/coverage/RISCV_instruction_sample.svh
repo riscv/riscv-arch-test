@@ -1766,6 +1766,26 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vabd.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vabdu.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vabs.v"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
         "vadc.vim"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -5813,6 +5833,20 @@
             ins.add_vs3(0);
             ins.add_rs1(1);
             ins.add_vs2(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vwabda.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vwabdau.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
             ins.add_vm(3);
             ins.add_v0();
         end

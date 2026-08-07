@@ -482,6 +482,18 @@
 `ifdef ZMMUL_COVERAGE
   `include "Zmmul_coverage.svh"
 `endif
+`ifdef ZVABD16_COVERAGE
+  `include "Zvabd16_coverage.svh"
+`endif
+`ifdef ZVABD32_COVERAGE
+  `include "Zvabd32_coverage.svh"
+`endif
+`ifdef ZVABD64_COVERAGE
+  `include "Zvabd64_coverage.svh"
+`endif
+`ifdef ZVABD8_COVERAGE
+  `include "Zvabd8_coverage.svh"
+`endif
 `ifdef ZVBB16_COVERAGE
   `include "Zvbb16_coverage.svh"
 `endif

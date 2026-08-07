@@ -51,7 +51,7 @@ NOTE: This document does not restate individual profile constraints such as Ssst
 Those requirements are defined normatively in the RVA23 Profiles and are unchanged for certification.
 
 NOTE: We encourage those who have implemented other base ISAs or extensions to
-run the appropriate RISC-V ACTs to help ensure compliance.
+run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to help ensure compliance.
 
 === Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
@@ -96,8 +96,8 @@ determine which requested traps have been delegated.
 
 === Related Specifications
 
-* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
-* https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
+* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version
+* https://docs.riscv.org/reference/isa/priv/priv-index.html[Privileged ISA Specification] - Latest version
 
 === M-Mode Trap Handler Requirements
 
@@ -127,7 +127,8 @@ environment to achieve the same effect as accessing any M-mode CSR — as
 defined in the M-mode ISA 1.13 specification — that can affect the behavior
 of lower-privilege modes or provide essential information, even if the DUT does not implement that CSR.
 
-These CSRs and memory-mapped I/O registers are:
+These CSRs and memory-mapped I/O registers that need to be accessible by the T-SEE
+are:
 
 [options=header]
 [cols="1,5"]
@@ -137,9 +138,25 @@ These CSRs and memory-mapped I/O registers are:
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
 | `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to `mip`.
-| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE may be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that ADUE may be read-only zero because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01 and/or 11. CDE, DTE are OUT-OF-SCOPE because they do not relate to RVA23 features. FIOM is OUT-OF-SCOPE because I/O memory is not required by the RVA23 profile. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
-| `mseccfg` | SSEED and USEED must be controllable if Zkr is supported; otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are OUT-OF-SCOPE because they do not relate to RVA23 features.  Note `mseccfg.PMM` affects Smmpm, which is not part of RVA23.
-| `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
+| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE may be
+controllable to allow testing of the behavior of lower privilege modes with
+these features enabled and disabled. Note that ADUE may be read-only zero
+because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7
+per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
+and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features. 
+// FIOM is out of scope because I/O memory is not required by the RVA23 profile.
+// KAD: Svpbmt is mandatory in RVA23, thus I/O memory is required.
+All
+writable fields must be controllable to allow testing of the behavior of lower
+privilege modes when certain features are disabled.
+| `mseccfg` | SSEED and USEED must be controllable if Zkr is supported;
+otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are out of scope
+ because
+they do not relate to RVA23 features.  Note `mseccfg.PMM` affects Smmpm, which
+is not part of RVA23.
+| `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the
+behavior of lower privilege modes when certain features are disabled. Other
+fields are our of scope because they do not relate to RVA23 features.
 | `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a designer-supplied M-mode trap handler intercepts invisible traps and relays the rest to S-mode.
 | `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, the trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
 | `mhartid` | Must be readable to influence the behavior of multicore tests.
@@ -152,7 +169,12 @@ The Certification Test Environment does not need to access the equivalent of the
 [cols="1,5"]
 |===
 | CSR | Notes
-| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification. GVA is accessible from `hstatus` and not tested from `mstatus`.  MPV does not affect the behavior of lower privilege modes. XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
+| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from
+`sstatus` and should not be tested through `mstatus` for RVA23 certification.
+GVA is accessible from `hstatus` and not tested from `mstatus`.  MPV does not
+affect the behavior of lower privilege modes and therefore does not need to be
+dynamically changed. Additionally the fields XS, SDT, MBE, SBE, UBE, SXL, and UXL
+are out of scope for RVA23.
 | `mie` | SEIE, STIE, SSIE, LCOFIE, and SGEIE are controlled from `sie` or `hie`.
 | `misa` | Not tested because required RVA23 features are not turned off during testing.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.
@@ -172,10 +194,6 @@ The Certification Test Environment does not need to access the equivalent of the
 |===
 
 === Interrupts
-// KAD OUT-OF-SCOPE is a term that we use when something is in scope for RVA23
-// but we are not currently testing it. It should not be used here.
-// Everything in RVA23 is in-scope. We should only list the subset that we are not testing
-
 All supervisor interrupts (SEI, STI, SSI, and LCOFI) are tested.
 Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested. Machine
 interrupts are subjected to limited testing as described above.

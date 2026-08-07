@@ -92,7 +92,7 @@ jobs:
       cancel-in-progress: false
     permissions:
       issues: write
-      pull-requests: read
+      pull-requests: write
     runs-on: ubuntu-slim
     steps:
       - name: Reconcile pull request labels

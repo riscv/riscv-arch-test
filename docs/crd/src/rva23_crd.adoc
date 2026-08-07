@@ -84,7 +84,7 @@ CSR in order to properly set up the environment for lower privilege tests, a
 T-SBI-defined call is made by placing commands in registers and performing an `ecall`.
 
 This `ecall`'s trap handler executes the
-necessary M-mode code need to complete the requested action. One such need for a
+necessary M-mode code needed to complete the requested action. One such need for a
 T-SBI call is necessary to fulfill a requirement of RVA23's defined Sspm
 extension which requires an execution environment to provide a means to select
 PMLEN. Another need is for the tests to be able to request that specific traps are

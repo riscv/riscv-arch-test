@@ -27,7 +27,7 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 
 def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
-    if extension in ["Vx", "Vls", "Vf", "Zvbb", "Zvkb"]:
+    if extension in ["Vx", "Vls", "Vf", "Zvbb", "Zvkb", "Zvabd"]:
         return [extension + effew for effew in ["8", "16", "32", "64"]]
     elif extension == "ExceptionsVf":
         return [extension + effew for effew in ["16", "32", "64"]]

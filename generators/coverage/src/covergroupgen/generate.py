@@ -112,7 +112,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignV")
 
 # Subset of vector prefixes that support widening instructions.
-VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
+VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma", "Zvabd")
 
 
 def _sew_variants_for(arch: str) -> list[str] | None:
@@ -121,7 +121,7 @@ def _sew_variants_for(arch: str) -> list[str] | None:
     A vector testplan is duplicated into one variant per returned SEW, replacing
     the base entry.
     """
-    if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
+    if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb", "Zvabd")):
         return ["8", "16", "32", "64"]
     if arch == "Vf":
         # SEW=8 has only Zvfh's conversions between 8-bit integers and binary16
@@ -173,6 +173,8 @@ _TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
     "WVX": (True, False, True),
     "WVV_ACC": (True, True, True),
     "WVX_ACC": (True, False, True),
+    "WVV_ACC_STD": (True, True, True),
+    "WVX_ACC_STD": (True, False, True),
     "WWV": (True, True, True),
     "WWX": (True, False, True),
     "VWV": (True, True, True),
@@ -363,8 +365,23 @@ def _filter_testplans(
 ) -> dict[str, dict[tuple[str, str], list[str]]]:
     """Filter testplans by comma-separated include/exclude extension lists.
 
-    Matches against post-expansion keys (e.g. Vx8, not Vx).
+    Matches exact post-expansion keys (e.g. Vx8), and also allows vector base names
+    such as Vx, Zvkb, or Zvabd to match their per-SEW variants.
     """
+
+    def matches_filter(arch: str, filters: set[str] | None) -> bool:
+        if filters is None:
+            return True
+
+        for ext in filters:
+            if arch == ext:
+                return True
+
+            if arch.startswith(ext) and arch[len(ext) :].isdigit():
+                return True
+
+        return False
+
     include_set: set[str] | None = None
     if extensions != "all":
         include_set = {ext.strip() for ext in extensions.split(",") if ext.strip()}
@@ -375,7 +392,7 @@ def _filter_testplans(
     return {
         arch: tp
         for arch, tp in test_plans.items()
-        if (include_set is None or arch in include_set) and arch not in exclude_set
+        if matches_filter(arch, include_set) and not matches_filter(arch, exclude_set)
     }
 
 

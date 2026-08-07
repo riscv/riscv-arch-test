@@ -32,12 +32,33 @@ jobs:
           script: |
             const statusPrefix = "status: ";
             const staleLabel = "Stale";
+            const issueAreaLabels = new Map([
+              ["Tests — Test generation or individual test files", "Tests"],
+              ["Test Environment — Trap handler, boot code, signature checking, etc.", "Test Environment"],
+              ["Test Framework — Test selection or compilation", "Test Framework"],
+              ["Coverpoints — Coverage model or coverage generation", "Coverpoints"],
+              ["CTP — Certification Test Plan", "CTP"],
+              ["CRD — Certification Requirements Document", "CRD"],
+              ["Other — Other project documentation", "documentation"],
+            ]);
 
             async function getLabels(issue_number) {
               return github.paginate(github.rest.issues.listLabelsOnIssue, {
                 ...context.repo,
                 issue_number,
               });
+            }
+
+            async function addIssueAreaLabel(issue) {
+              const match = issue.body?.match(/^### Affected area\s*\r?\n\s*\r?\n([^\r\n]+)/m);
+              const areaLabel = issueAreaLabels.get(match?.[1].trim());
+              if (areaLabel) {
+                await github.rest.issues.addLabels({
+                  ...context.repo,
+                  issue_number: issue.number,
+                  labels: [areaLabel],
+                });
+              }
             }
 
             async function setStatus(issue_number, status) {
@@ -69,6 +90,7 @@ jobs:
                 return;
               }
 
+              await addIssueAreaLabel(issue);
               const labels = await getLabels(issue.number);
               if (!labels.some(({ name }) => name.startsWith(statusPrefix))) {
                 await setStatus(issue.number, "status: needs-triage");
@@ -145,6 +167,30 @@ jobs:
               const paths = files.map(({ filename }) => filename);
               const labels = new Set();
               const hasPath = (prefix) => paths.some((path) => path.startsWith(prefix));
+              const hasGeneralDocumentation = paths.some(
+                (path) =>
+                  path.startsWith("docs/") && !path.startsWith("docs/ctp/") && !path.startsWith("docs/crd/"),
+              );
+              const hasCtp =
+                hasPath("docs/ctp/") || hasPath("coverpoints/norm/") || hasPath("coverpoints/param/");
+              const hasCoverpoints =
+                hasPath("generators/coverage/") ||
+                hasPath("framework/src/act/fcov/") ||
+                paths.some(
+                  (path) =>
+                    path.startsWith("coverpoints/") &&
+                    !path.startsWith("coverpoints/norm/") &&
+                    !path.startsWith("coverpoints/param/"),
+                );
+              const hasTestEnvironment = hasPath("tests/env/");
+              const hasTests =
+                hasPath("generators/testgen/") ||
+                hasPath("testplans/") ||
+                paths.some((path) => path.startsWith("tests/") && !path.startsWith("tests/env/"));
+              const hasTestFramework =
+                paths.some((path) => path.startsWith("framework/") && !path.startsWith("framework/src/act/fcov/")) ||
+                paths.includes("Makefile") ||
+                paths.includes("run_tests.py");
               const dependencyFiles = new Set([
                 "pyproject.toml",
                 "uv.lock",
@@ -164,22 +210,25 @@ jobs:
               ) {
                 labels.add("CI");
               }
-              if (hasPath("docs/")) {
+              if (hasGeneralDocumentation) {
                 labels.add("documentation");
               }
-              if (hasPath("docs/ctp/")) {
+              if (hasCtp) {
                 labels.add("CTP");
               }
               if (hasPath("docs/crd/")) {
                 labels.add("CRD");
               }
-              if (hasPath("framework/")) {
+              if (hasTestEnvironment) {
+                labels.add("Test Environment");
+              }
+              if (hasTests) {
+                labels.add("Tests");
+              }
+              if (hasTestFramework) {
                 labels.add("Test Framework");
               }
-              if (hasPath("generators/testgen/")) {
-                labels.add("Test Generator");
-              }
-              if (hasPath("coverpoints/") || hasPath("generators/coverage/")) {
+              if (hasCoverpoints) {
                 labels.add("Coverpoints");
               }
               if (paths.some((path) => dependencyFiles.has(path.split("/").at(-1)))) {
@@ -242,14 +291,14 @@ jobs:
 
             async function reconcilePullRequest(pullRequest) {
               if (pullRequest.draft) {
-                await setStatus(pullRequest.number, null, true);
-              } else {
-                const labels = await getLabels(pullRequest.number);
-                const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
-                if (statusLabels.every((status) => automaticStatuses.has(status))) {
-                  const status = (await changesRequestedOnHead(pullRequest)) ? needsAuthor : needsReview;
-                  await setStatus(pullRequest.number, status);
-                }
+                return;
+              }
+
+              const labels = await getLabels(pullRequest.number);
+              const statusLabels = labels.map(({ name }) => name).filter((name) => name.startsWith(statusPrefix));
+              if (statusLabels.every((status) => automaticStatuses.has(status))) {
+                const status = (await changesRequestedOnHead(pullRequest)) ? needsAuthor : needsReview;
+                await setStatus(pullRequest.number, status);
               }
 
               await addAreaLabels(pullRequest.number);

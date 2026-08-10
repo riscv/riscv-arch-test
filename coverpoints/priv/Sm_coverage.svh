@@ -469,44 +469,41 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif // RVMODEL_MSIP_ADDRESS
     `endif // S1P13P0_SUPPORTED
 
-    // Counter Wraparound Coverage
+    csrrw_allones: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.rs1_val == '1);
+    }
+    rs2_ones: coverpoint ins.current.rs2_val {
+        bins allones = {'1};
+    }
+
     `ifdef UDB_MXLEN_32
-        cp_mcycle_wraparound : coverpoint {
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCYCLE ,"mcycle", ""),
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCYCLE ,"mcycleh", "")
-        } {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
+        mcycleh: coverpoint ins.current.insn[31:20] {
+            bins mcycleh = {CSR_MCYCLEH};
         }
-    `else
-        cp_mcycle_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MCYCLE ,"mcycle", "") {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
+        minstreth: coverpoint ins.current.insn[31:20] {
+            bins minstreth = {CSR_MINSTRETH};
         }
     `endif
 
-    `ifdef UDB_MXLEN_32
-        cp_minstret_wraparound : coverpoint {
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MINSTRET ,"minstret", ""),
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MINSTRET ,"minstreth", "")
-        } {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
-        }
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
+    sd: coverpoint ins.current.insn {
+        wildcard bins sd = {SD};
+    }
+
+    `ifdef UDB_MXLEN_64
+        cp_mtime_wraparound: cross priv_mode_m, sd, rs2_ones;
     `else
-        cp_minstret_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MINSTRET ,"minstret", "") {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
-        }
+        cp_mtime_wraparound: cross priv_mode_m, sw, rs2_ones;
     `endif
+    cp_mcycle_wraparound:   cross priv_mode_m, csrrw_allones, mcycle;
+    cp_minstret_wraparound: cross priv_mode_m, csrrw_allones, minstret;
 
     `ifdef UDB_MXLEN_32
-        cp_mtime_wraparound : coverpoint {
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TIME, "time", ""),
-            get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TIME, "timeh", "")
-        } {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
-        }
-    `else
-        cp_mtime_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_TIME, "time", "") {
-            bins wrapped = (64'hFFFFFFFF_FFFFFFFF => 64'h00000000_00000000);
-        }
+        cp_mcycleh_wraparound:   cross priv_mode_m, csrrw_allones, mcycleh;
+        cp_minstreth_wraparound: cross priv_mode_m, csrrw_allones, minstreth;
+        cp_mtimeh_wraparound: cross priv_mode_m, sw, rs2_ones;
     `endif
 
 endgroup

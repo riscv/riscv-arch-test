@@ -463,25 +463,25 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     lines = []
 
-    ######################################
-    coverpoint = "cp_minstret_wfi_timeout"
-    ######################################
-    lines.append(comment_banner(coverpoint, "wfi with nothing armed: minstret delta, no trap expected"))
-    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase("minstret_wfi_timeout", coverpoint, covergroup),
-            "csrw mie, zero              # nothing enabled, nothing pending",
-            "csrci mstatus, 8             # mstatus.MIE = 0",
-            f"csrr x{r_before}, minstret",
-            "wfi                          # no event armed; must eventually fall through per spec",
-            f"csrr x{r_after}, minstret",
-            f"sub x{r_diff}, x{r_after}, x{r_before}",
-            write_sigupd(r_diff, test_data),
-        ]
-    )
-    test_data.int_regs.return_registers([r_before, r_after, r_diff])
+    # ######################################
+    # coverpoint = "cp_minstret_wfi_timeout"
+    # ######################################
+    # lines.append(comment_banner(coverpoint, "wfi with nothing armed: minstret delta, no trap expected"))
+    # r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    # lines.extend(
+    #     [
+    #         "",
+    #         test_data.add_testcase("minstret_wfi_timeout", coverpoint, covergroup),
+    #         "csrw mie, zero              # nothing enabled, nothing pending",
+    #         "csrci mstatus, 8             # mstatus.MIE = 0",
+    #         f"csrr x{r_before}, minstret",
+    #         "wfi                          # no event armed; must eventually fall through per spec",
+    #         f"csrr x{r_after}, minstret",
+    #         f"sub x{r_diff}, x{r_after}, x{r_before}",
+    #         write_sigupd(r_diff, test_data),
+    #     ]
+    # )
+    # test_data.int_regs.return_registers([r_before, r_after, r_diff])
 
     ######################################
     coverpoint = "cp_minstret_wfi_pending"

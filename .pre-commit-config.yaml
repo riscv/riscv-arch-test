@@ -76,7 +76,7 @@ repos:
 
   # Find security issues in GitHub Actions workflows
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: 067260dc5fe6ea86b7551bfd6f8b3ba4e6c93129 # frozen: v1.28.0
+    rev: 451b56af716f9f0d0c2b816503a3fd0cf8b036fa # frozen: v1.29.0
     hooks:
       - id: zizmor
 
@@ -108,14 +108,14 @@ repos:
 
   # Check links in markdown files
   - repo: https://github.com/tcort/markdown-link-check
-    rev: 3a8992dcbb083a248671812c7027b6995ef88523 # frozen: v3.14.2
+    rev: 275c27c5035a5b4a656fe0e21a4c1403c118c767 # frozen: v3.15.0
     hooks:
       - id: markdown-link-check
         args: [-q, -c .markdown-link-check.config]
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 8721e9c1e937979236af38772ef056f608678a0a # frozen: 43.284.0
+    rev: bf252c92d5fccab3ce0b7e1f7ad1ca8615338465 # frozen: 43.288.0
     hooks:
       - id: renovate-config-validator
 

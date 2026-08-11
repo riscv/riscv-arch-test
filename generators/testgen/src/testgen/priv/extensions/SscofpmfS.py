@@ -15,13 +15,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
-    """cp_lcofi_sip_s: Interrupt from sip.LCOFI, running in S-mode.
-
-    sstatus.SIE=1 (fixed), mideleg.LCOFI=1, sweep sie.LCOFIE x sip.LCOFIP.
-    sie/sip are restricted views of mie/mip, so setup happens directly on
-    mie/mip/mstatus in M-mode (matches InterruptsS/U pattern) before
-    switching down, to avoid nested traps mid-switch.
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_lcofi_sip_s"
@@ -35,10 +28,6 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Interrupt from sip.LCOFI, running in S-mode.\n"
-            "sstatus.SIE=1 (fixed), mideleg.LCOFI=1, sweep sie.LCOFIE x sip.LCOFIP.\n"
-            "sie/sip alias mie/mip bit 13, so setup is direct M-mode CSR writes\n"
-            "(matches InterruptsS/U pattern) before switching to S-mode.",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -84,13 +73,6 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_lcofip_hw_only_s_tests(test_data: TestData) -> list[str]:
-    """cp_lcofip_hw_only: counter overflow (LCOFIP) only results from hardware
-    increments of counter registers, not software writes to OF -- S-mode only.
-
-    Software-setting RVMODEL_MHPMEVENT's OF bit directly must NOT assert
-    mip.LCOFIP; only a genuine hardware wraparound should. All CSR access
-    from S-mode goes through SBI per _csr_access, matching cp_sscofpmf_access.
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_lcofip_hw_only"
@@ -103,11 +85,6 @@ def _generate_lcofip_hw_only_s_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Counter overflow (LCOFIP) only results from hardware increments\n"
-            "of counter registers -- S-mode only. Software-set/clear the OF bit\n"
-            "in RVMODEL_MHPMEVENT directly (no HW increments in between) and\n"
-            "confirm mip.LCOFIP stays 0 in both cases. All access from S-mode\n"
-            "routed via SBI (RVMODEL_MHPMEVENT and mip are M-mode CSRs).",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -137,12 +114,6 @@ def _generate_lcofip_hw_only_s_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_scountovf_shadow_s_tests(test_data: TestData) -> list[str]:
-    """cp_scountovf_shadow: scountovf shadows OF bits of mhpmevent3:31 -- S-mode only.
-
-    From S-mode: mcounteren = all 1s (fixed). Write OF patterns
-    (all_0s, all_1s, walking_1s) across mhpmevent3...31.OF, read scountovf,
-    confirm it matches the 1s in the OF fields.
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_scountovf_shadow"
@@ -156,12 +127,6 @@ def _generate_scountovf_shadow_s_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "scountovf shadows OF bits of mhpmevent3:31 -- S-mode only.\n"
-            "mcounteren = all 1s (fixed, set once via SBI). Write OF patterns\n"
-            "(all_0s, all_1s, walking_1s) across mhpmevent3...31.OF, read\n"
-            "scountovf, confirm it matches the 1s in the OF fields.\n"
-            "mhpmevent writes go via SBI from S-mode; scountovf is read\n"
-            "natively (S-mode-accessible CSR, addr[9:8]=01).",
         ),
         "",
         "RVTEST_GOTO_LOWER_MODE Smode",

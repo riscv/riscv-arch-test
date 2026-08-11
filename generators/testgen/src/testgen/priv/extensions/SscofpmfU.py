@@ -13,14 +13,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
-    """cp_lcofi_sip_u: Interrupt from sip.LCOFI, running in U-mode.
-
-    sstatus.SIE=0 (fixed), mideleg.LCOFI=1, sweep sie.LCOFIE x sip.LCOFIP.
-    Below S-mode, the S-level enable bit doesn't gate delegated interrupts --
-    this deliberately holds SIE=0 to prove the interrupt still fires in
-    U-mode. sie/sip alias mie/mip bit 13, so setup is direct M-mode CSR
-    writes (matches InterruptsS/U pattern) before switching down.
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_lcofi_sip_u"
@@ -34,11 +26,6 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Interrupt from sip.LCOFI, running in U-mode.\n"
-            "sstatus.SIE=0 (fixed) -- below S-mode this doesn't gate the\n"
-            "delegated interrupt; mideleg.LCOFI=1, sweep sie.LCOFIE x sip.LCOFIP.\n"
-            "sie/sip alias mie/mip bit 13, so setup is direct M-mode CSR writes\n"
-            "(matches InterruptsS/U pattern) before switching to U-mode.",
         ),
         "",
         "# === M-MODE SETUP ===",

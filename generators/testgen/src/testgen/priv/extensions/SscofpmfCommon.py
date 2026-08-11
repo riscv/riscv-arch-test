@@ -17,11 +17,6 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
-# tsbi_call()'s CSR table (_CSR_ALIASES in tsbi.py) only covers CSRs used by
-# other suites (e.g. Sdtrig). Performance-monitoring CSRs aren't in that
-# table, but tsbi.py's _parse_csr() explicitly supports a literal hex/numeric
-# CSR address as a fallback -- so we substitute these names for their literal
-# addresses before handing off to tsbi_call().
 _FIXED_TSBI_ALIASES = {
     "RVMODEL_MHPMEVENT": "0x323",  # mhpmevent3
     "RVMODEL_MHPMCOUNTER": "0xb03",  # mhpmcounter3
@@ -126,13 +121,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
     lines = [
         comment_banner(
             coverpoint,
-            "OF bit is set when hpmcounter overflows.\n"
-            "RVMODEL_MHPMEVENT[55:0] = VAL, [62:58] = 0b11100 (M/S/U guaranteed),\n"
-            "[63] = OF (0/1). mip/mie cleared directly in M-mode (matches\n"
-            "InterruptsS/U pattern) before switching modes, to avoid nested traps\n"
-            "mid-T-SBI-call. Counter set to all 1s, run event code at least twice\n"
-            "via SBI per spec, check OF sets, counter isn't all 0s/1s, LCOFIP\n"
-            "fires iff OF was initially 0.",
+            "OF bit is set when hpmcounter overflows.\n",
         ),
         "",
     ]
@@ -211,13 +200,6 @@ def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> lis
     lines = [
         comment_banner(
             coverpoint,
-            "Counter overflow interrupt triggered by hardware counter increments,\n"
-            "not software writes. mip/mie cleared directly in M-mode before\n"
-            "switching (matches InterruptsS/U pattern). RVMODEL_MHPMEVENT write\n"
-            "and per-step accesses go via SBI once in target mode, per spec.\n"
-            "Software-write the counter to all 1s then all 0s -- OF must stay 0\n"
-            "in both cases, since OF should only latch on a genuine HW increment\n"
-            "causing wraparound, not a direct CSR write.",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -328,23 +310,11 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str) -> list
 
 
 def _scountovf_access(instr: str, mode: str) -> str:
-    """scountovf is natively S-mode-accessible (addr[9:8]=01) -- access it
-    directly in both Sm and S mode, same as other Sm-only CSRs, rather than
-    via tsbi_call. Routing a faulting write through tsbi_call would execute
-    the instruction inside the M-mode trap handler itself, and a fault there
-    triggers a recursive trap that corrupts the handler's save-area sp (see
-    the T-SBI CSR table's "these must not fault" note). Direct access lets
-    the normal per-mode trap handler catch the illegal-instruction trap.
-    """
+
     return instr
 
 
 def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]:
-    """cp_sscofpmf_access: read, write 1s, write 0s, set, clear on hpm CSRs.
-
-    Per coverpoint spec: scountovf access is only exercised from M/S-mode;
-    mhpmeventh3..31 sweep is only exercised from M-mode. Not applicable to U-mode.
-    """
     if mode == "U":
         return []
 
@@ -382,12 +352,6 @@ def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]
                 lines.extend([f"{indent}LI(x{r_val}, -1)", f"{indent}csrc {csr_name}, x{r_val}"])
             lines.append("")
 
-    # scountovf is natively S-mode-accessible (addr[9:8]=01), and its write
-    # traps (it's read-only). For that trap to be delegated to and caught by
-    # the S-mode handler -- as the signature framework expects -- it must run
-    # at *real* S-mode privilege, not via tsbi_call, which executes inside the
-    # M-mode trap handler and would corrupt recursive-trap state on fault
-    # (see the T-SBI CSR table's "these must not fault" note).
     if mode == "Sm":
         emit_accesses("scountovf")
     else:  # mode == "S"
@@ -406,11 +370,6 @@ def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]
 
 
 def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
-    """cp_lcofi: Interrupt pending and enable.
-
-    mstatus.MIE=0, mstatus.SIE=1 (fixed); sweep mip.LCOFIP x mie.LCOFIE x
-    mideleg.LCOFI, from S-mode and U-mode. Not applicable to Sm.
-    """
     if priv_mode == "Sm":
         return []
 
@@ -428,17 +387,7 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            f"Interrupt pending and enable, mode = {priv_mode}.\n"
-            "mstatus.MIE=0, mstatus.SIE=1 (fixed); sweep mip.LCOFIP x mie.LCOFIE\n"
-            "x mideleg.LCOFI. Setup happens directly in M-mode before switching\n"
-            "down (matches InterruptsS/U pattern).\n"
-            "When LCOFIP=1 and LCOFIE=1, the interrupt is pending+enabled\n"
-            "before RVTEST_GOTO_LOWER_MODE's mret. Per spec, an interrupt to\n"
-            "mode X fires whenever current_mode < X -- MIE only gates M-level\n"
-            "interrupts while still in M-mode, and this generator never lands\n"
-            "back in M during the eligible window. So the trap fires exactly\n"
-            "at the mret boundary, not during an idle wait -- hence plain\n"
-            "nops here instead of RVTEST_IDLE_FOR_INTERRUPT.",
+            f"Interrupt pending and enable, mode = {priv_mode}.\n",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -510,15 +459,7 @@ def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list
     lines = [
         comment_banner(
             coverpoint,
-            f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 competing interrupts).\n"
-            "mip/mie setup happens directly in M-mode before switching (matches\n"
-            "InterruptsS/U pattern), avoiding nested traps mid-switch.\n"
-            "For Sm: MIE is set directly, so priority is tested in M-mode itself.\n"
-            "For S/U: MIE is left 0 and MPIE=1 is set instead, so mret's\n"
-            "MIE<-MPIE transfer only enables interrupts the instant we land in\n"
-            "the target mode -- otherwise the M-level competing interrupts\n"
-            "(meip/mtip/msip) fire during M-mode setup, before the switch ever\n"
-            "happens, and 'priority after switching' is never actually tested.",
+            f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 competing interrupts).\n",
         ),
         "",
     ]
@@ -625,6 +566,6 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     tc.code.extend(_generate_overflow_hw_only_tests(test_data, mode))
     tc.code.extend(_generate_scountovf_mcounteren_tests(test_data, mode))
     tc.code.extend(_generate_sscofpmf_access_tests(test_data, mode))
-    # tc.code.extend(_generate_lcofi_tests(test_data, mode))
-    # tc.code.extend(_generate_lcofip_priority_tests(test_data, mode))
+    tc.code.extend(_generate_lcofi_tests(test_data, mode))
+    tc.code.extend(_generate_lcofip_priority_tests(test_data, mode))
     return [test_data.end_test_chunk()]

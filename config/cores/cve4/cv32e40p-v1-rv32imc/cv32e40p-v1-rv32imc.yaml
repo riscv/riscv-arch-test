@@ -155,10 +155,10 @@ params:
   NUM_PMP_ENTRIES: 0
   MCOUNTENABLE_EN:
     [
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
       false,
       false,
       false,
@@ -188,4 +188,3 @@ params:
       false,
       false,
     ]
-# end

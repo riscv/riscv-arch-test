@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Instruction formatter registry with automatic discovery."""
+"""Instruction formatter registration, lookup, and rendering."""
 
 from __future__ import annotations
 
@@ -23,7 +23,6 @@ from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
-VectorInstructionFormatter = Callable[[str, TestData, InstructionParams, str], tuple[list[str], list[str], list[str]]]
 
 
 class MissingInstructionFormatterError(MissingRegistryItemError):
@@ -93,45 +92,40 @@ class InstructionTypeConfig:
     vector_data: VectorTypeConfig | None = None
 
 
-# Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)
-_INSTRUCTION_CONFIGS: dict[str, tuple[InstructionFormatter, InstructionTypeConfig]] = {}
+# Registry: dict mapping instruction type to (instruction formatter, instruction type config)
+_INSTRUCTION_FORMATTERS: dict[str, tuple[InstructionFormatter, InstructionTypeConfig]] = {}
 
 
 def add_instruction_formatter(
     instr_type: str, instruction_type_config: InstructionTypeConfig
 ) -> Callable[[InstructionFormatter], InstructionFormatter]:
     """
-    Decorator to register an instruction formatter for a given instruction type.
+    Register an instruction formatter for an instruction type.
 
     Args:
         instr_type: The instruction type string (e.g., "R", "I", "S")
-        instruction_type_config: Configuration for the instruction type specifying
-                                 required params, reg ranges, imm ranges, etc.
+        instruction_type_config: Metadata specifying required parameters and operand constraints.
     """
 
     def decorator(formatter_func: InstructionFormatter) -> InstructionFormatter:
-        _INSTRUCTION_CONFIGS[instr_type] = (formatter_func, instruction_type_config)
+        _INSTRUCTION_FORMATTERS[instr_type] = (formatter_func, instruction_type_config)
         return formatter_func
 
     return decorator
 
 
-def get_instr_type_config(instr_type: str) -> InstructionTypeConfig:
-    """Get the configuration for an instruction type."""
-    if instr_type not in _INSTRUCTION_CONFIGS:
-        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
-    return _INSTRUCTION_CONFIGS[instr_type][1]
+def get_instruction_type_config(instr_type: str) -> InstructionTypeConfig:
+    """Get the configuration registered for an instruction type."""
+    if instr_type not in _INSTRUCTION_FORMATTERS:
+        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_FORMATTERS))
+    return _INSTRUCTION_FORMATTERS[instr_type][1]
 
 
-def get_instr_type_formatter(instr_type: str) -> InstructionFormatter:
-    """Get the instruction formatter function for an instruction type."""
-    if instr_type not in _INSTRUCTION_CONFIGS:
-        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
-    return _INSTRUCTION_CONFIGS[instr_type][0]
-
-
-# Discover and import formatters at module load
-discover_and_import_modules(Path(__file__).parent / "types", "testgen.formatters.types")
+def _get_instruction_formatter(instr_type: str) -> InstructionFormatter:
+    """Get the formatter function registered for an instruction type."""
+    if instr_type not in _INSTRUCTION_FORMATTERS:
+        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_FORMATTERS))
+    return _INSTRUCTION_FORMATTERS[instr_type][0]
 
 
 def format_instruction(
@@ -152,7 +146,7 @@ def format_instruction(
     Returns:
         Tuple of (setup_code, test_code, check_code) as strings
     """
-    formatter = get_instr_type_formatter(instr_type)
+    formatter = _get_instruction_formatter(instr_type)
     setup, test, check = formatter(instr_name, test_data, params)
     return "\n".join(setup), "\n".join(test), "\n".join(check)
 
@@ -206,3 +200,7 @@ def format_single_testcase(
         tc.code.append(check)
 
     return test_data.end_test_chunk()
+
+
+# Discover and import instruction formatter plugins at module load.
+discover_and_import_modules(Path(__file__).parent / "types", "testgen.formatters.types")

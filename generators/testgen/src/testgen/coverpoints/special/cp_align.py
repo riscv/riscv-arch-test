@@ -7,11 +7,11 @@
 
 """cp_align coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
@@ -124,6 +124,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         else:
             raise ValueError(f"Unknown instruction type: {instr_type} for cp_align.")
 
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return [test_data.end_test_chunk()]

@@ -309,11 +309,6 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str) -> list
     return lines
 
 
-def _scountovf_access(instr: str, mode: str) -> str:
-
-    return instr
-
-
 def _generate_sscofpmf_access_tests(test_data: TestData, mode: str) -> list[str]:
     if mode == "U":
         return []

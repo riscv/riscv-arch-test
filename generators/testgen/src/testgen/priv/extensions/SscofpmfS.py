@@ -10,8 +10,10 @@ from collections.abc import Callable
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import _csr_access, _scountovf_access, generate_sscofpmf_suite
+from testgen.priv.extensions.SscofpmfCommon import _csr_access, generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
+
+# _scountovf_access
 
 
 def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
@@ -165,9 +167,7 @@ def _generate_scountovf_shadow_s_tests(test_data: TestData) -> list[str]:
 
         binname = f"scountovf_shadow_s_{pattern_name}"
         lines.append(f"    {test_data.add_testcase(binname, coverpoint, covergroup)}")
-        lines.append(
-            f"    {_scountovf_access(f'csrr x{r_scountovf}, scountovf   # sample point -- must match OF pattern', 'S')}"
-        )
+        lines.append(f"    csrr x{r_scountovf}, scountovf   # sample point -- must match OF pattern")
         lines.append("")
 
         test_data.int_regs.return_registers([r_scountovf])

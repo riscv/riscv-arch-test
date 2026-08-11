@@ -582,7 +582,7 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrw mstatush, zero // Clear all these fields
         #endif
       #endif
@@ -603,7 +603,7 @@
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
       #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
           li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
           csrw menvcfg, t0
           #if __riscv_xlen == 32
@@ -861,7 +861,7 @@
     // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
     // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
     // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    #ifndef S1P11P0_SUPPORTED
+    #ifdef S1P12P0_OR_LATER_SUPPORTED
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif

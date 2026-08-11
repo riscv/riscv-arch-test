@@ -14,6 +14,7 @@ from testgen.asm.vector_helpers import (
     prep_mask_v,
     write_sigupd_v,
     write_sigupd_v_len,
+    write_sigupd_v_mask_prod,
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
@@ -38,6 +39,13 @@ vlsegff_config = InstructionTypeConfig(
     instruction_class=["load", "segmented"],
     vector_data=VectorTypeConfig(
         overlap_constraints={("vd", "vs2")},
+    ),
+)
+vlm_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"},
+    instruction_class=["load"],
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
     ),
 )
 
@@ -70,11 +78,21 @@ def format_vlsegff_type(
     return format_vlseg_like_type(instr_str, test_data, params, "VLSEGFF")
 
 
+@add_instruction_formatter("VLM", vlm_config)
+def format_vlm_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    assert params.maskval is None, "VLM-Type instructions cannot be masked"
+    return format_vlseg_like_type(instr_str, test_data, params, "VLM", vd_mask=True)
+
+
 def format_vlseg_like_type(
     instr_str: str,
     test_data: TestData,
     params: InstructionParams,
     instr_type: str,
+    *,
+    vd_mask: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.rs1 is not None and params.rs1val_pointer is not None, (
         f"rs1 and rs1val_pointer must be provided for {instr_type}-type instructions"
@@ -98,7 +116,7 @@ def format_vlseg_like_type(
     info = parse_instruction_info(instr_str, "VLUS")
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract an EEW from {instr_type}-type instruction {instr_str}"
-    emul = params.lmul * eew / params.sew
+    emul = params.lmul * eew / params.sew if not vd_mask else 1
     segments = info.segments
 
     setup = []
@@ -125,9 +143,22 @@ def format_vlseg_like_type(
         test = [f"{instr_str} v{params.vd}, (x{params.rs1})"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
+        check = [
+            *write_sigupd_v_len(
+                test_data, params, emul, segments=segments, sew_override=info.load_store_eew, mask_producing=vd_mask
+            )
+        ]
+
+        if vd_mask:
+            check.extend(
+                [
+                    "# Mask-producing SIGUPD Requires a VLMAX variant of the instruction. But, for vlm.v specifically, the",
+                    "# spec does not allow the vlm.v variant. So, we fill the VLMAX sigupd with the same value",
+                    *write_sigupd_v_mask_prod(test_data, params),
+                ]
+            )
     else:
-        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew, mask_producing=vd_mask)]
 
     # This can only be released after sigupd
     if params.maskval:

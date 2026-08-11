@@ -351,3 +351,90 @@ def make_cp_custom_ordered_index_overlap(
     return_testcase_registers(test_data, params)
 
     return [tc]
+
+
+@add_coverpoint_generator("cp_custom_vwholeRegLS_vill")
+def make_cp_custom_vwholeRegLS_vill(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Checks that whole register load/store operations are unaffected by the vill bit
+    """
+
+    desc = "Whole Register Load Store (vill=1)"
+    bin_name = "1"
+    params = generate_random_vector_params(test_data, instr_name, instr_type, 1, vl=2, suite="length")
+
+    # Write the test manually so we can insert
+    tc = test_data.begin_test_chunk()
+    tc.code.append("# Testcase fault-only-first updates vl")
+
+    label_line = test_data.add_testcase(bin_name, coverpoint)
+
+    # Add test and signature update lines
+    setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
+
+    vl_reg, vtype_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    force_vill = "\n".join(
+        [
+            "# Force a vector configuration with vill = 1",
+            f"csrr x{vl_reg}, vl",
+            f"csrr x{vtype_reg}, vtype",
+            f"LI (x{params.temp_reg}, {1 << (test_data.xlen - 1)})",
+            f"vsetvl x0, x0, x{params.temp_reg}",
+        ]
+    )
+    reset_vtype = f"vsetvl x0, x{vl_reg}, x{vtype_reg}"
+
+    tc.code.extend([f"# {desc}", setup, force_vill, label_line, test, reset_vtype, check])
+
+    test_data.int_regs.return_registers([vl_reg, vtype_reg])
+    tc = test_data.end_test_chunk()
+    return_testcase_registers(test_data, params)
+
+    return [tc]
+
+
+@add_coverpoint_generator("cp_custom_vwholeRegLS_lmul")
+def make_cp_custom_vwholeRegLS_lmul(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """
+    Check that while register load/stores work regardless of LMUL with vl == VLMAX
+    """
+
+    test_chunks = []
+    for lmul in (1, 2, 4, 8):
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, suite="length", vl="vlmax")
+        desc = f"Whole Register Load/Store lmul={lmul}"
+        bin_name = f"lmul_{lmul}"
+
+        test_chunks.append(
+            format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        )
+        return_testcase_registers(test_data, params)
+
+    return test_chunks
+
+
+@add_coverpoint_generator("cp_custom_maskLS")
+def make_cp_custom_maskLS(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates a cross of lmuls > 1 and sews > 8 to cover EMUL >= 16 cases for mask load/stores.
+    """
+
+    if test_data.config.sew == 8:
+        return []
+
+    test_chunks = []
+    for lmul in (2, 4, 8):
+        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, vl="vlmax", suite="length")
+        desc = f"Mask LS lmul={lmul}"
+        bin_name = f"lmul_{lmul}"
+
+        test_chunks.append(
+            format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        )
+        return_testcase_registers(test_data, params)
+
+    return test_chunks

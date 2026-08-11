@@ -12,7 +12,7 @@ from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector import get_base_lmul, parse_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -41,6 +41,13 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             edges = VECTOR_EDGES.vf_edges
         elif suffix.startswith("ls"):
             edges = VECTOR_EDGES.vls_edges
+            info = parse_instruction_info(instr_name, instr_type)
+            multiplier = info.get_size_multiplier(register, sew)
+
+            if multiplier < 1:
+                suffix += f"_emulf{int(1 / multiplier)}"
+            else:
+                suffix += f"_emul{int(multiplier)}"
         elif suffix == "eew1":
             vl = 8
         elif suffix.startswith("egs"):

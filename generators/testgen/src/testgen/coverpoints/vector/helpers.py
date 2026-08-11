@@ -30,7 +30,7 @@ def make_and_register_edge_label(reg_name: str, edge_name: str, suffix: str, tes
         emul = int(emul_match.group(1))
 
     label = f"{reg_name}_edge_{edge_name}_{suffix}"
-    if label == "vs2_edge_zero_emul8_ls":
+    if label.startswith("vs2_edge_zero_emul8_ls"):
         # FIXME: Coverage workaround because it requires all zeros in the register
         eew = int(sew * emul)
         max_elements = VLEN_MAX // eew * 8

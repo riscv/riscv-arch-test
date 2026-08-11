@@ -43,6 +43,9 @@ def get_register_emul(
     ):
         emul = 1
 
+    if info.whole_registers is not None:
+        emul = info.whole_registers
+
     return emul
 
 
@@ -277,6 +280,8 @@ def get_occupied_v_registers(
 
     # segment instructions take up consecutive registers even when lmul < 1
     emul = math.ceil(info.get_size_multiplier(register, sew) * lmul) * info.segments
+    if info.whole_registers:
+        emul = info.whole_registers
 
     if start_no_overlap or single_register or emul < 1:
         start_no_register_overlap = 0

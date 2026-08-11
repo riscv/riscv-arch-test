@@ -484,8 +484,7 @@ def _mmode_prelude(mode: str, regs: Regs) -> list[str]:
         ]
     # Stash medeleg only after the page-table setup, which clobbers a0/a1 and t0-t6;
     # t1 is x6, which is in the allocatable pool.
-    lines += [
-    ]
+    lines += []
     return lines
 
 
@@ -1047,6 +1046,9 @@ def _emit_mode_file(mode: str, td: TestData, regs: Regs) -> list[str]:
 @add_priv_test_generator(
     "Ssnpm",
     required_extensions=["Ssnpm"],
+    # Under an active satp most tag patterns cannot survive masking, so nearly every
+    # probe traps and the trap signature outgrows the default budget.
+    extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_ssnpm(test_data: TestData) -> list[TestChunk]:

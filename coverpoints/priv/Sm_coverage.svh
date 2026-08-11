@@ -488,22 +488,36 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     sw: coverpoint ins.current.insn {
         wildcard bins sw = {SW};
     }
-    sd: coverpoint ins.current.insn {
-        wildcard bins sd = {SD};
-    }
-
     `ifdef UDB_MXLEN_64
-        cp_mtime_wraparound: cross priv_mode_m, sd, rs2_ones;
-    `else
-        cp_mtime_wraparound: cross priv_mode_m, sw, rs2_ones;
+        sd: coverpoint ins.current.insn {
+            wildcard bins sd = {SD};
+        }
     `endif
+
     cp_mcycle_wraparound:   cross priv_mode_m, csrrw_allones, mcycle;
     cp_minstret_wraparound: cross priv_mode_m, csrrw_allones, minstret;
 
     `ifdef UDB_MXLEN_32
         cp_mcycleh_wraparound:   cross priv_mode_m, csrrw_allones, mcycleh;
         cp_minstreth_wraparound: cross priv_mode_m, csrrw_allones, minstreth;
-        cp_mtimeh_wraparound: cross priv_mode_m, sw, rs2_ones;
+    `endif
+
+    `ifdef RVMODEL_MTIME_ADDRESS
+        `ifdef UDB_MXLEN_64
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            cp_mtime_wraparound: cross priv_mode_m, sd, mtime_address, rs2_ones;
+        `else
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            mtimeh_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtimeh = {`RVMODEL_MTIME_ADDRESS + 4};
+            }
+            cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
+            cp_mtimeh_wraparound: cross priv_mode_m, sw, mtimeh_address, rs2_ones;
+        `endif
     `endif
 
 endgroup

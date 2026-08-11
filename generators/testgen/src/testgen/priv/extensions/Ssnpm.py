@@ -51,15 +51,6 @@ some tag patterns survive masking, and both the surviving value and the trap
 record (cause/epc/tval) are part of the signature, so the reference model pins
 down the whole matrix.  Each probe seeds its destination with a sentinel first
 so a trapped probe records a distinguishable value rather than stale state.
-
-Why every trap is taken in M-mode
----------------------------------
-Running U-mode code under an active satp requires ``PTE_U`` on the pages the
-test executes from, but S-mode may never *fetch* from a ``U=1`` page -- an
-S-mode trap handler living in the same identity-mapped superpage would fault
-forever.  Rather than alias the code at a second VA, these tests clear
-``medeleg`` so every trap is taken in M-mode, which is exempt from translation
-entirely.  ``medeleg`` is restored before the test ends.
 """
 
 from __future__ import annotations
@@ -144,6 +135,7 @@ _SENVCFG_CBIE_SHIFT = 4
 _SENVCFG_CBCFE_SHIFT = 6
 _SENVCFG_CBZE_SHIFT = 7
 _ENVCFG_SSE_BIT = 1 << 3  # Zicfiss shadow stack enable (menvcfg/senvcfg)
+_MSTATUS_SUM = 1 << 18
 _MSTATUS_MXR = 1 << 19
 _MSTATUS_FS_DIRTY = 3 << 13
 _MSTATUS_VS_DIRTY = 3 << 9
@@ -192,19 +184,10 @@ _ZCA_WRITES_SP: list[tuple[str, str]] = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 _ZICBOM_OPS: list[str] = ["cbo.clean", "cbo.flush", "cbo.inval"]
 _ZICBOP_OPS: list[str] = ["prefetch.r", "prefetch.w", "prefetch.i"]
 
-# Zicfiss shadow-stack atomics. Enabled through menvcfg.SSE + senvcfg.SSE; the
-# probe pages are ordinary data pages, so these are expected to fault -- what is
-# under test is that the address they fault on has been masked.
-# Zicfiss shadow-stack AMOs are DISABLED. `ssamoswap` is part of the `pm_insn`
-# coverage model, but it is not currently usable as a portable probe:
-# Re-enabling therefore buys 24 of 9600 cross bins (0.25% of cp_pmlen_masking)
-# while costing Ssnpm CI coverage on two of four DUTs. Restore by putting the
-# two entries back once the coverage front-end parses the operands and the DUT
-# bugs are fixed:
-#   [("ssamoswap.w", "lw", 0x2), ("ssamoswap.d", "ld", 0x3)]
-# `_probe_zicfiss` below is kept intact and still emits the `.insn` form, which
-# needs no experimental extension enabled in the assembler.
-_ZICFISS_AMOS: list[tuple[str, str, int]] = []
+# Zicfiss shadow-stack atomics, as (mnemonic, read-back load, funct3). Enabled through
+# menvcfg.SSE + senvcfg.SSE. Emitted as a raw `.insn` because Zicfiss is still experimental
+# in LLVM, so naming it in the march string makes clang reject the whole file.
+_ZICFISS_AMOS: list[tuple[str, str, int]] = [("ssamoswap.w", "lw", 0x2), ("ssamoswap.d", "ld", 0x3)]
 
 # Vector loads: (mnemonic, SEW used to set vtype, asm template).
 # `{a}` is the tagged base register, `{t}` a scratch integer register.
@@ -304,15 +287,16 @@ def _guard_close(macro: str | None) -> list[str]:
 
 
 def _data_section(mode: str) -> list[str]:
-    """Probe pages plus the non-root page tables this satp mode walks.
+    """Probe pages plus the page tables this satp mode walks.
 
-    ``rvtest_Sroot_pg_tbl`` is declared automatically by RVTEST_DATA_END when
-    S_SUPPORTED is defined, so only the lower levels appear here.
+    ``rvtest_Sroot_pg_tbl`` is declared by the framework; every level below it is
+    private to this test so the image mapping and the upper-half mapping cannot
+    collide in a shared table.
     """
     lines = [
         ".pushsection .data",
         ".p2align 12",
-        f"pm_lo_page:     .dword {hex(VALUE_OLD)}   # probe target reached through the identity map",
+        f"pm_lo_page:     .dword {hex(VALUE_OLD)}   # probe target inside the identity-mapped image",
         "                .zero 4088",
     ]
     if mode != "bare":
@@ -321,51 +305,116 @@ def _data_section(mode: str) -> list[str]:
             f"pm_hi_page:     .dword {hex(VALUE_OLD)}   # probe target reached through the upper-half VA",
             "                .zero 4088",
         ]
-        for level in range(_LEVELS_BELOW_ROOT[mode]):
-            lines += [
-                ".p2align 12",
-                f"rvtest_slvl{level}_pg_tbl: .zero 4096",
-            ]
+        # Two independent chains hanging off the framework's root table: one for the
+        # test image, one for the upper-half probe page. They occupy different root
+        # slots, and each owns every level below the root so their VPN indices at the
+        # interior levels cannot collide.
+        for level in range(_LEVELS_BELOW_ROOT[mode] - 1, -1, -1):
+            lines += [".p2align 12", f"pm_pt_l{level}:      .zero 4096"]
+        for level in range(_LEVELS_BELOW_ROOT[mode] - 1, -1, -1):
+            lines += [".p2align 12", f"pm_pt_hi_l{level}:   .zero 4096"]
     lines.append(".popsection")
     return lines
 
 
-def _pte_chain(mode: str, va: int, leaf_label: str) -> list[str]:
-    """Walk a fresh chain from the root down to a 4 KiB leaf mapping ``va``."""
-    top = _LEVELS_BELOW_ROOT[mode]
-    macro = f"PTE_SETUP_{mode.upper()}"
-    lines = [f"# {mode.upper()}: map {hex(va)} -> {leaf_label}"]
-    # Root -> slvl(top-1) -> ... -> slvl0, then slvl0 -> leaf.
-    for level in range(top, 0, -1):
-        lines.append(f"{macro}(rvtest_slvl{level - 1}_pg_tbl, ({_NONLEAF_PERMS}), {hex(va)}, LEVEL{level})")
-    lines.append(f"{macro}({leaf_label}, ({_LEAF_PERMS}), {hex(va)}, LEVEL0)")
+def _nonleaf(parent: str, child: str, shift: int, va_reg: str) -> list[str]:
+    """parent[VPN(va, shift)] = child, valid but not a leaf."""
+    return [
+        f"srli t1, {va_reg}, {shift}",
+        "andi t1, t1, 0x1FF",
+        "slli t1, t1, 3",
+        f"LA(t2, {parent})",
+        "add  t2, t2, t1",
+        f"LA(t3, {child})",
+        "srli t3, t3, 12",
+        "slli t3, t3, 10",
+        f"ori  t3, t3, ({_NONLEAF_PERMS})",
+        "sd   t3, 0(t2)",
+    ]
+
+
+def _walk(mode: str, tables: list[str], va_reg: str) -> list[str]:
+    """Install the non-leaf entries from the framework root down to ``tables[0]``."""
+    # Root indexes the highest VPN slice; each level below shifts down by 9.
+    shifts = [12 + 9 * k for k in range(_LEVELS_BELOW_ROOT[mode], 0, -1)]
+    chain = ["rvtest_Sroot_pg_tbl", *tables]
+    lines: list[str] = []
+    for parent, child, shift in zip(chain, chain[1:], shifts):
+        lines += _nonleaf(parent, child, shift, va_reg)
     return lines
 
 
-def _grant_umode_access_to_identity_map(mode: str) -> list[str]:
-    """OR PTE_U into the boot-time identity leaf so U-mode can run from it.
+def _build_page_tables(mode: str) -> list[str]:
+    """Map the test image at 4 KiB granularity, with PTE_U only where U-mode needs it.
 
-    rvtest_setup.h installs a leaf superpage (perms 0xCF = D|A|X|W|R|V, no U)
-    directly in the root table for the region holding ``rvtest_data_begin``,
-    which is where this test's code, data, signature and save areas all live.
-    Walking a fresh chain for that region would shadow the framework's entry, so
-    the existing leaf is edited in place instead. The VPN shift has to match the
-    one the boot code used for this mode.
+    The boot code installs one identity superpage without PTE_U, which U-mode cannot
+    execute from. Adding PTE_U to that superpage is not an option either: the supervisor
+    may never *fetch* from a U=1 page, so the S-mode trap handler, which lives in the same
+    superpage, would take an instruction page fault on every trap and loop forever.
+    Splitting the superpage into 4 KiB leaves lets PTE_U cover exactly the test's own code
+    and data, leaving the handlers and the model shim S-mode-fetchable.
     """
-    shift = _IDENTITY_VPN_SHIFT[mode]
-    return [
-        f"# {mode.upper()}: make the boot identity superpage U-accessible (leaf stays a leaf)",
-        "LA(a1, rvtest_data_begin)",
-        f"srli a1, a1, {shift}",
-        "andi a1, a1, 0x1FF",
-        "slli a1, a1, 3",
-        "LA(a0, rvtest_Sroot_pg_tbl)",
-        "add  a0, a0, a1",
-        "ld   t0, 0(a0)",
-        "li   t1, PTE_U",
-        "or   t0, t0, t1",
-        "sd   t0, 0(a0)",
+    top = _LEVELS_BELOW_ROOT[mode]
+    img = [f"pm_pt_l{lvl}" for lvl in range(top - 1, -1, -1)]
+    hi = [f"pm_pt_hi_l{lvl}" for lvl in range(top - 1, -1, -1)]
+    hi_va = _HIGH_VA[mode]
+
+    lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on test code and data"]
+    lines += ["LA(t0, rvtest_code_begin)"]
+    lines += _walk(mode, img, "t0")
+
+    lines += [
+        "# Fill the leaf table for the 2 MiB region holding the image.",
+        "LA(t0, rvtest_code_begin)",
+        "srli t0, t0, 21",
+        "slli t0, t0, 21                  # t0 = 2 MiB-aligned base of the image",
+        f"LA(t1, {img[-1]})",
+        "LA(t2, pm_utext_begin)",
+        "LA(t3, pm_utext_end)",
+        "sub  t3, t3, t2                  # t3 = size of the U-executable text",
+        "LA(t4, rvtest_data_begin)",
+        "LA(t5, end_signature)            # the signature sits just past rvtest_data_end",
+        "sub  t5, t5, t4                  # t5 = size of the U-accessible data",
+        "li   t6, 512",
+        "1:",
+        "li   a0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        "sub  a1, t0, t2",
+        "bltu a1, t3, 2f                  # inside the code segment -> U-accessible",
+        "sub  a1, t0, t4",
+        "bgeu a1, t5, 3f                  # outside the data segment -> keep U clear",
+        "2:",
+        "ori  a0, a0, PTE_U",
+        "3:",
+        "srli a1, t0, 12",
+        "slli a1, a1, 10",
+        "or   a1, a1, a0",
+        "sd   a1, 0(t1)",
+        "addi t1, t1, 8",
+        "lui  a1, 1                       # 4096",
+        "add  t0, t0, a1",
+        "addi t6, t6, -1",
+        "bnez t6, 1b",
     ]
+
+    lines += [
+        f"# Upper-half probe page at {hex(hi_va)}: proves masking sign extends under translation.",
+        f"LI(t0, {hex(hi_va)})",
+    ]
+    lines += _walk(mode, hi, "t0")
+    lines += [
+        f"LI(t0, {hex(hi_va)})",
+        "srli t1, t0, 12",
+        "andi t1, t1, 0x1FF",
+        "slli t1, t1, 3",
+        f"LA(t2, {hi[-1]})",
+        "add  t2, t2, t1",
+        "LA(t3, pm_hi_page)",
+        "srli t3, t3, 12",
+        "slli t3, t3, 10",
+        f"ori  t3, t3, ({_LEAF_PERMS})",
+        "sd   t3, 0(t2)",
+    ]
+    return lines
 
 
 # ---------------------------------------------------------------------------
@@ -420,30 +469,22 @@ def _mmode_prelude(mode: str, regs: Regs) -> list[str]:
         _li(regs.tmp, cbo_fields),
         f"csrs senvcfg, x{regs.tmp}",
         "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        _li(regs.tmp, _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY),
+        "# FP and vector state must be on for the FP/vector probes to be legal. SUM lets the",
+        "# S-mode trap handler reach its save area and trap signature, which live on the same",
+        "# U-accessible data pages the U-mode probes use.",
+        _li(regs.tmp, _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY | _MSTATUS_SUM),
         f"csrs mstatus, x{regs.tmp}",
     ]
     if mode != "bare":
-        lines += ["", *_grant_umode_access_to_identity_map(mode)]
-        lines += ["", *_pte_chain(mode, _HIGH_VA[mode], "pm_hi_page")]
+        lines += ["", *_build_page_tables(mode)]
         lines += [
             "sfence.vma",
             f"SATP_SETUP_RV64({mode})",
             "sfence.vma",
         ]
-    # Stash medeleg only after the page-table setup: PTE_SETUP_SV* and
-    # SATP_SETUP_RV64 clobber a0/a1/t0/t1 and t5/t6, and t1 is x6 -- which is in
-    # the allocatable pool and may well be the register holding the mask.
+    # Stash medeleg only after the page-table setup, which clobbers a0/a1 and t0-t6;
+    # t1 is x6, which is in the allocatable pool.
     lines += [
-        "",
-        "# Take every trap in M-mode. U-mode code running under an active satp needs",
-        "# PTE_U on the identity superpage it executes from, and S-mode may not fetch",
-        "# from a U=1 page -- an S-mode handler in that same superpage would trap",
-        "# forever. M-mode is exempt from translation, so delegation is switched off",
-        "# for the duration of the test and restored at the end.",
-        f"csrr x{regs.tmp2}, medeleg      # stash the framework's delegation mask",
-        "csrw medeleg, zero",
     ]
     return lines
 
@@ -456,7 +497,6 @@ def _teardown(regs: Regs) -> list[str]:
         *_set_mxr(False, regs.tmp),
         "csrwi satp, 0",
         "sfence.vma",
-        f"csrw medeleg, x{regs.tmp2}   # restore the framework's delegation mask",
     ]
 
 
@@ -951,6 +991,13 @@ def _emit_mode_file(mode: str, td: TestData, regs: Regs) -> list[str]:
 
     lines += _data_section(mode)
     lines += [
+        "# Bracket the U-mode-executable text on 4 KiB boundaries. The U bit is per page,",
+        "# and rvtest_code_end lands mid-page with the trap handlers, so deriving the range",
+        "# from it would mark the handler page U=1 and make it unfetchable from S-mode.",
+        ".p2align 12",
+        "pm_utext_begin:",
+    ]
+    lines += [
         comment_banner(
             f"Ssnpm pointer masking -- satp={mode.upper()}",
             "senvcfg.PMM is programmed from M-mode; every probe runs in U-mode.",
@@ -986,6 +1033,7 @@ def _emit_mode_file(mode: str, td: TestData, regs: Regs) -> list[str]:
         lines += ["RVTEST_GOTO_MMODE", *_set_mxr(False, regs.tmp)]
 
     lines += _teardown(regs)
+    lines += [".p2align 12", "pm_utext_end:"]
     if guard:
         lines.append(f"#endif // {guard}")
     return lines
@@ -998,14 +1046,11 @@ def _emit_mode_file(mode: str, td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "Ssnpm",
-    required_extensions=["Ssnpm", "Zicsr", "S", "U"],
-    # Every extension a probe can emit must be in the march string. Other suites
-    # do the same; a local `.option arch` would be the only use of that directive
-    # in the repo and its extension-name vocabulary differs across toolchains.
+    required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_ssnpm(test_data: TestData) -> list[TestChunk]:
-    """One TestChunk (hence one test file) per satp mode."""
+    """Generate the Ssnpm pointer-masking tests for every supported satp mode."""
     test_chunks: list[TestChunk] = []
 
     # x8-x15 for the four registers that have to be encodable in compressed

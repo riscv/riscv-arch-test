@@ -10,12 +10,11 @@
 # The MRET path writes MSTATUS directly and is unaffected. The S suite's
 # cp_sret_m mprv=1 bins catch this: sail clears MPRV, whisper keeps it -> selfcheck mismatch.
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# InterruptsSSm excluded because whisper supports M mode interrupt delegation and Sail currently only supports S mode interrupt delegation. https://github.com/riscv/sail-riscv/issues/1836
 # Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 # Ssnpm: menvcfg.SSE/senvcfg.SSE are read-only, so ssamoswap always traps illegal below M-mode
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "S,Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,InterruptsSSm,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU,Ssnpm"
+exclude_extensions: "S,Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU,Ssnpm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

@@ -38,7 +38,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: cb8c523fd4835aba42af70f4cad5568db4df0b6c # frozen: v0.16.0
+    rev: 39d9ac5938dadb73df0564a45f163e25ff9fa6e2 # frozen: v0.16.1
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -63,7 +63,7 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 69e5d7b46d7a93b633431a498a46cf3a8a2181f4 # frozen: 0.11.31
+    rev: e0db454a41cc9086a0b33a5d5638e834cf8efe1a # frozen: 0.11.33
     hooks:
       - id: uv-lock
 
@@ -76,7 +76,7 @@ repos:
 
   # Find security issues in GitHub Actions workflows
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: 067260dc5fe6ea86b7551bfd6f8b3ba4e6c93129 # frozen: v1.28.0
+    rev: 451b56af716f9f0d0c2b816503a3fd0cf8b036fa # frozen: v1.29.0
     hooks:
       - id: zizmor
 
@@ -96,7 +96,7 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: 9337a74165b178ae2c766f60bee7252a0f06f3e8 # frozen: v3.9.5
+    rev: 0ee178619d696787ca73d210cc191d720868c631 # frozen: v3.9.6
     hooks:
       - id: prettier
 
@@ -108,14 +108,14 @@ repos:
 
   # Check links in markdown files
   - repo: https://github.com/tcort/markdown-link-check
-    rev: 3a8992dcbb083a248671812c7027b6995ef88523 # frozen: v3.14.2
+    rev: 275c27c5035a5b4a656fe0e21a4c1403c118c767 # frozen: v3.15.0
     hooks:
       - id: markdown-link-check
         args: [-q, -c .markdown-link-check.config]
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 87bc4ce9e2e73ac403ab97cb779dc8ede47b76ad # frozen: 43.272.3
+    rev: 1bd8f4cb77ae41186d8ac8b3aebcab5e04c0ee6e # frozen: 44.8.0
     hooks:
       - id: renovate-config-validator
 

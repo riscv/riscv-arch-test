@@ -560,7 +560,7 @@
       "supported": true
     },
     "Smcntrpmf": {
-      "supported": false
+      "supported": true
     },
     "Svbare": {
       "supported": true,

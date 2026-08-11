@@ -13,7 +13,6 @@ from __future__ import annotations
 from typing import Literal
 
 from testgen.constants import INDENT
-from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 
 
@@ -132,19 +131,3 @@ def reproducible_hash(s: str) -> int:
     for c in s:
         h = (h * 31 + ord(c)) & 0xFFFFFFFF
     return h
-
-
-def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
-    """
-    Return all registers used in a test case back to the pool.
-
-    Args:
-        test_data: TestData object managing the registers
-        params: InstructionParams object containing used registers
-    """
-    test_data.int_regs.return_registers(params.used_int_regs)
-    test_data.float_regs.return_registers(params.used_float_regs)
-    test_data.vec_regs.deallocate_operands()
-    assert len(test_data.vec_regs.reg_list) == 32, (
-        f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are {test_data.vec_regs.reg_list}"
-    )

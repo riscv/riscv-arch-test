@@ -354,9 +354,31 @@
 // Note: S and HS modes share the same CSR names (stvec, sepc, scause, etc.)
 // because HS-mode uses the S-mode CSR space. VS-mode has its own CSRs
 // (vstvec, vsepc, vscause, etc.)
+//
+// V-mode needs TWO name sets, because which name is legal depends on where
+// the code runs, not on which register it means:
+//
+//   XCSR_RENAME V         — for code EXECUTING in VS-mode (the V trap handler).
+//                           With V=1, the hardware transparently aliases every
+//                           S-mode CSR access to its VS counterpart, so `sepc`
+//                           IS `vsepc`. Naming vsepc explicitly from VS-mode is
+//                           a virtual instruction exception, which re-enters the
+//                           handler and livelocks. So: use the S-mode names.
+//
+//   XCSR_RENAME_FROM_M V  — for M-mode code REACHING INTO VS-mode (prolog and
+//                           epilog, which both run in M-mode). No aliasing
+//                           applies there, so the VS CSRs must be named
+//                           explicitly or the S-mode CSRs get clobbered instead.
+//
+// Every other mode names its own CSRs the same way from either context, so
+// XCSR_RENAME_FROM_M just defers to XCSR_RENAME for M, S and H.
 //==============================================================================
 
 .macro _XCSR_RENAME_V
+  _XCSR_RENAME_S                                // running in VS-mode: S-mode names alias to VS
+.endm
+
+.macro _XCSR_RENAME_V_FROM_M
   .set CSR_XSTATUS, CSR_VSSTATUS                // vsstatus — VS-mode status register
   .set CSR_XIE,     CSR_VSIE                    // vsie — VS-mode interrupt enable
   .set CSR_XIP,     CSR_VSIP                    // vsip — VS-mode interrupt pending
@@ -447,7 +469,21 @@
        _XCSR_RENAME_S                           //   set CSR_X* to S-mode CSR names
   .endif
   .ifc  \__MODE__ ,  V                          // if mode == V (VS-mode)
-       _XCSR_RENAME_V                           //   set CSR_X* to VS-mode CSR names
+       _XCSR_RENAME_V                           //   set CSR_X* to S-mode names (aliased to VS when V=1)
+  .endif
+.endm
+
+//==============================================================================
+// XCSR_RENAME_FROM_M — same, but for M-mode code that manipulates another
+// mode's CSRs (the prolog and epilog). Only V differs: no S->VS aliasing
+// happens from M-mode, so the VS CSRs must be named explicitly.
+//==============================================================================
+
+.macro XCSR_RENAME_FROM_M __MODE__
+  .ifc   \__MODE__ , V                          // if mode == V (VS-mode)
+       _XCSR_RENAME_V_FROM_M                    //   set CSR_X* to explicit VS-mode CSR names
+  .else
+       XCSR_RENAME \__MODE__                    //   M/S/H: identical from either context
   .endif
 .endm
 
@@ -873,7 +909,7 @@
 .option norvc                                    // no compressed instructions in handler code
 
 .global \__MODE__\()trampoline                   // make trampoline label globally visible
-        XCSR_RENAME \__MODE__                    // set CSR_X* aliases for this mode
+        XCSR_RENAME_FROM_M \__MODE__             // set CSR_X* aliases for this mode (prolog runs in M-mode)
 
         LA(     T1, \__MODE__\()tramptbl_sv)     // T1 = address of this mode's save area in .data
 
@@ -980,6 +1016,17 @@ init_\__MODE__\()tramp:
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
+// If the copy destination [T2,T3) overlaps the code below, the loop clobbers
+// itself and leaves a half-written trampoline, which shows up later as a bogus
+// SELFCHECK failure. Bail out instead; nothing has been written yet, so xTVEC
+// is still as the boot code left it.
+        LA(     T5, overwt_tt_\__MODE__\()loop)    // T5 = first instruction that must survive
+        LA(     T6, rvtest_\__MODE__\()prolog_done) // T6 = end of protected range (exclusive)
+        bgeu    T2, T6, ovlpok_\__MODE__\()tramp   // dest begins after protected code -> disjoint
+        bgeu    T5, T3, ovlpok_\__MODE__\()tramp   // protected code begins after dest  -> disjoint
+        j       abort\__MODE__\()test              // overlap -> cannot copy here; abort
+ovlpok_\__MODE__\()tramp:
+
 overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read original instruction at xTVEC target
         sw      T6, 0(T1)                          // save it in trampoline save area
@@ -1066,7 +1113,11 @@ rvtest_\__MODE__\()prolog_done:
 .macro RVTEST_TRAP_HANDLER __MODE__
 .option push
 .option rvc             // temporarily allow compress to allow c.nop alignment
-// Ensure that trampoline is on a boundary that is the max of 64 bytes, UDB_MTVEC_BASE_ALIGNMENT_VECTORED, and UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+// Ensure that trampoline is on a boundary that satisfies the relevant xTVEC
+// WARL BASE alignment. M-mode uses mtvec; S-mode and HS-mode use stvec.
+// VS-mode keeps the legacy mtvec-based over-alignment until UDB exposes a
+// separate vstvec BASE alignment parameter.
+.ifc \__MODE__,M
 .balign 64
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
@@ -1074,6 +1125,25 @@ rvtest_\__MODE__\()prolog_done:
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
+.endif
+.ifc \__MODE__,S
+.balign 64
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
+#endif
+.endif
+.ifc \__MODE__,H
+.balign 64
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
+#endif
+.endif
+.ifc \__MODE__,V
+.balign 64
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
+#endif
+.endif
 .option pop
 
   /**********************************************************************/
@@ -2043,6 +2113,7 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
+#ifdef ZCA_SUPPORTED
         // Advance xEPC past the trapping instruction by its true width.
         // Read the low halfword of the instruction at xEPC (T3), in the
         // addressing/permission context of the code that trapped, then
@@ -2074,6 +2145,9 @@ adj_\__MODE__\()epc_rtn:
         srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
         addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
         slli    T2, T2, 1                            // advance = 4 or 2
+#else
+        li      T2, 4                                // IALIGN=32 requires a 4-byte advance
+#endif
         add     T3, T3, T2                           // next instruction (raw xEPC + width)
         csrw    CSR_XEPC, T3
 
@@ -2570,11 +2644,8 @@ fast_Mothertrap:
 // Align to the core's WARL stvec BASE boundary so the prolog's write of the
 // handler address into stvec survives.
 .balign 64
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-#endif
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#ifdef UDB_STVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_STVEC_BASE_ALIGNMENT_VECTORED
 #endif
 // Same entry protocol as the M handler: preserve the caller's a0/a1 across the
 // forward path (the S standard handler dispatches delegated U-ecalls on the
@@ -2651,7 +2722,7 @@ fast_Sothertrap:
 .option push
 .option norvc
 
-        XCSR_RENAME \__MODE__                     // set CSR aliases for this mode
+        XCSR_RENAME_FROM_M \__MODE__              // set CSR aliases for this mode (epilog runs in M-mode)
         LI(T3, actual_tramp_sz)                   // T3 = trampoline size (used as loop bound)
 
 exit_\__MODE__\()cleanup:                         // entry point (also used by abort path)

@@ -85,6 +85,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
+                    "#ifndef SM1P11P0_SUPPORTED",
                     "# 6. Read STCE (needed for timer functions)",
                     f"csrr x{r_stce}, menvcfg",
                     "#if __riscv_xlen == 64",
@@ -93,6 +94,9 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
                     f"    srli x{r_stce}, x{r_stce}, 31",
                     "#endif",
                     f"andi x{r_stce}, x{r_stce}, 0x1",
+                    "#else",
+                    f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
+                    "#endif",
                 ]
             )
 
@@ -584,6 +588,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
+            "#ifndef SM1P11P0_SUPPORTED",
             "# Read STCE",
             f"csrr x{r_stce}, menvcfg",
             "#if __riscv_xlen == 64",
@@ -592,6 +597,9 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
             f"    srli x{r_stce}, x{r_stce}, 31",
             "#endif",
             f"andi x{r_stce}, x{r_stce}, 0x1",
+            "#else",
+            f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
+            "#endif",
         ]
     )
 
@@ -893,6 +901,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     if mip_name == "stip":
                         lines.extend(
                             [
+                                "#ifndef SM1P11P0_SUPPORTED",
                                 f"csrr x{r_stce}, menvcfg",
                                 "#if __riscv_xlen == 64",
                                 f"    srli x{r_stce}, x{r_stce}, 63",
@@ -900,6 +909,9 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                                 f"    srli x{r_stce}, x{r_stce}, 31",
                                 "#endif",
                                 f"andi x{r_stce}, x{r_stce}, 0x1",
+                                "#else",
+                                f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
+                                "#endif",
                             ]
                         )
                         lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
@@ -1049,6 +1061,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                 if int_name == "stip":
                     lines.extend(
                         [
+                            "#ifndef SM1P11P0_SUPPORTED",
                             f"csrr x{r_stce}, menvcfg",
                             "#if __riscv_xlen == 64",
                             f"    srli x{r_stce}, x{r_stce}, 63",
@@ -1056,6 +1069,9 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                             f"    srli x{r_stce}, x{r_stce}, 31",
                             "#endif",
                             f"andi x{r_stce}, x{r_stce}, 0x1",
+                            "#else",
+                            f"LI(x{r_stce}, 0x0) # priv 1.11 fallback: assume STCE=0",
+                            "#endif",
                         ]
                     )
                     lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))

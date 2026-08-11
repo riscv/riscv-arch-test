@@ -101,6 +101,7 @@ main:
 
     LA(x4, PMP3CFG)
     csrw pmpcfg0, x4
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
 
     // Test Case 1: Execute in first region (should succeed)
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1

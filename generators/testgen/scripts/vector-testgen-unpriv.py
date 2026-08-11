@@ -35,6 +35,7 @@ from rich.progress import (
   TextColumn,
   TimeElapsedColumn,
 )
+from testgen.io.testplans import get_extensions as get_main_testgen_extensions
 
 import vector_testgen_common as common
 from vector_testgen_common import (
@@ -1734,7 +1735,8 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
   """Build the list of (xlen, extension) tasks honoring filters."""
   tasks: list[tuple[int, str]] = []
   testplans = readTestplans()
-  extensions = list(testplans.keys())
+  main_testgen_extensions = set(get_main_testgen_extensions(Path(ARCH_VERIF) / "testplans"))
+  extensions = [extension for extension in testplans if extension not in main_testgen_extensions]
   if include_set:
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
@@ -1760,7 +1762,7 @@ def run(
     int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
   ] = 0,
 ) -> None:
-  """Generate directed vector tests for functional coverage."""
+  """Generate directed vector tests not handled by the main testgen."""
   include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
   exclude_set = set(filter(None, (s.strip() for s in exclude.split(",")))) if exclude else set()
 

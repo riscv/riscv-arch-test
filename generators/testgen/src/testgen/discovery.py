@@ -26,7 +26,7 @@ def discover_and_import_modules(package_dir: Path, base_module: str, *, exclude:
         base_module: Dotted base module prefix (e.g. ``"testgen.coverpoints"``).
         exclude: Optional file path to skip (e.g. the calling registry module itself).
     """
-    for module_file in package_dir.rglob("*.py"):
+    for module_file in sorted(package_dir.rglob("*.py")):
         if module_file.stem.startswith("_"):
             continue
         if exclude is not None and module_file == exclude:

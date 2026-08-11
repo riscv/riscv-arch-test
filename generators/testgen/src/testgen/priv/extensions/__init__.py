@@ -1,4 +1,4 @@
-# testgen/priv/extensions/__init__.py
+# SPDX-License-Identifier: Apache-2.0
 """Privileged test extension generators.
 
 This package contains individual generator modules that are automatically

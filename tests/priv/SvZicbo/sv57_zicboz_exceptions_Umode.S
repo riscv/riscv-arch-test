@@ -319,11 +319,13 @@ main:
 //                    256TB PAGE    Region 1 under test at level 4 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 9: Test in U-Mode | RWX bit set | expected = Store access fault
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL4, test9
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -421,23 +423,27 @@ main:
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 18: Test in U-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL3, test18
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 19: Test in U-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL3, test19
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permission given to the region
@@ -576,6 +582,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 31: Test in U-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL3)
@@ -583,11 +590,13 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test31
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 32: Test in U-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -595,6 +604,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL2, test32
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permission given to the region
@@ -744,6 +754,7 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 44: Test in U-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -752,11 +763,13 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test44
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 45: Test in U-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -765,6 +778,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL1, test45
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
@@ -925,6 +939,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 57: Test in U-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -934,11 +949,13 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test57
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 58: Test in U-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -948,6 +965,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test58
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region

@@ -213,7 +213,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
         bins stval         = {CSR_STVAL};
         bins sip           = {CSR_SIP};
-        bins senvcfg       = {CSR_SENVCFG};
+        `ifndef S1P11P0_SUPPORTED
+          bins senvcfg       = {CSR_SENVCFG};
+        `endif
     }
     csruname : coverpoint ins.current.insn[31:20] {
         `ifdef F_SUPPORTED

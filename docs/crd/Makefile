@@ -17,7 +17,7 @@
 # Install by running:
 #		make docker-pull-latest
 
-DOCS := rvi20_crd mc100_crd rva23_crd all_impldefs
+DOCS := rva23_crd
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)

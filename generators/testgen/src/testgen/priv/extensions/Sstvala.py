@@ -188,20 +188,20 @@ def _emit_pf_block(
     lines.append("#if __riscv_xlen == 64")
     lines.append("#ifdef SV39_SUPPORTED")
     if requires_s1p12:
-        lines.append("#ifndef S1P11P0_SUPPORTED")
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV64: Sv39")
     lines.extend(_xlen_block(["SATP_SETUP_RV64(sv39)"], _pf_pte_setup_sv39(_VA_PF_PAGE_RV64, pte_flags), instrs_rv64))
     if requires_s1p12:
-        lines.append("#endif  // S1P11P0_SUPPORTED")
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV39_SUPPORTED")
     lines.append("#else")
     lines.append("#ifdef SV32_SUPPORTED")
     if requires_s1p12:
-        lines.append("#ifndef S1P11P0_SUPPORTED")
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV32: Sv32")
     lines.extend(_xlen_block(["SATP_SETUP_SV32"], _pf_pte_setup_sv32(_VA_PF_PAGE_RV32, pte_flags), instrs_rv32))
     if requires_s1p12:
-        lines.append("#endif  // S1P11P0_SUPPORTED")
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV32_SUPPORTED")
     lines.append("#endif  // xlen")
     return lines

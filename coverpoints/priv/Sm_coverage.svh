@@ -208,7 +208,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        `ifndef SM1P11P0_SUPPORTED
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
           bins menvcfg    = {CSR_MENVCFG};
         `endif
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
@@ -246,13 +246,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
         `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
-            `ifndef SM1P11P0_SUPPORTED
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
               bins menvcfgh = {CSR_MENVCFGH};
             `endif
             `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif
-            `ifdef S1P13P0_SUPPORTED
+            `ifdef S1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -443,7 +443,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    `ifdef S1P13P0_SUPPORTED
+    `ifdef S1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -467,7 +467,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // S1P13P0_SUPPORTED
+    `endif // S1P13P0_OR_LATER_SUPPORTED
 
 
 endgroup

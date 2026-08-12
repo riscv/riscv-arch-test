@@ -121,7 +121,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
 
-    `ifdef S1P13P0_SUPPORTED
+    `ifdef S1P13P0_OR_LATER_SUPPORTED
         `ifdef UDB_MXLEN_64
             uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
                 bins attempt_1 = {2'b01};
@@ -133,7 +133,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
              // main coverpoints
             cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
         `endif // UDB_MXLEN_64
-    `endif // S1P13P0_SUPPORTED
+    `endif // S1P13P0_OR_LATER_SUPPORTED
 
 endgroup
 
@@ -213,7 +213,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
         bins stval         = {CSR_STVAL};
         bins sip           = {CSR_SIP};
-        `ifndef S1P11P0_SUPPORTED
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
           bins senvcfg       = {CSR_SENVCFG};
         `endif
     }

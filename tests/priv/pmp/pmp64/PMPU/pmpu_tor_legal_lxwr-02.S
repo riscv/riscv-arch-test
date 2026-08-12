@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -24,14 +27,11 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_tor_legal_lxwr.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -57,27 +57,14 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR_0000 ((((                        PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_0001 ((((      PMP_R|            PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_0011 ((((      PMP_R|PMP_W       |PMP_TOR  )&0xFF) << PMP7_CFG_SHIFT))
 #define PMPREGION_LXWR_0100 ((((                    PMP_X|PMP_TOR  )&0xFF) << PMP5_CFG_SHIFT))
 #define PMPREGION_LXWR_0101 ((((      PMP_R         |PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_0111 ((((      PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
-#ifdef S_SUPPORTED
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
@@ -93,6 +80,7 @@ main:
     LI(x4, PMPREGION_LXWR_0100)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_4
     RVTEST_GOTO_MMODE
@@ -110,6 +98,7 @@ main:
     LI(x4, PMPREGION_LXWR_0101)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_5
     RVTEST_GOTO_MMODE
@@ -127,6 +116,7 @@ main:
     LI(x4, PMPREGION_LXWR_0111)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_6
     RVTEST_GOTO_MMODE

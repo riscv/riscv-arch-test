@@ -98,6 +98,13 @@ I-cache). Declare Zifencei support in the config instead of supplying a private 
   #endif
 #endif
 
+// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+.macro RVTEST_SFENCE_VMA_IF_SUPPORTED
+  #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+    sfence.vma
+  #endif
+.endm
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only
@@ -424,46 +431,6 @@ I-cache). Declare Zifencei support in the config instead of supplying a private 
     .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
-
-// CSR Macros
-// each access is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define CSRRW(_R2, _CSR, _R1) \
-    csrrw _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRS(_R2, _CSR, _R1) \
-    csrrs _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRC(_R2, _CSR, _R1) \
-    csrrc _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRR(_R2, _CSR) \
-    csrr _R2, _CSR      ;\
-    nop
-
-#define CSRW(_CSR, _R1) \
-    csrw _CSR, _R1      ;\
-    nop
-
-#define CSRS(_CSR, _R1) \
-    csrs _CSR, _R1      ;\
-    nop
-
-#define CSRC(_CSR, _R1) \
-    csrc _CSR, _R1      ;\
-    nop
-
-// Macros for instructions that can trap
-// each instruction is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define SFENCE_VMA \
-    sfence.vma         ;\
-    nop
 
 // Utility Macros
 

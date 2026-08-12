@@ -61,7 +61,6 @@
 # MARCH: rv32i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_zicbom_exceptions_Umode.S"
 #define SIGUPD_COUNT 80
 
 
@@ -171,8 +170,8 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
-  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
+  csrs menvcfg, t0                                                      // Allow execution of Zicbom instructions in S-Mode
+  csrs senvcfg, t0                                                      // Further delegate the permission to U-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -271,11 +270,13 @@ main:
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 10: Test in U-Mode | RWX bit set | expected = 3 Store access faults
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL1, test10
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -384,23 +385,27 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 20: Test in U-Mode | Incorrect PTE setup | expected = 3 Store access faults
   PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test20
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 21: Test in U-Mode | RWX bit set | expected = 3 Store access faults
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Umode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test21
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region

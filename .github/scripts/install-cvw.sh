@@ -33,7 +33,7 @@ git submodule update --init addins/verilog-ethernet
 # Command mirrors exactly what `wsim --sim verilator` runs (bin/wsim,
 # runVerilator) so the up-to-date check skips recompilation at run time.
 export WALLY="$INSTALL_DIR/cvw"
-export PATH="$INSTALL_DIR/bin:$PATH"   # Verilator was just `make install`ed here
+export PATH="$INSTALL_DIR/bin:$PATH" # Verilator was just `make install`ed here
 
 for WALLYCONF in rv32gc rv32imc rv64gc; do
   echo "Prebuilding Verilator model for $WALLYCONF ..."
@@ -43,8 +43,11 @@ for WALLYCONF in rv32gc rv32imc rv64gc; do
     PARAM_ARGS="" \
     DEFINE_ARGS="" \
     BUILD_HASH=""
-  test -x "$WALLY/sim/verilator/wkdir/${WALLYCONF}_testbench/Vtestbench" \
-    || { echo "ERROR: Vtestbench not produced for $WALLYCONF"; exit 1; }
+  test -x "$WALLY/sim/verilator/wkdir/${WALLYCONF}_testbench/Vtestbench" ||
+    {
+      echo "ERROR: Vtestbench not produced for $WALLYCONF"
+      exit 1
+    }
   # wsim's up-to-date check is mtime-based; ensure the prebuilt model stays
   # newer than all CVW sources after the GitHub Actions cache is restored so
   # it is reused instead of silently rebuilding.

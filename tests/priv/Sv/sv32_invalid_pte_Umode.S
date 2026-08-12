@@ -8,11 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test Explanation:
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// This test verifies the functioning of the PMP Permissions on the PTE in S mode in the SV-32 virtual memory system.
-//
-// PMP Permissions on the Page Table Entry test in S mode
-// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
-// Future updates will align with ISA version 1.13.
+// This test verifies exceptions are thrown when the V bit is not set on PTEs in U mode in the Sv32 virtual memory system.
 //
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -30,7 +26,6 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_invalid_pte_Umode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 40
 

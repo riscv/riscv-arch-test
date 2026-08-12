@@ -7,15 +7,17 @@
 
 import re
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector.vector_helpers import extract_instruction_info, get_base_lmul
 from testgen.data.params import InstructionParams
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_single_testcase
-from testgen.formatters.registry import get_instr_type_config
-from testgen.formatters.vector_params import generate_random_vector_params, get_overlap_constraints, has_invalid_overlap
+from testgen.formatters import format_single_testcase, get_instruction_type_config
+from testgen.instructions.vector import get_base_lmul, parse_instruction_info
+from testgen.instructions.vector_params import (
+    generate_random_vector_params,
+    get_overlap_constraints,
+    has_invalid_overlap,
+)
 
 
 @add_coverpoint_generator("cmp_vd_vs2")
@@ -33,9 +35,10 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     cmp, v1, v2, *suffixes = coverpoint.split("_")
     assert cmp == "cmp"
 
-    info = extract_instruction_info(instr_name, instr_type)
-    instr_type_config = get_instr_type_config(instr_type)
+    instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "vector_data must be set for vector instruction types"
+    info = parse_instruction_info(instr_name, instr_type)
+    info.widened_regs = instr_type_config.vector_data.widened_regs
 
     lower_bound, upper_bound = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -120,7 +123,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -171,6 +174,6 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

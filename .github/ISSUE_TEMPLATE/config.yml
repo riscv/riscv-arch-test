@@ -1,0 +1,11 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+blank_issues_enabled: false
+contact_links:
+  - name: ACT SIG mailing list
+    url: https://lists.riscv.org/g/sig-arch-test
+    about: Join the mailing list and project meetings for broader discussion.
+  - name: GitHub Discussions
+    url: https://github.com/riscv/riscv-arch-test/discussions
+    about: Start a general discussion that does not need issue tracking.

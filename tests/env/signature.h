@@ -47,12 +47,15 @@
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
 // failedtest_trap_x7_x9 in case of a mismatch.
-// In failedtest_trap_x7_x9, x7/T2 is LINK_REG & x9/T4 is TEMP_REG
+// On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
+// expected value, x7/T2 is the link register, and x9/T4 is scratch.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -62,6 +65,8 @@
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -437,15 +442,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
             vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
@@ -490,7 +497,11 @@
         /* Calculate the number of elements to slide _VTMP up */ \
         srli _TEMP_REG3, _TEMP_REG, 3; /* _TEMP_REG = _TEMP_REG >> 3 (divides by 8) */ \
         vslideup.vx _MTMP3, _VTMP, _TEMP_REG3; /* Slide Up By _TEMP_REG3. rs1 is NOT truncated to SEW bytes for this instruction */ \
-        vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .if (_MASKPROD_FLAG == 1) ; \
+            vsetvli _LINK_REG, x0, e8, m8, ta, ma; /* Return to the previous vector settings */     \
+        .else ; \
+            vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .endif ; \
     5: ;\
         .if (_MASKED_FLAG == 1); \
             /* Filter the active element mask, if the operation was masked */ \
@@ -508,7 +519,7 @@
         /* Check whether instr is a mask-producing instruction */                                                                      \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-            vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+            vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
             vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == 1) → mismatch with all 1s */  \
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
@@ -547,7 +558,7 @@
             beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-                vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+                vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
                 vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
             .else; \
                 /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
@@ -630,15 +641,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1) ; \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
             nop                                  ;                                                                      \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                   \
             nop                                  ;                                                                      \
         .endif; \
@@ -665,7 +678,11 @@
         /* As, v1 = 1, this sets only the first element of vtmp to 1 */ \
         nop                                  ;                                                                      \
         /* Return to a full vector register */ \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 1) ; \
+            nop ; \
+        .else ; \
+            nop ; \
+        .endif ; \
         /* Set the target to be all ones at the start */ \
         LI(_LINK_REG, 0xff)                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -794,7 +811,7 @@
 #endif
 
 #ifdef RVTEST_SELFCHECK
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                         ;                                                 \
         .option norvc                        ;                                                 \
         nop                                  ;                                                 \
@@ -802,13 +819,53 @@
         RVTEST_SIGUPD_V_ADVANCE_NOP          ;                                                 \
         .option pop
 #else
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                                            ;                              \
         .option norvc                                           ;                              \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                              \
+        /* Store the whole mask, regardless of vl, the corresponding read uses this setting */   \
+        vsetvli     _LINK_REG, x0, e8, m8, ta, ma               ;                              \
         vsm.v _VR, 0(_SIG_PTR)                                  ;                              \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG) ;                              \
         .option pop
+#endif
+
+// RVTEST_SIGUPD_VXSAT(sigptr, linkreg, tempreg, instptr, strptr)
+// Reads vxsat and compares/stores it to the signature at 0(sigptr).
+// In SELFCHECK mode, compares the value in vxsat with the value in memory
+// at 0(sigptr) and jumps to a failure handler if different.
+// In non-SELFCHECK mode, stores vxsat to memory at 0(sigptr).
+// In both cases, increments sigptr by SIG_STRIDE.
+//  _SIG_PTR - Base register for signature region
+//  _LINK_REG - Link register to use for failure jump
+//  _TEMP_REG - Temporary register to use for loading signature
+//  _INST_PTR - label on instruction being tested (for PC reporting)
+//  _STR_PTR - label to string describing the test
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
+    beq _TEMP_REG, _LINK_REG, 1f                           ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
+#else
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    SREG _LINK_REG, 0(_SIG_PTR)                            ;\
+    beq x0, x0, 1f                                         ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
 #endif
 
 // Canary value to indicate bounds of signature region
@@ -832,9 +889,21 @@
       .word TRAP_CANARY_VALUE
 #endif
 
+#if UDB_MXLEN==64
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5C0DEF00D
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .dword FINAL_TRAP_OFFSET_CANARY_VALUE
+#else
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .word FINAL_TRAP_OFFSET_CANARY_VALUE
+#endif
+
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _INST_PTR, _STR_PTR) \
-    CSRR(_R, _CSR)                                       ;\
+    csrr _R, _CSR                                    ;\
     RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers
@@ -844,7 +913,7 @@
 
 // Write _R1 into _CSR, then read back into _R2 and record/check the signature
 #define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _INST_PTR, _STR_PTR) \
-    CSRW(_CSR, _R1)                                      ;\
+    csrw _CSR, _R1                                      ;\
     RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers, overwrites _R with value read back

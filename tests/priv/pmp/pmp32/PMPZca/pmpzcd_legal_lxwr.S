@@ -27,13 +27,10 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei_zcd
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzcd_legal_lwxr.S"
 #define SIGUPD_COUNT 100
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -67,7 +64,6 @@ main:
     fscsr x0
 
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
@@ -75,7 +71,6 @@ main:
 #define PMPREGION_LXWR_1101 ((((PMP_L|PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -85,16 +80,8 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
@@ -110,6 +97,7 @@ main:
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
@@ -125,6 +113,7 @@ main:
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
@@ -140,6 +129,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
@@ -155,6 +145,7 @@ main:
     LI(x4, PMPREGION_LXWR_1100)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 1
@@ -170,6 +161,7 @@ main:
     LI(x4, PMPREGION_LXWR_1101)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
@@ -185,6 +177,7 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_X_ZCD    TEST_FOR_EXECUTION, test_6
 
 

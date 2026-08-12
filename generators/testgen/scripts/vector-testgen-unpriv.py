@@ -35,6 +35,7 @@ from rich.progress import (
   TextColumn,
   TimeElapsedColumn,
 )
+from testgen.io.testplans import get_extensions as get_main_testgen_extensions
 
 import vector_testgen_common as common
 from vector_testgen_common import (
@@ -786,6 +787,24 @@ def make_fflags_pairs(instruction: str, sew: int) -> None:
                 sew=sew, clear_fflags=(i == 0))
       incrementBasetestCount()
 
+def make_vxsat(instruction, sew):
+  if instruction != "vsmul.vx":
+    # Otherwise, it is covered by other test generation (truncation of rs1 edges
+    # breaks this case)
+    return
+
+  # For this case, we just need to generate something that will overflow
+  rs1_val = 1 << (min(xlen, sew) - 1)
+  vs2_val_ptr = "vs_corner_min_emul1"
+
+  description = "cp_csr_vxsat (vxsat = 1)"
+  cp = "cp_csr_vxsat_1"
+  instruction_data = randomizeVectorInstructionData(
+    instruction, sew, getBaseSuiteTestCount(), rs1_val=rs1_val, vs2_val_pointer=vs2_val_ptr
+  )
+  writeTest(description, instruction, cp, instruction_data, sew=sew)
+  incrementBasetestCount()
+
 ##################################### length suite (vl!=1) test generation #####################################
 
 def getMaxlmul(sew, eew, maxemul):
@@ -1299,6 +1318,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_imm_edges_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_imm_edges_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_csr_vxrm"                  : pass # already tested in cross coverpoints with vs2 and vs1/rs1/imm
+    elif coverpoint == "cp_csr_vxsat"                 : make_vxsat(test, sew) # already tested in natural execution
     ############################ length suite ############################
     elif coverpoint == "cp_masking_edges"             : make_mask_edges(test, sew, getBaseLmul(test, sew))
     elif coverpoint == "cp_vl_0"                        : make_vl_0(test, sew, lmul = getBaseLmul(test, sew))
@@ -1715,7 +1735,8 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
   """Build the list of (xlen, extension) tasks honoring filters."""
   tasks: list[tuple[int, str]] = []
   testplans = readTestplans()
-  extensions = list(testplans.keys())
+  main_testgen_extensions = set(get_main_testgen_extensions(Path(ARCH_VERIF) / "testplans"))
+  extensions = [extension for extension in testplans if extension not in main_testgen_extensions]
   if include_set:
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
@@ -1741,7 +1762,7 @@ def run(
     int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
   ] = 0,
 ) -> None:
-  """Generate directed vector tests for functional coverage."""
+  """Generate directed vector tests not handled by the main testgen."""
   include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
   exclude_set = set(filter(None, (s.strip() for s in exclude.split(",")))) if exclude else set()
 

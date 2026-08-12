@@ -90,7 +90,6 @@
 # MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_zicboz_exceptions_Smode.S"
 #define SIGUPD_COUNT 45
 
 
@@ -182,7 +181,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_CBZE)
-  CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
+  csrs menvcfg, t0                                                      // Allow execution of cbo.zero in S-Mode
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -236,10 +235,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL2, test5
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
@@ -285,11 +284,13 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 10: Test in S-Mode | RWX bit set | expected = Store access fault
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Smode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL2, test10
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -349,10 +350,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test15
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -402,23 +403,27 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 20: Test in S-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test20
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 21: Test in S-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER_2 Smode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL1, test21
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
@@ -516,10 +521,10 @@ main:
   sfence.vma
 
   LI(t0, MSTATUS_SUM)
-  CSRS(mstatus, t0)                                               // Set mstatus.SUM
+  csrs mstatus, t0                                               // Set mstatus.SUM
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test29
   LI(t0, MSTATUS_SUM)
-  CSRC(mstatus, t0)                                               // Clear mstatus.SUM
+  csrc mstatus, t0                                               // Clear mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
@@ -573,6 +578,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 34: Test in S-Mode | Incorrect PTE setup | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_V), va_data, LEVEL1)
@@ -580,11 +586,13 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Smode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test34
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 35: Test in S-Mode | RWX bit set | expected = Store access fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -592,6 +600,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER_2 Smode, RVMODEL_ACCESS_FAULT_ADDRESS, va_data, LEVEL0, test35
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region

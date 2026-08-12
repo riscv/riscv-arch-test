@@ -1,19 +1,18 @@
 // --------------------------------------------------------------------------------
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Title        : PMP address grain discovery verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
+//                Jordan Carlin
 //
-// Description : This test verifies the functionality and enforcement of
-//               Physical Memory Protection (PMP) configurations in RISC-V
-//               systems. It specifically tests the Read, Write, and Execute
-//               permissions for a designated memory region, ensuring that
-//               the PMP settings are correctly applied and that the system
-//               behaves as expected when accessing this region.
+// Description : This test verifies PMP address grain discovery.
+//               It writes ones to pmpaddr0 with pmpcfg0 set to OFF and
+//               checks the low bits needed to identify the grain.
 //
-// Coverpoints: cp_grain_check for PMPM is fully covered in this test file.
+// Coverpoints: cp_grain_check for PMPSm is fully covered in this test file.
 //
 // Test case  : Checking that granularity matches expectations. We write 0
 //              to pmpcfg0, all 1s to pmpaddr0, and then read back pmpaddr0.
@@ -26,17 +25,17 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_grain_check.S"
-#define SIGUPD_COUNT 50
+// Define the size of the signature region
+#define SIGUPD_COUNT 1
 
 
 // Include framework macros
 #include "riscv_arch_test.h"
+
+#define PMP_GRAIN_CHECK_MASK ((1 << (UDB_PMP_GRANULARITY - 1)) - 1)
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
@@ -57,17 +56,10 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
@@ -79,13 +71,12 @@ main:
     LI(x6, 0)
     csrw pmpcfg0, x6
     LI(x6, -1)
-    test_1:
-         # Write x6 to pmpaddr0, read back and check against expected.
-         RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x6, test_1, test_1_str)
-
-    test_2:
-        # Read pmpaddr0 into x7 and check against expected.
-        RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
+    csrw pmpaddr0, x6
+    LI(t3, PMP_GRAIN_CHECK_MASK)
+    test_0:
+        csrr x7, pmpaddr0
+        and x7, x7, t3
+        RVTEST_SIGUPD(x2, x5, x4, x7, test_0, test_0_str)
 
 
 
@@ -94,8 +85,7 @@ RVTEST_DATA_BEGIN
 .p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
-test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
+test_0_str: .string "\"write ones to pmpaddr0 and check grain low bits; cp: cp_grain_check\""
 
 .p2align 12
 TEST_FOR_EXECUTION_0:

@@ -24,13 +24,10 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_cfg_A_all.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
 
@@ -54,19 +51,9 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)      // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL        -1                                        // All memory region
 
-#ifdef S_SUPPORTED
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     LA(x4, -1)
     // Putting all 1s in pmpaddr0
@@ -77,6 +64,7 @@ main:
 
     csrw pmpcfg0, x0        // pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE

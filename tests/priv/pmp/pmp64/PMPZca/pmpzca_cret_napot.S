@@ -30,8 +30,7 @@
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_cret_napot.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
@@ -59,10 +58,8 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION_1
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -74,12 +71,7 @@ main:
     #define SIZE (1<<(UDB_PMP_GRANULARITY+1)
 #endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: NAPOT Region with L->1 and XWR->111
@@ -95,6 +87,7 @@ main:
     LA(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
      //Test case1
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 

@@ -180,7 +180,6 @@ def _emit_pf_block(
             block.extend(extra_setup)
             block.append(test_data.add_testcase(name, coverpoint, covergroup))
             block.extend(asm)
-            block.append("nop")
         block.extend(["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma", ""])
         return block
 
@@ -284,7 +283,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 @add_priv_test_generator(
     "Sstvala",
     required_extensions=["Sstvala"],
-    march_extensions=["S", "Zicsr"],
+    march_extensions=["S"],
     extra_defines=[],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:

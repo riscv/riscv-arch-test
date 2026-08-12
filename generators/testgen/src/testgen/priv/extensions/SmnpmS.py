@@ -8,19 +8,23 @@
 
 from __future__ import annotations
 
-from testgen.asm.csr import gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     _LEAF_PERMS_S,
-    CP_CSR,
     CP_SXL_CLEAR,
+    HIGH_VA,
+    MODE_GUARDS,
+    MODES,
     PMM_CONFIGS,
-    VALUE_OLD,
     Regs,
     _pte_chain_asm,
+    data_pm_hi_page,
+    data_pm_lo_page,
+    data_slvl_tables,
     enable_envcfg_cbo_sse,
+    enable_fp_vector_state,
+    jalr_pad_asm,
     pass_a_all_instructions,
     pass_b_sign_extension,
     pass_c_misaligned,
@@ -28,74 +32,40 @@ from testgen.priv.extensions.ZpmCommon import (
     pass_d_mxr,
     pass_e_jalr,
     pass_f_fault_address,
+    pass_g_csr_writes,
     set_mxr,
+    set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "SmnpmS_cg"
-
 _MENVCFG_PMM = 32
-_MSTATUS_FS_DIRTY = 3 << 13
-_MSTATUS_VS_DIRTY = 3 << 9
-_MODES = ["bare", "sv39", "sv48", "sv57"]
-_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in _MODES}
-_LEVELS = {"sv39": 2, "sv48": 3, "sv57": 4}
-_HIGH_VA = {
-    "sv39": 0xFFFF_FFC0_0000_0000,
-    "sv48": 0xFFFF_8000_0000_0000,
-    "sv57": 0xFFFF_8000_0000_0000,
-}
 
 
 def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    mask = 0b11 << _MENVCFG_PMM
-    return [
-        f"# menvcfg.PMM={val:#04b} PMLEN={pmlen}",
-        f"LI(x{tmp}, {hex(mask)})",
-        f"csrc menvcfg, x{tmp}",
-        f"LI(x{tmp}, {hex(val << _MENVCFG_PMM)})",
-        f"csrs menvcfg, x{tmp}",
-    ]
+    return set_pmm_field("menvcfg", _MENVCFG_PMM, val, pmlen, tmp)
 
 
 def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
-    guard, is_bare = _GUARDS[mode], mode == "bare"
+    guard, is_bare = MODE_GUARDS[mode], mode == "bare"
     lines = [] if not guard else [f"#ifdef {guard}"]
     lines += [
         ".pushsection .data",
-        ".p2align 12",
-        f"pm_lo_page: .dword {hex(VALUE_OLD)}",
-        ".zero 4088",
+        *data_pm_lo_page(),
     ]
     if not is_bare:
-        lines += [
-            ".p2align 12",
-            f"pm_hi_page: .dword {hex(VALUE_OLD)}",
-            ".zero 4088",
-        ]
-        for i in range(_LEVELS[mode]):
-            lines += [".p2align 12", f"rvtest_slvl{i}_pg_tbl: .zero 4096"]
+        lines += data_pm_hi_page()
+        lines += data_slvl_tables(mode)
     lines += [
         ".popsection",
-        "j pm_jalr_pad_end",
-        "pm_jalr_pad:",
-        f"addi x{regs.chk}, x{regs.chk}, 1",
-        "jr ra",
-        "pm_jalr_pad_end:",
-        "RVTEST_GOTO_MMODE",
-        "",
+        *jalr_pad_asm(regs),
     ]
 
     lines += enable_envcfg_cbo_sse(regs, "menvcfg")
-    lines += [
-        "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
-        f"csrs mstatus, x{regs.tmp}",
-    ]
+    lines += enable_fp_vector_state(regs)
 
     if not is_bare:
-        lines += _pte_chain_asm(mode, _HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S)
+        lines += _pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page", _LEAF_PERMS_S)
         lines += ["sfence.vma", f"SATP_SETUP_RV64({mode})", "sfence.vma"]
 
     for pmm, pmlen, label in PMM_CONFIGS:
@@ -123,16 +93,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         lines += ["RVTEST_GOTO_MMODE", *set_mxr(False, regs.tmp, "mstatus")]
         lines += ["RVTEST_TSBI_GOTO_SMODE"]
 
-        lines.append(comment_banner(f"{prefix}: CSR writes must not be pointer-masked"))
-        pattern = ((1 << pmlen) - 1) << (64 - pmlen) | 0x1234_5678
-        for csr in ["sepc", "sscratch"]:
-            lines += [
-                f"csrr x{regs.tmp}, {csr} # save the framework's value before clobbering it",
-                f"LI(x{regs.chk}, {hex(pattern)})",
-                td.add_testcase(f"{prefix}_csrsw_{csr}", CP_CSR, COVERGROUP),
-                gen_csr_write_sigupd(regs.chk, csr, td),
-                f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
-            ]
+        lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, ["sepc", "sscratch"])
 
         lines.append("RVTEST_GOTO_MMODE")
         lines += pass_clear_on_xlen_change(
@@ -161,12 +122,10 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpms(td: TestData) -> list[TestChunk]:
-    # Same 6-GPR budget as Smmpm/Ssnpm.
-    # amocas.q needs even rd/rs2 → only x8 and x14 in the x8–x15 window.
+
     dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
     a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
     tmp, tmp2, base = td.int_regs.get_registers(3)
-    # Alias chk/data onto the even pair (no extra allocation).
     chk = dest_pair
     data = source_pair
 
@@ -189,7 +148,7 @@ def make_smnpms(td: TestData) -> list[TestChunk]:
     )
 
     chunks = []
-    for mode in _MODES:
+    for mode in MODES:
         tc = td.begin_test_chunk(split_name=mode)
         tc.code = _emit_mode(mode, td, regs)
         chunks.append(td.end_test_chunk())

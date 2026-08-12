@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 
@@ -43,6 +44,8 @@ SENTINEL: int = 0x1BAD_0BAD_1BAD_0BAD
 
 _MSTATUS_MXR = 1 << 19
 _MSTATUS_SUM = 1 << 18
+_MSTATUS_FS_DIRTY = 3 << 13
+_MSTATUS_VS_DIRTY = 3 << 9
 
 CP_MASKING = "cp_pmlen_masking"
 CP_MISALIGN = "cp_pmlen_misaligned_word"
@@ -56,7 +59,7 @@ CP_MPRV = "cp_pm_mprv"
 
 # envcfg (menvcfg/senvcfg) field positions shared by every mode-entry prelude
 # that needs to grant cbo.*/prefetch.*/Zicfiss permission to the next lower
-# privilege level. Same bit positions regardless of which *envcfg CSR is used.
+# privilege level.
 _ENVCFG_CBIE_SHIFT = 4
 _ENVCFG_CBCFE_SHIFT = 6
 _ENVCFG_CBZE_SHIFT = 7
@@ -124,7 +127,6 @@ _LEAF_PERMS_U = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"  # U-accessible 
 _LEAF_PERMS_S = "PTE_D | PTE_A | PTE_W | PTE_R | PTE_V"  # S-accessible only (no U)
 
 LEVELS_BELOW_ROOT: dict[str, int] = {"sv39": 2, "sv48": 3, "sv57": 4}
-
 IDENTITY_VPN_SHIFT: dict[str, int] = {"sv39": 30, "sv48": 39, "sv57": 48}
 
 HIGH_VA: dict[str, int] = {
@@ -133,9 +135,11 @@ HIGH_VA: dict[str, int] = {
     "sv57": 0xFFFF_8000_0000_0000,
 }
 
+MODES: list[str] = ["bare", "sv39", "sv48", "sv57"]
+MODE_GUARDS: dict[str, str | None] = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
+
+
 # ── Config / Regs ──────────────────────────────────────────────────────────
-
-
 @dataclass
 class Regs:
     base: int
@@ -171,6 +175,103 @@ def _tid(prefix: str, upper: int, mnemonic: str) -> str:
     return f"{prefix}_up{upper:04X}_{mnemonic.replace('.', '_')}"
 
 
+# ── Factoring helpers (PMM / FS+VS / JALR pad / data pages) ────────────────
+
+
+def set_pmm_field(csr: str, shift: int, val: int, pmlen: int, tmp: int) -> list[str]:
+    """Clear then set the 2-bit PMM field in *csr* at *shift*."""
+    mask = 0b11 << shift
+    return [
+        f"# {csr}.PMM={val:#04b} PMLEN={pmlen}",
+        f"LI(x{tmp}, {hex(mask)})",
+        f"csrc {csr}, x{tmp}",
+        f"LI(x{tmp}, {hex(val << shift)})",
+        f"csrs {csr}, x{tmp}",
+    ]
+
+
+def enable_fp_vector_state(
+    regs: Regs,
+    extra_bits: int = 0,
+    extra_comment: str | None = None,
+) -> list[str]:
+    """Enable FS/VS dirty so FP and vector probes are legal.
+
+    *extra_bits* is ORed into the same mstatus write (e.g. SUM for Ssnpm).
+    *extra_comment* replaces the default one-line comment when supplied.
+    """
+    bits = _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY | extra_bits
+    if extra_comment is not None:
+        comment = extra_comment
+    else:
+        comment = "# FP and vector state must be enabled for the FP/vector probes to be legal."
+    return [
+        "",
+        comment,
+        f"LI(x{regs.tmp}, {hex(bits)})",
+        f"csrs mstatus, x{regs.tmp}",
+    ]
+
+
+def jalr_pad_asm(regs: Regs) -> list[str]:
+    return [
+        "j pm_jalr_pad_end",
+        "pm_jalr_pad:",
+        f"addi x{regs.chk}, x{regs.chk}, 1",
+        "jr ra",
+        "pm_jalr_pad_end:",
+        "RVTEST_GOTO_MMODE",
+        "",
+    ]
+
+
+def data_page(label: str, value: int = VALUE_OLD) -> list[str]:
+    """One 4 KiB page containing a single dword seed."""
+    return [
+        ".p2align 12",
+        f"{label}: .dword {hex(value)}",
+        ".zero 4088",
+    ]
+
+
+def data_pm_lo_page() -> list[str]:
+    return data_page("pm_lo_page")
+
+
+def data_pm_hi_page() -> list[str]:
+    return data_page("pm_hi_page")
+
+
+def data_slvl_tables(mode: str, label_prefix: str = "rvtest_slvl") -> list[str]:
+    """Zero-filled page-table pages for the given satp mode."""
+    lines: list[str] = []
+    for i in range(LEVELS_BELOW_ROOT[mode]):
+        lines += [".p2align 12", f"{label_prefix}{i}_pg_tbl: .zero 4096"]
+    return lines
+
+
+def pass_g_csr_writes(
+    prefix: str,
+    pmlen: int,
+    td: TestData,
+    regs: Regs,
+    cg: str,
+    csrs: list[str],
+) -> list[str]:
+    """CSR writes must not be pointer-masked (shared by Smmpm / SmnpmS)."""
+    lines = [comment_banner(f"{prefix}: CSR writes must not be pointer-masked")]
+    pattern = ((1 << pmlen) - 1) << (64 - pmlen) | 0x1234_5678
+    for csr in csrs:
+        lines += [
+            f"csrr x{regs.tmp}, {csr} # save the framework's value before clobbering it",
+            f"LI(x{regs.chk}, {hex(pattern)})",
+            td.add_testcase(f"{prefix}_csrsw_{csr}", CP_CSR, cg),
+            gen_csr_write_sigupd(regs.chk, csr, td),
+            f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
+        ]
+    return lines
+
+
 # ── envcfg (menvcfg/senvcfg) setup helper ──────────────────────────────────
 
 
@@ -183,7 +284,7 @@ def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg") -> list[str]:
       through (SmnpmS, and M-mode-only Smmpm doesn't need this at all).
     - "senvcfg" when the probes run in U-mode; the caller is responsible for
       first cascading the same fields through menvcfg down to senvcfg
-      (Ssnpm, SmnpmU).
+      (Ssnpm).
     """
     cbo_fields = (0b11 << _ENVCFG_CBIE_SHIFT) | (1 << _ENVCFG_CBCFE_SHIFT) | (1 << _ENVCFG_CBZE_SHIFT) | _ENVCFG_SSE_BIT
     return [
@@ -201,10 +302,8 @@ def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg") -> list[str]:
 def enable_cascaded_envcfg_cbo_sse(regs: Regs) -> list[str]:
     """Grant U-mode permission to run cbo.*/prefetch.* and the Zicfiss
     shadow-stack atomics, cascading the grant through menvcfg down to senvcfg.
-
     Used when the probes run in U-mode under an M-mode-configured PMM
-    ( SmnpmU) -- menvcfg gates whether S-mode's own senvcfg settings
-    take effect at all, so menvcfg.SSE must be set.
+    ( SmnpmU)
     """
     cbo_fields = (0b11 << _ENVCFG_CBIE_SHIFT) | (1 << _ENVCFG_CBCFE_SHIFT) | (1 << _ENVCFG_CBZE_SHIFT) | _ENVCFG_SSE_BIT
     return [
@@ -361,7 +460,6 @@ def _probe_zacas(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[s
         dest_reg = regs.chk
         src_reg = regs.data
 
-    # Unified implementation for all three instructions
     return [
         *_seed(regs),
         f"LI(x{dest_reg}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
@@ -531,8 +629,7 @@ def _probe_vec_store(
 
 def _probe_zicfiss(mn: str, readback: str, funct3: int, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     """Zicfiss shadow-stack AMO through a tagged pointer (kept for parity;
-    ZICFISS_AMOS is currently empty across all four extensions -- see their
-    module docstrings for why)."""
+    ZICFISS_AMOS is currently empty across all four extensions, TODO : Add them"""
     return [
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
@@ -663,15 +760,7 @@ def pass_c_misaligned(cfg: object | None, prefix: str, td: TestData, regs: Regs,
 
 
 def set_mxr(enable: bool, tmp: int, status_csr: str = "sstatus") -> list[str]:
-    """MXR gates pointer masking off entirely when set.
-
-    `status_csr` must match whatever CSR the caller's _cg mxr_bit coverpoint
-    actually samples:
-    - Ssnpm samples the sstatus shadow (probes run in U-mode under an
-      S-mode-configured PMM) -> status_csr="sstatus" (the default).
-    - Smmpm and SmnpmS sample mstatus directly (no shadow-register concern)
-      -> status_csr="mstatus".
-    """
+    """MXR gates pointer masking off entirely when set."""
     op = "csrs" if enable else "csrc"
     return [f"# {status_csr}.MXR = {int(enable)}", f"LI(x{tmp}, {hex(_MSTATUS_MXR)})", f"{op} {status_csr}, x{tmp}"]
 
@@ -685,13 +774,7 @@ def pass_d_mxr(
     goto_target_mode: str = "RVTEST_TSBI_GOTO_UMODE",
     status_csr: str = "sstatus",
 ) -> list[str]:
-    """sw/lw with MXR set. MXR suppresses masking, so tagged pointers must fault.
-
-    `goto_target_mode` is whatever privilege-transition macro puts the hart
-    where the probes should run (U-mode for Ssnpm, S-mode for SmnpmS, or
-    omitted/no-op for Smmpm which never leaves M-mode -- pass "" in that case).
-    `status_csr` is forwarded to set_mxr; see its docstring.
-    """
+    """sw/lw with MXR set. MXR suppresses masking, so tagged pointers must fault."""
     lines = [comment_banner(f"{prefix}: {status_csr}.MXR=1 suppresses pointer masking")]
     lines += ["RVTEST_GOTO_MMODE", *set_mxr(True, regs.tmp, status_csr)]
     if goto_target_mode:
@@ -776,9 +859,7 @@ def pass_clear_on_xlen_change(
     ifdef_guard: str | None = None,
 ) -> list[str]:
     """Setting status_csr's 2-bit field to 01 (RV32) must clear pmm_csr.PMM to 00.
-
-    Generalizes Ssnpm's, SmnpmU's UXL-clear pass and SmnpmS's SXL-clear pass -- same
-    clear-then-set-both-bits logic, just parameterized on which CSR/shift.
+    Generalizes Ssnpm's, SmnpmU's UXL-clear pass and SmnpmS's SXL-clear pass
     """
     lines = [""]
     if ifdef_guard:

@@ -14,12 +14,20 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     _MSTATUS_SUM,
     CP_UXL_CLEAR,
+    HIGH_VA,
+    LEVELS_BELOW_ROOT,
+    MODE_GUARDS,
+    MODES,
     PMM_CONFIGS,
-    VALUE_OLD,
     Regs,
     _pte_chain_asm,
     build_finegrained_text_map_asm,
+    data_pm_hi_page,
+    data_pm_lo_page,
+    data_slvl_tables,
     enable_cascaded_envcfg_cbo_sse,
+    enable_fp_vector_state,
+    jalr_pad_asm,
     pass_a_all_instructions,
     pass_b_sign_extension,
     pass_c_misaligned,
@@ -28,68 +36,43 @@ from testgen.priv.extensions.ZpmCommon import (
     pass_e_jalr,
     pass_f_fault_address,
     set_mxr,
+    set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Ssnpm_cg"
-
 _SENVCFG_PMM = 32
-_MSTATUS_FS_DIRTY = 3 << 13
-_MSTATUS_VS_DIRTY = 3 << 9
-_MODES = ["bare", "sv39", "sv48", "sv57"]
-_GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in _MODES}
-_LEVELS = {"sv39": 2, "sv48": 3, "sv57": 4}
-_HIGH_VA = {"sv39": 0xFFFF_FFC0_0000_0000, "sv48": 0xFFFF_8000_0000_0000, "sv57": 0xFFFF_8000_0000_0000}
 
 
 def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    mask = 0b11 << _SENVCFG_PMM
-    return [
-        f"# senvcfg.PMM={val:#04b} PMLEN={pmlen}",
-        f"LI(x{tmp}, {hex(mask)})",
-        f"csrc senvcfg, x{tmp}",
-        f"LI(x{tmp}, {hex(val << _SENVCFG_PMM)})",
-        f"csrs senvcfg, x{tmp}",
-    ]
+    return set_pmm_field("senvcfg", _SENVCFG_PMM, val, pmlen, tmp)
 
 
 def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
-    guard, is_bare = _GUARDS[mode], mode == "bare"
+    guard, is_bare = MODE_GUARDS[mode], mode == "bare"
     lines = [] if not guard else [f"#ifdef {guard}"]
-    lines += [".pushsection .data", ".p2align 12", f"pm_lo_page: .dword {hex(VALUE_OLD)}", ".zero 4088"]
+    lines += [".pushsection .data", *data_pm_lo_page()]
     if not is_bare:
-        lines += [".p2align 12", f"pm_hi_page: .dword {hex(VALUE_OLD)}", ".zero 4088"]
-        for i in range(_LEVELS[mode]):
-            lines += [".p2align 12", f"rvtest_slvl{i}_pg_tbl: .zero 4096"]
-        for i in range(_LEVELS[mode]):
-            lines += [".p2align 12", f"pm_img_slvl{i}_pg_tbl: .zero 4096"]
+        lines += data_pm_hi_page()
+        lines += data_slvl_tables(mode)
+        lines += data_slvl_tables(mode, label_prefix="pm_img_slvl")
     lines += [
         ".popsection",
         ".p2align 12",
         "pm_utext_begin:",
-        "j pm_jalr_pad_end",
-        "pm_jalr_pad:",
-        f"addi x{regs.chk}, x{regs.chk}, 1",
-        "jr ra",
-        "pm_jalr_pad_end:",
-        "RVTEST_GOTO_MMODE",
-        "",
+        *jalr_pad_asm(regs),
     ]
 
     lines += enable_cascaded_envcfg_cbo_sse(regs)
-    lines += [
-        "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal. SUM lets",
-        "# the S-mode trap handler reach its save area and trap signature, which live on",
-        "# the same U-accessible data pages the U-mode probes use.",
-        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY | _MSTATUS_SUM)})",
-        f"csrs mstatus, x{regs.tmp}",
-    ]
+    lines += enable_fp_vector_state(
+        regs,
+        extra_bits=_MSTATUS_SUM,
+    )
 
     if not is_bare:
-        img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(_LEVELS[mode] - 1, -1, -1)]
+        img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
         lines += ["", *build_finegrained_text_map_asm(mode, img_tables)]
-        lines += ["", *_pte_chain_asm(mode, _HIGH_VA[mode], "pm_hi_page")]
+        lines += ["", *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page")]
         lines += ["sfence.vma", f"SATP_SETUP_RV64({mode})", "sfence.vma"]
 
     for pmm, pmlen, label in PMM_CONFIGS:
@@ -136,8 +119,6 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     "Ssnpm",
     required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
-    # Under an active satp most tag patterns cannot survive masking, so nearly every
-    # probe traps and the trap signature outgrows the default budget.
     extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
@@ -150,7 +131,7 @@ def make_ssnpm(td: TestData) -> list[TestChunk]:
     )
 
     chunks = []
-    for mode in _MODES:
+    for mode in MODES:
         tc = td.begin_test_chunk(split_name=mode)
         tc.code = _emit_mode(mode, td, regs)
         chunks.append(td.end_test_chunk())

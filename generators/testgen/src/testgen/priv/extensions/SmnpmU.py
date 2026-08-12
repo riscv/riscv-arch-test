@@ -14,59 +14,39 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     CP_UXL_CLEAR,
     PMM_CONFIGS,
-    VALUE_OLD,
     Regs,
+    data_pm_lo_page,
     enable_cascaded_envcfg_cbo_sse,
+    enable_fp_vector_state,
+    jalr_pad_asm,
     pass_a_all_instructions,
     pass_c_misaligned,
     pass_clear_on_xlen_change,
     pass_e_jalr,
     pass_f_fault_address,
+    set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "SmnpmU_cg"
-
 _MENVCFG_PMM = 32
 _MSTATUS_UXL_SHIFT = 32
-_MSTATUS_FS_DIRTY = 3 << 13
-_MSTATUS_VS_DIRTY = 3 << 9
 
 
 def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    mask = 0b11 << _MENVCFG_PMM
-    return [
-        f"# menvcfg.PMM={val:#04b} PMLEN={pmlen}",
-        f"LI(x{tmp}, {hex(mask)})",
-        f"csrc menvcfg, x{tmp}",
-        f"LI(x{tmp}, {hex(val << _MENVCFG_PMM)})",
-        f"csrs menvcfg, x{tmp}",
-    ]
+    return set_pmm_field("menvcfg", _MENVCFG_PMM, val, pmlen, tmp)
 
 
 def _emit_file(td: TestData, regs: Regs) -> list[str]:
     lines = [
         ".pushsection .data",
-        ".p2align 12",
-        f"pm_lo_page: .dword {hex(VALUE_OLD)}",
-        ".zero 4088",
+        *data_pm_lo_page(),
         ".popsection",
-        "j pm_jalr_pad_end",
-        "pm_jalr_pad:",
-        f"addi x{regs.chk}, x{regs.chk}, 1",
-        "jr ra",
-        "pm_jalr_pad_end:",
-        "RVTEST_GOTO_MMODE",
-        "",
+        *jalr_pad_asm(regs),
     ]
 
     lines += enable_cascaded_envcfg_cbo_sse(regs)
-    lines += [
-        "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
-        f"csrs mstatus, x{regs.tmp}",
-    ]
+    lines += enable_fp_vector_state(regs)
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_bare"
@@ -102,12 +82,11 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpmu(td: TestData) -> list[TestChunk]:
-    # Same 6-GPR budget as Smmpm/SmnpmS/Ssnpm.
-    # amocas.q needs even rd/rs2 → only x8 and x14 in the x8–x15 window.
+
     dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
     a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
     tmp, tmp2, base = td.int_regs.get_registers(3)
-    # Alias chk/data onto the even pair (no extra allocation).
+
     chk = dest_pair
     data = source_pair
 

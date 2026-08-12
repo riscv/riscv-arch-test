@@ -1610,7 +1610,7 @@ def _generate_stip_write_stimecmp_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S", "Zicsr"])
+@add_priv_test_generator("InterruptsSSm", required_extensions=["Sm", "S"])
 def make_interruptsssm(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests running in M mode.
 

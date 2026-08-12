@@ -49,11 +49,10 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
 
 @add_priv_test_generator(
     "SsstrictS",
-    required_extensions=["S", "Zicsr", "Ssstrict"],
+    required_extensions=["S", "Ssstrict"],
     march_extensions=[
         "I",
         "V",  # V included: sets vl/vtype for vector loads and stores in the encoding sweep
-        "Zicsr",
     ],
     extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define RVTEST_TEMP_BOOT_TO_S"],
 )

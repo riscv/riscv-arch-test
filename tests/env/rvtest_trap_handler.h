@@ -2520,9 +2520,10 @@ rtn_fm_mmode:
 //  Ssstrict CSR and instruction-encoding sweeps, 150k+ traps). The standard
 //  RVTEST_TRAP_HANDLER records several words per trap into the dedicated
 //  trap-signature region, which those sweeps would overflow. This handler
-//  instead writes three words (xcause, xepc, xtval) per illegal-instruction
-//  trap directly to the regular test signature (x2), advances xEPC past the
-//  trapping instruction, and returns.
+//  records three words (xcause, xepc, xtval) per illegal-instruction trap in
+//  the regular test signature (x2), advances xEPC past the trapping
+//  instruction, and returns. In self-check mode, each word is compared before
+//  x2 advances.
 //
 //  Enabled with:    #define RVTEST_USE_FAST_TRAP_HANDLER   (in the test file)
 //  Instantiated by: RVTEST_CODE_END, alongside the standard trap handlers
@@ -2565,6 +2566,26 @@ rtn_fm_mmode:
 //==============================================================================
 //==============================================================================
 
+// RVTEST_FAST_TRAP_FAILURE(epc, cause, tval, status, check, description)
+// Reports a fast-trap field mismatch. This path is cold, so it can use extra
+// registers to snapshot the trapping CSRs for the normal trap diagnostics.
+#define RVTEST_FAST_TRAP_FAILURE(_EPC, _CAUSE, _TVAL, _STATUS, _CHECK, _DESCRIPTION) \
+        csrr x9, _EPC                                      ;\
+        LA(x7, saved_xepc)                                 ;\
+        SREG x9, 0(x7)                                     ;\
+        csrr x9, _CAUSE                                    ;\
+        SREG x9, REGWIDTH(x7)                              ;\
+        csrr x9, _TVAL                                     ;\
+        SREG x9, 2*REGWIDTH(x7)                            ;\
+        csrr x9, _STATUS                                   ;\
+        SREG x9, 3*REGWIDTH(x7)                            ;\
+        mv x6, a0                                          ;\
+        mv x4, a1                                          ;\
+        jal x7, failedtest_trap_x7_x9                      ;\
+        RVTEST_WORD_PTR _CHECK                             ;\
+        RVTEST_WORD_PTR _DESCRIPTION                       ;\
+        .word _EPC
+
 .macro RVTEST_FAST_TRAP_HANDLER
 .option push
 .option norvc                                    // all handler code must be uncompressed
@@ -2592,15 +2613,10 @@ trap_handler_fastillegalinstr:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
 fast_Millegalinstruction:
-        csrr a0, mcause
-        SREG a0, 0(x2)                  // store mcause (=2) to signature
-        addi x2, x2, SIG_STRIDE
-        csrr a0, mepc
-        SREG a0, 0(x2)                  // store mepc to signature
-        addi x2, x2, SIG_STRIDE
-        csrr a0, mtval
-        SREG a0, 0(x2)                  // store mtval to signature
-        addi x2, x2, SIG_STRIDE
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MCAUSE, 0, fast_Mcause_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MEPC, SIG_STRIDE, fast_Mepc_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MTVAL, 2*SIG_STRIDE, fast_Mtval_mismatch)
+        addi x2, x2, 3*SIG_STRIDE
         // mepc advance using only a0 — reads bits[1:0] from *mepc using lhu
         // (lhu because mepc is only guaranteed 2-byte aligned).
         csrr a0, mepc
@@ -2623,6 +2639,13 @@ fast_Mothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
         j    Mtrampoline                // hand off all non-illegal-instruction traps
+
+fast_Mcause_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mcause_mismatch, sv_Mcause_str)
+fast_Mepc_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mepc_mismatch, sv_Mepc_str)
+fast_Mtval_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_MEPC, CSR_MCAUSE, CSR_MTVAL, CSR_MSTATUS, fast_Mtval_mismatch, sv_Mtval_str)
 
 #ifdef S_SUPPORTED
 // ── Fast S-mode handler (stvec) ─────────────────────────────────────────────
@@ -2647,15 +2670,10 @@ strap_handler_fastillegalinstr:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
 fast_Sillegalinstruction:
-        csrr a0, scause
-        SREG a0, 0(x2)                  // store scause (=2) to signature
-        addi x2, x2, SIG_STRIDE
-        csrr a0, sepc
-        SREG a0, 0(x2)                  // store sepc to signature
-        addi x2, x2, SIG_STRIDE
-        csrr a0, stval
-        SREG a0, 0(x2)                  // store stval to signature
-        addi x2, x2, SIG_STRIDE
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_SCAUSE, 0, fast_Scause_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_SEPC, SIG_STRIDE, fast_Sepc_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_STVAL, 2*SIG_STRIDE, fast_Stval_mismatch)
+        addi x2, x2, 3*SIG_STRIDE
         // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
         csrr a0, sepc
         lhu  a0, 0(a0)                  // load lower 16 bits of faulting instruction
@@ -2679,6 +2697,13 @@ fast_Sothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
         j    Strampoline                // hand off all non-illegal-instruction traps
+
+fast_Scause_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Scause_mismatch, sv_Scause_str)
+fast_Sepc_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Sepc_mismatch, sv_Sepc_str)
+fast_Stval_mismatch:
+        RVTEST_FAST_TRAP_FAILURE(CSR_SEPC, CSR_SCAUSE, CSR_STVAL, CSR_SSTATUS, fast_Stval_mismatch, sv_Stval_str)
 #endif // S_SUPPORTED
 
 .option pop

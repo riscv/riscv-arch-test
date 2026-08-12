@@ -12,12 +12,13 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
+    _MSTATUS_SUM,
     CP_UXL_CLEAR,
     PMM_CONFIGS,
     VALUE_OLD,
     Regs,
-    _grant_umode_access_to_identity_map_asm,
     _pte_chain_asm,
+    build_finegrained_text_map_asm,
     enable_cascaded_envcfg_cbo_sse,
     pass_a_all_instructions,
     pass_b_sign_extension,
@@ -60,8 +61,12 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         lines += [".p2align 12", f"pm_hi_page: .dword {hex(VALUE_OLD)}", ".zero 4088"]
         for i in range(_LEVELS[mode]):
             lines += [".p2align 12", f"rvtest_slvl{i}_pg_tbl: .zero 4096"]
+        for i in range(_LEVELS[mode]):
+            lines += [".p2align 12", f"pm_img_slvl{i}_pg_tbl: .zero 4096"]
     lines += [
         ".popsection",
+        ".p2align 12",
+        "pm_utext_begin:",
         "j pm_jalr_pad_end",
         "pm_jalr_pad:",
         f"addi x{regs.chk}, x{regs.chk}, 1",
@@ -74,24 +79,18 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     lines += enable_cascaded_envcfg_cbo_sse(regs)
     lines += [
         "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
+        "# FP and vector state must be enabled for the FP/vector probes to be legal. SUM lets",
+        "# the S-mode trap handler reach its save area and trap signature, which live on",
+        "# the same U-accessible data pages the U-mode probes use.",
+        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY | _MSTATUS_SUM)})",
         f"csrs mstatus, x{regs.tmp}",
     ]
 
     if not is_bare:
-        lines += ["", *_grant_umode_access_to_identity_map_asm(mode, regs)]
+        img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(_LEVELS[mode] - 1, -1, -1)]
+        lines += ["", *build_finegrained_text_map_asm(mode, img_tables)]
         lines += ["", *_pte_chain_asm(mode, _HIGH_VA[mode], "pm_hi_page")]
         lines += ["sfence.vma", f"SATP_SETUP_RV64({mode})", "sfence.vma"]
-
-    lines += [
-        "",
-        "# Take every trap in M-mode: U-mode code running under an active satp",
-        "# needs PTE_U on the page it executes from, and S-mode may not fetch",
-        "# from a U=1 page, so an S-mode handler there would trap forever.",
-        f"csrr x{regs.tmp2}, medeleg      # stash the framework's delegation mask",
-        "csrw medeleg, zero",
-    ]
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_{mode}"
@@ -126,7 +125,8 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     lines += ["RVTEST_GOTO_MMODE"]
     lines += _set_pmm(0b00, 0, regs.tmp)
     lines += set_mxr(False, regs.tmp)
-    lines += ["csrwi satp, 0", "sfence.vma", f"csrw medeleg, x{regs.tmp2}   # restore the framework's delegation mask"]
+    lines += ["csrwi satp, 0", "sfence.vma"]
+    lines += [".p2align 12", "pm_utext_end:"]
     if guard:
         lines.append(f"#endif // {guard}")
     return lines
@@ -136,6 +136,9 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     "Ssnpm",
     required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    # Under an active satp most tag patterns cannot survive masking, so nearly every
+    # probe traps and the trap signature outgrows the default budget.
+    extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
     a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))

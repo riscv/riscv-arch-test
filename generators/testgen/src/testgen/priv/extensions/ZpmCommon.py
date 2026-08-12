@@ -42,6 +42,7 @@ VALUE_NEW: int = 0xA5A5_A5A5_A5A5_A5A5
 SENTINEL: int = 0x1BAD_0BAD_1BAD_0BAD
 
 _MSTATUS_MXR = 1 << 19
+_MSTATUS_SUM = 1 << 18
 
 CP_MASKING = "cp_pmlen_masking"
 CP_MISALIGN = "cp_pmlen_misaligned_word"
@@ -234,22 +235,75 @@ def _pte_chain_asm(mode: str, va: int, leaf_label: str, leaf_perms: str = _LEAF_
     return lines
 
 
-def _grant_umode_access_to_identity_map_asm(mode: str, regs: Regs | None = None) -> list[str]:
-    """OR PTE_U into the boot-time identity leaf so U-mode can run from it."""
-    shift = IDENTITY_VPN_SHIFT[mode]
+def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str) -> list[str]:
+    """parent[VPN(va, shift)] = child, valid but not a leaf."""
     return [
-        f"# {mode.upper()}: make the boot identity superpage U-accessible (leaf stays a leaf)",
-        "LA(a1, rvtest_data_begin)",
-        f"srli a1, a1, {shift}",
-        "andi a1, a1, 0x1FF",
-        "slli a1, a1, 3",
-        "LA(a0, rvtest_Sroot_pg_tbl)",
-        "add  a0, a0, a1",
-        "ld   t0, 0(a0)",
-        "li   t1, PTE_U",
-        "or   t0, t0, t1",
-        "sd   t0, 0(a0)",
+        f"srli t1, {va_reg}, {shift}",
+        "andi t1, t1, 0x1FF",
+        "slli t1, t1, 3",
+        f"LA(t2, {parent})",
+        "add  t2, t2, t1",
+        f"LA(t3, {child})",
+        "srli t3, t3, 12",
+        "slli t3, t3, 10",
+        f"ori  t3, t3, ({_NONLEAF_PERMS})",
+        "sd   t3, 0(t2)",
     ]
+
+
+def _walk_asm(mode: str, tables: list[str], va_reg: str) -> list[str]:
+    """Install non-leaf entries from the framework root down to tables[0]."""
+    top = LEVELS_BELOW_ROOT[mode]
+    shifts = [12 + 9 * k for k in range(top, 0, -1)]
+    chain = ["rvtest_Sroot_pg_tbl", *tables]
+    lines: list[str] = []
+    for parent, child, shift in zip(chain, chain[1:], shifts):
+        lines += _nonleaf_asm(parent, child, shift, va_reg)
+    return lines
+
+
+def build_finegrained_text_map_asm(mode: str, img_tables: list[str]) -> list[str]:
+    """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
+    granting PTE_U only to the U-mode-executable text (pm_utext_begin..end)
+    and the U-accessible data range (rvtest_data_begin..end_signature).
+    The S-mode trap handler, which lives outside that bracket in the same
+    2 MiB region, is left without PTE_U so S-mode can still fetch it.
+    """
+    lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on test code and data"]
+    lines += ["LA(t0, rvtest_code_begin)"]
+    lines += _walk_asm(mode, img_tables, "t0")
+    lines += [
+        "LA(t0, rvtest_code_begin)",
+        "srli t0, t0, 21",
+        "slli t0, t0, 21                  # t0 = 2 MiB-aligned base of the image",
+        f"LA(t1, {img_tables[-1]})",
+        "LA(t2, pm_utext_begin)",
+        "LA(t3, pm_utext_end)",
+        "sub  t3, t3, t2                  # t3 = size of the U-executable text",
+        "LA(t4, rvtest_data_begin)",
+        "LA(t5, end_signature)",
+        "sub  t5, t5, t4                  # t5 = size of the U-accessible data",
+        "li   t6, 512",
+        "1:",
+        "li   a0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        "sub  a1, t0, t2",
+        "bltu a1, t3, 2f                  # inside the code segment -> U-accessible",
+        "sub  a1, t0, t4",
+        "bgeu a1, t5, 3f                  # outside the data segment -> keep U clear",
+        "2:",
+        "ori  a0, a0, PTE_U",
+        "3:",
+        "srli a1, t0, 12",
+        "slli a1, a1, 10",
+        "or   a1, a1, a0",
+        "sd   a1, 0(t1)",
+        "addi t1, t1, 8",
+        "lui  a1, 1",
+        "add  t0, t0, a1",
+        "addi t6, t6, -1",
+        "bnez t6, 1b",
+    ]
+    return lines
 
 
 # ── Probe Primitives ───────────────────────────────────────────────────────

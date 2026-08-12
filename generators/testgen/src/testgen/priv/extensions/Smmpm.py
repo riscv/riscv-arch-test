@@ -8,261 +8,51 @@
 
 from __future__ import annotations
 
-from testgen.asm.csr import gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
-    CP_CSR,
-    CP_MPRV,
-    LEVELS_BELOW_ROOT,
     PMM_CONFIGS,
-    UPPER_PATTERNS,
-    VALUE_OLD,
     Regs,
-    _fixed,
-    _sentinel,
-    _tid,
+    alloc_pm_regs_paired,
+    enable_fp_vector_state,
+    free_pm_regs,
+    jalr_pad_asm,
+    mprv_data_section,
     pass_a_all_instructions,
     pass_c_misaligned,
     pass_d_mxr,
     pass_e_jalr,
     pass_f_fault_address,
+    pass_g_csr_writes,
+    pass_h_mprv,
     set_mxr,
+    set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Smmpm_cg"
-
 _MSECCFG_PMM = 32
-_MSTATUS_MPRV = 1 << 17
-_MSTATUS_SUM = 1 << 18
-_MSTATUS_MPP_SHIFT = 11
-_MSTATUS_FS_DIRTY = 3 << 13
-_MSTATUS_VS_DIRTY = 3 << 9
-_MPP_U, _MPP_S = 0b00, 0b01
 _CSR_TARGETS = ["mepc", "mscratch"]
-_SATP_MODES = ["bare", "sv39", "sv48", "sv57"]
-_SATP_GUARD = {
-    "bare": None,
-    "sv39": "SV39_SUPPORTED",
-    "sv48": "SV48_SUPPORTED",
-    "sv57": "SV57_SUPPORTED",
-}
-_NONLEAF_PERMS = "PTE_V"
-_MPRV_LEAF_PERMS = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"
-_MPRV_VA = 0x0000_0020_0000_0000
-
-
-def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    mask = 0b11 << _MSECCFG_PMM
-    return [
-        f"# mseccfg.PMM={val:#04b} PMLEN={pmlen}",
-        f"LI(x{tmp}, {hex(mask)})",
-        f"csrc mseccfg, x{tmp}",
-        f"LI(x{tmp}, {hex(val << _MSECCFG_PMM)})",
-        f"csrs mseccfg, x{tmp}",
-    ]
-
-
-def _set_mprv(enable: bool, mpp: int, tmp: int) -> list[str]:
-    if enable:
-        return [
-            f"LI(x{tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
-            f"csrc mstatus, x{tmp}",
-            f"LI(x{tmp}, {hex(mpp << _MSTATUS_MPP_SHIFT)})",
-            f"csrs mstatus, x{tmp}",
-            f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
-            f"csrs mstatus, x{tmp}",
-        ]
-    return [
-        f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
-        f"csrc mstatus, x{tmp}",
-    ]
-
-
-def _set_sum(enable: bool, tmp: int) -> list[str]:
-    op = "csrs" if enable else "csrc"
-    return [
-        f"# mstatus.SUM = {int(enable)}",
-        f"LI(x{tmp}, {hex(_MSTATUS_SUM)})",
-        f"{op} mstatus, x{tmp}",
-    ]
-
-
-def _write_pte(table_label: str, vpn_index: int, target_label: str, perms: str) -> list[str]:
-    return [
-        f"LA(x6, {table_label})",
-        f"LI(x7, {vpn_index * 8})",
-        "add x6, x6, x7",
-        f"LA(x8, {target_label})",
-        f"LI(x7, {perms})",
-        "or x8, x8, x7",
-        "sd x8, 0(x6)",
-    ]
-
-
-def _mprv_pte_chain(mode: str, va: int) -> list[str]:
-    if mode == "bare":
-        return []
-    vpn_shifts = {
-        "sv39": [30, 21, 12],
-        "sv48": [39, 30, 21, 12],
-        "sv57": [48, 39, 30, 21, 12],
-    }
-    vpn_indices = [(va >> s) & 0x1FF for s in vpn_shifts[mode]]
-    lines = [f"# {mode.upper()}: PTE chain for VA {hex(va)}"]
-    current = "rvtest_Sroot_pg_tbl"
-    for i, vpn in enumerate(vpn_indices[:-1]):
-        nxt = f"rvtest_mprv_slvl{len(vpn_indices) - 2 - i}_pg_tbl_{mode}"
-        lines += _write_pte(current, vpn, nxt, _NONLEAF_PERMS)
-        current = nxt
-    lines += _write_pte(current, vpn_indices[-1], "mprv_page", _MPRV_LEAF_PERMS)
-    return lines
-
-
-def _probe_mprv_load(mn: str, mpp: int, tid: str, td: TestData, regs: Regs) -> list[str]:
-    return [
-        f"LA(x{regs.tmp}, mprv_page)",
-        f"LI(x{regs.data}, {hex(VALUE_OLD)})",
-        f"sd x{regs.data}, 0(x{regs.tmp}) # seed, MPRV=0: untranslated physical write",
-        *_sentinel(regs),
-        td.add_testcase(tid, CP_MPRV, COVERGROUP),
-        *_set_mprv(True, mpp, regs.tmp),
-        *_fixed(f"{mn} x{regs.chk}, 0(x{regs.a})"),
-        *_set_mprv(False, 0, regs.tmp),
-        write_sigupd(regs.chk, td),
-    ]
-
-
-def _probe_mprv_store(mn: str, readback: str, mpp: int, tid: str, td: TestData, regs: Regs) -> list[str]:
-    return [
-        f"LA(x{regs.tmp}, mprv_page)",
-        f"LI(x{regs.data}, {hex(VALUE_OLD)})",
-        f"sd x{regs.data}, 0(x{regs.tmp}) # seed, MPRV=0: untranslated physical write",
-        f"LI(x{regs.data}, {hex(0xA5A5_A5A5_A5A5_A5A5)})",
-        td.add_testcase(tid, CP_MPRV, COVERGROUP),
-        *_set_mprv(True, mpp, regs.tmp),
-        *_fixed(f"{mn} x{regs.data}, 0(x{regs.a})"),
-        *_set_mprv(False, 0, regs.tmp),
-        f"LA(x{regs.tmp}, mprv_page)",
-        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.tmp}) # read back physically, MPRV=0"),
-        write_sigupd(regs.chk, td),
-    ]
-
-
-def _mprv_mpp_probes(prefix: str, mpp_label: str, mpp_val: int, td: TestData, regs: Regs) -> list[str]:
-    lines = []
-    for upper in UPPER_PATTERNS:
-        lines += [
-            f"LI(x{regs.tmp}, {hex(upper << 48)})",
-            f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-        ]
-        base = f"{prefix}_{mpp_label}"
-        lines += _probe_mprv_load("lw", mpp_val, _tid(base, upper, "lw"), td, regs)
-        lines += _probe_mprv_store("sw", "lw", mpp_val, _tid(base, upper, "sw"), td, regs)
-    return lines
-
-
-def _pass_h_mprv(td: TestData, regs: Regs) -> list[str]:
-    """MPRV=1 with MPP={U,S} across all satp modes."""
-    lines = [
-        comment_banner("MPRV=1 uses MPP's translation/protection"),
-        f"csrr x{regs.tmp2}, mstatus # snapshot",
-    ]
-    lines += _set_sum(True, regs.tmp)
-
-    for mode in _SATP_MODES:
-        guard = _SATP_GUARD[mode]
-        if guard:
-            lines.append(f"#ifdef {guard}")
-
-        if mode == "bare":
-            lines.append(f"LA(x{regs.base}, mprv_page)")
-        else:
-            lines += _mprv_pte_chain(mode, _MPRV_VA)
-            lines += [
-                "sfence.vma",
-                f"SATP_SETUP_RV64({mode})",
-                "sfence.vma",
-                f"LI(x{regs.base}, {hex(_MPRV_VA)})",
-            ]
-
-        for pmm, pmlen, label in PMM_CONFIGS:
-            prefix = f"{label}_{mode}_mprv"
-            lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(pmm, pmlen, regs.tmp)
-
-            lines.append("#ifdef U_SUPPORTED")
-            lines += _mprv_mpp_probes(prefix, "u", _MPP_U, td, regs)
-            lines.append("#endif // U_SUPPORTED")
-
-            lines.append("#ifdef S_SUPPORTED")
-            lines += _mprv_mpp_probes(prefix, "s", _MPP_S, td, regs)
-            lines.append("#endif // S_SUPPORTED")
-
-        if mode != "bare":
-            lines += ["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma"]
-
-        if guard:
-            lines.append(f"#endif // {guard}")
-
-    lines.append(f"csrw mstatus, x{regs.tmp2} # restore")
-    lines.append(f"LA(x{regs.base}, pm_lo_page)")
-    return lines
-
-
-def _data_section() -> list[str]:
-    lines = [
-        ".pushsection .data",
-        ".p2align 12",
-        f"pm_lo_page: .dword {hex(VALUE_OLD)}",
-        ".zero 4088",
-        ".p2align 12",
-        f"mprv_page: .dword {hex(VALUE_OLD)}",
-        ".zero 4088",
-    ]
-    for mode, guard in [
-        ("sv39", "SV39_SUPPORTED"),
-        ("sv48", "SV48_SUPPORTED"),
-        ("sv57", "SV57_SUPPORTED"),
-    ]:
-        lines.append(f"#ifdef {guard}")
-        for level in range(LEVELS_BELOW_ROOT[mode]):
-            lines += [
-                ".p2align 12",
-                f"rvtest_mprv_slvl{level}_pg_tbl_{mode}: .zero 4096",
-            ]
-        lines.append(f"#endif // {guard}")
-    lines.append(".popsection")
-    return lines
 
 
 def _emit_file(td: TestData, regs: Regs) -> list[str]:
-    lines = _data_section()
+    lines = mprv_data_section()
     lines += [
         comment_banner(
             "Smmpm pointer masking -- M-mode only",
             "mseccfg.PMM is programmed from M-mode; every probe also runs in M-mode.",
         ),
         "",
-        "j pm_jalr_pad_end",
-        "pm_jalr_pad:",
-        f"addi x{regs.chk}, x{regs.chk}, 1",
-        "jr ra",
-        "pm_jalr_pad_end:",
-        "RVTEST_GOTO_MMODE",
-        "",
-        "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
-        f"csrs mstatus, x{regs.tmp}",
+        *jalr_pad_asm(regs),
     ]
+    lines += enable_fp_vector_state(regs)
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_mmode"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"))
-        lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(pmm, pmlen, regs.tmp)
+        lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("mseccfg", _MSECCFG_PMM, pmm, pmlen, regs.tmp)
 
-        # Smmpm samples mstatus.MXR (not sstatus). Guard so pure-M configs still build.
         lines.append("#ifdef S_SUPPORTED")
         lines += set_mxr(False, regs.tmp, "mstatus")
         lines.append("#endif // S_SUPPORTED")
@@ -280,25 +70,16 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
             td,
             regs,
             COVERGROUP,
-            goto_target_mode="",  # Smmpm never leaves M-mode
+            goto_target_mode="",
             status_csr="mstatus",
         )
         lines += set_mxr(False, regs.tmp, "mstatus")
         lines.append("#endif // S_SUPPORTED")
 
-        lines.append(comment_banner(f"{prefix}: CSR writes must not be pointer-masked"))
-        pattern = ((1 << pmlen) - 1) << (64 - pmlen) | 0x1234_5678
-        for csr in _CSR_TARGETS:
-            lines += [
-                f"csrr x{regs.tmp}, {csr} # save the framework's value before clobbering it",
-                f"LI(x{regs.chk}, {hex(pattern)})",
-                td.add_testcase(f"{prefix}_csrsw_{csr}", CP_CSR, COVERGROUP),
-                gen_csr_write_sigupd(regs.chk, csr, td),
-                f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
-            ]
+        lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, _CSR_TARGETS)
 
-    lines += _pass_h_mprv(td, regs)
-    lines += ["RVTEST_GOTO_MMODE", *_set_pmm(0b00, 0, regs.tmp)]
+    lines += pass_h_mprv(td, regs, COVERGROUP, "mseccfg", _MSECCFG_PMM)
+    lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("mseccfg", _MSECCFG_PMM, 0b00, 0, regs.tmp)
     lines.append("#ifdef S_SUPPORTED")
     lines += set_mxr(False, regs.tmp, "mstatus")
     lines.append("#endif // S_SUPPORTED")
@@ -311,46 +92,11 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smmpm(td: TestData) -> list[TestChunk]:
-    # Same 6-GPR budget as working Ssnpm.
-    # priv_exclude_regs leaves a small pool; do NOT allocate pair regs on top.
-    #
-    # amocas.q requires even rd/rs2. Only x8 and x14 are even in x8–x15.
-    dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
-
-    # One more compressed-friendly reg for the address pointer.
-    a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
-
-    # Remaining temps / base (from x2–x6 etc.).
-    tmp, tmp2, base = td.int_regs.get_registers(3)
-
-    # Alias: general probes use chk/data; amocas.q uses dest_pair/source_pair.
-    # Same physical registers → even, and no extra allocation.
-    chk = dest_pair  # x8
-    data = source_pair  # x14
-
-    fp, fp_c = (
-        td.float_regs.get_register(),
-        td.float_regs.get_register(reg_range=list(range(8, 16))),
-    )
-
-    regs = Regs(
-        base=base,
-        a=a,
-        data=data,
-        chk=chk,
-        tmp=tmp,
-        tmp2=tmp2,
-        fp=fp,
-        fp_c=fp_c,
-        dest_pair=dest_pair,
-        source_pair=source_pair,
-    )
+    regs = alloc_pm_regs_paired(td)
 
     tc = td.begin_test_chunk()
     tc.code = _emit_file(td, regs)
     chunks = [td.end_test_chunk()]
 
-    # Only the 6 distinct GPRs were taken from the allocator.
-    td.int_regs.return_registers([dest_pair, source_pair, a, tmp, tmp2, base])
-    td.float_regs.return_registers([fp, fp_c])
+    free_pm_regs(td, regs)
     return chunks

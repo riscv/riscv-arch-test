@@ -85,7 +85,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "#ifndef SM1P11P0_SUPPORTED",
+                    "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
                     "# 6. Read STCE (needed for timer functions)",
                     f"csrr x{r_stce}, menvcfg",
                     "#if __riscv_xlen == 64",
@@ -588,7 +588,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "#ifndef SM1P11P0_SUPPORTED",
+            "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
             "# Read STCE",
             f"csrr x{r_stce}, menvcfg",
             "#if __riscv_xlen == 64",
@@ -901,7 +901,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     if mip_name == "stip":
                         lines.extend(
                             [
-                                "#ifndef SM1P11P0_SUPPORTED",
+                                "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
                                 f"csrr x{r_stce}, menvcfg",
                                 "#if __riscv_xlen == 64",
                                 f"    srli x{r_stce}, x{r_stce}, 63",
@@ -1061,7 +1061,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                 if int_name == "stip":
                     lines.extend(
                         [
-                            "#ifndef SM1P11P0_SUPPORTED",
+                            "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
                             f"csrr x{r_stce}, menvcfg",
                             "#if __riscv_xlen == 64",
                             f"    srli x{r_stce}, x{r_stce}, 63",

@@ -138,6 +138,14 @@ HIGH_VA: dict[str, int] = {
 MODES: list[str] = ["bare", "sv39", "sv48", "sv57"]
 MODE_GUARDS: dict[str, str | None] = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in MODES}
 
+# ── MPRV pass (Smmpm-specific) ─────────
+
+_MSTATUS_MPRV = 1 << 17
+_MSTATUS_MPP_SHIFT = 11
+_MPP_U, _MPP_S = 0b00, 0b01
+_MPRV_LEAF_PERMS = "PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V"
+_MPRV_VA = 0x0000_0020_0000_0000
+
 
 # ── Config / Regs ──────────────────────────────────────────────────────────
 @dataclass
@@ -152,6 +160,55 @@ class Regs:
     fp_c: int
     dest_pair: int  # for amocas.q (register pair)
     source_pair: int  # for amocas.q (register pair)
+
+
+# ── Register allocation helpers ─────────────────────────────────────────────
+
+
+def alloc_pm_regs_paired(td: TestData) -> Regs:
+    """Standard allocation shared by Smmpm / SmnpmS / SmnpmU: dest_pair and
+    source_pair double as chk/data.
+    """
+    dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
+    a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
+    tmp, tmp2, base = td.int_regs.get_registers(3)
+    chk = dest_pair
+    data = source_pair
+    fp, fp_c = (
+        td.float_regs.get_register(),
+        td.float_regs.get_register(reg_range=list(range(8, 16))),
+    )
+    return Regs(
+        base=base,
+        a=a,
+        data=data,
+        chk=chk,
+        tmp=tmp,
+        tmp2=tmp2,
+        fp=fp,
+        fp_c=fp_c,
+        dest_pair=dest_pair,
+        source_pair=source_pair,
+    )
+
+
+def alloc_pm_regs_wide(td: TestData) -> Regs:
+    """Allocation: a/data/chk/tmp share one wide 8-15 range."""
+    a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
+    tmp2, base = td.int_regs.get_registers(2)
+    fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
+    return Regs(
+        base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c, dest_pair=chk, source_pair=data
+    )
+
+
+def free_pm_regs(td: TestData, regs: Regs) -> None:
+    """Return every register a probe module borrows. dest_pair/source_pair are
+    aliases of chk/data (never separate registers), so they are not returned
+    a second time.
+    """
+    td.int_regs.return_registers([regs.base, regs.a, regs.data, regs.chk, regs.tmp, regs.tmp2])
+    td.float_regs.return_registers([regs.fp, regs.fp_c])
 
 
 # ── Assembly Helpers ───────────────────────────────────────────────────────
@@ -269,6 +326,185 @@ def pass_g_csr_writes(
             gen_csr_write_sigupd(regs.chk, csr, td),
             f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
         ]
+    return lines
+
+
+# ── MPRV pass (Smmpm-specific) ─────────
+
+
+def set_mprv(enable: bool, mpp: int, tmp: int) -> list[str]:
+    if enable:
+        return [
+            f"LI(x{tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
+            f"csrc mstatus, x{tmp}",
+            f"LI(x{tmp}, {hex(mpp << _MSTATUS_MPP_SHIFT)})",
+            f"csrs mstatus, x{tmp}",
+            f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
+            f"csrs mstatus, x{tmp}",
+        ]
+    return [
+        f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
+        f"csrc mstatus, x{tmp}",
+    ]
+
+
+def set_sum(enable: bool, tmp: int) -> list[str]:
+    op = "csrs" if enable else "csrc"
+    return [
+        f"# mstatus.SUM = {int(enable)}",
+        f"LI(x{tmp}, {hex(_MSTATUS_SUM)})",
+        f"{op} mstatus, x{tmp}",
+    ]
+
+
+def _mprv_write_pte(table_label: str, vpn_index: int, target_label: str, perms: str) -> list[str]:
+    return [
+        f"LA(x6, {table_label})",
+        f"LI(x7, {vpn_index * 8})",
+        "add x6, x6, x7",
+        f"LA(x8, {target_label})",
+        f"LI(x7, {perms})",
+        "or x8, x8, x7",
+        "sd x8, 0(x6)",
+    ]
+
+
+def _mprv_pte_chain(mode: str, va: int) -> list[str]:
+    if mode == "bare":
+        return []
+    vpn_shifts = {
+        "sv39": [30, 21, 12],
+        "sv48": [39, 30, 21, 12],
+        "sv57": [48, 39, 30, 21, 12],
+    }
+    vpn_indices = [(va >> s) & 0x1FF for s in vpn_shifts[mode]]
+    lines = [f"# {mode.upper()}: PTE chain for VA {hex(va)}"]
+    current = "rvtest_Sroot_pg_tbl"
+    for i, vpn in enumerate(vpn_indices[:-1]):
+        nxt = f"rvtest_mprv_slvl{len(vpn_indices) - 2 - i}_pg_tbl_{mode}"
+        lines += _mprv_write_pte(current, vpn, nxt, _NONLEAF_PERMS)
+        current = nxt
+    lines += _mprv_write_pte(current, vpn_indices[-1], "mprv_page", _MPRV_LEAF_PERMS)
+    return lines
+
+
+def _mprv_probe_load(mn: str, mpp: int, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
+    return [
+        f"LA(x{regs.tmp}, mprv_page)",
+        f"LI(x{regs.data}, {hex(VALUE_OLD)})",
+        f"sd x{regs.data}, 0(x{regs.tmp}) # seed, MPRV=0: untranslated physical write",
+        *_sentinel(regs),
+        td.add_testcase(tid, CP_MPRV, cg),
+        *set_mprv(True, mpp, regs.tmp),
+        *_fixed(f"{mn} x{regs.chk}, 0(x{regs.a})"),
+        *set_mprv(False, 0, regs.tmp),
+        write_sigupd(regs.chk, td),
+    ]
+
+
+def _mprv_probe_store(mn: str, readback: str, mpp: int, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
+    return [
+        f"LA(x{regs.tmp}, mprv_page)",
+        f"LI(x{regs.data}, {hex(VALUE_OLD)})",
+        f"sd x{regs.data}, 0(x{regs.tmp}) # seed, MPRV=0: untranslated physical write",
+        f"LI(x{regs.data}, {hex(0xA5A5_A5A5_A5A5_A5A5)})",
+        td.add_testcase(tid, CP_MPRV, cg),
+        *set_mprv(True, mpp, regs.tmp),
+        *_fixed(f"{mn} x{regs.data}, 0(x{regs.a})"),
+        *set_mprv(False, 0, regs.tmp),
+        f"LA(x{regs.tmp}, mprv_page)",
+        *_fixed(f"{readback} x{regs.chk}, 0(x{regs.tmp}) # read back physically, MPRV=0"),
+        write_sigupd(regs.chk, td),
+    ]
+
+
+def _mprv_mpp_probes(prefix: str, mpp_label: str, mpp_val: int, td: TestData, regs: Regs, cg: str) -> list[str]:
+    lines = []
+    for upper in UPPER_PATTERNS:
+        lines += [
+            f"LI(x{regs.tmp}, {hex(upper << 48)})",
+            f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
+        ]
+        base = f"{prefix}_{mpp_label}"
+        lines += _mprv_probe_load("lw", mpp_val, _tid(base, upper, "lw"), td, regs, cg)
+        lines += _mprv_probe_store("sw", "lw", mpp_val, _tid(base, upper, "sw"), td, regs, cg)
+    return lines
+
+
+def pass_h_mprv(
+    td: TestData,
+    regs: Regs,
+    cg: str,
+    pmm_csr: str,
+    pmm_shift: int,
+) -> list[str]:
+    """MPRV=1 with MPP={U,S} across all satp modes. *pmm_csr* / *pmm_shift*
+    identify the PMM field (Smmpm uses mseccfg.PMM).
+    """
+    lines = [
+        comment_banner("MPRV=1 uses MPP's translation/protection"),
+        f"csrr x{regs.tmp2}, mstatus # snapshot",
+    ]
+    lines += set_sum(True, regs.tmp)
+
+    for mode in MODES:
+        guard = MODE_GUARDS[mode]
+        if guard:
+            lines.append(f"#ifdef {guard}")
+
+        if mode == "bare":
+            lines.append(f"LA(x{regs.base}, mprv_page)")
+        else:
+            lines += _mprv_pte_chain(mode, _MPRV_VA)
+            lines += [
+                "sfence.vma",
+                f"SATP_SETUP_RV64({mode})",
+                "sfence.vma",
+                f"LI(x{regs.base}, {hex(_MPRV_VA)})",
+            ]
+
+        for pmm, pmlen, label in PMM_CONFIGS:
+            prefix = f"{label}_{mode}_mprv"
+            lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field(pmm_csr, pmm_shift, pmm, pmlen, regs.tmp)
+
+            lines.append("#ifdef U_SUPPORTED")
+            lines += _mprv_mpp_probes(prefix, "u", _MPP_U, td, regs, cg)
+            lines.append("#endif // U_SUPPORTED")
+
+            lines.append("#ifdef S_SUPPORTED")
+            lines += _mprv_mpp_probes(prefix, "s", _MPP_S, td, regs, cg)
+            lines.append("#endif // S_SUPPORTED")
+
+        if mode != "bare":
+            lines += ["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma"]
+
+        if guard:
+            lines.append(f"#endif // {guard}")
+
+    lines.append(f"csrw mstatus, x{regs.tmp2} # restore")
+    lines.append(f"LA(x{regs.base}, pm_lo_page)")
+    return lines
+
+
+def mprv_data_section() -> list[str]:
+    lines = [
+        ".pushsection .data",
+        *data_pm_lo_page(),
+        *data_page("mprv_page"),
+    ]
+    for mode, guard in [
+        ("sv39", "SV39_SUPPORTED"),
+        ("sv48", "SV48_SUPPORTED"),
+        ("sv57", "SV57_SUPPORTED"),
+    ]:
+        lines.append(f"#ifdef {guard}")
+        for level in range(LEVELS_BELOW_ROOT[mode]):
+            lines += [
+                ".p2align 12",
+                f"rvtest_mprv_slvl{level}_pg_tbl_{mode}: .zero 4096",
+            ]
+        lines.append(f"#endif // {guard}")
+    lines.append(".popsection")
     return lines
 
 

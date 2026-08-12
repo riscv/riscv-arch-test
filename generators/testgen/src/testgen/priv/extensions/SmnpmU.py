@@ -15,9 +15,11 @@ from testgen.priv.extensions.ZpmCommon import (
     CP_UXL_CLEAR,
     PMM_CONFIGS,
     Regs,
+    alloc_pm_regs_paired,
     data_pm_lo_page,
     enable_cascaded_envcfg_cbo_sse,
     enable_fp_vector_state,
+    free_pm_regs,
     jalr_pad_asm,
     pass_a_all_instructions,
     pass_c_misaligned,
@@ -31,10 +33,6 @@ from testgen.priv.registry import add_priv_test_generator
 COVERGROUP = "SmnpmU_cg"
 _MENVCFG_PMM = 32
 _MSTATUS_UXL_SHIFT = 32
-
-
-def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    return set_pmm_field("menvcfg", _MENVCFG_PMM, val, pmlen, tmp)
 
 
 def _emit_file(td: TestData, regs: Regs) -> list[str]:
@@ -51,7 +49,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_bare"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"))
-        lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(pmm, pmlen, regs.tmp)
+        lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
         lines += ["RVTEST_TSBI_GOTO_UMODE", f"LA(x{regs.base}, pm_lo_page)"]
 
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
@@ -72,7 +70,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
             ifdef_guard="UDB_UXLEN_64",
         )
 
-    lines += ["RVTEST_GOTO_MMODE", *_set_pmm(0b00, 0, regs.tmp)]
+    lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
     return lines
 
 
@@ -82,36 +80,11 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpmu(td: TestData) -> list[TestChunk]:
-
-    dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
-    a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
-    tmp, tmp2, base = td.int_regs.get_registers(3)
-
-    chk = dest_pair
-    data = source_pair
-
-    fp, fp_c = (
-        td.float_regs.get_register(),
-        td.float_regs.get_register(reg_range=list(range(8, 16))),
-    )
-
-    regs = Regs(
-        base=base,
-        a=a,
-        data=data,
-        chk=chk,
-        tmp=tmp,
-        tmp2=tmp2,
-        fp=fp,
-        fp_c=fp_c,
-        dest_pair=dest_pair,
-        source_pair=source_pair,
-    )
+    regs = alloc_pm_regs_paired(td)
 
     tc = td.begin_test_chunk()
     tc.code = _emit_file(td, regs)
     chunks = [td.end_test_chunk()]
 
-    td.int_regs.return_registers([dest_pair, source_pair, a, tmp, tmp2, base])
-    td.float_regs.return_registers([fp, fp_c])
+    free_pm_regs(td, regs)
     return chunks

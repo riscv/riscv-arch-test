@@ -21,12 +21,14 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     Regs,
     _pte_chain_asm,
+    alloc_pm_regs_wide,
     build_finegrained_text_map_asm,
     data_pm_hi_page,
     data_pm_lo_page,
     data_slvl_tables,
     enable_cascaded_envcfg_cbo_sse,
     enable_fp_vector_state,
+    free_pm_regs,
     jalr_pad_asm,
     pass_a_all_instructions,
     pass_b_sign_extension,
@@ -42,10 +44,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Ssnpm_cg"
 _SENVCFG_PMM = 32
-
-
-def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
-    return set_pmm_field("senvcfg", _SENVCFG_PMM, val, pmlen, tmp)
 
 
 def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
@@ -78,7 +76,11 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_{mode}"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}"))
-        lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(pmm, pmlen, regs.tmp) + set_mxr(False, regs.tmp)
+        lines += (
+            ["RVTEST_GOTO_MMODE"]
+            + set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp)
+            + set_mxr(False, regs.tmp)
+        )
         lines += ["RVTEST_TSBI_GOTO_UMODE", f"LA(x{regs.base}, pm_lo_page)"]
 
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
@@ -106,7 +108,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         )
 
     lines += ["RVTEST_GOTO_MMODE"]
-    lines += _set_pmm(0b00, 0, regs.tmp)
+    lines += set_pmm_field("senvcfg", _SENVCFG_PMM, 0b00, 0, regs.tmp)
     lines += set_mxr(False, regs.tmp)
     lines += ["csrwi satp, 0", "sfence.vma"]
     lines += [".p2align 12", "pm_utext_end:"]
@@ -122,13 +124,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
-    a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
-    tmp2, base = td.int_regs.get_registers(2)
-    fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
-
-    regs = Regs(
-        base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c, dest_pair=chk, source_pair=data
-    )
+    regs = alloc_pm_regs_wide(td)
 
     chunks = []
     for mode in MODES:
@@ -136,6 +132,5 @@ def make_ssnpm(td: TestData) -> list[TestChunk]:
         tc.code = _emit_mode(mode, td, regs)
         chunks.append(td.end_test_chunk())
 
-    td.int_regs.return_registers([base, a, data, chk, tmp, tmp2])
-    td.float_regs.return_registers([fp, fp_c])
+    free_pm_regs(td, regs)
     return chunks

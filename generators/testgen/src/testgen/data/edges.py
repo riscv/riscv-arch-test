@@ -625,7 +625,7 @@ class VECTOR_EDGES:
             conflict = True
             while conflict:
                 conflict = False
-                random_val = random_range(3, 2 ** (eew - 1 - 3))
+                random_val = random_range(3, 2 ** (eew - 1) - 3)
                 for edge2 in VECTOR_EDGES.vls_edges:
                     if "random" in edge2:
                         continue

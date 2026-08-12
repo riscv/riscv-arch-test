@@ -124,7 +124,7 @@ def format_vlxseg_like_type(
     # if the label is zero_emul8 or random_within_2vlmax, it needs special handling
     if params.vs2_val_pointer.startswith("vs2_edge_random_within_2vlmax_ls"):
         # FIXME: We are required load at wrong sew to make coverage happy
-        to_load.append(VectorLoad(reg="vs2", lmul=index_emul))
+        to_load.append(VectorLoad(reg="vs2"))
     elif params.vs2_val_pointer.startswith("vs2_edge_zero_emul8_ls"):
         # FIXME: Coverage requires a load at vlmax here as the entire register must be zero
         to_load.append(VectorLoad(reg="vs2", lmul=max(index_emul, 1), sew=index_eew, vl="vlmax"))

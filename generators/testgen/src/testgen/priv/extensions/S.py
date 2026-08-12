@@ -302,8 +302,8 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_scsr_tests(test_data: TestData) -> list[str]:
-    """Generate CSR tests"""
+def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate CSR tests, one test chunk per CSR so they can be split across files."""
     covergroup = "S_scsr_cg"
 
     # Standard S-mode CSRs
@@ -342,43 +342,52 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_scsr_access"
     ######################################
-    lines = [
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
         ),
-    ]
+    )
 
     for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+    tc.code.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_ucsr_from_s"
     ######################################
-    lines.append(
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
         ),
     )
 
-    lines.extend(["", "#ifdef F_SUPPORTED"])
+    # The #ifdef guard has to stay in one chunk, so all F (and all V) CSRs share a chunk.
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef F_SUPPORTED"])
     for csr in csrf:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
-    lines.extend(["", "#ifdef V_SUPPORTED"])
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef V_SUPPORTED"])
     for csr in csrv:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_scsrwalk"
     ######################################
-    lines.append(
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Set and clear each bit individually in all writable S-mode CSRs",
@@ -386,15 +395,18 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     for csr in csrs:
-        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
     # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
     # legalize to any legal value, so those iterations check that the field is legal
     # instead of exact-matching the reference model.
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-    lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
-    lines.extend(["", "#endif"])
+    tc.code.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
+    tc.code.extend(["", "#endif"])
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -442,7 +454,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_csr_insufficient_priv"
     ######################################
 
-    lines.append(
+    tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
@@ -455,7 +468,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         + list(range(0xB00, 0xC00))
         + list(range(0xF00, 0x1000))
     ):
-        lines.extend(
+        tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
+        tc.code.extend(
             [
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
@@ -468,54 +482,57 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_csr_ro"
     ######################################
 
-    lines.append(
+    tc = test_data.new_test_chunk(test_chunks, "scsr_ro")
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
-    r1 = test_data.int_regs.get_register()
 
-    lines.append(f"LI(x{r1}, -1)          # x{r1} = all 1s")
     for csr in range(0xC00, 0xF00):
-        lines.extend(
+        tc = test_data.new_test_chunk(test_chunks)
+        r1 = test_data.int_regs.get_register()
+        tc.code.extend(
             [
                 "",
                 f"# Testcase: attempt to access CSR 0x{csr:03x}",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
+                f"LI(x{r1}, -1)          # x{r1} = all 1s",
                 f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
-    test_data.int_regs.return_register(r1)
+        test_data.int_regs.return_register(r1)
 
     ######################################
     coverpoint = "cp_scsr_from_m"
     ######################################
-    lines.append(
+    tc = test_data.new_test_chunk(test_chunks, "scsr_from_m")
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
         ),
     )
 
-    lines.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
+    tc.code.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
     for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
-    lines.extend(["", "#endif"])
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
+    tc.code.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
+    tc.code.extend(["", "#endif"])
 
     ######################################
     coverpoint = "cp_shadow"
     ######################################
-    lines.append(
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Check that values written to shadowed registers are consistent between machine and supervisor mode",
         ),
     )
     r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
-    lines.extend(
+    tc.code.extend(
         [
             f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
             _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
@@ -528,8 +545,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ]
     )
     test_data.int_regs.return_registers([r1, r2, rmask, rsave])
-
-    return lines
 
 
 def _add_shadow(
@@ -566,6 +581,7 @@ def _add_shadow(
 @add_priv_test_generator(
     "S",
     required_extensions=["S"],
+    extra_defines=["#define BOOT_TO_SMODE"],
     testcases_per_file=512,  # the scsr tests throw costly illegal instruction exceptions, so limit them for runtime
 )
 def make_s(test_data: TestData) -> list[TestChunk]:
@@ -573,6 +589,7 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
+    tc.code.append("RVTEST_GOTO_MMODE  # the file boots to S-mode; these tests need machine mode")
     tc.code.extend(_generate_srets_tests(test_data))
     tc.code.extend(
         [
@@ -585,10 +602,7 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_scause_tests(test_data))
     tc.code.extend(_generate_sstatus_sd_tests(test_data))
     tc.code.extend(_generate_priv_inst_tests(test_data))
-    test_chunks.append(test_data.end_test_chunk())
 
-    tc = test_data.begin_test_chunk("scsr")
-    tc.code.append("RVTEST_GOTO_LOWER_MODE Smode  # Run tests in supervisor mode")
-    tc.code.extend(_generate_scsr_tests(test_data))
+    _generate_scsr_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

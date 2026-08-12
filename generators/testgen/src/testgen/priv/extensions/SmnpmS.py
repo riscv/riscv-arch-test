@@ -2,7 +2,7 @@
 # priv/extensions/SmnpmS.py
 #
 # SmnpmS privileged extension test generator.
-# Author : Umer Shahid & Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, JULY 2026)
+# Author : Umer Shahid & Ammarah Wakeel email:ammarahwakeel9@gmail.com (UET, JULY 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -19,7 +19,6 @@ from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
     VALUE_OLD,
     Regs,
-    _li,
     _pte_chain_asm,
     enable_envcfg_cbo_sse,
     pass_a_all_instructions,
@@ -36,22 +35,25 @@ from testgen.priv.registry import add_priv_test_generator
 COVERGROUP = "SmnpmS_cg"
 
 _MENVCFG_PMM = 32
-_MSTATUS_SXL = 34
 _MSTATUS_FS_DIRTY = 3 << 13
 _MSTATUS_VS_DIRTY = 3 << 9
 _MODES = ["bare", "sv39", "sv48", "sv57"]
 _GUARDS = {m: None if m == "bare" else f"{m.upper()}_SUPPORTED" for m in _MODES}
 _LEVELS = {"sv39": 2, "sv48": 3, "sv57": 4}
-_HIGH_VA = {"sv39": 0xFFFF_FFC0_0000_0000, "sv48": 0xFFFF_8000_0000_0000, "sv57": 0xFFFF_8000_0000_0000}
+_HIGH_VA = {
+    "sv39": 0xFFFF_FFC0_0000_0000,
+    "sv48": 0xFFFF_8000_0000_0000,
+    "sv57": 0xFFFF_8000_0000_0000,
+}
 
 
 def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
     mask = 0b11 << _MENVCFG_PMM
     return [
         f"# menvcfg.PMM={val:#04b} PMLEN={pmlen}",
-        _li(tmp, mask),
+        f"LI(x{tmp}, {hex(mask)})",
         f"csrc menvcfg, x{tmp}",
-        _li(tmp, val << _MENVCFG_PMM),
+        f"LI(x{tmp}, {hex(val << _MENVCFG_PMM)})",
         f"csrs menvcfg, x{tmp}",
     ]
 
@@ -59,9 +61,18 @@ def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
 def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     guard, is_bare = _GUARDS[mode], mode == "bare"
     lines = [] if not guard else [f"#ifdef {guard}"]
-    lines += [".pushsection .data", ".p2align 12", f"pm_lo_page: .dword {hex(VALUE_OLD)}", ".zero 4088"]
+    lines += [
+        ".pushsection .data",
+        ".p2align 12",
+        f"pm_lo_page: .dword {hex(VALUE_OLD)}",
+        ".zero 4088",
+    ]
     if not is_bare:
-        lines += [".p2align 12", f"pm_hi_page: .dword {hex(VALUE_OLD)}", ".zero 4088"]
+        lines += [
+            ".p2align 12",
+            f"pm_hi_page: .dword {hex(VALUE_OLD)}",
+            ".zero 4088",
+        ]
         for i in range(_LEVELS[mode]):
             lines += [".p2align 12", f"rvtest_slvl{i}_pg_tbl: .zero 4096"]
     lines += [
@@ -79,7 +90,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     lines += [
         "",
         "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        _li(regs.tmp, _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY),
+        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
         f"csrs mstatus, x{regs.tmp}",
     ]
 
@@ -91,6 +102,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         prefix = f"{label}_{mode}"
         lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(pmm, pmlen, regs.tmp)
         lines += ["RVTEST_TSBI_GOTO_SMODE", f"LA(x{regs.base}, pm_lo_page)"]
+
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
         if not is_bare:
             lines += pass_b_sign_extension(None, prefix, mode, td, regs, COVERGROUP)
@@ -98,24 +110,31 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=0)
         lines += pass_f_fault_address(None, prefix, td, regs, COVERGROUP)
         lines += pass_d_mxr(
-            None, prefix, td, regs, COVERGROUP, goto_target_mode="RVTEST_TSBI_GOTO_SMODE", status_csr="mstatus"
+            None,
+            prefix,
+            td,
+            regs,
+            COVERGROUP,
+            goto_target_mode="RVTEST_TSBI_GOTO_SMODE",
+            status_csr="mstatus",
         )
         lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=1)
-        lines += ["RVTEST_GOTO_MMODE", *set_mxr(False, regs.tmp, "mstatus")]
 
+        lines += ["RVTEST_GOTO_MMODE", *set_mxr(False, regs.tmp, "mstatus")]
         lines += ["RVTEST_TSBI_GOTO_SMODE"]
+
         lines.append(comment_banner(f"{prefix}: CSR writes must not be pointer-masked"))
         pattern = ((1 << pmlen) - 1) << (64 - pmlen) | 0x1234_5678
         for csr in ["sepc", "sscratch"]:
             lines += [
-                f"csrr x{regs.tmp}, {csr}   # save the framework's value before clobbering it",
-                _li(regs.chk, pattern),
+                f"csrr x{regs.tmp}, {csr} # save the framework's value before clobbering it",
+                f"LI(x{regs.chk}, {hex(pattern)})",
                 td.add_testcase(f"{prefix}_csrsw_{csr}", CP_CSR, COVERGROUP),
                 gen_csr_write_sigupd(regs.chk, csr, td),
-                f"csrw {csr}, x{regs.tmp}   # restore before any later trap needs this CSR",
+                f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
             ]
-        lines.append("RVTEST_GOTO_MMODE")
 
+        lines.append("RVTEST_GOTO_MMODE")
         lines += pass_clear_on_xlen_change(
             None,
             prefix,
@@ -128,6 +147,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
             status_csr="mstatus",
             status_shift=34,
         )
+
     lines += ["RVTEST_GOTO_MMODE"] + _set_pmm(0b00, 0, regs.tmp)
     lines += [*set_mxr(False, regs.tmp, "mstatus"), "csrwi satp, 0", "sfence.vma"]
     if guard:
@@ -141,10 +161,32 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpms(td: TestData) -> list[TestChunk]:
-    a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
-    tmp2, base = td.int_regs.get_registers(2)
-    fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
-    regs = Regs(base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c)
+    # Same 6-GPR budget as Smmpm/Ssnpm.
+    # amocas.q needs even rd/rs2 → only x8 and x14 in the x8–x15 window.
+    dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
+    a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
+    tmp, tmp2, base = td.int_regs.get_registers(3)
+    # Alias chk/data onto the even pair (no extra allocation).
+    chk = dest_pair
+    data = source_pair
+
+    fp, fp_c = (
+        td.float_regs.get_register(),
+        td.float_regs.get_register(reg_range=list(range(8, 16))),
+    )
+
+    regs = Regs(
+        base=base,
+        a=a,
+        data=data,
+        chk=chk,
+        tmp=tmp,
+        tmp2=tmp2,
+        fp=fp,
+        fp_c=fp_c,
+        dest_pair=dest_pair,
+        source_pair=source_pair,
+    )
 
     chunks = []
     for mode in _MODES:
@@ -152,6 +194,6 @@ def make_smnpms(td: TestData) -> list[TestChunk]:
         tc.code = _emit_mode(mode, td, regs)
         chunks.append(td.end_test_chunk())
 
-    td.int_regs.return_registers([base, a, data, chk, tmp, tmp2])
+    td.int_regs.return_registers([dest_pair, source_pair, a, tmp, tmp2, base])
     td.float_regs.return_registers([fp, fp_c])
     return chunks

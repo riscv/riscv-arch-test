@@ -138,11 +138,10 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
-    # Allocate only what we need - constrain only to x8-x15
     a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
     tmp2, base = td.int_regs.get_registers(2)
     fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
-    # Reuse chk and data as register pairs for amocas.q (no new allocation)
+
     regs = Regs(
         base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c, dest_pair=chk, source_pair=data
     )

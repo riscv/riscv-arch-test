@@ -115,6 +115,8 @@
   #endif
   #ifndef RVMODEL_MHPMEVENT_CODE
     #error "RVMODEL_MHPMEVENT_CODE not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+#endif
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTIRES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

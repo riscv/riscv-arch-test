@@ -13,11 +13,22 @@
 
     // helper coverpoints for the Sscofpmf extension
     csr_access_pattern: coverpoint ins.current.insn {
-        wildcard bins csrrw0   = {CSRRW} iff (ins.current.rs1_val ==  0); // write all zeros
-        wildcard bins csrrw1   = {CSRRW} iff (ins.current.rs1_val == '1); // write all ones
-        wildcard bins csrrs1   = {CSRRS} iff (ins.current.rs1_val == '1); // set all ones
-        wildcard bins csrrc1   = {CSRRC} iff (ins.current.rs1_val == '1); // clear all ones
-    }
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0);
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1);
+        wildcard bins csrrs1    = {CSRRS} iff (ins.current.rs1_val == '1);
+        wildcard bins csrrc1    = {CSRRC} iff (ins.current.rs1_val == '1);
+        wildcard bins read_only = {CSRRS} iff (ins.current.rs1_val ==  0);
+   }
+    `ifdef UDB_MXLEN_64
+        mhpmevent_inhibits_all_set: coverpoint ins.current.insn {
+                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT && ins.current.rs1_val[62:58] == 5'b11100);
+        }
+    `else
+        // On RV32, MINH/SINH/UINH/VSINH/VUINH live in mhpmevent*h[30:26] (address + 0x400)
+        mhpmevent_inhibits_all_set: coverpoint ins.current.insn {
+                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT + 12'h400 && ins.current.rs1_val[30:26] == 5'b11100);
+        }
+    `endif
 
     `ifdef UDB_MXLEN_64
         mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {
@@ -37,7 +48,8 @@
                 bins zero = {0};
         }
     `endif
-
+    sip_lcofi: coverpoint ins.current.csr[CSR_SIP][13] {}
+    sie_lcofi: coverpoint ins.current.csr[CSR_SIE][13] {}
     hpmcounter_nonzero: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] != 0) {
             bins yes = {1};
             bins no  = {0};
@@ -48,10 +60,13 @@
     mie_clear: coverpoint (ins.current.csr[CSR_MIE] == 0) {
             bins yes = {1};
     }
-    mhpmcounter_extremes: coverpoint ins.current.csr[RVMODEL_MHPMCOUNTER] {
-            bins all_ones  = {'1};
-            bins all_zeros = {'0};
-    }
+    mie_all_ones: coverpoint (ins.current.csr[CSR_MIE] == '1) {
+        bins yes = {1};
+   }
+    mhpmcounter_write_extremes: coverpoint ins.current.insn {
+        wildcard bins write_ones  = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '1);
+        wildcard bins write_zeros = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '0);
+   }
 
     // Pack the 29 OF bits (mhpmevent3..mhpmevent31) into one expression via macro
     `ifdef UDB_MXLEN_64
@@ -91,6 +106,10 @@
                 wildcard bins write_ones = {CSRRW} iff (ins.current.insn[31:20] == CSR_MCOUNTEREN &&
                                                   ins.current.rs1_val[31:3] == '1);
     }
+    mcounteren_walking_one: coverpoint $clog2(ins.current.rs1_val[31:3])
+        iff (ins.current.insn[31:20] == CSR_MCOUNTEREN && (ins.current.insn ==? CSRRW || ins.current.insn ==? CSRRS || ins.current.insn ==? CSRRC) && $onehot(ins.current.rs1_val[31:3])) {
+                bins pos[] = {[0:28]};
+}
     of_walking_one: coverpoint $clog2(`OF_VEC) iff ($onehot(`OF_VEC)) {
             bins b_of[] = {[0:28]};  // one bin per OF bit position (mhpmevent3..mhpmevent31 = 29 bits)
     }
@@ -121,11 +140,12 @@
                 wildcard bins write_zero = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT && ins.current.rs1_val == '0);
         }
     `else
-        // On RV32, writes to the base mhpmeventN CSR only cover the low 32 bits;
-        // the inhibit/OF bits live in mhpmevent*h (address + 0x400)
         mhpmevent_all_zero: coverpoint ins.current.insn {
                 wildcard bins write_zero = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT + 12'h400 && ins.current.rs1_val == '0);
         }
+        mhpmevent_base_zero: coverpoint ins.current.insn {
+            wildcard bins write_zero = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT && ins.current.rs1_val == '0);
+    }
     `endif
 
     csrops: coverpoint ins.current.insn {

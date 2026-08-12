@@ -588,7 +588,7 @@ dut_environment:
 sail_overrides:
   base.writable_fiom: false
   extensions.V.vlen_exp: 7
-  memory.misaligned.allowed_within_exp: 12   # Spike/QEMU doubleword-boundary behaviour
+  memory.misaligned.allowed_within_exp: 12 # Spike/QEMU doubleword-boundary behaviour
   platform.archid: 5
   platform.reservation.require_exact_reservation_addr: true
   platform.wfi_available_to_user_mode: false

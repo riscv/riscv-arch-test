@@ -181,7 +181,11 @@ def _gen_kit_tasks(
         test.S -> test.sig.elf -> test.sig (reference model) -> test.results
         test.S + test.results -> <kit>/objects/<name>.o     (certified, DUT-free)
     """
-    from act.build_plan import _compiler_cmd, _ref_model_sig_cmd
+    # Reuse the normal build's command construction so the signature ELF and the
+    # certified object stay in lock-step with build_plan.py. Duplicating those
+    # flag lists is exactly what broke when the main build added -DTEST_FILE and
+    # the Sail platform defines.
+    from act.build_plan import _compiler_cmd, _ref_model_sig_cmd, _sail_platform_defines
 
     config_wkdir = workdir / config.name
     build_dir = config_wkdir / "package_build"
@@ -201,77 +205,99 @@ def _gen_kit_tasks(
     kit_inputs = (*env_headers, *udb_headers)
 
     ref_inputs: tuple[Path, ...] = ()
+    signature_compile_flags: tuple[str, ...] = ()
     sail_json = config.dut_include_dir / "sail.json"
     if sail_json.exists():
         ref_inputs = (sail_json.absolute(),)
+        # sail_macros.h now expects the CLINT / interrupt-generator base addresses
+        # on the command line (Sail reference build only).
+        signature_compile_flags = _sail_platform_defines(sail_json)
 
     tasks: list[BuildTask] = []
     inventory: list[KitTest] = []
 
     for name_str, meta in sorted(selected.items()):
         name = Path(name_str)
+        # C tests link framework C-runtime sources into the object; a certified
+        # C-test object plus a linked shim is an unvalidated corner, so skip them
+        # explicitly rather than emit something untested.
+        if meta.is_c_test:
+            rprint(f"[yellow]Skipping C test (not supported in kits yet):[/] {name}", file=sys.stderr)
+            continue
+
         march = meta.march.replace("${XLEN}", str(xlen))
         mabi = _mabi(xlen, meta.e_ext)
         flen = meta.flen
+        test_file_define = f'-DTEST_FILE="{name.name}"'
 
-        sig_elf = build_dir / name.with_suffix(".sig.elf")
-        sig = build_dir / name.with_suffix(".sig")
-        sig_trace = build_dir / name.with_suffix(".sig.trace")
-        sig_log = build_dir / name.with_suffix(".sig.log")
         results = build_dir / name.with_suffix(".results")
         obj = obj_root / name.with_suffix(".o")
 
-        # 1. signature ELF (DUT include dir present; sail_macros.h overrides the
-        #    model macros because RVTEST_SELFCHECK is not defined here)
-        tasks.append(
-            BuildTask(
-                outputs=(sig_elf,),
-                extra_inputs=(meta.test_path, *sig_inputs),
-                action=SubprocessAction(
-                    cmd=[
-                        *sig_cmd_prefix,
-                        "-o",
-                        str(sig_elf),
-                        f"-march={march}",
-                        f"-mabi={mabi}",
-                        "-DSIGNATURE",
-                        f"-DTEST_FLEN={flen}",
-                        str(meta.test_path),
-                    ]
-                ),
-                intermediate=True,
-            )
-        )
+        # Signature chain (only for tests that need one), identical to the normal
+        # build so the baked-in golden signature is the same one ACT would use.
+        obj_deps: tuple[Path, ...] = ()
+        sig_flag = "-DRVTEST_NOSIG"
+        if meta.needs_signature:
+            sig_elf = build_dir / name.with_suffix(".sig.elf")
+            sig = build_dir / name.with_suffix(".sig")
+            sig_trace = build_dir / name.with_suffix(".sig.trace")
+            sig_log = build_dir / name.with_suffix(".sig.log")
 
-        # 2. golden signature from the reference model
-        tasks.append(
-            BuildTask(
-                outputs=(sig,),
-                deps=(sig_elf,),
-                extra_inputs=ref_inputs,
-                action=SubprocessAction(
-                    cmd=_ref_model_sig_cmd(config, sig_elf, sig, sig_trace, xlen, debug),
-                    stdout_file=sig_log,
-                ),
-                intermediate=True,
+            # 1. signature ELF (DUT include dir present; sail_macros.h overrides
+            #    the model macros because RVTEST_SELFCHECK is not defined here)
+            tasks.append(
+                BuildTask(
+                    outputs=(sig_elf,),
+                    extra_inputs=(meta.test_path, *sig_inputs),
+                    action=SubprocessAction(
+                        cmd=[
+                            *sig_cmd_prefix,
+                            "-o",
+                            str(sig_elf),
+                            f"-march={march}",
+                            f"-mabi={mabi}",
+                            "-DSIGNATURE",
+                            *signature_compile_flags,
+                            f"-DTEST_FLEN={flen}",
+                            test_file_define,
+                            str(meta.test_path),
+                        ]
+                    ),
+                    intermediate=True,
+                )
             )
-        )
 
-        # 3. .results (assembler-friendly form of the signature)
-        tasks.append(
-            BuildTask(
-                outputs=(results,),
-                deps=(sig,),
-                action=PythonAction(fn=process_signature_file, args=(sig, xlen)),
-                intermediate=True,
+            # 2. golden signature from the reference model
+            tasks.append(
+                BuildTask(
+                    outputs=(sig,),
+                    deps=(sig_elf,),
+                    extra_inputs=ref_inputs,
+                    action=SubprocessAction(
+                        cmd=_ref_model_sig_cmd(config, sig_elf, sig, sig_trace, xlen, debug),
+                        stdout_file=sig_log,
+                    ),
+                    intermediate=True,
+                )
             )
-        )
+
+            # 3. .results (assembler-friendly form of the signature)
+            tasks.append(
+                BuildTask(
+                    outputs=(results,),
+                    deps=(sig,),
+                    action=PythonAction(fn=process_signature_file, args=(sig, xlen)),
+                    intermediate=True,
+                )
+            )
+            obj_deps = (results,)
+            sig_flag = f'-DSIGNATURE_FILE="{results}"'
 
         # 4. the certified object: signature baked in, no DUT include dir
         tasks.append(
             BuildTask(
                 outputs=(obj,),
-                deps=(results,),
+                deps=obj_deps,
                 extra_inputs=(meta.test_path, *kit_inputs),
                 action=SubprocessAction(
                     cmd=[
@@ -283,9 +309,10 @@ def _gen_kit_tasks(
                         f"-mabi={mabi}",
                         "-DRVTEST_SELFCHECK",
                         "-DRVMODEL_SHIM_EXTERN",
+                        sig_flag,
                         f"-DXLEN={xlen}",
                         f"-DTEST_FLEN={flen}",
-                        f'-DSIGNATURE_FILE="{results}"',
+                        test_file_define,
                         str(meta.test_path),
                     ]
                 ),
@@ -482,7 +509,7 @@ def _write_kit_files(
         _BUILD_SCRIPT
         % {
             "compiler": Path(str(config.compiler_exe)).name,
-            "march": sorted(marches)[0] if marches else f"rv{xlen}i",
+            "march": min(marches) if marches else f"rv{xlen}i",
             "mabi": _mabi(xlen, False),
             "xlen": xlen,
         }

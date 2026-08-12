@@ -128,13 +128,11 @@
         `endif
         // Zicfiss shadow-stack stores and loads
         `ifdef ZICFISS_SUPPORTED
-            wildcard bins sspush_x1      = {SSPUSH_X1};
-            wildcard bins sspush_x5      = {SSPUSH_X5};
+            wildcard bins sspush         = {SSPUSH_X1, SSPUSH_X5};
             wildcard bins c_sspush_x1    = {C_SSPUSH_X1};
             wildcard bins ssamoswap_w    = {SSAMOSWAP_W};
             wildcard bins ssamoswap_d    = {SSAMOSWAP_D};
-            wildcard bins sspopchk_x1    = {SSPOPCHK_X1};
-            wildcard bins sspopchk_x5    = {SSPOPCHK_X5};
+            wildcard bins sspopchk       = {SSPOPCHK_X1, SSPOPCHK_X5};
             wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
         `endif // ZICFISS_SUPPORTED
         // RVV 1.0 vector stores and loads (ZVL32B minimum)

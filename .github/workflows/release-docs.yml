@@ -130,10 +130,6 @@ jobs:
             "${release_args[@]}" \
             ctp.pdf \
             ctp.html \
-            rvi20_crd.pdf \
-            rvi20_crd.html \
-            mc100_crd.pdf \
-            mc100_crd.html \
             rva23_crd.pdf \
             rva23_crd.html
 

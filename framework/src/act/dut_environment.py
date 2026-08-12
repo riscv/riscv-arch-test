@@ -6,19 +6,15 @@
 # Generate dut_environment.h from the `dut_environment` block of a UDB config.
 ##################################
 
-"""Turn the config's ``dut_environment`` block into a C header.
+"""Turn the config's dut_environment block into a C header.
 
-These are the DUT-specific *values* (device addresses, interrupt timing) that the
-test body bakes into certified code — as opposed to the DUT-specific *code* that
-lives behind the RVMODEL_* macros and is confined to ``.text.rvmodel``.
+These are DUT-specific values (device addresses, interrupt timing) the test body
+bakes into certified code, as opposed to the DUT code behind the RVMODEL_* macros.
+They come from the config, not the customer's private rvmodel_macros.h, because
+the reference model needs the same addresses to produce a matching signature - so
+they were never really private.
 
-They have to come from the config rather than from the customer's private
-``rvmodel_macros.h``, for a reason that is worth stating plainly: the reference
-model must model the same addresses to produce a matching signature. A value the
-customer hides from us cannot be modelled, so it was never really private.
-
-UDB validates an unknown top-level block without complaint but ``udb-gen`` does
-not emit it, so ACT generates this header itself.
+UDB accepts an unknown top-level block but udb-gen won't emit it, so we do it here.
 """
 
 from __future__ import annotations
@@ -60,14 +56,9 @@ def read_dut_environment(udb_config_file: Path) -> dict[str, object]:
 
 
 def _int_lines(name: str, value: object) -> list[str]:
-    """Emit one integer constant plus its agreement check.
-
-    The config is authoritative for certification-kit builds, where
-    rvmodel_macros.h is absent entirely. For normal builds the DUT header still
-    wins, but it must agree with the config -- a silent disagreement would mean
-    the reference model was configured for a different device map than the DUT,
-    which is exactly the kind of mismatch that is otherwise found the hard way.
-    """
+    """Emit one integer constant plus an agreement check. Kit builds have no
+    rvmodel_macros.h so the config wins; normal builds keep the DUT header but
+    #error if it disagrees, catching a reference model built for a different map."""
     if isinstance(value, bool) or not isinstance(value, int):
         raise TypeError(f"dut_environment.{name} must be an integer, got {value!r}")
     cfg_name = f"ACT_CFG_{name}"

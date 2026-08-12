@@ -559,10 +559,8 @@ params:
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
 
-# ACT certification-kit DUT environment.
-# These are DUT *values* baked into certified test code, so the reference model
-# must be configured with the same ones. They are deliberately not private:
-# a value the reference model cannot see is a value it cannot model.
+# DUT values baked into certified test code. The reference model needs the same
+# ones to match, so they aren't private (see dut_environment.py).
 dut_environment:
   RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
   RVMODEL_MTIME_ADDRESS: 0x0200BFF8
@@ -572,7 +570,7 @@ dut_environment:
   RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
   STANDARD_SM_SUPPORTED: true
 
-# Sail reference-model settings that UDB does not express. Applied on top of the
-# generated config; every path must already exist in sail_template.json.
+# Sail settings UDB can't express, applied over the generated config. Each path
+# must already exist in sail_template.json.
 sail_overrides:
   extensions.V.max_index_eew_exp: 5

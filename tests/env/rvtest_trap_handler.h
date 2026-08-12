@@ -118,11 +118,8 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-// T1..T6 moved to utils.h: they are a framework-wide register convention, not a
-// trap-handler-private one, and rvmodel_shim.S needs them without pulling in
-// this header. utils.h is included before this file, so the definitions are
-// already in scope here. The #ifndef guards there preserve the previous
-// "a prior definition wins" behaviour.
+// T1..T6 now live in utils.h (included before this file) so the shim can use
+// them without pulling in the whole trap handler.
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS
@@ -2300,22 +2297,12 @@ excpt_\__MODE__\()hndlr_tbl:
 // reference don't affect .text.rvtest size.
 //==============================================================================
 
-// RVTEST_MODEL_INT_CLR(_SHIM, _MACRO) — invoke the DUT's interrupt-clear code
-// from handler context.
-//
-// Normally _MACRO is expanded inline exactly as before. In a certification-kit
-// build (RVMODEL_SHIM_EXTERN) the DUT implementation lives in the separately
-// assembled rvmodel_shim.S, so we call _SHIM instead and the test object stays
-// free of DUT code.
-//
-// Handler-context contract for the _SHIM routines (NOT the plain ABI):
-//   - scratch is limited to ra, T2 and T5, matching the inline _MACRO(T2, T5)
-//     contract these sites already had. T2/T5 are restored by resto_Xrtn.
-//   - a0/a1 are LIVE here (a0 may carry a T-SBI return value), so the a0/a1
-//     flavoured rvtest_{set,clr}_*_int entry points must NOT be used.
-//   - sp points at the current mode's save area for the whole handler, so ra is
-//     spilled to its reserved slot 0 around the call. Same idiom as the T-SBI
-//     CSR_ACCESS dispatch above.
+// RVTEST_MODEL_INT_CLR(_SHIM, _MACRO): interrupt-clear from handler context.
+// Normally expands _MACRO inline; in a kit build it calls _SHIM instead so the
+// object stays DUT-free. The _SHIM routines may only touch ra/T2/T5 (matching the
+// old _MACRO(T2,T5) contract; T2/T5 restored by resto_Xrtn) — a0/a1 are live, so
+// don't use the a0/a1 entry points. ra is spilled to save-area slot 0 around the
+// call, as in the T-SBI CSR_ACCESS dispatch above.
 #ifdef RVMODEL_SHIM_EXTERN
   #define RVTEST_MODEL_INT_CLR(_SHIM, _MACRO)                   \
         SREG    ra, trap_sv_off+0*REGWIDTH(sp)                 ;\

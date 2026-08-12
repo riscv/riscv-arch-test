@@ -1,46 +1,33 @@
 // rvmodel_shim.S
-// Certification-kit model shim: the ONLY translation unit that expands the
-// DUT's private RVMODEL_* macros.
-//
-// The customer assembles this file against their own rvmodel_macros.h and
-// links the result with the pre-assembled, certified test objects. Nothing in
-// this file is certified; everything it provides is reachable only through the
-// fixed symbol names below.
+// The one translation unit that expands the DUT's private RVMODEL_* macros. The
+// customer assembles this against their rvmodel_macros.h and links it with the
+// certified objects; everything here is reached only through the symbol names below.
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// check_defines.h requires these; the shim contains no testcases of its own.
+// check_defines.h wants these; the shim has no testcases of its own.
 #define TEST_FILE "rvmodel_shim.S"
 #define SIGUPD_COUNT 0
 
-// The shim deliberately does NOT include riscv_arch_test.h.
-//
-// That header pulls in rvtest_setup.h, which contains `#include SIGNATURE_FILE`
-// inside .macro RVTEST_SIG_SETUP. The C preprocessor runs before the assembler
-// and does not respect .macro boundaries, so that include fires even though the
-// macro is never invoked here -- the shim has no signature and no testcases.
-//
-// Including only what the shim actually needs also keeps the set of headers
-// shipped in a certification kit as small as possible.
+// Don't include riscv_arch_test.h: it pulls rvtest_setup.h, whose
+// `#include SIGNATURE_FILE` sits inside .macro RVTEST_SIG_SETUP and fires anyway
+// (cpp runs before the assembler and ignores .macro). Include only what we need.
 #include "rvtest_config.h"
-#undef H_SUPPORTED // matches riscv_arch_test.h: Sail does not support Hypervisor yet
+#undef H_SUPPORTED // as in riscv_arch_test.h: Sail has no Hypervisor yet
 #include "derived_config.h"
 #include "encoding.h"
 #include "utils.h"
 #include "rvmodel_macros.h"
 #include "dut_environment.h"
-// Checks the DUT macros this file is about to expand. Note RVMODEL_SHIM_EXTERN
-// is NOT defined for the shim: the implementation checks are exactly the ones
-// that matter here, because supplying those implementations is the shim's job.
+// RVMODEL_SHIM_EXTERN stays undefined here so check_defines.h enforces the
+// implementation macros - which is the shim's job to supply.
 #include "check_defines.h"
 
   .pushsection .text.rvmodel,"ax",@progbits
 
   // ---- Boot hooks -------------------------------------------------------
-  // The framework boot sequence (RVTEST_BOOT_TO_MMODE, RVTEST_INIT_REGS, the
-  // identity map) stays in the certified object. Only these two DUT hooks live
-  // here. Both are plain ABI calls: ra holds the return address, T1-T3 are
-  // scratch, everything else must be preserved.
+  // Only these two DUT hooks live here; the rest of boot stays in the object.
+  // Plain ABI calls: ra = return, T1-T3 scratch, preserve everything else.
   .global rvmodel_dut_boot
   rvmodel_dut_boot:
     #ifdef RVMODEL_BOOT
@@ -122,13 +109,9 @@
   #endif
 
   // ---- Interrupt clear (handler-context flavour) ------------------------
-  // Called from the trap handler's interrupt dispatch routines, NOT via the
-  // plain ABI. Contract (see RVTEST_MODEL_INT_CLR in rvtest_trap_handler.h):
-  //   - may clobber ONLY ra, T2 and T5; T2/T5 are restored by resto_Xrtn
-  //   - a0/a1 are LIVE (a0 may hold a T-SBI return value) — do not touch them
-  //   - the caller spills/reloads ra around the call, so `ret` is safe
-  // These are separate from the a0/a1 entry points above because the register
-  // contracts differ; do not merge them.
+  // Called from the trap handler (RVTEST_MODEL_INT_CLR), not via the ABI. May
+  // clobber only ra/T2/T5; a0/a1 are live (a0 may carry a T-SBI return). The
+  // caller spills ra, so `ret` is fine. Kept separate from the a0/a1 versions.
   .global rvmodel_clr_msw_int_h
   rvmodel_clr_msw_int_h:
     RVMODEL_CLR_MSW_INT(T2, T5)

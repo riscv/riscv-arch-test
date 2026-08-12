@@ -22,16 +22,9 @@
 #endif
 
 ########## rvmodel_macros.h CHECKS ##########
-// Two kinds of RVMODEL_* definition are checked in this file:
-//
-//   implementations - code the DUT supplies (halt, IO, interrupt set/clear).
-//                     A certification-kit build gets these from the separately
-//                     assembled rvmodel_shim.S, so they are NOT required here.
-//   values          - device addresses and timings baked into certified test
-//                     code. Required in every build; a kit build gets them from
-//                     the config's dut_environment block via dut_environment.h.
-//
-// Only the implementation checks are skipped under RVMODEL_SHIM_EXTERN.
+// Implementation macros (halt, IO, interrupt set/clear) come from the shim in a
+// kit build, so skip those checks under RVMODEL_SHIM_EXTERN. Value macros (device
+// addresses, timings) are still required — they come from dut_environment.h.
 #ifndef RVMODEL_SHIM_EXTERN
 
 #ifndef RVMODEL_DATA_SECTION

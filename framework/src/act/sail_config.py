@@ -6,26 +6,17 @@
 # Generate and validate the Sail reference-model config from the UDB config.
 ##################################
 
-"""Derive ``sail.json`` from the UDB config instead of hand-maintaining it.
+"""Derive sail.json from the UDB config instead of hand-maintaining it.
 
-Motivation: test *selection* reads UDB (``extensions.txt``), while the reference
-model reads ``sail.json``. When those two disagree, tests get selected for an
-extension the reference model is not modelling, and the golden signature is
-produced by the wrong machine. Nothing catches that today -- the run simply
-produces a confidently wrong answer.
+Test selection reads UDB while the reference model reads sail.json; when they
+disagree a test runs against a model missing the extension it needs, and nothing
+catches it. So: start from sail_template.json, set base.xlen and every
+extensions.<Name>.supported from UDB, then apply the config's sail_overrides for
+the few DUT scalars UDB can't express (archid, vlen, misaligned behaviour, ...).
 
-Approach (template + overlay, chosen over full generation because UDB does not
-express every Sail knob -- PMP addressing modes being the known example):
-
-1. Start from a maintained baseline ``sail_template.json``.
-2. Set ``base.xlen`` from the config's MXLEN param.
-3. Set every ``extensions.<Name>.supported`` from UDB's implemented-extension
-   list. This is the bulk of the file and the part that silently drifts.
-4. Apply the handful of genuinely DUT-specific scalars from the config's
-   ``sail_overrides`` block (misaligned behaviour, archid, vlen, ...).
-
-Names match between UDB and Sail for 90 of Sail's 99 extension keys; the
-remainder are listed in ``_EXTENSION_ALIASES`` / ``_NOT_IN_UDB``.
+Full generation isn't possible - UDB doesn't model every Sail knob (PMP
+addressing modes being one). Extension names match UDB for 90 of Sail's 99 keys;
+see _EXTENSION_ALIASES / _NOT_IN_UDB for the rest.
 """
 
 from __future__ import annotations
@@ -42,9 +33,8 @@ _EXTENSION_ALIASES: dict[str, str] = {
     "Stateen": "Smstateen",
 }
 
-# Sail extension keys UDB does not know about at all. Left at whatever the
-# template says rather than being force-disabled, because "UDB has no opinion"
-# is not the same as "the DUT does not implement it". Revisit as UDB catches up.
+# Sail keys UDB doesn't know about; leave them at the template value rather than
+# force-disable ("UDB has no opinion" isn't "the DUT lacks it").
 _NOT_IN_UDB: frozenset[str] = frozenset({"Zibi", "Zvabd"})
 
 # Sail keys that are XLEN-determined rather than UDB-determined.
@@ -72,11 +62,8 @@ def read_sail_overrides(udb_config_file: Path) -> dict[str, Any]:
 
 
 def _set_path(tree: dict[str, Any], dotted: str, value: Any) -> None:  # noqa: ANN401
-    """Set tree["a"]["b"] = value for "a.b", requiring the path to already exist.
-
-    Requiring it to exist means a typo'd override is an error rather than a new
-    field Sail will ignore.
-    """
+    """Set tree["a"]["b"] for dotted "a.b". The path must already exist, so a
+    typo'd override errors instead of adding a field Sail ignores."""
     parts = dotted.split(".")
     node: Any = tree
     for p in parts[:-1]:
@@ -89,12 +76,8 @@ def _set_path(tree: dict[str, Any], dotted: str, value: Any) -> None:  # noqa: A
 
 
 def check_extension_agreement(sail_cfg: dict[str, Any], implemented: set[str]) -> list[str]:
-    """Report where sail.json's extension flags disagree with UDB.
-
-    Returns human-readable discrepancy lines; empty means consistent. Extensions
-    Sail does not model at all are not reported -- that is a Sail capability
-    limit, not a config error.
-    """
+    """Report where sail.json's extension flags disagree with UDB (empty = fine).
+    Extensions Sail can't model at all aren't flagged - that's a Sail limit."""
     problems: list[str] = []
     for name, body in sorted(sail_cfg.get("extensions", {}).items()):
         if not isinstance(body, dict) or "supported" not in body:

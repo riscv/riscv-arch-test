@@ -3,9 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-// Framework-wide temporary-register convention. Moved here from
-// rvtest_trap_handler.h so rvmodel_shim.S can use T1..T6 without including the
-// whole trap handler. The #ifndef guards let a test or DUT override one.
+// Temporary-register convention (moved here from rvtest_trap_handler.h so the
+// shim can use T1..T6 without it). #ifndef lets a test or DUT override one.
 #ifndef T1
   #define T1      x6                             // handler temporary 1
 #endif
@@ -73,14 +72,9 @@
 // (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
 // (or a JAL) so code size is constant.
 //
-// Certification-kit builds (RVMODEL_SHIM_EXTERN) deliberately do NOT honour a
-// custom RVMODEL_FENCEI. This is a semantic limit, not a packaging one: the kit's
-// guarantee is that the DUT executes the same instruction stream the reference
-// model executed when it produced the golden signature. RVTEST_FENCEI expands
-// inside .text.rvtest -- certified code -- so a private sync sequence the
-// reference model never ran would invalidate the signature. Unlike the other
-// RVMODEL_* hooks it also cannot be moved behind a call, because a JAL must write
-// a link register and no register is reserved at these sites.
+// Kit builds reject a custom RVMODEL_FENCEI. It expands inside certified code, so
+// a private sync the reference model never ran would break the signature; and it
+// can't move behind a call since a JAL needs a link register and none is free here.
 #if defined(RVMODEL_FENCEI) && defined(RVMODEL_SHIM_EXTERN)
   #error "RVMODEL_FENCEI is not supported in a certification-kit build. The reference \
 model must execute the same instruction stream as the DUT, so the instruction-stream \

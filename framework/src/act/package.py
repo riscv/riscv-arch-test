@@ -7,28 +7,15 @@
 # the customer links their private RVMODEL macros into.
 ##################################
 
-"""Emit a certification kit for one config.
+"""Build a certification kit for one config.
 
-The kit exists so a certification applicant never has to hand over their
-``rvmodel_macros.h``. We assemble every test into a relocatable object with the
-Sail-derived golden signature already baked in, and ship a shim template the
-customer assembles against their own private macros. They link the two and run
-the resulting ELFs themselves.
+Each test is assembled into an object with the Sail golden signature baked in,
+shipped with a shim the customer compiles against their private rvmodel_macros.h.
+Objects are built with RVMODEL_SHIM_EXTERN and no DUT include dir, so any leftover
+dependency on rvmodel_macros.h fails the build instead of leaking DUT code.
 
-What makes this sound rather than merely convenient:
-
-* The certified objects contain no DUT implementation code. They are assembled
-  with ``RVMODEL_SHIM_EXTERN`` and with **no DUT include directory at all**, so a
-  stray dependency on ``rvmodel_macros.h`` fails the build instead of silently
-  baking a private implementation into a certified artifact.
-* The signature is inside the object (``#include SIGNATURE_FILE`` lands in
-  ``.data``), so it cannot be swapped for a friendlier one.
-* ``act_link.ld`` keeps every customer-supplied section after ``.data``, so the
-  shim's size cannot shift a signature-visible address.
-
-What this does NOT do: stop a customer fabricating a log. They own
-``rvmodel_halt_pass`` and run the ELFs on their own machine. The manifest hashes
-prove which test binaries were certified, not what was executed.
+Not a tamper guard: the customer runs the ELFs and owns rvmodel_halt_pass. The
+hashes prove which binaries were certified, not what ran.
 """
 
 from __future__ import annotations
@@ -55,8 +42,7 @@ from act.parse_test_constraints import TestMetadata, TestYamlHeaderError, genera
 from act.select_tests import prepare_configs_and_select_tests
 from act.sig_modify import process_signature_file
 
-# Symbols the customer's shim must define. Kept here so the kit README and the
-# post-build check agree with each other and with data/rvmodel_shim.S.
+# Symbols the shim must define; keep in sync with data/rvmodel_shim.S.
 SHIM_SYMBOLS: tuple[str, ...] = (
     "rvmodel_dut_boot",
     "rvmodel_dut_io_init",
@@ -77,11 +63,8 @@ SHIM_SYMBOLS: tuple[str, ...] = (
     "rvmodel_clr_sext_int_h",
 )
 
-# Undefined symbols that are expected in a certified object but are NOT the
-# shim's responsibility. CSR_SEDELEG/CSR_SIDELEG are referenced by a .set in
-# rvtest_trap_handler.h and defined nowhere; the linker resolves them to 0. That
-# is a pre-existing framework bug, tracked separately -- listed here so the kit's
-# own consistency check does not mistake it for a missing shim symbol.
+# CSR_SEDELEG/CSR_SIDELEG are .set to undefined symbols in rvtest_trap_handler.h
+# (pre-existing bug; linker resolves them to 0). Not the shim's job, so don't flag.
 _KNOWN_UNRESOLVED: frozenset[str] = frozenset({"CSR_SEDELEG", "CSR_SIDELEG"})
 
 package_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -105,12 +88,8 @@ def _mabi(xlen: int, e_ext: bool) -> str:
 
 
 def _kit_compiler_cmd(config: Config, tests_dir: Path, udb_header_dir: Path, empty_include: Path) -> list[str]:
-    """Compiler prefix for certified objects.
-
-    Deliberately substitutes an empty directory for the DUT include dir. If a
-    test or env header still reaches for rvmodel_macros.h, the build fails here
-    rather than shipping DUT code inside a certified object.
-    """
+    """Compiler prefix for certified objects, with an empty dir in place of the
+    DUT include dir so a stray rvmodel_macros.h reference fails the build."""
     from act.config import CompilerType
 
     cmd = [str(config.compiler_exe)]
@@ -145,11 +124,8 @@ def _tool_version(exe: str | Path, *args: str) -> str:
 
 
 def check_object_is_clean(obj: Path, objdump_exe: Path | None) -> None:
-    """Fail if a certified object references anything the shim does not provide.
-
-    Runs as a build action so a bad object stops the kit rather than being
-    discovered by the customer.
-    """
+    """Fail if a certified object references anything the shim does not provide,
+    so a bad object stops the kit here instead of at the customer."""
     if objdump_exe is None:
         return
     nm = Path(str(objdump_exe).replace("objdump", "nm"))
@@ -174,23 +150,19 @@ def _gen_kit_tasks(
     kit_dir: Path,
     debug: bool,
 ) -> tuple[list[BuildTask], list[KitTest]]:
-    """Tasks producing one certified object per test, plus the kit inventory.
+    """One certified object per test, plus the kit inventory.
 
-    Pipeline per test (first three steps mirror the normal ACT build exactly, so
-    the golden signature is the same one the normal flow would produce):
-        test.S -> test.sig.elf -> test.sig (reference model) -> test.results
-        test.S + test.results -> <kit>/objects/<name>.o     (certified, DUT-free)
+    Per test: test.S -> sig.elf -> sig (ref model) -> results, then compile the
+    DUT-free object with the results baked in. The signature steps match the
+    normal build so the baked-in signature is identical.
     """
-    # Reuse the normal build's command construction so the signature ELF and the
-    # certified object stay in lock-step with build_plan.py. Duplicating those
-    # flag lists is exactly what broke when the main build added -DTEST_FILE and
-    # the Sail platform defines.
+    # Reuse build_plan's command helpers so the compile flags stay in sync (they
+    # drifted once already when the main build added -DTEST_FILE and platform defines).
     from act.build_plan import _compiler_cmd, _ref_model_sig_cmd, _sail_platform_defines
 
     config_wkdir = workdir / config.name
     build_dir = config_wkdir / "package_build"
-    # Objects are built inside the workdir (build()'s cache keys every output
-    # relative to cache_root) and published into the kit afterwards.
+    # build()'s cache keys outputs under cache_root, so build here and copy into the kit.
     obj_root = config_wkdir / "kit_objects"
     empty_include = config_wkdir / "_kit_no_dut_include"
     empty_include.mkdir(parents=True, exist_ok=True)
@@ -209,8 +181,7 @@ def _gen_kit_tasks(
     sail_json = config.dut_include_dir / "sail.json"
     if sail_json.exists():
         ref_inputs = (sail_json.absolute(),)
-        # sail_macros.h now expects the CLINT / interrupt-generator base addresses
-        # on the command line (Sail reference build only).
+        # sail_macros.h wants the CLINT / interrupt-generator addresses via -D.
         signature_compile_flags = _sail_platform_defines(sail_json)
 
     tasks: list[BuildTask] = []
@@ -218,9 +189,7 @@ def _gen_kit_tasks(
 
     for name_str, meta in sorted(selected.items()):
         name = Path(name_str)
-        # C tests link framework C-runtime sources into the object; a certified
-        # C-test object plus a linked shim is an unvalidated corner, so skip them
-        # explicitly rather than emit something untested.
+        # C tests pull in C-runtime sources; kit support for them is unvalidated, so skip.
         if meta.is_c_test:
             rprint(f"[yellow]Skipping C test (not supported in kits yet):[/] {name}", file=sys.stderr)
             continue
@@ -233,8 +202,6 @@ def _gen_kit_tasks(
         results = build_dir / name.with_suffix(".results")
         obj = obj_root / name.with_suffix(".o")
 
-        # Signature chain (only for tests that need one), identical to the normal
-        # build so the baked-in golden signature is the same one ACT would use.
         obj_deps: tuple[Path, ...] = ()
         sig_flag = "-DRVTEST_NOSIG"
         if meta.needs_signature:
@@ -243,8 +210,8 @@ def _gen_kit_tasks(
             sig_trace = build_dir / name.with_suffix(".sig.trace")
             sig_log = build_dir / name.with_suffix(".sig.log")
 
-            # 1. signature ELF (DUT include dir present; sail_macros.h overrides
-            #    the model macros because RVTEST_SELFCHECK is not defined here)
+            # sig.elf: built with the DUT include dir; sail_macros.h drives it
+            # (RVTEST_SELFCHECK is off here).
             tasks.append(
                 BuildTask(
                     outputs=(sig_elf,),
@@ -443,9 +410,8 @@ def _write_kit_files(
     inc = kit_dir / "include"
     inc.mkdir(parents=True, exist_ok=True)
 
-    # Env headers. The customer compiles the shim, so it needs the same headers
-    # the certified objects were built against. Only headers: tests/ must contain
-    # no non-test .S file, because generate_test_dict() rglobs "*.S" over it.
+    # Env headers the shim needs. Only .h: a non-test .S under tests/ would be
+    # picked up by generate_test_dict()'s rglob("*.S").
     for h in sorted((tests_dir / "env").iterdir()):
         if h.suffix == ".h":
             shutil.copy2(h, inc / h.name)
@@ -457,9 +423,8 @@ def _write_kit_files(
         if src.exists():
             shutil.copy2(src, inc / gen)
 
-    # Framework-owned kit assets (linker script and the model shim template).
-    # These live in the act package rather than tests/ precisely so the test
-    # scanner never sees the shim.
+    # Framework-owned kit assets. These live in the act package, not tests/, so
+    # the test scanner never sees the shim.
     act_res = importlib.resources.files("act")
     shutil.copy2(Path(str(act_res / "data" / "act_link.ld")), kit_dir / "act_link.ld")
     shutil.copy2(Path(str(act_res / "data" / "rvmodel_shim.S")), kit_dir / "rvmodel_shim.S")

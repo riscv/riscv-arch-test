@@ -8,23 +8,13 @@
 
 """Check returned certification logs against the kit that produced them.
 
-The applicant builds the kit's certified objects into ELFs, runs them on their
-DUT, and returns the logs. This module answers one question: do those logs
-account for every test we certified, and did they all pass?
+Confirms every certified test has a result and all passed, no result is for a
+test outside the manifest, nothing is FAILED or SIGRUN (SIGRUN = not built
+self-checking), and the objects still match the manifest hashes. A dropped test
+is reported as loudly as a failure - it's the easy way to hide one.
 
-What it checks:
-
-* every test in the manifest has a result -- a silently dropped test is the
-  cheapest way to hide a failure, so absence is reported as loudly as failure
-* no result refers to a test that is not in the manifest
-* nothing reports FAILED or SIGRUN (SIGRUN means the ELF was not built
-  self-checking, so the run proves nothing)
-* the logs came from the kit we think they did, via the manifest hash
-
-What it deliberately does not claim: that the logs are genuine. The applicant
-runs the ELFs on their own machine and supplies ``rvmodel_halt_pass``. This
-verifies bookkeeping, not honesty. Any statement to a certification body should
-be worded accordingly.
+This checks bookkeeping, not honesty: the applicant runs the ELFs and supplies
+rvmodel_halt_pass, so it can't prove the logs are genuine.
 """
 
 from __future__ import annotations
@@ -40,11 +30,9 @@ from typing import Annotated
 import typer
 from rich import print as rprint
 
-# Typer resolves these annotations at runtime, so the names must be importable at
-# module scope even though `from __future__ import annotations` stringifies them.
+# Annotated/typer imported at module scope: Typer resolves CLI annotations at runtime.
 
-# Matches the line the test prints via RVMODEL_IO_WRITE_STR, as produced by
-# run_tests.py and parsed by its _SUMMARY_RE.
+# The summary line run_tests.py emits, same regex it parses.
 _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File "([^"]*)"')
 
 

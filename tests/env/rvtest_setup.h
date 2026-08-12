@@ -193,10 +193,8 @@
   // Model specific boot code
   rvmodel_boot:
     #ifdef RVMODEL_SHIM_EXTERN
-      // Certification-kit build: the DUT's boot and IO-init macros are expanded
-      // in the separately assembled rvmodel_shim.S, not here. ra is dead at this
-      // point (rvmodel_boot never returns; it ends with `jr T1` to
-      // rvtest_code_begin), so `call` is free to clobber it.
+      // Kit build: boot/IO-init come from the shim. ra is dead here (rvmodel_boot
+      // ends with `jr T1`), so `call` is free to clobber it.
       call rvmodel_dut_boot
       call rvmodel_dut_io_init
     #else
@@ -275,9 +273,8 @@
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test
 
-  // Everything below expands DUT-private RVMODEL_* macros. In a certification-kit
-  // build these are provided by the separately assembled rvmodel_shim.S instead,
-  // so the test object never contains DUT implementation code.
+  // Everything below expands DUT-private RVMODEL_* macros. In a kit build the
+  // shim supplies these instead, keeping DUT code out of the test object.
   #ifndef RVMODEL_SHIM_EXTERN
 
   rvmodel_io_write_str:
@@ -513,8 +510,7 @@
 
   // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
   // Placed after the signature so variable-size DUT data does not affect any
-  // test-visible symbol addresses. In a certification-kit build this comes from
-  // rvmodel_shim.S instead.
+  // test-visible symbol addresses. In a kit build it comes from the shim.
   #ifndef RVMODEL_SHIM_EXTERN
     RVMODEL_DATA_SECTION
   #endif

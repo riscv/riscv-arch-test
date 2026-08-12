@@ -43,7 +43,7 @@
 
 RVTEST_BEGIN
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions

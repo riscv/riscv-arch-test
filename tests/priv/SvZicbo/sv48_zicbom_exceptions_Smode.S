@@ -249,7 +249,7 @@ main:
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 2: Test in S-Mode | WX bit set | expected = 3 Store page faults
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), va_data, LEVEL3)
   sfence.vma
@@ -372,7 +372,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 13: Test in S-Mode | WX bit set | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), va_data, LEVEL2)
@@ -503,7 +503,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 24: Test in S-Mode | PTE.D set for level 2 PTE | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -554,7 +554,7 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 28: Test in S-Mode | WX bit set | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -696,7 +696,7 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 39: Test in S-Mode | PTE.D set for level 2 PTE | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL2)
@@ -751,7 +751,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 43: Test in S-Mode | WX bit set | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -904,7 +904,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifndef S1P11P0_SUPPORTED
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 54: Test in S-Mode | PTE.D set for level 1 PTE | expected = 3 Store page faults
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)

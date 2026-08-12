@@ -737,7 +737,7 @@
    .if     ((\LMODE\()==VUmode) || (\LMODE\()==VSmode))
      LI    T2, (1<<MPV_LSB)
 #if (UDB_MXLEN==32)
-  #ifndef SM1P11P0_SUPPORTED
+  #ifdef SM1P12P0_OR_LATER_SUPPORTED
      csrs  CSR_MSTATUSH, T2     /* set V RV32                   */
   #endif
 #else
@@ -747,7 +747,7 @@
    .elseif ((\LMODE\()==HSmode))
      LI    T2, (1<<MPV_LSB)
 #if (UDB_MXLEN==32)
-  #ifndef SM1P11P0_SUPPORTED
+  #ifdef SM1P12P0_OR_LATER_SUPPORTED
     csrc  CSR_MSTATUSH, T2     /* clr V RV32                   */
   #endif
 #else
@@ -1376,7 +1376,7 @@ tsbi_\__MODE__\()goto_m:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrc    CSR_MSTATUSH, T2             // RV32: clear MPV in mstatush (not virtual)
         #endif
     #else
@@ -1395,7 +1395,7 @@ tsbi_\__MODE__\()goto_s:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrc    CSR_MSTATUSH, T2             // RV32: clear MPV (not virtual)
         #endif
     #else
@@ -1412,7 +1412,7 @@ tsbi_\__MODE__\()goto_u:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrc    CSR_MSTATUSH, T2             // RV32: clear MPV (not virtual)
         #endif
     #else
@@ -1431,7 +1431,7 @@ tsbi_\__MODE__\()goto_vs:
         csrs    CSR_MSTATUS, T4                       // set MPP = 01 (S-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrs    CSR_MSTATUSH, T2                      // RV32: set MPV=1 in mstatush (virtualized)
         #endif
     #else
@@ -1446,7 +1446,7 @@ tsbi_\__MODE__\()goto_vu:
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrs    CSR_MSTATUSH, T2             // RV32: set MPV=1 in mstatush (virtualized)
         #endif
     #else
@@ -1975,7 +1975,7 @@ sv_\__MODE__\()vect:
   #if (UDB_MXLEN==64)
         srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
   #else
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrr    T4, CSR_MSTATUSH
         #else
           li      T4, 0                   // no H: GVA/MPV/xPV always 0
@@ -2046,7 +2046,7 @@ common_\__MODE__\()excpt_handler:
         #if (UDB_MXLEN==64)
                 csrr    T6, CSR_MSTATUS
         #else
-          #ifndef SM1P11P0_SUPPORTED
+          #ifdef SM1P12P0_OR_LATER_SUPPORTED
                 csrr    T6, CSR_MSTATUSH
           #else
             li      T6, 0                   // no H: MPV always 0
@@ -2518,7 +2518,7 @@ excpt_\__MODE__\()hndlr_tbl:
         addi    sp, sp, sv_area_sz                    // adjust sp to access other save areas
 
   #if (UDB_MXLEN==32)
-        #ifndef SM1P11P0_SUPPORTED
+        #ifdef SM1P12P0_OR_LATER_SUPPORTED
           csrr    T2, CSR_MSTATUSH        /* find Vbit  if RV32                   */
         #else
           li      T2, 0                   // no H: V always 0

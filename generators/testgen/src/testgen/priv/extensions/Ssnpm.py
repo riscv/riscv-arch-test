@@ -17,7 +17,6 @@ from testgen.priv.extensions.ZpmCommon import (
     VALUE_OLD,
     Regs,
     _grant_umode_access_to_identity_map_asm,
-    _li,
     _pte_chain_asm,
     enable_cascaded_envcfg_cbo_sse,
     pass_a_all_instructions,
@@ -46,9 +45,9 @@ def _set_pmm(val: int, pmlen: int, tmp: int) -> list[str]:
     mask = 0b11 << _SENVCFG_PMM
     return [
         f"# senvcfg.PMM={val:#04b} PMLEN={pmlen}",
-        _li(tmp, mask),
+        f"LI(x{tmp}, {hex(mask)})",
         f"csrc senvcfg, x{tmp}",
-        _li(tmp, val << _SENVCFG_PMM),
+        f"LI(x{tmp}, {hex(val << _SENVCFG_PMM)})",
         f"csrs senvcfg, x{tmp}",
     ]
 
@@ -76,7 +75,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     lines += [
         "",
         "# FP and vector state must be enabled for the FP/vector probes to be legal.",
-        _li(regs.tmp, _MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY),
+        f"LI(x{regs.tmp}, {hex(_MSTATUS_FS_DIRTY | _MSTATUS_VS_DIRTY)})",
         f"csrs mstatus, x{regs.tmp}",
     ]
 
@@ -135,14 +134,18 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "Ssnpm",
-    required_extensions=["Ssnpm", "Zicsr", "S", "U"],
+    required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
+    # Allocate only what we need - constrain only to x8-x15
     a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
     tmp2, base = td.int_regs.get_registers(2)
     fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
-    regs = Regs(base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c)
+    # Reuse chk and data as register pairs for amocas.q (no new allocation)
+    regs = Regs(
+        base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c, dest_pair=chk, source_pair=data
+    )
 
     chunks = []
     for mode in _MODES:

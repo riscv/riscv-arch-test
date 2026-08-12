@@ -68,7 +68,7 @@ RV64A_AMOS: list[tuple[str, str]] = [(f"amo{op}.{w}", "lw" if w == "w" else "ld"
 ZABHA_AMOS: list[tuple[str, str]] = [
     (f"amo{op}.{w}", "lbu" if w == "b" else "lhu") for op in AMO_OPS for w in ("b", "h")
 ]
-ZACAS_AMOS: list[str] = ["amocas.w", "amocas.d"]
+ZACAS_AMOS: list[str] = ["amocas.w", "amocas.d", "amocas.q"]
 FP_READS: list[tuple[str, str, str]] = [("flw", "F_SUPPORTED", "fmv.w.x"), ("fld", "D_SUPPORTED", "fmv.d.x")]
 FP_WRITES: list[tuple[str, str, str, str]] = [
     ("fsw", "lw", "F_SUPPORTED", "fmv.w.x"),
@@ -145,13 +145,11 @@ class Regs:
     tmp2: int
     fp: int
     fp_c: int
+    dest_pair: int  # for amocas.q (register pair)
+    source_pair: int  # for amocas.q (register pair)
 
 
 # ── Assembly Helpers ───────────────────────────────────────────────────────
-
-
-def _li(reg: int, val: int) -> str:
-    return f"LI(x{reg}, {hex(val)})"
 
 
 def _fixed(instr: str) -> list[str]:
@@ -196,11 +194,11 @@ def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg") -> list[str]:
     return [
         f"# {csr}: let the probes run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1)",
         "# and the Zicfiss shadow-stack atomics (SSE=1)",
-        _li(regs.tmp, _ENVCFG_SSE_BIT),
+        f"LI(x{regs.tmp}, {hex(_ENVCFG_SSE_BIT)})",
         f"csrs {csr}, x{regs.tmp}",
-        _li(regs.tmp, cbo_fields),
+        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrc {csr}, x{regs.tmp}",
-        _li(regs.tmp, cbo_fields),
+        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrs {csr}, x{regs.tmp}",
     ]
 
@@ -217,11 +215,11 @@ def enable_cascaded_envcfg_cbo_sse(regs: Regs) -> list[str]:
     return [
         "# Let U-mode run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1) and the Zicfiss",
         "# shadow-stack atomics (SSE=1). menvcfg gates senvcfg, so both are written.",
-        _li(regs.tmp, _ENVCFG_SSE_BIT),
+        f"LI(x{regs.tmp}, {hex(_ENVCFG_SSE_BIT)})",
         f"csrs menvcfg, x{regs.tmp}",
-        _li(regs.tmp, cbo_fields),
+        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrc senvcfg, x{regs.tmp}",
-        _li(regs.tmp, cbo_fields),
+        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrs senvcfg, x{regs.tmp}",
     ]
 
@@ -266,11 +264,11 @@ def _grant_umode_access_to_identity_map_asm(mode: str, regs: Regs | None = None)
 
 
 def _seed(regs: Regs) -> list[str]:
-    return [_li(regs.data, VALUE_OLD), f"sd x{regs.data}, 0(x{regs.base})"]
+    return [f"LI(x{regs.data}, {hex(VALUE_OLD)})", f"sd x{regs.data}, 0(x{regs.base})"]
 
 
 def _sentinel(regs: Regs) -> list[str]:
-    return [_li(regs.chk, SENTINEL)]
+    return [f"LI(x{regs.chk}, {hex(SENTINEL)})"]
 
 
 def _probe_load(mn: str, tid: str, td: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
@@ -286,7 +284,7 @@ def _probe_load(mn: str, tid: str, td: TestData, regs: Regs, cp: str, cg: str) -
 def _probe_store(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cp: str, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, cp, cg),
         *_fixed(f"{mn} x{regs.data}, 0(x{regs.a})"),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
@@ -297,7 +295,7 @@ def _probe_store(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cp:
 def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, CP_MASKING, cg),
         *_fixed(f"{mn} x0, x{regs.data}, (x{regs.a})"),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
@@ -306,14 +304,24 @@ def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: s
 
 
 def _probe_zacas(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
+    """ZACAS probe: handles amocas.w/d (single registers) and amocas.q (register pairs)."""
+    # Determine which registers to use based on instruction type
+    if mn == "amocas.q":
+        dest_reg = regs.dest_pair
+        src_reg = regs.source_pair
+    else:  # amocas.w or amocas.d
+        dest_reg = regs.chk
+        src_reg = regs.data
+
+    # Unified implementation for all three instructions
     return [
         *_seed(regs),
-        f"{_li(regs.chk, VALUE_OLD)}   # comparand matches the seeded value",
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{dest_reg}, {hex(VALUE_OLD)})   # comparand matches the seeded value",
+        f"LI(x{src_reg}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})"),
-        *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
-        write_sigupd(regs.chk, td),
+        *_fixed(f"{mn} x{dest_reg}, x{src_reg}, (x{regs.a})"),
+        *_fixed(f"ld x{dest_reg}, 0(x{regs.base})"),
+        write_sigupd(dest_reg, td),
     ]
 
 
@@ -331,7 +339,7 @@ def _probe_fp_load(mn: str, mv: str, tid: str, td: TestData, regs: Regs, cg: str
 def _probe_fp_store(mn: str, readback: str, mv: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"{mv} f{regs.fp}, x{regs.data}",
         td.add_testcase(tid, CP_MASKING, cg),
         *_fixed(f"{mn} f{regs.fp}, 0(x{regs.a})"),
@@ -353,7 +361,7 @@ def _probe_c_load_cl(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> li
 def _probe_c_store_cs(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, CP_MASKING, cg),
         *_compressed(f"{mn} x{regs.data}, 0(x{regs.a})"),
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
@@ -377,7 +385,7 @@ def _probe_c_load_sp(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> li
 def _probe_c_store_sp(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, cg),
@@ -405,7 +413,7 @@ def _probe_cd_load_sp(tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
 def _probe_cd_store_sp(tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         f"fmv.d.x f{regs.fp_c}, x{regs.data}",
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
@@ -458,7 +466,7 @@ def _probe_vec_store(
 ) -> list[str]:
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         *_fixed_block(
             [
                 *_vset(sew, regs),
@@ -479,7 +487,7 @@ def _probe_zicfiss(mn: str, readback: str, funct3: int, tid: str, td: TestData, 
     module docstrings for why)."""
     return [
         *_seed(regs),
-        _li(regs.data, VALUE_NEW),
+        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         *_sentinel(regs),
         td.add_testcase(tid, CP_MASKING, cg),
         *_fixed(
@@ -498,7 +506,7 @@ def _load_base(mode: str, region: str, regs: Regs) -> list[str]:
     if region == "hi":
         return [
             f"# upper-half VA base: masking must sign extend to reproduce {hex(HIGH_VA[mode])}",
-            _li(regs.base, HIGH_VA[mode]),
+            f"LI(x{regs.base}, {hex(HIGH_VA[mode])})",
         ]
     return [f"LA(x{regs.base}, pm_lo_page)"]
 
@@ -506,7 +514,7 @@ def _load_base(mode: str, region: str, regs: Regs) -> list[str]:
 def _tag_address(upper: int, regs: Regs, byte_offset: int = 0) -> list[str]:
     lines = [
         f"# tagged pointer: bits 63:48 = 0x{upper:04X}",
-        _li(regs.tmp, upper << 48),
+        f"LI(x{regs.tmp}, {hex(upper << 48)})",
         f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
     ]
     if byte_offset:
@@ -521,7 +529,7 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
     lines = []
     for upper in UPPER_PATTERNS:
         lines.append(comment_banner(f"{prefix}: tag 0x{upper:04X} -- full instruction sweep"))
-        lines += [_li(regs.tmp, upper << 48), f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
+        lines += [f"LI(x{regs.tmp}, {hex(upper << 48)})", f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
 
         for mn in READS:
             lines += _probe_load(mn, _tid(prefix, upper, mn), td, regs, CP_MASKING, cg)
@@ -597,7 +605,7 @@ def pass_c_misaligned(cfg: object | None, prefix: str, td: TestData, regs: Regs,
     lines = [comment_banner(f"{prefix}: misaligned word accesses through a tagged pointer")]
     for upper in UPPER_PATTERNS:
         lines += [
-            _li(regs.tmp, upper << 48),
+            f"LI(x{regs.tmp}, {hex(upper << 48)})",
             f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
             f"addi x{regs.a}, x{regs.a}, 1   # force a misaligned effective address",
         ]
@@ -617,7 +625,7 @@ def set_mxr(enable: bool, tmp: int, status_csr: str = "sstatus") -> list[str]:
       -> status_csr="mstatus".
     """
     op = "csrs" if enable else "csrc"
-    return [f"# {status_csr}.MXR = {int(enable)}", _li(tmp, _MSTATUS_MXR), f"{op} {status_csr}, x{tmp}"]
+    return [f"# {status_csr}.MXR = {int(enable)}", f"LI(x{tmp}, {hex(_MSTATUS_MXR)})", f"{op} {status_csr}, x{tmp}"]
 
 
 def pass_d_mxr(
@@ -642,7 +650,7 @@ def pass_d_mxr(
         lines.append(goto_target_mode)
     lines += [f"LA(x{regs.base}, pm_lo_page)"]
     for upper in UPPER_PATTERNS:
-        lines += [_li(regs.tmp, upper << 48), f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
+        lines += [f"LI(x{regs.tmp}, {hex(upper << 48)})", f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
         lines += _probe_load("lw", _tid(f"{prefix}_mxr", upper, "lw"), td, regs, CP_MXR, cg)
         lines += _probe_store("sw", "lw", _tid(f"{prefix}_mxr", upper, "sw"), td, regs, CP_MXR, cg)
     return lines
@@ -652,7 +660,7 @@ def pass_e_jalr(cfg: object | None, prefix: str, td: TestData, regs: Regs, cg: s
     lines = [comment_banner(f"{prefix}: JALR through a tagged pointer, MXR={mxr} (fetch is never masked)")]
     lines.append(f"LA(x{regs.base}, pm_jalr_pad)")
     for upper in UPPER_PATTERNS:
-        lines += [_li(regs.tmp, upper << 48), f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
+        lines += [f"LI(x{regs.tmp}, {hex(upper << 48)})", f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
         lines += [
             f"li x{regs.chk}, 0   # the pad sets this to 1 if the fetch succeeded",
             td.add_testcase(_tid(f"{prefix}_mxr{mxr}", upper, "jalr"), CP_JALR, cg),
@@ -671,13 +679,13 @@ def pass_f_fault_address(cfg: object | None, prefix: str, td: TestData, regs: Re
     ]
     for upper in UPPER_PATTERNS:
         lines += [
-            _li(regs.tmp, upper << 48),
+            f"LI(x{regs.tmp}, {hex(upper << 48)})",
             f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
             *_sentinel(regs),
             td.add_testcase(_tid(f"{prefix}_flt", upper, "lw"), CP_FAULT, cg),
             *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
             write_sigupd(regs.chk, td),
-            _li(regs.data, VALUE_NEW),
+            f"LI(x{regs.data}, {hex(VALUE_NEW)})",
             *_sentinel(regs),
             td.add_testcase(_tid(f"{prefix}_flt", upper, "sw"), CP_FAULT, cg),
             *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
@@ -740,9 +748,9 @@ def pass_clear_on_xlen_change(
     ]
     mask = 0b11 << status_shift
     lines += [
-        _li(regs.tmp, mask),
+        f"LI(x{regs.tmp}, {hex(mask)})",
         f"csrc {status_csr}, x{regs.tmp}",
-        _li(regs.tmp, rv32_val << status_shift),
+        f"LI(x{regs.tmp}, {hex(rv32_val << status_shift)})",
         f"csrs {status_csr}, x{regs.tmp}",
         "",
     ]
@@ -755,9 +763,9 @@ def pass_clear_on_xlen_change(
         "",
     ]
     lines += [
-        _li(regs.tmp, mask),
+        f"LI(x{regs.tmp}, {hex(mask)})",
         f"csrc {status_csr}, x{regs.tmp}",
-        _li(regs.tmp, rv64_val << status_shift),
+        f"LI(x{regs.tmp}, {hex(rv64_val << status_shift)})",
         f"csrs {status_csr}, x{regs.tmp}",
     ]
     if ifdef_guard:

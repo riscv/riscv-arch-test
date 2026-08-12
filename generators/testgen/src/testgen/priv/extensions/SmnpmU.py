@@ -49,7 +49,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_bare"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"))
-        lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+        lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
         lines += ["RVTEST_TSBI_GOTO_UMODE", f"LA(x{regs.base}, pm_lo_page)"]
 
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
@@ -70,7 +70,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
             ifdef_guard="UDB_UXLEN_64",
         )
 
-    lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+    lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
     return lines
 
 

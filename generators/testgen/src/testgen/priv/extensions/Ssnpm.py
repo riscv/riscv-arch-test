@@ -77,7 +77,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         prefix = f"{label}_{mode}"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}"))
         lines += (
-            ["RVTEST_GOTO_MMODE"]
+            ["RVTEST_TSBI_GOTO_MMODE"]
             + set_pmm_field("senvcfg", _SENVCFG_PMM, pmm, pmlen, regs.tmp)
             + set_mxr(False, regs.tmp)
         )
@@ -92,7 +92,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         lines += pass_d_mxr(None, prefix, td, regs, COVERGROUP)
         lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=1)
 
-        lines += ["RVTEST_GOTO_MMODE", *set_mxr(False, regs.tmp)]
+        lines += ["RVTEST_TSBI_GOTO_MMODE", *set_mxr(False, regs.tmp)]
         lines += pass_clear_on_xlen_change(
             None,
             prefix,
@@ -107,7 +107,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
             ifdef_guard="UDB_UXLEN_64",
         )
 
-    lines += ["RVTEST_GOTO_MMODE"]
+    lines += ["RVTEST_TSBI_GOTO_MMODE"]
     lines += set_pmm_field("senvcfg", _SENVCFG_PMM, 0b00, 0, regs.tmp)
     lines += set_mxr(False, regs.tmp)
     lines += ["csrwi satp, 0", "sfence.vma"]

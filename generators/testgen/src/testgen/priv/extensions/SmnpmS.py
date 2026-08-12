@@ -68,7 +68,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_{mode}"
-        lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+        lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
         lines += ["RVTEST_TSBI_GOTO_SMODE", f"LA(x{regs.base}, pm_lo_page)"]
 
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
@@ -88,12 +88,12 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
         )
         lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP, mxr=1)
 
-        lines += ["RVTEST_GOTO_MMODE", *set_mxr(False, regs.tmp, "mstatus")]
+        lines += ["RVTEST_TSBI_GOTO_MMODE", *set_mxr(False, regs.tmp, "mstatus")]
         lines += ["RVTEST_TSBI_GOTO_SMODE"]
 
         lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, ["sepc", "sscratch"])
 
-        lines.append("RVTEST_GOTO_MMODE")
+        lines.append("RVTEST_TSBI_GOTO_MMODE")
         lines += pass_clear_on_xlen_change(
             None,
             prefix,
@@ -107,7 +107,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
             status_shift=34,
         )
 
-    lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+    lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
     lines += [*set_mxr(False, regs.tmp, "mstatus"), "csrwi satp, 0", "sfence.vma"]
     if guard:
         lines.append(f"#endif // {guard}")

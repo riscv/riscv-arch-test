@@ -277,7 +277,7 @@ def jalr_pad_asm(regs: Regs) -> list[str]:
         f"addi x{regs.chk}, x{regs.chk}, 1",
         "jr ra",
         "pm_jalr_pad_end:",
-        "RVTEST_GOTO_MMODE",
+        "RVTEST_TSBI_GOTO_MMODE",
         "",
     ]
 
@@ -465,7 +465,7 @@ def pass_h_mprv(
 
         for pmm, pmlen, label in PMM_CONFIGS:
             prefix = f"{label}_{mode}_mprv"
-            lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field(pmm_csr, pmm_shift, pmm, pmlen, regs.tmp)
+            lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field(pmm_csr, pmm_shift, pmm, pmlen, regs.tmp)
 
             lines.append("#ifdef U_SUPPORTED")
             lines += _mprv_mpp_probes(prefix, "u", _MPP_U, td, regs, cg)
@@ -476,7 +476,7 @@ def pass_h_mprv(
             lines.append("#endif // S_SUPPORTED")
 
         if mode != "bare":
-            lines += ["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma"]
+            lines += ["RVTEST_TSBI_GOTO_MMODE", "csrwi satp, 0", "sfence.vma"]
 
         if guard:
             lines.append(f"#endif // {guard}")
@@ -1012,7 +1012,7 @@ def pass_d_mxr(
 ) -> list[str]:
     """sw/lw with MXR set. MXR suppresses masking, so tagged pointers must fault."""
     lines = [comment_banner(f"{prefix}: {status_csr}.MXR=1 suppresses pointer masking")]
-    lines += ["RVTEST_GOTO_MMODE", *set_mxr(True, regs.tmp, status_csr)]
+    lines += ["RVTEST_TSBI_GOTO_MMODE", *set_mxr(True, regs.tmp, status_csr)]
     if goto_target_mode:
         lines.append(goto_target_mode)
     lines += [f"LA(x{regs.base}, pm_lo_page)"]
@@ -1102,7 +1102,7 @@ def pass_clear_on_xlen_change(
         lines.append(f"#ifndef {ifdef_guard}")
     lines += [
         comment_banner(f"{prefix}: {status_csr} field=01 must clear {pmm_csr}.PMM"),
-        "RVTEST_GOTO_MMODE",
+        "RVTEST_TSBI_GOTO_MMODE",
         "",
         f"csrr x{regs.chk}, {pmm_csr}",
         f"srli x{regs.chk}, x{regs.chk}, {pmm_shift}",

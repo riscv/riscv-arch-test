@@ -51,7 +51,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_mmode"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"))
-        lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("mseccfg", _MSECCFG_PMM, pmm, pmlen, regs.tmp)
+        lines += set_pmm_field("mseccfg", _MSECCFG_PMM, pmm, pmlen, regs.tmp)
 
         lines.append("#ifdef S_SUPPORTED")
         lines += set_mxr(False, regs.tmp, "mstatus")
@@ -79,7 +79,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, _CSR_TARGETS)
 
     lines += pass_h_mprv(td, regs, COVERGROUP, "mseccfg", _MSECCFG_PMM)
-    lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("mseccfg", _MSECCFG_PMM, 0b00, 0, regs.tmp)
+    lines += set_pmm_field("mseccfg", _MSECCFG_PMM, 0b00, 0, regs.tmp)
     lines.append("#ifdef S_SUPPORTED")
     lines += set_mxr(False, regs.tmp, "mstatus")
     lines.append("#endif // S_SUPPORTED")

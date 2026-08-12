@@ -9,7 +9,7 @@
 """Pure vector instruction parsing and LMUL helpers."""
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 
@@ -38,7 +38,7 @@ class InstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     whole_registers: int | None
-    widened_regs: set[str] = field(default_factory=set)
+    widened_regs: set[str]
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
         """Return a register's size multiplier relative to SEW."""
@@ -55,6 +55,9 @@ class InstructionInfo:
 
 def parse_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
     """Parse vector instruction facts encoded in an instruction name."""
+    # Lazy import here to avoid import loops due to registry imports breaking the import hierarchy with import-time
+    # code execution. If the name is already found, there should not be a performance penalty
+    from testgen.formatters.registry import get_instruction_type_config
 
     # Extract Segments
     # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v
@@ -82,12 +85,18 @@ def parse_instruction_info(instruction: str, instruction_type: str) -> Instructi
     whole_register_match = re.search(r"v[ls](\d)r", instruction)
     whole_registers = int(whole_register_match.group(1)) if whole_register_match else None
 
+    instr_type_config = get_instruction_type_config(instruction_type)
+    assert instr_type_config.vector_data is not None, "vector_data must be provided for a vector instruction type"
+
+    widened_regs = instr_type_config.vector_data.widened_regs
+
     return InstructionInfo(
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
         whole_registers=whole_registers,
+        widened_regs=widened_regs,
     )
 
 

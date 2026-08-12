@@ -38,7 +38,6 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "vector_data must be set for vector instruction types"
     info = parse_instruction_info(instr_name, instr_type)
-    info.widened_regs = instr_type_config.vector_data.widened_regs
 
     lower_bound, upper_bound = 0, test_data.vec_regs.reg_count
     emul = 1

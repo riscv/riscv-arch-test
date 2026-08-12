@@ -386,7 +386,6 @@ def generate_random_vector_params(
         f"Vector Data must be provided for vector instruction type {instr_type}"
     )
     info = parse_instruction_info(instruction, instr_type)
-    info.widened_regs = instr_type_config.vector_data.widened_regs
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:

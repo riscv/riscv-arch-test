@@ -6,12 +6,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Instruction formatter registry with automatic discovery."""
+"""Instruction formatter registration, lookup, and rendering."""
 
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
@@ -40,6 +40,28 @@ class MissingInstructionFormatterError(MissingRegistryItemError):
 
 
 @dataclass
+class VectorTypeConfig:
+    """
+    Configuration for a vector instruction type.
+
+    This data class holds metadata specific to vector instructions.
+
+    Attributes:
+        overlap_constraints: Set of pairs of vector registers that cannot overlap
+        masked_constraints: Set of pairs of vector register that cannot overlap only when masked
+        mask_regs: Set of registers used as mask registers
+        scalar_regs: Set of registers used as scalar registers
+        widened_regs: Set of registers that are widened
+    """
+
+    overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
+    masked_constraints: set[tuple[str, str]] | None = None
+    mask_regs: set[str] = field(default_factory=set)
+    scalar_regs: set[str] = field(default_factory=set)
+    widened_regs: set[str] = field(default_factory=set)
+
+
+@dataclass
 class InstructionTypeConfig:
     """Configuration for an instruction type.
 
@@ -55,6 +77,8 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+        instruction_class: List of strings containing broader instruction categories (e.g. "load", "store", "indexed")
+        vector_data: Optional attribute containing data necessary for vector instructions
     """
 
     required_params: set[str] | None = None
@@ -64,47 +88,44 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
+    instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
+    vector_data: VectorTypeConfig | None = None
 
 
-# Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)
-_INSTRUCTION_CONFIGS: dict[str, tuple[InstructionFormatter, InstructionTypeConfig]] = {}
+# Registry: dict mapping instruction type to (instruction formatter, instruction type config)
+_INSTRUCTION_FORMATTERS: dict[str, tuple[InstructionFormatter, InstructionTypeConfig]] = {}
 
 
 def add_instruction_formatter(
     instr_type: str, instruction_type_config: InstructionTypeConfig
 ) -> Callable[[InstructionFormatter], InstructionFormatter]:
     """
-    Decorator to register an instruction formatter for a given instruction type.
+    Register an instruction formatter for an instruction type.
 
     Args:
         instr_type: The instruction type string (e.g., "R", "I", "S")
-        instruction_type_config: Configuration for the instruction type specifying
-                                 required params, reg ranges, imm ranges, etc.
+        instruction_type_config: Metadata specifying required parameters and operand constraints.
     """
 
     def decorator(formatter_func: InstructionFormatter) -> InstructionFormatter:
-        _INSTRUCTION_CONFIGS[instr_type] = (formatter_func, instruction_type_config)
+        _INSTRUCTION_FORMATTERS[instr_type] = (formatter_func, instruction_type_config)
         return formatter_func
 
     return decorator
 
 
-def get_instr_type_config(instr_type: str) -> InstructionTypeConfig:
-    """Get the configuration for an instruction type."""
-    if instr_type not in _INSTRUCTION_CONFIGS:
-        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
-    return _INSTRUCTION_CONFIGS[instr_type][1]
+def get_instruction_type_config(instr_type: str) -> InstructionTypeConfig:
+    """Get the configuration registered for an instruction type."""
+    if instr_type not in _INSTRUCTION_FORMATTERS:
+        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_FORMATTERS))
+    return _INSTRUCTION_FORMATTERS[instr_type][1]
 
 
-def get_instr_type_formatter(instr_type: str) -> InstructionFormatter:
-    """Get the instruction formatter function for an instruction type."""
-    if instr_type not in _INSTRUCTION_CONFIGS:
-        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
-    return _INSTRUCTION_CONFIGS[instr_type][0]
-
-
-# Discover and import formatters at module load
-discover_and_import_modules(Path(__file__).parent / "types", "testgen.formatters.types")
+def _get_instruction_formatter(instr_type: str) -> InstructionFormatter:
+    """Get the formatter function registered for an instruction type."""
+    if instr_type not in _INSTRUCTION_FORMATTERS:
+        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_FORMATTERS))
+    return _INSTRUCTION_FORMATTERS[instr_type][0]
 
 
 def format_instruction(
@@ -125,7 +146,7 @@ def format_instruction(
     Returns:
         Tuple of (setup_code, test_code, check_code) as strings
     """
-    formatter = get_instr_type_formatter(instr_type)
+    formatter = _get_instruction_formatter(instr_type)
     setup, test, check = formatter(instr_name, test_data, params)
     return "\n".join(setup), "\n".join(test), "\n".join(check)
 
@@ -179,3 +200,7 @@ def format_single_testcase(
         tc.code.append(check)
 
     return test_data.end_test_chunk()
+
+
+# Discover and import instruction formatter plugins at module load.
+discover_and_import_modules(Path(__file__).parent / "types", "testgen.formatters.types")

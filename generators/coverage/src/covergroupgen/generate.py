@@ -158,6 +158,38 @@ _TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
     "VSXM": (True, False, False),
     "VSXVM": (True, False, True),
     "VSXXM": (True, False, False),
+    # Vector integer types from Vx.csv
+    "WVV": (True, True, True),
+    "WVX": (True, False, True),
+    "WVV_ACC": (True, True, True),
+    "WVX_ACC": (True, False, True),
+    "WWV": (True, True, True),
+    "WWX": (True, False, True),
+    "VWV": (True, True, True),
+    "VWX": (True, False, True),
+    "VWI": (True, False, True),
+    "VVV_ACC": (True, True, True),
+    "VVX_ACC": (True, False, True),
+    "VVV_SAT": (True, True, True),
+    "VVX_SAT": (True, False, True),
+    "VVI_SAT": (True, False, True),
+    "VVSR": (True, True, True),
+    "WVWSR": (True, True, True),
+    "MVV": (True, True, True),
+    "MVX": (True, False, True),
+    "MVI": (True, False, True),
+    "MVVM": (True, True, True),
+    "MVXM": (True, False, True),
+    "MVIM": (True, False, True),
+    "MMM": (True, True, True),
+    "MM": (True, False, True),
+    "VVVP": (True, True, True),
+    "VVXP": (True, False, True),
+    "VVIP": (True, False, True),
+    "VEXT": (True, False, True),
+    "VMVR": (True, False, True),
+    "VCOMPRESS": (True, True, True),
+    "VID": (True, False, False),
 }
 
 
@@ -258,6 +290,7 @@ def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
                 if not isinstance(value, str) or value == "":
                     continue
                 if key == "Type":
+                    # TODO: Alias sample functions that are the same!
                     cps.append(f"sample_{value}")
                 else:
                     # For special entries, append the value as a suffix
@@ -808,14 +841,15 @@ def write_coverage_headers(
 
 def _merge_instruction_testplans(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
 ) -> dict[tuple[str, str], list[str]]:
-    """Merge all testplans into a single mapping with unique instruction entries.
+    """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
 
     Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
     instruction appears in multiple testplan variants.  Merging first-occurrence-wins
     collapses those duplicates before the instruction sample file is generated.
     """
-    merged: dict[tuple[str, str], list[str]] = {}
+    merged = dict(instruction_formats)
     for arch in sorted(test_plans.keys()):
         if arch == "E":
             continue  # E is a duplicate of I
@@ -828,6 +862,7 @@ def _merge_instruction_testplans(
 
 def write_instruction_sample_file(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
     templates: dict[str, str],
     output_dir: Path,
 ) -> None:
@@ -839,7 +874,7 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    merged_tp = _merge_instruction_testplans(test_plans)
+    merged_tp = _merge_instruction_testplans(test_plans, instruction_formats)
     instr_keys = sorted(merged_tp.keys())
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
@@ -909,6 +944,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
+    instruction_formats = _parse_testplan_csv(testplan_dir / "coverage" / "instruction_formats.csv")
 
     jobs = _plan_unpriv_jobs(test_plans, output_dir)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
@@ -919,5 +955,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
             progress.advance(task_id)
 
     write_coverage_headers(all_test_plans, output_dir, templates)
-    write_instruction_sample_file(all_test_plans, templates, output_dir)
+    write_instruction_sample_file(all_test_plans, instruction_formats, templates, output_dir)
     rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

@@ -326,11 +326,14 @@
 `ifdef ZAMA16B_COVERAGE
   `include "Zama16b_coverage.svh"
 `endif
-`ifdef ZAWRSSU_COVERAGE
-  `include "ZawrsSU_coverage.svh"
+`ifdef ZAWRSS_COVERAGE
+  `include "ZawrsS_coverage.svh"
 `endif
 `ifdef ZAWRSSM_COVERAGE
   `include "ZawrsSm_coverage.svh"
+`endif
+`ifdef ZAWRSU_COVERAGE
+  `include "ZawrsU_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"

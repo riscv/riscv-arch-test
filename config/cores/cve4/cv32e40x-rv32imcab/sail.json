@@ -64,6 +64,18 @@
         "base_alignment": 2
       }
     },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
     "xtval_nonzero": {
       // mtval is hardwired to 0 in cv32e40x.
       "illegal_instruction": false,
@@ -105,9 +117,11 @@
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
-    }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
+    "physaddr_bits": 32,
     // cv32e40x has no PMP
     "pmp": {
       "grain": 0,
@@ -128,14 +142,11 @@
         // Access fault takes priority if the region has no atomic support (PMA).
         "lrsc": "AlignmentException",
         // Misaligned AMO raises store/AMO address misaligned (code 6).
-        "amo": "AlignmentException"
+        "amo": { "Some": "AlignmentException" }
       },
-      "allowed_within_exp": 0,
+      "default_allowed_within_exp": 0,
       "byte_by_byte": false,
       "order_decreasing": false
-    },
-    "translation": {
-      "dirty_update": false
     },
     "dtb_address": {
       "len": 64,
@@ -171,6 +182,8 @@
           },
           // A_EXT=A: full AMO (amoswap/amoadd/amoand/amoor/amoxor/amomax/amomin)
           "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           // LR/SC reservation sets managed externally; non-eventual (conservative).
           "reservability": "RsrvNonEventual",
           "supports_cbo_zero": false,
@@ -208,6 +221,8 @@
           },
           // No atomic support in I/O regions.
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -259,7 +274,8 @@
       "supported": true
     },
     "F": {
-      "supported": false
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
       "supported": false
@@ -367,6 +383,9 @@
     "Zalrsc": {
       // VERIFIED — A_EXT=A includes LR.W/SC.W
       "supported": true
+    },
+    "Zama16b": {
+      "supported": false
     },
     "Zawrs": {
       "supported": false,

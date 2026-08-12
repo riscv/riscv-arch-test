@@ -18,7 +18,6 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_svnapot_not_supported_Smode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 50
 
@@ -101,7 +100,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(   t0, MENVCFG_PBMTE)
-  CSRC( menvcfg, t0)                                                     // Clear menvcfg.PBMTE (Disable SVPBMT)
+  csrc  menvcfg, t0                                                     // Clear menvcfg.PBMTE (Disable SVPBMT)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------

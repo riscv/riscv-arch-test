@@ -7,13 +7,12 @@
 
 """Floating point register edge value coverpoint generators (cp_fs1_edges, cp_fs2_edges, cp_fs3_edges)."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import FLOAT_EDGES
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 def _make_fs_edges(
@@ -47,7 +46,7 @@ def _make_fs_edges(
             desc = f"{coverpoint} (Test source {operand} value = {test_data.flen_format_str.format(edge_val)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             test_chunks.append(tc)
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return test_chunks
 

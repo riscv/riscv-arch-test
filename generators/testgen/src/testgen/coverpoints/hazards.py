@@ -13,9 +13,8 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_instruction
-from testgen.formatters.params import generate_random_params
-from testgen.formatters.registry import get_instr_type_config
+from testgen.formatters import format_instruction, get_instruction_type_config
+from testgen.instructions.params import generate_random_params
 
 # Long-latency integer producer used for WAW tests against multi-cycle
 # consumers. div is the slowest common integer operation, so a consumer with
@@ -69,22 +68,22 @@ def _int_sources(instr_type: str) -> list[str]:
         # JALR rs1 is a jump target — a RAW hazard on rs1 would corrupt control flow.
         # RAW generation for JALR is excluded entirely. No dedicated pattern exists.
         return []
-    required = get_instr_type_config(instr_type).required_params or set()
+    required = get_instruction_type_config(instr_type).required_params or set()
     return [field for field in ("rs1", "rs2", "rs3") if field in required]
 
 
 def _float_sources(instr_type: str) -> list[str]:
-    required = get_instr_type_config(instr_type).required_params or set()
+    required = get_instruction_type_config(instr_type).required_params or set()
     return [field for field in ("fs1", "fs2", "fs3") if field in required]
 
 
 def _has_int_dest(instr_type: str) -> bool:
-    required = get_instr_type_config(instr_type).required_params or set()
+    required = get_instruction_type_config(instr_type).required_params or set()
     return "rd" in required
 
 
 def _has_float_dest(instr_type: str) -> bool:
-    required = get_instr_type_config(instr_type).required_params or set()
+    required = get_instruction_type_config(instr_type).required_params or set()
     return "fd" in required
 
 

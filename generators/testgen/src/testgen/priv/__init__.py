@@ -8,6 +8,7 @@ from testgen.priv.registry import (
     get_priv_test_march_extensions,
     get_priv_test_params,
     get_priv_test_required_extensions,
+    get_priv_test_testcases_per_file,
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "get_priv_test_march_extensions",
     "get_priv_test_params",
     "get_priv_test_required_extensions",
+    "get_priv_test_testcases_per_file",
 ]

@@ -41,8 +41,8 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_ucsr_tests(test_data: TestData) -> list[str]:
-    """Generate CSR tests."""
+def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate CSR tests, one test chunk per CSR so they can be split across files."""
     covergroup = "U_ucsr_cg"
 
     ######################################
@@ -55,17 +55,21 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
             "Attempt to read non-user-mode registers.  Should throw illegal instruction",
         ),
     ]
-    temp_reg = test_data.int_regs.get_register()
     for csr in (
         list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
     ):
+        tc = test_data.new_test_chunk(test_chunks, "ucsr")
+        temp_reg = test_data.int_regs.get_register()
         lines.extend(
             [
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
+                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
                 f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
                 "",
             ]
         )
+        test_data.int_regs.return_register(temp_reg)
+        tc.code.extend(lines)
+        lines = []
 
     ######################################
     coverpoint = "cp_csr_ro"
@@ -78,30 +82,35 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    lines.append(f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s\n")
     for csr in range(0xC00, 0xD00):
+        tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
+        temp_reg = test_data.int_regs.get_register()
         lines.extend(
             [
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
+                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
+                f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
                 f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
                 "",
             ]
         )
+        test_data.int_regs.return_register(temp_reg)
+        tc.code.extend(lines)
+        lines = []
 
-    test_data.int_regs.return_register(temp_reg)
 
-    return lines
-
-
-@add_priv_test_generator("U", required_extensions=["U", "Zicsr"])
+@add_priv_test_generator(
+    "U",
+    required_extensions=["U"],
+    extra_defines=["#define BOOT_TO_UMODE"],
+    testcases_per_file=512,  # the ucsr tests throw costly illegal instruction exceptions, so limit them for runtime
+)
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.extend(["RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
     tc.code.extend(_generate_priv_inst_tests(test_data))
-    tc.code.extend(_generate_ucsr_tests(test_data))
+    _generate_ucsr_tests(test_data, test_chunks)
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

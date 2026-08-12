@@ -156,6 +156,11 @@ class TestData:
         """Increment the test count by 1."""
         self._test_count += 1
 
+    def new_test_chunk(self, test_chunks: list[TestChunk], split_name: str | None = None) -> TestChunk:
+        """Create a new TestChunk and set it as the active chunk."""
+        test_chunks.append(self.end_test_chunk())
+        return self.begin_test_chunk(split_name)
+
     def begin_test_chunk(self, split_name: str | None = None) -> TestChunk:
         """Create and set a new active TestChunk.
 

@@ -8,15 +8,16 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     write_sigupd_v,
     write_sigupd_v_len,
 )
-from testgen.instructions.vector import parse_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.instructions.vector import parse_instruction_info
 
 vlr_config = InstructionTypeConfig(
     required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig()
@@ -73,5 +74,7 @@ def format_vlr_type(
         check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
     else:
         check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+
+    handle_parameter_exclusions(params.lmul, setup, check, encoded_eew=eew)
 
     return (setup, test, check)

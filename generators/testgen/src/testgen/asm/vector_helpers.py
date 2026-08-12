@@ -665,18 +665,32 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
     return code, random_vl_reg
 
 
-def handle_lmul_ifdef(lmul: float, setup: list[str], check: list[str]) -> None:
+def handle_parameter_exclusions(
+    lmul: float, setup: list[str], check: list[str], *, encoded_eew: int | None = None, index_eew: int | None = None
+) -> None:
     """
-    Modifies setup and check in place to ensure that the test is only run if the lmul is supported.
+    Modifies setup and check in place to ensure that the test is only run if the test is supported by the core. This
+    includes, but is not limited to parameters defining support of fractional LMUL, maximum indew EEWs, minimum SEWs,
+    and ELEN.
     """
+
+    parameters_needed: list[str] = []
 
     match lmul:
         case 0.5:
-            setup.insert(0, "#ifdef TEST_LMULf2_SUPPORTED")
-            check.append("#endif")
+            parameters_needed.append("defined(TEST_LMULf2_SUPPORTED)")
         case 0.25:
-            setup.insert(0, "#ifdef TEST_LMULf4_SUPPORTED")
-            check.append("#endif")
+            parameters_needed.append("defined(TEST_LMULf4_SUPPORTED)")
         case 0.125:
-            setup.insert(0, "#ifdef TEST_LMULf8_SUPPORTED")
-            check.append("#endif")
+            parameters_needed.append("defined(TEST_LMULf8_SUPPORTED)")
+
+    if encoded_eew is not None:
+        parameters_needed.append(f"(UDB_ELEN >= {encoded_eew})")
+        parameters_needed.append(f"(UDB_SEW_MIN <= {encoded_eew})")
+
+    if index_eew is not None:
+        parameters_needed.append(f"(MAXINDEXEEW >= {index_eew})")
+
+    if parameters_needed:
+        setup.insert(0, "#if " + " && ".join(parameters_needed))
+        check.append("#endif")

@@ -10,7 +10,6 @@
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.instructions.vector import get_base_lmul
 from testgen.data.edges import VECTOR_EDGES, get_general_edges, get_orcb_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk

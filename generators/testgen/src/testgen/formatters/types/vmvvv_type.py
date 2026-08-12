@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     write_sigupd_v,
@@ -73,6 +73,6 @@ def format_vmvvv_type(
     else:
         check = [*write_sigupd_v(test_data, params)]
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

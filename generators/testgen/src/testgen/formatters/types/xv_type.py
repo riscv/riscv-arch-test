@@ -6,7 +6,13 @@
 ##################################
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.vector_helpers import VectorLoad, handle_lmul_ifdef, load_test_vtype, load_vec_regs, prep_mask_v
+from testgen.asm.vector_helpers import (
+    VectorLoad,
+    handle_parameter_exclusions,
+    load_test_vtype,
+    load_vec_regs,
+    prep_mask_v,
+)
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
@@ -74,6 +80,6 @@ def format_xv_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

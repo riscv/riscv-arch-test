@@ -133,10 +133,13 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
 
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
+    needs_endif = "#endif" in check
 
     tc.sigupd_count = 1
     check_reg = test_data.int_regs.get_register(exclude_regs=[0])
     check = "\n".join([f"csrr x{check_reg}, vl", write_sigupd(check_reg, test_data, "int")])
+    if needs_endif:
+        check += "\n#endif"
 
     setup += f"\nLI (x{params.rs1}, 0)"  # Hardcode the load
 

@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     load_vxrm,
@@ -215,6 +215,6 @@ def format_vvx_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

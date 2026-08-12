@@ -12,9 +12,9 @@ from testgen.data.edges import VECTOR_EDGES
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
+from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import get_base_lmul, parse_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
-from testgen.formatters.registry import get_instruction_type_config
 
 
 @add_coverpoint_generator("cp_vs2_edges")

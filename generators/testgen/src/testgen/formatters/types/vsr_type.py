@@ -10,6 +10,7 @@ import random
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     write_sigupd_v,
@@ -88,5 +89,7 @@ def format_vsr_type(
         check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
     else:
         check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

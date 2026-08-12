@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -321,6 +321,6 @@ def format_mask_producing_type(
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

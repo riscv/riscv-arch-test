@@ -11,6 +11,7 @@ import random
 from testgen.asm.vector_helpers import (
     VectorLoad,
     get_lmul_flag,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -202,5 +203,7 @@ def format_vsxseg_like_type(
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
+
+    handle_parameter_exclusions(params.lmul, setup, check, encoded_eew=info.index_eew, index_eew=info.index_eew)
 
     return (setup, test, check)

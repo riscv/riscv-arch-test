@@ -6,9 +6,9 @@ from __future__ import annotations
 
 import re
 
+from testgen.constants import VLEN_MAX
 from testgen.data.edges import get_vector_edge
 from testgen.data.state import TestData
-from testgen.constants import VLEN_MAX
 
 
 def make_and_register_edge_label(reg_name: str, edge_name: str, suffix: str, test_data: TestData) -> str:

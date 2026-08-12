@@ -41,7 +41,7 @@ from act.build_types import (
     SymlinkAction,
 )
 
-BUILD_STEP_TIMEOUT_SECONDS = 300
+BUILD_STEP_TIMEOUT_SECONDS = 60 * 60  # A longer timeout is needed for coverage jobs (Vx8 can take 30-40 minutes)
 
 
 @dataclass

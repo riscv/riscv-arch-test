@@ -1,8 +1,0 @@
-[[extension:Zifencei]]
-=== Extension Zifencei
-
-Long Name::
-Instruction Fence
-
-Description::
-Instruction fence instructions and related CSRs.

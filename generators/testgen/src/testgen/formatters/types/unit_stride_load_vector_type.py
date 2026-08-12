@@ -1,8 +1,9 @@
 ##################################
-# strided_load_vector_type.py
+# unit_stride_load__vector_type.py
 #
 #
-# rwolk@hmc.edu August 2026
+#
+# rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -13,47 +14,84 @@ from testgen.asm.vector_helpers import (
     prep_mask_v,
     write_sigupd_v,
     write_sigupd_v_len,
+    write_sigupd_v_mask_prod,
 )
-from testgen.instructions.vector import parse_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
+from testgen.instructions.vector import parse_instruction_info
 
-vls_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "rs2"}, instruction_class=["load", "strided"], vector_data=VectorTypeConfig()
+vlus_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig()
 )
-vlsseg_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "rs2"},
-    instruction_class=["load", "strided", "segmented"],
+vlseg_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"},
+    instruction_class=["load", "segmented"],
     vector_data=VectorTypeConfig(),
 )
+vlusff_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig()
+)
+vlsegff_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"},
+    instruction_class=["load", "segmented"],
+    vector_data=VectorTypeConfig(),
+)
+vlm_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"},
+    instruction_class=["load"],
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
+    ),
+)
 
 
-@add_instruction_formatter("VLS", vls_config)
+@add_instruction_formatter("VLUS", vlus_config)
 def format_vlus_type(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vlsseg_like_type(instr_str, test_data, params, "VLS")
+    return format_vlseg_like_type(instr_str, test_data, params, "VLUS")
 
 
-@add_instruction_formatter("VLSSEG", vlsseg_config)
+@add_instruction_formatter("VLSEG", vlseg_config)
 def format_vlseg_type(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_vlsseg_like_type(instr_str, test_data, params, "VLSSEG")
+    return format_vlseg_like_type(instr_str, test_data, params, "VLSEG")
 
 
-def format_vlsseg_like_type(
+@add_instruction_formatter("VLSFF", vlusff_config)
+def format_vlsff_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vlseg_like_type(instr_str, test_data, params, "VLSFF")
+
+
+@add_instruction_formatter("VLSEGFF", vlsegff_config)
+def format_vlsegff_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vlseg_like_type(instr_str, test_data, params, "VLSEGFF")
+
+
+@add_instruction_formatter("VLM", vlm_config)
+def format_vlm_type(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    assert params.maskval is None, "VLM-Type instructions cannot be masked"
+    return format_vlseg_like_type(instr_str, test_data, params, "VLM", vd_mask=True)
+
+
+def format_vlseg_like_type(
     instr_str: str,
     test_data: TestData,
     params: InstructionParams,
     instr_type: str,
+    *,
+    vd_mask: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.rs1 is not None and params.rs1val_pointer is not None, (
         f"rs1 and rs1val_pointer must be provided for {instr_type}-type instructions"
-    )
-    assert params.rs2 is not None and params.rs2val is not None, (
-        f"rs2 and rs2val must be provided for {instr_type}-type instructions"
     )
     assert params.vd is not None and params.vd_val_pointer is not None, (
         f"vd and vd_val_pointer must be provided for {instr_type}-type instructions"
@@ -71,10 +109,10 @@ def format_vlsseg_like_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, instr_type)
+    info = parse_instruction_info(instr_str, "VLUS")
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract an EEW from {instr_type}-type instruction {instr_str}"
-    emul = params.lmul * eew / params.sew
+    emul = params.lmul * eew / params.sew if not vd_mask else 1
     segments = info.segments
 
     setup = []
@@ -89,7 +127,6 @@ def format_vlsseg_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
-    setup.append(f"LI (x{params.rs2}, {params.rs2val})")
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore
@@ -97,14 +134,27 @@ def format_vlsseg_like_type(
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     if params.maskval:
-        test = [f"{instr_str} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t"]
+        test = [f"{instr_str} v{params.vd}, (x{params.rs1}), v0.t"]
     else:
-        test = [f"{instr_str} v{params.vd}, (x{params.rs1}), x{params.rs2}"]
+        test = [f"{instr_str} v{params.vd}, (x{params.rs1})"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
+        check = [
+            *write_sigupd_v_len(
+                test_data, params, emul, segments=segments, sew_override=info.load_store_eew, mask_producing=vd_mask
+            )
+        ]
+
+        if vd_mask:
+            check.extend(
+                [
+                    "# Mask-producing SIGUPD Requires a VLMAX variant of the instruction. But, for vlm.v specifically, the",
+                    "# spec does not allow the vlm.v variant. So, we fill the VLMAX sigupd with the same value",
+                    *write_sigupd_v_mask_prod(test_data, params),
+                ]
+            )
     else:
-        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew, mask_producing=vd_mask)]
 
     # This can only be released after sigupd
     if params.maskval:

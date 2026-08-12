@@ -14,6 +14,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.instructions.vector import get_base_lmul, parse_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
+from testgen.formatters.registry import get_instruction_type_config
 
 
 @add_coverpoint_generator("cp_vs2_edges")
@@ -53,6 +54,9 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         elif suffix.startswith("egs"):
             raise NotImplementedError("Crypto Edges are not yet Supported")
 
+    type_config = get_instruction_type_config(instr_type)
+    additional_no_overlap = {("vs3", "vs2")} if "store" in type_config.instruction_class else set()
+
     test_chunks = []
     for edge in edges:
         label = make_and_register_edge_label(register, edge, suffix, test_data)
@@ -65,7 +69,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             instr_type,
             lmul=lmul,
             vl=vl,
-            additional_no_overlap=set(),
+            additional_no_overlap=additional_no_overlap,
             masked=False,
             suite="base",
             **presets,

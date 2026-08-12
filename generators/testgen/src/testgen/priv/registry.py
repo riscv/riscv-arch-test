@@ -88,7 +88,7 @@ def add_priv_test_generator(
             required_extensions=required_extensions,
             march_extensions=march_extensions,
             params=params,
-            testcases_per_file=testcases_per_file if testcases_per_file is not None else TESTCASES_PER_PRIV_FILE,
+            testcases_per_file=testcases_per_file or TESTCASES_PER_PRIV_FILE,
         )
         return func
 

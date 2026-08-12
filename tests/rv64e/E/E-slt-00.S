@@ -3401,16 +3401,16 @@ E_slt_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x6, E_slt_cg_cp_gpr_hazard_rw_raw_rs2_stressor, E_slt_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x1f504d147cffa45c
   RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs2: x10 = 0x8d037de33a17d6a5
   RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0xcabb9a293b451b61
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs2: x13 = 0x0ab4b0f35ea2b717
   add x6, x11, x10 # WAW producer: writes x6 (must NOT win)
-E_slt_cg_cp_gpr_hazard_rw_waw:
+E_slt_cg_cp_gpr_hazard_rw_waw_depth0:
   slt x6, x7, x13 # WAW consumer: writes x6 (must win - last write)
   # Check if x6 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x6, E_slt_cg_cp_gpr_hazard_rw_waw, E_slt_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x9, x5, x4, x6, E_slt_cg_cp_gpr_hazard_rw_waw_depth0, E_slt_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x9 # restore signature pointer to default register for teardown
 
@@ -4657,7 +4657,7 @@ E_slt_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 403; cg: E_slt_cg; c
 E_slt_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 404; cg: E_slt_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 E_slt_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 405; cg: E_slt_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 E_slt_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 406; cg: E_slt_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-E_slt_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 407; cg: E_slt_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_slt_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 407; cg: E_slt_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

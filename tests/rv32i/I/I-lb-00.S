@@ -851,15 +851,15 @@ I_lb_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   RVTEST_SIGUPD(x9, x8, x7, x13, I_lb_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_lb_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
   addi x16, x16, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0xba55a786
   RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs2: x14 = 0xe25f3dce
   addi x3, x16, -537 # copy data_ptr to rs1 and adjust for offset
   add x20, x27, x14 # WAW producer: writes x20 (must NOT win)
-I_lb_cg_cp_gpr_hazard_rw_waw:
+I_lb_cg_cp_gpr_hazard_rw_waw_depth0:
   lb x20, 537(x3) # WAW consumer: writes x20 (must win - last write)
   # Check if x20 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x20, I_lb_cg_cp_gpr_hazard_rw_waw, I_lb_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x9, x8, x7, x20, I_lb_cg_cp_gpr_hazard_rw_waw_depth0, I_lb_cg_cp_gpr_hazard_rw_waw_depth0_str)
   addi x16, x16, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -1397,7 +1397,7 @@ I_lb_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 94; cg: I_lb_cg; cp: cmp_rd_rs1
 I_lb_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 95; cg: I_lb_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_lb_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 96; cg: I_lb_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_lb_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 97; cg: I_lb_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_lb_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 98; cg: I_lb_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_lb_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 98; cg: I_lb_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_lb_cg_cp_imm_edges_0x0_str: .string "\"test: 99; cg: I_lb_cg; cp: cp_imm_edges; bin: 0x0\""
 I_lb_cg_cp_imm_edges_0x1_str: .string "\"test: 100; cg: I_lb_cg; cp: cp_imm_edges; bin: 0x1\""
 I_lb_cg_cp_imm_edges_0x2_str: .string "\"test: 101; cg: I_lb_cg; cp: cp_imm_edges; bin: 0x2\""

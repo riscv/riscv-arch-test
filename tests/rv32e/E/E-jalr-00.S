@@ -805,28 +805,28 @@ E_jalr_cg_cmp_rd_rs1_nx0_b15:
   RVTEST_SIGUPD(x11, x5, x4, x15, E_jalr_cg_cmp_rd_rs1_nx0_b15, E_jalr_cg_cmp_rd_rs1_nx0_b15_str)
 
 /////////////////////////////////
-// cp_gpr_hazard_rw
+// cp_gpr_hazard_w
 /////////////////////////////////
 
 
-# Testcase cp_gpr_hazard_rw waw
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x06ded135
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xa397dd85
-  LA(x9, 1f) # load jump target address
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load jump check value: x7 = 0x01cdd3b4
-  addi x9, x9, -1205 # adjust base address for offset
-  add x10, x6, x14 # WAW producer: writes x10 (must NOT win)
-E_jalr_cg_cp_gpr_hazard_rw_waw:
-  jalr x10, x9, 1205 # WAW consumer: writes x10 (must win - last write)
-  addi x7, x7, -4 # should not execute
+# Testcase cp_gpr_hazard_w waw_depth0
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0xe405090f
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x065a140f
+  LA(x7, 1f) # load jump target address
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load jump check value: x13 = 0xc9abbe54
+  addi x7, x7, -871 # adjust base address for offset
+  add x9, x14, x10 # WAW producer: writes x9 (must NOT win)
+E_jalr_cg_cp_gpr_hazard_w_waw_depth0:
+  jalr x9, x7, 871 # WAW consumer: writes x9 (must win - last write)
+  addi x13, x13, -4 # should not execute
 1:
-  addi x7, x7, 2 # should execute
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, E_jalr_cg_cp_gpr_hazard_rw_waw, E_jalr_cg_cp_gpr_hazard_rw_waw_str)
-  auipc x7, 0 # get current PC
-  sub x10, x10, x7 # subtract current PC to make position-independent
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, E_jalr_cg_cp_gpr_hazard_rw_waw, E_jalr_cg_cp_gpr_hazard_rw_waw_str)
+  addi x13, x13, 2 # should execute
+  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x13, E_jalr_cg_cp_gpr_hazard_w_waw_depth0, E_jalr_cg_cp_gpr_hazard_w_waw_depth0_str)
+  auipc x13, 0 # get current PC
+  sub x9, x9, x13 # subtract current PC to make position-independent
+  # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x11, x5, x4, x9, E_jalr_cg_cp_gpr_hazard_w_waw_depth0, E_jalr_cg_cp_gpr_hazard_w_waw_depth0_str)
 
 /////////////////////////////////
 // cp_offset_jalr
@@ -1298,9 +1298,9 @@ RVTEST_DATA_BEGIN
 .word 0xcb984b3d
 .word 0x9b64145b
 .word 0xb642e6c1
-.word 0x06ded135
-.word 0xa397dd85
-.word 0x01cdd3b4
+.word 0xe405090f
+.word 0x065a140f
+.word 0xc9abbe54
 .word 0xab821ff3
 .word 0xfc2ca3f9
 .word 0xcb360253
@@ -1374,7 +1374,7 @@ E_jalr_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 43; cg: E_jalr_cg; cp: cmp_rd
 E_jalr_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 44; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
 E_jalr_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 45; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
 E_jalr_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_jalr_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-E_jalr_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_jalr_cg_cp_gpr_hazard_w_waw_depth0_str: .string "\"test: 47; cg: E_jalr_cg; cp: cp_gpr_hazard_w; bin: waw_depth0\""
 E_jalr_cg_cp_offset_jalr_neg_str: .string "\"test: 48; cg: E_jalr_cg; cp: cp_offset_jalr; bin: neg\""
 E_jalr_cg_cp_offset_lsbs_0_0_str: .string "\"test: 49; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_0\""
 E_jalr_cg_cp_offset_lsbs_0_1_str: .string "\"test: 50; cg: E_jalr_cg; cp: cp_offset_lsbs; bin: 0_1\""

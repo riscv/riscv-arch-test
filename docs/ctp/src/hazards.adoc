@@ -14,14 +14,60 @@ Three classes of pipeline data hazards are relevant to RISC-V certification:
 * WAW (Write-After-Write): Two instructions both write the same destination
   register. The second write must win. Relevant for multi-cycle instructions.
 * WAR (Write-After-Read): Register WAR is not a real hazard in an in-order
-  pipeline and is excluded. Memory WAR (store then load same address) tests
-  store-to-load forwarding and is deferred to Phase 2.
+  pipeline, because the read completes before the write in the same stage.
+  Memory WAR (a store followed by a load of the same address) tests
+  store-to-load forwarding and is not yet implemented.
 
 ==== Generator Architecture
 
 The generator uses a Category x Category approach: every consumer instruction
-category is tested against a fixed add producer. Using a fixed producer
-eliminates producer-dependent pipeline variance, isolating the consumer bypass path.
+category is tested against a selected producer. The instruction named by the
+testplan row is always the consumer, because a covergroup only samples when
+its own instruction retires; a hazard in which that instruction were the
+producer would be attributed to a different covergroup.
+
+===== Producer Selection
+
+For RAW the producer is always add. A single-cycle producer isolates the
+consumer bypass path from producer-dependent pipeline variance.
+
+For WAW the producer is chosen by latency. A single-cycle producer cannot
+expose a WAW bug against a multi-cycle consumer: the producer always
+completes first, so "last write wins" holds by construction and no
+implementation can fail. Where the consumer is materially faster than the
+slowest available operation, the generator substitutes a long-latency
+producer so that the consumer retires first, making the ordering requirement
+observable.
+
+[cols="2,2,3"]
+|===
+|Consumer|WAW Producer|Rationale
+
+|mul, mulh, mulhsu, mulhu, mulw
+|div
+|Consumer latency is well below div, so the consumer retires first.
+
+|div, divu, rem, remu and word variants
+|add
+|Consumer latency matches div, so a div producer would not stress ordering.
+
+|fadd.s, fsub.s, fmul.s, fmin.s, fmax.s, fsgnj[n,x].s, fmadd.s, fmsub.s,
+ fnmadd.s, fnmsub.s
+|fdiv.s
+|Consumer latency is well below fdiv.s.
+
+|fdiv.s, fsqrt.s
+|fadd.s
+|Consumer latency matches the long-latency producer.
+
+|All other instructions
+|add or fadd.s
+|Single-cycle consumers; no latency mismatch to exploit.
+
+|===
+
+The multi-cycle consumer sets are currently enumerated by instruction name
+because the framework carries no instruction latency model.
 
 ===== Depth
 
@@ -32,25 +78,35 @@ Depth=n means there are n instructions between the producer and consumer.
   a pipeline stage boundary.
 
 Depth=0 and Depth=1 are the certification core. Depth greater than 1 is
-deferred to Phase 2 and requires investigation of RVVI retirement buffer capacity.
+not implemented and requires investigation of RVVI retirement buffer capacity.
 
 ===== Filler Classes
 
 Depth=1 tests use two filler classes, each exposing a distinct failure mode:
 
 * Class A NOP (addi x0, x0, 0): Catches a broken basic bypass path.
-* Class B Structural stressor: An independent add on the same functional
-  unit using registers disjoint from both producer and consumer. Catches
-  pipelines that track the last result from the FU rather than the last write
-  to the specific register. Stressor registers are explicitly excluded from
-  overlapping with producer destination or consumer sources.
+* Class B Structural stressor: An independent instruction on the same
+  functional unit using registers disjoint from both producer and consumer.
+  Catches pipelines that track the last result from the FU rather than the
+  last write to the specific register. Stressor registers are explicitly
+  excluded from overlapping with the producer destination or the consumer
+  sources, for both the integer and floating-point register files.
+
+A third class, an always-not-taken branch to detect forwarding state being
+flushed on branch decode, is not implemented.
 
 ===== Source Port Coverage
 
-RAW tests exercise each integer source port rs1 and rs2 separately. The SV
-bins raw_rs_depth0 and raw_rs_depth1 aggregate rs1 and rs2 hits. Per-port
-bin granularity requires extending check_gpr_hazards() to return port
-identity and is deferred to Phase 2.
+RAW tests exercise each source port separately. Integer coverpoints provide
+raw_rs1_depth0, raw_rs2_depth0, raw_rs1_depth1 and raw_rs2_depth1 bins.
+Floating-point coverpoints additionally provide raw_fs3 bins for the
+four-operand fused multiply-add forms. Port identity is resolved by
+check_gpr_hazard_field() and check_fpr_hazard_field(), which return which
+source port matched the producer destination.
+
+Coverage bin names match the generated test case names, except that the two
+depth=1 filler classes (nop and stressor) both map to the single
+raw_*_depth1 bin.
 
 ===== Instruction Class Handling
 
@@ -69,40 +125,48 @@ identity and is deferred to Phase 2.
 |SIGUPD on consumer rd
 
 |Load lw
-|add base, rs1, rs2
+|Address-setup arithmetic writes the base register
 |rs1 as base address
 |Bypass failure forces load from garbage address causing signature mismatch
 
 |Store sw
-|add rd, rs1, rs2
-|rs2 as store data
+|Address-setup arithmetic for rs1; add for rs2
+|rs1 as base address and rs2 as store data
 |Verified via subsequent load from same address
 
 |Branch beq
 |add rd, rs1, rs2
 |rs1 or rs2
-|Wrong value causes wrong-path execution detectable via signature
+|A wrong forwarded value changes the branch outcome, which changes whether
+ the instruction after the branch executes, and so changes the signature
 
 |JALR
-|Excluded Phase 1
-|rs1 is jump target RAW injection corrupts control flow
-|Phase 2: dedicated safe-landing RAW pattern
+|Not applicable
+|rs1 is the jump target, so a RAW on rs1 corrupts control flow
+|RAW is not generated for JALR. The testplan assigns it the w hazard class
+ so that only WAW bins are declared and no unreachable RAW bins appear.
 
 |U-type lui auipc
 |add rd, rs1, rs2
 |No integer sources WAW only
 |SIGUPD on consumer rd
 
+|FP arithmetic
+|fadd.s or fdiv.s per the producer selection table
+|fs1, fs2 or fs3
+|SIGUPD on consumer fd
+
 |===
 
 ===== WAW Tests
 
-WAW tests place a fast add producer and the consumer both writing the same
-destination register. The consumer result must win. SIGUPD is placed on the
-consumer. Producer and consumer are constrained to produce arithmetically
-distinct values where possible to prevent a lucky coincidence masking a WAW bug.
+WAW tests place a producer and the consumer both writing the same destination
+register. The consumer result must win. SIGUPD is placed on the consumer.
+Operand values are randomly generated, so a WAW failure is detected whenever
+the two instructions compute different results; no explicit constraint
+currently forces the values apart.
 
-==== Implemented Coverage Phase 1
+==== Implemented Coverage
 
 [cols="1,1,1"]
 |===
@@ -110,16 +174,22 @@ distinct values where possible to prevent a lucky coincidence masking a WAW bug.
 
 |RAW integer rs1|0 and 1|Implemented
 |RAW integer rs2|0 and 1|Implemented
+|RAW floating-point fs1, fs2, fs3|0 and 1|Implemented
 |WAW integer rd|0|Implemented
-|WAR memory store to load|0|Phase 2
-|RAW JALR rs1|0|Phase 2
-|RAW depth greater than 1|2+|Phase 2 behind flag
+|WAW floating-point fd|0|Implemented
+|WAR register|n/a|Excluded, not a hazard in an in-order pipeline
+|WAR memory store to load|0|Not implemented
+|RAW JALR rs1|0|Not implemented
+|RAW depth greater than 1|2+|Not implemented
+|Class C branch filler|1|Not implemented
 
 |===
 
+Extensions currently carrying hazard coverpoints: I, E, M and F.
+
 ==== Test Budget
 
-The certification core targets approximately 84 tests per instruction at
-Depth=0 and Depth=1, within the 100-test-per-instruction cap. Depth greater
-than 1 optional tests are generated behind a flag only if no RVVI changes
-are required.
+Each instruction currently generates seven hazard test cases: RAW on each
+available source port at depth=0, the same ports at depth=1 with each of the
+two filler classes, and one WAW case. This is well within the
+100-test-per-instruction cap, leaving room for the unimplemented items above.

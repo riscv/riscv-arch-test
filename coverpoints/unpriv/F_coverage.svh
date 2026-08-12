@@ -55,6 +55,25 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -150,6 +169,23 @@ covergroup F_fclass_s_cg with function sample(ins_t ins);
         bins bit_9_1  = {32'b00000000000000000000001000000000};
     }
 
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -219,6 +255,13 @@ covergroup F_fcvt_s_w_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -292,6 +335,13 @@ covergroup F_fcvt_s_wu_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
+    }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
@@ -359,6 +409,23 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
         bins illegal  = default;
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -432,6 +499,23 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
         bins illegal  = default;
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -531,6 +615,25 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -616,6 +719,23 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -709,6 +829,23 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
 
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -800,6 +937,23 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
 
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -889,6 +1043,13 @@ covergroup F_flw_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
+    }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -966,6 +1127,25 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -1105,6 +1285,25 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -1202,6 +1401,25 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -1325,6 +1543,25 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -1484,6 +1721,25 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -1569,6 +1825,13 @@ covergroup F_fmv_w_x_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
+    }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
@@ -1614,6 +1877,23 @@ covergroup F_fmv_x_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "fmv.x.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -1703,6 +1983,25 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -1866,6 +2165,25 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -1997,6 +2315,25 @@ covergroup F_fsgnj_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -2090,6 +2427,25 @@ covergroup F_fsgnjn_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -2181,6 +2537,25 @@ covergroup F_fsgnjx_s_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2294,6 +2669,25 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -2377,6 +2771,25 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_rw : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 7 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+        bins waw_depth0     = {7};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -2456,6 +2869,23 @@ covergroup F_fsw_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "fsw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
@@ -2552,6 +2982,23 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins illegal  = default;
     }
 
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
+    }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
@@ -2623,6 +3070,23 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
         bins illegal  = default;
+    }
+
+    cp_fpr_hazard_r : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS1) ? 1 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS2) ? 2 :
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 0) == HAZARD_FIELD_RS3) ? 3 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS1) ? 4 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS2) ? 5 :
+        (check_fpr_hazards(ins.hart, ins.issue, 1) == RAW_HAZARD && check_fpr_hazard_field(ins.hart, ins.issue, 1) == HAZARD_FIELD_RS3) ? 6 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard      = {0};
+        bins raw_fs1_depth0 = {1};
+        bins raw_fs2_depth0 = {2};
+        bins raw_fs3_depth0 = {3};
+        bins raw_fs1_depth1 = {4};
+        bins raw_fs2_depth1 = {5};
+        bins raw_fs3_depth1 = {6};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2700,6 +3164,13 @@ covergroup F_fcvt_s_l_cg with function sample(ins_t ins);
         // FD register assignment
     }
 
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
+    }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
@@ -2769,6 +3240,13 @@ covergroup F_fcvt_s_lu_cg with function sample(ins_t ins);
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
+    }
+
+    cp_fpr_hazard_w : coverpoint (
+        (check_fpr_hazards(ins.hart, ins.issue, 0) == WAW_HAZARD) ? 1 : 0
+    ) iff (ins.trap == 0) {
+        bins no_hazard  = {0};
+        bins waw_depth0 = {1};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {

@@ -4293,16 +4293,16 @@ I_sllw_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x15, I_sllw_cg_cp_gpr_hazard_rw_raw_rs2_stressor, I_sllw_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x12, x14) # load rs1: x14 = 0xacf148d476ed3329
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load rs2: x24 = 0x7e0c88e68dfe4e02
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs1: x10 = 0x5b95ae26a1deeba3
   RVTEST_TESTDATA_LOAD_INT(x12, x30) # load rs2: x30 = 0x73bdaae68a679504
   add x20, x14, x24 # WAW producer: writes x20 (must NOT win)
-I_sllw_cg_cp_gpr_hazard_rw_waw:
+I_sllw_cg_cp_gpr_hazard_rw_waw_depth0:
   sllw x20, x10, x30 # WAW consumer: writes x20 (must win - last write)
   # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x20, I_sllw_cg_cp_gpr_hazard_rw_waw, I_sllw_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x25, x8, x7, x20, I_sllw_cg_cp_gpr_hazard_rw_waw_depth0, I_sllw_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x25 # restore signature pointer to default register for teardown
 
@@ -5885,7 +5885,7 @@ I_sllw_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 515; cg: I_sllw_cg;
 I_sllw_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 516; cg: I_sllw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 I_sllw_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 517; cg: I_sllw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 I_sllw_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 518; cg: I_sllw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-I_sllw_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 519; cg: I_sllw_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_sllw_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 519; cg: I_sllw_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -242,14 +242,14 @@ I_lui_cg_cp_rd_b31:
 /////////////////////////////////
 
 
-# Testcase cp_gpr_hazard_w waw
+# Testcase cp_gpr_hazard_w waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xc570584643dbf40b
   RVTEST_TESTDATA_LOAD_INT(x9, x21) # load rs2: x21 = 0x21024e2e7ee432dd
   add x15, x11, x21 # WAW producer: writes x15 (must NOT win)
-I_lui_cg_cp_gpr_hazard_w_waw:
+I_lui_cg_cp_gpr_hazard_w_waw_depth0:
   lui x15, 749560 # WAW consumer: writes x15 (must win - last write)
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x15, I_lui_cg_cp_gpr_hazard_w_waw, I_lui_cg_cp_gpr_hazard_w_waw_str)
+  RVTEST_SIGUPD(x19, x5, x4, x15, I_lui_cg_cp_gpr_hazard_w_waw_depth0, I_lui_cg_cp_gpr_hazard_w_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges_20bit
@@ -462,7 +462,7 @@ I_lui_cg_cp_rd_b28_str: .string "\"test: 29; cg: I_lui_cg; cp: cp_rd; bin: b28\"
 I_lui_cg_cp_rd_b29_str: .string "\"test: 30; cg: I_lui_cg; cp: cp_rd; bin: b29\""
 I_lui_cg_cp_rd_b30_str: .string "\"test: 31; cg: I_lui_cg; cp: cp_rd; bin: b30\""
 I_lui_cg_cp_rd_b31_str: .string "\"test: 32; cg: I_lui_cg; cp: cp_rd; bin: b31\""
-I_lui_cg_cp_gpr_hazard_w_waw_str: .string "\"test: 33; cg: I_lui_cg; cp: cp_gpr_hazard_w; bin: waw\""
+I_lui_cg_cp_gpr_hazard_w_waw_depth0_str: .string "\"test: 33; cg: I_lui_cg; cp: cp_gpr_hazard_w; bin: waw_depth0\""
 I_lui_cg_cp_imm_edges_20bit_0x0_str: .string "\"test: 34; cg: I_lui_cg; cp: cp_imm_edges_20bit; bin: 0x0\""
 I_lui_cg_cp_imm_edges_20bit_0x1_str: .string "\"test: 35; cg: I_lui_cg; cp: cp_imm_edges_20bit; bin: 0x1\""
 I_lui_cg_cp_imm_edges_20bit_0x2_str: .string "\"test: 36; cg: I_lui_cg; cp: cp_imm_edges_20bit; bin: 0x2\""

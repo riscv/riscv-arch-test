@@ -3134,15 +3134,15 @@ I_xori_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x11, I_xori_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_xori_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs1: x15 = 0xb3c39ec7fccfb50a
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x685f5d748fdd94c1
   RVTEST_TESTDATA_LOAD_INT(x1, x4) # load rs1: x4 = 0x4b3c9a48b63744ef
   add x26, x15, x22 # WAW producer: writes x26 (must NOT win)
-I_xori_cg_cp_gpr_hazard_rw_waw:
+I_xori_cg_cp_gpr_hazard_rw_waw_depth0:
   xori x26, x4, 1195 # WAW consumer: writes x26 (must win - last write)
   # Check if x26 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x26, I_xori_cg_cp_gpr_hazard_rw_waw, I_xori_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x24, x8, x7, x26, I_xori_cg_cp_gpr_hazard_rw_waw_depth0, I_xori_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -4198,7 +4198,7 @@ I_xori_cg_cmp_rd_rs1_b31_str: .string "\"test: 432; cg: I_xori_cg; cp: cmp_rd_rs
 I_xori_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 433; cg: I_xori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_xori_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 434; cg: I_xori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_xori_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 435; cg: I_xori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_xori_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 436; cg: I_xori_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_xori_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 436; cg: I_xori_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_xori_cg_cp_imm_edges_0x0_str: .string "\"test: 437; cg: I_xori_cg; cp: cp_imm_edges; bin: 0x0\""
 I_xori_cg_cp_imm_edges_0x1_str: .string "\"test: 438; cg: I_xori_cg; cp: cp_imm_edges; bin: 0x1\""
 I_xori_cg_cp_imm_edges_0x2_str: .string "\"test: 439; cg: I_xori_cg; cp: cp_imm_edges; bin: 0x2\""

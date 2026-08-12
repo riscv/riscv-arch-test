@@ -3401,16 +3401,16 @@ E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x8, E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor, E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x6, x11) # load rs1: x11 = 0x99168de2e57ee77b
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs2: x15 = 0xf424d74b673cfbe6
   RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs1: x8 = 0x0a3a70cf7ec39d69
   RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xfdd601dad85a739e
   add x9, x11, x15 # WAW producer: writes x9 (must NOT win)
-E_and_cg_cp_gpr_hazard_rw_waw:
+E_and_cg_cp_gpr_hazard_rw_waw_depth0:
   and x9, x8, x2 # WAW consumer: writes x9 (must win - last write)
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, E_and_cg_cp_gpr_hazard_rw_waw, E_and_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x10, x5, x4, x9, E_and_cg_cp_gpr_hazard_rw_waw_depth0, E_and_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x10 # restore signature pointer to default register for teardown
 
@@ -4657,7 +4657,7 @@ E_and_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 403; cg: E_and_cg; c
 E_and_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 404; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 E_and_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 405; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 406; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-E_and_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 407; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_and_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 407; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

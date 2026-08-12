@@ -4294,16 +4294,16 @@ I_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x6 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x1, x8, x7, x6, I_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor, I_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x17, x22) # load rs1: x22 = 0xc5166ddb79ca893c
   RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0xf40cf034d43fd381
   RVTEST_TESTDATA_LOAD_INT(x17, x29) # load rs1: x29 = 0x07c805c862d1ad67
   RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rs2: x23 = 0x5aa64cd077874313
   add x24, x22, x11 # WAW producer: writes x24 (must NOT win)
-I_xor_cg_cp_gpr_hazard_rw_waw:
+I_xor_cg_cp_gpr_hazard_rw_waw_depth0:
   xor x24, x29, x23 # WAW consumer: writes x24 (must win - last write)
   # Check if x24 contains the expected result. x1 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x1, x8, x7, x24, I_xor_cg_cp_gpr_hazard_rw_waw, I_xor_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x1, x8, x7, x24, I_xor_cg_cp_gpr_hazard_rw_waw_depth0, I_xor_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x1 # restore signature pointer to default register for teardown
 
@@ -5886,7 +5886,7 @@ I_xor_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 515; cg: I_xor_cg; c
 I_xor_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 516; cg: I_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 I_xor_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 517; cg: I_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 I_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 518; cg: I_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-I_xor_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 519; cg: I_xor_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_xor_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 519; cg: I_xor_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -468,15 +468,15 @@ E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   RVTEST_SIGUPD(x10, x5, x4, x14, E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x5254bf9c3e82493a
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs2: x9 = 0xcaae17a3632e842a
   addi x13, x6, -984 # copy data_ptr to rs1 and adjust for offset
   add x11, x15, x9 # WAW producer: writes x11 (must NOT win)
-E_lbu_cg_cp_gpr_hazard_rw_waw:
+E_lbu_cg_cp_gpr_hazard_rw_waw_depth0:
   lbu x11, 984(x13) # WAW consumer: writes x11 (must win - last write)
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, E_lbu_cg_cp_gpr_hazard_rw_waw, E_lbu_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x10, x5, x4, x11, E_lbu_cg_cp_gpr_hazard_rw_waw_depth0, E_lbu_cg_cp_gpr_hazard_rw_waw_depth0_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -918,7 +918,7 @@ E_lbu_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_lbu_cg; cp: cmp_rd_r
 E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 47; cg: E_lbu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 48; cg: E_lbu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_lbu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 49; cg: E_lbu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_lbu_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 50; cg: E_lbu_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_lbu_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 50; cg: E_lbu_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_lbu_cg_cp_imm_edges_0x0_str: .string "\"test: 51; cg: E_lbu_cg; cp: cp_imm_edges; bin: 0x0\""
 E_lbu_cg_cp_imm_edges_0x1_str: .string "\"test: 52; cg: E_lbu_cg; cp: cp_imm_edges; bin: 0x1\""
 E_lbu_cg_cp_imm_edges_0x2_str: .string "\"test: 53; cg: E_lbu_cg; cp: cp_imm_edges; bin: 0x2\""

@@ -2545,15 +2545,15 @@ I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x15 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x2, x8, x7, x15, I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x513c8939
   RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0xaf6ce262
   RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs1: x19 = 0xca6f42dd
   add x14, x15, x10 # WAW producer: writes x14 (must NOT win)
-I_sltiu_cg_cp_gpr_hazard_rw_waw:
+I_sltiu_cg_cp_gpr_hazard_rw_waw_depth0:
   sltiu x14, x19, 896 # WAW consumer: writes x14 (must win - last write)
   # Check if x14 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x14, I_sltiu_cg_cp_gpr_hazard_rw_waw, I_sltiu_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x2, x8, x7, x14, I_sltiu_cg_cp_gpr_hazard_rw_waw_depth0, I_sltiu_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -3439,7 +3439,7 @@ I_sltiu_cg_cmp_rd_rs1_b31_str: .string "\"test: 348; cg: I_sltiu_cg; cp: cmp_rd_
 I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 349; cg: I_sltiu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 350; cg: I_sltiu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_sltiu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 351; cg: I_sltiu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_sltiu_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 352; cg: I_sltiu_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_sltiu_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 352; cg: I_sltiu_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_sltiu_cg_cp_imm_edges_0x0_str: .string "\"test: 353; cg: I_sltiu_cg; cp: cp_imm_edges; bin: 0x0\""
 I_sltiu_cg_cp_imm_edges_0x1_str: .string "\"test: 354; cg: I_sltiu_cg; cp: cp_imm_edges; bin: 0x1\""
 I_sltiu_cg_cp_imm_edges_0x2_str: .string "\"test: 355; cg: I_sltiu_cg; cp: cp_imm_edges; bin: 0x2\""

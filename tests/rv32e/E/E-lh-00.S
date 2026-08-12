@@ -466,15 +466,15 @@ E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   RVTEST_SIGUPD(x2, x8, x7, x11, E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
   addi x10, x10, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0x737217d9
   RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs2: x15 = 0x4e784aee
   addi x6, x10, 833 # copy data_ptr to rs1 and adjust for offset
   add x9, x14, x15 # WAW producer: writes x9 (must NOT win)
-E_lh_cg_cp_gpr_hazard_rw_waw:
+E_lh_cg_cp_gpr_hazard_rw_waw_depth0:
   lh x9, -833(x6) # WAW consumer: writes x9 (must win - last write)
   # Check if x9 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x9, E_lh_cg_cp_gpr_hazard_rw_waw, E_lh_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x2, x8, x7, x9, E_lh_cg_cp_gpr_hazard_rw_waw_depth0, E_lh_cg_cp_gpr_hazard_rw_waw_depth0_str)
   addi x10, x10, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -870,7 +870,7 @@ E_lh_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_lh_cg; cp: cmp_rd_rs1
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 47; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 48; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 49; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_lh_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 50; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_lh_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 50; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_lh_cg_cp_imm_edges_0x0_str: .string "\"test: 51; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x0\""
 E_lh_cg_cp_imm_edges_0x1_str: .string "\"test: 52; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x1\""
 E_lh_cg_cp_imm_edges_0x2_str: .string "\"test: 53; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x2\""

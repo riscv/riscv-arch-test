@@ -3331,16 +3331,16 @@ I_sll_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x27 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x9, x8, x7, x27, I_sll_cg_cp_gpr_hazard_rw_raw_rs2_stressor, I_sll_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x23, x11) # load rs1: x11 = 0xd3390810
   RVTEST_TESTDATA_LOAD_INT(x23, x17) # load rs2: x17 = 0x8954bc67
   RVTEST_TESTDATA_LOAD_INT(x23, x0) # load rs1: x0 = 0x0f743724
   RVTEST_TESTDATA_LOAD_INT(x23, x1) # load rs2: x1 = 0x8160ee4f
   add x28, x11, x17 # WAW producer: writes x28 (must NOT win)
-I_sll_cg_cp_gpr_hazard_rw_waw:
+I_sll_cg_cp_gpr_hazard_rw_waw_depth0:
   sll x28, x0, x1 # WAW consumer: writes x28 (must win - last write)
   # Check if x28 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x9, x8, x7, x28, I_sll_cg_cp_gpr_hazard_rw_waw, I_sll_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x9, x8, x7, x28, I_sll_cg_cp_gpr_hazard_rw_waw_depth0, I_sll_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x9 # restore signature pointer to default register for teardown
 
@@ -4563,7 +4563,7 @@ I_sll_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 395; cg: I_sll_cg; c
 I_sll_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 396; cg: I_sll_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 I_sll_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 397; cg: I_sll_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 I_sll_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 398; cg: I_sll_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-I_sll_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 399; cg: I_sll_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_sll_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 399; cg: I_sll_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

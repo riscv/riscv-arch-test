@@ -14,7 +14,7 @@ bltu,B,x,x,x,x,x,,x,x,,offset,x,,,,r,x,,branch,,,
 bne,B,x,x,x,x,x,,x,x,,offset,x,,,,r,x,,branch,,,
 fence,F,x,x,x,,,,,,,,,,,,,,,,,,fence
 jal,J,x,x,x,,,x,,,,,,,,,w,x,,jal,,,
-jalr,JR,x,x,x,nx0,,x,,,,,,nx0,,,rw,jalr,,x,,,
+jalr,JR,x,x,x,nx0,,x,,,,,,nx0,,,w,jalr,,x,,,
 lb,L,x,x,x,nx0,,x,,,,,,nx0,,,rw,,,x,byte,byte,
 lbu,L,x,x,x,nx0,,x,,,,,,nx0,,,rw,,,x,byte,byte,
 ld,L,,x,x,nx0,,x,,,,,,nx0,,,rw,,,x,,double,

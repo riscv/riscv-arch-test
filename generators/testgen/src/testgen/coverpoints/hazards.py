@@ -17,6 +17,40 @@ from testgen.formatters import format_instruction
 from testgen.formatters.params import generate_random_params
 from testgen.formatters.registry import get_instr_type_config
 
+# Long-latency integer producer used for WAW tests against multi-cycle
+# consumers. div is the slowest common integer operation, so a consumer with
+# shorter latency retires first and the "last write wins" requirement becomes
+# observable rather than trivially satisfied.
+_WAW_SLOW_PRODUCER = "div"
+
+# Consumers materially faster than div. The div/rem family is excluded because
+# its latency matches the producer's, so the ordering is not stressed there.
+_MULTICYCLE_CONSUMERS = frozenset({"mul", "mulh", "mulhsu", "mulhu", "mulw"})
+
+# Long-latency FP producer for WAW, for the same reason as the integer case.
+# fdiv is the slowest common FP operation, so a shorter-latency consumer
+# retires first and the ordering requirement becomes observable.
+_WAW_SLOW_FP_PRODUCER = "fdiv.s"
+
+# FP consumers materially faster than fdiv. fdiv and fsqrt are excluded because
+# their latency matches the producer's, so the ordering is not stressed there.
+_FP_MULTICYCLE_CONSUMERS = frozenset(
+    {
+        "fadd.s",
+        "fsub.s",
+        "fmul.s",
+        "fmin.s",
+        "fmax.s",
+        "fsgnj.s",
+        "fsgnjn.s",
+        "fsgnjx.s",
+        "fmadd.s",
+        "fmsub.s",
+        "fnmadd.s",
+        "fnmsub.s",
+    }
+)
+
 
 def _hazard_class(coverpoint: str) -> str:
     """Return the requested hazard class suffix: r, w, or rw."""
@@ -163,14 +197,22 @@ def _make_gpr_hazard(
     case_idx: int | str,
     filler: str = "",
     filler_name: str = "",
+    producer_instr: str = "add",
+    producer_type: str = "R",
 ) -> list[str]:
-    """Generate one adjacent GPR producer/consumer hazard testcase."""
+    """Generate one adjacent GPR producer/consumer hazard testcase.
+
+    producer_instr/producer_type select the hazard producer. The default (add,
+    R-type) is a fast single-cycle producer. For WAW against a multi-cycle
+    consumer the caller substitutes a long-latency producer so the faster
+    consumer retires first and the ordering requirement is actually tested.
+    """
     if haz_type == "raw" and instr_type == "L" and field == "rs1":
         return _make_load_base_hazard(instr_name, instr_type, coverpoint, test_data, case_idx, filler, filler_name)
     if haz_type == "raw" and instr_type == "S" and field == "rs1":
         return _make_store_base_hazard(instr_name, instr_type, coverpoint, test_data, case_idx, filler, filler_name)
 
-    producer = generate_random_params(test_data, "R", exclude_regs=[0, 1, 2, 3, 4, 5, 7, 8, 12, 13])
+    producer = generate_random_params(test_data, producer_type, exclude_regs=[0, 1, 2, 3, 4, 5, 7, 8, 12, 13])
     assert producer.rd is not None and producer.rs1 is not None and producer.rs2 is not None
 
     if haz_type == "raw":
@@ -195,7 +237,7 @@ def _make_gpr_hazard(
     label_line = test_data.add_testcase(bin_name, coverpoint)
     assert test_data.test_chunk is not None
     sigupd_count = test_data.test_chunk.sigupd_count
-    setup1, test1, check1 = format_instruction("add", "R", test_data, producer)
+    setup1, test1, check1 = format_instruction(producer_instr, producer_type, test_data, producer)
     if check1:
         test_data.test_chunk.sigupd_count = sigupd_count
         check1 = ""
@@ -223,9 +265,16 @@ def _make_gpr_hazard(
     return [line for line in lines if line]
 
 
-def _make_fpr_stressor(test_data: TestData) -> str:
-    """Independent FP-register-consuming filler for depth=1 FPR hazard tests."""
-    available_regs = sorted(test_data.float_regs.reg_list)
+def _make_fpr_stressor(test_data: TestData, forbidden: set[int] | None = None) -> str:
+    """Independent FP-register-consuming filler for depth=1 FPR hazard tests.
+
+    forbidden should include the producer's fd and the consumer's used float
+    registers so the stressor cannot create its own WAW/RAW with either
+    instruction, which would mask the hazard under test. Mirrors the guarantee
+    _make_gpr_stressor already provides on the GPR side.
+    """
+    forbidden = forbidden or set()
+    available_regs = sorted(test_data.float_regs.reg_list - forbidden)
     if len(available_regs) < 3:
         return "fadd.s f0, f0, f0"
     fd, fs1, fs2 = available_regs[:3]
@@ -242,9 +291,16 @@ def _make_fpr_hazard(
     case_idx: int | str,
     filler: str = "",
     filler_name: str = "",
+    producer_instr: str = "fadd.s",
+    producer_type: str = "FR",
 ) -> list[str]:
-    """Generate one adjacent FPR producer/consumer hazard testcase."""
-    producer = generate_random_params(test_data, "FR", fp_load_type="single")
+    """Generate one adjacent FPR producer/consumer hazard testcase.
+
+    producer_instr/producer_type select the hazard producer, defaulting to a
+    short-latency fadd.s. For WAW the caller substitutes a long-latency
+    producer so the faster consumer retires first.
+    """
+    producer = generate_random_params(test_data, producer_type, fp_load_type="single")
     assert producer.fd is not None and producer.fs1 is not None and producer.fs2 is not None
 
     if haz_type == "raw":
@@ -258,13 +314,22 @@ def _make_fpr_hazard(
     else:
         raise ValueError(f"Unknown hazard type: {haz_type}")
 
-    bin_name = haz_type if field is None else f"{haz_type}_{field}_{case_idx}"
+    bin_name = (
+        case_idx if isinstance(case_idx, str) else (haz_type if field is None else f"{haz_type}_{field}_{case_idx}")
+    )
     label_line = test_data.add_testcase(bin_name, coverpoint)
-    setup1, test1, check1 = format_instruction("fadd.s", "FR", test_data, producer)
+    setup1, test1, check1 = format_instruction(producer_instr, producer_type, test_data, producer)
     setup2, test2, check2 = format_instruction(instr_name, instr_type, test_data, consumer)
 
+    if haz_type == "raw":
+        test1 = _with_hazard_comment(test1, f"# RAW producer: writes f{producer.fd}")
+        test2 = _with_hazard_comment(test2, f"# RAW consumer: reads {field} - tests bypass forwarding")
+    elif haz_type == "waw":
+        test1 = _with_hazard_comment(test1, f"# WAW producer: writes f{producer.fd} (must NOT win)")
+        test2 = _with_hazard_comment(test2, f"# WAW consumer: writes f{consumer.fd} (must win - last write)")
+
     if filler_name == "stressor":
-        filler = _make_fpr_stressor(test_data)
+        filler = _make_fpr_stressor(test_data, {producer.fd} | set(consumer.used_float_regs))
     mid = [f"  {filler} # depth=1 filler: {filler_name}"] if filler else []
     lines = [f"\n# Testcase {coverpoint} {bin_name}", setup1, setup2, test1, *mid, label_line, test2]
     if haz_type == "waw":
@@ -322,7 +387,30 @@ def make_cp_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data:
                     )
                 )
     if "w" in haz_class and has_dest:
-        test_lines.extend(make_hazard(instr_name, instr_type, coverpoint, test_data, "waw", None, "waw"))
+        # WAW producer selection. A fast single-cycle producer (add) cannot
+        # expose the multi-cycle WAW case: it always completes before the
+        # consumer, so "last write wins" holds trivially and no implementation
+        # can fail. A long-latency producer makes the faster consumer retire
+        # first, so an implementation that lets the slow producer write back
+        # afterwards clobbers a committed result and is caught. The instruction
+        # under test stays the consumer because its covergroup only samples
+        # when that instruction retires.
+        if make_hazard is _make_gpr_hazard:
+            waw_producer = _WAW_SLOW_PRODUCER if instr_name in _MULTICYCLE_CONSUMERS else "add"
+        else:
+            waw_producer = _WAW_SLOW_FP_PRODUCER if instr_name in _FP_MULTICYCLE_CONSUMERS else "fadd.s"
+        test_lines.extend(
+            make_hazard(
+                instr_name,
+                instr_type,
+                coverpoint,
+                test_data,
+                "waw",
+                None,
+                "waw_depth0",
+                producer_instr=waw_producer,
+            )
+        )
 
     tc.code = test_lines
     return [test_data.end_test_chunk()]

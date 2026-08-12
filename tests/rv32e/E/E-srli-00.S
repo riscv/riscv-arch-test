@@ -947,15 +947,15 @@ E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x12, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x6, x15) # load rs1: x15 = 0x92ab9d82
   RVTEST_TESTDATA_LOAD_INT(x6, x14) # load rs2: x14 = 0xccfc33b4
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load rs1: x9 = 0x7916549c
   add x10, x15, x14 # WAW producer: writes x10 (must NOT win)
-E_srli_cg_cp_gpr_hazard_rw_waw:
+E_srli_cg_cp_gpr_hazard_rw_waw_depth0:
   srli x10, x9, 0 # WAW consumer: writes x10 (must win - last write)
   # Check if x10 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x10, E_srli_cg_cp_gpr_hazard_rw_waw, E_srli_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x1, x5, x4, x10, E_srli_cg_cp_gpr_hazard_rw_waw_depth0, E_srli_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_uimm
@@ -1483,7 +1483,7 @@ E_srli_cg_cmp_rd_rs1_b15_str: .string "\"test: 120; cg: E_srli_cg; cp: cmp_rd_rs
 E_srli_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 121; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_srli_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 122; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_srli_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 123; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_srli_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 124; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_srli_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 124; cg: E_srli_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_srli_cg_cp_uimm_uimm0_str: .string "\"test: 125; cg: E_srli_cg; cp: cp_uimm; bin: uimm0\""
 E_srli_cg_cp_uimm_uimm1_str: .string "\"test: 126; cg: E_srli_cg; cp: cp_uimm; bin: uimm1\""
 E_srli_cg_cp_uimm_uimm2_str: .string "\"test: 127; cg: E_srli_cg; cp: cp_uimm; bin: uimm2\""

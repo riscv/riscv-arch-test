@@ -3132,15 +3132,15 @@ I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x30 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x16, x5, x4, x30, I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs1: x22 = 0xb20bb5ebac5f7c00
   RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x3e266c3baedace4d
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs1: x3 = 0x26ef0c47b42fc855
   add x21, x22, x25 # WAW producer: writes x21 (must NOT win)
-I_addiw_cg_cp_gpr_hazard_rw_waw:
+I_addiw_cg_cp_gpr_hazard_rw_waw_depth0:
   addiw x21, x3, -1939 # WAW consumer: writes x21 (must win - last write)
   # Check if x21 contains the expected result. x16 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x16, x5, x4, x21, I_addiw_cg_cp_gpr_hazard_rw_waw, I_addiw_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x16, x5, x4, x21, I_addiw_cg_cp_gpr_hazard_rw_waw_depth0, I_addiw_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -4196,7 +4196,7 @@ I_addiw_cg_cmp_rd_rs1_b31_str: .string "\"test: 432; cg: I_addiw_cg; cp: cmp_rd_
 I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 433; cg: I_addiw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 434; cg: I_addiw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_addiw_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 435; cg: I_addiw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_addiw_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 436; cg: I_addiw_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_addiw_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 436; cg: I_addiw_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_addiw_cg_cp_imm_edges_0x0_str: .string "\"test: 437; cg: I_addiw_cg; cp: cp_imm_edges; bin: 0x0\""
 I_addiw_cg_cp_imm_edges_0x1_str: .string "\"test: 438; cg: I_addiw_cg; cp: cp_imm_edges; bin: 0x1\""
 I_addiw_cg_cp_imm_edges_0x2_str: .string "\"test: 439; cg: I_addiw_cg; cp: cp_imm_edges; bin: 0x2\""

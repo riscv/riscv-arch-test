@@ -400,19 +400,19 @@ I_jal_cg_cp_rd_b31:
 /////////////////////////////////
 
 
-# Testcase cp_gpr_hazard_w waw
+# Testcase cp_gpr_hazard_w waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs1: x28 = 0xaf3db6ce
   RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0xaa8f7485
   LI(x19, 1) # initialize indicator to 1 (jump taken)
   add x14, x28, x26 # WAW producer: writes x14 (must NOT win)
-I_jal_cg_cp_gpr_hazard_w_waw:
+I_jal_cg_cp_gpr_hazard_w_waw_depth0:
   jal x14, 1f # WAW consumer: writes x14 (must win - last write)
   LI(x19, -1) # should not execute (jump not taken)
 1:
   # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x14, I_jal_cg_cp_gpr_hazard_w_waw, I_jal_cg_cp_gpr_hazard_w_waw_str)
+  RVTEST_SIGUPD(x17, x8, x7, x14, I_jal_cg_cp_gpr_hazard_w_waw_depth0, I_jal_cg_cp_gpr_hazard_w_waw_depth0_str)
   # Check if x19 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x19, I_jal_cg_cp_gpr_hazard_w_waw, I_jal_cg_cp_gpr_hazard_w_waw_str)
+  RVTEST_SIGUPD(x17, x8, x7, x19, I_jal_cg_cp_gpr_hazard_w_waw_depth0, I_jal_cg_cp_gpr_hazard_w_waw_depth0_str)
 
 /////////////////////////////////
 // cp_offset
@@ -889,7 +889,7 @@ I_jal_cg_cp_rd_b28_str: .string "\"test: 29; cg: I_jal_cg; cp: cp_rd; bin: b28\"
 I_jal_cg_cp_rd_b29_str: .string "\"test: 30; cg: I_jal_cg; cp: cp_rd; bin: b29\""
 I_jal_cg_cp_rd_b30_str: .string "\"test: 31; cg: I_jal_cg; cp: cp_rd; bin: b30\""
 I_jal_cg_cp_rd_b31_str: .string "\"test: 32; cg: I_jal_cg; cp: cp_rd; bin: b31\""
-I_jal_cg_cp_gpr_hazard_w_waw_str: .string "\"test: 33; cg: I_jal_cg; cp: cp_gpr_hazard_w; bin: waw\""
+I_jal_cg_cp_gpr_hazard_w_waw_depth0_str: .string "\"test: 33; cg: I_jal_cg; cp: cp_gpr_hazard_w; bin: waw_depth0\""
 I_jal_cg_cp_imm_edges_jal_b_2_str: .string "\"test: 34; cg: I_jal_cg; cp: cp_imm_edges_jal; bin: b_2\""
 I_jal_cg_cp_imm_edges_jal_b_3_str: .string "\"test: 35; cg: I_jal_cg; cp: cp_imm_edges_jal; bin: b_3\""
 I_jal_cg_cp_imm_edges_jal_b_4_str: .string "\"test: 36; cg: I_jal_cg; cp: cp_imm_edges_jal; bin: b_4\""

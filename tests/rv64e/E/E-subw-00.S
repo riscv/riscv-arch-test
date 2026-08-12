@@ -3400,16 +3400,16 @@ E_subw_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x11, E_subw_cg_cp_gpr_hazard_rw_raw_rs2_stressor, E_subw_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs1: x10 = 0x8be0735876244774
   RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0xc4a81c9e26f18a32
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0x159cb92ad3c79c41
   RVTEST_TESTDATA_LOAD_INT(x3, x7) # load rs2: x7 = 0x9e23ad352d47e5d6
   add x6, x10, x9 # WAW producer: writes x6 (must NOT win)
-E_subw_cg_cp_gpr_hazard_rw_waw:
+E_subw_cg_cp_gpr_hazard_rw_waw_depth0:
   subw x6, x8, x7 # WAW consumer: writes x6 (must win - last write)
   # Check if x6 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x6, E_subw_cg_cp_gpr_hazard_rw_waw, E_subw_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x1, x5, x4, x6, E_subw_cg_cp_gpr_hazard_rw_waw_depth0, E_subw_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x1 # restore signature pointer to default register for teardown
 
@@ -4656,7 +4656,7 @@ E_subw_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 403; cg: E_subw_cg;
 E_subw_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 404; cg: E_subw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 E_subw_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 405; cg: E_subw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 E_subw_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 406; cg: E_subw_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-E_subw_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 407; cg: E_subw_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_subw_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 407; cg: E_subw_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

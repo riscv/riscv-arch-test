@@ -2802,15 +2802,15 @@ E_slti_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x3, x8, x7, x13, E_slti_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_slti_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs1: x9 = 0xf0c5f0df69c97ea7
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xcb94486cae8cf8fc
   RVTEST_TESTDATA_LOAD_INT(x1, x2) # load rs1: x2 = 0xd46540bc7e86690f
   add x10, x9, x11 # WAW producer: writes x10 (must NOT win)
-E_slti_cg_cp_gpr_hazard_rw_waw:
+E_slti_cg_cp_gpr_hazard_rw_waw_depth0:
   slti x10, x2, 743 # WAW consumer: writes x10 (must win - last write)
   # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x10, E_slti_cg_cp_gpr_hazard_rw_waw, E_slti_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x3, x8, x7, x10, E_slti_cg_cp_gpr_hazard_rw_waw_depth0, E_slti_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -3770,7 +3770,7 @@ E_slti_cg_cmp_rd_rs1_b15_str: .string "\"test: 384; cg: E_slti_cg; cp: cmp_rd_rs
 E_slti_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 385; cg: E_slti_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_slti_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 386; cg: E_slti_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_slti_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 387; cg: E_slti_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_slti_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 388; cg: E_slti_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_slti_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 388; cg: E_slti_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_slti_cg_cp_imm_edges_0x0_str: .string "\"test: 389; cg: E_slti_cg; cp: cp_imm_edges; bin: 0x0\""
 E_slti_cg_cp_imm_edges_0x1_str: .string "\"test: 390; cg: E_slti_cg; cp: cp_imm_edges; bin: 0x1\""
 E_slti_cg_cp_imm_edges_0x2_str: .string "\"test: 391; cg: E_slti_cg; cp: cp_imm_edges; bin: 0x2\""

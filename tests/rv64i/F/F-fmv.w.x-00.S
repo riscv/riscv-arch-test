@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "F-fmv.w.x-00.S"
-#define SIGUPD_COUNT 170
+#define SIGUPD_COUNT 174
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -691,6 +691,23 @@ F_fmv_w_x_cg_cp_fd_b31:
   # Check if f31 contains the expected result. Also checks fflags. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x6, x8, x7, f4, f31, F_fmv_w_x_cg_cp_fd_b31, F_fmv_w_x_cg_cp_fd_b31_str)
 
+/////////////////////////////////
+// cp_fpr_hazard_w
+/////////////////////////////////
+
+
+# Testcase cp_fpr_hazard_w waw_depth0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x2, f16) # load fs1: f16 = 0xd516c1d3
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x2, f10) # load fs2: f10 = 0x932bb0c2
+  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x667d8183dba64763
+  fsflagsi 0b00000 # clear all fflags
+  fadd.s f30, f16, f10 # WAW producer: writes f30 (must NOT win)
+F_fmv_w_x_cg_cp_fpr_hazard_w_waw_depth0:
+  fmv.w.x f30, x15 # WAW consumer: writes f30 (must win - last write)
+  # Check if f30 contains the expected result. Also checks fflags. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x6, x8, x7, f4, f30, F_fmv_w_x_cg_cp_fpr_hazard_w_waw_depth0, F_fmv_w_x_cg_cp_fpr_hazard_w_waw_depth0_str)
+
   mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -780,6 +797,9 @@ RVTEST_DATA_BEGIN
 .dword 0x30dced50d459f484
 .dword 0x4180e845a7075225
 .dword 0xf7cd489297acc563
+.dword 0xffffffffd516c1d3
+.dword 0xffffffff932bb0c2
+.dword 0x667d8183dba64763
 
 // Testcase strings
 F_fmv_w_x_cg_cp_rs1_b0_str: .string "\"test: 1; cg: F_fmv.w.x_cg; cp: cp_rs1; bin: b0\""
@@ -862,6 +882,7 @@ F_fmv_w_x_cg_cp_fd_b28_str: .string "\"test: 77; cg: F_fmv.w.x_cg; cp: cp_fd; bi
 F_fmv_w_x_cg_cp_fd_b29_str: .string "\"test: 78; cg: F_fmv.w.x_cg; cp: cp_fd; bin: b29\""
 F_fmv_w_x_cg_cp_fd_b30_str: .string "\"test: 79; cg: F_fmv.w.x_cg; cp: cp_fd; bin: b30\""
 F_fmv_w_x_cg_cp_fd_b31_str: .string "\"test: 80; cg: F_fmv.w.x_cg; cp: cp_fd; bin: b31\""
+F_fmv_w_x_cg_cp_fpr_hazard_w_waw_depth0_str: .string "\"test: 81; cg: F_fmv.w.x_cg; cp: cp_fpr_hazard_w; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

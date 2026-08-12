@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "F-fclass.s-00.S"
-#define SIGUPD_COUNT 194
+#define SIGUPD_COUNT 206
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -972,6 +972,61 @@ F_fclass_s_cg_cp_fs1_edges_b0x813d9ab0:
   # Check fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x6, x5, x4, F_fclass_s_cg_cp_fs1_edges_b0x813d9ab0, F_fclass_s_cg_cp_fs1_edges_b0x813d9ab0_str)
 
+/////////////////////////////////
+// cp_fpr_hazard_r
+/////////////////////////////////
+
+
+# Testcase cp_fpr_hazard_r raw_fs1_depth0
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f1) # load fs1: f1 = 0x12a84081
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f16) # load fs2: f16 = 0xe3755091
+  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f31) # load fs1: f31 = 0xda51c856
+  fsflagsi 0b00000 # clear all fflags
+  fadd.s f31, f1, f16 # RAW producer: writes f31
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0:
+  fclass.s x9, f31 # RAW consumer: reads fs1 - tests bypass forwarding
+  # Check if f31 contains the expected result. Also checks fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x6, x5, x4, f7, f31, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0_str)
+  # Check if x9 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x9, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0_str)
+  # Check fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x6, x5, x4, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0_str)
+
+# Testcase cp_fpr_hazard_r raw_fs1_nop
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f27) # load fs1: f27 = 0xa7eeb5ca
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f13) # load fs2: f13 = 0x83fa0231
+  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f9) # load fs1: f9 = 0xe69e7adf
+  fsflagsi 0b00000 # clear all fflags
+  fadd.s f9, f27, f13 # RAW producer: writes f9
+  addi x0, x0, 0 # depth=1 filler: nop
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop:
+  fclass.s x7, f9 # RAW consumer: reads fs1 - tests bypass forwarding
+  # Check if f9 contains the expected result. Also checks fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x6, x5, x4, f7, f9, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop_str)
+  # Check if x7 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x7, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop_str)
+  # Check fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x6, x5, x4, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop_str)
+
+# Testcase cp_fpr_hazard_r raw_fs1_stressor
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f11) # load fs1: f11 = 0x66385bc9
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f20) # load fs2: f20 = 0x86b65088
+  fsflagsi 0b00000 # clear all fflags
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x22, f22) # load fs1: f22 = 0x5f215cd1
+  fsflagsi 0b00000 # clear all fflags
+  fadd.s f22, f11, f20 # RAW producer: writes f22
+  fadd.s f0, f1, f2 # depth=1 filler: stressor
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor:
+  fclass.s x28, f22 # RAW consumer: reads fs1 - tests bypass forwarding
+  # Check if f22 contains the expected result. Also checks fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x6, x5, x4, f7, f22, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor_str)
+  # Check if x28 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x28, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor_str)
+  # Check fflags. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD_FFLAGS(x6, x5, x4, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor, F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor_str)
+
   mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1073,6 +1128,15 @@ RVTEST_DATA_BEGIN
 .word 0xffbfffff
 .word 0x7ef8654f
 .word 0x813d9ab0
+.word 0x12a84081
+.word 0xe3755091
+.word 0xda51c856
+.word 0xa7eeb5ca
+.word 0x83fa0231
+.word 0xe69e7adf
+.word 0x66385bc9
+.word 0x86b65088
+.word 0x5f215cd1
 
 // Testcase strings
 F_fclass_s_cg_cp_rd_b0_str: .string "\"test: 1; cg: F_fclass.s_cg; cp: cp_rd; bin: b0\""
@@ -1167,6 +1231,9 @@ F_fclass_s_cg_cp_fs1_edges_b0x7fbfffff_str: .string "\"test: 89; cg: F_fclass.s_
 F_fclass_s_cg_cp_fs1_edges_b0xffbfffff_str: .string "\"test: 90; cg: F_fclass.s_cg; cp: cp_fs1_edges; bin: b0xffbfffff\""
 F_fclass_s_cg_cp_fs1_edges_b0x7ef8654f_str: .string "\"test: 91; cg: F_fclass.s_cg; cp: cp_fs1_edges; bin: b0x7ef8654f\""
 F_fclass_s_cg_cp_fs1_edges_b0x813d9ab0_str: .string "\"test: 92; cg: F_fclass.s_cg; cp: cp_fs1_edges; bin: b0x813d9ab0\""
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_depth0_str: .string "\"test: 93; cg: F_fclass.s_cg; cp: cp_fpr_hazard_r; bin: raw_fs1_depth0\""
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_nop_str: .string "\"test: 94; cg: F_fclass.s_cg; cp: cp_fpr_hazard_r; bin: raw_fs1_nop\""
+F_fclass_s_cg_cp_fpr_hazard_r_raw_fs1_stressor_str: .string "\"test: 95; cg: F_fclass.s_cg; cp: cp_fpr_hazard_r; bin: raw_fs1_stressor\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

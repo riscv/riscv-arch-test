@@ -55,6 +55,21 @@ function hazard_field_t check_gpr_hazard_field(int hart, int issue, int depth = 
   return HAZARD_FIELD_NONE;
 endfunction
 
+function hazard_field_t check_fpr_hazard_field(int hart, int issue, int depth = 0);
+  int producer_idx;
+  producer_idx = depth + 1;
+  if (traceDataQ[hart][issue][producer_idx].has_fd) begin
+    if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs1 == traceDataQ[hart][issue][producer_idx].fd)) begin
+      return HAZARD_FIELD_RS1;
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs2 == traceDataQ[hart][issue][producer_idx].fd)) begin
+      return HAZARD_FIELD_RS2;
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs3 == traceDataQ[hart][issue][producer_idx].fd)) begin
+      return HAZARD_FIELD_RS3;
+    end
+  end
+  return HAZARD_FIELD_NONE;
+endfunction
+
 function hazards_t check_fpr_hazards(int hart, int issue, int depth = 0);
   int producer_idx;
   producer_idx = depth + 1;

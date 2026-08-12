@@ -2440,16 +2440,16 @@ E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x5 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x2, x8, x7, x5, E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor, E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs1: x15 = 0xb40a5038
   RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0xb657e8f3
   RVTEST_TESTDATA_LOAD_INT(x3, x4) # load rs1: x4 = 0xf9b02a76
   RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0xcd8dc175
   add x10, x15, x9 # WAW producer: writes x10 (must NOT win)
-E_and_cg_cp_gpr_hazard_rw_waw:
+E_and_cg_cp_gpr_hazard_rw_waw_depth0:
   and x10, x4, x14 # WAW consumer: writes x10 (must win - last write)
   # Check if x10 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x10, E_and_cg_cp_gpr_hazard_rw_waw, E_and_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x2, x8, x7, x10, E_and_cg_cp_gpr_hazard_rw_waw_depth0, E_and_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -3334,7 +3334,7 @@ E_and_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 283; cg: E_and_cg; c
 E_and_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 284; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 E_and_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 285; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 E_and_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 286; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-E_and_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 287; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_and_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 287; cg: E_and_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

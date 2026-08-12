@@ -467,15 +467,15 @@ E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   RVTEST_SIGUPD(x2, x5, x4, x15, E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs1: x10 = 0x00797d7e7bd46e61
   RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x4fbf86dfd6ef44b7
   addi x3, x9, 833 # copy data_ptr to rs1 and adjust for offset
   add x11, x10, x15 # WAW producer: writes x11 (must NOT win)
-E_lh_cg_cp_gpr_hazard_rw_waw:
+E_lh_cg_cp_gpr_hazard_rw_waw_depth0:
   lh x11, -833(x3) # WAW consumer: writes x11 (must win - last write)
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, E_lh_cg_cp_gpr_hazard_rw_waw, E_lh_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, E_lh_cg_cp_gpr_hazard_rw_waw_depth0, E_lh_cg_cp_gpr_hazard_rw_waw_depth0_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -871,7 +871,7 @@ E_lh_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 46; cg: E_lh_cg; cp: cmp_rd_rs1
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 47; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 48; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_lh_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 49; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_lh_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 50; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_lh_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 50; cg: E_lh_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_lh_cg_cp_imm_edges_0x0_str: .string "\"test: 51; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x0\""
 E_lh_cg_cp_imm_edges_0x1_str: .string "\"test: 52; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x1\""
 E_lh_cg_cp_imm_edges_0x2_str: .string "\"test: 53; cg: E_lh_cg; cp: cp_imm_edges; bin: 0x2\""

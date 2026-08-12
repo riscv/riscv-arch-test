@@ -2800,15 +2800,15 @@ E_andi_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x1 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x1, E_andi_cg_cp_gpr_hazard_rw_raw_rs1_stressor, E_andi_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs1: x6 = 0xf4524952789bf6c4
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0x68174109f3c816b4
   RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs1: x5 = 0xaa15e5a6cbe97c07
   add x15, x6, x9 # WAW producer: writes x15 (must NOT win)
-E_andi_cg_cp_gpr_hazard_rw_waw:
+E_andi_cg_cp_gpr_hazard_rw_waw_depth0:
   andi x15, x5, -1660 # WAW consumer: writes x15 (must win - last write)
   # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x15, E_andi_cg_cp_gpr_hazard_rw_waw, E_andi_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x10, x8, x7, x15, E_andi_cg_cp_gpr_hazard_rw_waw_depth0, E_andi_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -3768,7 +3768,7 @@ E_andi_cg_cmp_rd_rs1_b15_str: .string "\"test: 384; cg: E_andi_cg; cp: cmp_rd_rs
 E_andi_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 385; cg: E_andi_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 E_andi_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 386; cg: E_andi_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 E_andi_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 387; cg: E_andi_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-E_andi_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 388; cg: E_andi_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_andi_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 388; cg: E_andi_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 E_andi_cg_cp_imm_edges_0x0_str: .string "\"test: 389; cg: E_andi_cg; cp: cp_imm_edges; bin: 0x0\""
 E_andi_cg_cp_imm_edges_0x1_str: .string "\"test: 390; cg: E_andi_cg; cp: cp_imm_edges; bin: 0x1\""
 E_andi_cg_cp_imm_edges_0x2_str: .string "\"test: 391; cg: E_andi_cg; cp: cp_imm_edges; bin: 0x2\""

@@ -2545,15 +2545,15 @@ I_ori_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x16, I_ori_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_ori_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x2, x19) # load rs1: x19 = 0x9cfc53e3
   RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs2: x18 = 0x28820e21
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load rs1: x13 = 0x3fe5fbae
   add x21, x19, x18 # WAW producer: writes x21 (must NOT win)
-I_ori_cg_cp_gpr_hazard_rw_waw:
+I_ori_cg_cp_gpr_hazard_rw_waw_depth0:
   ori x21, x13, -1303 # WAW consumer: writes x21 (must win - last write)
   # Check if x21 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x6, x5, x4, x21, I_ori_cg_cp_gpr_hazard_rw_waw, I_ori_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x6, x5, x4, x21, I_ori_cg_cp_gpr_hazard_rw_waw_depth0, I_ori_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 /////////////////////////////////
 // cp_imm_edges
@@ -3441,7 +3441,7 @@ I_ori_cg_cmp_rd_rs1_b31_str: .string "\"test: 348; cg: I_ori_cg; cp: cmp_rd_rs1;
 I_ori_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 349; cg: I_ori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_ori_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 350; cg: I_ori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_ori_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 351; cg: I_ori_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_ori_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 352; cg: I_ori_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_ori_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 352; cg: I_ori_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_ori_cg_cp_imm_edges_0x0_str: .string "\"test: 353; cg: I_ori_cg; cp: cp_imm_edges; bin: 0x0\""
 I_ori_cg_cp_imm_edges_0x1_str: .string "\"test: 354; cg: I_ori_cg; cp: cp_imm_edges; bin: 0x1\""
 I_ori_cg_cp_imm_edges_0x2_str: .string "\"test: 355; cg: I_ori_cg; cp: cp_imm_edges; bin: 0x2\""

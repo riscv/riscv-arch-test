@@ -3334,16 +3334,16 @@ I_sra_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x20 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x10, x8, x7, x20, I_sra_cg_cp_gpr_hazard_rw_raw_rs2_stressor, I_sra_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs1: x22 = 0xcae1166e
   RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs2: x24 = 0xb1b8aa87
   RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs1: x27 = 0x3244be08
   RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs2: x26 = 0xd8ef41cf
   add x23, x22, x24 # WAW producer: writes x23 (must NOT win)
-I_sra_cg_cp_gpr_hazard_rw_waw:
+I_sra_cg_cp_gpr_hazard_rw_waw_depth0:
   sra x23, x27, x26 # WAW consumer: writes x23 (must win - last write)
   # Check if x23 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x23, I_sra_cg_cp_gpr_hazard_rw_waw, I_sra_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x10, x8, x7, x23, I_sra_cg_cp_gpr_hazard_rw_waw_depth0, I_sra_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
   mv x2, x10 # restore signature pointer to default register for teardown
 
@@ -4566,7 +4566,7 @@ I_sra_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 395; cg: I_sra_cg; c
 I_sra_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 396; cg: I_sra_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 I_sra_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 397; cg: I_sra_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 I_sra_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 398; cg: I_sra_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-I_sra_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 399; cg: I_sra_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_sra_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 399; cg: I_sra_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

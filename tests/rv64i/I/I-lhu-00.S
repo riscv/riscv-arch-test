@@ -847,15 +847,15 @@ I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_stressor:
   RVTEST_SIGUPD(x15, x5, x4, x7, I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_stressor, I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs1: x11 = 0xcb72aed74ba6e17d
   RVTEST_TESTDATA_LOAD_INT(x9, x23) # load rs2: x23 = 0x0b9db93fd00c5790
   addi x18, x9, 713 # copy data_ptr to rs1 and adjust for offset
   add x16, x11, x23 # WAW producer: writes x16 (must NOT win)
-I_lhu_cg_cp_gpr_hazard_rw_waw:
+I_lhu_cg_cp_gpr_hazard_rw_waw_depth0:
   lhu x16, -713(x18) # WAW consumer: writes x16 (must win - last write)
   # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x15, x5, x4, x16, I_lhu_cg_cp_gpr_hazard_rw_waw, I_lhu_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x15, x5, x4, x16, I_lhu_cg_cp_gpr_hazard_rw_waw_depth0, I_lhu_cg_cp_gpr_hazard_rw_waw_depth0_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
 
 /////////////////////////////////
@@ -1349,7 +1349,7 @@ I_lhu_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 94; cg: I_lhu_cg; cp: cmp_rd_r
 I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_depth0_str: .string "\"test: 95; cg: I_lhu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_depth0\""
 I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 96; cg: I_lhu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_nop\""
 I_lhu_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 97; cg: I_lhu_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
-I_lhu_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 98; cg: I_lhu_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+I_lhu_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 98; cg: I_lhu_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 I_lhu_cg_cp_imm_edges_0x0_str: .string "\"test: 99; cg: I_lhu_cg; cp: cp_imm_edges; bin: 0x0\""
 I_lhu_cg_cp_imm_edges_0x1_str: .string "\"test: 100; cg: I_lhu_cg; cp: cp_imm_edges; bin: 0x1\""
 I_lhu_cg_cp_imm_edges_0x2_str: .string "\"test: 101; cg: I_lhu_cg; cp: cp_imm_edges; bin: 0x2\""

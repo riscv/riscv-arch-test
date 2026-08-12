@@ -3399,16 +3399,16 @@ E_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor:
   # Check if x3 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x2, x8, x7, x3, E_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor, E_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str)
 
-# Testcase cp_gpr_hazard_rw waw
+# Testcase cp_gpr_hazard_rw waw_depth0
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs1: x14 = 0x522da0aeb53bb94f
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x5aa64cd077874313
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs1: x12 = 0xe7fbb5a3e91eaef4
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x53a2cb5f112e53c9
   add x11, x14, x15 # WAW producer: writes x11 (must NOT win)
-E_xor_cg_cp_gpr_hazard_rw_waw:
+E_xor_cg_cp_gpr_hazard_rw_waw_depth0:
   xor x11, x12, x9 # WAW consumer: writes x11 (must win - last write)
   # Check if x11 contains the expected result. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x2, x8, x7, x11, E_xor_cg_cp_gpr_hazard_rw_waw, E_xor_cg_cp_gpr_hazard_rw_waw_str)
+  RVTEST_SIGUPD(x2, x8, x7, x11, E_xor_cg_cp_gpr_hazard_rw_waw_depth0, E_xor_cg_cp_gpr_hazard_rw_waw_depth0_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -4653,7 +4653,7 @@ E_xor_cg_cp_gpr_hazard_rw_raw_rs1_nop_str: .string "\"test: 403; cg: E_xor_cg; c
 E_xor_cg_cp_gpr_hazard_rw_raw_rs1_stressor_str: .string "\"test: 404; cg: E_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs1_stressor\""
 E_xor_cg_cp_gpr_hazard_rw_raw_rs2_nop_str: .string "\"test: 405; cg: E_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_nop\""
 E_xor_cg_cp_gpr_hazard_rw_raw_rs2_stressor_str: .string "\"test: 406; cg: E_xor_cg; cp: cp_gpr_hazard_rw; bin: raw_rs2_stressor\""
-E_xor_cg_cp_gpr_hazard_rw_waw_str: .string "\"test: 407; cg: E_xor_cg; cp: cp_gpr_hazard_rw; bin: waw\""
+E_xor_cg_cp_gpr_hazard_rw_waw_depth0_str: .string "\"test: 407; cg: E_xor_cg; cp: cp_gpr_hazard_rw; bin: waw_depth0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

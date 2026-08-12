@@ -8,9 +8,6 @@ ci_enabled: true
 # Sm: medeleg WARL parameter mismatch (config issue, not a QEMU bug)
 # S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
-# PMPSm: pmpcfg bits [6:5] writable (https://gitlab.com/qemu-project/qemu/-/work_items/3531);
-#        causes pmpsm_csr_walk-* to fail on real QEMU (10/54 pmp64/PMPSm tests,
-#        4/36 pmp32/PMPSm tests).
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.0.3)
 # ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)

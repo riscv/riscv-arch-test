@@ -2686,7 +2686,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsS", required_extensions=["S", "Zicsr"])
+@add_priv_test_generator("InterruptsS", required_extensions=["S"])
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests.
 

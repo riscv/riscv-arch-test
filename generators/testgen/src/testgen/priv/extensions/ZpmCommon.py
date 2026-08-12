@@ -153,23 +153,17 @@ class Regs:
 
 
 def _fixed(instr: str) -> list[str]:
+    """
+    Wraps it in `.option norvc` so the assembler cannot silently substitute
+    a compressed (16-bit) encoding,
+    This keeps the emitted instruction matching the exact mnemonic the
+    test ID/coverpoint was built from.
+    """
     return [".option push", ".option norvc", instr, ".option pop"]
-
-
-def _compressed(instr: str) -> list[str]:
-    return [".option push", ".option rvc", instr, ".option pop"]
 
 
 def _fixed_block(body: list[str]) -> list[str]:
     return [".option push", ".option norvc", *body, ".option pop"]
-
-
-def _guard_open(macro: str | None) -> list[str]:
-    return [f"#ifdef {macro}"] if macro else []
-
-
-def _guard_close(macro: str | None) -> list[str]:
-    return [f"#endif // {macro}"] if macro else []
 
 
 def _tid(prefix: str, upper: int, mnemonic: str) -> str:
@@ -353,7 +347,7 @@ def _probe_c_load_cl(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> li
         *_seed(regs),
         *_sentinel(regs),
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"{mn} x{regs.chk}, 0(x{regs.a})"),
+        f"{mn} x{regs.chk}, 0(x{regs.a})",
         write_sigupd(regs.chk, td),
     ]
 
@@ -363,7 +357,7 @@ def _probe_c_store_cs(mn: str, readback: str, tid: str, td: TestData, regs: Regs
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"{mn} x{regs.data}, 0(x{regs.a})"),
+        f"{mn} x{regs.data}, 0(x{regs.a})",
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
     ]
@@ -376,7 +370,7 @@ def _probe_c_load_sp(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> li
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"{mn} x{regs.chk}, 0(sp)"),
+        f"{mn} x{regs.chk}, 0(sp)",
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.chk, td),
     ]
@@ -389,7 +383,7 @@ def _probe_c_store_sp(mn: str, readback: str, tid: str, td: TestData, regs: Regs
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"{mn} x{regs.data}, 0(sp)"),
+        f"{mn} x{regs.data}, 0(sp)",
         f"mv sp, x{regs.tmp}",
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
@@ -404,7 +398,7 @@ def _probe_cd_load_sp(tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"c.fldsp f{regs.fp_c}, 0(sp)"),
+        f"c.fldsp f{regs.fp_c}, 0(sp)",
         f"mv sp, x{regs.tmp}",
         write_sigupd(regs.fp_c, td, "float"),
     ]
@@ -418,7 +412,7 @@ def _probe_cd_store_sp(tid: str, td: TestData, regs: Regs, cg: str) -> list[str]
         f"mv x{regs.tmp}, sp",
         f"mv sp, x{regs.a}",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_compressed(f"c.fsdsp f{regs.fp_c}, 0(sp)"),
+        f"c.fsdsp f{regs.fp_c}, 0(sp)",
         f"mv sp, x{regs.tmp}",
         *_fixed(f"ld x{regs.chk}, 0(x{regs.base})"),
         write_sigupd(regs.chk, td),
@@ -536,29 +530,29 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
         for mn, rb in WRITES:
             lines += _probe_store(mn, rb, _tid(prefix, upper, mn), td, regs, CP_MASKING, cg)
 
-        lines += _guard_open("ZAAMO_SUPPORTED")
+        lines.append("#ifdef ZAAMO_SUPPORTED")
         for mn, rb in RV64A_AMOS:
             lines += _probe_amo(mn, rb, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_open("ZABHA_SUPPORTED")
+        lines.append("#ifdef ZABHA_SUPPORTED")
         for mn, rb in ZABHA_AMOS:
             lines += _probe_amo(mn, rb, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZABHA_SUPPORTED")
-        lines += _guard_open("ZACAS_SUPPORTED")
+        lines.append("#endif // ZABHA_SUPPORTED")
+        lines.append("#ifdef ZACAS_SUPPORTED")
         for mn in ZACAS_AMOS:
             lines += _probe_zacas(mn, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZACAS_SUPPORTED")
-        lines += _guard_close("ZAAMO_SUPPORTED")
+        lines.append("#endif // ZACAS_SUPPORTED")
+        lines.append("#endif // ZAAMO_SUPPORTED")
 
         for mn, guard, mv in FP_READS:
-            lines += _guard_open(guard)
+            lines.append(f"#ifdef {guard}")
             lines += _probe_fp_load(mn, mv, _tid(prefix, upper, mn), td, regs, cg)
-            lines += _guard_close(guard)
+            lines.append(f"#endif // {guard}")
         for mn, rb, guard, mv in FP_WRITES:
-            lines += _guard_open(guard)
+            lines.append(f"#ifdef {guard}")
             lines += _probe_fp_store(mn, rb, mv, _tid(prefix, upper, mn), td, regs, cg)
-            lines += _guard_close(guard)
+            lines.append(f"#endif // {guard}")
 
-        lines += _guard_open("ZCA_SUPPORTED")
+        lines.append("#ifdef ZCA_SUPPORTED")
         for mn in ZCA_READS_CL:
             lines += _probe_c_load_cl(mn, _tid(prefix, upper, mn), td, regs, cg)
         for mn, rb in ZCA_WRITES_CS:
@@ -567,37 +561,37 @@ def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs:
             lines += _probe_c_load_sp(mn, _tid(prefix, upper, mn), td, regs, cg)
         for mn, rb in ZCA_WRITES_SP:
             lines += _probe_c_store_sp(mn, rb, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_open("ZCD_SUPPORTED")
+        lines.append("#ifdef ZCD_SUPPORTED")
         lines += _probe_cd_load_sp(_tid(prefix, upper, "c.fldsp"), td, regs, cg)
         lines += _probe_cd_store_sp(_tid(prefix, upper, "c.fsdsp"), td, regs, cg)
-        lines += _guard_close("ZCD_SUPPORTED")
-        lines += _guard_close("ZCA_SUPPORTED")
+        lines.append("#endif // ZCD_SUPPORTED")
+        lines.append("#endif // ZCA_SUPPORTED")
 
-        lines += _guard_open("ZICFISS_SUPPORTED")
+        lines.append("#ifdef ZICFISS_SUPPORTED")
         for mn, rb, f3 in ZICFISS_AMOS:
             lines += _probe_zicfiss(mn, rb, f3, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZICFISS_SUPPORTED")
+        lines.append("#endif // ZICFISS_SUPPORTED")
 
-        lines += _guard_open("ZICBOZ_SUPPORTED")
+        lines.append("#ifdef ZICBOZ_SUPPORTED")
         lines += _probe_cbo("cbo.zero", _tid(prefix, upper, "cbo.zero"), td, regs, cg)
-        lines += _guard_close("ZICBOZ_SUPPORTED")
+        lines.append("#endif // ZICBOZ_SUPPORTED")
 
-        lines += _guard_open("ZICBOM_SUPPORTED")
+        lines.append("#ifdef ZICBOM_SUPPORTED")
         for mn in ZICBOM_OPS:
             lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZICBOM_SUPPORTED")
+        lines.append("#endif // ZICBOM_SUPPORTED")
 
-        lines += _guard_open("ZICBOP_SUPPORTED")
+        lines.append("#ifdef ZICBOP_SUPPORTED")
         for mn in ZICBOP_OPS:
             lines += _probe_cbo(mn, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZICBOP_SUPPORTED")
+        lines.append("#endif // ZICBOP_SUPPORTED")
 
-        lines += _guard_open("ZVL32B_SUPPORTED")
+        lines.append("#ifdef ZVL32B_SUPPORTED")
         for mn, sew, template in VEC_READS:
             lines += _probe_vec_load(mn, sew, template, _tid(prefix, upper, mn), td, regs, cg)
         for mn, sew, template, rb in VEC_WRITES:
             lines += _probe_vec_store(mn, sew, template, rb, _tid(prefix, upper, mn), td, regs, cg)
-        lines += _guard_close("ZVL32B_SUPPORTED")
+        lines.append("#endif // ZVL32B_SUPPORTED")
     return lines
 
 

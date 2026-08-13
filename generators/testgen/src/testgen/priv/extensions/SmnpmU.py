@@ -76,7 +76,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "SmnpmU",
-    required_extensions=["Smnpm", "Zicsr", "U"],
+    required_extensions=["Smnpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpmu(td: TestData) -> list[TestChunk]:

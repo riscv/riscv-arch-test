@@ -88,7 +88,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "Smmpm",
-    required_extensions=["Smmpm", "Zicsr", "M"],
+    required_extensions=["Smmpm"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smmpm(td: TestData) -> list[TestChunk]:

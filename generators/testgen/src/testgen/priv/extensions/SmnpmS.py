@@ -68,7 +68,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
 
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_{mode}"
-        lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+        lines += ["RVTEST_TSBI_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, pmm, pmlen, regs.tmp)
         lines += ["RVTEST_TSBI_GOTO_SMODE", f"LA(x{regs.base}, pm_lo_page)"]
 
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
@@ -116,7 +116,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "SmnpmS",
-    required_extensions=["Smnpm"],
+    required_extensions=["Smnpm", "S"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpms(td: TestData) -> list[TestChunk]:

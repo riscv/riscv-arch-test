@@ -5,17 +5,21 @@
 
 [[t-Sscofpmf-coverpoints]]
 .Sscofpmf Coverpoints
-//,===
-//include::{testplansdir}/Sscofpmf.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
+
+include::norm/Sscofpmf_norm_rules.adoc[]
 
 ==== Ssstateen Supervisor State Enable
 
 [[t-Ssstateen-coverpoints]]
 .Ssstateen Coverpoints
-//,===
-//include::{testplansdir}/Ssstateen.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
+,===
+
+The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-normative-rules>>).
 
 ==== Ssu64xl 64-bit User Mode
 
@@ -23,41 +27,62 @@ RV64 only
 
 [[t-Ssu64xl-coverpoints]]
 .Ssu64xl Coverpoints
-//,===
-//include::{testplansdir}/Ssu64xl.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
+,===
+
+include::norm/Ssu64xl_norm_rules.adoc[]
 
 ==== Sscounterenw Writable Counter Enables
 
 [[t-Sscounterenw-coverpoints]]
 .Sscounterenw Coverpoints
-//,===
-//include::{testplansdir}/Sscounterenw.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=316102369#gid=316102369[Google Sheet Testplan]
+,===
+
+include::norm/Sscounterenw_norm_rules.adoc[]
 
 ==== Sstvecd Direct Trap Vector
 
 [[t-Sstvecd-coverpoints]]
 .Sstvecd Coverpoints
-//,===
-//include::{testplansdir}/Sstvecd.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=435052299#gid=435052299[Google Sheet Testplan]
+,===
+
+include::norm/Sstvecd_norm_rules.adoc[]
 
 ==== Sstvala Trap Address
 
 [[t-Sstvala-coverpoints]]
 .Sstvala Coverpoints
-//,===
-//include::{testplansdir}/Sstvala.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=691634508#gid=691634508[Google Sheet Testplan]
+,===
+
+include::norm/Sstvala_norm_rules.adoc[]
+
+==== Ssccptr Page Table Reads
+
+[[t-Ssccptr-coverpoints]]
+.Ssccptr Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=16223482#gid=16223482[Google Sheet Testplan]
+,===
+
+include::norm/Ssccptr_norm_rules.adoc[]
+
 
 ==== Ss1p13 Supervisor Mode 1.13
 
 [[t-Ss1p13-coverpoints]]
 .Ss1p13 Coverpoints
-//,===
-//include::{testplansdir}/Ss1p13.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=108970394#gid=108970394[Google Sheet Testplan]
+,===
+
+include::norm/Ss1p13_norm_rules.adoc[]
 
 ==== Ssnpm Pointer Masking
 

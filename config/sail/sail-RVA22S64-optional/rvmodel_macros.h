@@ -151,12 +151,6 @@
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
-##### Sscofpmf #####
-
-#define RVMODEL_MHPMEVENT   mhpmevent3
-#define RVMODEL_MHPMCOUNTER mhpmcounter3
-#define RVMODEL_MHPMEVENT_VAL
-#define RVMODEL_MHPMEVENT_CODE
 
 ##### Sscofpmf #####
 

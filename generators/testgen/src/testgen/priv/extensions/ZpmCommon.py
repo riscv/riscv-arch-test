@@ -170,7 +170,9 @@ def alloc_pm_regs_paired(td: TestData) -> Regs:
     source_pair double as chk/data.
     """
     dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
-    a = td.int_regs.get_registers(1, reg_range=[9, 13, 15])[0]
+    forbidden_partners = {dest_pair + 1, source_pair + 1}
+    a_candidates = [r for r in [9, 13, 15] if r not in forbidden_partners]
+    a = td.int_regs.get_registers(1, reg_range=a_candidates)[0]
     tmp, tmp2, base = td.int_regs.get_registers(3)
     chk = dest_pair
     data = source_pair

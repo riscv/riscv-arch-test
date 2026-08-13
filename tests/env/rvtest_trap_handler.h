@@ -2070,6 +2070,7 @@ code_adj_\__MODE__\()epc:
 
 data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
+        sub     T2, T3, T2                            // T2 = EPC - data_begin, wraps if EPC is below it
         LREG    T6, data_seg_siz(T4)
         bgeu    T2, T6, oos_\__MODE__\()epc           // outside the data segment, either side
         mv      T3, T2                                // relocated offset

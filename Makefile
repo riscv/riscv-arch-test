@@ -167,7 +167,7 @@ help:
 .DEFAULT_GOAL := elfs
 .PHONY: elfs
 elfs: tests
-	@$(UV_RUN) act $(CONFIG_FILES) \
+	@$(UV_RUN) act $(CONFIG_FILES)  -k \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
 		--jobs $(JOBS) \

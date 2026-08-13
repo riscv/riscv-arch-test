@@ -8,9 +8,10 @@
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
 # Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 # Sdtrig* not yet implemented in Sail
+#Smmpm : MXR=1 incorrectly disables pointer masking for M-mode access with MPRV=0 in whisper (issue https://github.com/tenstorrent/whisper/issues/49)
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU,Smmpm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

@@ -43,7 +43,7 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     cp_scountovf_mcounteren:   cross priv_mode_m, of_write_pattern, mcounteren_write_pattern, mcounteren_walking_one;
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target ;
     cp_lcofi:                  cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
-    cp_lcofip_priority:        cross priv_mode_m, mstatus_mie_set, sstatus_sie_set, mie_clear, mie_all_ones, lcofi_ip_one, mip_other_pending;
+    cp_lcofip_priority:        cross priv_mode_m, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
 endgroup
 
 function void sscofpmfSm_sample(int hart, int issue, ins_t ins);

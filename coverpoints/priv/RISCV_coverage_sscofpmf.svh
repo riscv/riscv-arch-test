@@ -31,38 +31,26 @@
     `endif
 
     `ifdef UDB_MXLEN_64
-        mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {
-                bins zero = {0};
-                bins one  = {1};
-        }
+        mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {}
         mhpmevent_of_zero: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {
                 bins zero = {0};
         }
     `else
         // On RV32, Sscofpmf bits (including OF) live in mhpmevent*h[31:28] (CSR address + 0x400)
-        mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][31] {
-                bins zero = {0};
-                bins one  = {1};
-        }
+        mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][31] {}
         mhpmevent_of_zero: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][31] {
                 bins zero = {0};
         }
     `endif
     sip_lcofi: coverpoint ins.current.csr[CSR_SIP][13] {}
     sie_lcofi: coverpoint ins.current.csr[CSR_SIE][13] {}
-    hpmcounter_nonzero: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] != 0) {
-            bins yes = {1};
-            bins no  = {0};
-    }
+    hpmcounter_nonzero: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] != 0) {}
     mip_clear: coverpoint (ins.current.csr[CSR_MIP] == 0) {
             bins yes = {1};
     }
     mie_clear: coverpoint (ins.current.csr[CSR_MIE] == 0) {
             bins yes = {1};
     }
-    mie_all_ones: coverpoint (ins.current.csr[CSR_MIE] == '1) {
-        bins yes = {1};
-   }
     mhpmcounter_write_extremes: coverpoint ins.current.insn {
         wildcard bins write_ones  = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '1);
         wildcard bins write_zeros = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '0);

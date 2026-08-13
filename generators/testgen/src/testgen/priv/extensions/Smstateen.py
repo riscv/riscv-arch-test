@@ -561,7 +561,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Smstateen",
-    required_extensions=["S", "Smstateen"],
+    required_extensions=["Smstateen"],
     march_extensions=["Smstateen", "Zcmt", "Zfinx"],
 )
 def make_smstateen(test_data: TestData) -> list[TestChunk]:

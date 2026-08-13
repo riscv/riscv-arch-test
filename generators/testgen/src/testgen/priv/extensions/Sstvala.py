@@ -164,6 +164,7 @@ def _emit_pf_block(
     instrs_rv32: list[tuple[str, list[str]]],
     section_title: str,
     extra_setup: list[str] | None = None,
+    requires_s1p12: bool = False,
 ) -> list[str]:
     """Emit one page-fault test section.
 
@@ -186,13 +187,21 @@ def _emit_pf_block(
     lines = [comment_banner(coverpoint, section_title), ""]
     lines.append("#if __riscv_xlen == 64")
     lines.append("#ifdef SV39_SUPPORTED")
+    if requires_s1p12:
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV64: Sv39")
     lines.extend(_xlen_block(["SATP_SETUP_RV64(sv39)"], _pf_pte_setup_sv39(_VA_PF_PAGE_RV64, pte_flags), instrs_rv64))
+    if requires_s1p12:
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV39_SUPPORTED")
     lines.append("#else")
     lines.append("#ifdef SV32_SUPPORTED")
+    if requires_s1p12:
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV32: Sv32")
     lines.extend(_xlen_block(["SATP_SETUP_SV32"], _pf_pte_setup_sv32(_VA_PF_PAGE_RV32, pte_flags), instrs_rv32))
+    if requires_s1p12:
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV32_SUPPORTED")
     lines.append("#endif  // xlen")
     return lines
@@ -216,6 +225,7 @@ def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> lis
         instrs_rv64=[_load("lw", _VA_PF_PAGE_RV64, "rv64"), _load("ld", _VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_load("lw", _VA_PF_PAGE_RV32, "rv32")],
         section_title="Load Page Fault (W-only PTE, no R)",
+        requires_s1p12=True,
     )
     test_data.int_regs.return_registers([addr_reg, data_reg])
     return lines

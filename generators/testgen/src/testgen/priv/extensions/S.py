@@ -154,7 +154,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "#ifdef S1P13P0_SUPPORTED",
+            "#ifdef S1P13P0_OR_LATER_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
                 coverpoint,
@@ -186,7 +186,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             "",
             f"csrw sstatus, x{save_reg}        # restore sstatus after Ss1p13 UXL tests",
             "#endif // UDB_MXLEN_64",
-            "#endif // S1P13P0_SUPPORTED",
+            "#endif // S1P13P0_OR_LATER_SUPPORTED",
         ]
     )
 
@@ -483,7 +483,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
     lines.extend(["", "#endif"])
 
@@ -519,7 +519,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
     # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
     # legalize to any legal value, so those iterations check that the field is legal
@@ -633,7 +633,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
+    lines.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
     lines.extend(["", "#endif"])
 

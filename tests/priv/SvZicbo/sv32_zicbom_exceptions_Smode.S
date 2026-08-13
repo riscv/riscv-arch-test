@@ -193,6 +193,7 @@ main:
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 2: Test in S-Mode | WX bit set | expected = 3 Store page faults
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -208,6 +209,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL1, test3
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -314,6 +316,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 13: Test in S-Mode | WX bit set | expected = 3 Store page faults
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), va_data, LEVEL0)
@@ -331,6 +334,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test14
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
@@ -443,6 +447,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 24: Test in S-Mode | PTE.D set for level 1 PTE | expected = 3 Store page faults
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -471,6 +476,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test26
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------

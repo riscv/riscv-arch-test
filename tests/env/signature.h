@@ -43,6 +43,23 @@
     .option pop
 #endif
 
+// RVTEST_SIGUPD_FAST_TRAP(sigptr, tempreg, sigreg, csr, offset, mismatch)
+// Reads, records, or compares one CSR field without advancing sigptr.
+// Fast trap handlers use fixed offsets for their cause, EPC, and TVAL fields,
+// then advance sigptr once after all three fields. Both compile modes emit two
+// instructions so the signature and self-check ELFs have identical code layout.
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    LREG _TMPREG, _OFF(_SIG_PTR)                                           ;\
+    bne _R, _TMPREG, _MISMATCH
+#else
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    SREG _R, _OFF(_SIG_PTR)                                                ;\
+    nop
+#endif
+
 // TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to

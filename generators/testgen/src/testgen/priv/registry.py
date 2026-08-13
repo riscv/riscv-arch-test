@@ -61,7 +61,7 @@ def add_priv_test_generator(
     required_extensions: list[str] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
-    testcases_per_file: int | None = None,
+    testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
@@ -88,7 +88,7 @@ def add_priv_test_generator(
             required_extensions=required_extensions,
             march_extensions=march_extensions,
             params=params,
-            testcases_per_file=testcases_per_file or TESTCASES_PER_PRIV_FILE,
+            testcases_per_file=testcases_per_file,
         )
         return func
 

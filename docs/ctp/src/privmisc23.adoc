@@ -19,9 +19,7 @@ include::norm/Sscofpmf_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
 ,===
 
-The same normative rules apply to Ssstateen as to Smstateen.  They are repeated below.
-
-include::norm/Smstateen_norm_rules.adoc[]
+The same normative rules apply to Ssstateen as to Smstateen (see Table <<t-Smstateen-normative-rules>>).
 
 ==== Ssu64xl 64-bit User Mode
 

@@ -4,7 +4,7 @@
 # Shared across all QEMU configs
 
 ci_enabled: true
-# Status as of QEMU v11.0.3:
+# Status as of QEMU v11.1.0:
 # Sm: medeleg WARL parameter mismatch (config issue, not a QEMU bug)
 # S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
@@ -12,18 +12,17 @@ ci_enabled: true
 #        causes pmpsm_csr_walk-* to fail on real QEMU (10/54 pmp64/PMPSm tests,
 #        4/36 pmp32/PMPSm tests).
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
-#        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.0.3)
+#        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.1.0)
 # ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
-# Svinval: sfence.w.inval/sfence.inval.ir U-mode illegal-instruction checks still fail
-#        (https://gitlab.com/qemu-project/qemu/-/work_items/3493)
 # ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
 #        but cross-granule word/doubleword AMOs execute instead of trapping.
 # Zkr: QEMU sign-extends the CSR read of seed on RV64 (https://gitlab.com/qemu-project/qemu/-/work_items/4121)
+# SsstrictSm/SsstrictS/SsstrictU: Sail does not implement all extensions supported by QEMU.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # ZicntrS and ZicntrU fail on qemu because ecall increments instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4087
-exclude_extensions: "Sm,S,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,PMPSm,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

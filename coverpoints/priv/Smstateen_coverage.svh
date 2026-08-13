@@ -95,7 +95,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SSQOSID_SUPPORTED
                 wildcard bins walking1_55  = {64'b????????1???????????????????????????????????????????????????????};
             `endif
-            `ifdef SM1P13_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 wildcard bins walking1_56  = {64'b???????1????????????????????????????????????????????????????????};
             `endif
             `ifdef SDTRIG_SUPPORTED
@@ -141,7 +141,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SSQOSID_SUPPORTED
                 wildcard bins walking1_23 = {32'b????????1???????????????????????};
             `endif
-            `ifdef SM1P13_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 wildcard bins walking1_24 = {32'b???????1????????????????????????};
             `endif
             `ifdef SDTRIG_SUPPORTED
@@ -207,7 +207,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     `endif
 
     // cp_envcfg: Only present when Sm > 1.11 is supported
-    `ifndef SM1P11P0_SUPPORTED
+    `ifdef SM1P12P0_OR_LATER_SUPPORTED
       `ifdef UDB_MXLEN_64
           envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][62] {
                   bins envcfg_disabled = {1'b0};
@@ -247,7 +247,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // ── Sm1p13 + Hypervisor dependent coverpoints (cp_p1p13) ─────────────
-`ifdef SM1P13_SUPPORTED
+`ifdef SM1P13P0_OR_LATER_SUPPORTED
     p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
         bins p1p13_disabled = {1'b0};
         bins p1p13_enabled  = {1'b1};
@@ -314,7 +314,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // Row 8: Sm > 1.11 only
-    `ifndef SM1P11P0_SUPPORTED
+    `ifdef SM1P12P0_OR_LATER_SUPPORTED
       cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
     `endif
 
@@ -329,7 +329,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // Row 13: Sm1p13 + Hypervisor only
-`ifdef SM1P13_SUPPORTED
+`ifdef SM1P13P0_OR_LATER_SUPPORTED
     `ifdef H_SUPPORTED
         cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
     `endif

@@ -26,6 +26,8 @@
 
 RVTEST_BEGIN
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
+
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
 .macro VERIFICATION_RWX TEST_CASE
@@ -98,7 +100,7 @@ main:
 
   SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
-  #ifndef SM1P11P0_SUPPORTED
+  #ifdef SM1P12P0_OR_LATER_SUPPORTED
       LI(t0, MENVCFG_PBMTE)
       csrc menvcfg, t0                                                  // Clear menvcfg.PBMTE (Disable SVPBMT)
   #endif
@@ -138,6 +140,8 @@ main:
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
+#endif
+
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 

@@ -29,4 +29,19 @@
   #define MSECCFG_SUPPORTED
 #endif
 
+// Cumulative privileged ISA version defines
+#if defined(S1P13P0_SUPPORTED)
+  #define S1P12P0_OR_LATER_SUPPORTED
+  #define S1P13P0_OR_LATER_SUPPORTED
+#elif defined(S1P12P0_SUPPORTED)
+  #define S1P12P0_OR_LATER_SUPPORTED
+#endif
+
+#if defined(SM1P13P0_SUPPORTED)
+  #define SM1P12P0_OR_LATER_SUPPORTED
+  #define SM1P13P0_OR_LATER_SUPPORTED
+#elif defined(SM1P12P0_SUPPORTED)
+  #define SM1P12P0_OR_LATER_SUPPORTED
+#endif
+
 #endif // DERIVED_CONFIG_H

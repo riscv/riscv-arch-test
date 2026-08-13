@@ -24,6 +24,8 @@
 
 RVTEST_BEGIN
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
+
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
 .macro VERIFICATION_RWX TEST_CASE
@@ -114,6 +116,8 @@ main:
   TEST_CASES_RUNNER Smode, va_data, LEVEL0, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
+#endif
+
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 

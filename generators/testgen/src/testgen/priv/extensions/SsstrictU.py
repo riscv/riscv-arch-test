@@ -54,11 +54,10 @@ _U_CSR_SKIP: frozenset[int] = frozenset(
 
 @add_priv_test_generator(
     "SsstrictU",
-    required_extensions=["Sm", "U", "Zicsr", "Ssstrict"],
+    required_extensions=["U", "Ssstrict"],
     march_extensions=[
         "I",
         "V",
-        "Zicsr",
     ],
     extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define RVTEST_TEMP_BOOT_TO_U"],
 )

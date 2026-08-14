@@ -199,7 +199,7 @@ def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfS performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
-    # tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
+    tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
     tc.code.extend(_generate_lcofip_hw_only_s_tests(test_data))
     tc.code.extend(_generate_scountovf_shadow_s_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())

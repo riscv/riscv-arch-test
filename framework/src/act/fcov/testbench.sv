@@ -166,11 +166,6 @@ module testbench;
           "PC":             num = $sscanf(val, "%h", pc_rdata);
           "MODE":           num = $sscanf(val, "%d", mode);
           "MODE_VIRT":      num = $sscanf(val, "%d", mode_virt);
-          // Interrupts
-          //"M_EXT_INTR":     num = $sscanf(val, "%b", m_ext_intr);
-          //"S_EXT_INTR":     num = $sscanf(val, "%b", s_ext_intr);
-          //"M_TIMER_INTR":   num = $sscanf(val, "%b", m_timer_intr);
-          //"M_SOFT_INTR":    num = $sscanf(val, "%b", m_soft_intr);
           // Virtual Memory
           "VIRT_ADR_I":     num = $sscanf(val, "%h", virt_adr_i);
           "VIRT_ADR_D":     num = $sscanf(val, "%h", virt_adr_d);

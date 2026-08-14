@@ -105,10 +105,10 @@
             wildcard bins c_lwsp = {C_LWSP};
             wildcard bins c_ldsp = {C_LDSP};
             // Zcd compressed double-precision FP store and load
-        `ifdef ZCD_SUPPORTED
-            wildcard bins c_fsdsp = {C_FSDSP};
-            wildcard bins c_fldsp = {C_FLDSP};
-        `endif // ZCD_SUPPORTED
+            `ifdef ZCD_SUPPORTED
+                wildcard bins c_fsdsp = {C_FSDSP};
+                wildcard bins c_fldsp = {C_FLDSP};
+            `endif // ZCD_SUPPORTED
         `endif // ZCA_SUPPORTED
         // Zicboz cache-block zero (write, address in rs1)
         `ifdef ZICBOZ_SUPPORTED

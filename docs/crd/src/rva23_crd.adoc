@@ -143,7 +143,7 @@ controllable to allow testing of the behavior of lower privilege modes with
 these features enabled and disabled. Note that ADUE may be read-only zero
 because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7
 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
-and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features. 
+and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features.
 // FIOM is out of scope because I/O memory is not required by the RVA23 profile.
 // KAD: Svpbmt is mandatory in RVA23, thus I/O memory is required.
 All

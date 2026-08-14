@@ -73,7 +73,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fs1_badNB|12|The fs1 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs2_badNB|12|The fs2 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs3_badNB|12|The fs3 register contains an incorrectly-NaN-boxed lower-precision value.
-|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard. [TODO: this might change when hazards are updated]
+|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard. [TODO: this should be dropped when full hazards are implemented]
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
@@ -212,13 +212,11 @@ The categories of SI are given in <<t-secondary-instruction-categories>>.
 |FP Source||fsw (fs2)||||fmadd.s (fs1/2/3), fdiv.s (fs1/2), fli.s (fs1), fsqrt.d (fs1, D), fsqrt.h (fs1, Zfh), fsqrt.q (fs1, Q)||vfadd.vf (fs1), vmv.v.f (fs1)
 |Vector Dest (vd)||vle32.v|||||vadd.vi|vfadd.vf
 |Vector Source||vse32.v(vs2)|||||vadd.vv (vs1/2), vadd.vi (vs2), vmacc.vv (vs1/2/vd)|vfadd.vv (vs1/2), vfsqrt.v (vs2), vfmacc.vv (vs1/2/vd)
-|Memory Dest||sw, amoswap.w (Zaamo)||||fsw|vse32.v|
+|Memory Dest||sw, amoswap.w (Zaamo), cbo.zero (Zicboz)||||fsw|vse32.v|
 |Memory Source||lw, amoswap.w (Zaamo)||||fsw|vle32.v|
 |CSR Source|n/a|||||csrr fflags|csrr vcsr|
 |CSR Dest|n/a|||||csrw fflags|csrw vcsr|
 |===
-
-
 
 When multiple representative instructions are listed, one is randomly selected from the list for each test. Certain categories and cdertain instructions in a category (amoswap, fli, fsqrt.d/h/q) only may be selected if the relevant extension is present.  Different source instructions consume one, two, or three sources.  Loads, stores, and atomics always use rs1 as a pointer to a scratch memory location holding a random value. Subword load, store, and atomic IUTs use a random naturally aligned offset in the range [0, 3]. Tests assume mstatus.FS/VS are dirty, if applicable.  Loads and atomics have a memory source operand.  Stores, atomics, and cbo.zero have a memory destination operand.
 
@@ -253,8 +251,9 @@ The test cases are as follows:
 ***** If delay > 0, perform delay dependent instructions
 ***** Perform SI
 ***** SIGUPD SI dest or otherwise test SI result
-***** For WAR, also SIGUPD IUT dest
+***** For WAR, also SIGUPD IUT dest to confirm IUT got proper source
 
+Hazard coverpoints are named cp_hazard_{hazard_type}_{IUT source/dest}_{SI category}_{delay}. IUT source/dest is one of {rs1, rs2, rd, fs1, fs2, fs3, fd, vs1, vs2, vd, memr, memw, csrr, csrw}.
 
 include::i.adoc[]
 include::m.adoc[]

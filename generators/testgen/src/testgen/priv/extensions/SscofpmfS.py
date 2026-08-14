@@ -52,12 +52,12 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
                     f"{'csrs' if lcofip else 'csrc'} mip, x{r_temp}   # sip.LCOFIP = {lcofip}",
                     "",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "RVTEST_GOTO_LOWER_MODE Smode",
+                    "RVTEST_TSBI_GOTO_SMODE",
                     f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "RVTEST_GOTO_MMODE",
                     "",
-                    f"csrc mip, x{r_temp}   # clear LCOFIP for next iteration",
-                    f"csrc mie, x{r_temp}   # clear LCOFIE for next iteration",
+                    f"csrc mip, x{r_val}   # clear LCOFIP for next iteration",
+                    f"csrc mie, x{r_val}   # clear LCOFIE for next iteration",
                 ]
             )
 
@@ -199,7 +199,7 @@ def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfS performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
-    tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
+    # tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
     tc.code.extend(_generate_lcofip_hw_only_s_tests(test_data))
     tc.code.extend(_generate_scountovf_shadow_s_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())

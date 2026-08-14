@@ -48,12 +48,12 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
                     f"{'csrs' if lcofip else 'csrc'} mip, x{r_temp}   # sip.LCOFIP = {lcofip}",
                     "",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "RVTEST_GOTO_LOWER_MODE Umode",
+                    "RVTEST_TSBI_GOTO_UMODE",
                     f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "RVTEST_GOTO_MMODE",
                     "",
-                    f"csrc mip, x{r_temp}   # clear LCOFIP for next iteration",
-                    f"csrc mie, x{r_temp}   # clear LCOFIE for next iteration",
+                    f"csrc mip, x{r_val}   # clear LCOFIP for next iteration",
+                    f"csrc mie, x{r_val}   # clear LCOFIE for next iteration",
                 ]
             )
 

@@ -151,4 +151,11 @@
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
+##### Sscofpmf #####
+
+#define RVMODEL_MHPMEVENT   mhpmevent3
+#define RVMODEL_MHPMCOUNTER mhpmcounter3
+#define RVMODEL_MHPMEVENT_VAL              // Values will be assigned once there is a way to increment counters
+#define RVMODEL_MHPMEVENT_CODE
+
 #endif // _RVMODEL_MACROS_H

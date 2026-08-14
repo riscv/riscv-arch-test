@@ -365,6 +365,8 @@ def _mprv_write_pte(table_label: str, vpn_index: int, target_label: str, perms: 
         f"LI(x7, {vpn_index * 8})",
         "add x6, x6, x7",
         f"LA(x8, {target_label})",
+        "srli x8, x8, 12",
+        "slli x8, x8, 10",
         f"LI(x7, {perms})",
         "or x8, x8, x7",
         "sd x8, 0(x6)",

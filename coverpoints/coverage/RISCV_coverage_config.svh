@@ -200,6 +200,9 @@
 `ifdef SSCOFPMFS_COVERAGE
   `include "SscofpmfS_coverage.svh"
 `endif
+`ifdef SSCOFPMFSM_COVERAGE
+  `include "SscofpmfSm_coverage.svh"
+`endif
 `ifdef SSCOFPMFU_COVERAGE
   `include "SscofpmfU_coverage.svh"
 `endif

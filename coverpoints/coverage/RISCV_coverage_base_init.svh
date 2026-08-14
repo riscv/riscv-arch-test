@@ -262,6 +262,10 @@
         `cover_info("//      SscofpmfS - Enabled");
         `include "SscofpmfS_coverage_init.svh"
     `endif
+    `ifdef COVER_SSCOFPMFSM
+        `cover_info("//      SscofpmfSm - Enabled");
+        `include "SscofpmfSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SSCOFPMFU
         `cover_info("//      SscofpmfU - Enabled");
         `include "SscofpmfU_coverage_init.svh"

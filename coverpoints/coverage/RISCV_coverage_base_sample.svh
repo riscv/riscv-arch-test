@@ -199,6 +199,9 @@
     `ifdef COVER_SSCOFPMFS
         sscofpmfs_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSCOFPMFSM
+        sscofpmfsm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSCOFPMFU
         sscofpmfu_sample(hart, issue, ins);
     `endif

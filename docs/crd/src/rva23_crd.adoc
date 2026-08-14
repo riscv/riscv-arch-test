@@ -156,7 +156,7 @@ they do not relate to RVA23 features.  Note `mseccfg.PMM` affects Smmpm, which
 is not part of RVA23.
 | `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the
 behavior of lower privilege modes when certain features are disabled. Other
-fields are our of scope because they do not relate to RVA23 features.
+fields are out of scope because they do not relate to RVA23 features.
 | `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a designer-supplied M-mode trap handler intercepts invisible traps and relays the rest to S-mode.
 | `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, the trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
 | `mhartid` | Must be readable to influence the behavior of multicore tests.

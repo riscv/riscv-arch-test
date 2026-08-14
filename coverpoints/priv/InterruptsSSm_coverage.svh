@@ -215,9 +215,12 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
     }
-    s_ext_intr_low: coverpoint ins.current.s_ext_intr {
-        bins no_sei = {0};
-    }
+    // Following coverpoint is dropped because RVVI doesn't yet tie s_ext_intr to anything.
+    // For now, rely on test keeping external interrupt controller pin low when testing writes to mip.SEIP
+    // Could restore if it is added to the RVVI spec later.
+    //s_ext_intr_low: coverpoint ins.current.s_ext_intr {
+    //    bins no_sei = {0};
+    //}
 
     // main coverpoints
 
@@ -234,10 +237,10 @@ covergroup InterruptsSSm_cg with function sample(ins_t ins);
     cp_trigger_sti_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_stip_one, csrrs, write_mstatus_mie;
     cp_trigger_ssi_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_ssip_one, csrrs, write_mstatus_mie;
     cp_trigger_sei_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_seip_one, csrrs, write_mstatus_mie;
-    cp_sei1:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrw, write_mip_seip;
-    cp_sei2:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrs, write_mip_seip;
+    cp_sei1:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, /*s_ext_intr_low,*/ csrrw, write_mip_seip;
+    cp_sei2:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, /*s_ext_intr_low,*/ csrrs, write_mip_seip;
     cp_sei3:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip_one;
-    cp_sei4:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, s_ext_intr_low,  csrrc, write_mip_seip;
+    cp_sei4:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, /*s_ext_intr_low,*/ csrrc, write_mip_seip;
     cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip_one, csrrc, write_mip_seip;
     cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip;
     cp_global_ie:               cross priv_mode_m, mstatus_mie, mstatus_sie, mip_walking_m, mip_mie_eq;

@@ -459,10 +459,11 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "Attempt to read debug-mode registers.  Should throw illegal instruction",
+            "Attempt to read debug-mode registers.  Should throw illegal instruction if Sdext is implemented; otherwise, reserved and unpredictable.",
         ),
     )
-    for csr in range(0x7B0, 0x7C0):
+    lines.append("#ifdef SDEXT_SUPPORTED")
+    for csr in range(0x7B0, 0x7B4):
         lines.extend(
             [
                 "",
@@ -471,6 +472,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 f"csrr t0, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
             ]
         )
+    lines.append("#endif // SDEXT_SUPPORTED")
 
     ######################################
     coverpoint = "cp_csr_ro"

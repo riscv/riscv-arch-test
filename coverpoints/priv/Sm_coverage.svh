@@ -332,9 +332,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
-    csr_debug: coverpoint ins.current.insn[31:20]  {
-        bins debug_only[] = {[12'h7B0:12'h7BF]};
-    }
     csr_ro: coverpoint ins.current.insn[31:20] {
         bins readonly[] = {[12'hC00:12'hFFF]};
     }
@@ -423,7 +420,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
-    cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 
     // counters
@@ -435,6 +431,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
+
+    `ifdef SDEXT_SUPPORTED
+        // debug registers should trap from M-mode if SDEXT is supported
+        csr_debug: coverpoint ins.current.insn[31:20]  {
+            bins debug_only[] = {[12'h7B0:12'h7B3]};
+        }
+        cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
+    `endif
 
     `ifdef UDB_TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written

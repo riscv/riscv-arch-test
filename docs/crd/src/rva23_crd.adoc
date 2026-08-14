@@ -163,7 +163,7 @@ fields are our of scope because they do not relate to RVA23 features.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
 |===
 
-The Certification Test Environment does not need to access the equivalent of the  following M-mode CSRs/fields:
+The Certification Test Environment does not need to access the equivalent of the following M-mode CSRs/fields:
 
 [options=header]
 [cols="1,5"]

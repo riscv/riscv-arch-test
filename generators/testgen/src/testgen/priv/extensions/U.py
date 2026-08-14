@@ -78,13 +78,9 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
-    tc.code.extend(
-        [
-            comment_banner(
-                coverpoint,
-                "Attempt to write read-only CSRs.  Should throw illegal instruction",
-            ),
-        ]
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
 
     for csr in range(0xC00, 0xD00):

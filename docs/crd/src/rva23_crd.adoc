@@ -35,7 +35,7 @@ a| * Removed "custom M-mode"; made clarifications.
 
 This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
 
-The RVA23 processor certification requires compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23 Profiles], which is comprised of the RVA23S64 and RVA23U64 profiles. As described in these profile specifications,
+RVA23 processor certification requires compliance with the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23_profiles[RVA23S64 and RVA23U64 Profiles]. As described in these profile specifications,
 compliance requires that the RV64I base instruction set and all mandatory extensions of the profile must be
 implemented. Furthermore, any optional extensions as specified in the profile may be implemented. Any optional portions
 of the base ISA and these extensions may be implemented, but if they are
@@ -144,16 +144,15 @@ these features enabled and disabled. Note that ADUE may be read-only zero
 because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7
 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
 and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features.
-// FIOM is out of scope because I/O memory is not required by the RVA23 profile.
-// KAD: Svpbmt is mandatory in RVA23, thus I/O memory is required.
+| `mhpmevent*` | May need to be writable to trigger Sscofpmf LCOFI
+| `mhpmcounter*` | May need to be writable to trigger Sscofpmf LCOFI
+
 All
 writable fields must be controllable to allow testing of the behavior of lower
 privilege modes when certain features are disabled.
 | `mseccfg` | SSEED and USEED must be controllable if Zkr is supported;
 otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are out of scope
- because
-they do not relate to RVA23 features.  Note `mseccfg.PMM` affects Smmpm, which
-is not part of RVA23.
+ because they do not relate to RVA23 features.
 | `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the
 behavior of lower privilege modes when certain features are disabled. Other
 fields are out of scope because they do not relate to RVA23 features.
@@ -188,6 +187,8 @@ are out of scope for RVA23.
 | `mtval` | Does not affect the behavior of lower privilege modes.
 | `mtinst` | Does not affect the behavior of lower privilege modes.
 | `mtval2` | Does not affect the behavior of lower privilege modes.
+| `mcycle` | Not tested.
+| `minstret` | Not tested.
 | `mtimecmp` | MTI is not tested.
 | `msip` | MSI is not tested.
 | PMP CSRs | PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
@@ -195,30 +196,18 @@ are out of scope for RVA23.
 
 === Interrupts
 All supervisor interrupts (SEI, STI, SSI, and LCOFI) are tested.
-Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested. Machine
-interrupts are subjected to limited testing as described above.
+Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested.
+Machine interrupts are not tested because they are not in the RVA23 profile.
 
 LCOFI is mandatory because it is part of the Sscofpmf extension, which is required by the profile. STI and VSTI are mandatory because Sstc is a required part of the profile. The other supervisor interrupts (SEI, SSI) are individually optional per the supervisor specification: "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."  SGEI is optional because GEILEN can be 0.  The other hypervisor interrupts (VSEI, VSSI) are vague in the specification but are treated as optional because their supervisor counterparts are optional.
 
-=== User Requirements
-// KAD: It appears that this list is incomplete which can cause confusion
-// This should provide a reference to the CTP which can provide
-// the one complete and official list of DUT configuration information
-// If we want to reiterate what the developer needs to provide for the SEE
-// we need to provide broad categories (with links) rather than partial specifics
+=== Developer Requirements
 
-The developer is responsible for providing many things including:
+The developer must provide:
 
-* DUT configuration information described in the CTP, including UDB description, linker file describing memory map, sail.json configured to match DUT, RVMODEL macros specific to DUT.
+* DUT configuration information described in the CTP.
 * Custom trap handler, if any, to handle invisible traps.
-* Implementation specific boot code, as needed.
-
-// if standard M-mode boot code does not run on the DUT or if additional
-// configuration is necessary.
-
-// KAD: It is generally the case that implementations provide their own boot
-// code; We can provide a sample, but they are less likely to run into boot
-// issues (e.g., forgotten implementation-specific needs) if they use their own
+* Implementation-specific boot code, as needed.
 
 === Parameters
 

@@ -196,8 +196,8 @@ are out of scope for RVA23.
 
 === Interrupts
 All supervisor interrupts (SEI, STI, SSI, and LCOFI) are tested.
-Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested. Machine
-interrupts are out of scope.
+Hypervisor interrupts VSEI, VSTI, VSSI, and SGEI are also tested.
+Machine interrupts are not tested because they are not in the RVA23 profile.
 
 LCOFI is mandatory because it is part of the Sscofpmf extension, which is required by the profile. STI and VSTI are mandatory because Sstc is a required part of the profile. The other supervisor interrupts (SEI, SSI) are individually optional per the supervisor specification: "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."  SGEI is optional because GEILEN can be 0.  The other hypervisor interrupts (VSEI, VSSI) are vague in the specification but are treated as optional because their supervisor counterparts are optional.
 

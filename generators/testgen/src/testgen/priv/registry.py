@@ -14,6 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from testgen.constants import TESTCASES_PER_PRIV_FILE
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.discovery import discover_and_import_modules
@@ -46,6 +47,7 @@ class PrivTestRegistryEntry:
     required_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     params: list[str] | None = None
+    testcases_per_file: int = TESTCASES_PER_PRIV_FILE
 
 
 # Registry: dict mapping testsuite name to its registry entry
@@ -59,6 +61,7 @@ def add_priv_test_generator(
     required_extensions: list[str] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
+    testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
@@ -73,6 +76,9 @@ def add_priv_test_generator(
                           If None, march is built from required_extensions.
         params: Optional list of parameter constraints for the test (e.g., ["NUM_PMP_ENTRIES: '>=16'"]).
                 These are included in the test YAML header for test selection.
+        testcases_per_file: Optional max testcases per generated test file for this testsuite.
+                            Defaults to TESTCASES_PER_PRIV_FILE. Individual test chunks are never
+                            split, so a chunk larger than this still produces an oversized file.
     """
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
@@ -82,6 +88,7 @@ def add_priv_test_generator(
             required_extensions=required_extensions,
             march_extensions=march_extensions,
             params=params,
+            testcases_per_file=testcases_per_file,
         )
         return func
 
@@ -123,6 +130,11 @@ def get_priv_test_march_extensions(testsuite: str) -> list[str] | None:
 def get_priv_test_params(testsuite: str) -> list[str] | None:
     """Get the parameter constraints for a priv testsuite."""
     return _get_entry(testsuite).params
+
+
+def get_priv_test_testcases_per_file(testsuite: str) -> int:
+    """Get the max testcases per generated test file for a priv testsuite."""
+    return _get_entry(testsuite).testcases_per_file
 
 
 # Discover and import priv test generators at module load

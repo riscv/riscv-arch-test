@@ -12,7 +12,6 @@ from pathlib import Path
 from random import seed
 
 from testgen.asm.helpers import reproducible_hash
-from testgen.constants import TESTCASES_PER_PRIV_FILE
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.data.test_chunk import group_test_chunks
@@ -23,13 +22,15 @@ from testgen.priv import (
     get_priv_test_march_extensions,
     get_priv_test_params,
     get_priv_test_required_extensions,
+    get_priv_test_testcases_per_file,
 )
 
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     """
     Generate tests for a privileged testsuite.
-    Splits test chunks into multiple files if they exceed TESTCASES_PER_PRIV_FILE.
+    Splits test chunks into multiple files if they exceed the testsuite's testcases-per-file limit
+    (TESTCASES_PER_PRIV_FILE unless the generator overrides it).
 
     Args:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
@@ -67,7 +68,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     chunks = priv_test_generator(test_data)
 
     # Group by named split, split each group into test files, and write
-    for split_name, test_files in group_test_chunks(chunks, TESTCASES_PER_PRIV_FILE):
+    for split_name, test_files in group_test_chunks(chunks, get_priv_test_testcases_per_file(testsuite)):
         for file_idx, test_file_chunks in enumerate(test_files):
             write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
 

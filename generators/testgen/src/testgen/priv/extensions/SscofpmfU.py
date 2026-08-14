@@ -79,6 +79,9 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
 )
 def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfU performance-counter-overflow testsuite."""
+    test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
     tc.code.extend(_generate_lcofi_sip_u_tests(test_data))
-    return generate_sscofpmf_suite(test_data, "U")
+    test_chunks.append(test_data.end_test_chunk())
+    test_chunks.extend(generate_sscofpmf_suite(test_data, "U"))
+    return test_chunks

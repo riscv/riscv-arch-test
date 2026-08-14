@@ -144,8 +144,8 @@ these features enabled and disabled. Note that ADUE may be read-only zero
 because Svadu is optional, and that PMM may only be able to hold PMLEN=0 and 7
 per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
 and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features.
-| `mhpmevent*` | May need to be writable to trigger Sscofpmf LOCFI
-| `mhpmcounter*` | May need to be writable to trigger Sscofpmf LOCFI
+| `mhpmevent*` | May need to be writable to trigger Sscofpmf LCOFI
+| `mhpmcounter*` | May need to be writable to trigger Sscofpmf LCOFI
 
 All
 writable fields must be controllable to allow testing of the behavior of lower

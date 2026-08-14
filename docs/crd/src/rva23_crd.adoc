@@ -88,7 +88,7 @@ necessary M-mode code needed to complete the requested action. One such need for
 T-SBI call is necessary to fulfill a requirement of RVA23's defined Sspm
 extension which requires an execution environment to provide a means to select
 PMLEN. Another need is for the tests to be able to request that specific traps are
-delegated away from M- mode.
+delegated away from M-mode.
 
 NOTE: There is no requirement that any traps can be delegated. But if they can
 be, the T-SEE must provide a means to request that they are and a means to

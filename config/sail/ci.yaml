@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Sail reference model
-
+# SscofpmfSm,SscofpmfS,SscofpmfU will be removed from here once sail starts incrementing counters . Issue: https://github.com/riscv/sail-riscv/issues/1733
 ci_enabled: true
 # exclude SsstrictSm because of Sail sys_control being fixed in 0.13 release
 exclude_extensions: "SscofpmfSm,,SscofpmfS,SscofpmfU,SsstrictSm,SdtrigSm,SdtrigS,SdtrigU"

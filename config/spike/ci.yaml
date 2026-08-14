@@ -4,6 +4,7 @@
 # Shared across all Spike configs
 
 # SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in spike-max supported by Sail
+# SscofpmfSm,SscofpmfS,SscofpmfU will be added back once sail starts incrementing counters . Issue: https://github.com/riscv-software-src/riscv-isa-sim/issues/2370
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues.
 # TODO: Remove SsstrictV when sail SsstrictV is implemented

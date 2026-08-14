@@ -163,6 +163,9 @@
     `ifdef COVER_PMPZICBO
         pmpzicbo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_RISCV
+        riscv_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_S
         s_sample(hart, issue, ins);
     `endif
@@ -192,6 +195,12 @@
     `endif
     `ifdef COVER_SSCCPTR
         ssccptr_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSCOFPMFS
+        sscofpmfs_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSCOFPMFU
+        sscofpmfu_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);

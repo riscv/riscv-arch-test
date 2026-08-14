@@ -214,6 +214,10 @@
         `cover_info("//      PMPZicbo - Enabled");
         `include "PMPZicbo_coverage_init.svh"
     `endif
+    `ifdef COVER_RISCV
+        `cover_info("//      RISCV - Enabled");
+        `include "RISCV_coverage_init.svh"
+    `endif
     `ifdef COVER_S
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
@@ -253,6 +257,14 @@
     `ifdef COVER_SSCCPTR
         `cover_info("//      Ssccptr - Enabled");
         `include "Ssccptr_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSCOFPMFS
+        `cover_info("//      SscofpmfS - Enabled");
+        `include "SscofpmfS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSCOFPMFU
+        `cover_info("//      SscofpmfU - Enabled");
+        `include "SscofpmfU_coverage_init.svh"
     `endif
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");

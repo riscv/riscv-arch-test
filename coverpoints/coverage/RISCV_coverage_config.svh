@@ -164,6 +164,9 @@
 `ifdef PMPZICBO_COVERAGE
   `include "PMPZicbo_coverage.svh"
 `endif
+`ifdef RISCV_COVERAGE
+  `include "RISCV_coverage.svh"
+`endif
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
@@ -193,6 +196,12 @@
 `endif
 `ifdef SSCCPTR_COVERAGE
   `include "Ssccptr_coverage.svh"
+`endif
+`ifdef SSCOFPMFS_COVERAGE
+  `include "SscofpmfS_coverage.svh"
+`endif
+`ifdef SSCOFPMFU_COVERAGE
+  `include "SscofpmfU_coverage.svh"
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"

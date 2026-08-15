@@ -14,7 +14,7 @@
 covergroup SscofpmfS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RVTEST_coverage_sscofpmf.svh"
+    `include "RISCV_coverage_sscofpmf.svh"
     of_walking_one: coverpoint $clog2(`OF_VEC) iff ($onehot(`OF_VEC)) {
             bins b_of[] = {[0:28]};  // one bin per OF bit position (mhpmevent3..mhpmevent31 = 29 bits)
     }

@@ -15,7 +15,7 @@
 covergroup SscofpmfU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RVTEST_coverage_sscofpmf.svh"
+    `include "RISCV_coverage_sscofpmf.svh"
     sstatus_sie_clear: coverpoint ins.current.csr[CSR_SSTATUS][1] {
             bins zero = {0};
     }

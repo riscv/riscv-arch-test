@@ -203,7 +203,7 @@ The categories of SI are given in <<t-secondary-instruction-categories>>.
 .Secondary Instruction Categories
 [options=header]
 |===
-|Category|ALU|Memory|Control|CSR (Zicxr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
+|Category|ALU|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
 |Int Dest (rd)|auipc, li|lw, amoswap.w (Zaamo)|jal|csrr|mul, div|fcvt.w.s, fmv.x.w, fclass.s, feq.s|vmv.x.s|
 |Int Source|add (rs1/2), addi (rs1)|sw (rs2), amoswap.w (rs2, Zaamo)|beq (rs1/2)|csrw (rs1)|mul (rs1/2), div (rs1/2)|fcvt.s.w (rs1), fmv.w.x (rs1)
 |vadd.vx (rs1), vmv.v.x (rs1)|

@@ -21,6 +21,8 @@ class InstructionInfo:
 
     Formatter-aware callers add ``widened_regs`` after parsing; it defaults to
     an empty set here because widening is not encoded in the instruction name.
+    ``emul2_regs`` likewise marks registers whose EMUL is doubled while the
+    element width stays at SEW (e.g. Zvzip vzip.vv/vunzipe.v/vunzipo.v).
     """
 
     segments: int
@@ -28,6 +30,7 @@ class InstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     widened_regs: set[str] = field(default_factory=set)
+    emul2_regs: set[str] = field(default_factory=set)
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
         """Return a register's size multiplier relative to SEW."""

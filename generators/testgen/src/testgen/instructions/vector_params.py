@@ -36,6 +36,10 @@ def get_register_emul(
 
     emul = lmul * info.get_size_multiplier(register_name, sew)
 
+    # Registers with doubled EMUL at the same SEW occupy twice as many registers
+    if register_name in vector_type_config.emul2_regs:
+        emul *= 2
+
     if (
         (vector_type_config.mask_regs is not None and register_name in vector_type_config.mask_regs)
         or (vector_type_config.scalar_regs is not None and register_name in vector_type_config.scalar_regs)
@@ -274,6 +278,9 @@ def get_occupied_v_registers(
 
     # segment instructions take up consecutive registers even when lmul < 1
     emul = math.ceil(info.get_size_multiplier(register, sew) * lmul) * info.segments
+    if register in info.emul2_regs:
+        # Doubled EMUL at the same SEW (e.g. Zvzip): the group spans twice as many registers
+        emul = math.ceil(2 * lmul)
 
     if start_no_overlap or single_register or emul < 1:
         start_no_register_overlap = 0
@@ -379,6 +386,7 @@ def generate_random_vector_params(
     )
     info = parse_instruction_info(instruction, instr_type)
     info.widened_regs = instr_type_config.vector_data.widened_regs
+    info.emul2_regs = instr_type_config.vector_data.emul2_regs
 
     no_overlap = get_overlap_constraints(info, instr_type_config, masked, sew)
     if additional_no_overlap is not None:
@@ -466,6 +474,9 @@ def generate_random_vector_params(
             # Register the label
             eew = int(sew * info.get_size_multiplier(register, sew))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
+            if suite != "base" and register in info.emul2_regs:
+                # Doubled EMUL at SEW holds twice as many elements
+                element_count *= 2
             test_data.register_vector_data(label, eew, random_elements=element_count)
 
     # immediate handling

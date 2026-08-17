@@ -1,0 +1,83 @@
+# Normative rule to coverpoint mappings
+# Generated from Zvzip normative rule definitions
+
+normative_rule_definitions:
+  # The Zvzip extension depends on the Zve32x extension.
+  - name: Zvzip_dependent_Zve32x
+    coverpoint: [""]
+
+  # vzip.vv operates with an effective vector length (EVL) of 2*VL.
+  - name: vzip_evl
+    coverpoint: [""]
+
+  # For destination element index i, if i is even then vd[i] = vs2[i/2], and
+  # if i is odd then vd[i] = vs1[i/2].
+  - name: vzip_op
+    coverpoint: [""]
+
+  # The destination EMUL of vzip.vv is 2xLMUL.
+  - name: vzip_emul
+    coverpoint: [""]
+
+  # vzip.vv is reserved when LMUL is 8.
+  - name: vzip_lmul_rsv
+    coverpoint: [""]
+
+  # The destination group of vzip.vv may overlap a source group only if the
+  # overlap is in the highest-numbered part of the destination group and the
+  # source EMUL is at least 1; otherwise the encoding is reserved.
+  - name: vzip_overlap
+    coverpoint: [""]
+
+  # vunzipe.v extracts the VL even-indexed elements of the source group:
+  # vd[i] = vs2[2*i].
+  - name: vunzipe_op
+    coverpoint: [""]
+
+  # vunzipo.v extracts the VL odd-indexed elements of the source group:
+  # vd[i] = vs2[2*i+1].
+  - name: vunzipo_op
+    coverpoint: [""]
+
+  # vunzipe.v and vunzipo.v access 2*VL elements in the source group and the
+  # source EMUL is 2xLMUL.
+  - name: vunzip_emul
+    coverpoint: [""]
+
+  # vunzipe.v and vunzipo.v are reserved when LMUL is 8.
+  - name: vunzip_lmul_rsv
+    coverpoint: [""]
+
+  # The destination group of vunzipe.v/vunzipo.v may overlap the source group
+  # only if the overlap is in the lowest-numbered part of the source group;
+  # otherwise the encoding is reserved.
+  - name: vunzip_overlap
+    coverpoint: [""]
+
+  # For vpaire.vv destination element index i, if i is even then
+  # vd[i] = vs2[i], and if i is odd then vd[i] = vs1[i-1].
+  - name: vpaire_op
+    coverpoint: [""]
+
+  # For vpairo.vv destination element index i, if i is even then
+  # vd[i] = vs2[i+1], and if i is odd then vd[i] = vs1[i].
+  - name: vpairo_op
+    coverpoint: [""]
+
+  # The destination group of vpaire.vv/vpairo.vv cannot overlap the source
+  # groups and, if masked, cannot overlap the mask register; otherwise the
+  # encoding is reserved.
+  - name: vpair_overlap
+    coverpoint: [""]
+
+  # vpairo.vv may read one element past VL in vs2 when VL is odd. If the
+  # element index is greater than or equal to VLMAX in the source group, the
+  # value 0 is returned for that element.
+  - name: vpairo_read_past_vl
+    coverpoint: [""]
+
+  # Prestart, inactive, and tail element handling follows the standard vector
+  # rules. For vzip.vv they are applied over the EVL; for vunzipe.v and
+  # vunzipo.v they are defined over the destination element indices.
+  - name: zvzip_element_handling
+    coverpoint: [""]

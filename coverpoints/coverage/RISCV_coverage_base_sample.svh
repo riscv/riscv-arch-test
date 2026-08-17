@@ -538,3 +538,15 @@
     `ifdef COVER_ZVKSH
         zvksh_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZVZIP16
+        zvzip16_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVZIP32
+        zvzip32_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVZIP64
+        zvzip64_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVZIP8
+        zvzip8_sample(hart, issue, ins);
+    `endif

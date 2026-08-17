@@ -714,3 +714,19 @@
         `cover_info("//      Zvksh - Enabled");
         `include "Zvksh_coverage_init.svh"
     `endif
+    `ifdef COVER_ZVZIP16
+        `cover_info("//      Zvzip16 - Enabled");
+        `include "Zvzip16_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVZIP32
+        `cover_info("//      Zvzip32 - Enabled");
+        `include "Zvzip32_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVZIP64
+        `cover_info("//      Zvzip64 - Enabled");
+        `include "Zvzip64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVZIP8
+        `cover_info("//      Zvzip8 - Enabled");
+        `include "Zvzip8_coverage_init.svh"
+    `endif

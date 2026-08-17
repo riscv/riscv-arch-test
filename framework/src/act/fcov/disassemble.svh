@@ -1483,6 +1483,13 @@ function string disassemble (logic [31:0] instrRaw);
     VFWMACCBF16_VF:  $sformat(decoded, "vfwmaccbf16.vf %s, %s, %s%s",     vd, fs1, vs2, vm);
 
 
+    // Zvzip Extension: Vector Zip/Unzip/Pair
+    VZIP_VV:     $sformat(decoded, "vzip.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VUNZIPE_V:   $sformat(decoded, "vunzipe.v %s, %s%s", vd, vs2, vm);
+    VUNZIPO_V:   $sformat(decoded, "vunzipo.v %s, %s%s", vd, vs2, vm);
+    VPAIRE_VV:   $sformat(decoded, "vpaire.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VPAIRO_VV:   $sformat(decoded, "vpairo.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+
     default: decoded = "illegal";
   endcase
 

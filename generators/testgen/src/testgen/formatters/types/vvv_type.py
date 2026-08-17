@@ -161,6 +161,8 @@ def format_vvv_like_type(
     *,
     widen: set[str] | None = None,
     enable_vs2_preload: bool = False,
+    vd_lmul_multiplier: float = 1,
+    vd_sew_multiplier: float = 1,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
         f"vs1 and vs1_val_pointer must be provided for {type_name}-type instructions"
@@ -201,7 +203,14 @@ def format_vvv_like_type(
     vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
 
     to_load = [
-        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True),
+        VectorLoad(
+            reg="vd",
+            widen="vd" in widen,
+            vl=vd_vl,
+            lmul=max(params.lmul * vd_lmul_multiplier, 1),
+            sew=int(params.sew * vd_sew_multiplier),
+            no_fractional_load=True,
+        ),
         VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl),
     ]
 
@@ -228,7 +237,7 @@ def format_vvv_like_type(
 
     if params.vector_suite == "length":
         vcompress = type_name == "VCOMPRESS"
-        sig_lmul = params.lmul * (2 if "vd" in widen else 1)
+        sig_lmul = params.lmul * vd_lmul_multiplier * (2 if "vd" in widen else 1)
         check = [*write_sigupd_v_len(test_data, params, 1, sig_lmul, widen_vd="vd" in widen, vcompress=vcompress)]
     else:
         check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]

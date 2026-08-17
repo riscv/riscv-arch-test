@@ -341,3 +341,10 @@ Not tested yet.
 ==== MisalignV
 
 TBD, Kaden moving over from SsstrictV
+
+
+=== Zvzip Vector Zip/Unzip/Pair Reordering Extension
+[[t-Zvzip-coverpoints]]
+
+include::{testplansdir}/Zvzip.adoc[]
+

@@ -4450,6 +4450,20 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vpaire.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vpairo.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
         "vredand.vs"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -5816,6 +5830,18 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vunzipe.v"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
+        "vunzipo.v"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
         "vwadd.vv"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -6091,6 +6117,13 @@
             ins.add_vd(0);
             ins.add_vs2(1);
             ins.add_vm(2);
+            ins.add_v0();
+        end
+        "vzip.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
             ins.add_v0();
         end
         "wfi"     : begin

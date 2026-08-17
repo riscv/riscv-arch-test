@@ -66,6 +66,7 @@ def format_vv_like_type(
     *,
     lmul_override: float | None = None,
     vs2_lmul_multiplier: float = 1,
+    vs2_sew_multiplier: float = 1,
     vs2_mask: bool = False,
     preload_vs2: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
@@ -103,7 +104,7 @@ def format_vv_like_type(
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vs2_vl = params.vl if params.vector_suite == "base" or not preload_vs2 else "vlmax"
     vs2_lmul = max(lmul * vs2_lmul_multiplier, 1) if not vs2_mask else 1
-    vs2_sew = int(params.sew * vs2_lmul_multiplier)
+    vs2_sew = int(params.sew * vs2_lmul_multiplier * vs2_sew_multiplier)
 
     to_load = [
         VectorLoad(reg="vd", vl=vd_vl, lmul=lmul, no_fractional_load=True),

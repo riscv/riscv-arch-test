@@ -141,6 +141,7 @@ implemented_extensions:
   - { name: Zvksg, version: "= 1.0.0" }
   - { name: Zvksh, version: "= 1.0.0" }
   - { name: Zvkt, version: "= 1.0.0" }
+  - { name: Zvzip, version: "= 0.1" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }

@@ -539,3 +539,15 @@
 `ifdef ZVKSH_COVERAGE
   `include "Zvksh_coverage.svh"
 `endif
+`ifdef ZVZIP16_COVERAGE
+  `include "Zvzip16_coverage.svh"
+`endif
+`ifdef ZVZIP32_COVERAGE
+  `include "Zvzip32_coverage.svh"
+`endif
+`ifdef ZVZIP64_COVERAGE
+  `include "Zvzip64_coverage.svh"
+`endif
+`ifdef ZVZIP8_COVERAGE
+  `include "Zvzip8_coverage.svh"
+`endif

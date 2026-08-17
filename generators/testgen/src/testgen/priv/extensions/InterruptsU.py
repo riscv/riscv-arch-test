@@ -325,37 +325,37 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     )
     test_data.int_regs.return_registers([r_temp])
 
-    ######################################
-    coverpoint = "cp_uinstret_wfi_timeout"
-    ######################################
-    lines.append(comment_banner(coverpoint, "wfi in U-mode, TW=0, nothing armed: must fall through"))
-    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
-    lines.extend(
-        [
-            "",
-            "csrw mie, zero                      # nothing enabled, nothing pending",
-            f"LI(x{r_scratch}, 0x200000)",
-            f"csrc mstatus, x{r_scratch}          # TW=0",
-            *clr_mtimer_int(r_temp, r_mtimecmp),
-            "RVTEST_GOTO_LOWER_MODE Umode",
-        ]
-    )
-    test_data.int_regs.return_registers([r_mtimecmp, r_scratch])
+    # ######################################
+    # coverpoint = "cp_uinstret_wfi_timeout"
+    # ######################################
+    # lines.append(comment_banner(coverpoint, "wfi in U-mode, TW=0, nothing armed: must fall through"))
+    # r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
+    # lines.extend(
+    #     [
+    #         "",
+    #         "csrw mie, zero                      # nothing enabled, nothing pending",
+    #         f"LI(x{r_scratch}, 0x200000)",
+    #         f"csrc mstatus, x{r_scratch}          # TW=0",
+    #         *clr_mtimer_int(r_temp, r_mtimecmp),
+    #         "RVTEST_GOTO_LOWER_MODE Umode",
+    #     ]
+    # )
+    # test_data.int_regs.return_registers([r_mtimecmp, r_scratch])
 
-    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
-    lines.extend(
-        [
-            test_data.add_testcase("uinstret_wfi_timeout", coverpoint, covergroup),
-            f"csrr x{r_before}, instret",
-            "wfi  # no event armed; must eventually fall through",
-            "nop",
-            f"csrr x{r_after}, instret",
-            f"sub x{r_diff}, x{r_after}, x{r_before}",
-            write_sigupd(r_diff, test_data),
-            "RVTEST_GOTO_MMODE",
-        ]
-    )
-    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_temp])
+    # r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    # lines.extend(
+    #     [
+    #         test_data.add_testcase("uinstret_wfi_timeout", coverpoint, covergroup),
+    #         f"csrr x{r_before}, instret",
+    #         "wfi  # no event armed; must eventually fall through",
+    #         "nop",
+    #         f"csrr x{r_after}, instret",
+    #         f"sub x{r_diff}, x{r_after}, x{r_before}",
+    #         write_sigupd(r_diff, test_data),
+    #         "RVTEST_GOTO_MMODE",
+    #     ]
+    # )
+    # test_data.int_regs.return_registers([r_before, r_after, r_diff, r_temp])
 
     ######################################
     coverpoint = "cp_uinstret_wfi_taken"

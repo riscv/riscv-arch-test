@@ -97,9 +97,9 @@ def format_vlseg_like_type(
     assert params.vd is not None and params.vd_val_pointer is not None, (
         f"vd and vd_val_pointer must be provided for {instr_type}-type instructions"
     )
-    assert params.temp_reg is not None, f"temp_reg must provided for be {instr_type}-type instructions"
-    assert params.sew is not None, "SEW must provided for be Vector instructions"
-    assert params.lmul is not None, f"lmul must provided for be {instr_type}-type instructions"
+    assert params.temp_reg is not None, f"temp_reg must be provided for {instr_type}-type instructions"
+    assert params.sew is not None, "SEW must be provided for Vector instructions"
+    assert params.lmul is not None, f"lmul must be provided for {instr_type}-type instructions"
     assert test_data.test_chunk is not None, f"format_{instr_type.lower()}_type must be used with an active TestChunk"
 
     test_data.test_chunk.vector_labels.extend(

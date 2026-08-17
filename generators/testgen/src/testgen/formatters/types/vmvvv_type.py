@@ -31,9 +31,9 @@ def format_vmvvv_type(
     assert params.vd is not None and params.vd_val_pointer is not None, (
         "vd and vd_val_pointer must be provided for VMVVV-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must provided for be VMVVV-type instructions"
-    assert params.sew is not None, "sew must provided for be VMVVV-type instructions"
-    assert params.lmul is not None, "lmul must provided for be VMVVV-type instructions"
+    assert params.temp_reg is not None, "temp_reg must be provided for VMVVV-type instructions"
+    assert params.sew is not None, "sew must be provided for VMVVV-type instructions"
+    assert params.lmul is not None, "lmul must be provided for VMVVV-type instructions"
     assert params.maskval is None, "VMVVV-Type instructions are not maskable"
     assert test_data.test_chunk is not None, "format_vmvvv_type must be used with an active TestChunk"
 

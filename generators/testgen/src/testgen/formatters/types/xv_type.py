@@ -43,9 +43,9 @@ def format_xv_like_type(
         f"vs2 and vs2_val_pointer must be provided for {type_name}-type instructions"
     )
     assert params.rd is not None, f"rd must be provided for {type_name}-type instructions"
-    assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
-    assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
-    assert params.lmul is not None, f"lmul must provided for be {type_name}-type instructions"
+    assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
+    assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
     test_data.test_chunk.vector_labels.append(

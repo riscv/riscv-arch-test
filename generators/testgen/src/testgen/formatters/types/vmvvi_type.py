@@ -29,9 +29,9 @@ def format_vmvvi(
         "vd and vd_val_pointer must be provided for VMVVI-type instructions"
     )
     assert params.immval is not None, "immval must be provided for VMVVI-type instructions"
-    assert params.temp_reg is not None, "temp_reg must provided for be VID-type instructions"
-    assert params.sew is not None, "sew must provided for be VID-type instructions"
-    assert params.lmul is not None, "lmul must provided for be VID-type instructions"
+    assert params.temp_reg is not None, "temp_reg must be provided for VID-type instructions"
+    assert params.sew is not None, "sew must be provided for VID-type instructions"
+    assert params.lmul is not None, "lmul must be provided for VID-type instructions"
     assert test_data.test_chunk is not None, "format_vid_type must be used with an active TestChunk"
 
     test_data.test_chunk.vector_labels.append(

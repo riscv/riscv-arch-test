@@ -15,7 +15,7 @@ from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 
 
 @dataclass
-class InstructionInfo:
+class VectorInstructionInfo:
     """
     Information about individual vector instructions.
 
@@ -38,7 +38,7 @@ class InstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     whole_registers: int | None
-    widened_regs: set[str]
+    widened_regs: frozenset[str]
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
         """Return a register's size multiplier relative to SEW."""
@@ -53,7 +53,7 @@ class InstructionInfo:
         return 1
 
 
-def parse_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
+def parse_vector_instruction_info(instruction: str, instruction_type: str) -> VectorInstructionInfo:
     """Parse vector instruction facts encoded in an instruction name."""
     # Lazy import here to avoid import loops due to registry imports breaking the import hierarchy with import-time
     # code execution. If the name is already found, there should not be a performance penalty
@@ -88,9 +88,9 @@ def parse_instruction_info(instruction: str, instruction_type: str) -> Instructi
     instr_type_config = get_instruction_type_config(instruction_type)
     assert instr_type_config.vector_data is not None, "vector_data must be provided for a vector instruction type"
 
-    widened_regs = instr_type_config.vector_data.widened_regs
+    widened_regs = frozenset(instr_type_config.vector_data.widened_regs)
 
-    return InstructionInfo(
+    return VectorInstructionInfo(
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
@@ -120,7 +120,7 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
     if instr_type == "VMVR":
         return int(instruction[3])
 
-    info = parse_instruction_info(instruction, instr_type)
+    info = parse_vector_instruction_info(instruction, instr_type)
     if info.index_eew is not None and sew < info.index_eew:
         return sew / info.index_eew
     elif info.load_store_eew is not None and sew < info.load_store_eew:

@@ -9,6 +9,7 @@
 Edge value definitions for riscv-arch-test test generation.
 """
 
+import re
 from typing import ClassVar
 
 from testgen.data.random import random_int, random_range
@@ -578,10 +579,9 @@ class VECTOR_EDGES:
         "sNaN_payload1": 0x7F81,  # signaling NaN with lsb set
     }
 
-    load_store_rs2_e8 = (-2, -1, 0, 1, 2)
-    load_store_rs2_e16 = (-4, -2, 0, 2, 4)
-    load_store_rs2_e32 = (-8, -4, 0, 4, 8)
-    load_store_rs2_e64 = (-16, -8, 0, 8, 16)
+    @staticmethod
+    def load_store_edges(eew: int) -> tuple[int, int, int, int, int]:
+        return (eew // -4, eew // -8, 0, eew // 8, eew // 4)
 
     @staticmethod
     def edge_value(edge: str, eew: int) -> int:
@@ -721,10 +721,10 @@ def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
         return VECTOR_EDGES.edge_value(edge, 8)
 
     emul: int | float = 1
-    if suffix.startswith("emulf"):
+    if suffix_match := re.search(r"emulf(\d+)", suffix):
         # Fractional emul (e.g. vext cases)
-        emul = 1 / int(suffix[len("emulf") :])
-    elif suffix.startswith("emul"):
-        emul = int(suffix[len("emul") :])
+        emul = 1 / int(suffix_match.group(1))
+    elif suffix_match := re.search(r"emul(\d+)", suffix):
+        emul = int(suffix_match.group(1))
 
     return VECTOR_EDGES.edge_value(edge, int(sew * emul))

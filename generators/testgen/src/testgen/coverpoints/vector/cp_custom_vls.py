@@ -14,7 +14,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_instruction, format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -38,7 +38,7 @@ def make_cp_custom_ffLS_update_vl(
     # Use LMUL=2 (while ensuring EMUL does not exceed 8)
     lmul = 2
 
-    info = parse_instruction_info(instr_name, instr_type)
+    info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
     emul = eew * lmul / test_data.config.sew
@@ -53,35 +53,6 @@ def make_cp_custom_ffLS_update_vl(
         test_data, instr_name, instr_type, lmul, masked=True, maskval=mask_label, vl="vlmax", suite="length"
     )
 
-    # Do the test chunk manually as we need to override the check
-    # tc = test_data.begin_test_chunk()
-    # tc.code.append(f"# Testcase fault-only-first updates vl")
-
-    # label_line = test_data.add_testcase("", coverpoint)
-
-    # # Add test and signature update lines
-    # setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-
-    # tc.sigupd_count = 1
-    # check_reg = test_data.int_regs.get_register(exclude_regs=[0])
-    # check = [
-    #     f"csrr x{check_reg}, vl",
-    #     write_sigupd(check_reg, test_data, "int")
-    # ]
-
-    # if setup:
-    #     tc.code.append(setup)
-    # tc.code.extend(
-    #     [
-    #         label_line,
-    #         test,
-    #     ]
-    # )
-    # tc.code.extend(check)
-
-    # tc = test_data.end_test_chunk()
-
-    # test_data.int_regs.return_register(check_reg)
     tc = format_single_testcase(instr_name, instr_type, test_data, params, "ffLS update vl", "", coverpoint)
     return_testcase_registers(test_data, params)
 
@@ -106,13 +77,14 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     # Use LMUL=2 (while ensuring EMUL does not exceed 8)
     lmul = 2
 
-    info = parse_instruction_info(instr_name, instr_type)
+    info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
     emul = eew * lmul / test_data.config.sew
 
     # We might need an ifdef if vl=1 is vlmax (on lmul = 1, which could be required (e.g. 8 segments))
-    ifdef = f"UDB_ZVL{eew * 2}B_SUPPORTED" if emul * info.segments > 8 else ""
+    # But, we only need it if we require a VLEN > max(32, sew) as max(32, sew) is the minimum VLEN
+    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if emul * info.segments > 8 and eew * 2 > max(32, test_data.config.sew) else ""
     if emul * info.segments > 8:
         lmul = 1
         emul = eew * lmul / test_data.config.sew
@@ -165,7 +137,7 @@ def make_cp_custom_ls_indexed_truncated(
     Runs a test confirming that at XLEN=32, INDEX EEW=64, the index values are truncated to XLEN bits.
     """
 
-    info = parse_instruction_info(instr_name, instr_type)
+    info = parse_vector_instruction_info(instr_name, instr_type)
     eew = info.index_eew
 
     assert eew is not None, f"Unable to extract index-eew for instruction {instr_name}"
@@ -204,7 +176,7 @@ def make_cp_custom_indexed_overlap(
     config = get_instruction_type_config(instr_type)
     assert "segmented" not in config.instruction_class, "Overlaps are prohibited for segmented load/stores"
 
-    info = parse_instruction_info(instr_name, instr_type)
+    info = parse_vector_instruction_info(instr_name, instr_type)
     index_eew = info.index_eew
     assert index_eew is not None, f"Could not extract index EEW from {instr_name}"
 
@@ -306,7 +278,7 @@ def make_cp_custom_indexed_emul_data_only(
     if sew < min_sew:
         return []
 
-    info = parse_instruction_info(instr_name, instr_type)
+    info = parse_vector_instruction_info(instr_name, instr_type)
     segments = info.segments
 
     targets = {8: 1, 4: 2, 2: 4}  # Maps segments to the required lmul

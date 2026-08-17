@@ -21,7 +21,7 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, split_test_chunks
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -162,7 +162,7 @@ def _generate_unpriv_tests_for_instruction(
             assert test_config.sew is not None, "SEW must be set for vector tests"
             sew = test_config.sew
             vdsew = sew
-            info = parse_instruction_info(instr_name, instr_type)
+            info = parse_vector_instruction_info(instr_name, instr_type)
             if "vd" in info.widened_regs:
                 vdsew *= 2
             elif info.load_store_eew == 64:

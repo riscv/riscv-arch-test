@@ -21,7 +21,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vsux_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"}, instruction_class=["store", "indexed"], vector_data=VectorTypeConfig()
@@ -104,7 +104,7 @@ def format_vsxseg_like_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, instr_type)
+    info = parse_vector_instruction_info(instr_str, instr_type)
     index_eew = info.index_eew
     assert index_eew is not None, f"Could not extract an Index EEW from {instr_type}-type instruction {instr_str}"
     index_emul = params.lmul * index_eew / params.sew

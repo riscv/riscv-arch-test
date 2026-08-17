@@ -56,17 +56,8 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     if coverpoint == "cp_rs2_edges":
         edges = get_general_edges(test_data.xlen)
     elif match := re.search(r"ls_e(\d+)", coverpoint):
-        eew = match.group(1)
-        if eew == "8":
-            edges = VECTOR_EDGES.load_store_rs2_e8
-        elif eew == "16":
-            edges = VECTOR_EDGES.load_store_rs2_e16
-        elif eew == "32":
-            edges = VECTOR_EDGES.load_store_rs2_e32
-        elif eew == "64":
-            edges = VECTOR_EDGES.load_store_rs2_e64
-        else:
-            raise ValueError(f"Unknown cp_rs2_edges coverpoint variant: {coverpoint} for {instr_name}")
+        eew = int(match.group(1))
+        edges = VECTOR_EDGES.load_store_edges(eew)
     else:
         raise ValueError(f"Unknown cp_rs2_edges coverpoint variant: {coverpoint} for {instr_name}")
 

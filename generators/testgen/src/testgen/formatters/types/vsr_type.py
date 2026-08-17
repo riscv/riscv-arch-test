@@ -19,7 +19,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vsr_config = InstructionTypeConfig(
     required_params={"vs3", "rs1"}, instruction_class=["store"], vector_data=VectorTypeConfig()
@@ -52,7 +52,7 @@ def format_vsr_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, "VSR")
+    info = parse_vector_instruction_info(instr_str, "VSR")
     emul = info.whole_registers
     assert emul is not None, f"Could not extract a number of whole registers from VSR-type instruction {instr_str}"
     segments = info.segments

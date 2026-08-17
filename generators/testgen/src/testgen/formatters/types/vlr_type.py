@@ -17,7 +17,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vlr_config = InstructionTypeConfig(
     required_params={"vd", "rs1"}, instruction_class=["load"], vector_data=VectorTypeConfig()
@@ -47,7 +47,7 @@ def format_vlr_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, "VLR")
+    info = parse_vector_instruction_info(instr_str, "VLR")
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract an EEW from VLR-type instruction {instr_str}"
     emul = info.whole_registers

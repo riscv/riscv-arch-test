@@ -20,7 +20,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vss_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "rs2"}, instruction_class=["store", "strided"], vector_data=VectorTypeConfig()
@@ -77,7 +77,7 @@ def format_vssseg_like_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, instr_type)
+    info = parse_vector_instruction_info(instr_str, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract an EEW from {instr_type}-type instruction {instr_str}"
     emul = params.lmul * eew / params.sew
@@ -103,6 +103,15 @@ def format_vssseg_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+
+    # Ensure rs2val is valid (this only matters when there is more than one element)
+    if params.vector_suite == "length":
+        assert params.rs2val % (eew // 8) == 0, f"Stride {params.rs2val} is not aligned for {instr_str}"
+        assert params.rs2val % (eew * info.segments // 8) == 0, (
+            f"Stride {params.rs2val} allows for data to be overwritten for {instr_str}"
+        )
+        assert params.rs2val != 0, "Stride cannot be zero for strided stores because they are unordered"
+
     setup.append(f"LI (x{params.rs2}, {params.rs2val})")
     setup.append(load_test_vtype(params, random_vl_reg))
 

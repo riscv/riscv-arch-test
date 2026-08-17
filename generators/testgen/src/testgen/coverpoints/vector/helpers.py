@@ -37,6 +37,6 @@ def make_and_register_edge_label(reg_name: str, edge_name: str, suffix: str, tes
         test_data.register_vector_data(label, eew, elements=[0] * max_elements)
     elif not ("random" in label and label in test_data.vector_labels):
         eew = int(sew * emul)
-        test_data.register_vector_data(label, eew, elements=[get_vector_edge(edge_name, suffix, eew)])
+        test_data.register_vector_data(label, eew, elements=[get_vector_edge(edge_name, suffix, sew)])
 
     return label

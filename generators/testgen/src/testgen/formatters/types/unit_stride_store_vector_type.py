@@ -22,7 +22,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vsus_config = InstructionTypeConfig(
     required_params={"vs3", "rs1"}, instruction_class=["store"], vector_data=VectorTypeConfig()
@@ -93,7 +93,7 @@ def format_vsseg_like_type(
     )
 
     # Extract General Instruction Info
-    info = parse_instruction_info(instr_str, instr_type)
+    info = parse_vector_instruction_info(instr_str, instr_type)
     eew = info.load_store_eew
     assert eew is not None, f"Could not extract an EEW from {instr_type}-type instruction {instr_str}"
     emul = params.lmul * eew / params.sew if not vs3_mask else 1

@@ -309,22 +309,44 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     # Standard S-mode CSRs
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
 
+    # Create bit masks.  WPRI fields should be 0 to ignore reads.
+
+    # sstatus bit mask
+    sstatusmask = (
+        (1 << 1)  # SIE:  Supervisor Interrupt Enable
+        | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+        | (0 << 6)  # UBE not yet supported by Sail; change to 1 when supported
+        | (1 << 8)  # SPP:  Supervisor Previous Privilege
+        | (3 << 9)  # VS:   Vector Status
+        | (3 << 13)  # FS:   Floating-Point Status
+        | (3 << 15)  # XS:   User-Mode Extension Status
+        | (1 << 18)  # SUM:  Supervisor User Memory Access
+        | (1 << 19)  # MXR:  Make eXecutable Readable
+        | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
+        | (0 << 24)  # SDT: not yet supported by Sail; change to 1 when Ssdbltrp implemented
+        | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
+        | (3 << 32)  # UXL:  User-Mode XLEN
+        | (1 << 63)  # SD for RV64
+    )
+
     csrs = [
         # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
         # TODO: sail does not yet support sstatus.SDT.  Mask it until available to avoid mismatch with Whisper.
-        ("sstatus", 0xFFFFFFFFFEFFFFBF),
+        ("sstatus", sstatusmask),  # was 0xFFFFFFFFFEFFFFBF
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
-        #        ("scause", 0x7FFFFFFFFFFFFFF0),
-        ("sie", None),
+        ("scause", 0x800000000000001F),  # interrupt bit + required cause bits
+        ("sie", 0x3EEE),  # only test standard non-reserved portion
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("stvec", 0b10),
         ("scounteren", None),
         ("sscratch", None),
-        ("sepc", None),
-        ("stval", None),
-        ("sip", None),
+        ("sip", 0x3EEE),  # only test standard non-reserved portion
     ]
-    csrs_walkable = [("sscratch", None)]
+    # skip walking 1s on this because valid virtual addresses is not described adequately
+    csrs_nowalk = [
+        ("sepc", None),  # only has to be able to hold all valid virtual addresses
+        ("stval", None),  # only has to be able to hold all valid virtual addresses and 0
+    ]
     # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
     csr_senvcfg = ("senvcfg", None)
     # Floating-point CSRs
@@ -343,15 +365,13 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     ######################################
     coverpoint = "cp_scsr_access"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks)
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "scsr")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
     )
 
-    for csr in csrs:
+    for csr in csrs + csrs_nowalk:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
@@ -364,11 +384,9 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     coverpoint = "cp_ucsr_from_s"
     ######################################
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
-        ),
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
     )
 
     # The #ifdef guard has to stay in one chunk, so all F (and all V) CSRs share a chunk.
@@ -388,14 +406,12 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     coverpoint = "cp_scsrwalk"
     ######################################
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Set and clear each bit individually in all writable S-mode CSRs",
-        ),
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Set and clear each bit individually in all writable S-mode CSRs",
     )
 
-    for csr in csrs_walkable:
+    for csr in csrs:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -456,12 +472,11 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
-        ),
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
     )
+
     for csr in (
         list(range(0x300, 0x400))
         + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
@@ -484,11 +499,9 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "scsr_ro")
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to write read-only CSRs.  Should throw illegal instruction",
-        ),
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
 
     for csr in range(0xC00, 0xF00):
@@ -509,11 +522,9 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     coverpoint = "cp_scsr_from_m"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, "scsr_from_m")
-    tc.code.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
-        ),
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
     )
 
     tc.code.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")

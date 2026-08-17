@@ -324,6 +324,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         ("stval", None),
         ("sip", None),
     ]
+    csrs_walkable = [("sscratch", None)]
     # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
     csr_senvcfg = ("senvcfg", None)
     # Floating-point CSRs
@@ -394,7 +395,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         ),
     )
 
-    for csr in csrs:
+    for csr in csrs_walkable:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 

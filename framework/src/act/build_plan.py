@@ -15,11 +15,12 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
+from act.toolchain import Toolchain
 from act.trap_report import generate_trap_report
 
 # Flags used when generating .elf.objdump files.
@@ -33,7 +34,6 @@ _OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
 # -t: print the full symbol table
 # -s: print a full hex+ASCII dump of every section
 _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -81,28 +81,6 @@ def _sail_platform_defines(sail_config_path: Path) -> tuple[str, ...]:
     )
 
 
-def _compiler_cmd(config: Config, xlen: int, tests_dir: Path, udb_header_dir: Path) -> list[str]:
-    """Build the full compiler command list including compiler-specific and common flags."""
-    cmd = [str(config.compiler_exe)]
-    if config.compiler_type == CompilerType.CLANG:
-        cmd.extend([f"--target=riscv{xlen}", "-fuse-ld=lld"])
-    cmd.extend(
-        [
-            f"-I{config.dut_include_dir.absolute()}",
-            f"-T{config.linker_script.absolute()}",
-            "-O0",
-            "-g",
-            "-mcmodel=medany",
-            "-nostdlib",
-            f"-I{tests_dir}/env",
-            f"-I{udb_header_dir.absolute()}",
-        ]
-    )
-    if config.compiler_type == CompilerType.GCC:
-        cmd.extend(["-Wl,--no-warn-rwx-segments"])
-    return cmd
-
-
 def _ref_model_sig_cmd(
     config: Config,
     sig_elf: Path,
@@ -141,9 +119,10 @@ def gen_compile_tasks(
     test_name: Path,
     test_metadata: TestMetadata,
     base_dir: Path,
+    env_dir: Path,
     xlen: int,
     config: Config,
-    compiler_cmd: list[str],
+    toolchain: Toolchain,
     signature_compile_flags: tuple[str, ...] = (),
     compile_inputs: tuple[Path, ...] = (),
     c_runtime_sources: tuple[Path, ...] = (),
@@ -161,9 +140,10 @@ def gen_compile_tasks(
         test_name: Name of the test.
         test_metadata: Metadata for the test.
         base_dir: Base directory for the build.
+        env_dir: Directory that contains shared test-environment headers.
         xlen: XLEN (32 or 64).
         config: Configuration object.
-        compiler_cmd: Pre-built compiler command prefix (from _compiler_cmd).
+        toolchain: Toolchain used to resolve compiler ISA flags for this test.
         compile_inputs: Shared inputs for compilation.
         c_runtime_sources: Runtime sources compiled into C tests.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
@@ -182,9 +162,25 @@ def gen_compile_tasks(
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
 
-    # Metadata — substitute ${XLEN} placeholder used by priv tests
-    march = test_metadata.march.replace("${XLEN}", str(xlen))
-    # Always include zifencei so the trap handler's fence.i can be assembled.
+    compile_prefix = [
+        *toolchain.compile_prefix(xlen),
+        f"-I{config.dut_include_dir.absolute()}",
+        f"-T{config.linker_script.absolute()}",
+        "-O0",
+        "-g",
+        "-mcmodel=medany",
+        "-nostdlib",
+        f"-I{env_dir}",
+        f"-I{base_dir.absolute()}",
+    ]
+
+    # Metadata
+    march_flags = toolchain.march_flags(
+        xlen,
+        test_metadata.march,
+        assembly=not test_metadata.is_c_test,
+        e_ext=test_metadata.e_ext,
+    )
     test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
@@ -201,11 +197,11 @@ def gen_compile_tasks(
     if test_metadata.needs_signature:
         # 1. sig.elf – compile with -DSIGNATURE
         sig_elf_cmd = [
-            *compiler_cmd,
+            *compile_prefix,
             *c_compile_flags,
             "-o",
             str(sig_elf),
-            f"-march={march}",
+            *march_flags,
             f"-mabi={mabi}",
             "-DSIGNATURE",
             *signature_compile_flags,
@@ -280,11 +276,11 @@ def gen_compile_tasks(
     # Non-signature tests start here
     # 4. final.elf – compile with -DRVTEST_SELFCHECK
     final_elf_cmd = [
-        *compiler_cmd,
+        *compile_prefix,
         *c_compile_flags,
         "-o",
         str(final_elf),
-        f"-march={march}",
+        *march_flags,
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
         *([f'-DSIGNATURE_FILE="{result_file}"'] if test_metadata.needs_signature else ["-DRVTEST_NOSIG"]),
@@ -556,7 +552,7 @@ def generate_build_plan(
     config_report_dir = config_wkdir / "reports"
 
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
-    compiler_cmd = _compiler_cmd(config, xlen, tests_dir, config_wkdir)
+    toolchain = Toolchain(config.compiler_exe, config.compiler_type)
 
     # Collect shared file dependencies that affect all compilations.
     # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
@@ -584,9 +580,10 @@ def generate_build_plan(
                 test_name,
                 test_metadata,
                 config_wkdir,
+                env_dir,
                 xlen,
                 config,
-                compiler_cmd,
+                toolchain,
                 signature_compile_flags,
                 compile_inputs,
                 c_runtime_sources,

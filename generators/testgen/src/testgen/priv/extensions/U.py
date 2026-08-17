@@ -49,18 +49,22 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     coverpoint = "cp_csr_insufficient_priv"
     ######################################
 
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Attempt to read non-user-mode registers.  Should throw illegal instruction",
-        ),
-    ]
+    tc = test_data.new_test_chunk(test_chunks, "ucsr")
+    tc.code.extend(
+        [
+            comment_banner(
+                coverpoint,
+                "Attempt to read non-user-mode registers.  Should throw illegal instruction",
+            ),
+        ]
+    )
+
     for csr in (
         list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
     ):
         tc = test_data.new_test_chunk(test_chunks, "ucsr")
         temp_reg = test_data.int_regs.get_register()
-        lines.extend(
+        tc.code.extend(
             [
                 test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
                 f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
@@ -68,24 +72,21 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
             ]
         )
         test_data.int_regs.return_register(temp_reg)
-        tc.code.extend(lines)
-        lines = []
 
     ######################################
     coverpoint = "cp_csr_ro"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to write read-only CSRs.  Should throw illegal instruction",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
 
     for csr in range(0xC00, 0xD00):
         tc = test_data.new_test_chunk(test_chunks, "ucsr_ro")
         temp_reg = test_data.int_regs.get_register()
-        lines.extend(
+        tc.code.extend(
             [
                 test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
                 f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
@@ -94,8 +95,6 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
             ]
         )
         test_data.int_regs.return_register(temp_reg)
-        tc.code.extend(lines)
-        lines = []
 
 
 @add_priv_test_generator(

@@ -157,8 +157,9 @@ class TestData:
         self._test_count += 1
 
     def new_test_chunk(self, test_chunks: list[TestChunk], split_name: str | None = None) -> TestChunk:
-        """Create a new TestChunk and set it as the active chunk."""
-        test_chunks.append(self.end_test_chunk())
+        """End the current active TestChunk (if any), append it to `test_chunks`, and begin a new active TestChunk."""
+        if self.test_chunk is not None:
+            test_chunks.append(self.end_test_chunk())
         return self.begin_test_chunk(split_name)
 
     def begin_test_chunk(self, split_name: str | None = None) -> TestChunk:

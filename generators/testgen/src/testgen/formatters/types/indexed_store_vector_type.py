@@ -19,12 +19,37 @@ from testgen.asm.vector_helpers import (
     write_sigupd_v_len,
 )
 from testgen.data.params import InstructionParams
+from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 from testgen.instructions.vector import parse_vector_instruction_info
 
+
+def unordered_index_element_generator(element_count: int, sew: int) -> list[int]:
+    # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
+    # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
+    # LIMITATIONS: For SEW=8, unique indices are not guaranteed
+
+    res = []
+    sew_limit = 2**sew - 1
+
+    for i in range(element_count):
+        vlmax_power_of_2 = i.bit_length()
+
+        # Generate a unique index value under limit for vlmax
+        next_value = min(random_int(vlmax_power_of_2 + 1, signed=False), sew_limit)
+        while next_value in res and i <= sew_limit:
+            next_value = min(random_int(vlmax_power_of_2 + 1, signed=False), sew_limit)
+
+        res.append(next_value)
+
+    return res
+
+
 vsux_config = InstructionTypeConfig(
-    required_params={"vs3", "rs1", "vs2"}, instruction_class=["store", "indexed"], vector_data=VectorTypeConfig()
+    required_params={"vs3", "rs1", "vs2"},
+    instruction_class=["store", "indexed"],
+    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator),
 )
 
 vsox_config = InstructionTypeConfig(
@@ -34,7 +59,7 @@ vsox_config = InstructionTypeConfig(
 vsuxseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
     instruction_class=["store", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(),
+    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator),
 )
 
 vsoxseg_config = InstructionTypeConfig(

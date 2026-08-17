@@ -52,6 +52,7 @@ class VectorTypeConfig:
         mask_regs: Set of registers used as mask registers
         scalar_regs: Set of registers used as scalar registers
         widened_regs: Set of registers that are widened
+        random_element_generator: Add custom random element generation (used in unordered operations)
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
@@ -59,6 +60,7 @@ class VectorTypeConfig:
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
+    random_element_generator: Callable[[int, int], list[int]] | None = None
 
 
 @dataclass

@@ -474,7 +474,11 @@ def generate_random_vector_params(
             # Register the label
             eew = int(sew * info.get_size_multiplier(register, sew))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
-            test_data.register_vector_data(label, eew, random_elements=element_count)
+            if instr_type_config.vector_data.random_element_generator:
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew)
+                test_data.register_vector_data(label, eew, elements=elements)
+            else:
+                test_data.register_vector_data(label, eew, random_elements=element_count)
 
     # immediate handling
     if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:

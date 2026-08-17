@@ -135,35 +135,36 @@ def format_vlxseg_like_type(
     setup.extend(load_code)
 
     # Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned
-    setup.extend(
-        [
-            "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
-            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
-            f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
-        ]
-    )
-    if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls":
-        # FIXME: Coverage workaround
-        temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-        setup.append(f"vsetvli x{temp_reg2}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu")
-        test_data.int_regs.return_register(temp_reg2)
-    elif params.vl == "vlmax":
-        temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-        setup.append(f"vsetvli x{temp_reg2}, x0, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        test_data.int_regs.return_register(temp_reg2)
-    elif params.vl == "random":
-        setup.append(f"vsetvli x0, {random_vl_reg}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-    else:
-        assert isinstance(params.vl, int)
-        setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-    # Construct a factor that masks off the correct bits to align load to the SEW
-    sew_alignment_factor = -params.sew // 8
-    setup.extend(
-        [
-            f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-            f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
-        ]
-    )
+    if not params.ignore_vector_safety:
+        setup.extend(
+            [
+                "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
+                f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+                f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
+            ]
+        )
+        if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls":
+            # FIXME: Coverage workaround
+            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
+            setup.append(f"vsetvli x{temp_reg2}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu")
+            test_data.int_regs.return_register(temp_reg2)
+        elif params.vl == "vlmax":
+            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
+            setup.append(f"vsetvli x{temp_reg2}, x0, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+            test_data.int_regs.return_register(temp_reg2)
+        elif params.vl == "random":
+            setup.append(f"vsetvli x0, {random_vl_reg}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+        else:
+            assert isinstance(params.vl, int)
+            setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+        # Construct a factor that masks off the correct bits to align load to the SEW
+        sew_alignment_factor = -params.sew // 8
+        setup.extend(
+            [
+                f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
+                f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
+            ]
+        )
 
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))

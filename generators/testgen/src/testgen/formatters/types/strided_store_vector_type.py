@@ -105,7 +105,7 @@ def format_vssseg_like_type(
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
 
     # Ensure rs2val is valid (this only matters when there is more than one element)
-    if params.vector_suite == "length":
+    if params.vector_suite == "length" and not params.ignore_vector_safety:
         assert params.rs2val % (eew // 8) == 0, f"Stride {params.rs2val} is not aligned for {instr_str}"
         assert params.rs2val % (eew * info.segments // 8) == 0, (
             f"Stride {params.rs2val} allows for data to be overwritten for {instr_str}"

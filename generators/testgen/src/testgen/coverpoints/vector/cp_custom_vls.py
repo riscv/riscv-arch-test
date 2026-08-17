@@ -144,10 +144,16 @@ def make_cp_custom_ls_indexed_truncated(
     assert eew == 64, f"EEW must be 64 for {coverpoint}"
 
     label = "custom_idx_trunc_eew64"
-    test_data.register_vector_data(label, 64, elements=[0xFFFFFFFF00000000])
+    test_data.register_vector_data(label, 64, elements=[0xFFFF_FFFF_0000_0000])
 
     params = generate_random_vector_params(
-        test_data, instr_name, instr_type, 1, additional_no_overlap={("vd", "vs2")}, vs2_val_pointer=label
+        test_data,
+        instr_name,
+        instr_type,
+        1,
+        additional_no_overlap={("vd", "vs2")},
+        vs2_val_pointer=label,
+        ignore_vector_safety=True,
     )
     desc = "Index Value Truncation"
     bin_name = "truncate_xlen32_eew64"

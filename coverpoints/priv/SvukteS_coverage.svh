@@ -8,9 +8,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SVUKTE
+`define COVER_SVUKTES
 
-covergroup Svukte_cg with function sample(ins_t ins);
+covergroup SvukteS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -41,16 +41,6 @@ covergroup Svukte_cg with function sample(ins_t ins);
     pte_permissive_d: coverpoint ins.current.pte_d[7:0] {
         // Ensures the leaf page is readable, writable and user-accessible.
         wildcard bins user_rw = {8'b???1?111};
-    }
-
-    mprv_mstatus_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
-        bins set = {1'b1};
-    }
-    mprv_mstatus_not_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
-        bins not_set = {1'b0};
-    }
-    mpp_mstatus_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
-        bins u_mode = {2'b00};
     }
 
     satp_not_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
@@ -96,43 +86,26 @@ covergroup Svukte_cg with function sample(ins_t ins);
     // User Svukte-Qualified Accesses
     // -----------------------------------------------------------------------
 
-    svukte_qualified_exec_fault:  cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_i, exec_acc,  ins_page_fault;
-    svukte_qualified_read_fault:  cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_d, read_acc,  load_page_fault;
-    svukte_qualified_write_fault: cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_d, write_acc, store_page_fault;
-
-    // -----------------------------------------------------------------------
-    // Machine Svukte-Qualified Accesses (using MPRV)
-    // -----------------------------------------------------------------------
-
-    priv_m_effective_u: cross priv_mode_m, mprv_mstatus_set, mpp_mstatus_u;
-
-    svukte_qualified_mprv_read_fault:  cross ukte_set, priv_m_effective_u, satp_not_bare, va_high_bit_d, read_acc,  load_page_fault;
-    svukte_qualified_mprv_write_fault: cross ukte_set, priv_m_effective_u, satp_not_bare, va_high_bit_d, write_acc, store_page_fault;
-
-    // -----------------------------------------------------------------------
-    // Hypervisor Qualified Accesses (TODO)
-    // -----------------------------------------------------------------------
-
-
+    cp_svukte_qualified_exec_fault:  cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_i, exec_acc,  ins_page_fault;
+    cp_svukte_qualified_read_fault:  cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_d, read_acc,  load_page_fault;
+    cp_svukte_qualified_write_fault: cross ukte_set, priv_mode_u, satp_not_bare, va_high_bit_d, write_acc, store_page_fault;
 
     // -----------------------------------------------------------------------
     // Non-Svukte-Qualified Accesses
     // -----------------------------------------------------------------------
 
-    not_svukte_qualified_disabled: cross ukte_not_set, priv_mode_u, satp_not_bare, va_high_bit_d,    pte_permissive_d, rw_acc;
-    not_svukte_qualified_bare:     cross ukte_set,     priv_mode_u, satp_bare,     va_high_bit_d,                      rw_acc;
-    not_svukte_qualified_addr:     cross ukte_set,     priv_mode_u, satp_not_bare, no_va_high_bit_d, pte_permissive_d, rw_acc;
-    not_svukte_qualified_s:        cross ukte_set,     priv_mode_s, satp_not_bare, va_high_bit_d,    pte_permissive_d, rw_acc;
-    not_svukte_qualified_m:        cross ukte_set,     priv_mode_m, satp_not_bare, va_high_bit_d,    pte_permissive_d, rw_acc, mprv_mstatus_not_set;
+    cp_not_svukte_qualified_disabled: cross ukte_not_set, priv_mode_u, satp_not_bare, va_high_bit_d,    pte_permissive_d, rw_acc;
+    cp_not_svukte_qualified_bare:     cross ukte_set,     priv_mode_u, satp_bare,     va_high_bit_d,                      rw_acc;
+    cp_not_svukte_qualified_addr:     cross ukte_set,     priv_mode_u, satp_not_bare, no_va_high_bit_d, pte_permissive_d, rw_acc;
+    cp_not_svukte_qualified_s:        cross ukte_set,     priv_mode_s, satp_not_bare, va_high_bit_d,    pte_permissive_d, rw_acc;
 
-    not_svukte_qualified_disabled_i: cross ukte_not_set, priv_mode_u, satp_not_bare, va_high_bit_i,    pte_permissive_i, exec_acc;
-    not_svukte_qualified_bare_i:     cross ukte_set,     priv_mode_u, satp_bare,     va_high_bit_i,                      exec_acc;
-    not_svukte_qualified_addr_i:     cross ukte_set,     priv_mode_u, satp_not_bare, no_va_high_bit_i, pte_permissive_i, exec_acc;
-    not_svukte_qualified_s_i:        cross ukte_set,     priv_mode_s, satp_not_bare, va_high_bit_i,    pte_permissive_i, exec_acc;
-    not_svukte_qualified_m_i:        cross ukte_set,     priv_mode_m, satp_not_bare, va_high_bit_i,    pte_permissive_i, exec_acc, mprv_mstatus_not_set;
+    cp_not_svukte_qualified_disabled_i: cross ukte_not_set, priv_mode_u, satp_not_bare, va_high_bit_i,    pte_permissive_i, exec_acc;
+    cp_not_svukte_qualified_bare_i:     cross ukte_set,     priv_mode_u, satp_bare,     va_high_bit_i,                      exec_acc;
+    cp_not_svukte_qualified_addr_i:     cross ukte_set,     priv_mode_u, satp_not_bare, no_va_high_bit_i, pte_permissive_i, exec_acc;
+    cp_not_svukte_qualified_s_i:        cross ukte_set,     priv_mode_s, satp_not_bare, va_high_bit_i,    pte_permissive_i, exec_acc;
 
 endgroup
 
-function void svukte_sample(int hart, int issue, ins_t ins);
-    Svukte_cg.sample(ins);
+function void svuktes_sample(int hart, int issue, ins_t ins);
+    SvukteS_cg.sample(ins);
 endfunction

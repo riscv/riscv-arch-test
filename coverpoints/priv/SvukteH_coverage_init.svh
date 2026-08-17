@@ -1,0 +1,11 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups Initialization File
+//
+// Copyright (C) 2026 SiFive, Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SvukteH_cg = new(); SvukteH_cg.set_inst_name("obj_SvukteH");

@@ -235,6 +235,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "gva" : val = (val >> 6) & 'h1;
       "hu" : val = (val >> 9) & 'h1;
+      "hukte" : val = (val >> 24) & 'h1;
       "spv" : val = (val >> 7) & 'h1;
       "spvp" : val = (val >> 8) & 'h1;
       "vsbe" : val = (val >> 5) & 'h1;

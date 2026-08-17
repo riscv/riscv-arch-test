@@ -492,6 +492,7 @@ def gen_coverage_tasks(
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
                 intermediate=True,
+                is_coverage=True,
             )
         )
 

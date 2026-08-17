@@ -70,6 +70,7 @@ class BuildTask:
     deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
     label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
     intermediate: bool = False  # Only build if needed for another task
+    is_coverage: bool = False  # Is this a coverage task
 
     @property
     def name(self) -> str:

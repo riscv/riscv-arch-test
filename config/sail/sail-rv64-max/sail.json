@@ -574,7 +574,7 @@
     "Shvstvala": { "supported": true },
     "Shvstvecd": { "supported": true },
     "Sstvecd": { "supported": true },
-    "Svukte": { "supported": false },
+    "Svukte": { "supported": true },
     "Zilx": { "supported": false },
     "Zibi": {
       "supported": true
@@ -860,9 +860,6 @@
     "Svbare": {
       "supported": true,
       "sfence_vma_illegal_if_svbare_only": true
-    },
-    "Svukte": {
-      "supported": true
     },
     "Sv32": {
       "supported": false

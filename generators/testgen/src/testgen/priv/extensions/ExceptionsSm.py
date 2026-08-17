@@ -70,17 +70,8 @@ def _generate_minstret_trap_tests(test_data: TestData) -> list[str]:
 
     lines = []
 
-    ######################################
     # Ensure counters are running
-    ######################################
-    lines.append(comment_banner("Enable Counters", "Ensure mcountinhibit is 0 so counters can run"))
-    lines.extend(
-        [
-            f"LI(x{r_tmp}, 0)                      # Load 0 (enable all counters)",
-            f"csrw mcountinhibit, x{r_tmp}        # Clear inhibit register",
-            "nop\nnop\nnop",
-        ]
-    )
+    lines.append("csrw mcountinhibit, x0    # Clear inhibit register")
 
     ######################################
     coverpoint = "cp_minstret_ecall"

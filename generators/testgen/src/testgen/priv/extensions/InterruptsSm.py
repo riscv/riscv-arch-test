@@ -475,7 +475,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     #         "csrw mie, zero              # nothing enabled, nothing pending",
     #         "csrci mstatus, 8             # mstatus.MIE = 0",
     #         f"csrr x{r_before}, minstret",
-    #         "wfi                          # no event armed; must eventually fall through per spec",
+    #         "wfi                          # no event armed",
     #         f"csrr x{r_after}, minstret",
     #         f"sub x{r_diff}, x{r_after}, x{r_before}",
     #         write_sigupd(r_diff, test_data),

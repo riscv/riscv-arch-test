@@ -17,9 +17,9 @@ from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 @dataclass
 class VectorInstructionInfo:
     """
-    Information about individual vector instructions.
+    Information about individual vector instructions derived from instruction names.
 
-    This information can be derived from the instruction name and type, and is general information
+    This information can only be derived from the instruction name, and is general information
     necessary for randomization and test generation. This includes the number of segments in a
     segmented load/store or the eew of an index register.
 
@@ -30,7 +30,6 @@ class VectorInstructionInfo:
         vext_multiplier: The fractional value that a vext instruction uses to calculate its eew
             (e.g. 0.125 for vzext.vf8)
         widened_regs: Set of registers that are widened
-        whole_registers: Set if the instruction is a whole register operation, holds the number of registers
     """
 
     segments: int
@@ -38,9 +37,8 @@ class VectorInstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     whole_registers: int | None
-    widened_regs: frozenset[str]
 
-    def get_size_multiplier(self, register: str, sew: int) -> int | float:
+    def get_size_multiplier(self, register: str, sew: int, widened_regs: set[str]) -> int | float:
         """Return a register's size multiplier relative to SEW."""
         if self.vext_multiplier and register == "vs2":
             return self.vext_multiplier
@@ -48,16 +46,13 @@ class VectorInstructionInfo:
             return self.index_eew / sew
         if self.load_store_eew and register in ["vs3", "vd"]:
             return self.load_store_eew / sew
-        if register in self.widened_regs:
+        if register in widened_regs:
             return 2
         return 1
 
 
 def parse_vector_instruction_info(instruction: str, instruction_type: str) -> VectorInstructionInfo:
     """Parse vector instruction facts encoded in an instruction name."""
-    # Lazy import here to avoid import loops due to registry imports breaking the import hierarchy with import-time
-    # code execution. If the name is already found, there should not be a performance penalty
-    from testgen.formatters.registry import get_instruction_type_config
 
     # Extract Segments
     # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v
@@ -85,18 +80,12 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
     whole_register_match = re.search(r"v[ls](\d)r", instruction)
     whole_registers = int(whole_register_match.group(1)) if whole_register_match else None
 
-    instr_type_config = get_instruction_type_config(instruction_type)
-    assert instr_type_config.vector_data is not None, "vector_data must be provided for a vector instruction type"
-
-    widened_regs = frozenset(instr_type_config.vector_data.widened_regs)
-
     return VectorInstructionInfo(
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
         whole_registers=whole_registers,
-        widened_regs=widened_regs,
     )
 
 

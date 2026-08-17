@@ -40,7 +40,7 @@ def get_register_emul(
     if info.whole_registers is not None:
         return info.whole_registers
 
-    return max(lmul * info.get_size_multiplier(register_name, sew), 1)
+    return max(lmul * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs), 1)
 
 
 def randomize_register(
@@ -239,6 +239,7 @@ def get_occupied_v_registers(
     sew: int,
     params_dict: dict[str, Any],
     single_register: bool,
+    widened_regs: set[str],
 ) -> list[int]:
     """
     Given a register of the form v0, vd, vd_suffix, vsX, or vsX_suffix, determine the registers that it cannot overlap with.
@@ -250,6 +251,7 @@ def get_occupied_v_registers(
         sew: SEW of the instruction. Aids EMUL calculation
         params_dict: InstructionParams object as a dict. Used to easily find the assigned register number.
         single_register: Boolean determining if the instruction takes up only one register.
+        widened_regs: Set containing the widened registers for the instruction
     """
     if register == "v0":
         return [0]
@@ -284,7 +286,7 @@ def get_occupied_v_registers(
     smallest_emul = int(smallest_emul)
 
     # segment instructions take up consecutive registers even when lmul < 1
-    emul = math.ceil(info.get_size_multiplier(register, sew) * lmul) * info.segments
+    emul = math.ceil(info.get_size_multiplier(register, sew, widened_regs) * lmul) * info.segments
     if info.whole_registers:
         emul = info.whole_registers
 
@@ -311,6 +313,7 @@ def has_invalid_overlap(
     sew: int,
     scalar_vector_regs: set[str],
     mask_vector_regs: set[str],
+    widened_regs: set[str],
 ) -> bool:
     """
     Determine if a given InstructionParams object has an invalid overlap, according to a no_overlap set.
@@ -323,6 +326,7 @@ def has_invalid_overlap(
         sew: SEW of the test
         scalar_vector_regs: Set of registers to be interpreted as single element scalar vector registers
         mask_vector_regs: Set of registers to be interpreted as one register wide vector mask registers
+        widened:regs: Set of registers that are widened in this operation
     """
 
     register_overlap = False
@@ -340,7 +344,7 @@ def has_invalid_overlap(
             elif register_type == "v":
                 single_register = register in scalar_vector_regs or register in mask_vector_regs
                 registers_occupied.extend(
-                    get_occupied_v_registers(register, info, lmul, sew, params_dict, single_register)
+                    get_occupied_v_registers(register, info, lmul, sew, params_dict, single_register, widened_regs)
                 )
 
         if len(registers_occupied) != len(set(registers_occupied)):  # checks for duplicates
@@ -397,12 +401,8 @@ def generate_random_vector_params(
         no_overlap |= additional_no_overlap
 
     mask_vector_regs = instr_type_config.vector_data.mask_regs
-    if mask_vector_regs is None:
-        mask_vector_regs = set()
-
     scalar_vector_regs = instr_type_config.vector_data.scalar_regs
-    if scalar_vector_regs is None:
-        scalar_vector_regs = set()
+    widened_regs = instr_type_config.vector_data.widened_regs
 
     preset_params.lmul = lmul
     # These are effective lmuls for the operation, but we still must respect the callers choice of lmul
@@ -426,7 +426,9 @@ def generate_random_vector_params(
         params = randomize_registers(preset_params, test_data, instr_type_config, info, lmul)
         params_dict = dataclasses.asdict(params)
 
-        invalid_overlap = has_invalid_overlap(params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs)
+        invalid_overlap = has_invalid_overlap(
+            params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
+        )
 
         if invalid_overlap:
             # Return the registers that we use
@@ -472,7 +474,7 @@ def generate_random_vector_params(
             setattr(params, f"{register}_val_pointer", label)  # params.register_val_pointer = label
 
             # Register the label
-            eew = int(sew * info.get_size_multiplier(register, sew))
+            eew = int(sew * info.get_size_multiplier(register, sew, widened_regs))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
                 elements = instr_type_config.vector_data.random_element_generator(element_count, eew)

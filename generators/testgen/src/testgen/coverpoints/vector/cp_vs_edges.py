@@ -37,6 +37,10 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     lmul = get_base_lmul(instr_name, instr_type, sew)
     register = coverpoint.split("_")[1]
 
+    type_config = get_instruction_type_config(instr_type)
+    assert type_config.vector_data is not None, "Vector data must be provided for all vector instruction types"
+    additional_no_overlap = {("vs3", "vs2")} if "store" in type_config.instruction_class else set()
+
     if coverpoint.startswith(f"cp_{register}_edges_"):
         suffix = coverpoint[len(f"cp_{register}_edges_") :]
         if suffix.startswith("f"):
@@ -44,16 +48,13 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         elif suffix.startswith("ls"):
             edges = VECTOR_EDGES.vls_edges
             info = parse_vector_instruction_info(instr_name, instr_type)
-            multiplier = info.get_size_multiplier(register, sew)
+            multiplier = info.get_size_multiplier(register, sew, type_config.vector_data.widened_regs)
 
             suffix += f"_emul{get_lmul_flag(multiplier)}"
         elif suffix == "eew1":
             vl = 8
         elif suffix.startswith("egs"):
             raise NotImplementedError("Crypto Edges are not yet Supported")
-
-    type_config = get_instruction_type_config(instr_type)
-    additional_no_overlap = {("vs3", "vs2")} if "store" in type_config.instruction_class else set()
 
     test_chunks = []
     for edge in edges:

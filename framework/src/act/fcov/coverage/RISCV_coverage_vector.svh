@@ -420,16 +420,16 @@ endfunction
 function logic[63:0] get_vr_element_zero_eew(int hart, int issue, `VLEN_BITS val, int eew);
     case (eew)
     `ifdef SEW8_SUPPORTED
-    2'b00:   return {56'b0, val[7:0]};
+    8:   return {56'b0, val[7:0]};
     `endif
     `ifdef SEW16_SUPPORTED
-    2'b01:  return {48'b0, val[15:0]};
+    16:  return {48'b0, val[15:0]};
     `endif
     `ifdef SEW32_SUPPORTED
-    2'b10:  return {32'b0, val[31:0]};
+    32:  return {32'b0, val[31:0]};
     `endif
     `ifdef SEW64_SUPPORTED
-    2'b11:  return val[63:0];
+    64:  return val[63:0];
     `endif
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported EEW: %s", eew);

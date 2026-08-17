@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Svukte_cg = new(); Svukte_cg.set_inst_name("obj_Svukte");
+    SvukteSm_cg = new(); SvukteSm_cg.set_inst_name("obj_SvukteSm");

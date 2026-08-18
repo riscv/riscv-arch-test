@@ -14,6 +14,7 @@ description: CV32E40X v0.10.0 (CORE-V security) - RV32IMCAB configuration (A_EXT
 implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: A, version: "= 2.1" } # VERIFIED -- A_EXT=A; full A extension (LR/SC + AMO)
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }

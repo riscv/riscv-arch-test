@@ -61,6 +61,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
         (16, "#ifdef SMDBLTRP_SUPPORTED"),  # Double trap
         (17, "RESERVED"),
         (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
+        (19, "#ifdef SM1P13P0_OR_LATER_SUPPORTED"),  # hardware error
         (20, "#ifdef H_SUPPORTED"),  # instruction guest-page fault
         (21, "#ifdef H_SUPPORTED"),  # load guest-page fault
         (22, "#ifdef H_SUPPORTED"),  # virtual instruction

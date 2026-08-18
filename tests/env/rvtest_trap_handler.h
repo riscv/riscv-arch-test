@@ -2610,6 +2610,22 @@ trap_handler_fastillegalinstr:
         csrr a1, mcause                 // read trap cause
         xori a1, a1, 2                  // a1 = 0 iff cause == 2 (illegal instruction)
         bnez a1, fast_Mothertrap        // not illegal — restore regs and use regular handler
+        // Only traps taken in the test body may use the fast path. It signature-updates
+        // through x2, which RVTEST_INIT_REGS does not load until the end of boot, so a
+        // trap taken earlier — e.g. a boot-time CSR write that the reference model does
+        // not implement — would write through an uninitialized register. Forward those to
+        // the standard handler, which works off mscratch and records nothing in the
+        // signature (so the reference model taking such a trap does not diverge from a DUT
+        // that does not). Ask whether xEPC is in the test code segment rather than
+        // inferring it from x2's contents. This compares unrelocated addresses, which is
+        // already the fast path's assumption: RVTEST_SIGUPD_FAST_TRAP writes through x2 raw.
+        SREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // stash caller's a2 (rvmodel_sv slot 3 is free)
+        csrr a1, mepc
+        LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
+        sub  a1, a1, a2                 // a1 = mepc - code_begin (wraps if mepc is below it)
+        LREG a2, code_seg_siz(a0)       // a2 = code segment size
+        bgeu a1, a2, fast_Mbootrap      // outside the test code — use the standard handler
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
 fast_Millegalinstruction:
@@ -2635,6 +2651,8 @@ fast_Mdone:
         csrw mepc, a0
         mret
 
+fast_Mbootrap:
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Mothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
@@ -2667,6 +2685,16 @@ strap_handler_fastillegalinstr:
         bnez a1, fast_Sothertrap        // not illegal — restore regs and use the S framework handler
                                         // (NOT fast_Mothertrap: the M trampoline's mscratch access
                                         // is itself illegal from S-mode and creates a trap loop)
+        // Same test-body check as the M handler: only traps taken in the test code segment
+        // may use the fast path, because it signature-updates through x2, which is not
+        // loaded until the end of boot. See the M handler for the full rationale.
+        SREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // stash caller's a2 (rvmodel_sv slot 3 is free)
+        csrr a1, sepc
+        LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
+        sub  a1, a1, a2                 // a1 = sepc - code_begin (wraps if sepc is below it)
+        LREG a2, code_seg_siz(a0)       // a2 = code segment size
+        bgeu a1, a2, fast_Sbootrap      // outside the test code — use the S framework handler
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
 fast_Sillegalinstruction:
@@ -2693,6 +2721,8 @@ fast_Sdone:
                                         // is itself an illegal instruction and re-enters this
                                         // handler forever
 
+fast_Sbootrap:
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Sothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0

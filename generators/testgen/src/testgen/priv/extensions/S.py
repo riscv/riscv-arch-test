@@ -334,7 +334,10 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         # TODO: sail does not yet support sstatus.SDT.  Mask it until available to avoid mismatch with Whisper.
         ("sstatus", sstatusmask),  # was 0xFFFFFFFFFEFFFFBF
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
-        ("scause", 0x800000000000001F),  # interrupt bit + required cause bits
+        (
+            "scause",
+            0x800000008000001F,
+        ),  # interrupt bit + required cause bits.  Make interrupt bit work for both RV32 and RV64
         ("sie", 0x3EEE),  # only test standard non-reserved portion
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("stvec", 0b10),

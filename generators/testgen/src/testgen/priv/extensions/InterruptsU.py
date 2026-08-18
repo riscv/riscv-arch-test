@@ -199,9 +199,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_wfi",
-            "WFI in U-mode waits for interrupt\n"
-            "Cross: mstatus.MIE={0/1} x mstatus.TW={0/1}\n"
-            "mie.MTIE=1, timer fires soon",
+            "WFI in U-mode waits for interrupt\nCross: mstatus.MIE={0/1}\nmie.MTIE=1, timer fires soon",
         ),
         "",
     ]

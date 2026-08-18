@@ -528,7 +528,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     )
 
     tc.code.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
-    for csr in csrs:
+    for csr in csrs + csrs_nowalk:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))

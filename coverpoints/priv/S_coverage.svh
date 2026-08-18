@@ -196,6 +196,16 @@ covergroup S_scsr_cg with function sample(ins_t ins);
           bins senvcfg       = {CSR_SENVCFG};
         `endif
     }
+    csrwalk: coverpoint ins.current.insn[31:20] {
+        bins sstatus       = {CSR_SSTATUS};
+        bins sie           = {CSR_SIE};
+        bins scounteren    = {CSR_SCOUNTEREN};
+        bins sscratch      = {CSR_SSCRATCH};
+        bins sip           = {CSR_SIP};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+          bins senvcfg     = {CSR_SENVCFG};
+        `endif
+    }
     csruname : coverpoint ins.current.insn[31:20] {
         `ifdef F_SUPPORTED
             bins fcsr      = {CSR_FCSR};
@@ -268,7 +278,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
-    cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones;
+    cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
     cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;

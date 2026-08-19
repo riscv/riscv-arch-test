@@ -241,7 +241,6 @@ When multiple representative instructions are listed, one is randomly selected f
 
 The test cases are as follows:
 
-
 * If the IUT has {int/pc/fp/vector/memory/CSR} source operand:
 ** For each IUT source
 *** For each hazard_type in {RAW, WAR}
@@ -263,7 +262,6 @@ The test cases are as follows:
 ******* Perform SPI
 ******* SIGUPD IUT dest or otherwise test IUT result
 ******* SIGUPD SPI dest
-
 
 * If the IUT has {int/pc/fp/vector/memory/CSR} destination operand:
 ** For each hazard_type in {RAW, WAR}

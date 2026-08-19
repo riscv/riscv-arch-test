@@ -102,7 +102,7 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
 def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_priority"
+    coverpoint = "cp_lcofip_priority_s"
     priv_mode = "S"
     ######################################
 

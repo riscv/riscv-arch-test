@@ -116,17 +116,9 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
-    """cp_lcofip_priority for SscofpmfSm (M-mode only).
-
-    Per updated testplan:
-        mstatus.MIE = 1
-        mie = all 0s
-        mip = 1 in LCOFIP and one of {MEIP, MTIP, MSIP, SEIP, STIP, SSIP, none}
-        mie = all 1s   <- trigger: MIE is already 1, so this write is what fires the trap
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_priority"
+    coverpoint = "cp_lcofip_priority_m"
     ######################################
 
     MIE_BIT = 0x8  # mstatus bit 3

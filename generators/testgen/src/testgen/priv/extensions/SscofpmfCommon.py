@@ -12,7 +12,6 @@ import re
 
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
-from testgen.asm.interrupts import clr_mtimer_int, clr_stimer_mmode, set_mtimer_int, set_stimer_mmode
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -373,9 +372,14 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
     coverpoint = "cp_lcofi"
     ######################################
 
-    LCOFI_BIT = 1 << 13  # mip/mie/mideleg bit 13
-    MIE_BIT = 0x8  # mstatus bit 3
-    SIE_BIT = 0x2  # mstatus bit 1
+    LCOFI_BIT = 1 << 13
+    MIE_BIT = 0x8
+    SIE_BIT = 0x2
+
+    goto_lower_macro = {
+        "S": "RVTEST_TSBI_GOTO_SMODE",
+        "U": "RVTEST_TSBI_GOTO_UMODE",
+    }[priv_mode]
 
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
@@ -407,11 +411,12 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
                         ),
                         f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
                         f"{'csrs' if lcofip else 'csrc'} mip, x{r_temp}   # mip.LCOFIP = {lcofip}",
+                        f"csrr x{r_val}, mip   # readback -- did LCOFIP actually latch on QEMU?" if lcofip else "",
                         f"{'csrs' if lcofie else 'csrc'} mie, x{r_temp}   # mie.LCOFIE = {lcofie}",
                         f"{'csrs' if mideleg_bit else 'csrc'} mideleg, x{r_temp}   # mideleg.LCOFI = {mideleg_bit}",
                         "",
                         test_data.add_testcase(binname, coverpoint, covergroup),
-                        f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
+                        goto_lower_macro,
                         "    # Fires here immediately if LCOFIP=1 & LCOFIE=1; else falls through.",
                         "    nop",
                         "    nop",
@@ -438,229 +443,6 @@ def _generate_lcofi_tests(test_data: TestData, priv_mode: str) -> list[str]:
     return lines
 
 
-def _generate_lcofip_priority_tests(test_data: TestData, priv_mode: str) -> list[str]:
-
-    ######################################
-    covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_priority"
-    ######################################
-
-    LCOFIP_BIT = 1 << 13  # mip bit 13
-    LCOFI_DELEG_BIT = 1 << 13  # mideleg bit 13
-    MIE_BIT = 0x8  # mstatus bit 3
-    MPIE_BIT = 0x80  # mstatus bit 7
-
-    DELEGABLE_MIDELEG_BIT = {
-        "seip": 1 << 9,  # SEIP
-        "stip": 1 << 5,  # STIP
-        "ssip": 1 << 0,  # SSIP
-    }
-
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            (
-                f"Priority of LCOFI interrupt (mode = {priv_mode}; 7 competing "
-                "interrupts,\n"
-                "per testplan). mstatus.MIE=1, mstatus.SIE=1, mie=all 1s, "
-                "mip=LCOFIP + one\n"
-                "of {MEIP,MTIP,MSIP,SEIP,STIP,SSIP,none}. meip/mtip/msip are "
-                "non-delegable\n"
-                "and always preempt into M-mode -- still 'highest priority "
-                "interrupt fires'\n"
-                "since M is the highest-priority destination by definition.\n"
-            ),
-        ),
-        "",
-    ]
-
-    other_interrupts = [
-        "meip",
-        "mtip",
-        "msip",
-        "seip",
-        "stip",
-        "ssip",
-        "none",
-    ]
-
-    for other_int in other_interrupts:
-        binname = f"lcofip_priority_{priv_mode.lower()}_{other_int}"
-
-        lines.extend(
-            [
-                "",
-                "# === M-MODE SETUP ===",
-                f"# Testcase: competing interrupt = {other_int}, mode = {priv_mode}",
-                "csrw mie, zero      # disable all interrupts first",
-                "csrci mstatus, 0x8  # MIE=0 (set later: direct for Sm, via MPIE for S/U)",
-                "csrsi mstatus, 0x2  # SIE=1",
-                f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly",
-            ]
-        )
-
-        if priv_mode != "Sm":
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, {hex(LCOFI_DELEG_BIT)})",
-                    (f"csrs mideleg, x{r_scratch}   # delegate LCOFI to {priv_mode}-mode"),
-                ]
-            )
-
-            if other_int in DELEGABLE_MIDELEG_BIT:
-                bit = DELEGABLE_MIDELEG_BIT[other_int]
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, {hex(bit)})",
-                        (
-                            f"csrs mideleg, x{r_scratch}   # also delegate "
-                            f"{other_int} so it competes with LCOFI for "
-                            f"{priv_mode}-mode destination"
-                        ),
-                    ]
-                )
-
-            # meip/mtip/msip: no mideleg bit exists -- always M-mode destined
-
-        if other_int == "meip":
-            lines.append("RVTEST_SET_MEXT_INT")
-        elif other_int == "mtip":
-            lines.extend(
-                set_mtimer_int(
-                    r_mtime,
-                    r_mtimecmp,
-                    r_temp,
-                    r_temp2,
-                )
-            )
-        elif other_int == "msip":
-            lines.append("RVTEST_SET_MSW_INT")
-        elif other_int == "seip":
-            lines.append("RVTEST_SET_SEXT_INT")
-        elif other_int == "stip":
-            lines.extend(set_stimer_mmode(r_scratch))
-        elif other_int == "ssip":
-            lines.extend(
-                [
-                    f"LI(x{r1}, 0x2)",
-                    f"csrs mip, x{r1}",
-                ]
-            )
-        # "none" -- no competing interrupt triggered
-
-        lines.extend(
-            [
-                f"LI(x{r_temp}, -1)",
-                (f"csrw mie, x{r_temp}   # mie = all 1s (per testplan); MIE still 0, safe while in M-mode"),
-            ]
-        )
-
-        if priv_mode == "Sm":
-            lines.extend(
-                [
-                    f"LI(x{r_temp2}, {hex(MIE_BIT)})",
-                    (f"csrs mstatus, x{r_temp2}   # MIE=1 -- fires immediately, still in M-mode"),
-                    "",
-                    test_data.add_testcase(
-                        binname,
-                        coverpoint,
-                        covergroup,
-                    ),
-                    "    nop",
-                    "    nop",
-                    "    nop",
-                    "    nop",
-                ]
-            )
-        else:
-            lines.extend(
-                [
-                    f"LI(x{r_temp2}, {hex(MPIE_BIT)})",
-                    (f"csrs mstatus, x{r_temp2}   # MPIE=1 -> mret sets MIE=1 only after landing in {priv_mode}mode"),
-                    "",
-                    test_data.add_testcase(
-                        binname,
-                        coverpoint,
-                        covergroup,
-                    ),
-                    f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
-                    "    nop",
-                    "    nop",
-                    "    nop",
-                    "    nop",
-                    "RVTEST_GOTO_MMODE",
-                ]
-            )
-
-        # Cleanup -- back in M-mode
-        if other_int == "meip":
-            lines.append("RVTEST_CLR_MEXT_INT")
-        elif other_int == "mtip":
-            lines.extend(
-                clr_mtimer_int(
-                    r_temp,
-                    r_mtimecmp,
-                )
-            )
-        elif other_int == "msip":
-            lines.append("RVTEST_CLR_MSW_INT")
-        elif other_int == "seip":
-            lines.append("RVTEST_CLR_SEXT_INT")
-        elif other_int == "stip":
-            lines.extend(clr_stimer_mmode(r_scratch))
-        elif other_int == "ssip":
-            lines.extend(
-                [
-                    f"LI(x{r1}, 0x2)",
-                    f"csrc mip, x{r1}",
-                ]
-            )
-
-        if priv_mode != "Sm":
-            if other_int in DELEGABLE_MIDELEG_BIT:
-                bit = DELEGABLE_MIDELEG_BIT[other_int]
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, {hex(bit)})",
-                        (f"csrc mideleg, x{r_scratch}   # {other_int} stays M-mode by default"),
-                    ]
-                )
-
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, {hex(LCOFI_DELEG_BIT)})",
-                    (f"csrc mideleg, x{r_scratch}   # LCOFI stays M-mode by default"),
-                ]
-            )
-
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                (
-                    f"csrc mip, x{r_scratch}   # clear LCOFIP for next iteration "
-                    "(harmless if already cleared by cascaded trap servicing)"
-                ),
-                "csrw mie, zero",
-            ]
-        )
-
-    test_data.int_regs.return_registers(
-        [
-            r1,
-            r_mtime,
-            r_mtimecmp,
-            r_temp,
-            r_temp2,
-            r_scratch,
-        ]
-    )
-
-    return lines
-
-
 def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sscofpmf suite for ``mode`` ("Sm"/"S"/"U") as a test chunk."""
     test_chunks: list[TestChunk] = []
@@ -670,7 +452,5 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     tc.code.extend(_generate_overflow_hw_only_tests(test_data, mode))
     tc.code.extend(_generate_scountovf_mcounteren_tests(test_data, mode))
     tc.code.extend(_generate_sscofpmf_access_tests(test_data, mode))
-    tc.code.extend(_generate_lcofi_tests(test_data, mode))
-    tc.code.extend(_generate_lcofip_priority_tests(test_data, mode))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

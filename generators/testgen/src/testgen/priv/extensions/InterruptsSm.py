@@ -573,7 +573,7 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
         [
             "",
             "csrw mie, zero",
-            "csrci mstatus, 8    # keep MIE=0 while arming",
+            "csrci mstatus, 8",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
             f"LI(x{r_scratch}, 0x80)",
             f"csrs mie, x{r_scratch}",

@@ -303,7 +303,7 @@ The test cases are as follows:
 
 Hazard coverpoints are named cp_hazard_{hazard_type}_{IUT source/dest}_{to/from}_{SI category}_{delay}. IUT source/dest is one of {rs1, rs2, rd, fs1, fs2, fs3, fd, vs1, vs2, vd, memr, memw, csrr, csrw, pc}.
 
-The number of hazard bins for a typical R-type integer instruction is ((2 sources) * (2 hazard types) + (1 destination) * (4 hazard types)) * (8 categories) * (2 delays) = 128 bins.
+The number of hazard bins for a typical R-type integer IUT is ((2 sources) * (2 hazard types) + (1 destination) * (4 hazard types)) * (8 categories) * (2 delays) = 128 bins.
 
 include::i.adoc[]
 include::m.adoc[]

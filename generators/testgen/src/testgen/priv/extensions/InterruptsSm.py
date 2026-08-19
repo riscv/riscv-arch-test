@@ -566,42 +566,51 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_minstret_wrs_nto"
     ######################################
     lines.append("\n#ifdef ZAWRS_SUPPORTED")
-    lines.append(comment_banner(coverpoint, "wrs.nto: minstret delta, interrupt taken during the wait"))
+    lines.append(comment_banner(coverpoint, "wrs.nto: minstret delta, no trap"))
     r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.append("#ifndef UDB_ZAWRS_NTO_IS_NOP")
     lines.extend(
         [
             "",
-            test_data.add_testcase("minstret_wrs_nto_taken", coverpoint, covergroup),
             "csrw mie, zero",
-            "csrci mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.nto is reached",
+            "csrci mstatus, 8    # keep MIE=0 while arming",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
-        ]
-    )
-    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
-    lines.extend(
-        [
             f"LI(x{r_scratch}, 0x80)",
             f"csrs mie, x{r_scratch}",
-            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
         ]
     )
-    test_data.int_regs.return_registers([r_scratch])
+    lines.append("#else")
+    lines.extend(
+        [
+            "",
+            "csrci mstatus, 8    # MIE=0, unaffected either way",
+        ]
+    )
+    lines.append("#endif // UDB_ZAWRS_NTO_IS_NOP")
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
 
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"lr.w x{r_before}, (sp)              # establish reservation; loaded value unused",
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
             f"csrr x{r_before}, minstret",
-            "csrsi mstatus, 8                       # MIE=1, immediately before wrs.nto so the trap lands there",
-            "wrs.nto                     # interrupt taken here; traps, handler runs, returns after wrs.nto",
+            test_data.add_testcase("minstret_wrs_nto", coverpoint, covergroup),
+            "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+            "csrsi mstatus, 8    # MIE=1 right before wrs.nto",
+            "#endif // UDB_ZAWRS_NTO_IS_NOP",
+            "wrs.nto",
             f"csrr x{r_after}, minstret",
             "csrci mstatus, 8",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
+            "#ifndef UDB_ZAWRS_NTO_IS_NOP",
             *clr_mtimer_int(r_t02, r_mtimecmp2),
+            "#endif // UDB_ZAWRS_NTO_IS_NOP",
         ]
     )
-    test_data.int_regs.return_registers([r_mtimecmp2, r_t02, r_before, r_after, r_diff])
+    test_data.int_regs.return_registers([r_mtimecmp2, r_t02, r_scratch, r_before, r_after, r_diff])
     lines.append("#endif // ZAWRS_SUPPORTED")
 
     ######################################
@@ -632,10 +641,11 @@ def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"lr.w x{r_before}, (sp)              # establish reservation; loaded value unused",
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
             f"csrr x{r_before}, minstret",
             "csrsi mstatus, 8                       # MIE=1, immediately before wrs.sto so the trap lands there",
-            "wrs.sto                     # interrupt taken here; traps, handler runs, returns after wrs.sto",
+            "wrs.sto                     # interrupt taken here; traps",
             f"csrr x{r_after}, minstret",
             "csrci mstatus, 8",
             f"sub x{r_diff}, x{r_after}, x{r_before}",

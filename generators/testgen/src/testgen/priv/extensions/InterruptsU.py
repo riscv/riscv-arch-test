@@ -316,14 +316,8 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     lines = ["", "#ifdef ZICNTR_SUPPORTED"]
 
-    r_temp = test_data.int_regs.get_register()
-    lines.extend(
-        [
-            f"LI(x{r_temp}, 0x4)                    # mcounteren.IR (bit 2)",
-            f"csrs mcounteren, x{r_temp}            # allow U-mode instret reads for this whole function",
-        ]
-    )
-    test_data.int_regs.return_registers([r_temp])
+    # Ensure U-mode can read instret
+    lines.append("csrsi mcounteren, 0x4   # allow U-mode instret reads")
 
     # ######################################
     # coverpoint = "cp_uinstret_wfi_timeout"
@@ -401,44 +395,57 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
     lines.append("\n#ifdef ZAWRS_SUPPORTED")
 
     ######################################
-    coverpoint = "cp_uinstret_wrs_nto_taken"
+    coverpoint = "cp_uinstret_wrs_nto"
     ######################################
-    lines.append(comment_banner(coverpoint, "wrs.nto: instret delta, interrupt taken during the wait"))
+    lines.append(comment_banner(coverpoint, "wrs.nto: instret delta, no trap"))
     r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.append("#ifndef UDB_ZAWRS_NTO_IS_NOP")
     lines.extend(
         [
             "",
             "csrw mie, zero",
             f"LI(x{r_scratch}, 0x200000)",
             f"csrc mstatus, x{r_scratch}          # TW=0",
-            f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
+            f"LI(x{r_scratch}, 0x80)",
             f"csrs mstatus, x{r_scratch}          # MIE=1 once mret enters U-mode",
             f"LI(x{r_scratch}, 0x80)               # enable MTIE",
             f"csrw mie, x{r_scratch}",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
-            "RVTEST_GOTO_LOWER_MODE Umode",
         ]
     )
+    lines.append("#else")
+    lines.extend(
+        [
+            "",
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrc mstatus, x{r_scratch}          # MIE=0, unaffected either way",
+        ]
+    )
+    lines.append("#endif // UDB_ZAWRS_NTO_IS_NOP")
+    lines.append("RVTEST_GOTO_LOWER_MODE Umode")
     test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
 
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"lr.w x{r_before}, (sp)               # establish reservation in U-mode; loaded value unused",
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
             f"csrr x{r_before}, instret",
             test_data.add_testcase("uinstret_wrs_nto_taken", coverpoint, covergroup),
-            "wrs.nto                              # interrupt taken here; traps to M-mode, resumes after wrs.nto",
+            "wrs.nto",
             f"csrr x{r_after}, instret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),
             "RVTEST_GOTO_MMODE",
+            "#ifndef UDB_ZAWRS_NTO_IS_NOP",
             *clr_mtimer_int(r_temp, r_mtimecmp),
+            "#endif // UDB_ZAWRS_NTO_IS_NOP",
         ]
     )
     test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch, r_before, r_after, r_diff])
 
     ######################################
-    coverpoint = "cp_uinstret_wrs_sto_taken"
+    coverpoint = "cp_uinstret_wrs_sto"
     ######################################
     lines.append(comment_banner(coverpoint, "wrs.sto: instret delta, interrupt already pending, taken not timed out"))
     r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
@@ -448,23 +455,23 @@ def _generate_uinstret_wfi_tests(test_data: TestData) -> list[str]:
             "csrw mie, zero",
             f"LI(x{r_scratch}, 0x200000)",
             f"csrc mstatus, x{r_scratch}          # TW=0",
-            f"LI(x{r_scratch}, 0x80)               # mstatus.MPIE bit mask (bit 7)",
-            f"csrs mstatus, x{r_scratch}          # MIE=1 once mret enters U-mode",
-            f"LI(x{r_scratch}, 0x80)               # enable MTIE",
-            f"csrw mie, x{r_scratch}",
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrs mstatus, x{r_scratch}          # MIE=1 on mret",
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrw mie, x{r_scratch}             # enable MTIE",
             *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_scratch),
             "RVTEST_GOTO_LOWER_MODE Umode",
         ]
     )
     test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
-
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     lines.extend(
         [
-            f"lr.w x{r_before}, (sp)               # establish reservation in U-mode; loaded value unused",
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
             f"csrr x{r_before}, instret",
             test_data.add_testcase("uinstret_wrs_sto_taken", coverpoint, covergroup),
-            "wrs.sto                              # interrupt taken here; traps to M-mode, resumes after wrs.sto",
+            "wrs.sto",
             f"csrr x{r_after}, instret",
             f"sub x{r_diff}, x{r_after}, x{r_before}",
             write_sigupd(r_diff, test_data),

@@ -5,16 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from collections.abc import Callable
-
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_stimer_mmode, set_stimer_mmode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import _csr_access, generate_sscofpmf_suite
+from testgen.priv.extensions.SscofpmfCommon import generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
-
-# _scountovf_access
 
 
 def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
@@ -100,119 +96,6 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_val, r_temp, r_scratch])
-    return lines
-
-
-def _generate_lcofip_hw_only_s_tests(test_data: TestData) -> list[str]:
-    ######################################
-    covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_hw_only"
-    ######################################
-
-    OF_BIT = 1 << 63  # RVMODEL_MHPMEVENT bit 63
-
-    r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
-
-    lines = [
-        comment_banner(
-            coverpoint,
-        ),
-        "",
-        "# === M-MODE SETUP ===",
-        "csrw mip, zero   # clear pending",
-        "csrw mie, zero   # disable interrupts",
-        "RVTEST_GOTO_LOWER_MODE Smode",
-        f"    LI(x{r_val}, {hex(OF_BIT)})",
-        "",
-        "    # Testcase: software-set OF bit directly (no HW increment)",
-        f"    {_csr_access(f'csrs RVMODEL_MHPMEVENT, x{r_val}   # software-set OF bit', 'S')}",
-        "",
-        f"    {test_data.add_testcase('lcofip_hw_only_s_set_of', coverpoint, covergroup)}",
-        f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
-        f"    {_csr_access(f'csrr x{r_temp}, mip   # sample point -- LCOFIP must read 0', 'S')}",
-        "",
-        "    # Testcase: software-clear OF bit directly (no HW increment)",
-        f"    {_csr_access(f'csrc RVMODEL_MHPMEVENT, x{r_val}   # software-clear OF bit', 'S')}",
-        "",
-        f"    {test_data.add_testcase('lcofip_hw_only_s_clear_of', coverpoint, covergroup)}",
-        f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
-        f"    {_csr_access(f'csrr x{r_temp}, mip   # sample point -- LCOFIP must still read 0', 'S')}",
-        "RVTEST_GOTO_MMODE",
-    ]
-
-    test_data.int_regs.return_registers([r_val, r_temp])
-    return lines
-
-
-def _generate_scountovf_shadow_s_tests(test_data: TestData) -> list[str]:
-    ######################################
-    covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_scountovf_shadow"
-    ######################################
-
-    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENT{n}H" for n in range(3, 32)]  # RV32: 29 registers
-    MHPMEVENT_CSRS = [f"CSR_MHPMEVENT{n}" for n in range(3, 32)]  # RV64: 29 registers
-
-    r_mcounteren = test_data.int_regs.get_register(exclude_regs=[0, 31])
-
-    lines = [
-        comment_banner(
-            coverpoint,
-        ),
-        "",
-        "RVTEST_GOTO_LOWER_MODE Smode",
-        f"    LI(x{r_mcounteren}, -1)",
-        f"    {_csr_access(f'csrw mcounteren, x{r_mcounteren}   # mcounteren = all 1s (fixed for this coverpoint)', 'S')}",
-        "",
-    ]
-
-    test_data.int_regs.return_registers([r_mcounteren])
-
-    def emit_pattern(pattern_name: str, of_bit_fn: Callable[[int], int]) -> None:
-        r_of_bit, r_scountovf = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
-
-        lines.append("    #if __riscv_xlen == 32")
-        lines.append(f"    LI(x{r_of_bit}, {1 << 31})   # OF bit (bit 31 of mhpmeventh, RV32)")
-        lines.append(f"    # --- Write OF pattern: {pattern_name} across mhpmeventh3..31 (RV32) ---")
-        for i, csr_name in enumerate(MHPMEVENTH_CSRS):
-            set_bit = of_bit_fn(i)
-            op = "csrs" if set_bit else "csrc"
-            action = "set" if set_bit else "clear"
-            instr = f"{op} {csr_name}, x{r_of_bit}   # {action} OF bit -- {csr_name}"
-            lines.append(f"    {_csr_access(instr, 'S')}")
-        lines.append("    #else")
-        lines.append(f"    LI(x{r_of_bit}, {1 << 63})   # OF bit (bit 63 of mhpmevent, RV64)")
-        lines.append(f"    # --- Write OF pattern: {pattern_name} across mhpmevent3..31 (RV64) ---")
-        for i, csr_name in enumerate(MHPMEVENT_CSRS):
-            set_bit = of_bit_fn(i)
-            op = "csrs" if set_bit else "csrc"
-            action = "set" if set_bit else "clear"
-            instr = f"{op} {csr_name}, x{r_of_bit}   # {action} OF bit -- {csr_name}"
-            lines.append(f"    {_csr_access(instr, 'S')}")
-        lines.append("    #endif")
-        lines.append("")
-
-        test_data.int_regs.return_registers([r_of_bit])
-
-        binname = f"scountovf_shadow_s_{pattern_name}"
-        lines.append(f"    {test_data.add_testcase(binname, coverpoint, covergroup)}")
-        lines.append(f"    csrr x{r_scountovf}, scountovf   # sample point -- must match OF pattern")
-        lines.append("")
-
-        test_data.int_regs.return_registers([r_scountovf])
-
-    # --- all_0s: every OF bit clear ---
-    emit_pattern("all_0s", lambda i: 0)
-
-    # --- all_1s: every OF bit set ---
-    emit_pattern("all_1s", lambda i: 1)
-
-    # --- walking_1s: exactly one OF bit set at a time, across all 29 positions ---
-    for walk_idx in range(29):
-        emit_pattern(f"walking1_{walk_idx}", lambda i, w=walk_idx: 1 if i == w else 0)
-
-    lines.append("RVTEST_GOTO_MMODE")
-
     return lines
 
 
@@ -358,8 +241,6 @@ def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
     tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
-    tc.code.extend(_generate_lcofip_hw_only_s_tests(test_data))
-    tc.code.extend(_generate_scountovf_shadow_s_tests(test_data))
     tc.code.extend(_generate_lcofip_priority_s_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "S"))

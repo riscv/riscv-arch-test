@@ -312,7 +312,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     # Create bit masks.  WPRI fields should be 0 to ignore reads.
 
     # sstatus bit mask
-    sstatusmask = (
+    sstatus_mask = (
         (1 << 1)  # SIE:  Supervisor Interrupt Enable
         | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
         | (0 << 6)  # UBE not yet supported by Sail; change to 1 when supported
@@ -330,15 +330,14 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     )
 
     csrs = [
-        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
-        # TODO: sail does not yet support sstatus.SDT.  Mask it until available to avoid mismatch with Whisper.
-        ("sstatus", sstatusmask),  # was 0xFFFFFFFFFEFFFFBF
+        ("sstatus", sstatus_mask),
         # cp_scause is tested separately. WLRL fields can't be managed with masks.
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("stvec", 0b10),
         ("scounteren", None),
         ("sscratch", None),
         ("sip", 0x3EEE),  # only test standard non-reserved portion
+        ("sie", 0x3EEE),  # only test standard non-reserved portion
     ]
     # skip walking 1s on this because valid virtual addresses is not described adequately
     csrs_nowalk = [

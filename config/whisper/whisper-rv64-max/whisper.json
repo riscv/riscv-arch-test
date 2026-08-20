@@ -126,7 +126,7 @@
     "tail_agnostic_policy": "ones",
     "trap_invalid_vtype": false,
     "trap_non_zero_vstart": true,
-    "tt_clear_tval_vl_egs": true,
+    "tt_clear_tval_vl_egs": false,
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
     "update_whole_mask": true
   },

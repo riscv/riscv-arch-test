@@ -87,8 +87,7 @@ def _simulator_error_lines(log_file: Path, limit: int = 3) -> list[str]:
 def run_test(
     command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool, timeout: int
 ) -> tuple[bool, Path, str, str]:
-    """Run a single ELF and return (failed, elf_path, rvcp_summary_line, fail_message).
-    """
+    """Run a single ELF and return (failed, elf_path, rvcp_summary_line, fail_message)."""
 
     # Create log, trace, and summary file paths mirroring the ELF subdirectory hierarchy
     rel = elf_path.relative_to(elf_dir)

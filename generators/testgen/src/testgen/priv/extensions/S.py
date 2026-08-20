@@ -313,11 +313,11 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 
     # sstatus bit mask
     sstatus_mask = (
-          (1 << 1)   # SIE:  Supervisor Interrupt Enable
-        | (1 << 5)   # SPIE: Supervisor Previous Interrupt Enable
-        | (0 << 6)   # UBE not yet supported by Sail; TODO change to 1 when supported
-        | (1 << 8)   # SPP:  Supervisor Previous Privilege
-        | (3 << 9)   # VS:   Vector Status
+        (1 << 1)  # SIE:  Supervisor Interrupt Enable
+        | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+        | (0 << 6)  # UBE not yet supported by Sail; TODO change to 1 when supported
+        | (1 << 8)  # SPP:  Supervisor Previous Privilege
+        | (3 << 9)  # VS:   Vector Status
         | (3 << 13)  # FS:   Floating-Point Status
         | (3 << 15)  # XS:   User-Mode Extension Status
         | (1 << 18)  # SUM:  Supervisor User Memory Access

@@ -52,10 +52,10 @@
       "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },
     "mcounteren": {
-      "mask": "0x00000007"
+      "mask": "0x000007FF"
     },
     "scounteren": {
-      "mask": "0x00000007"
+      "mask": "0x000007FF"
     }
   },
 

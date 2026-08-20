@@ -313,7 +313,6 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -321,17 +320,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # Standard M-mode CSRs
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
     mstatus_mask = (
-          (1 << 1)   # SIE:  Supervisor Interrupt Enable
-        | (1 << 3)   # MIE:  Machine Interrupt Enable
-        | (1 << 5)   # SPIE: Supervisor Previous Interrupt Enable
-        | (0 << 6)   # UBE not yet supported by Sail; change to 1 when supported
-        | (1 << 7)   # MPIE: Machine Previous Interrupt Enable
-        | (1 << 8)   # SPP:  Supervisor Previous Privilege
-        | (3 << 9)   # VS:   Vector Status
+        (1 << 1)  # SIE:  Supervisor Interrupt Enable
+        | (1 << 3)  # MIE:  Machine Interrupt Enable
+        | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+        | (0 << 6)  # UBE not yet supported by Sail; change to 1 when supported
+        | (1 << 7)  # MPIE: Machine Previous Interrupt Enable
+        | (1 << 8)  # SPP:  Supervisor Previous Privilege
+        | (3 << 9)  # VS:   Vector Status
         | (3 << 11)  # MPP:  Machine Previous Privilege
         | (3 << 13)  # FS:   Floating-Point Status
         | (3 << 15)  # XS:   User-Mode Extension Status
-        | (1 << 17)  # MPRV: Modify PRiVelege
+        | (1 << 17)  # MPRV: Modify Privilege
         | (1 << 18)  # SUM:  Supervisor User Memory Access
         | (1 << 19)  # MXR:  Make eXecutable Readable
         | (1 << 20)  # TVM:  Trap Virtual Memory
@@ -351,32 +350,31 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
-          (0 << 0) # Smepmp MML not supported
-        | (0 << 1) # Smepmp MMWP not supported
-        | (0 << 2) # Smepmp RLB not supported
-        | (1 << 8) # USEED User mode seed access
-        | (1 << 9) # SSEED Supervisor mode seed access
-        | (1 << 10) # MLPE Machine landing pads enabled
-        | (3 << 32) # Pointer masking
+        (0 << 0)  # Smepmp MML not supported
+        | (0 << 1)  # Smepmp MMWP not supported
+        | (0 << 2)  # Smepmp RLB not supported
+        | (1 << 8)  # USEED User mode seed access
+        | (1 << 9)  # SSEED Supervisor mode seed access
+        | (1 << 10)  # MLPE Machine landing pads enabled
+        | (3 << 32)  # Pointer masking
     )
     menvcfg_mask = (
-          (1 << 0) # FIOM: Fence of I/O implies memory
-        | (1 << 2) # LPE: Landing Pad enable
-        | (1 << 3) # SSE: Shadow Stack Enable
-        | (3 >> 4) # CBIE: Cache Block Invalidate Enable
-        | (1 << 6) # CBCFE: Cache Block Clean and Flush Enable
-        | (1 << 7) # CBZE: Cache Block Zero Enable
-        | (3 << 32) # PMM: Pointer Masking
-        | (0 << 59) # Double Trap not supported by Sail; change to 1 when Smdbltrp implemented
-        | (0 << 60) # Counter Delegation Smcdeleg not supported by Sail; change to 1 when Smcdeleg implemented
-        | (1 << 61) # ADUE: A/D
-        | (1 << 62) # PBMTE: Page-Based Memory Type Enable
-        | (1 << 63) # STCE: Supervisor Timer Compare Enable
+        (1 << 0)  # FIOM: Fence of I/O implies memory
+        | (1 << 2)  # LPE: Landing Pad enable
+        | (1 << 3)  # SSE: Shadow Stack Enable
+        | (3 << 4)  # CBIE: Cache Block Invalidate Enable
+        | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
+        | (1 << 7)  # CBZE: Cache Block Zero Enable
+        | (3 << 32)  # PMM: Pointer Masking
+        | (0 << 59)  # Double Trap not supported by Sail; change to 1 when Smdbltrp implemented
+        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; change to 1 when Smcdeleg implemented
+        | (1 << 61)  # ADUE: A/D
+        | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
+        | (1 << 63)  # STCE: Supervisor Timer Compare Enable
     )
 
     csrs_maskedwrites = [
         ("mstatus", mstatus_mask),  # mask off reserved bits and unsupported bits
-
     ]
 
     csrs = [
@@ -393,7 +391,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
         ("mip", 0xFFFF),  # limit to standard interrupt bits
-        ("mcountinhibit", None),
+        # Only check CY (bit 0) and IR (bit 2). Bit 1 (TM) is always read-only zero. The HPMn inhibit bits are
+        # WARL and may be writable even for unimplemented counters (priv spec 3.1.12 does not require them to be
+        # read-only zero); Spike and Whisper implement all 29 inhibit bits while hardwiring most counters to zero.
+        # Sail derives the writable mcountinhibit bits from writable_hpm_counters, so it cannot model that.
+        ("mcountinhibit", 0b101),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -426,7 +428,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     # RV32-only high CSRs
-    csr_mstatush = ("mstatush", mstatus_mask >> 32)
+    csr_mstatush = (
+        "mstatush",
+        (mstatus_mask >> 32) & 0x7FFFFFF0,
+    )  # mask off UXL/SXL and SD that don't apply in mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
@@ -474,10 +479,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, ("menvcfgh", menvcfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(test_data, ("menvcfgh", menvcfg_mask >> 32), covergroup, coverpoint, maskedwrites=True)
+    )
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, maskedwrites=True)
+    )
     tc.code.append("#endif // MSECCFG")
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
@@ -499,12 +508,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Set and clear each bit individually in all writable M-mode CSRs",
     )
 
+    for csr in csrs_maskedwrites:
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
+
     for csr in csrs:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint))
+    tc.code.extend(csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("#endif")
 
     tc = test_data.new_test_chunk(test_chunks)
@@ -515,9 +528,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint))
+    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint))
+    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("#endif // __riscv_xlen == 32")
 
@@ -531,15 +544,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         coverpoint,
         "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
+    temp_reg = test_data.int_regs.get_register()
     for csr in range(0x7B0, 0x7C0):
         tc.code.extend(
             [
                 "",
                 # Test the write value
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr t0, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
+                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
             ]
         )
+    test_data.int_regs.return_register(temp_reg)
 
     ######################################
     coverpoint = "cp_csr_ro"
@@ -552,38 +567,33 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
 
-    tc.code.extend(
-        [
-            "",
-        ]
-    )
-
     for csr in range(0xC00, 0x1000):
-    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-
+        tc = test_data.new_test_chunk(test_chunks, "csr_ro")
+        temp_reg = test_data.int_regs.get_register()
         tc.code.extend(
             [
                 "",
-                "\nLI(t0, -1)          # t0 = all 1s",
+                f"\nLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrw 0x{csr:03x}, t0    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
+        test_data.int_regs.return_register(temp_reg)
 
     ######################################
     coverpoint = "cp_misa_mxl"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Set, clear, write misa.MXL.  Should not change",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "misa_mxl")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Set, clear, write misa.MXL.  Should not change",
     )
 
     rmisasave, rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(5)
 
-    lines.extend(
+    tc.code.extend(
         [
             "# Save misa",
             f"csrr x{rmisasave}, misa      # save misa",
@@ -640,14 +650,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_dependencies"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to write incompatible values to misa and check illegal combinations do not occur",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "misa_dependencies")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write incompatible values to misa and check illegal combinations do not occur",
     )
 
-    lines.extend(
+    tc.code.extend(
         [
             _gen_misa_dependencies(
                 "0b00000000000000000100010000",
@@ -720,16 +730,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_clear_c"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Try to clear misa.C.  Should not change if PC is at 2-byte aligned address",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "misa_clear_c")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Try to clear misa.C.  Should not change if PC is at 2-byte aligned address",
     )
 
     r1, r2, rc = test_data.int_regs.get_registers(3)
 
-    lines.extend(
+    tc.code.extend(
         [
             f"LI(x{rc}, 0b100)      # bitmask for C extension bit in misa",
             "",
@@ -764,27 +774,23 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
 
-    lines.extend(
-        [
-            "",
-            "#ifdef SM1P13P0_OR_LATER_SUPPORTED",
-        ]
-    )
-
     ######################################
     coverpoint = "cp_misa_bv"
     ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
-            "Read, set, and clear each bit; read back and write to signature.",
-        ),
+
+    tc = test_data.new_test_chunk(test_chunks, "misa_bv_msip")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
+        "Read, set, and clear each bit; read back and write to signature.",
     )
 
     rmisasave3, rb, rv, rr3 = test_data.int_regs.get_registers(4)
 
-    lines.extend(
+    tc.code.append("#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+
+    tc.code.extend(
         [
             f"csrr x{rmisasave3}, misa       # save misa before Sm1p13 B/V tests",
             f"LI(x{rb}, 0x2)                 # bitmask for misa.B (bit 1)",
@@ -827,7 +833,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ######################################
     coverpoint = "cp_msip"
     ######################################
-    lines.append(
+
+    tc.code.append(
         comment_banner(
             coverpoint,
             "Sm1p13: write all 1s / all 0s to memory-mapped msip register.\n"
@@ -837,7 +844,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     r_msip, r_msipaddr = test_data.int_regs.get_registers(2)
 
-    lines.extend(
+    tc.code.extend(
         [
             "#ifdef RVMODEL_MSIP_ADDRESS",
             f"LI(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
@@ -874,9 +881,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
-    lines.append("#endif // SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.append("#endif // SM1P13P0_OR_LATER_SUPPORTED")
 
-    return lines
 
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     """Generate CSR counter tests."""
@@ -1156,39 +1162,11 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     return lines
 
-def _generate_mcsr_ro_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Generate read-only CSR tests, split across files"""
-    covergroup = "Sm_mcsr_cg"
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "mcsr_ro")
-
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0x1000):
-        r1 = test_data.int_regs.get_register()
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(
-            [
-                "",
-                f"LI(x{r1}, -1)          # x{r1} = all 1s",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(r1)
-
 
 @add_priv_test_generator(
-        "Sm",
-        required_extensions=["Sm"],
-        testcases_per_file = 512 # split tests for runtime
+    "Sm",
+    required_extensions=["Sm"],
+    testcases_per_file=512,  # split tests for runtime
 )
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
@@ -1216,9 +1194,6 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
 
     _generate_mcsr_tests(test_data, test_chunks)
-    test_chunks.append(test_data.end_test_chunk())
-
-    _generate_mcsr_ro_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

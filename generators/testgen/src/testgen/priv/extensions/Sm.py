@@ -802,7 +802,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     return lines
 
-
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     """Generate CSR counter tests."""
     covergroup = "Sm_mcsr_cg"
@@ -984,8 +983,40 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     return lines
 
+def _generate_mcsr_ro_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate read-only CSR tests, split across files"""
+    covergroup = "Sm_mcsr_cg"
 
-@add_priv_test_generator("Sm", required_extensions=["Sm"])
+    ######################################
+    coverpoint = "cp_csr_ro"
+    ######################################
+
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_ro")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
+    )
+
+    for csr in range(0xC00, 0x1000):
+        r1 = test_data.int_regs.get_register()
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(
+            [
+                "",
+                f"LI(x{r1}, -1)          # x{r1} = all 1s",
+                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
+                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+            ]
+        )
+        test_data.int_regs.return_register(r1)
+
+
+@add_priv_test_generator(
+        "Sm",
+        required_extensions=["Sm"],
+        testcases_per_file = 512 # split tests for runtime
+)
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
     test_chunks: list[TestChunk] = []
@@ -1013,6 +1044,9 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("mcsr_cntr")
     tc.code.extend(_generate_mcsr_cntr_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    _generate_mcsr_ro_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

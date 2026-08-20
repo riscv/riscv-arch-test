@@ -435,7 +435,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_mcsr_access"
     ######################################
 
-    tc = test_data.new_test_chunk(test_chunks, "mcsr_raccess")
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_access")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -447,21 +447,23 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
 
     for csr in csrs:
+        tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
-    lines.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    lines.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
-    lines.append("#endif")
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
+    tc.code.append("#endif")
 
-    lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint, maskedwrites=True))
-    lines.append("#endif")
+    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint, maskedwrites=True))
+    tc.code.append("#endif")
 
-    lines.append("\n// Read-Only CSRs")
+    tc.code.append("\n// Read-Only CSRs")
     for csr in csrsro:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
-    lines.extend(
+    tc.code.extend(
         [
             "",
             "// RV32-only h CSRs",
@@ -469,17 +471,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    lines.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
 
-    lines.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("menvcfgh", menvcfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
-    lines.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
-    lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
-    lines.append("#endif // MSECCFG")
-    lines.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
-    lines.extend(
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, ("menvcfgh", menvcfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
+    tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, maskedwrites=True))
+    tc.code.append("#endif // MSECCFG")
+    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
+    tc.code.extend(
         [
             "#endif // SM1P13P0_OR_LATER_SUPPORTED",
             "#endif // xlen = 32",
@@ -489,45 +491,48 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ######################################
     coverpoint = "cp_mcsrwalk"
     ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Set and clear each bit individually in all writable M-mode CSRs",
-        ),
+
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_walk")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Set and clear each bit individually in all writable M-mode CSRs",
     )
 
     for csr in csrs:
-        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
-    lines.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    lines.extend(csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint))
-    lines.append("#endif")
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint))
+    tc.code.append("#endif")
 
-    lines.extend(
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(
         [
             "// RV32-only h CSRs",
             "#if __riscv_xlen == 32",
         ]
     )
 
-    lines.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint))
-    lines.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    lines.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint))
-    lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
-    lines.append("#endif // __riscv_xlen == 32")
+    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint))
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint))
+    tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("#endif // __riscv_xlen == 32")
 
     ######################################
     coverpoint = "cp_csr_insufficient_priv"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to read debug-mode registers.  Should throw illegal instruction",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "csr_insufficient_priv")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
     for csr in range(0x7B0, 0x7C0):
-        lines.extend(
+        tc.code.extend(
             [
                 "",
                 # Test the write value
@@ -540,18 +545,26 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_csr_ro"
     ######################################
 
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Attempt to write read-only CSRs.  Should throw illegal instruction",
-        ),
+    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to write read-only CSRs.  Should throw illegal instruction",
     )
 
-    lines.append("\nLI(t0, -1)          # t0 = all 1s")
+    tc.code.extend(
+        [
+            "",
+        ]
+    )
+
     for csr in range(0xC00, 0x1000):
-        lines.extend(
+    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
+
+        tc.code.extend(
             [
                 "",
+                "\nLI(t0, -1)          # t0 = all 1s",
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"csrw 0x{csr:03x}, t0    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]

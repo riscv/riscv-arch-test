@@ -205,7 +205,7 @@ The categories of SPI and SCI are given in <<t-secondary-producer-instruction-ca
 |===
 |Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
 |Int (rd)|auipc, li|sll, cpop (Zbb), clmul (Zbc), sha256sig0 (Zknh)|lw, amoswap.w (Zaamo)|jal|csrr|mul, div|fcvt.w.s, fmv.x.w, fclass.s, feq.s|vmv.x.s|
-|PC||||jal, jalr|||||
+|PC||||jal, jalr, beq|||||
 |FP (fd)|||flw||||fmadd.s, fdiv.s, fli.s (Zfa), fsqrt.d (D), fsqrt.h (Zfh), fsqrt.q (Q)||vmv.f.s
 |Vector (vd)|||vle32.v|||||vadd.vi|vfadd.vf
 |Memory|||sw, amoswap.w (Zaamo), cbo.zero (Zicboz)||||fsw|vse32.v|
@@ -218,7 +218,7 @@ The categories of SPI and SCI are given in <<t-secondary-producer-instruction-ca
 |===
 |Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
 |Int|add (rs1/2), addi (rs1)|srl, sh1add (Zba), binv (Zbs), aes32dsmi (Zknd32), aes64dsm (Zknd32)|sw (rs2), amoswap.w (rs2, Zaamo)|beq (rs1/2)|csrw (rs1)|mul (rs1/2), div (rs1/2)|fcvt.s.w (rs1), fmv.w.x (rs1)|vadd.vx (rs1), vmv.v.x (rs1)|
-|PC||||auipc (implicit), jal (implicit)|||||
+|PC|auipc (implicit)|||jal, jalr (implicit)|||||
 |FP|||fsw (fs2)||||fmadd.s (fs1/2/3), fdiv.s (fs1/2), fli.s (fs1), fsqrt.d (fs1, D), fsqrt.h (fs1, Zfh), fsqrt.q (fs1, Q)||vfadd.vf (fs1), vmv.v.f (fs1)
 |Vector|||vse32.v(vs2)|||||vadd.vv (vs1/2), vadd.vi (vs2), vmacc.vv (vs1/2/vd)|vfadd.vv (vs1/2), vfsqrt.v (vs2), vfmacc.vv (vs1/2/vd)
 |Memory|||lw, amoswap.w (Zaamo)||||fsw|vle32.v|

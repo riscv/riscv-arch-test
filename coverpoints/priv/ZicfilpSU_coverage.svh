@@ -11,9 +11,9 @@
 //
 ///////////////////////////////////////////////
 
-`define COVER_ZICFILPU_S
+`define COVER_ZICFILPSU
 
-covergroup Zicfilp_u_s_cg with function sample(ins_t ins);
+covergroup Zicfilpsu_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "Zicfilp_coverpoints.svh"
@@ -76,6 +76,6 @@ covergroup Zicfilp_u_s_cg with function sample(ins_t ins);
     `endif
 endgroup
 
-function void zicfilp_u_s_sample(int hart, int issue, ins_t ins);
-    Zicfilp_u_s_cg.sample(ins);
+function void zicfilpus_sample(int hart, int issue, ins_t ins);
+    Zicfilpsu_cg.sample(ins);
 endfunction

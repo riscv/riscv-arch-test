@@ -3,13 +3,11 @@
 # CI configuration for Spike simulator
 # Shared across all Spike configs
 
-# SsstrictSm, SsstrictS, SsstrictU excluded because Spike does not presently aim to support Ssstrict.
-# https://github.com/riscv-software-src/riscv-isa-sim/issues/1976#issuecomment-5335375358
 ci_enabled: true
-# TODO: Priv tests mismatch due to config issues.
-# TODO: Remove SsstrictV when sail SsstrictV is implemented
+# Sm tests mismatch due to config issues.
 # Smstateen will be added back once sail starts supporting Sscsrind too
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# Sdtrig* not yet supported in Sail reference
+exclude_extensions: "Sm,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

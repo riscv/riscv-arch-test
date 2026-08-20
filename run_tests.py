@@ -88,11 +88,6 @@ def run_test(
     command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool, timeout: int
 ) -> tuple[bool, Path, str, str]:
     """Run a single ELF and return (failed, elf_path, rvcp_summary_line, fail_message).
-
-    fail_message is returned rather than printed here: this runs in a Pool worker, and all
-    workers share the parent's stdout. print() emits the message and its terminating newline
-    as two separate writes, so on a line-buffered stdout (i.e. a terminal) another worker can
-    flush between them and glue its message onto this one's last line. The parent prints.
     """
 
     # Create log, trace, and summary file paths mirroring the ELF subdirectory hierarchy

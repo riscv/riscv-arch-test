@@ -982,6 +982,103 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r1, r2])
 
+    # Counter Wraparound Verification
+    r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)
+
+    # Re-enable all counters before trying to wrap them!
+    lines.append("csrw mcountinhibit, x0    # Clear inhibit register")
+
+    ######################################
+    coverpoint = "cp_mcycle_wraparound"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Write max value to mcycle and verify it wraps around cleanly"))
+
+    lines.extend(
+        [
+            f"LI(x{r_temp}, -1)                    # Load all-ones",
+            "#if __riscv_xlen == 32",
+            f"csrw mcycleh, x{r_temp}             # Set upper 32 bits of mcycle to maximum (RV32 only)",
+            "#endif",
+            test_data.add_testcase("mcycle_wrap", coverpoint, covergroup),
+            f"csrw mcycle, x{r_temp}             # Set mcycle to its maximum value",
+            f"LI(x{r_counter}, 100)                # Wait loop for counter ticks",
+            "1:",
+            "nop",
+            f"addi x{r_counter}, x{r_counter}, -1",
+            f"bnez x{r_counter}, 1b",
+            f"csrr x{r_val}, mcycle               # Read mcycle after the bounded wait",
+            f"sltiu x{r_val}, x{r_val}, 1000       # Pass if mcycle wrapped to a small value",
+            "#if __riscv_xlen == 32",
+            f"csrr x{r_val2}, mcycleh             # Read upper 32 bits after the bounded wait",
+            f"sltiu x{r_val2}, x{r_val2}, 1        # Pass if upper 32 bits wrapped to zero",
+            f"and x{r_val}, x{r_val}, x{r_val2}    # Pass only if both wraparound conditions are met",
+            "#endif",
+            write_sigupd(r_val, test_data),
+            "",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_wraparound"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Write max value to minstret and verify it wraps around cleanly"))
+
+    lines.extend(
+        [
+            f"LI(x{r_temp}, -1)                    # Load all-ones",
+            "#if __riscv_xlen == 32",
+            f"csrw minstreth, x{r_temp}           # Set upper 32 bits of minstret to maximum (RV32 only)",
+            "#endif",
+            test_data.add_testcase("minstret_wrap", coverpoint, covergroup),
+            f"csrw minstret, x{r_temp}            # Set minstret to its maximum value",
+            "nop",
+            f"csrr x{r_val}, minstret             # Read minstret after wraparound",
+            "#if __riscv_xlen == 32",
+            f"csrr x{r_val2}, minstreth           # Read upper 32 bits after wraparound",
+            "#endif",
+            write_sigupd(r_val, test_data),
+            "#if __riscv_xlen == 32",
+            write_sigupd(r_val2, test_data),
+            "#endif",
+            "",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_mtime_wraparound"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Write all-ones to memory-mapped mtime and verify it wraps around cleanly"))
+
+    lines.extend(
+        [
+            "#ifdef RVMODEL_MTIME_ADDRESS",
+            f"LA(x{r_temp}, RVMODEL_MTIME_ADDRESS) # base address of mtime",
+            f"LI(x{r_val}, -1)                     # all-ones",
+            "#if __riscv_xlen == 32",
+            f"SREG x{r_val}, 4(x{r_temp})          # write all-ones to the upper half (RV32 only)",
+            "#endif",
+            test_data.add_testcase("mtime_wrap", coverpoint, covergroup),
+            f"SREG x{r_val}, 0(x{r_temp})          # write all-ones to the base word; arms the counter",
+            f"LI(x{r_counter}, 100)                # Wait loop for counter ticks",
+            "1:",
+            "nop",
+            f"addi x{r_counter}, x{r_counter}, -1",
+            f"bnez x{r_counter}, 1b",
+            f"LREG x{r_val2}, 0(x{r_temp})         # read raw lower half after the bounded wait",
+            f"sltiu x{r_val}, x{r_val2}, 1000       # pass if mtime wrapped to a small value",
+            "#if __riscv_xlen == 32",
+            f"LREG x{r_val2}, 4(x{r_temp})         # read raw upper half after the bounded wait",
+            f"sltiu x{r_val2}, x{r_val2}, 1         # pass if upper half wrapped to zero",
+            f"and x{r_val}, x{r_val}, x{r_val2}     # pass only if both halves wrapped",
+            "#endif",
+            write_sigupd(r_val, test_data),
+            "#endif",
+            "",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_val, r_val2, r_temp, r_counter])
+
     return lines
 
 

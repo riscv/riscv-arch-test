@@ -319,6 +319,38 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     # Standard M-mode CSRs
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
+    mstatusmask = (
+          (1 << 1)   # SIE:  Supervisor Interrupt Enable
+        | (1 << 3)   # MIE:  Machine Interrupt Enable
+        | (1 << 5)   # SPIE: Supervisor Previous Interrupt Enable
+        | (0 << 6)   # UBE not yet supported by Sail; change to 1 when supported
+        | (1 << 7)   # MPIE: Machine Previous Interrupt Enable
+        | (1 << 8)   # SPP:  Supervisor Previous Privilege
+        | (3 << 9)   # VS:   Vector Status
+        | (3 << 11)  # MPP:  Machine Previous Privilege
+        | (3 << 13)  # FS:   Floating-Point Status
+        | (3 << 15)  # XS:   User-Mode Extension Status
+        | (1 << 17)  # MPRV: Modify PRiVelege
+        | (1 << 18)  # SUM:  Supervisor User Memory Access
+        | (1 << 19)  # MXR:  Make eXecutable Readable
+        | (1 << 20)  # TVM:  Trap Virtual Memory
+        | (1 << 21)  # TW:   Timeout Wait
+        | (1 << 22)  # TSR:  Trap SRET
+        | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
+        | (0 << 24)  # SDT: not yet supported by Sail; change to 1 when Ssdbltrp implemented
+        | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
+        | (3 << 32)  # UXL:  User-Mode XLEN
+        | (3 << 34)  # SXL:  Supervisor-Mode XLEN
+        | (0 << 36)  # SBE not supported by Sail; change to 1 when supported
+        | (0 << 37)  # MBE not supported by Sail; change to 1 when supported
+        | (0 << 38)  # GVA not supported by Sail; change to 1 when H is implemented
+        | (0 << 39)  # MPV not supported by Sail; change to 1 when H is implemented
+        | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
+        | (0 << 42)  # MDT:   not yet supported by Sail; change to 1 when Smdbltrp implemented
+        | (1 << 63)  # SD for RV64
+
+    )
+
     csrs = [
         # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
         ("mstatus", 0xFFFFFFCFFFFFFFBF),

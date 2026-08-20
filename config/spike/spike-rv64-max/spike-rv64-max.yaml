@@ -49,7 +49,8 @@ implemented_extensions:
   - { name: Sspm, version: "= 1.0.0" }
   - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
-  - { name: Ssstrict, version: "= 1.0.0" }
+  # - { name: Ssstrict, version: "= 1.0.0" } # Spike does not aim to support Ssstrict as of 8/20/2026
+  # https://github.com/riscv-software-src/riscv-isa-sim/issues/1976#issuecomment-5335375358
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }

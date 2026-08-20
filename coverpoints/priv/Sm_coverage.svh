@@ -208,7 +208,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        `ifndef SM1P11P0_SUPPORTED
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
           bins menvcfg    = {CSR_MENVCFG};
         `endif
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
@@ -246,13 +246,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
         `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
-            `ifndef SM1P11P0_SUPPORTED
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
               bins menvcfgh = {CSR_MENVCFGH};
             `endif
             `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif
-            `ifdef S1P13P0_SUPPORTED
+            `ifdef S1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -443,7 +443,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    `ifdef S1P13P0_SUPPORTED
+    `ifdef S1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -467,8 +467,58 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // S1P13P0_SUPPORTED
+    `endif // S1P13P0_OR_LATER_SUPPORTED
 
+    csrrw_allones: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW} iff (ins.current.rs1_val == '1);
+    }
+    rs2_ones: coverpoint ins.current.rs2_val {
+        bins allones = {'1};
+    }
+
+    `ifdef UDB_MXLEN_32
+        mcycleh: coverpoint ins.current.insn[31:20] {
+            bins mcycleh = {CSR_MCYCLEH};
+        }
+        minstreth: coverpoint ins.current.insn[31:20] {
+            bins minstreth = {CSR_MINSTRETH};
+        }
+    `endif
+
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
+    `ifdef UDB_MXLEN_64
+        sd: coverpoint ins.current.insn {
+            wildcard bins sd = {SD};
+        }
+    `endif
+
+    cp_mcycle_wraparound:   cross priv_mode_m, csrrw_allones, mcycle;
+    cp_minstret_wraparound: cross priv_mode_m, csrrw_allones, minstret;
+
+    `ifdef UDB_MXLEN_32
+        cp_mcycleh_wraparound:   cross priv_mode_m, csrrw_allones, mcycleh;
+        cp_minstreth_wraparound: cross priv_mode_m, csrrw_allones, minstreth;
+    `endif
+
+    `ifdef RVMODEL_MTIME_ADDRESS
+        `ifdef UDB_MXLEN_64
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            cp_mtime_wraparound: cross priv_mode_m, sd, mtime_address, rs2_ones;
+        `else
+            mtime_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtime = {`RVMODEL_MTIME_ADDRESS};
+            }
+            mtimeh_address: coverpoint ins.current.rs1_val + ins.current.imm {
+                bins mtimeh = {`RVMODEL_MTIME_ADDRESS + 4};
+            }
+            cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
+            cp_mtimeh_wraparound: cross priv_mode_m, sw, mtimeh_address, rs2_ones;
+        `endif
+    `endif
 
 endgroup
 

@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up mise
-        uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
+        uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4
 
       - run: git submodule update --init docs/docs-resources
 
@@ -127,13 +127,11 @@ jobs:
           fi
 
           gh release create "$tag_name" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
             "${release_args[@]}" \
             ctp.pdf \
             ctp.html \
-            rvi20_crd.pdf \
-            rvi20_crd.html \
-            mc100_crd.pdf \
-            mc100_crd.html \
             rva23_crd.pdf \
             rva23_crd.html
 

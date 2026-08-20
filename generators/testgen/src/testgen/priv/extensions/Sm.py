@@ -319,7 +319,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     # Standard M-mode CSRs
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
-    mstatusmask = (
+    mstatus_mask = (
           (1 << 1)   # SIE:  Supervisor Interrupt Enable
         | (1 << 3)   # MIE:  Machine Interrupt Enable
         | (1 << 5)   # SPIE: Supervisor Previous Interrupt Enable
@@ -348,12 +348,14 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
         | (0 << 42)  # MDT:   not yet supported by Sail; change to 1 when Smdbltrp implemented
         | (1 << 63)  # SD for RV64
-
     )
 
+    csrs_maskedwrites = [
+        ("mstatus", mstatus_mask),  # mask off reserved bits and unsupported bits
+
+    ]
+
     csrs = [
-        # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
-        ("mstatus", 0xFFFFFFCFFFFFFFBF),
         (
             "medeleg",
             0xDBBFE,
@@ -400,7 +402,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ]
     csr_menvcfg = ("menvcfg", None)
     # RV32-only high CSRs
-    csr_mstatush = ("mstatush", None)
+    csr_mstatush = ("mstatush", mstatusmask >> 32)
     csr_menvcfgh = ("menvcfgh", None)
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
@@ -415,6 +417,9 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
+    for csr in csrs_maskedwrites:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint, masked=True))
+
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
@@ -423,7 +428,16 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.append("#endif")
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("mseccfg", None), covergroup, coverpoint))
+    mseccfg_mask = (
+          (0 << 0) # Smepmp MML not supported
+        | (0 << 1) # Smepmp MMWP not supported
+        | (0 << 2) # Smepmp RLB not supported
+        | (1 << 8) # USEED User mode seed access
+        | (1 << 9) # SSEED Supervisor mode seed access
+        | (1 << 10) # MLPE Machine landing pads enabled
+        | (3 << 32) # Pointer masking
+    )
+    lines.extend(csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint, masked=True))
     lines.append("#endif")
 
     lines.append("\n// Read-Only CSRs")
@@ -444,7 +458,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.extend(csr_access_test(test_data, ("menvcfgh", None), covergroup, coverpoint))
     lines.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("mseccfgh", None), covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, masked=True))
     lines.append("#endif // MSECCFG")
     lines.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))

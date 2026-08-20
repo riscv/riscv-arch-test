@@ -313,7 +313,8 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_mcsr_tests(test_data: TestData) -> list[str]:
+
+def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
 
@@ -433,18 +434,20 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_mcsr_access"
     ######################################
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs",
-        ),
-    ]
+
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_raccess")
+
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs",
+    )
 
     for csr in csrs_maskedwrites:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
 
     for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     lines.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     lines.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
@@ -1195,12 +1198,11 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_sret_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
-    tc = test_data.begin_test_chunk("mcsr")
-    tc.code.extend(_generate_mcsr_tests(test_data))
-    test_chunks.append(test_data.end_test_chunk())
-
     tc = test_data.begin_test_chunk("mcsr_cntr")
     tc.code.extend(_generate_mcsr_cntr_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+
+    _generate_mcsr_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())
 
     _generate_mcsr_ro_tests(test_data, test_chunks)

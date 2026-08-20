@@ -425,6 +425,9 @@
 `ifdef ZICFILPS_COVERAGE
   `include "ZicfilpS_coverage.svh"
 `endif
+`ifdef ZICFILPSU_COVERAGE
+  `include "ZicfilpSU_coverage.svh"
+`endif
 `ifdef ZICFILPSM_COVERAGE
   `include "ZicfilpSm_coverage.svh"
 `endif

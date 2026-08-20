@@ -562,6 +562,10 @@
         `cover_info("//      ZicfilpS - Enabled");
         `include "ZicfilpS_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICFILPSU
+        `cover_info("//      ZicfilpSU - Enabled");
+        `include "ZicfilpSU_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICFILPSM
         `cover_info("//      ZicfilpSm - Enabled");
         `include "ZicfilpSm_coverage_init.svh"

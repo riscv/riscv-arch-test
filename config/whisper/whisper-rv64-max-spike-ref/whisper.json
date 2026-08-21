@@ -45,6 +45,9 @@
       "mask": "0x2222",
       "poke_mask": "0x2aaa"
     },
+    "mideleg": {
+      "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
+    },
     "stvec": {
       "mask": "0xFFFFFFFFFFFFFFFD"
     },

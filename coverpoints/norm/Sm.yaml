@@ -1310,14 +1310,12 @@ normative_rule_definitions:
   - name: Zicsr_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
 
-<<<<<<< HEAD
   # ECALL and EBREAK cause synchronous exceptions and trap before the instruction
   # itself completes normal execution. Because they do not retire, executing ECALL
   # or EBREAK does not cause minstret to increment for that instruction.
   - names: [ecall_no_minstret_inc, ebreak_no_minstret_inc]
     coverpoint: ["Sm_mcsr_cg/cp_minstret_insn/{ecall,ebreak}"]
-=======
+
   # The mtime register will wrap around if the count overflows.
   - name: mtime_wrap
     coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound"]
->>>>>>> upstream/act4

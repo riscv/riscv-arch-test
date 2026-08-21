@@ -62,6 +62,9 @@
       "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
       "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
     },
+    "mideleg": {
+      "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
+    },
     "stvec": {
       "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },

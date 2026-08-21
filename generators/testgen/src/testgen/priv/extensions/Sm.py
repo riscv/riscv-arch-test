@@ -339,8 +339,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
         | (0 << 24)  # SDT: not yet supported by Sail; change to 1 when Ssdbltrp implemented
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-        | (3 << 32)  # UXL:  User-Mode XLEN
-        | (3 << 34)  # SXL:  Supervisor-Mode XLEN
+        | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  TODO: change to 3 when supported.
+        | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  TODO: change to 3 when supported.
         | (0 << 36)  # SBE not supported by Sail; change to 1 when supported
         | (0 << 37)  # MBE not supported by Sail; change to 1 when supported
         | (0 << 38)  # GVA not supported by Sail; change to 1 when H is implemented
@@ -373,24 +373,20 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
     )
 
-    csrs_maskedwrites = [
-        ("mstatus", mstatus_mask),  # mask off reserved bits and unsupported bits
-    ]
-
     csrs = [
         (
             "medeleg",
             0xDBBFE,
         ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
-        ("mideleg", 0xFFFF),  # limit to standard interrupt bits
-        ("mie", 0xFFFF),  # limit to standard interrupt bits
+        ("mideleg", 0x3EEE),  # limit to standard interrupt bits
+        ("mie", 0x3EEE),  # limit to standard interrupt bits
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
-        ("mip", 0xFFFF),  # limit to standard interrupt bits
+        ("mip", 0x3EEE),  # limit to standard interrupt bits
         # Only check CY (bit 0) and IR (bit 2). Bit 1 (TM) is always read-only zero. The HPMn inhibit bits are
         # WARL and may be writable even for unimplemented counters (priv spec 3.1.12 does not require them to be
         # read-only zero); Spike and Whisper implement all 29 inhibit bits while hardwiring most counters to zero.
@@ -447,9 +443,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs",
     )
 
-    for csr in csrs_maskedwrites:
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(csr_access_test(test_data, ("mstatus", mstatus_mask), covergroup, coverpoint, maskedwrites=True))
 
     for csr in csrs:
         tc = test_data.new_test_chunk(test_chunks)
@@ -508,16 +503,23 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Set and clear each bit individually in all writable M-mode CSRs",
     )
 
-    for csr in csrs_maskedwrites:
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, maskedwrites=True))
+    tc = test_data.new_test_chunk(test_chunks)
+    warl_fields = [("mpp", 11, 2, 0b10)]
+    tc.code.extend(
+        csr_walk_test(
+            test_data, ("mstatus", mstatus_mask), covergroup, coverpoint, warl_fields=warl_fields, maskedwrites=True
+        )
+    )
 
     for csr in csrs:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
+    warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
+    tc.code.extend(
+        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint, warl_fields=warl_fields, maskedwrites=True)
+    )
     tc.code.append("#endif")
 
     tc = test_data.new_test_chunk(test_chunks)

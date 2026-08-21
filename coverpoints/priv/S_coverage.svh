@@ -38,7 +38,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins exception = {0};
     }
     scause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
-        // exclude reserved and custom fields
+        // values are WLRL. Exclude reserved and custom and possibly unimplemented fields unless SS1P12 or higher is supported
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
         bins b_2_illegal_instruction = {2};
@@ -49,48 +49,50 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_7_store_access_fault = {7};
         bins b_8_ecall_u = {8};
         bins b_9_ecall_s = {9};
-        `ifdef H_SUPPORTED
-            bins b_10_ecall_vs = {10};
-        `endif
-        // bins b_11_ecall_m = {11}; // never delegated to S mode
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
-        //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        //bins b_16_double_trap = {16}; // never delegated to S mode
-        //bins b_17_reserved = {17};
-        `ifdef SOFTWARE_CHECK_SUPPORTED
-            bins b_18_software_check = {18};
-        `endif
-        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
-        `ifdef H_SUPPORTED
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            // Exception code is required to hold the values 0-31 in Ss1p12 or higher.
+            bins b_10_ecall_vs = {10}; // only can be triggered in hardware if H supported but scause must be able to hold 0-31
+            bins b_11_ecall_m = {11}; // never delegated to S mode but scause must be able to hold 0-31
+            bins b_14_reserved = {14};
+            bins b_16_double_trap = {16}; // never delegated to S mode
+            bins b_17_reserved = {17};
+            bins b_18_software_check = {18}; // only can be triggered in hardware if SOFTWARE_CHECK_SUPPORTED but scause must be able to hold 0-31
+            bins b_19_hardware_error = {19}; // scause must be able to hold 0-31
+            // These can only be triggered in hardware if H supported, but scause must be able to hold 0-31
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
+            bins b_31_24_custom[] = {[31:24]}; // scause must be able to hold 0-31
         `endif
-        //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
     scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
-        // exclude reserved and custom fields
-        //bins b_0_reserved = {0};
+        // values are WLRL. Exclude reserved and custom fields unless SS1P12 or higher is supported
         bins b_1_supervisor_software = {1};
-        bins b_2_vs_software = {2};
         bins b_3_machine_software = {3};
-        //bins b_4_reserved = {4};
         bins b_5_supervisor_timer = {5};
-        bins b_6_vs_timer = {6};
         bins b_7_machine_timer = {7};
-        //bins b_8_reserved = {8};
         bins b_9_supervisor_external = {9};
-        bins b_10_vs_external = {10};
         bins b_11_machine_external = {11};
-        bins b_12_supervisor_guest_external = {12};
-        bins b_13_counter_overflow = {13};
-        //bins b_14_reserved = {14};
-        //bins b_15_reserved = {15};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            // scause Exception Code required to hold the values 0-31
+            bins b_0_reserved = {0};
+            bins b_2_vs_software = {2};
+            bins b_4_reserved = {4};
+            bins b_6_vs_timer = {6};
+            bins b_8_reserved = {8};
+            bins b_10_vs_external = {10};
+            bins b_12_supervisor_guest_external = {12};
+            bins b_13_counter_overflow = {13};
+            bins b_14_reserved = {14};
+            bins b_15_reserved = {15};
+            bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+        `endif
     }
 
     // main coverpoints
@@ -145,11 +147,7 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
         bins          ecall      = {ECALL};
         bins          ebreak     = {EBREAK};
         bins          mret       = {MRET};
-        bins          sret       = {SRET};
         wildcard bins sfence_vma = {SFENCE_VMA};
-    }
-    mret: coverpoint ins.current.insn  {
-        bins mret   = {MRET};
     }
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
@@ -158,23 +156,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     }
     old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
     }
-    old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
-    }
-    old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
-        bins U_mode = {2'b00};
-        bins S_mode = {2'b01};
-        bins M_mode = {2'b11};
-    }
-    old_mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
-    }
-    old_mstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {
-    }
-    old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
-    }
-    old_mstatus_mie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
-    }
-    old_mstatus_mpie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {
-    }
     old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
     }
     old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
@@ -182,8 +163,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     // main coverpoints
     cp_sprivinst: cross priv_mode_s, privinstrs;
     cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
-    cp_mret_m:    cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret_m:    cross priv_mode_m, sret, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
 endgroup
 
 covergroup S_scsr_cg with function sample(ins_t ins);
@@ -215,6 +194,16 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins sip           = {CSR_SIP};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
           bins senvcfg       = {CSR_SENVCFG};
+        `endif
+    }
+    csrwalk: coverpoint ins.current.insn[31:20] {
+        bins sstatus       = {CSR_SSTATUS};
+        bins sie           = {CSR_SIE};
+        bins scounteren    = {CSR_SCOUNTEREN};
+        bins sscratch      = {CSR_SSCRATCH};
+        bins sip           = {CSR_SIP};
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+          bins senvcfg     = {CSR_SENVCFG};
         `endif
     }
     csruname : coverpoint ins.current.insn[31:20] {
@@ -289,7 +278,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
-    cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones;
+    cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
     cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;

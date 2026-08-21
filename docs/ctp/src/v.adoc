@@ -341,3 +341,9 @@ Not tested yet.
 ==== MisalignV
 
 TBD, Kaden moving over from SsstrictV
+
+
+=== Zvabd Vector Absolute Value and Absolute Difference Extension
+[[t-Zvabd-coverpoints]]
+
+include::{testplansdir}/Zvabd.adoc[]

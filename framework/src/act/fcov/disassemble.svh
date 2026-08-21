@@ -1482,6 +1482,12 @@ function string disassemble (logic [31:0] instrRaw);
     VFWMACCBF16_VV:  $sformat(decoded, "vfwmaccbf16.vv %s, %s, %s%s",     vd, vs1, vs2, vm);
     VFWMACCBF16_VF:  $sformat(decoded, "vfwmaccbf16.vf %s, %s, %s%s",     vd, fs1, vs2, vm);
 
+    // Zvabd Extension: Vector Absolute Difference
+    VABS_V:      $sformat(decoded, "vabs.v %s, %s%s", vd, vs2, vm);
+    VABD_VV:     $sformat(decoded, "vabd.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VABDU_VV:    $sformat(decoded, "vabdu.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VWABDA_VV:   $sformat(decoded, "vwabda.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VWABDAU_VV:  $sformat(decoded, "vwabdau.vv %s, %s, %s%s", vd, vs2, vs1, vm);
 
     default: decoded = "illegal";
   endcase

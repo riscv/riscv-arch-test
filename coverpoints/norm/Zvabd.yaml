@@ -1,0 +1,74 @@
+# Normative rule to coverpoint mappings
+# Generated from Zvabd normative rule definitions
+
+normative_rule_definitions:
+  # The Zvabd extension depend on Zve32x.
+  - name: Zvabd_dependent_Zve32x
+    coverpoint: [""]
+
+  # If Zve32x is supported then vabs provide support for SEW of 8, 16, and 32.
+  # If Zve64x is supported then vabs also add support for SEW 64.
+  - name: Zvabd_eew
+    coverpoint: [""]
+
+  # An absolute value operation is performed on each element of vs2.
+  - name: vabs_op
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vabd_sew_rsv
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the elements of two
+  # signed integer SEW-bit source operands vs1 and vs2.
+  - name: vabd_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction
+  # encoding is reserved.
+  - name: vabd_sew_defined
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vabdu_sew_rsv
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the elements of two
+  # unsigned integer SEW-bit source operands vs1 and vs2.
+  - name: vabdu_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction
+  # encoding is reserved.
+  - name: vabdu_sew_defined
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vwabda_sew_rsv
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the elements of two
+  # signed integer SEW-bit source operands vs1 and vs2, and accumulates the results
+  # into the elements of a 2*SEW-bit integer operand vd.
+  - name: vwabda_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction
+  # encoding is reserved.
+  - name: vwabda_sew_defined
+    coverpoint: [""]
+
+  # `SEW` is neither 8 nor 16.
+  - name: vwabdau_sew_rsv
+    coverpoint: [""]
+
+  # This instruction computes the absolute difference between the elements of two
+  # unsigned integer SEW-bit source operands vs1 and vs2, and accumulates the
+  # results into the elements of a 2*SEW-bit integer operand vd.
+  - name: vwabdau_op
+    coverpoint: [""]
+
+  # This instruction is defined for SEW=8 and SEW=16, otherwise the instruction
+  # encoding is reserved.
+  - name: vwabdau_sew_defined
+    coverpoint: [""]

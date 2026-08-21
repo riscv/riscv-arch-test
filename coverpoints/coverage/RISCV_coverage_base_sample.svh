@@ -481,6 +481,18 @@
     `ifdef COVER_ZMMUL
         zmmul_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZVABD16
+        zvabd16_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVABD32
+        zvabd32_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVABD64
+        zvabd64_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVABD8
+        zvabd8_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZVBB16
         zvbb16_sample(hart, issue, ins);
     `endif

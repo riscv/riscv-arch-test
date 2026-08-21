@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -17,7 +17,7 @@ from testgen.asm.vector_helpers import (
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
-from testgen.instructions.vector import parse_instruction_info
+from testgen.instructions.vector import parse_vector_instruction_info
 
 vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
 vext_config = InstructionTypeConfig(
@@ -46,7 +46,7 @@ def format_vmvr_type(
 def format_vext_type(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    info = parse_instruction_info(instr_str, "VEXT")
+    info = parse_vector_instruction_info(instr_str, "VEXT")
     assert info.vext_multiplier is not None, f"Unable to extract multiplier for VEXT-type instruction {instr_str}"
     return format_vv_like_type(instr_str, test_data, params, "VEXT", vs2_lmul_multiplier=info.vext_multiplier)
 
@@ -75,10 +75,10 @@ def format_vv_like_type(
     assert params.vd is not None and params.vd_val_pointer is not None, (
         f"vd and vd_val_pointer must be provided for {type_name}-type instructions"
     )
-    assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
-    assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
+    assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
+    assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
     assert params.lmul is not None or lmul_override is not None, (
-        f"lmul must provided for be {type_name}-type instructions"
+        f"lmul must be provided for {type_name}-type instructions"
     )
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
@@ -124,7 +124,7 @@ def format_vv_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, lmul)]
+        check = [*write_sigupd_v_len(test_data, params, lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 
@@ -132,6 +132,6 @@ def format_vv_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_lmul_ifdef(lmul, setup, check)
+    handle_parameter_exclusions(lmul, setup, check)
 
     return (setup, test, check)

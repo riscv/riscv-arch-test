@@ -9,27 +9,36 @@
 """Pure vector instruction parsing and LMUL helpers."""
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 
 
 @dataclass
-class InstructionInfo:
+class VectorInstructionInfo:
     """
-    Information parsed from an individual vector instruction name.
+    Information about individual vector instructions derived from instruction names.
 
-    Formatter-aware callers add ``widened_regs`` after parsing; it defaults to
-    an empty set here because widening is not encoded in the instruction name.
+    This information can only be derived from the instruction name, and is general information
+    necessary for randomization and test generation. This includes the number of segments in a
+    segmented load/store or the eew of an index register.
+
+    Attributes
+        segments: The number of segments that this instruction uses (e.g. 5 for vlseg5e8.v)
+        load_store_eew: The eew of the data for this instruction (e.g. 8 for vle8.v)
+        index_eew: The eew of the index register (e.g. 16 for vrgatherei16.vv)
+        vext_multiplier: The fractional value that a vext instruction uses to calculate its eew
+            (e.g. 0.125 for vzext.vf8)
+        widened_regs: Set of registers that are widened
     """
 
     segments: int
     load_store_eew: int | None
     index_eew: int | None
     vext_multiplier: float | None
-    widened_regs: set[str] = field(default_factory=set)
+    whole_registers: int | None
 
-    def get_size_multiplier(self, register: str, sew: int) -> int | float:
+    def get_size_multiplier(self, register: str, sew: int, widened_regs: set[str]) -> int | float:
         """Return a register's size multiplier relative to SEW."""
         if self.vext_multiplier and register == "vs2":
             return self.vext_multiplier
@@ -37,12 +46,12 @@ class InstructionInfo:
             return self.index_eew / sew
         if self.load_store_eew and register in ["vs3", "vd"]:
             return self.load_store_eew / sew
-        if register in self.widened_regs:
+        if register in widened_regs:
             return 2
         return 1
 
 
-def parse_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
+def parse_vector_instruction_info(instruction: str, instruction_type: str) -> VectorInstructionInfo:
     """Parse vector instruction facts encoded in an instruction name."""
 
     # Extract Segments
@@ -55,6 +64,8 @@ def parse_instruction_info(instruction: str, instruction_type: str) -> Instructi
     # Load/Store EEW: Ends with e<eew>.v, e<eew>ff.v,
     load_store_eew_match = re.search(r"v[ls]\w*e(\d+)(?:ff)?.v", instruction)
     load_store_eew = int(load_store_eew_match.group(1)) if load_store_eew_match is not None else None
+    if instruction in ["vlm.v", "vsm.v"]:
+        load_store_eew = 8  # Special case that needs to be hardcoded
     if load_store_eew not in [8, 16, 32, 64, None]:
         raise ValueError(f"Invalid EEW Parsed from Instruction: {instruction}, Parsed {load_store_eew} EEW")
 
@@ -65,11 +76,16 @@ def parse_instruction_info(instruction: str, instruction_type: str) -> Instructi
         raise ValueError(f"Invalid Index EEW Parsed from Instruction: {instruction}, Parsed {index_eew} EEW")
 
     vext_multiplier = 1 / int(instruction[-1]) if instruction_type == "VEXT" else None
-    return InstructionInfo(
+
+    whole_register_match = re.search(r"v[ls](\d)r", instruction)
+    whole_registers = int(whole_register_match.group(1)) if whole_register_match else None
+
+    return VectorInstructionInfo(
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
+        whole_registers=whole_registers,
     )
 
 
@@ -93,8 +109,10 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
     if instr_type == "VMVR":
         return int(instruction[3])
 
-    info = parse_instruction_info(instruction, instr_type)
+    info = parse_vector_instruction_info(instruction, instr_type)
     if info.index_eew is not None and sew < info.index_eew:
         return sew / info.index_eew
+    elif info.load_store_eew is not None and sew < info.load_store_eew:
+        return sew / info.load_store_eew
 
     return 1

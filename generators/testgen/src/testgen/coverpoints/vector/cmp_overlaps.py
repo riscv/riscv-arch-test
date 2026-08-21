@@ -12,7 +12,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
-from testgen.instructions.vector import get_base_lmul, parse_instruction_info
+from testgen.instructions.vector import get_base_lmul, parse_vector_instruction_info
 from testgen.instructions.vector_params import (
     generate_random_vector_params,
     get_overlap_constraints,
@@ -37,8 +37,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "vector_data must be set for vector instruction types"
-    info = parse_instruction_info(instr_name, instr_type)
-    info.widened_regs = instr_type_config.vector_data.widened_regs
+    info = parse_vector_instruction_info(instr_name, instr_type)
 
     lower_bound, upper_bound = 0, test_data.vec_regs.reg_count
     emul = 1
@@ -101,6 +100,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             test_data.config.sew,
             instr_type_config.vector_data.scalar_regs,
             instr_type_config.vector_data.mask_regs,
+            instr_type_config.vector_data.widened_regs,
         ):
             continue
 

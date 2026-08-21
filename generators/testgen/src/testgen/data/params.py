@@ -87,6 +87,7 @@ class InstructionParams:
     ta: bool | None = None  # Tail Agnostic
     ma: bool | None = None  # Mask Agnostic
     egs: int | None = None  # Element Group Size
+    ignore_vector_safety: bool = False  # Set this to disable vector safety (e.g. allow arbitrary index values)
 
     maskval: str | PresetMask | None = None
 

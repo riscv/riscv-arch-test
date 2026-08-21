@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -188,9 +188,9 @@ def format_mask_producing_type(
     no_dot_t: bool = False,
     force_full_length_check: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
-    assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
-    assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
-    assert params.lmul is not None, f"lmul must provided for be {type_name}-type instructions"
+    assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
+    assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
     assert params.vd is not None and params.vs2 is not None, (
@@ -296,7 +296,7 @@ def format_mask_producing_type(
             vlmax_vsetvli = [load_test_vtype(params, random_vl_reg, force_vlmax=True)]
 
         check = [
-            *write_sigupd_v_len(test_data, params, 1, lmul=1, mask_producing=True, mask_reg=mask_reg),
+            *write_sigupd_v_len(test_data, params, lmul=1, mask_producing=True, mask_reg=mask_reg),
             "# After a length suite sigupd, we need to do the operation as if vl=vlmax as that is a valid behavior",
             "# in the tail, according to the spec. None of the registers involved in the operation could have been",
             "# clobbered in the sigupd, however, in the case of a masked instruction with vd = v0, v0 was overwritten.",
@@ -321,6 +321,6 @@ def format_mask_producing_type(
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

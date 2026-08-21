@@ -92,6 +92,8 @@ def csr_access_test(
         List of assembly lines for the access test
     """
     csr_name, mask = csr
+    if maskedwrites:
+        assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
         save_reg, temp_reg, check_reg, mask_reg = test_data.int_regs.get_registers(4)
     else:
@@ -118,7 +120,6 @@ def csr_access_test(
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
     if maskedwrites:
-        assert mask_reg is not None, "maskedwrites requires a csr mask"
         valstr = "mask"
         lines.append(f"mv x{temp_reg}, x{mask_reg}    # Apply {valstr} to value being written")
     else:
@@ -237,6 +238,8 @@ def csr_walk_test(
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
+    if maskedwrites:
+        assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
         save_reg, temp_reg, walk_reg, check_reg, mask_reg = test_data.int_regs.get_registers(5)
     else:

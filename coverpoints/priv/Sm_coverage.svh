@@ -258,7 +258,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif
-            `ifdef S1P13P0_OR_LATER_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -464,7 +464,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
         `ifdef UDB_MXLEN_32
-            `ifdef S1P13P0_OR_LATER_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 ignore_bins medelegh_not_walked = binsof(mcsrname.medelegh);
             `endif
         `endif
@@ -489,7 +489,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    `ifdef S1P13P0_OR_LATER_SUPPORTED
+    `ifdef SM1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -513,7 +513,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // S1P13P0_OR_LATER_SUPPORTED
+    `endif // SM1P13P0_OR_LATER_SUPPORTED
 
     csrrw_allones: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW} iff (ins.current.rs1_val == '1);

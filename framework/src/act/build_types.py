@@ -16,13 +16,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+BUILD_STEP_TIMEOUT_SECONDS = 300
+COVERAGE_STEP_TIMEOUT_SECONDS = 60 * 60  # Vx coverage can take about 40 minutes, set to None to disable
+
 # ---------------------------------------------------------------------------
 # Actions: the work a task performs
 # ---------------------------------------------------------------------------
-
-BUILD_STEP_TIMEOUT_SECONDS = 300
-COVERAGE_STEP_TIMEOUT_SECONDS = 60 * 60  # Vx coverage can take about 40 minutes
-COVERAGE_STEP_TIMEOUT = True  # Enable or disable the timeout for coverage jobs
 
 
 @dataclass(frozen=True)

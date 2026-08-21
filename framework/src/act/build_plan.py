@@ -14,14 +14,7 @@ from pathlib import Path
 
 import pyjson5
 
-from act.build_types import (
-    COVERAGE_STEP_TIMEOUT,
-    COVERAGE_STEP_TIMEOUT_SECONDS,
-    BuildTask,
-    PythonAction,
-    SubprocessAction,
-    SymlinkAction,
-)
+from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
@@ -488,7 +481,6 @@ def gen_coverage_tasks(
         # The rvvi traces have the same stems as the traces list but with .rvvi suffix
         rvvi_deps = tuple(sorted(traces))
 
-        coverage_timeout = COVERAGE_STEP_TIMEOUT_SECONDS if COVERAGE_STEP_TIMEOUT else None
         tasks.append(
             BuildTask(
                 outputs=(simulator_artifact,),
@@ -496,7 +488,7 @@ def gen_coverage_tasks(
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
                 intermediate=True,
-                timeout=coverage_timeout,
+                timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
         )
 

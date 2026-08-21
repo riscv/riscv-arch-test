@@ -4,7 +4,7 @@
 # Imperas is proprietary and cannot run in public CI.
 
 # These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
-# - Sm: Insufficient WARL configuration options.
+# - Sm: Sail does not yet support hypervisor, misa.D=1 with F=0 written (solvnet 500WQ000023Lf8k)
 # - SsstrictSm/S/U: Sail does not yet implement hypervisor instructions/CSRs, #1880 (Sail 0.14)
 # - InterruptsSm/S/SSm/U: Imperas does not implement interrupts
 # - Smstateen: Sail does not implement all state yet to match

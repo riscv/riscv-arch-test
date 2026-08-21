@@ -20,6 +20,10 @@ from typing import Any
 # Actions: the work a task performs
 # ---------------------------------------------------------------------------
 
+BUILD_STEP_TIMEOUT_SECONDS = 300
+COVERAGE_STEP_TIMEOUT_SECONDS = 60 * 60  # Vx coverage can take about 40 minutes
+COVERAGE_STEP_TIMEOUT = True  # Enable or disable the timeout for coverage jobs
+
 
 @dataclass(frozen=True)
 class SubprocessAction:
@@ -70,7 +74,7 @@ class BuildTask:
     deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
     label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
     intermediate: bool = False  # Only build if needed for another task
-    is_coverage: bool = False  # Is this a coverage task
+    timeout: int | None = BUILD_STEP_TIMEOUT_SECONDS  # Set the execution timeout (or None for no timeout)
 
     @property
     def name(self) -> str:

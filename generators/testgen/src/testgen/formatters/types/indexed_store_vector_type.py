@@ -39,7 +39,7 @@ def unordered_index_element_generator(element_count: int, sew: int) -> list[int]
         # Generate a unique index value under limit for vlmax
         next_value = min(random_int(vlmax_power_of_2 + 1, signed=False), sew_limit)
         while next_value in res and i <= sew_limit:
-            next_value = min(random_int(vlmax_power_of_2 + 1, signed=False), sew_limit)
+            next_value = random_int(min(vlmax_power_of_2 + 1, sew), signed=False)
 
         res.append(next_value)
 

@@ -544,7 +544,7 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
     if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
         return None
 
-    # cp_custom_ffLS requires LMUL=2; skip where that is infeasible at this SEW.
+    # cp_custom_ffLS requires LMUL=2; Use a fallback when this isn't possible
     if cp == "cp_custom_ffLS" and _is_vector(arch) and not _ffLS_feasible(instr, int(_get_effew(arch))):
         cp = "cp_custom_ffLS_lmul_lt2"
 

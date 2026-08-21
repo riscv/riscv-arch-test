@@ -41,10 +41,6 @@ from act.build_types import (
     SymlinkAction,
 )
 
-BUILD_STEP_TIMEOUT_SECONDS = 300
-COVERAGE_STEP_TIMEOUT_SECONDS = 60 * 60  # Vx coverage can take about 40 minutes
-COVERAGE_STEP_TIMEOUT = True  # Enable or disable the timeout for coverage jobs
-
 
 @dataclass
 class BuildError:
@@ -129,11 +125,7 @@ def execute_task(
                 _kill_subprocess_tree(pgid, proc)
 
             try:
-                if task.is_coverage:
-                    timeout = COVERAGE_STEP_TIMEOUT_SECONDS if COVERAGE_STEP_TIMEOUT else None
-                else:
-                    timeout = BUILD_STEP_TIMEOUT_SECONDS
-                output, returncode = _communicate_with_timeout(proc, pgid, timeout)
+                output, returncode = _communicate_with_timeout(proc, pgid, task.timeout)
             finally:
                 with pgids_lock:
                     active_pgids.discard(pgid)

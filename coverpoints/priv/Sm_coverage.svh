@@ -178,12 +178,18 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mconfigptr = {CSR_MCONFIGPTR};
     }
 
+    // The Sm access tests write a CSR's writable mask rather than all ones for CSRs whose
+    // reserved/unimplemented bits are dangerous to poke - mstatus (MBE would flip M-mode to
+    // big-endian), mseccfg (Smepmp MML/MMWP lock the machine out of memory), menvcfg and their
+    // RV32 high halves.  See csr_access_test(..., maskedwrites=True) in
+    // generators/testgen/src/testgen/priv/extensions/Sm.py.  These bins therefore accept any
+    // non-zero write rather than requiring all ones; csrrw0 still pins the all-zeros case.
     csraccesses : coverpoint ins.current.insn {
-        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
-        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
-        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
-        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
-        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask or all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask or all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask or all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
     }
 
     // counters keep incrementing, so don't write the maximum value that will roll over
@@ -422,7 +428,47 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
-    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    // The Sm CSR walk tests use masked writes for the CSRs whose reserved/unimplemented bits are
+    // dangerous to poke (see csr_walk_test(..., maskedwrites=True) in
+    // generators/testgen/src/testgen/priv/extensions/Sm.py).  The walking one is ANDed with the
+    // CSR's writable mask before the csrs/csrc, so a bit outside the mask is written as zero,
+    // rs1_val is not one-hot, and walking_ones never samples.  Those cross bins are therefore
+    // unreachable by construction.  Keep the lists below in sync with the masks in Sm.py.
+    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones {
+        // mstatus_mask covers bits 1, 3, 5, 7:23, 31, 41 and 63.
+        ignore_bins mstatus_unwritable = binsof(mcsrname.mstatus) &&
+            binsof(walking_ones) intersect {0, 2, 4, 6, [24:30], [32:40], [42:62]};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            // menvcfg_mask covers bits 0, 2:7, 32, 33, 61, 62 and 63.
+            ignore_bins menvcfg_unwritable = binsof(mcsrname.menvcfg) &&
+                binsof(walking_ones) intersect {1, [8:31], [34:60]};
+        `endif
+        `ifdef UDB_MXLEN_32
+            // mstatush is masked to bit 9 (MPELP) only.
+            ignore_bins mstatush_unwritable = binsof(mcsrname.mstatush) &&
+                binsof(walking_ones) intersect {[0:8], [10:31]};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                // menvcfgh is the top half of menvcfg_mask: bits 0, 1, 29, 30, 31.
+                ignore_bins menvcfgh_unwritable = binsof(mcsrname.menvcfgh) &&
+                    binsof(walking_ones) intersect {[2:28]};
+            `endif
+        `endif
+
+        // mseccfg/mseccfgh and medelegh appear in the access tests but are deliberately not
+        // walked: mseccfg's Smepmp bits (MML/MMWP) lock the machine out of its own memory, and
+        // medelegh has no writable bits in these configs.
+        `ifdef MSECCFG_SUPPORTED
+            ignore_bins mseccfg_not_walked = binsof(mcsrname.mseccfg);
+            `ifdef UDB_MXLEN_32
+                ignore_bins mseccfgh_not_walked = binsof(mcsrname.mseccfgh);
+            `endif
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef S1P13P0_OR_LATER_SUPPORTED
+                ignore_bins medelegh_not_walked = binsof(mcsrname.medelegh);
+            `endif
+        `endif
+    }
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 

@@ -5,8 +5,9 @@
 
 ci_enabled: true
 # Status as of QEMU v11.1.0:
-# Sm: medeleg WARL parameter mismatch (config issue, not a QEMU bug)
-# S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
+# Sm: Multiple issues:
+#     menvcfg.CBIE can be written with reserved 0b10 https://gitlab.com/qemu-project/qemu/-/work_items?sort=created_date&state=opened&first_page_size=20
+# S: TBD
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.1.0)

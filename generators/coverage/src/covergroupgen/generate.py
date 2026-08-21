@@ -545,9 +545,14 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
     if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
         return None
 
-    # cp_custom_ffLS requires LMUL=2; skip where that is infeasible at this SEW.
+    # cp_custom_ffLS requires LMUL=2; Use a fallback when this isn't possible
     if cp == "cp_custom_ffLS" and _is_vector(arch) and not _ffLS_feasible(instr, int(_get_effew(arch))):
-        return None
+        cp = "cp_custom_ffLS_lmul_lt2"
+
+        eew_m = re.search(r"e(\d+)ff", instr)
+        eew = int(eew_m.group(1)) if eew_m else 0
+        if eew >= 32:
+            cp += f"_eew{eew}"
 
     # _sew_ge{N}: only applies when arch SEW >= N; strip the suffix when it does.
     ge_match = re.search(r"_sew_ge(\d+)$", cp)

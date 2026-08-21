@@ -1294,6 +1294,7 @@
         addi a2, a2, 1
         lw a0, failing_reg
         jal failedtest_dec_to_str
+        j failedtest_report_print_regstr
     failedtest_report_vxsat:
         LA(a0, vxsatstr)
         call rvmodel_io_write_str

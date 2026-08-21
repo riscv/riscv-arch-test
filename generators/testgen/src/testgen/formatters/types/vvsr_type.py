@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -62,9 +62,9 @@ def format_vvsr_like_type(
     assert params.vd is not None and params.vd_val_pointer is not None, (
         f"vd and vd_val_pointer must be provided for {type_name}-type instructions"
     )
-    assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
-    assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
-    assert params.lmul is not None, f"lmul must provided for be {type_name}-type instructions"
+    assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
+    assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
     if widen is None:
@@ -130,9 +130,7 @@ def format_vvsr_like_type(
 
     mask_reg = 0 if mask_copy_reg is None else mask_copy_reg
     if params.vector_suite == "length":
-        check = [
-            *write_sigupd_v_len(test_data, params, 1, 1, widen_vd="vd" in widen, scalar_dest=True, mask_reg=mask_reg)
-        ]
+        check = [*write_sigupd_v_len(test_data, params, 1, widen_vd="vd" in widen, scalar_dest=True, mask_reg=mask_reg)]
     else:
         check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
 
@@ -140,6 +138,6 @@ def format_vvsr_like_type(
     if params.maskval:
         test_data.vec_regs.return_register(mask_reg)
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

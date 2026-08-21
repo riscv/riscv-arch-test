@@ -220,6 +220,13 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     equal_cases = [True, False] if is_zacas else [None]
     all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        assert test_data.config.sew is not None, "SEW must be set for vector tests"
+        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    else:
+        lmul = 1  # Placeholder to keep the type-checker happy
+
     for rs2 in rs2_regs:
         for equal_case in equal_cases:
             if reg_is_pair:
@@ -252,7 +259,10 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 desc = f"{coverpoint} (Test source rs2 = x{rs2}, {case_desc})"
                 bin_name = f"b{rs2}_{bin_suffix}"
             else:
-                params = generate_random_params(test_data, instr_type, rs2=rs2)
+                if is_vector:
+                    params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, rs2=rs2)
+                else:
+                    params = generate_random_params(test_data, instr_type, rs2=rs2)
                 desc = f"{coverpoint} (Test source rs2 = x{rs2})"
                 bin_name = f"b{rs2}"
 

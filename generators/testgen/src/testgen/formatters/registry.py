@@ -77,6 +77,7 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+        excluded_regs: Registers to exclude for each operand.
         instruction_class: List of strings containing broader instruction categories (e.g. "load", "store", "indexed")
         vector_data: Optional attribute containing data necessary for vector instructions
     """
@@ -88,6 +89,7 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
+    excluded_regs: dict[str, set[int]] = field(default_factory=dict)
     instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
     vector_data: VectorTypeConfig | None = None
 

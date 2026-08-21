@@ -325,7 +325,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         (1 << 1)  # SIE:  Supervisor Interrupt Enable
         | (1 << 3)  # MIE:  Machine Interrupt Enable
         | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
-        | (0 << 6)  # UBE not yet supported by Sail; change to 1 when supported
+        | (0 << 6)  # UBE not yet supported by Sail; TODO change to 1 when supported
         | (1 << 7)  # MPIE: Machine Previous Interrupt Enable
         | (1 << 8)  # SPP:  Supervisor Previous Privilege
         | (3 << 9)  # VS:   Vector Status
@@ -339,20 +339,20 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 21)  # TW:   Timeout Wait
         | (1 << 22)  # TSR:  Trap SRET
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (0 << 24)  # SDT: not yet supported by Sail; change to 1 when Ssdbltrp implemented
+        | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
         | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  TODO: change to 3 when supported.
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  TODO: change to 3 when supported.
-        | (0 << 36)  # SBE not supported by Sail; change to 1 when supported
-        | (0 << 37)  # MBE not supported by Sail; change to 1 when supported
-        | (0 << 38)  # GVA not supported by Sail; change to 1 when H is implemented
-        | (0 << 39)  # MPV not supported by Sail; change to 1 when H is implemented
+        | (0 << 36)  # SBE not supported by Sail; TODO change to 1 when supported
+        | (0 << 37)  # MBE not supported by Sail; TODO change to 1 when supported
+        | (0 << 38)  # GVA not supported by Sail; TODO change to 1 when H is implemented
+        | (0 << 39)  # MPV not supported by Sail; TODO change to 1 when H is implemented
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (0 << 42)  # MDT:   not yet supported by Sail; change to 1 when Smdbltrp implemented
+        | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
-        (0 << 0)  # Smepmp MML not supported
+        (0 << 0)  # Smepmp MML not supported TODO: change these to 1 when Sail implements & boot code sets it up
         | (0 << 1)  # Smepmp MMWP not supported
         | (0 << 2)  # Smepmp RLB not supported
         | (1 << 8)  # USEED User mode seed access
@@ -368,8 +368,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
-        | (0 << 59)  # Double Trap not supported by Sail; change to 1 when Smdbltrp implemented
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; change to 1 when Smcdeleg implemented
+        | (0 << 59)  # Double Trap not supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable

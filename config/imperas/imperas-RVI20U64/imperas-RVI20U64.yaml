@@ -150,7 +150,7 @@ params:
       false,
       false,
       false,
-      false
+      false,
     ]
   NUM_PMP_ENTRIES: 0
   MCOUNTENABLE_EN:

@@ -47,7 +47,7 @@ implemented_extensions:
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
-  #- { name: Ssqosid, version: "= 1.0.0" }
+  - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
@@ -529,8 +529,8 @@ params:
   # Pointer masking params
   PMLEN: 7
   # Ssqosid params
-  #MCID_WIDTH: 12
-  #RCID_WIDTH: 12
+  MCID_WIDTH: 12
+  RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw

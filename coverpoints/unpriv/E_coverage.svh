@@ -2038,8 +2038,9 @@ covergroup E_slli_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2127,8 +2128,9 @@ covergroup E_slt_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2247,8 +2249,9 @@ covergroup E_slti_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2329,8 +2332,9 @@ covergroup E_sltiu_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2400,8 +2404,9 @@ covergroup E_sltu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2606,8 +2611,9 @@ covergroup E_srai_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -2792,8 +2798,9 @@ covergroup E_srli_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3625,8 +3632,9 @@ covergroup E_slliw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3804,8 +3812,9 @@ covergroup E_sraiw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
@@ -3983,8 +3992,9 @@ covergroup E_srliw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
-        // RD register assignment
+    cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
+        // RD register assignment (excluding x0)
+        ignore_bins x0 = {x0};
     }
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {

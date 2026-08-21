@@ -20,21 +20,23 @@ def _gen_misa_dependencies(
     misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
 ) -> str:
     """Generate tests for misa dependencies."""
-    r1, rmask, rfail = test_data.int_regs.get_registers(3)
+    r1, rmask, rfail, rorig = test_data.int_regs.get_registers(4)
     lines = [
         f"# Write {comment}. Error if this reads back the same.",
+        f"csrr x{rorig}, misa # save original value of misa",
         f"LI(x{rfail}, {misa}) # Illegal value to write to misa and read back",
         f"LI(x{rmask}, {mask}) # bits to check",
         test_data.add_testcase(cpbin, coverpoint, covergroup),
         f"csrw misa, x{rfail} # attempt to write misa",
         f"csrr x{r1}, misa # read back",
+        f"csrw misa, x{rorig} # restore original value of misa",
         f"and x{r1}, x{r1}, x{rmask} # Mask off don't care bits",
         f"xor x{r1}, x{r1}, x{rfail} # Zero result means failing condition observed",
         f"seqz x{r1}, x{r1}  # 1 indicates illegal outcome.  Ref model should always produce 0",
         write_sigupd(r1, test_data),
         "",
     ]
-    test_data.int_regs.return_registers([r1, rmask, rfail])
+    test_data.int_regs.return_registers([r1, rmask, rfail, rorig])
     return "\n".join(lines)
 
 

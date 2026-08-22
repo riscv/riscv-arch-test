@@ -14,18 +14,14 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
-_CG = "UV_cg"
+_CG = "UV_vucsr_cg"
 
 _VS_MASK = 3 << 9
 
 
-def _enable_vs_and_vector(temp_reg: int) -> list[str]:
-    """In M-mode prelude: set mstatus.VS=Dirty and configure a legal vtype/vl."""
+def _enable_vector(temp_reg: int) -> list[str]:
+    """configure a legal vtype/vl."""
     return [
-        f"LI(x{temp_reg}, {_VS_MASK})",
-        f"csrc mstatus, x{temp_reg}  # clear VS",
-        f"LI(x{temp_reg}, {3 << 9})",
-        f"csrs mstatus, x{temp_reg}  # VS=Dirty",
         f"vsetivli x{temp_reg}, 1, e32, m1, tu, mu",
         "csrw vstart, x0",
     ]
@@ -70,6 +66,7 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
     required_extensions=["Sm", "U", "M", "V", "Zicsr"],
     march_extensions=["M", "V"],
     extra_defines=[
+        "#define BOOT_TO_UMODE",
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
@@ -81,8 +78,7 @@ def make_uv(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
     temp_reg = test_data.int_regs.get_register()
 
-    tc.code.extend(_enable_vs_and_vector(temp_reg))
-    tc.code.append("RVTEST_GOTO_LOWER_MODE Umode  # run vector CSR tests in U-mode\n")
+    tc.code.extend(_enable_vector(temp_reg))
     tc.code.extend(_gen_uvcsr_access(test_data))
     tc.code.extend(_gen_uvcsrwalk(test_data))
 

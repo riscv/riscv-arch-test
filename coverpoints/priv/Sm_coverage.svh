@@ -149,6 +149,12 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     }
     old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
         bins M_mode = {2'b11};
+        `ifdef S_SUPPORTED
+            bins S_mode = {2'b01};
+        `endif
+        `ifdef U_SUPPORTED
+            bins U_mode = {2'b00};
+        `endif
     }
     old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
     }

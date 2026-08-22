@@ -224,7 +224,11 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
         f"and x{reg1}, x{save_reg}, x{reg2}         # clear MPP, MPRV, MPIE, MIE bits",
     ]
 
-    for mpp in (3,):  # only M-mode; this will expand in other tests
+    # MPP selects the mode mret returns to; the S and U cases only exist when those modes do
+    mpp_guard = {3: None, 1: "S_SUPPORTED", 0: "U_SUPPORTED"}
+    for mpp in (3, 1, 0):
+        if mpp_guard[mpp]:
+            lines.append(f"#ifdef {mpp_guard[mpp]}")
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -246,11 +250,14 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"addi x{check_reg}, zero, -1       # should not be executed",
                             "1:                         # mret should return to here",
                             write_sigupd(check_reg, test_data),
+                            "RVTEST_TSBI_GOTO_MMODE       # mret may have returned to S or U mode; get back to M for the readback",
                             # Test the read value
                             test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                             gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                         ]
                     )
+        if mpp_guard[mpp]:
+            lines.append(f"#endif // {mpp_guard[mpp]}")
 
     lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -304,7 +311,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"addi x{check_reg}, zero, -1       # should not be executed",
                                 "1:                        # sret should return to here",
                                 write_sigupd(check_reg, test_data),
-                                "RVTEST_GOTO_MMODE       # make sure we return to machine mode",
+                                "RVTEST_TSBI_GOTO_MMODE       # make sure we return to machine mode",
                                 # Test the read value
                                 test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                                 gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
@@ -355,7 +362,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
                 # Set mstatus.TSR from M-mode
                 "",
                 "# Set mstatus.TSR",
-                "RVTEST_GOTO_MMODE      # enter machine mode for twiddling mstatus.TSR",
+                "RVTEST_TSBI_GOTO_MMODE      # enter machine mode for twiddling mstatus.TSR",
                 f"LI(x{check_reg}, {1 << 22})  # mstatus.TSR bit",
             ]
         )
@@ -364,7 +371,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
             lines.append(f"csrs mstatus, x{check_reg}          # set TSR bit")
         else:
             lines.append(f"csrc mstatus, x{check_reg}          # clear TSR bit")
-        lines.append("RVTEST_GOTO_LOWER_MODE Smode # return to supervisor mode to execute sret tests")
+        lines.append("RVTEST_TSBI_GOTO_SMODE # return to supervisor mode to execute sret tests")
 
         for spp in (0, 1):
             for spie in (0, 1):
@@ -387,8 +394,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
                             f"addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
-                            "RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
+                            "RVTEST_TSBI_GOTO_SMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
                             # Test sstatus was updated properly, masked the same way as the S suite's cp_sret_s.
                             # x{reg3} is free again (sepc consumed it); split the load because the mask has bits above 31.
                             "#if __riscv_xlen == 64",
@@ -403,7 +409,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"\ncsrw sstatus, x{save_reg}    # restore CSR",
-            "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
+            "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to touch medeleg",
             f"LI(x{reg1}, 1 << 2)",
             f"csrs medeleg, x{reg1}           # restore delegating illegal instructions",
         ]

@@ -44,6 +44,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
             ]
         )
         if i < 3:
+            if reg_list[i] == "time":
+                lines.append("#ifdef UDB_TIME_CSR_IMPLEMENTED")
             lines.extend(
                 [
                     f"csrr x{read_reg}, {reg_list[i]}",
@@ -52,6 +54,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
                     "#endif",
                 ]
             )
+            if reg_list[i] == "time":
+                lines.append("#endif")
         else:
             lines.extend(
                 [
@@ -88,6 +92,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
             ]
         )
         if i < 3:
+            if reg_list[i] == "time":
+                lines.append("#ifdef UDB_TIME_CSR_IMPLEMENTED")
             lines.extend(
                 [
                     f"csrr x{read_reg}, {reg_list[i]}",
@@ -96,6 +102,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
                     "#endif",
                 ]
             )
+            if reg_list[i] == "time":
+                lines.append("#endif")
         else:
             lines.extend(
                 [
@@ -146,6 +154,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
             ]
         )
         if i < 3:
+            if reg_list[i] == "time":
+                lines.append("#ifdef UDB_TIME_CSR_IMPLEMENTED")
             lines.extend(
                 [
                     f"csrr x{read_reg}, {reg_list[i]}",
@@ -154,6 +164,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
                     "#endif",
                 ]
             )
+            if reg_list[i] == "time":
+                lines.append("#endif")
         else:
             lines.extend(
                 [
@@ -188,6 +200,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
             ]
         )
         if i < 3:
+            if reg_list[i] == "time":
+                lines.append("#ifdef UDB_TIME_CSR_IMPLEMENTED")
             lines.extend(
                 [
                     f"csrr x{read_reg}, {reg_list[i]}",
@@ -196,6 +210,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
                     "#endif",
                 ]
             )
+            if reg_list[i] == "time":
+                lines.append("#endif")
         else:
             lines.extend(
                 [

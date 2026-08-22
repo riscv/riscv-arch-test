@@ -1,0 +1,24 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # controls the availability of the hardware performance-monitoring counters to the next-lower
+  # privileged mode.
+  - name: mcounteren_op
+    coverpoint:
+      [
+        "ZicntrSm_cg/cp_mcounteren_access_m (M-mode reads succeed for every mcounteren value)",
+      ]
+
+  # When the CY, TM, IR, or HPMn bit in the scounteren register is clear, attempts to read the
+  # cycle, time, instret, or hpmcountern register while executing in U-mode will cause an
+  # illegal-instruction exception.
+  - name: scounteren_op
+    coverpoint:
+      [
+        "ZicntrSm_cg/cp_scounteren_access_m (M-mode reads succeed for every scounteren value)",
+      ]
+
+  # The counters are accessible from M-mode regardless of the counter-enable registers.
+  - name: zihpm_op_sz_mode_acc_priv
+    coverpoint: ["ZicntrSm_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}"]

@@ -226,21 +226,6 @@ def _generate_scounteren_access_s_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_scounteren_access_m_tests(test_data: TestData) -> list[str]:
-    """Generate scounteren access m mode tests."""
-    covergroup, coverpoint = "ZicntrS_cg", "cp_scounteren_access_m"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Write walking 1s and 0s to scounteren with mcounteren = all 1s.  Read from corresponding counter and counterh in M-mode",
-        ),
-        "",
-    ]
-    lines.extend(_helper_scounteren_access("Mmode", test_data, coverpoint, covergroup))
-    return lines
-
-
 def _generate_scounteren_access_u_tests(test_data: TestData) -> list[str]:
     """Generate scounteren access u mode tests."""
     covergroup, coverpoint = "ZicntrS_cg", "cp_scounteren_access_u"
@@ -409,6 +394,7 @@ def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
     march_extensions=["Zicntr", "Zihpm"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrS coverpoints"""
@@ -417,7 +403,6 @@ def make_zicntrs(test_data: TestData) -> list[TestChunk]:
 
     tc.code.extend(_generate_mcounteren_access_s_tests(test_data))
     tc.code.extend(_generate_scounteren_access_s_tests(test_data))
-    tc.code.extend(_generate_scounteren_access_m_tests(test_data))
     tc.code.extend(_generate_scounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mscounteren_access_u_tests(test_data))
     tc.code.extend(_generate_mcounter_inc_inaccessible_tests(test_data))

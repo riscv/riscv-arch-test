@@ -170,7 +170,6 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mcounteren_access_u: cross csrr, counters_mcounteren, priv_mode_u;
-    cp_mcounteren_access_m: cross csrr, counters_mcounteren, priv_mode_m;
     cp_mcounteren_inc_inaccessible: cross mcounteren_zeros, priv_mode_u;
 endgroup
 

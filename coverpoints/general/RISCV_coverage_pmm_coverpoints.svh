@@ -188,6 +188,13 @@
             bins sv57 = {4'b1010};
         `endif
     }
+    satp_mode_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        type_option.weight = 0;
+        bins bare = {4'b0000};
+        `ifdef SV39_SUPPORTED
+            bins sv39 = {4'b1000};
+        `endif
+    }
     a_upper_bits: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
         type_option.weight = 0;
         bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
@@ -198,6 +205,12 @@
         bins upper_FFFF = {16'hFFFF};   // Bits 63:48 masked if PMLEN=16, only partially if PMLEN=7
         bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
         bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
+    }
+    a_upper_bits_mprv: coverpoint ((ins.current.rs1_val + ins.current.imm)>> 48) {
+        type_option.weight = 0;
+        bins upper_0000 = {16'h0000};   // no tag: masking is a no-op, the control case
+        bins upper_0001 = {16'h0001};   // bit 48   -- stripped by PMLEN=16 only
+        bins upper_0200 = {16'h0200};   // bit 57   -- stripped by PMLEN=16 and PMLEN=7
     }
     jalr_insn: coverpoint ins.current.insn {
         type_option.weight = 0;

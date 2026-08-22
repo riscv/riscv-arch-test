@@ -5,13 +5,13 @@
 # Author : Umer Shahid & Ammarah Wakeel email:ammarahwakeel9@gmail.com (UET, JULY 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
-
 from __future__ import annotations
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
+    _PMM_FIELD_SHIFT,
     PMM_CONFIGS,
     Regs,
     alloc_pm_regs_paired,
@@ -25,14 +25,13 @@ from testgen.priv.extensions.ZpmCommon import (
     pass_e_jalr,
     pass_f_fault_address,
     pass_g_csr_writes,
-    pass_h_mprv,
+    pass_i_mprv_mxr_pmm_loop,
     set_mxr,
     set_pmm_field,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Smmpm_cg"
-_MSECCFG_PMM = 32
 _CSR_TARGETS = ["mepc", "mscratch"]
 
 
@@ -47,22 +46,18 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         *jalr_pad_asm(regs),
     ]
     lines += enable_fp_vector_state(regs)
-
     for pmm, pmlen, label in PMM_CONFIGS:
         prefix = f"{label}_mmode"
         lines.append(comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"))
-        lines += set_pmm_field("mseccfg", _MSECCFG_PMM, pmm, pmlen, regs.tmp)
-
+        lines += set_pmm_field("mseccfg", _PMM_FIELD_SHIFT, pmm, pmlen, regs.tmp)
         lines.append("#ifdef S_SUPPORTED")
         lines += set_mxr(False, regs.tmp, "mstatus")
         lines.append("#endif // S_SUPPORTED")
-
         lines += [f"LA(x{regs.base}, pm_lo_page)"]
         lines += pass_a_all_instructions(None, prefix, td, regs, COVERGROUP)
         lines += pass_c_misaligned(None, prefix, td, regs, COVERGROUP)
         lines += pass_e_jalr(None, prefix, td, regs, COVERGROUP)
         lines += pass_f_fault_address(None, prefix, td, regs, COVERGROUP)
-
         lines.append("#ifdef S_SUPPORTED")
         lines += pass_d_mxr(
             None,
@@ -75,11 +70,13 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         )
         lines += set_mxr(False, regs.tmp, "mstatus")
         lines.append("#endif // S_SUPPORTED")
-
         lines += pass_g_csr_writes(prefix, pmlen, td, regs, COVERGROUP, _CSR_TARGETS)
 
-    lines += pass_h_mprv(td, regs, COVERGROUP, "mseccfg", _MSECCFG_PMM)
-    lines += set_pmm_field("mseccfg", _MSECCFG_PMM, 0b00, 0, regs.tmp)
+    # MPRV test using nested loop structure from testplan
+    # Only tests Bare and Sv39 modes with limited upper bit patterns
+    lines += pass_i_mprv_mxr_pmm_loop(td, regs, COVERGROUP, _PMM_FIELD_SHIFT)
+
+    lines += set_pmm_field("mseccfg", _PMM_FIELD_SHIFT, 0b00, 0, regs.tmp)
     lines.append("#ifdef S_SUPPORTED")
     lines += set_mxr(False, regs.tmp, "mstatus")
     lines.append("#endif // S_SUPPORTED")
@@ -93,10 +90,8 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
 )
 def make_smmpm(td: TestData) -> list[TestChunk]:
     regs = alloc_pm_regs_paired(td)
-
     tc = td.begin_test_chunk()
     tc.code = _emit_file(td, regs)
     chunks = [td.end_test_chunk()]
-
     free_pm_regs(td, regs)
     return chunks

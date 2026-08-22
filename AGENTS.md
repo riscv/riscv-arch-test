@@ -23,7 +23,7 @@
 
 - `make help`: list current targets and knobs.
 - `make tests`: generate assembly tests and generated coverpoints only; no compiler or Sail run.
-- `make clean-tests tests`: force regeneration when generator/template/testplan changes would otherwise be hidden by stamps.
+- `make tests` already regenerates when anything under `generators/testgen/src/` or `testplans/` changes (the stamp depends on them). To force it, `rm work/stamps/testgen.stamp`. **Never run `make clean-tests` with `EXTENSIONS` restricted** (including via a local Makefile default): it deletes the checked-in `tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv` outputs and a filtered `make tests` does not regenerate them. Recover with `git checkout -- tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv`. Use `make clean-tests tests` only with `EXTENSIONS=` (everything).
 - `make`: generate tests and build ELFs for default `CONFIG_FILES` (`config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml`).
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build one DUT config.
 - `EXTENSIONS=I,M,Zifencei make tests` or `EXTENSIONS=I make`: restrict generation/build to suites. `EXCLUDE_EXTENSIONS=Sm make tests` applies a negative filter after `EXTENSIONS`.
@@ -32,6 +32,7 @@
 - `FAST=True make`: skip objdump for faster ELF builds. `DEBUG=True make EXTENSIONS=<suite>` emits signature objdump, Sail traces, and trap reports. `VERBOSE=True` implies debug and serializes jobs.
 - Do not specify `JOBS` or `--jobs` for normal validation; let the project choose parallelism. Use `JOBS=1 make ...` only when debugging a hang or another issue where parallelism seems to be the cause; `make -jN` is also honored.
 - `make coverage EXTENSIONS=<suite>`: focused coverage build. Full `make coverage` is expensive and uses `COVERAGE_CONFIG_FILES` (`config/sail/sail-rv64-max` and `sail-rv32-max`).
+- Coverage reports land in `work/<config>/reports/<suite>_summary.txt`, `<suite>_report.txt` (every bin with hit counts) and `<suite>_uncovered.txt` (missing bins only). Questa averages per-cross percentages, so a few misses in a small cross move the covergroup figure more than in a large one. Walk-cross `ignore_bins` lists encode the generator masks (`mstatus_mask`, `menvcfg_mask`, ...) and must change together with them.
 - `make vector-tests`: run the standalone vector generators. `EXTENSIONS`/`EXCLUDE_EXTENSIONS` only filter unpriv vector generation; priv vector tests are always generated.
 - `make lint`, `make lint-fix`, `make format`: Ruff/Pyright checks and formatting.
 - Docs builds run from subdirs: `cd docs/ctp && make docker-pull-latest && make -j6` or `cd docs/crd && make docker-pull-latest && make -j6`. They use the `docs/docs-resources` submodule and Docker unless `SKIP_DOCKER=true`.
@@ -55,6 +56,16 @@
 - Unprivileged tests do not install trap handlers and can infinite-loop on traps. Tests that may trap should use the privileged-test style.
 - In privileged generated assembly, avoid loops; emit repeated code with Python loops so testcase labels/debug strings stay unique.
 
+## T-SBI Conversion
+
+- Privileged suites are being converted to T-SBI: the test boots to its own mode and asks the M-mode trap handler (via `ecall`) to perform privileged operations instead of hopping modes. Plan and status: `docs/tsbi-changes.md`.
+- Boot mode is selected with `extra_defines=["#define BOOT_TO_SMODE"]` or `"#define BOOT_TO_UMODE"` on `@add_priv_test_generator`. The boot chain stops at the named mode: `BOOT_TO_SMODE` does not reach U-mode, so U-mode suites (`U`, `UF`, `ExceptionsU`, ...) must say `BOOT_TO_UMODE` or their `priv_mode_u` crosses read 0%.
+- Mode changes in converted suites use the assembler macros `RVTEST_TSBI_GOTO_MMODE` / `RVTEST_TSBI_GOTO_SMODE` / `RVTEST_TSBI_GOTO_UMODE`, never the legacy `RVTEST_GOTO_MMODE` / `RVTEST_GOTO_LOWER_MODE`. `TSBI_GOTO_*` (no `RVTEST_` prefix) are the a0 opcode constants; emitting one bare assembles as `0x2 # ...` and fails with "junk at end of line".
+- Privileged CSR instructions from a lower mode go through `tsbi_call("csrw mstatus, x{reg}")` from `testgen.asm.tsbi`, which marshals rs1/rs2/rd through a1/a2/a0 and re-encodes the instruction. a0-a2 are reserved out of the priv register pool for this. The handler executes only instructions listed in `tsbi_instr_table` (`tests/env/rvtest_trap_handler.h`); a CSR missing from that table fails at run time with `T-SBI ERROR: requested instruction not found in tsbi_instr_table`. `medeleg` is deliberately not in the table.
+- Coverpoints that need M-mode by construction (sweeps of `mstatus.TSR`, `cp_shadow`'s adjacent write-then-read, `*_from_m` accesses) belong in `Sm`, with the generated code under `#ifdef S_SUPPORTED` and the coverpoints under `` `ifdef S_SUPPORTED `` in `Sm_coverage.svh`. Moving a coverpoint between suites means moving its references in `coverpoints/norm/*.yaml` (normative rule -> coverpoint map, free text consumed by the CTP generators) as well.
+- Masks shared between suites are module-level in `S.py` (`S_SSTATUS_MASK`, `S_CSRS`, `S_CSRS_NOWALK`, `S_CSR_SENVCFG`) and imported by `Sm.py`; do not retype them.
+- Reference-model limits that shape the masks: Sail 0.13.1 has no Smdbltrp/Ssdbltrp (SDT, MDT, `menvcfg.DTE`), no H (GVA, MPV, VS delegation), no UBE, no dynamic UXL/SXL (`mstatus.SXL`/`UXL` are frozen at MXL), and derives `mcountinhibit` writability from `writable_hpm_counters`. Bits that Sail cannot model are zero in `mstatus_mask` / `S_SSTATUS_MASK` and show up as deliberate, documented misses in `cp_mcsrwalk_masked`.
+
 ## Configs And CI
 
 - A runnable config directory needs `test_config.yaml`, UDB YAML, `rvmodel_macros.h`, `link.ld`, `sail.json`, `rvtest_config.h`, and `rvtest_config.svh`. Paths in `test_config.yaml` are relative to that file.
@@ -70,3 +81,5 @@
 - Passing tests print lines matching `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`; failures use `TEST FAILED`. `SIGRUN` means the ELF was not built self-checking.
 - With `DEBUG=True`, ACT build artifacts in `work/<config>/build/` include `.sig.log` Sail traces and `.sig.trap_report` files.
 - Triage failures in this order: config/UDB mismatch, Sail config mismatch, generated objdump/trace, then DUT behavior.
+- To measure one suite everywhere: `EXTENSIONS=<suite> DEBUG=True make -k sail-rv64-max sail-rv32-max spike-rv64-max spike-rv32-max whisper-rv64-max whisper-rv32-max qemu-rv64-max qemu-rv32-max imperas-rv64-max imperas-rv32gck cvw-rv64gc cvw-rv32gc`. `DEBUG=True` keeps a trace per test; `make -k` continues past a failing config. Each failing test's `.log` names the first diverging testcase on its `bin:` line.
+- Ghost outputs: nothing cleans `tests/priv/<suite>/` or `work/<config>/elfs/priv/<suite>/`, so a renamed or retired chunk keeps being built, run, and counted, and `run_tests.py`'s "N tests" includes it. When chunk names change, delete the stale files by name — not by mtime, since unchanged files keep their old timestamps.

@@ -2,7 +2,6 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# Sm: menvcfg.SSE=0 (whisper#46), mstatush not writable (whisper#47)
 # SsstrictSm, SsstrictS, SsstrictU excluded because of sail-riscv#1882, sail-riscv#1880
 #   Should be fixed in Sail 0.14
 # Smstateen Sail does not yet support 1P13 bit
@@ -11,7 +10,7 @@
 # Sdtrig* not yet implemented in Sail
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

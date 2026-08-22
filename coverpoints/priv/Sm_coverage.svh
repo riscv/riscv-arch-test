@@ -428,44 +428,35 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
-    // The Sm CSR walk tests use masked writes for the CSRs whose reserved/unimplemented bits are
-    // dangerous to poke (see csr_walk_test(..., maskedwrites=True) in
-    // generators/testgen/src/testgen/priv/extensions/Sm.py).  The walking one is ANDed with the
-    // CSR's writable mask before the csrs/csrc, so a bit outside the mask is written as zero,
-    // rs1_val is not one-hot, and walking_ones never samples.  Those cross bins are therefore
-    // unreachable by construction.  Keep the lists below in sync with the masks in Sm.py.
+    // Keep the lists below in sync with the masks in Sm.py.
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones {
         // mstatus_mask covers bits 1, 3, 5, 7:23, 31, 41 and 63.
         ignore_bins mstatus_unwritable = binsof(mcsrname.mstatus) &&
-            binsof(walking_ones) intersect {0, 2, 4, 6, [24:30], [32:40], [42:62]};
+            binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             // menvcfg_mask covers bits 0, 2:7, 32, 33, 61, 62 and 63.
             ignore_bins menvcfg_unwritable = binsof(mcsrname.menvcfg) &&
                 binsof(walking_ones) intersect {1, [8:31], [34:60]};
         `endif
+        `ifdef MSECCFG_SUPPORTED
+            // mseccfg is accessed but deliberately not walked: its Smepmp bits (MML/MMWP) would lock
+            // the machine out of its own memory.  mseccfgh (RV32) is walked, masked to PMM.
+            ignore_bins mseccfg_not_walked = binsof(mcsrname.mseccfg);
+            `ifdef UDB_MXLEN_32
+                // mseccfgh is the top half of mseccfg_mask: bits 0 and 1 (PMM).
+                ignore_bins mseccfgh_unwritable = binsof(mcsrname.mseccfgh) &&
+                    binsof(walking_ones) intersect {[2:31]};
+            `endif
+        `endif
         `ifdef UDB_MXLEN_32
-            // mstatush is masked to bit 9 (MPELP) only.
+            // mstatush is masked to only writable bits.
+            // Skip WPRI bits, and MBE/SBE that cause trouble with test framework
             ignore_bins mstatush_unwritable = binsof(mcsrname.mstatush) &&
-                binsof(walking_ones) intersect {[0:8], [10:31]};
+                binsof(walking_ones) intersect {[0:5], 8, [11:31]};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 // menvcfgh is the top half of menvcfg_mask: bits 0, 1, 29, 30, 31.
                 ignore_bins menvcfgh_unwritable = binsof(mcsrname.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:28]};
-            `endif
-        `endif
-
-        // mseccfg/mseccfgh and medelegh appear in the access tests but are deliberately not
-        // walked: mseccfg's Smepmp bits (MML/MMWP) lock the machine out of its own memory, and
-        // medelegh has no writable bits in these configs.
-        `ifdef MSECCFG_SUPPORTED
-            ignore_bins mseccfg_not_walked = binsof(mcsrname.mseccfg);
-            `ifdef UDB_MXLEN_32
-                ignore_bins mseccfgh_not_walked = binsof(mcsrname.mseccfgh);
-            `endif
-        `endif
-        `ifdef UDB_MXLEN_32
-            `ifdef SM1P13P0_OR_LATER_SUPPORTED
-                ignore_bins medelegh_not_walked = binsof(mcsrname.medelegh);
             `endif
         `endif
     }

@@ -426,11 +426,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     # RV32-only high CSRs
-    csr_mstatush = (
-        "mstatush",
-        (mstatus_mask >> 32) & 0x7FFFFFF0,
-    )  # mask off UXL/SXL and SD that don't apply in mstatush
+    csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
+    csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
+    # medeleg's mask (0xDBBFE) has no bits above 31, so medelegh is entirely read-only zero: walk it
+    # unmasked so every one-hot write is exercised and must read back as 0.
+    csr_medelegh = ("medelegh", None)
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
@@ -476,17 +477,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(
-        csr_access_test(test_data, ("menvcfgh", menvcfg_mask >> 32), covergroup, coverpoint, maskedwrites=True)
-    )
+    tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(
-        csr_access_test(test_data, ("mseccfgh", mseccfg_mask >> 32), covergroup, coverpoint, maskedwrites=True)
-    )
+    tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
+    tc.code.extend(csr_access_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.extend(
         [
             "#endif // SM1P13P0_OR_LATER_SUPPORTED",
@@ -536,6 +533,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint, maskedwrites=True))
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint, maskedwrites=True))
+    tc.code.append("#endif // MSECCFG")
+    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
+    tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
 
     ######################################
@@ -588,7 +591,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_mxl"
     ######################################
 
-    tc = test_data.new_test_chunk(test_chunks, "misa_mxl")
+    tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -654,7 +657,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_dependencies"
     ######################################
 
-    tc = test_data.new_test_chunk(test_chunks, "misa_dependencies")
+    tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -733,7 +736,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_clear_c"
     ######################################
 
-    tc = test_data.new_test_chunk(test_chunks, "misa_clear_c")
+    tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -782,7 +785,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     coverpoint = "cp_misa_bv"
     ######################################
 
-    tc = test_data.new_test_chunk(test_chunks, "misa_bv_msip")
+    tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
         coverpoint,
@@ -886,6 +889,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
     tc.code.append("#endif // SM1P13P0_OR_LATER_SUPPORTED")
+
+    test_chunks.append(test_data.end_test_chunk())
 
 
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
@@ -1199,6 +1204,5 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     test_chunks.append(test_data.end_test_chunk())
 
     _generate_mcsr_tests(test_data, test_chunks)
-    test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

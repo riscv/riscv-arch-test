@@ -16,8 +16,6 @@ from testgen.priv.registry import add_priv_test_generator
 
 _CG = "UV_vucsr_cg"
 
-_VS_MASK = 3 << 9
-
 
 def _enable_vector(temp_reg: int) -> list[str]:
     """configure a legal vtype/vl."""

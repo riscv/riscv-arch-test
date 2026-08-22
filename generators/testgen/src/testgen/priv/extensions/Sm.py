@@ -726,7 +726,6 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
                 covergroup,
                 test_data,
             ),
-            f"csrw misa, x{rmisasave}    # restore misa",
         ]
     )
 
@@ -745,6 +744,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.extend(
         [
+            f"csrr x{rmisasave}, misa   # save misa",
             f"LI(x{rc}, 0b100)      # bitmask for C extension bit in misa",
             "",
             f"csrs misa, x{rc}     # set misa.C if possible",

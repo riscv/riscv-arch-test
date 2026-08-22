@@ -178,18 +178,40 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mconfigptr = {CSR_MCONFIGPTR};
     }
 
-    // The Sm access tests write a CSR's writable mask rather than all ones for CSRs whose
-    // reserved/unimplemented bits are dangerous to poke - mstatus (MBE would flip M-mode to
-    // big-endian), mseccfg (Smepmp MML/MMWP lock the machine out of memory), menvcfg and their
-    // RV32 high halves.  See csr_access_test(..., maskedwrites=True) in
-    // generators/testgen/src/testgen/priv/extensions/Sm.py.  These bins therefore accept any
-    // non-zero write rather than requiring all ones; csrrw0 still pins the all-zeros case.
     csraccesses : coverpoint ins.current.insn {
-        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask or all ones
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
+
+     csraccesses_masked : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
         wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
-        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask or all ones
-        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask or all ones
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
+    }
+
+    // CSRs whose access tests use masked writes (see csraccesses_masked above)
+    mcsrname_masked : coverpoint ins.current.insn[31:20] {
+        bins mstatus = {CSR_MSTATUS};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            bins menvcfg = {CSR_MENVCFG};
+        `endif
+        `ifdef MSECCFG_SUPPORTED
+            bins mseccfg = {CSR_MSECCFG};
+        `endif
+        `ifdef UDB_MXLEN_32
+            bins mstatush = {CSR_MSTATUSH};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                bins menvcfgh = {CSR_MENVCFGH};
+            `endif
+            `ifdef MSECCFG_SUPPORTED
+                bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+        `endif
     }
 
     // counters keep incrementing, so don't write the maximum value that will roll over
@@ -202,8 +224,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr       = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
-    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus    = {CSR_MSTATUS};
+    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs and the masked-write CSRs (mcsrname_masked)
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -214,9 +235,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        `ifdef SM1P12P0_OR_LATER_SUPPORTED
-          bins menvcfg    = {CSR_MENVCFG};
-        `endif
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
@@ -247,17 +265,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED
-            bins mseccfg  = {CSR_MSECCFG};
-        `endif
         `ifdef UDB_MXLEN_32
-            bins mstatush = {CSR_MSTATUSH};
-            `ifdef SM1P12P0_OR_LATER_SUPPORTED
-              bins menvcfgh = {CSR_MENVCFGH};
-            `endif
-            `ifdef MSECCFG_SUPPORTED
-                bins mseccfgh = {CSR_MSECCFGH};
-            `endif
             `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
@@ -427,36 +435,39 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
+    cp_mcsr_access_masked:      cross priv_mode_m, mcsrname_masked, csraccesses_masked;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
-    // Keep the lists below in sync with the masks in Sm.py.
-    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones {
+    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    // The masked-write CSRs are walked through their writable mask only, so the bits outside the
+    // mask can never be one-hot sources.  Keep the lists below in sync with the masks in Sm.py.
+    cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
         // mstatus_mask covers bits 1, 3, 5, 7:23, 31, 41 and 63.
-        ignore_bins mstatus_unwritable = binsof(mcsrname.mstatus) &&
+        ignore_bins mstatus_unwritable = binsof(mcsrname_masked.mstatus) &&
             binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
-            // menvcfg_mask covers bits 0, 2:7, 32, 33, 61, 62 and 63.
-            ignore_bins menvcfg_unwritable = binsof(mcsrname.menvcfg) &&
-                binsof(walking_ones) intersect {1, [8:31], [34:60]};
+            // menvcfg_mask covers bits 0, 2:7, 32, 33, 59, 60, 61, 62 and 63.
+            ignore_bins menvcfg_unwritable = binsof(mcsrname_masked.menvcfg) &&
+                binsof(walking_ones) intersect {1, [8:31], [34:58]};
         `endif
         `ifdef MSECCFG_SUPPORTED
             // mseccfg is accessed but deliberately not walked: its Smepmp bits (MML/MMWP) would lock
             // the machine out of its own memory.  mseccfgh (RV32) is walked, masked to PMM.
-            ignore_bins mseccfg_not_walked = binsof(mcsrname.mseccfg);
+            ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg);
             `ifdef UDB_MXLEN_32
                 // mseccfgh is the top half of mseccfg_mask: bits 0 and 1 (PMM).
-                ignore_bins mseccfgh_unwritable = binsof(mcsrname.mseccfgh) &&
+                ignore_bins mseccfgh_unwritable = binsof(mcsrname_masked.mseccfgh) &&
                     binsof(walking_ones) intersect {[2:31]};
             `endif
         `endif
         `ifdef UDB_MXLEN_32
             // mstatush is masked to only writable bits.
             // Skip WPRI bits, and MBE/SBE that cause trouble with test framework
-            ignore_bins mstatush_unwritable = binsof(mcsrname.mstatush) &&
+            ignore_bins mstatush_unwritable = binsof(mcsrname_masked.mstatush) &&
                 binsof(walking_ones) intersect {[0:5], 8, [11:31]};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
-                // menvcfgh is the top half of menvcfg_mask: bits 0, 1, 29, 30, 31.
-                ignore_bins menvcfgh_unwritable = binsof(mcsrname.menvcfgh) &&
-                    binsof(walking_ones) intersect {[2:28]};
+                // menvcfgh is the top half of menvcfg_mask: bits 0, 1, 27, 28, 29, 30, 31.
+                ignore_bins menvcfgh_unwritable = binsof(mcsrname_masked.menvcfgh) &&
+                    binsof(walking_ones) intersect {[2:26]};
             `endif
         `endif
     }

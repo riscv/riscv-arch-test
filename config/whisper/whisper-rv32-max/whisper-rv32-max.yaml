@@ -315,6 +315,7 @@ params:
   MCOUNTINHIBIT_IMPLEMENTED: true
   # Whisper's mcountinhibit mask is 0xFFFFFFFD regardless of num_mmode_perf_regs, but UDB requires
   # COUNTINHIBIT_EN[n] to be false whenever HPM_COUNTER_EN[n] is false, so bits 11-31 are listed as false.
+  # TODO: Fix COUNTINHIBIT on all DUTs when UDB fixes this: https://github.com/riscv/riscv-unified-db/issues/2511
   COUNTINHIBIT_EN:
     [
       true,

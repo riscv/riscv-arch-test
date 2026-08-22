@@ -380,20 +380,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             "medeleg",
             0xDBBFE,
         ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
-        ("mideleg", 0x3EEE),  # limit to standard interrupt bits
-        ("mie", 0x3EEE),  # limit to standard interrupt bits
+        ("mideleg", 0xFFFF),  # limit to standard interrupt bits
+        ("mie", 0xFFFF),  # limit to standard interrupt bits
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
-        ("mip", 0x3EEE),  # limit to standard interrupt bits
-        # Only check CY (bit 0) and IR (bit 2). Bit 1 (TM) is always read-only zero. The HPMn inhibit bits are
-        # WARL and may be writable even for unimplemented counters (priv spec 3.1.12 does not require them to be
-        # read-only zero); Spike and Whisper implement all 29 inhibit bits while hardwiring most counters to zero.
-        # Sail derives the writable mcountinhibit bits from writable_hpm_counters, so it cannot model that.
-        ("mcountinhibit", 0b101),
+        ("mip", 0xFFFF),  # limit to standard interrupt bits
+        # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
+        ("mcountinhibit", 0b111),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -429,14 +426,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
-    # medeleg's mask (0xDBBFE) has no bits above 31, so medelegh is entirely read-only zero: walk it
-    # unmasked so every one-hot write is exercised and must read back as 0.
-    csr_medelegh = ("medelegh", None)
+    csr_medelegh = ("medelegh", 0x00000000)  # all bits are reserved or custom
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
     ######################################
     coverpoint = "cp_mcsr_access"
+    coverpoint_masked = "cp_mcsr_access_masked"  # masked-write CSRs (see csraccesses_masked in Sm_coverage.svh)
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "mcsr_access")
@@ -447,7 +443,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.extend(csr_access_test(test_data, ("mstatus", mstatus_mask), covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(test_data, ("mstatus", mstatus_mask), covergroup, coverpoint_masked, maskedwrites=True)
+    )
 
     for csr in csrs:
         tc = test_data.new_test_chunk(test_chunks)
@@ -455,11 +453,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(
+        csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint_masked, maskedwrites=True)
+    )
     tc.code.append("#endif")
 
     tc.code.append("\n// Read-Only CSRs")
@@ -474,13 +474,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_medelegh, covergroup, coverpoint))
@@ -493,6 +493,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     ######################################
     coverpoint = "cp_mcsrwalk"
+    coverpoint_masked = "cp_mcsrwalk_masked"  # masked-write CSRs (see cp_mcsrwalk_masked in Sm_coverage.svh)
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "mcsr_walk")
@@ -506,7 +507,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     warl_fields = [("mpp", 11, 2, 0b10)]
     tc.code.extend(
         csr_walk_test(
-            test_data, ("mstatus", mstatus_mask), covergroup, coverpoint, warl_fields=warl_fields, maskedwrites=True
+            test_data,
+            ("mstatus", mstatus_mask),
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            maskedwrites=True,
         )
     )
 
@@ -517,7 +523,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
     )
     tc.code.append("#endif")
 
@@ -529,12 +535,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint, maskedwrites=True))
+    tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
     tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))

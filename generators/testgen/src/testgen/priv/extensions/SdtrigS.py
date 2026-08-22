@@ -18,7 +18,7 @@ from testgen.priv.registry import add_priv_test_generator
     march_extensions=[],
     extra_defines=[
         *UDB_DEFINES,
-        "#define RVTEST_TEMP_BOOT_TO_S",
+        "#define BOOT_TO_SMODE",
     ],
 )
 def make_sdtrigs(test_data: TestData) -> list[TestChunk]:

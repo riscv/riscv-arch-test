@@ -422,6 +422,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
     csr_menvcfg = ("menvcfg", menvcfg_mask)
+    csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
@@ -457,9 +458,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif")
 
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
-    tc.code.extend(
-        csr_access_test(test_data, ("mseccfg", mseccfg_mask), covergroup, coverpoint_masked, maskedwrites=True)
-    )
+    tc.code.extend(csr_access_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif")
 
     tc.code.append("\n// Read-Only CSRs")
@@ -524,6 +523,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
         csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+    )
+    tc.code.append("#endif")
+
+    tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
+    warl_fields = [("pmm", 32, 2, 0b01)]
+    tc.code.extend(
+        csr_walk_test(test_data, csr_mseccfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
     )
     tc.code.append("#endif")
 

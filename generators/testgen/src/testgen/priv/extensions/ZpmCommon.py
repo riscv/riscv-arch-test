@@ -134,6 +134,9 @@ IDENTITY_VPN_SHIFT: dict[str, int] = {"sv39": 30, "sv48": 39, "sv57": 48}
 HIGH_VA: dict[str, int] = {
     "sv39": 0xFFFF_FFC0_0000_0000,
     "sv48": 0xFFFF_8000_0000_0000,
+    # sv57 reuses sv48's boundary rather than its own tighter one (bit 56
+    # only, 0xFF00...) because that value leaves bit 47 = 0, breaking the
+    # PMLEN=16 round trip; this one keeps bits 63:47 all set to 1.
     "sv57": 0xFFFF_8000_0000_0000,
 }
 

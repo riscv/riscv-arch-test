@@ -75,7 +75,10 @@ ZABHA_AMOS: list[tuple[str, str]] = [
     (f"amo{op}.{w}", "lbu" if w == "b" else "lhu") for op in AMO_OPS for w in ("b", "h")
 ]
 ZACAS_AMOS: list[str] = ["amocas.w", "amocas.d", "amocas.q"]
-FP_READS: list[tuple[str, str, str]] = [("flw", "F_SUPPORTED", "fmv.w.x"), ("fld", "D_SUPPORTED", "fmv.d.x")]
+FP_READS: list[tuple[str, str, str]] = [
+    ("flw", "F_SUPPORTED", "fmv.w.x"),
+    ("fld", "D_SUPPORTED", "fmv.d.x"),
+]  # TODO :Add flq & fsq when Q is supported.
 FP_WRITES: list[tuple[str, str, str, str]] = [
     ("fsw", "lw", "F_SUPPORTED", "fmv.w.x"),
     ("fsd", "ld", "D_SUPPORTED", "fmv.d.x"),
@@ -87,7 +90,9 @@ ZCA_WRITES_SP: list[tuple[str, str]] = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 
 ZICBOM_OPS: list[str] = ["cbo.clean", "cbo.flush", "cbo.inval"]
 ZICBOP_OPS: list[str] = ["prefetch.r", "prefetch.w", "prefetch.i"]
-ZICFISS_AMOS: list[tuple[str, str, int]] = []
+ZICFISS_AMOS: list[
+    tuple[str, str, int]
+] = []  # TODO : Add all zicfiss instructions including amo and push, pop instructions.
 
 VEC_READS: list[tuple[str, int, str]] = [
     ("vle8.v", 8, "vle8.v v2, (x{a})"),
@@ -309,7 +314,7 @@ def jalr_pad_asm(regs: Regs) -> list[str]:
         f"addi x{regs.chk}, x{regs.chk}, 1",
         "jr ra",
         "pm_jalr_pad_end:",
-        "RVTEST_TSBI_GOTO_MMODE",
+        "RVTEST_GOTO_MMODE",
         "",
     ]
 
@@ -996,12 +1001,12 @@ def pass_d_mxr(
     td: TestData,
     regs: Regs,
     cg: str,
-    goto_target_mode: str = "RVTEST_TSBI_GOTO_UMODE",
+    goto_target_mode: str = "RVTEST_GOTO_LOWER_MODE Umode",
     status_csr: str = "sstatus",
 ) -> list[str]:
     """sw/lw with MXR set. MXR suppresses masking, so tagged pointers must fault."""
     lines = [comment_banner(f"{prefix}: {status_csr}.MXR=1 suppresses pointer masking")]
-    lines += ["RVTEST_TSBI_GOTO_MMODE", *set_mxr(True, regs.tmp, status_csr)]
+    lines += ["RVTEST_GOTO_MMODE", *set_mxr(True, regs.tmp, status_csr)]
     if goto_target_mode:
         lines.append(goto_target_mode)
     lines += [f"LA(x{regs.base}, pm_lo_page)"]
@@ -1091,7 +1096,7 @@ def pass_clear_on_xlen_change(
         lines.append(f"#ifndef {ifdef_guard}")
     lines += [
         comment_banner(f"{prefix}: {status_csr} field=01 must clear {pmm_csr}.PMM"),
-        "RVTEST_TSBI_GOTO_MMODE",
+        "RVTEST_GOTO_MMODE",
         "",
         f"csrr x{regs.chk}, {pmm_csr}",
         f"srli x{regs.chk}, x{regs.chk}, {pmm_shift}",
@@ -1265,7 +1270,7 @@ def pass_i_mprv_mxr_pmm_loop(
                         lines += set_mprv(False, 0, regs.tmp)
                         if satp_mode != "bare":
                             lines += [
-                                "RVTEST_TSBI_GOTO_MMODE",
+                                "RVTEST_GOTO_MMODE",
                                 "csrwi satp, 0",
                                 "sfence.vma",
                             ]
@@ -1348,7 +1353,7 @@ def pass_i_mprv_mxr_pmm_loop(
                         lines += set_mprv(False, 0, regs.tmp)
                         if satp_mode != "bare":
                             lines += [
-                                "RVTEST_TSBI_GOTO_MMODE",
+                                "RVTEST_GOTO_MMODE",
                                 "csrwi satp, 0",
                                 "sfence.vma",
                             ]

@@ -34,6 +34,215 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ExceptionsSm_cg"
 
 
+def _add_jalr_misaligned_test_fault_addr(
+    rs1_lsb: int,
+    addr_reg: int,
+    test_data: TestData,
+    coverpoint: str,
+    covergroup: str,
+    tag_prefix: str = "",
+) -> list[str]:
+
+    offsets_for_lsb = {0: [0, 1, 2, 3], 1: [0, 1, 2, -1], 2: [0, 1, -2, -1], 3: [0, -3, -2, -1]}
+
+    label = f"{tag_prefix}_jalr_rs1_{rs1_lsb}" if tag_prefix else f"jalr_rs1_{rs1_lsb}"
+
+    t_lines = [test_data.add_testcase(label, coverpoint, covergroup)]
+
+    for off in offsets_for_lsb[rs1_lsb]:
+        t_lines.append(f"jalr x1, {off}(x{addr_reg})")
+
+    return t_lines
+
+
+_MEDELEG_WALK = (
+    [0]
+    + [1 << i for i in range(9)]  # bits 0-8 walking 1s
+    + [1 << i for i in range(10, 16)]  # bits 10-15 walking 1s
+    + [0b1011_0001_1111_1111]
+)
+
+
+def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
+    """
+    Runs 10 exception tests x 17 medeleg values for one privilege mode.
+    Starts and ends in M-mode.  For each medeleg value: write medeleg in M-mode, drop to the mode
+    under test with RVTEST_TSBI_GOTO_SMODE / RVTEST_TSBI_GOTO_UMODE (nothing for M-mode), run the
+    tests, and return with RVTEST_TSBI_GOTO_MMODE (via RVTEST_TSBI_GOTO_SMODE first when returning
+    from U-mode with ecall-from-U delegated).
+    """
+    covergroup = _CG
+    coverpoint = "cp_medeleg_msu"
+
+    addr_reg, data_reg, check_reg, medeleg_reg = test_data.int_regs.get_registers(4)
+    goto_mode = {3: [], 1: ["RVTEST_TSBI_GOTO_SMODE"], 0: ["RVTEST_TSBI_GOTO_UMODE"]}[priv_mode]
+    goto_back = ["RVTEST_TSBI_GOTO_MMODE"] if priv_mode != 3 else []
+
+    lines = []
+
+    for medeleg_val in _MEDELEG_WALK:
+        tag = f"mdlg_{medeleg_val:#06x}_{mode_tag}"
+        lines.append(f"\n# --- medeleg={medeleg_val:#06x}, {mode_tag} ---")
+
+        # set medeleg in M-mode, then enter the mode under test
+        lines.extend([f"LI(x{medeleg_reg}, {medeleg_val})", f"csrw medeleg, x{medeleg_reg}", *goto_mode])
+
+        # Instruction misaligned
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        lines.extend(
+            [
+                test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
+                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            ]
+        )
+        for rs1_lsb in range(4):
+            if rs1_lsb > 0:
+                lines.append(f"addi x{addr_reg}, x{addr_reg}, 1")
+            lines.extend(
+                _add_jalr_misaligned_test_fault_addr(
+                    rs1_lsb, addr_reg, test_data, coverpoint, covergroup, tag_prefix=tag
+                )
+            )
+        lines.append("#endif")
+
+        # Instruction access fault
+        lines.extend(
+            [
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
+                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"jalr x1, 0(x{addr_reg})",
+                "#endif",
+            ]
+        )
+
+        # Illegal instruction zeros
+        lines.extend(
+            [
+                test_data.add_testcase(f"illegalinstr_zeros_{tag}", coverpoint, covergroup),
+                ".p2align 2",
+                ".word 0x00000000",
+            ]
+        )
+
+        # Illegal instruction ones
+        lines.extend(
+            [
+                test_data.add_testcase(f"illegalinstr_ones_{tag}", coverpoint, covergroup),
+                ".p2align 2",
+                ".word 0xFFFFFFFF",
+            ]
+        )
+
+        # Ebreak
+        lines.extend(
+            [
+                test_data.add_testcase(f"ebreak_{tag}", coverpoint, covergroup),
+                "ebreak",
+            ]
+        )
+
+        # Load misaligned
+        lines.extend(
+            [test_data.add_testcase(f"loadmisaligned_{tag}", coverpoint, covergroup), f"LA(x{addr_reg}, scratch)"]
+        )
+        for offset in range(8):
+            for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+                lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
+            lines.extend(
+                [
+                    "#if __riscv_xlen == 64",
+                    f" ld x{check_reg}, {offset}(x{addr_reg})",
+                    f" lwu x{check_reg}, {offset}(x{addr_reg})",
+                    "#endif",
+                ]
+            )
+
+        # Load access fault
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        lines.extend(
+            [
+                test_data.add_testcase(f"loadaccessfault_{tag}", coverpoint, covergroup),
+                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            ]
+        )
+        for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+            lines.append(f"{op} x{check_reg}, 0(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" ld x{check_reg}, 0(x{addr_reg})",
+                f" lwu x{check_reg}, 0(x{addr_reg})",
+                "#endif",
+                "#endif",
+            ]
+        )
+
+        # Store misaligned
+        lines.extend(
+            [
+                test_data.add_testcase(f"storemisaligned_{tag}", coverpoint, covergroup),
+                f"LI(x{data_reg}, 0xDECAFCAB)",
+                f"LA(x{addr_reg}, scratch)",
+            ]
+        )
+        for offset in range(8):
+            for op in ["sw", "sh", "sb"]:
+                lines.append(f"{op} x{data_reg}, {offset}(x{addr_reg})")
+            lines.extend(
+                [
+                    "#if __riscv_xlen == 64",
+                    f" sd x{data_reg}, {offset}(x{addr_reg})",
+                    "#endif",
+                ]
+            )
+
+        # Store access fault
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        lines.extend(
+            [
+                test_data.add_testcase(f"storeaccessfault_{tag}", coverpoint, covergroup),
+                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI(x{data_reg}, 0xADDEDCAB)",
+            ]
+        )
+        for op in ["sw", "sh", "sb"]:
+            lines.append(f"{op} x{data_reg}, 0(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" sd x{data_reg}, 0(x{addr_reg})",
+                "#endif",
+                "#endif",
+            ]
+        )
+
+        # Ecall (uses the T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
+        # misinterpreted by the trap handler as a T-SBI instruction-table request)
+        lines.extend(
+            [
+                test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
+                "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                write_sigupd(10, test_data),
+            ]
+        )
+
+        # Return to M-mode.  With ecall-from-U delegated (medeleg bit 8), a GOTO_MMODE from U-mode is
+        # forwarded by the S-mode handler and the caller resumes in U-mode (handler returns into the
+        # forwarding stub, whose sret drops to SPP=U), so hop to S-mode first and go to M from there.
+        if priv_mode == 0 and medeleg_val & (1 << 8):
+            lines.extend(["RVTEST_TSBI_GOTO_SMODE", "RVTEST_TSBI_GOTO_MMODE"])
+        else:
+            lines.extend(goto_back)
+
+    # Clear medeleg (in M-mode)
+    lines.extend([f"LI(x{medeleg_reg}, 0)", f"csrw medeleg, x{medeleg_reg}"])
+
+    test_data.int_regs.return_registers([addr_reg, data_reg, check_reg, medeleg_reg])
+    return lines
+
+
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_mstatus_ie"
     save_reg, mask_reg = test_data.int_regs.get_registers(2)
@@ -66,6 +275,9 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsSm",
     required_extensions=["Sm"],
+    extra_defines=[
+        "#define TRAP_SIGUPD_COUNT 50000",  # the medeleg walk records thousands of trap signatures
+    ],
 )
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Sm exception test generation (refactored)."""
@@ -97,6 +309,14 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
-
     test_chunks.append(test_data.end_test_chunk())
+
+    # medeleg only exists with S-mode; walk it from M-, S- and U-mode.  One file per mode: each walk
+    # records thousands of (6-word, M-mode) trap signatures, more than one TRAP_SIGUPD_COUNT area holds.
+    for mode_tag, priv_mode in (("mode_m", 3), ("mode_s", 1), ("mode_u", 0)):
+        tc = test_data.begin_test_chunk(f"medeleg_{mode_tag[-1]}")
+        tc.code.append("#ifdef S_SUPPORTED")
+        tc.code.extend(_generate_medeleg_msu_tests(test_data, mode_tag, priv_mode))
+        tc.code.append("#endif // S_SUPPORTED")
+        test_chunks.append(test_data.end_test_chunk())
     return test_chunks

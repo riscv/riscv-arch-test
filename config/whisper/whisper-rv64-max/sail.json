@@ -6,7 +6,7 @@
     // x16-31 is reserved and in this implementation will
     // raise an illegal instruction exception.
     "E": false,
-    "writable_misa": true,
+    "writable_misa": false,
     "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding
     // HPM counters (hpmcounter31 .. hpmcounter3) are supported
@@ -15,7 +15,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x00000007"
+      "value": "0x0000_07F8"
     },
     // The bits in this value control whether the corresponding bits
     // of the `scounteren` CSR that control access to HPM counters,
@@ -26,7 +26,7 @@
     // the top 29 bits of `writable_hpm_counters`.
     "scounteren_writable_bits": {
       "len": 32,
-      "value": "0x00000007"
+      "value": "0x0000_07FF"
     },
     // The bits in this value control whether the corresponding bits
     // of the `mcounteren` CSR that control access to HPM counters,
@@ -36,7 +36,7 @@
     // bit is read-only zero.
     "mcounteren_writable_bits": {
       "len": 32,
-      "value": "0x0000007"
+      "value": "0x0000_07FF"
     },
     // `mtvec.{direct,vectored}.supported` indicates whether the
     // corresponding mode is supported for `mtvec`.  At least one mode
@@ -96,7 +96,7 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_0000_0000_2AAA"
+        "value": "0x0000_0000_0000_2222"
       }
     },
     // These settings control whether the specified exceptions

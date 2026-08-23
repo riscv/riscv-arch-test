@@ -96,7 +96,7 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_0000_0000_2AAA"
+        "value": "0x0000_0000_0000_2222"
       }
     },
     // These settings control whether the specified exceptions

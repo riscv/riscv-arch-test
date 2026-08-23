@@ -186,6 +186,34 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
+     csraccesses_masked : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
+    }
+
+    // CSRs whose access tests use masked writes (see csraccesses_masked above)
+    mcsrname_masked : coverpoint ins.current.insn[31:20] {
+        bins mstatus = {CSR_MSTATUS};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            bins menvcfg = {CSR_MENVCFG};
+        `endif
+        `ifdef MSECCFG_SUPPORTED
+            bins mseccfg = {CSR_MSECCFG};
+        `endif
+        `ifdef UDB_MXLEN_32
+            bins mstatush = {CSR_MSTATUSH};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                bins menvcfgh = {CSR_MENVCFGH};
+            `endif
+            `ifdef MSECCFG_SUPPORTED
+                bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+        `endif
+    }
+
     // counters keep incrementing, so don't write the maximum value that will roll over
     // tests should check value read back is within some tolerance of value written
     cntraccesses : coverpoint ins.current.insn {
@@ -196,8 +224,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr       = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
-    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus    = {CSR_MSTATUS};
+    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs and the masked-write CSRs (mcsrname_masked)
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -208,9 +235,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
-        `ifdef SM1P12P0_OR_LATER_SUPPORTED
-          bins menvcfg    = {CSR_MENVCFG};
-        `endif
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
@@ -241,18 +265,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED
-            bins mseccfg  = {CSR_MSECCFG};
-        `endif
         `ifdef UDB_MXLEN_32
-            bins mstatush = {CSR_MSTATUSH};
-            `ifdef SM1P12P0_OR_LATER_SUPPORTED
-              bins menvcfgh = {CSR_MENVCFGH};
-            `endif
-            `ifdef MSECCFG_SUPPORTED
-                bins mseccfgh = {CSR_MSECCFGH};
-            `endif
-            `ifdef S1P13P0_OR_LATER_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -421,8 +435,35 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
+    cp_mcsr_access_masked:      cross priv_mode_m, mcsrname_masked, csraccesses_masked;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    // Avoid testing WPRI bits and those that don't like being poked.
+    // Keep the lists below in sync with the masks in Sm.py.
+    cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
+        ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
+            binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
+                binsof(walking_ones) intersect {1, [8:31], [34:58]};
+        `endif
+        `ifdef MSECCFG_SUPPORTED
+            ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
+                binsof(walking_ones) intersect {[0:7], [11:31], [34:63]};
+        `endif
+        `ifdef UDB_MXLEN_32
+            ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
+                binsof(walking_ones) intersect {[0:5], 8, [11:31]};
+            `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
+                    binsof(walking_ones) intersect {[2:26]};
+            `endif
+            `ifdef MSECCFG_SUPPORTED
+                ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&
+                    binsof(walking_ones) intersect {[2:31]};
+            `endif
+        `endif
+    }
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 
@@ -443,7 +484,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     `endif
 
-    `ifdef S1P13P0_OR_LATER_SUPPORTED
+    `ifdef SM1P13P0_OR_LATER_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -467,7 +508,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // S1P13P0_OR_LATER_SUPPORTED
+    `endif // SM1P13P0_OR_LATER_SUPPORTED
 
     csrrw_allones: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW} iff (ins.current.rs1_val == '1);

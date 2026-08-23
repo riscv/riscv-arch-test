@@ -12,7 +12,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x00000007"
+      "value": "0x0000_07F8"
     },
     // The top 29 bits in this value control whether the
     // corresponding bits of the `scounteren` CSR that control HPM
@@ -23,7 +23,7 @@
     // `writable_hpm_counters`.
     "scounteren_writable_bits": {
       "len": 32,
-      "value": "0x00000007"
+      "value": "0x0000_07FF"
     },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate

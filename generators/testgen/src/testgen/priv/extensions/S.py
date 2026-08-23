@@ -336,8 +336,8 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         ("stvec", 0b10),
         ("scounteren", None),
         ("sscratch", None),
-        ("sip", 0x3EEE),  # only test standard non-reserved portion
-        ("sie", 0x3EEE),  # only test standard non-reserved portion
+        ("sip", 0xFFFF),  # only test standard non-reserved portion
+        ("sie", 0xFFFF),  # only test standard non-reserved portion
     ]
     # skip walking 1s on this because valid virtual addresses is not described adequately
     csrs_nowalk = [

@@ -74,7 +74,9 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     )
 
 
-def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint: str) -> list[str]:
+def csr_access_test(
+    test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, maskedwrites: bool = False
+) -> list[str]:
     """
     Generate a CSR access test: write all 1s, write all 0s, set all, clear all.
 
@@ -84,11 +86,14 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
              mask is either None or an integer representing a binary mask of bits to keep
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
+        maskedwrites: If True, the CSR is written with a mask applied to the value being written.
 
     Returns:
         List of assembly lines for the access test
     """
     csr_name, mask = csr
+    if maskedwrites:
+        assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
         save_reg, temp_reg, check_reg, mask_reg = test_data.int_regs.get_registers(4)
     else:
@@ -99,7 +104,6 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
         "",
         f"# CSR Access Tests for {csr_name}",
         f"csrr x{save_reg}, {csr_name}    # Save CSR",
-        f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
     ]
     if mask is not None:
         mask32 = mask & 0xFFFFFFFF
@@ -115,10 +119,16 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
             )
         else:
             lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+    if maskedwrites:
+        valstr = "mask"
+        lines.append(f"mv x{temp_reg}, x{mask_reg}    # Apply {valstr} to value being written")
+    else:
+        valstr = "all 1s"
+        lines.append(f"LI(x{temp_reg}, -1)             # write {valstr}")
     lines.extend(
         [
             test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
-            f"csrw {csr_name}, x{temp_reg}    # Write all 1s to CSR",
+            f"csrw {csr_name}, x{temp_reg}    # Write {valstr} to CSR",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
             test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint, covergroup),
@@ -126,11 +136,11 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
             test_data.add_testcase(f"{csr_name}_csrs_all", coverpoint, covergroup),
-            f"csrs {csr_name}, x{temp_reg}    # Set all CSR bits",
+            f"csrs {csr_name}, x{temp_reg}    # Set {valstr}",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             "",
             test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint, covergroup),
-            f"csrc {csr_name}, x{temp_reg}    # Clear all CSR bits",
+            f"csrc {csr_name}, x{temp_reg}    # Clear {valstr}",
             gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
             f"csrw {csr_name}, x{save_reg}       # Restore CSR",
         ]
@@ -205,6 +215,7 @@ def csr_walk_test(
     start_bit: int = 0,
     walk_zeros: bool = True,
     warl_fields: list[tuple[str, int, int, int]] | None = None,
+    maskedwrites: bool = False,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -223,9 +234,12 @@ def csr_walk_test(
             write the reserved value to such a field skip the exact-match check for the field's
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
+        maskedwrites: If True, the CSR is written with a mask applied to the value being written.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
+    if maskedwrites:
+        assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
         save_reg, temp_reg, walk_reg, check_reg, mask_reg = test_data.int_regs.get_registers(5)
     else:
@@ -272,13 +286,12 @@ def csr_walk_test(
         if i == 32:
             lines.append("\n#if __riscv_xlen == 64")
             need_endif = True
-        lines.extend(
-            [
-                "",
-                f"csrw {csr_name}, zero    # clear all bits",
-                f"csrs {csr_name}, x{walk_reg}     # set walking 1 in column {i}",
-            ]
-        )
+        lines.append(f"csrw {csr_name}, zero    # clear all bits")
+        if maskedwrites:
+            lines.append(f"and x{check_reg}, x{walk_reg}, x{mask_reg} # mask walking 1")
+            lines.append(f"csrs {csr_name}, x{check_reg}     # set walking 1 in column {i}")
+        else:
+            lines.append(f"csrs {csr_name}, x{walk_reg}     # set walking 1 in column {i}")
         reserved_fields = reserved_fields_written(i, walking_ones=True)
         if reserved_fields:
             assert warl_mask_reg is not None
@@ -314,13 +327,14 @@ def csr_walk_test(
             if i == 32:
                 lines.append("\n#if __riscv_xlen == 64")
                 need_endif = True
-            lines.extend(
-                [
-                    "",
-                    f"csrw {csr_name}, x{temp_reg}      # set all bits",
-                    f"csrc {csr_name}, x{walk_reg}      # clear walking 1 in column {i}",
-                ]
+            lines.append(
+                f"csrw {csr_name}, x{mask_reg if maskedwrites else temp_reg}   # set all (possibly masked) bits"
             )
+            if maskedwrites:
+                lines.append(f"and x{check_reg}, x{walk_reg}, x{mask_reg} # mask walking 1")
+                lines.append(f"csrc {csr_name}, x{check_reg}     # clear walking 0 in column {i}")
+            else:
+                lines.append(f"csrc {csr_name}, x{walk_reg}     # clear walking 0 in column {i}")
             reserved_fields = reserved_fields_written(i, walking_ones=False)
             if reserved_fields:
                 assert warl_mask_reg is not None

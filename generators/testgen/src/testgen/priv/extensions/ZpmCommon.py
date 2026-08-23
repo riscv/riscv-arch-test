@@ -172,16 +172,17 @@ class Regs:
 
 
 def alloc_pm_regs_paired(td: TestData) -> Regs:
-    """Standard allocation shared by Smmpm / SmnpmS / SmnpmU: dest_pair and
-    source_pair double as chk/data.
+    """dest_pair/source_pair are reserved as aligned register pairs for
+    amocas.q. Their +1 halves are reused as tmp/tmp2 rather than reserved
+    separately; tmp/tmp2 are always reloaded via LI() right
+    before use, so amocas.q clobbering its own partner register never loses
+    a value anything later depends on.
     """
-    dest_pair, source_pair = td.int_regs.get_registers(2, reg_range=[8, 14])
-    forbidden_partners = {dest_pair + 1, source_pair + 1}
-    a_candidates = [r for r in [9, 13, 15] if r not in forbidden_partners]
-    a = td.int_regs.get_registers(1, reg_range=a_candidates)[0]
-    tmp, tmp2, base = td.int_regs.get_registers(3)
-    chk = dest_pair
-    data = source_pair
+    chk = td.int_regs.get_register_pair()
+    data = td.int_regs.get_register_pair()
+    tmp = chk + 1
+    tmp2 = data + 1
+    a, base = td.int_regs.get_registers(2)
     fp, fp_c = (
         td.float_regs.get_register(),
         td.float_regs.get_register(reg_range=list(range(8, 16))),
@@ -195,27 +196,45 @@ def alloc_pm_regs_paired(td: TestData) -> Regs:
         tmp2=tmp2,
         fp=fp,
         fp_c=fp_c,
-        dest_pair=dest_pair,
-        source_pair=source_pair,
+        dest_pair=chk,
+        source_pair=data,
     )
 
 
 def alloc_pm_regs_wide(td: TestData) -> Regs:
-    """Allocation: a/data/chk/tmp share one wide 8-15 range."""
-    a, data, chk, tmp = td.int_regs.get_registers(4, reg_range=list(range(8, 16)))
-    tmp2, base = td.int_regs.get_registers(2)
+    """Same register-budget reasoning as alloc_pm_regs_paired: chk/data are
+    pair-bases for amocas.q, and their +1 halves are reused as tmp/tmp2
+    rather than reserved as extra registers the 6-register pool doesn't have.
+    """
+    chk = td.int_regs.get_register_pair()
+    data = td.int_regs.get_register_pair()
+    tmp = chk + 1
+    tmp2 = data + 1
+    a, base = td.int_regs.get_registers(2)
     fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
     return Regs(
-        base=base, a=a, data=data, chk=chk, tmp=tmp, tmp2=tmp2, fp=fp, fp_c=fp_c, dest_pair=chk, source_pair=data
+        base=base,
+        a=a,
+        data=data,
+        chk=chk,
+        tmp=tmp,
+        tmp2=tmp2,
+        fp=fp,
+        fp_c=fp_c,
+        dest_pair=chk,
+        source_pair=data,
     )
 
 
 def free_pm_regs(td: TestData, regs: Regs) -> None:
     """Return every register a probe module borrows. dest_pair/source_pair are
-    aliases of chk/data (never separate registers), so they are not returned
-    a second time.
+    reserved as register pairs; tmp/tmp2 alias their +1 halves rather than
+    being separately reserved, so returning the two pairs already releases
+    tmp/tmp2.
     """
-    td.int_regs.return_registers([regs.base, regs.a, regs.data, regs.chk, regs.tmp, regs.tmp2])
+    td.int_regs.return_register_pair(regs.dest_pair)
+    td.int_regs.return_register_pair(regs.source_pair)
+    td.int_regs.return_registers([regs.base, regs.a])
     td.float_regs.return_registers([regs.fp, regs.fp_c])
 
 

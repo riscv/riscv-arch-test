@@ -32,3 +32,4 @@ apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1
 config_shards:
   qemu-rv64-max: 2
+  qemu-rv32-max: 2

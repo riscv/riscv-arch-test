@@ -15,7 +15,7 @@ implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: Q, version: "= 2.2.0" }
-  - { name: S, version: "= 1.12.0" } # must match Sm; UDB rejects S@1.13 unless Sm=1.13
+  - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sha, version: "= 1.0.0" }
@@ -25,27 +25,25 @@ implemented_extensions:
   - { name: Shvsatpa, version: "= 1.0.0" }
   - { name: Shvstvala, version: "= 1.0.0" }
   - { name: Shvstvecd, version: "= 1.0.0" }
-  - { name: Sm, version: "= 1.12.0" } # medelegh is required for 1.13, and not implemented as of 8/21/26
-  # https://github.com/riscv-software-src/riscv-isa-sim/issues/2382
-  # TODO: Re-enable 1.13 when spike supports it, and then update S and re-enable extensions that depend on 1.13
+  - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
   - { name: Smcntrpmf, version: "= 1.0.0" }
-  #   - { name: Smcsrind, version: "= 1.0.0" } # requires S~>1.13; dropped for the Sm/S 1.12 downgrade
-  #   - { name: Smctr, version: "= 1.0.0" } # requires S~>1.13; dropped for the Sm/S 1.12 downgrade
+  - { name: Smcsrind, version: "= 1.0.0" }
+  - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  # - { name: Smrnmi, version: "= 1.0.0" } spike does not support Smrnmi
+  # - { name: Smrnmi, version: "= 1.0.0" } # spike does not support Smrnmi
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscofpmf, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
-  #   - { name: Sscsrind, version: "= 1.0.0" } # requires S~>1.13; dropped for the Sm/S 1.12 downgrade
-  #   - { name: Ssctr, version: "= 1.0.0" } # requires S~>1.13; dropped for the Sm/S 1.12 downgrade
+  - { name: Sscsrind, version: "= 1.0.0" }
+  - { name: Ssctr, version: "= 1.0.0" }
   - { name: Ssdbltrp, version: "= 1.0.0" }
-  #   - { name: Ssqosid, version: "= 1.0.0" } # requires S~>1.13; dropped for the Sm/S 1.12 downgrade
+  - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   # - { name: Ssstrict, version: "= 1.0.0" } # Spike does not aim to support Ssstrict as of 8/20/2026
   # https://github.com/riscv-software-src/riscv-isa-sim/issues/1976#issuecomment-5335375358
@@ -524,36 +522,36 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Ssqosid params
-  #   MCID_WIDTH: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade 12
-  #   RCID_WIDTH: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade 12
+  MCID_WIDTH: 12
+  RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
   # Csrind params
-  #   HSTATEEN_CSRIND_TYPE: rw
-  #   MSTATEEN_CSRIND_TYPE: rw
+  HSTATEEN_CSRIND_TYPE: rw
+  MSTATEEN_CSRIND_TYPE: rw
   # AIA params
   HSTATEEN_AIA_TYPE: rw
   MSTATEEN_AIA_TYPE: rw
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
-  #   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
-  #   MCTRCTL_CUSTOM_IMPLEMENTED: false
-  #   MCTRCTL_DIRCALLINH_IMPLEMENTED: true
-  #   MCTRCTL_DIRJMPINH_IMPLEMENTED: true
-  #   MCTRCTL_DIRLJMPINH_IMPLEMENTED: true
-  #   MCTRCTL_EXCINH_IMPLEMENTED: true
-  #   MCTRCTL_INDCALLINH_IMPLEMENTED: true
-  #   MCTRCTL_INDJMPINH_IMPLEMENTED: true
-  #   MCTRCTL_INDLJMPINH_IMPLEMENTED: true
-  #   MCTRCTL_INTRINH_IMPLEMENTED: true
-  #   MCTRCTL_MTE_IMPLEMENTED: true
-  #   MCTRCTL_NTBREN_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
-  #   MCTRCTL_RASEMU_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
-  #   MCTRCTL_RETINH_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
-  #   MCTRCTL_STE_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
-  #   MCTRCTL_TKBRINH_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
-  #   MCTRCTL_TRETINH_IMPLEMENTED: # dropped with Smctr/Ssqosid for the Sm/S 1.12 downgrade true
+  MCTRCTL_CORSWAPINH_IMPLEMENTED: true
+  MCTRCTL_CUSTOM_IMPLEMENTED: false
+  MCTRCTL_DIRCALLINH_IMPLEMENTED: true
+  MCTRCTL_DIRJMPINH_IMPLEMENTED: true
+  MCTRCTL_DIRLJMPINH_IMPLEMENTED: true
+  MCTRCTL_EXCINH_IMPLEMENTED: true
+  MCTRCTL_INDCALLINH_IMPLEMENTED: true
+  MCTRCTL_INDJMPINH_IMPLEMENTED: true
+  MCTRCTL_INDLJMPINH_IMPLEMENTED: true
+  MCTRCTL_INTRINH_IMPLEMENTED: true
+  MCTRCTL_MTE_IMPLEMENTED: true
+  MCTRCTL_NTBREN_IMPLEMENTED: true
+  MCTRCTL_RASEMU_IMPLEMENTED: true
+  MCTRCTL_RETINH_IMPLEMENTED: true
+  MCTRCTL_STE_IMPLEMENTED: true
+  MCTRCTL_TKBRINH_IMPLEMENTED: true
+  MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

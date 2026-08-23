@@ -118,8 +118,6 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     medeleg_illegalinstr_enabled: coverpoint ins.current.csr[CSR_MEDELEG][2] {
         bins enabled = {1};
     }
-    medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
-    }
     mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
         bins notequal = {1};
     }
@@ -137,7 +135,7 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;
     cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
-    cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE, medeleg_b8;
+    cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE;
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

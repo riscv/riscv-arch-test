@@ -266,13 +266,17 @@ def _tid(prefix: str, upper: int, mnemonic: str) -> str:
 def set_pmm_field(csr: str, shift: int, val: int, pmlen: int, tmp: int) -> list[str]:
     """Clear then set the 2-bit PMM field in *csr* at *shift*."""
     mask = 0b11 << shift
-    return [
+    lines = [
         f"# {csr}.PMM={val:#04b} PMLEN={pmlen}",
         f"LI(x{tmp}, {hex(mask)})",
         f"csrc {csr}, x{tmp}",
-        f"LI(x{tmp}, {hex(val << shift)})",
-        f"csrs {csr}, x{tmp}",
     ]
+    if val:
+        lines += [
+            f"LI(x{tmp}, {hex(val << shift)})",
+            f"csrs {csr}, x{tmp}",
+        ]
+    return lines
 
 
 def enable_fp_vector_state(
@@ -472,10 +476,6 @@ def enable_envcfg_cbo_sse(regs: Regs, csr: str = "menvcfg") -> list[str]:
     return [
         f"# {csr}: let the probes run cbo.*/prefetch.* (CBIE=11, CBCFE=1, CBZE=1)",
         "# and the Zicfiss shadow-stack atomics (SSE=1)",
-        f"LI(x{regs.tmp}, {hex(_ENVCFG_SSE_BIT)})",
-        f"csrs {csr}, x{regs.tmp}",
-        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
-        f"csrc {csr}, x{regs.tmp}",
         f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrs {csr}, x{regs.tmp}",
     ]
@@ -493,8 +493,6 @@ def enable_cascaded_envcfg_cbo_sse(regs: Regs) -> list[str]:
         "# shadow-stack atomics (SSE=1). menvcfg gates senvcfg, so both are written.",
         f"LI(x{regs.tmp}, {hex(_ENVCFG_SSE_BIT)})",
         f"csrs menvcfg, x{regs.tmp}",
-        f"LI(x{regs.tmp}, {hex(cbo_fields)})",
-        f"csrc senvcfg, x{regs.tmp}",
         f"LI(x{regs.tmp}, {hex(cbo_fields)})",
         f"csrs senvcfg, x{regs.tmp}",
     ]

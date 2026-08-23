@@ -39,7 +39,7 @@ normative_rule_definitions:
   - names: [sstatus_spie_sz, sstatus_spie_acc, sstatus_spie_op]
     coverpoint:
       [
-        "InterruptsS_cg/cp_user_mti, ExceptionsS_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s, Sm_mprivinst_cg/cp_sret_s",
+        "InterruptsS_cg/cp_user_mti, ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s, Sm_mprivinst_cg/cp_sret_s",
       ]
 
   # The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may

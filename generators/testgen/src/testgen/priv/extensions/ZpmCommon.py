@@ -348,9 +348,9 @@ def pass_g_csr_writes(
     pattern = ((1 << pmlen) - 1) << (64 - pmlen) | 0x1234_5678
     for csr in csrs:
         lines += [
-            f"csrr x{regs.tmp}, {csr} # save the framework's value before clobbering it",
+            f"csrr x{regs.tmp}, {csr} # save the csr's value before clobbering it",
             f"LI(x{regs.chk}, {hex(pattern)})",
-            td.add_testcase(f"{prefix}_csrsw_{csr}", CP_CSR, cg),
+            td.add_testcase(f"{prefix}_csrw_{csr}", CP_CSR, cg),
             gen_csr_write_sigupd(regs.chk, csr, td),
             f"csrw {csr}, x{regs.tmp} # restore before any later trap needs this CSR",
         ]
@@ -375,9 +375,7 @@ def set_mprv(enable: bool, mpp: int, tmp: int) -> list[str]:
         return [
             f"LI(x{tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
             f"csrc mstatus, x{tmp}",
-            f"LI(x{tmp}, {hex(mpp << _MSTATUS_MPP_SHIFT)})",
-            f"csrs mstatus, x{tmp}",
-            f"LI(x{tmp}, {hex(_MSTATUS_MPRV)})",
+            f"LI(x{tmp}, {hex((mpp << _MSTATUS_MPP_SHIFT) | _MSTATUS_MPRV)})",
             f"csrs mstatus, x{tmp}",
         ]
     return [

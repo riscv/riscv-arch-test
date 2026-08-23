@@ -251,6 +251,8 @@ def _generate_seed_entropy_zero_non_es16_tests(test_data: TestData) -> list[str]
 @add_priv_test_generator(
     "Zkr",
     required_extensions=["Zkr"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zkr(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zkr"""

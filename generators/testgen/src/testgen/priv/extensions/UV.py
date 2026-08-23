@@ -73,6 +73,8 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
+        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+        "#define BOOT_TO_MMODE",
     ],
 )
 def make_uv(test_data: TestData) -> list[TestChunk]:

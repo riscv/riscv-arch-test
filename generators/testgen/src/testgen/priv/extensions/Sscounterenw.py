@@ -37,7 +37,12 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sscounterenw", required_extensions=["S"])
+@add_priv_test_generator(
+    "Sscounterenw",
+    required_extensions=["S"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_scounterenw(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Scounteren supervisor counter-enable register."""
     test_chunks: list[TestChunk] = []

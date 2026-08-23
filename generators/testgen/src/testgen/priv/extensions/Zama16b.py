@@ -355,6 +355,8 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     "Zama16b",
     required_extensions=["Zama16b"],
     march_extensions=["Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""

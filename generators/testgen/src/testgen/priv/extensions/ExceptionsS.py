@@ -9,6 +9,7 @@
 """Exceptions S-mode test generator (refactored, calls ExceptionsCommon)."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -70,18 +71,12 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
 
     lines = [
         comment_banner(coverpoint, "delegated illegal instruction in S/U mode goes to stvec"),
-        "RVTEST_GOTO_MMODE",
-        "# Delegate illegal instruction (medeleg bit 2) to S-mode",
-        f"LI(x{medeleg_reg}, (1 << 2))",
-        f"csrw medeleg, x{medeleg_reg}",
     ]
 
     if priv_mode == 1:
-        lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
     elif priv_mode == 0:
-        lines.append("RVTEST_GOTO_LOWER_MODE Umode")
-    else:
-        lines.append("RVTEST_GOTO_MMODE")
+        lines.append("RVTEST_TSBI_GOTO_UMODE")
 
     for name, word in (("zeros", "0x00000000"), ("ones", "0xFFFFFFFF")):
         lines.extend(
@@ -92,14 +87,6 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
                 f".word {word}",
             ]
         )
-    lines.extend(
-        [
-            "RVTEST_GOTO_MMODE",
-            "# Restore medeleg to all zeros",
-            f"LI(x{medeleg_reg}, 0)",
-            f"csrw medeleg, x{medeleg_reg}",
-        ]
-    )
 
     test_data.int_regs.return_registers([medeleg_reg])
     return lines
@@ -111,67 +98,49 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 
     lines = [
         comment_banner(coverpoint, "xstatus Interrupt Enable"),
-        "RVTEST_GOTO_MMODE",
         "# Save mstatus before modifying it",
-        f"csrr x{save_reg}, mstatus",
+        tsbi_call(f"csrr x{save_reg}, mstatus"),
     ]
+    if priv_mode == 0:
+        lines.append("RVTEST_TSBI_GOTO_UMODE")
 
-    for medeleg_b8 in (0, 1):
-        for mie in (0, 1):
-            for sie in (0, 1):
-                tag = f"{mode_tag}_mdlg_{medeleg_b8}_mie_{mie}_sie_{sie}"
-                lines.extend(
-                    [
-                        f"\n# {tag}",
-                        # Return to M-mode
-                        "RVTEST_GOTO_MMODE",
-                        f"LI(x{medeleg_reg}, 256)",
-                        # Reinitialize masks each iteration: RVTEST_GOTO_LOWER_MODE clobbers
-                        # x6/x7/x9 internally, so mask registers may not survive mode switches.
-                        f"LI(x{mask_mie}, 0x88)",
-                        f"LI(x{mask_sie}, 0x2)",
-                        f"{'csrs' if medeleg_b8 else 'csrc'} medeleg, x{medeleg_reg}",
-                        # Set MPIE and MIE so mret goes to the proper MIE in the next mode
-                        f"{'csrs' if mie else 'csrc'} mstatus, x{mask_mie}",
-                    ]
-                )
+    for mie in (0, 1):
+        for sie in (0, 1):
+            tag = f"{mode_tag}_mdlg_mie_{mie}_sie_{sie}"
+            lines.extend(
+                [
+                    f"\n# {tag}",
+                    f"LI(x{mask_mie}, 0x88)",
+                    f"LI(x{mask_sie}, 0x2)",
+                    # Set MPIE and MIE so mret goes to the proper MIE in the next mode
+                    tsbi_call(f"{'csrs' if mie else 'csrc'} mstatus, x{mask_mie}"),
+                ]
+            )
 
-                if priv_mode == 1:
-                    lines.append("RVTEST_GOTO_LOWER_MODE Smode")
-                    lines.append(f"{'csrsi' if sie else 'csrci'} sstatus, 2")
-                elif priv_mode == 0:
-                    lines.append(f"{'csrs' if sie else 'csrc'} mstatus, x{mask_sie}")
-                    lines.append("RVTEST_GOTO_LOWER_MODE Umode")
-                    lines.append("nop")
-                else:
-                    lines.extend(
-                        [
-                            f"{'csrs' if sie else 'csrc'} mstatus, x{mask_sie}",
-                            "RVTEST_GOTO_MMODE",
-                        ]
-                    )
+            siecmd = f"{'csrsi' if sie else 'csrci'} sstatus, 2"
+            if priv_mode == 1:
+                lines.append(siecmd)
+            else:
+                lines.append(siecmd)
+                lines.append("nop")
 
-                lines.extend(
-                    [
-                        test_data.add_testcase(tag, coverpoint, covergroup),
-                        # T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
-                        # misinterpreted by the trap handler as a T-SBI instruction-table request
-                        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-                        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-                        write_sigupd(10, test_data),
-                        "RVTEST_GOTO_MMODE",
-                    ]
-                )
+            lines.extend(
+                [
+                    test_data.add_testcase(tag, coverpoint, covergroup),
+                    "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                    "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                    write_sigupd(10, test_data),
+                ]
+            )
 
     lines.extend(
         [
-            "\n# Restore mstatus and medeleg",
-            "RVTEST_GOTO_MMODE",
-            f"csrw mstatus, x{save_reg}",
-            f"LI(x{medeleg_reg}, 0)",
-            f"csrw medeleg, x{medeleg_reg}",
+            "\n# Restore mstatus",
+            tsbi_call(f"csrw mstatus, x{save_reg}"),
         ]
     )
+    if priv_mode == 0:
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
 
     test_data.int_regs.return_registers([save_reg, mask_mie, mask_sie, medeleg_reg])
     return lines
@@ -182,6 +151,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     required_extensions=["S"],
     extra_defines=[
         "#define TRAP_SIGUPD_COUNT 50000",
+        "#define BOOT_TO_SMODE",
     ],
 )
 def make_exceptionss(test_data: TestData) -> list[TestChunk]:
@@ -189,7 +159,6 @@ def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
     tc.code.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
     tc.code.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))

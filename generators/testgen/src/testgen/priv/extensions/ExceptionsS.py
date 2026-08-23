@@ -67,7 +67,6 @@ def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
 def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     """Delegated illegal-instruction exceptions in S/U-mode trap through stvec (cp_stvec crosses illegalops)."""
     covergroup, coverpoint = _CG, "cp_stvec"
-    medeleg_reg = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(coverpoint, "delegated illegal instruction in S/U mode goes to stvec"),
@@ -87,14 +86,15 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
                 f".word {word}",
             ]
         )
+    if priv_mode == 0:
+        lines.append("RVTEST_TSBI_GOTO_SMODE  # back to S-mode for the tests that follow")
 
-    test_data.int_regs.return_registers([medeleg_reg])
     return lines
 
 
 def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     covergroup, coverpoint = _CG, "cp_xstatus_ie"
-    save_reg, mask_mie, mask_sie, medeleg_reg = test_data.int_regs.get_registers(4)
+    save_reg, mask_mie, mask_sie = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(coverpoint, "xstatus Interrupt Enable"),
@@ -110,19 +110,18 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
             lines.extend(
                 [
                     f"\n# {tag}",
-                    f"LI(x{mask_mie}, 0x88)",
-                    f"LI(x{mask_sie}, 0x2)",
+                    f"LI(x{mask_mie}, 0x88)",  # MPIE | MIE: mret in the T-SBI handler copies MPIE into MIE
+                    f"LI(x{mask_sie}, 0x22)",  # SPIE | SIE: likewise if the handler returns with sret
                     # Set MPIE and MIE so mret goes to the proper MIE in the next mode
                     tsbi_call(f"{'csrs' if mie else 'csrc'} mstatus, x{mask_mie}"),
                 ]
             )
 
-            siecmd = f"{'csrsi' if sie else 'csrci'} sstatus, 2"
+            sie_cmd = f"{'csrs' if sie else 'csrc'} sstatus, x{mask_sie}"
             if priv_mode == 1:
-                lines.append(siecmd)
-            else:
-                lines.append(siecmd)
-                lines.append("nop")
+                lines.append(sie_cmd)
+            else:  # sstatus is not accessible from U-mode
+                lines.append(tsbi_call(sie_cmd))
 
             lines.extend(
                 [
@@ -142,7 +141,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     if priv_mode == 0:
         lines.append("RVTEST_TSBI_GOTO_SMODE")
 
-    test_data.int_regs.return_registers([save_reg, mask_mie, mask_sie, medeleg_reg])
+    test_data.int_regs.return_registers([save_reg, mask_mie, mask_sie])
     return lines
 
 

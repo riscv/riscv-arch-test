@@ -272,6 +272,60 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
+    """
+    ecall from S/U-mode with every combination of medeleg[8] (ecall-from-U delegated) and mstatus.MIE
+    and .SIE.  Runs from M-mode: medeleg and both mstatus bits are written directly (MPIE/SPIE alongside
+    MIE/SIE, so the mret/sret of the T-SBI hop that drops into the mode under test carries them
+    through), then RVTEST_TSBI_GOTO_SMODE/UMODE, ecall, and RVTEST_TSBI_GOTO_MMODE back.  With
+    medeleg[8] set, a GOTO_MMODE from U-mode is forwarded by the S-mode handler and the caller would
+    resume in U-mode, so that case hops to S-mode first.
+    """
+    covergroup, coverpoint = _CG, "cp_xstatus_ie"
+    save_reg, mask_mie, mask_sie, medeleg_reg = test_data.int_regs.get_registers(4)
+    goto_mode = "RVTEST_TSBI_GOTO_SMODE" if priv_mode == 1 else "RVTEST_TSBI_GOTO_UMODE"
+
+    lines = [
+        comment_banner(
+            coverpoint, f"xstatus Interrupt Enable: ecall from {mode_tag} with medeleg[8], MIE, SIE 0 and 1"
+        ),
+        "# Save mstatus before modifying it",
+        f"csrr x{save_reg}, mstatus",
+        f"LI(x{mask_mie}, 0x88)",  # MPIE | MIE: the hop's mret copies MPIE into MIE
+        f"LI(x{mask_sie}, 0x22)",  # SPIE | SIE: likewise for a handler that returns with sret
+        f"LI(x{medeleg_reg}, 1 << 8)",  # medeleg.ecall_from_U
+    ]
+
+    for medeleg_b8 in (0, 1):
+        lines.append(f"{'csrs' if medeleg_b8 else 'csrc'} medeleg, x{medeleg_reg}")
+        goto_back = (
+            ["RVTEST_TSBI_GOTO_SMODE", "RVTEST_TSBI_GOTO_MMODE"]
+            if priv_mode == 0 and medeleg_b8
+            else ["RVTEST_TSBI_GOTO_MMODE"]
+        )
+        for mie in (0, 1):
+            for sie in (0, 1):
+                tag = f"{mode_tag}_mdlg_{medeleg_b8}_mie_{mie}_sie_{sie}"
+                lines.extend(
+                    [
+                        f"\n# {tag}",
+                        f"{'csrs' if mie else 'csrc'} mstatus, x{mask_mie}",
+                        f"{'csrs' if sie else 'csrc'} mstatus, x{mask_sie}",
+                        goto_mode,
+                        test_data.add_testcase(tag, coverpoint, covergroup),
+                        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+                        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+                        write_sigupd(10, test_data),
+                        *goto_back,
+                    ]
+                )
+
+    lines.extend(["\n# Restore mstatus and medeleg", f"csrw mstatus, x{save_reg}", f"csrc medeleg, x{medeleg_reg}"])
+
+    test_data.int_regs.return_registers([save_reg, mask_mie, mask_sie, medeleg_reg])
+    return lines
+
+
 @add_priv_test_generator(
     "ExceptionsSm",
     required_extensions=["Sm"],
@@ -309,6 +363,10 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
+    tc.code.append("#ifdef S_SUPPORTED")
+    tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))
+    tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_u", priv_mode=0))
+    tc.code.append("#endif // S_SUPPORTED")
     test_chunks.append(test_data.end_test_chunk())
 
     # medeleg only exists with S-mode; walk it from M-, S- and U-mode.  One file per mode: each walk

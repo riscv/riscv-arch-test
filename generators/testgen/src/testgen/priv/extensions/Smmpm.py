@@ -14,7 +14,9 @@ from testgen.priv.extensions.ZpmCommon import (
     _PMM_FIELD_SHIFT,
     PMM_CONFIGS,
     Regs,
+    _mprv_img_tables,
     alloc_pm_regs_paired,
+    build_data_only_u_map_asm,
     enable_fp_vector_state,
     free_pm_regs,
     jalr_pad_asm,
@@ -35,7 +37,7 @@ COVERGROUP = "Smmpm_cg"
 _CSR_TARGETS = ["mepc", "mscratch"]
 
 
-def _emit_file(td: TestData, regs: Regs) -> list[str]:
+def _emit_file(td: TestData, regs: Regs, sv39_data_map: list[str]) -> list[str]:
     lines = mprv_data_section()
     lines += [
         comment_banner(
@@ -74,7 +76,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
 
     # MPRV test using nested loop structure from testplan
     # Only tests Bare and Sv39 modes with limited upper bit patterns
-    lines += pass_i_mprv_mxr_pmm_loop(td, regs, COVERGROUP, _PMM_FIELD_SHIFT)
+    lines += pass_i_mprv_mxr_pmm_loop(td, regs, COVERGROUP, sv39_data_map, _PMM_FIELD_SHIFT)
 
     lines += set_pmm_field("mseccfg", _PMM_FIELD_SHIFT, 0b00, 0, regs.tmp)
     lines.append("#ifdef S_SUPPORTED")
@@ -89,9 +91,13 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smmpm(td: TestData) -> list[TestChunk]:
+    # Build the sv39 data-only U-map ASM once, before regs claims the whole
+    # register pool, so building it here avoids the register exhaustion.
+    sv39_data_map = build_data_only_u_map_asm("sv39", _mprv_img_tables("sv39"), td)
+
     regs = alloc_pm_regs_paired(td)
     tc = td.begin_test_chunk()
-    tc.code = _emit_file(td, regs)
+    tc.code = _emit_file(td, regs, sv39_data_map)
     chunks = [td.end_test_chunk()]
     free_pm_regs(td, regs)
     return chunks

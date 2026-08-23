@@ -423,15 +423,21 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], td: TestData) ->
     """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
     granting PTE_U only to the U-accessible data range (rvtest_data_begin..
     end_signature). Unlike build_finegrained_text_map_asm, no code range is
-    ever marked U -- used by callers (Smmpm's MPRV pass) whose fetches stay
-    at M-mode and are never translated, so only the data page's permission
-    bit matters.
+    ever marked U -- callers (Smmpm's MPRV pass) fetch only from M-mode,
+    which is never translated, so only the data page's permission bit matters.
+
+    Only 6 int registers are available, so the loop keeps just three live
+    across iterations -- current VA, leaf PTE slot pointer, and the loop
+    counter -- and reloads the data-range bounds with LA each pass instead
+    of holding them in dedicated registers.
     """
-    r0, r1, r4, r5, r6, ra0, ra1 = td.int_regs.get_registers(7)
+    (r0,) = td.int_regs.get_registers(1)
     lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on data range"]
     # Walk the non-leaf PTEs from the framework root down to img_tables[0].
     lines += [f"LA(x{r0}, rvtest_code_begin)"]
     lines += _walk_asm(mode, img_tables, f"x{r0}", td)
+
+    r1, r6, s0, s1, s2 = td.int_regs.get_registers(5)
     lines += [
         # Recompute the 2 MiB-aligned base of the image; this is the VA the
         # leaf-fill loop below walks forward from, 4 KiB at a time.
@@ -440,31 +446,33 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], td: TestData) ->
         f"slli x{r0}, x{r0}, 21                  # x{r0} = 2 MiB-aligned base of the image",
         # r1 walks the 512 consecutive leaf PTE slots in img_tables[-1].
         f"LA(x{r1}, {img_tables[-1]})",
-        # r4/r5 bound the U-accessible data range; r5 becomes its size.
-        f"LA(x{r4}, rvtest_data_begin)",
-        f"LA(x{r5}, end_signature)",
-        f"sub  x{r5}, x{r5}, x{r4}                  # x{r5} = size of the U-accessible data",
         f"li   x{r6}, 512",
         "1:",
-        # Default leaf perms with no PTE_U; add PTE_U only inside the data range.
-        f"li   x{ra0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        f"sub  x{ra1}, x{r0}, x{r4}",
-        f"bgeu x{ra1}, x{r5}, 2f                  # outside the data segment -> keep U clear",
-        f"ori  x{ra0}, x{ra0}, PTE_U",
+        # Default leaf perms with no PTE_U.
+        f"li   x{s0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        # Reload the data-range bounds fresh each iteration (instead of
+        # keeping them in dedicated registers) to stay within the 6-register
+        # budget; s1/s2 are scratch and don't need to survive past this block.
+        f"LA(x{s1}, rvtest_data_begin)",
+        f"LA(x{s2}, end_signature)",
+        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-accessible data",
+        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from data begin",
+        f"bgeu x{s1}, x{s2}, 2f                  # outside the data segment -> keep U clear",
+        f"ori  x{s0}, x{s0}, PTE_U",
         "2:",
         # Pack the PPN + perms into the PTE and store it, then advance to the
         # next leaf slot and the next 4 KiB page.
-        f"srli x{ra1}, x{r0}, 12",
-        f"slli x{ra1}, x{ra1}, 10",
-        f"or   x{ra1}, x{ra1}, x{ra0}",
-        f"sd   x{ra1}, 0(x{r1})",
+        f"srli x{s1}, x{r0}, 12",
+        f"slli x{s1}, x{s1}, 10",
+        f"or   x{s1}, x{s1}, x{s0}",
+        f"sd   x{s1}, 0(x{r1})",
         f"addi x{r1}, x{r1}, 8",
-        f"lui  x{ra1}, 1",
-        f"add  x{r0}, x{r0}, x{ra1}",
+        f"lui  x{s1}, 1",
+        f"add  x{r0}, x{r0}, x{s1}",
         f"addi x{r6}, x{r6}, -1",
         f"bnez x{r6}, 1b",
     ]
-    td.int_regs.return_registers([r0, r1, r4, r5, r6, ra0, ra1])
+    td.int_regs.return_registers([r0, r1, r6, s0, s1, s2])
     return lines
 
 
@@ -560,45 +568,53 @@ def build_finegrained_text_map_asm(mode: str, img_tables: list[str], td: TestDat
     and the U-accessible data range (rvtest_data_begin..end_signature).
     The S-mode trap handler, which lives outside that bracket in the same
     2 MiB region, is left without PTE_U so S-mode can still fetch it.
+
+    Register budget: same constraint as build_data_only_u_map_asm -- only 6
+    int registers total. Text and data bounds are both reloaded with LA
+    every iteration rather than held live, so only r0/r1/r6 persist across
+    the loop; s0/s1/s2 are reused scratch.
     """
-    r0, r1, r2, r3, r4, r5, r6, ra0 = td.int_regs.get_registers(8)
+    (r0,) = td.int_regs.get_registers(1)
     lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on test code and data"]
     lines += [f"LA(x{r0}, rvtest_code_begin)"]
     lines += _walk_asm(mode, img_tables, f"x{r0}", td)
+
+    r1, r6, s0, s1, s2 = td.int_regs.get_registers(5)
     lines += [
         f"LA(x{r0}, rvtest_code_begin)",
         f"srli x{r0}, x{r0}, 21",
         f"slli x{r0}, x{r0}, 21                  # x{r0} = 2 MiB-aligned base of the image",
         f"LA(x{r1}, {img_tables[-1]})",
-        # r2/r3 bound the U-executable text; r3 becomes its size.
-        f"LA(x{r2}, pm_utext_begin)",
-        f"LA(x{r3}, pm_utext_end)",
-        f"sub  x{r3}, x{r3}, x{r2}                  # x{r3} = size of the U-executable text",
-        # r4/r5 bound the U-accessible data; r5 becomes its size.
-        f"LA(x{r4}, rvtest_data_begin)",
-        f"LA(x{r5}, end_signature)",
-        f"sub  x{r5}, x{r5}, x{r4}                  # x{r5} = size of the U-accessible data",
         f"li   x{r6}, 512",
         "1:",
-        f"li   x{ra0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        f"sub  a1, x{r0}, x{r2}",
-        f"bltu a1, x{r3}, 2f                  # inside the code segment -> U-accessible",
-        f"sub  a1, x{r0}, x{r4}",
-        f"bgeu a1, x{r5}, 3f                  # outside the data segment -> keep U clear",
+        f"li   x{s0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        # Check the U-executable text range first; bounds reloaded fresh
+        # rather than held in dedicated registers (6-register budget).
+        f"LA(x{s1}, pm_utext_begin)",
+        f"LA(x{s2}, pm_utext_end)",
+        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-executable text",
+        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from text begin",
+        f"bltu x{s1}, x{s2}, 2f                  # inside the code segment -> U-accessible",
+        # Not in the text range -- check the U-accessible data range.
+        f"LA(x{s1}, rvtest_data_begin)",
+        f"LA(x{s2}, end_signature)",
+        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-accessible data",
+        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from data begin",
+        f"bgeu x{s1}, x{s2}, 3f                  # outside the data segment -> keep U clear",
         "2:",
-        f"ori  x{ra0}, x{ra0}, PTE_U",
+        f"ori  x{s0}, x{s0}, PTE_U",
         "3:",
-        f"srli a1, x{r0}, 12",
-        "slli a1, a1, 10",
-        f"or   a1, a1, x{ra0}",
-        f"sd   a1, 0(x{r1})",
+        f"srli x{s1}, x{r0}, 12",
+        f"slli x{s1}, x{s1}, 10",
+        f"or   x{s1}, x{s1}, x{s0}",
+        f"sd   x{s1}, 0(x{r1})",
         f"addi x{r1}, x{r1}, 8",
-        "lui  a1, 1",
-        f"add  x{r0}, x{r0}, a1",
+        f"lui  x{s1}, 1",
+        f"add  x{r0}, x{r0}, x{s1}",
         f"addi x{r6}, x{r6}, -1",
         f"bnez x{r6}, 1b",
     ]
-    td.int_regs.return_registers([r0, r1, r2, r3, r4, r5, r6, ra0])
+    td.int_regs.return_registers([r0, r1, r6, s0, s1, s2])
     return lines
 
 
@@ -1118,6 +1134,7 @@ def pass_i_mprv_mxr_pmm_loop(
     td: TestData,
     regs: Regs,
     cg: str,
+    sv39_data_map: list[str],
     pmm_shift: int = _PMM_FIELD_SHIFT,
 ) -> list[str]:
     """MPRV=1 test with nested loops over MXR, mseccfg.PMM, menvcfg.PMM, senvcfg.PMM, MPP, satp.MODE, upper patterns.
@@ -1207,8 +1224,11 @@ def pass_i_mprv_mxr_pmm_loop(
 
                     for satp_mode in ["bare", "sv39"]:
                         if satp_mode != "bare":
+                            # Precomputed once in make_smmpm() before regs claimed the
+                            # register pool -- identical output every iteration since
+                            # it depends only on satp_mode, which is always "sv39" here.
                             lines += [
-                                *build_data_only_u_map_asm(satp_mode, _mprv_img_tables(satp_mode), td),
+                                *sv39_data_map,
                                 "sfence.vma",
                                 "SATP_SETUP_RV64(sv39)",
                                 "sfence.vma",

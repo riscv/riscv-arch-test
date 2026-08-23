@@ -46,7 +46,7 @@ COVERGROUP = "Ssnpm_cg"
 _SENVCFG_PMM = 32
 
 
-def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
+def _emit_mode(mode: str, td: TestData, regs: Regs, finegrained_map: list[str] | None) -> list[str]:
     guard, is_bare = MODE_GUARDS[mode], mode == "bare"
     lines = [] if not guard else [f"#ifdef {guard}"]
     lines += [".pushsection .data", *data_pm_lo_page()]
@@ -68,8 +68,11 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     )
 
     if not is_bare:
-        img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
-        lines += ["", *build_finegrained_text_map_asm(mode, img_tables)]
+        # finegrained_map was built in make_ssnpm() before regs claimed the
+        # register pool, build_finegrained_text_map_asm needs its own
+        # scratch registers and the pool would otherwise be empty here.
+        assert finegrained_map is not None, f"missing finegrained map for mode={mode}"
+        lines += ["", *finegrained_map]
         lines += ["", *_pte_chain_asm(mode, HIGH_VA[mode], "pm_hi_page")]
         lines += ["sfence.vma", f"SATP_SETUP_RV64({mode})", "sfence.vma"]
 
@@ -124,12 +127,21 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
     extra_defines=["#define TRAP_SIGUPD_COUNT 40000"],
 )
 def make_ssnpm(td: TestData) -> list[TestChunk]:
+    # Build the fine-grained U-text/data page-table setup for every non-bare
+    # mode FIRST, while the register pool is still full.
+    finegrained_maps: dict[str, list[str]] = {}
+    for mode in MODES:
+        if mode == "bare":
+            continue
+        img_tables = [f"pm_img_slvl{i}_pg_tbl" for i in range(LEVELS_BELOW_ROOT[mode] - 1, -1, -1)]
+        finegrained_maps[mode] = build_finegrained_text_map_asm(mode, img_tables, td)
+
     regs = alloc_pm_regs_wide(td)
 
     chunks = []
     for mode in MODES:
         tc = td.begin_test_chunk(split_name=mode)
-        tc.code = _emit_mode(mode, td, regs)
+        tc.code = _emit_mode(mode, td, regs, finegrained_maps.get(mode))
         chunks.append(td.end_test_chunk())
 
     free_pm_regs(td, regs)

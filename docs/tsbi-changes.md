@@ -14,6 +14,6 @@
   - tsbi_call(f"csrr x{save_reg}, mstatus")
   - search for and specially handle medeleg / mideleg CSR accesses, which probably shouldn't be in lower priv mode code
 - change ecalls to RVTEST_TSBI_ECALL_TEST followed by write_sigupd(10, test_data) to check value returned in a0
-- Confirm tests still run on all simulators and has 100% coverage
+- Confirm tests still run on all simulators and have 100% coverage
 - Check whether dynamic instruction count and number of traps changed in unexpected ways. How much performance did this cost?
 - Review whether tests changed in any significant way.

@@ -17,7 +17,7 @@ from testgen.priv.extensions.ZpmCommon import (
     Regs,
     alloc_pm_regs_paired,
     data_pm_lo_page,
-    enable_cascaded_envcfg_cbo_sse,
+    enable_envcfg_cbo_sse,
     enable_fp_vector_state,
     free_pm_regs,
     jalr_pad_asm,
@@ -43,7 +43,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         *jalr_pad_asm(regs),
     ]
 
-    lines += enable_cascaded_envcfg_cbo_sse(regs)
+    lines += enable_envcfg_cbo_sse(regs, csr="menvcfg")
     lines += enable_fp_vector_state(regs)
 
     for pmm, pmlen, label in PMM_CONFIGS:

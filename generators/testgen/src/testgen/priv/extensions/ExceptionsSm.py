@@ -34,27 +34,6 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ExceptionsSm_cg"
 
 
-def _add_jalr_misaligned_test_fault_addr(
-    rs1_lsb: int,
-    addr_reg: int,
-    test_data: TestData,
-    coverpoint: str,
-    covergroup: str,
-    tag_prefix: str = "",
-) -> list[str]:
-
-    offsets_for_lsb = {0: [0, 1, 2, 3], 1: [0, 1, 2, -1], 2: [0, 1, -2, -1], 3: [0, -3, -2, -1]}
-
-    label = f"{tag_prefix}_jalr_rs1_{rs1_lsb}" if tag_prefix else f"jalr_rs1_{rs1_lsb}"
-
-    t_lines = [test_data.add_testcase(label, coverpoint, covergroup)]
-
-    for off in offsets_for_lsb[rs1_lsb]:
-        t_lines.append(f"jalr x1, {off}(x{addr_reg})")
-
-    return t_lines
-
-
 _MEDELEG_WALK = (
     [0]
     + [1 << i for i in range(9)]  # bits 0-8 walking 1s
@@ -87,23 +66,18 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         # set medeleg in M-mode, then enter the mode under test
         lines.extend([f"LI(x{medeleg_reg}, {medeleg_val})", f"csrw medeleg, x{medeleg_reg}", *goto_mode])
 
-        # Instruction misaligned
-        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+        # Instruction misaligned: one aligned and one misaligned jalr target next to the access-fault
+        # address.
         lines.extend(
             [
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
                 test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"jalr x1, 0(x{addr_reg})  # aligned target",
+                f"jalr x1, 2(x{addr_reg})  # misaligned target",
+                "#endif",
             ]
         )
-        for rs1_lsb in range(4):
-            if rs1_lsb > 0:
-                lines.append(f"addi x{addr_reg}, x{addr_reg}, 1")
-            lines.extend(
-                _add_jalr_misaligned_test_fault_addr(
-                    rs1_lsb, addr_reg, test_data, coverpoint, covergroup, tag_prefix=tag
-                )
-            )
-        lines.append("#endif")
 
         # Instruction access fault
         lines.extend(

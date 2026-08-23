@@ -75,5 +75,5 @@
 - Passing tests print lines matching `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`; failures use `TEST FAILED`. `SIGRUN` means the ELF was not built self-checking.
 - With `DEBUG=True`, ACT build artifacts in `work/<config>/build/` include `.sig.log` Sail traces and `.sig.trap_report` files.
 - Triage failures in this order: config/UDB mismatch, Sail config mismatch, generated objdump/trace, then DUT behavior.
-  -To measure one suite everywhere: `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. `DEBUG=True` keeps a trace per test; `make -k` continues past a failing config. Each failing test's `.log` names the first diverging testcase on its `bin:` line.
+- To measure one suite everywhere: `EXTENSIONS=<suite> DEBUG=True make -k sail spike whisper qemu imperas cvw`. `DEBUG=True` keeps a trace per test; `make -k` continues past a failing config. Each failing test's `.log` names the first diverging testcase on its `bin:` line.
 - Ghost outputs: nothing cleans `tests/priv/<suite>/` or `work/<config>/elfs/priv/<suite>/`, so a renamed or retired chunk keeps being built, run, and counted, and `run_tests.py`'s "N tests" includes it. When chunk names change, delete the stale files by name — not by mtime, since unchanged files keep their old timestamps.

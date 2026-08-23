@@ -133,6 +133,10 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
             // auto fills 1 and 0: ecall from U-mode delegated to S-mode or not
         }
+        jalr_target_bit1: coverpoint {ins.current.rs1_val + ins.current.imm}[1] {
+            bins aligned    = {0};  // 4-byte aligned target
+            bins misaligned = {1};  // bit 1 set: instruction address misaligned (a legal target with Zca)
+        }
     `endif
 
     // main coverpoints
@@ -148,7 +152,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     cp_ecall_m:                              cross priv_mode_m, ecall;
     cp_mstatus_ie:                           cross priv_mode_m, ecall, mstatus_MIE;
     `ifdef S_SUPPORTED
-        cp_medeleg_msu_instrmisaligned:      cross priv_mode_m_s_u, jalr,       rs1_1_0, offset,  medeleg_walk;
+        cp_medeleg_msu_instrmisaligned:      cross priv_mode_m_s_u, jalr,       jalr_target_bit1, medeleg_walk;
         cp_medeleg_msu_loadmisaligned:       cross priv_mode_m_s_u, loadops,    adr_LSBs,         medeleg_walk;
         cp_medeleg_msu_storemisaligned:      cross priv_mode_m_s_u, storeops,   adr_LSBs,         medeleg_walk;
         cp_medeleg_msu_illegalinstruction:   cross priv_mode_m_s_u, illegalops,                   medeleg_walk;

@@ -419,7 +419,7 @@ def mprv_data_section() -> list[str]:
     return lines
 
 
-def build_data_only_u_map_asm(mode: str, img_tables: list[str]) -> list[str]:
+def build_data_only_u_map_asm(mode: str, img_tables: list[str], td: TestData) -> list[str]:
     """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
     granting PTE_U only to the U-accessible data range (rvtest_data_begin..
     end_signature). Unlike build_finegrained_text_map_asm, no code range is
@@ -427,34 +427,44 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str]) -> list[str]:
     at M-mode and are never translated, so only the data page's permission
     bit matters.
     """
+    r0, r1, r4, r5, r6, ra0, ra1 = td.int_regs.get_registers(7)
     lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on data range"]
-    lines += ["LA(t0, rvtest_code_begin)"]
-    lines += _walk_asm(mode, img_tables, "t0")
+    # Walk the non-leaf PTEs from the framework root down to img_tables[0].
+    lines += [f"LA(x{r0}, rvtest_code_begin)"]
+    lines += _walk_asm(mode, img_tables, f"x{r0}", td)
     lines += [
-        "LA(t0, rvtest_code_begin)",
-        "srli t0, t0, 21",
-        "slli t0, t0, 21                  # t0 = 2 MiB-aligned base of the image",
-        f"LA(t1, {img_tables[-1]})",
-        "LA(t4, rvtest_data_begin)",
-        "LA(t5, end_signature)",
-        "sub  t5, t5, t4                  # t5 = size of the U-accessible data",
-        "li   t6, 512",
+        # Recompute the 2 MiB-aligned base of the image; this is the VA the
+        # leaf-fill loop below walks forward from, 4 KiB at a time.
+        f"LA(x{r0}, rvtest_code_begin)",
+        f"srli x{r0}, x{r0}, 21",
+        f"slli x{r0}, x{r0}, 21                  # x{r0} = 2 MiB-aligned base of the image",
+        # r1 walks the 512 consecutive leaf PTE slots in img_tables[-1].
+        f"LA(x{r1}, {img_tables[-1]})",
+        # r4/r5 bound the U-accessible data range; r5 becomes its size.
+        f"LA(x{r4}, rvtest_data_begin)",
+        f"LA(x{r5}, end_signature)",
+        f"sub  x{r5}, x{r5}, x{r4}                  # x{r5} = size of the U-accessible data",
+        f"li   x{r6}, 512",
         "1:",
-        "li   a0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        "sub  a1, t0, t4",
-        "bgeu a1, t5, 2f                  # outside the data segment -> keep U clear",
-        "ori  a0, a0, PTE_U",
+        # Default leaf perms with no PTE_U; add PTE_U only inside the data range.
+        f"li   x{ra0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        f"sub  x{ra1}, x{r0}, x{r4}",
+        f"bgeu x{ra1}, x{r5}, 2f                  # outside the data segment -> keep U clear",
+        f"ori  x{ra0}, x{ra0}, PTE_U",
         "2:",
-        "srli a1, t0, 12",
-        "slli a1, a1, 10",
-        "or   a1, a1, a0",
-        "sd   a1, 0(t1)",
-        "addi t1, t1, 8",
-        "lui  a1, 1",
-        "add  t0, t0, a1",
-        "addi t6, t6, -1",
-        "bnez t6, 1b",
+        # Pack the PPN + perms into the PTE and store it, then advance to the
+        # next leaf slot and the next 4 KiB page.
+        f"srli x{ra1}, x{r0}, 12",
+        f"slli x{ra1}, x{ra1}, 10",
+        f"or   x{ra1}, x{ra1}, x{ra0}",
+        f"sd   x{ra1}, 0(x{r1})",
+        f"addi x{r1}, x{r1}, 8",
+        f"lui  x{ra1}, 1",
+        f"add  x{r0}, x{r0}, x{ra1}",
+        f"addi x{r6}, x{r6}, -1",
+        f"bnez x{r6}, 1b",
     ]
+    td.int_regs.return_registers([r0, r1, r4, r5, r6, ra0, ra1])
     return lines
 
 
@@ -514,74 +524,81 @@ def _pte_chain_asm(mode: str, va: int, leaf_label: str, leaf_perms: str = _LEAF_
     return lines
 
 
-def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str) -> list[str]:
+def _nonleaf_asm(parent: str, child: str, shift: int, va_reg: str, td: TestData) -> list[str]:
     """parent[VPN(va, shift)] = child, valid but not a leaf."""
-    return [
-        f"srli t1, {va_reg}, {shift}",
-        "andi t1, t1, 0x1FF",
-        "slli t1, t1, 3",
-        f"LA(t2, {parent})",
-        "add  t2, t2, t1",
-        f"LA(t3, {child})",
-        "srli t3, t3, 12",
-        "slli t3, t3, 10",
-        f"ori  t3, t3, ({_NONLEAF_PERMS})",
-        "sd   t3, 0(t2)",
+    t1, t2, t3 = td.int_regs.get_registers(3)
+    lines = [
+        f"srli x{t1}, {va_reg}, {shift}",
+        f"andi x{t1}, x{t1}, 0x1FF",
+        f"slli x{t1}, x{t1}, 3",
+        f"LA(x{t2}, {parent})",
+        f"add  x{t2}, x{t2}, x{t1}",
+        f"LA(x{t3}, {child})",
+        f"srli x{t3}, x{t3}, 12",
+        f"slli x{t3}, x{t3}, 10",
+        f"ori  x{t3}, x{t3}, ({_NONLEAF_PERMS})",
+        f"sd   x{t3}, 0(x{t2})",
     ]
+    td.int_regs.return_registers([t1, t2, t3])
+    return lines
 
 
-def _walk_asm(mode: str, tables: list[str], va_reg: str) -> list[str]:
+def _walk_asm(mode: str, tables: list[str], va_reg: str, td: TestData) -> list[str]:
     """Install non-leaf entries from the framework root down to tables[0]."""
     top = LEVELS_BELOW_ROOT[mode]
     shifts = [12 + 9 * k for k in range(top, 0, -1)]
     chain = ["rvtest_Sroot_pg_tbl", *tables]
     lines: list[str] = []
     for parent, child, shift in zip(chain, chain[1:], shifts):
-        lines += _nonleaf_asm(parent, child, shift, va_reg)
+        lines += _nonleaf_asm(parent, child, shift, va_reg, td)
     return lines
 
 
-def build_finegrained_text_map_asm(mode: str, img_tables: list[str]) -> list[str]:
+def build_finegrained_text_map_asm(mode: str, img_tables: list[str], td: TestData) -> list[str]:
     """Split the 2 MiB region containing rvtest_code_begin into 4 KiB leaves,
     granting PTE_U only to the U-mode-executable text (pm_utext_begin..end)
     and the U-accessible data range (rvtest_data_begin..end_signature).
     The S-mode trap handler, which lives outside that bracket in the same
     2 MiB region, is left without PTE_U so S-mode can still fetch it.
     """
+    r0, r1, r2, r3, r4, r5, r6, ra0 = td.int_regs.get_registers(8)
     lines = [f"# {mode.upper()}: 4 KiB mapping of the test image; PTE_U only on test code and data"]
-    lines += ["LA(t0, rvtest_code_begin)"]
-    lines += _walk_asm(mode, img_tables, "t0")
+    lines += [f"LA(x{r0}, rvtest_code_begin)"]
+    lines += _walk_asm(mode, img_tables, f"x{r0}", td)
     lines += [
-        "LA(t0, rvtest_code_begin)",
-        "srli t0, t0, 21",
-        "slli t0, t0, 21                  # t0 = 2 MiB-aligned base of the image",
-        f"LA(t1, {img_tables[-1]})",
-        "LA(t2, pm_utext_begin)",
-        "LA(t3, pm_utext_end)",
-        "sub  t3, t3, t2                  # t3 = size of the U-executable text",
-        "LA(t4, rvtest_data_begin)",
-        "LA(t5, end_signature)",
-        "sub  t5, t5, t4                  # t5 = size of the U-accessible data",
-        "li   t6, 512",
+        f"LA(x{r0}, rvtest_code_begin)",
+        f"srli x{r0}, x{r0}, 21",
+        f"slli x{r0}, x{r0}, 21                  # x{r0} = 2 MiB-aligned base of the image",
+        f"LA(x{r1}, {img_tables[-1]})",
+        # r2/r3 bound the U-executable text; r3 becomes its size.
+        f"LA(x{r2}, pm_utext_begin)",
+        f"LA(x{r3}, pm_utext_end)",
+        f"sub  x{r3}, x{r3}, x{r2}                  # x{r3} = size of the U-executable text",
+        # r4/r5 bound the U-accessible data; r5 becomes its size.
+        f"LA(x{r4}, rvtest_data_begin)",
+        f"LA(x{r5}, end_signature)",
+        f"sub  x{r5}, x{r5}, x{r4}                  # x{r5} = size of the U-accessible data",
+        f"li   x{r6}, 512",
         "1:",
-        "li   a0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        "sub  a1, t0, t2",
-        "bltu a1, t3, 2f                  # inside the code segment -> U-accessible",
-        "sub  a1, t0, t4",
-        "bgeu a1, t5, 3f                  # outside the data segment -> keep U clear",
+        f"li   x{ra0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
+        f"sub  a1, x{r0}, x{r2}",
+        f"bltu a1, x{r3}, 2f                  # inside the code segment -> U-accessible",
+        f"sub  a1, x{r0}, x{r4}",
+        f"bgeu a1, x{r5}, 3f                  # outside the data segment -> keep U clear",
         "2:",
-        "ori  a0, a0, PTE_U",
+        f"ori  x{ra0}, x{ra0}, PTE_U",
         "3:",
-        "srli a1, t0, 12",
+        f"srli a1, x{r0}, 12",
         "slli a1, a1, 10",
-        "or   a1, a1, a0",
-        "sd   a1, 0(t1)",
-        "addi t1, t1, 8",
+        f"or   a1, a1, x{ra0}",
+        f"sd   a1, 0(x{r1})",
+        f"addi x{r1}, x{r1}, 8",
         "lui  a1, 1",
-        "add  t0, t0, a1",
-        "addi t6, t6, -1",
-        "bnez t6, 1b",
+        f"add  x{r0}, x{r0}, a1",
+        f"addi x{r6}, x{r6}, -1",
+        f"bnez x{r6}, 1b",
     ]
+    td.int_regs.return_registers([r0, r1, r2, r3, r4, r5, r6, ra0])
     return lines
 
 
@@ -624,9 +641,10 @@ def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: s
         *_seed(regs),
         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
         td.add_testcase(tid, CP_MASKING, cg),
-        *_fixed(f"{mn} x0, x{regs.data}, (x{regs.a})"),
+        *_fixed(f"{mn} x{regs.chk}, x{regs.data}, (x{regs.a})"),  # capture old value
+        write_sigupd(regs.chk, td),  # sigupd the AMO result
         *_fixed(f"{readback} x{regs.chk}, 0(x{regs.base})"),
-        write_sigupd(regs.chk, td),
+        write_sigupd(regs.chk, td),  # then the memory read-back
     ]
 
 
@@ -864,7 +882,7 @@ def _tag_address(upper: int, regs: Regs, byte_offset: int = 0) -> list[str]:
 def pass_a_all_instructions(cfg: object | None, prefix: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     lines = []
     for upper in UPPER_PATTERNS:
-        lines.append(comment_banner(f"{prefix}: tag 0x{upper:04X} -- full instruction sweep"))
+        lines.append(comment_banner(f"{prefix} {CP_MASKING}: tag 0x{upper:04X} -- full instruction sweep"))
         lines += [f"LI(x{regs.tmp}, {hex(upper << 48)})", f"or x{regs.a}, x{regs.base}, x{regs.tmp}"]
 
         for mn in READS:
@@ -951,7 +969,7 @@ def pass_c_misaligned(cfg: object | None, prefix: str, td: TestData, regs: Regs,
 
 
 def set_mxr(enable: bool, tmp: int, status_csr: str = "sstatus") -> list[str]:
-    """MXR gates pointer masking off entirely when set."""
+    """MXR gates pointer masking off entirely when set in priv modes below M"""
     op = "csrs" if enable else "csrc"
     return [f"# {status_csr}.MXR = {int(enable)}", f"LI(x{tmp}, {hex(_MSTATUS_MXR)})", f"{op} {status_csr}, x{tmp}"]
 
@@ -1190,7 +1208,7 @@ def pass_i_mprv_mxr_pmm_loop(
                     for satp_mode in ["bare", "sv39"]:
                         if satp_mode != "bare":
                             lines += [
-                                *build_data_only_u_map_asm(satp_mode, _mprv_img_tables(satp_mode)),
+                                *build_data_only_u_map_asm(satp_mode, _mprv_img_tables(satp_mode), td),
                                 "sfence.vma",
                                 "SATP_SETUP_RV64(sv39)",
                                 "sfence.vma",

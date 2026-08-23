@@ -172,17 +172,17 @@ class Regs:
 
 
 def alloc_pm_regs_paired(td: TestData) -> Regs:
-    """dest_pair/source_pair are reserved as aligned register pairs for
-    amocas.q. Their +1 halves are reused as tmp/tmp2 rather than reserved
-    separately; tmp/tmp2 are always reloaded via LI() right
-    before use, so amocas.q clobbering its own partner register never loses
-    a value anything later depends on.
+    """chk/data are reserved as aligned pairs (get_register_pair) for amocas.q,
+    which implicitly reads/writes rd+1/rs2+1; those halves double as tmp/tmp2,
+    always reloaded before use. `a` is pinned to x8-x15 since it's rs1 in
+    forced c.lw/c.ld/c.sw/c.sd, whose 3-bit field can't encode x6.
     """
     chk = td.int_regs.get_register_pair()
     data = td.int_regs.get_register_pair()
     tmp = chk + 1
     tmp2 = data + 1
-    a, base = td.int_regs.get_registers(2)
+    a = td.int_regs.get_registers(1, reg_range=list(range(8, 16)))[0]
+    base = td.int_regs.get_registers(1)[0]
     fp, fp_c = (
         td.float_regs.get_register(),
         td.float_regs.get_register(reg_range=list(range(8, 16))),
@@ -202,15 +202,13 @@ def alloc_pm_regs_paired(td: TestData) -> Regs:
 
 
 def alloc_pm_regs_wide(td: TestData) -> Regs:
-    """Same register-budget reasoning as alloc_pm_regs_paired: chk/data are
-    pair-bases for amocas.q, and their +1 halves are reused as tmp/tmp2
-    rather than reserved as extra registers the 6-register pool doesn't have.
-    """
+    """Same reasoning as alloc_pm_regs_paired"""
     chk = td.int_regs.get_register_pair()
     data = td.int_regs.get_register_pair()
     tmp = chk + 1
     tmp2 = data + 1
-    a, base = td.int_regs.get_registers(2)
+    a = td.int_regs.get_registers(1, reg_range=list(range(8, 16)))[0]
+    base = td.int_regs.get_registers(1)[0]
     fp, fp_c = td.float_regs.get_register(), td.float_regs.get_register(reg_range=list(range(8, 16)))
     return Regs(
         base=base,
@@ -635,14 +633,25 @@ def _probe_amo(mn: str, readback: str, tid: str, td: TestData, regs: Regs, cg: s
 
 def _probe_zacas(mn: str, tid: str, td: TestData, regs: Regs, cg: str) -> list[str]:
     """ZACAS probe: handles amocas.w/d (single registers) and amocas.q (register pairs)."""
-    # Determine which registers to use based on instruction type
     if mn == "amocas.q":
-        dest_reg = regs.dest_pair
-        src_reg = regs.source_pair
-    else:  # amocas.w or amocas.d
-        dest_reg = regs.chk
-        src_reg = regs.data
+        dest_lo, dest_hi = regs.dest_pair, regs.tmp
+        src_lo, src_hi = regs.source_pair, regs.tmp2
+        return [
+            *_seed(regs),
+            f"sd x0, 8(x{regs.base})   # seed high dword of the 128-bit comparand",
+            f"LI(x{dest_lo}, {hex(VALUE_OLD)})   # comparand.lo matches the seeded value",
+            f"LI(x{dest_hi}, 0)                  # comparand.hi matches the seeded value",
+            f"LI(x{src_lo}, {hex(VALUE_NEW)})",
+            f"LI(x{src_hi}, {hex(VALUE_NEW)})",
+            td.add_testcase(tid, CP_MASKING, cg),
+            *_fixed(f"{mn} x{dest_lo}, x{src_lo}, (x{regs.a})"),
+            *_fixed(f"ld x{dest_lo}, 0(x{regs.base})"),
+            *_fixed(f"ld x{dest_hi}, 8(x{regs.base})"),
+            write_sigupd(dest_lo, td),
+            write_sigupd(dest_hi, td),
+        ]
 
+    dest_reg, src_reg = regs.chk, regs.data
     return [
         *_seed(regs),
         f"LI(x{dest_reg}, {hex(VALUE_OLD)})   # comparand matches the seeded value",

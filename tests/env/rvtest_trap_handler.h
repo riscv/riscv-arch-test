@@ -2076,10 +2076,12 @@ data_adj_\__MODE__\()epc:
         mv      T3, T2                                // relocated offset
         j       sv_\__MODE__\()epc
 
-// A fetch fault at a target outside every segment has an xEPC that cannot be
-// expressed as a segment-relative offset. Record it raw: the address is a
-// test-chosen constant, identical on the DUT and the reference model, and the
-// fetch-fault path below rewrites xEPC from ra anyway.
+// Fetch access/page/guest-page fault at a deliberately out-of-segment target
+// (PM JALR-through-tagged-pointer probes, Sv/PMP execute-permission probes):
+// xEPC is the bogus target itself, not segment-relocatable, so record it raw
+// -- it's a test-chosen constant, deterministic on DUT and reference model,
+// and the return path below resumes via ra regardless. Any other cause here
+// is a genuine runaway EPC and still aborts.
 oos_\__MODE__\()epc:
         csrr    T2, CSR_XCAUSE
         LI(     T6, CAUSE_FETCH_ACCESS)

@@ -14,16 +14,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
-_CG = "UV_vucsr_cg"
-
-
-def _enable_vector(temp_reg: int) -> list[str]:
-    """configure a legal vtype/vl."""
-    return [
-        f"vsetivli x{temp_reg}, 1, e32, m1, tu, mu",
-        "csrw vstart, x0",
-    ]
-
+_CG = "UV_uvcsr_cg"
 
 # Vector CSRs accessible from U-mode
 _VECTOR_CSRS_RW = ["vstart", "vxsat", "vxrm", "vcsr"]
@@ -35,13 +26,12 @@ def _gen_uvcsr_access(test_data: TestData, temp_reg: int, test_chunks: list[Test
     """cp_uvcsr_access: csrrc-all/csrrw-0/csrrw-1/csrrs-all/csrr against each vector CSR in U-mode."""
     coverpoint = "cp_uvcsr_access"
     for idx, csr in enumerate(_VECTOR_CSRS):
-        tc = test_data.new_test_chunk(test_chunks, "vucsr")
+        tc = test_data.new_test_chunk(test_chunks, "uvcsr")
         if idx == 0:
             tc.section_header = comment_banner(
                 coverpoint,
                 "U-mode access patterns (csrrw all 0s/all 1s, csrrs all 1s, csrrc all 1s, csrr) for each vector CSR",
             )
-        tc.code.extend(_enable_vector(temp_reg))
         tc.code.extend(csr_access_test(test_data, (csr, None), _CG, coverpoint))
 
 
@@ -49,14 +39,13 @@ def _gen_uvcsrwalk(test_data: TestData, temp_reg: int, test_chunks: list[TestChu
     """cp_uvcsrwalk: csrrs/csrrc with rs1 = walking-1s against each vector CSR in U-mode."""
     coverpoint = "cp_uvcsrwalk"
     for idx, csr in enumerate(_VECTOR_CSRS):
-        split = f"vucsrwalk_{csr}" if csr in _VECTOR_CSRS_RO else "vucsrwalk"
+        split = f"uvcsrwalk_{csr}" if csr in _VECTOR_CSRS_RO else "uvcsrwalk"
         tc = test_data.new_test_chunk(test_chunks, split)
         if idx == 0:
             tc.section_header = comment_banner(
                 coverpoint,
                 "Walking-1s csrrs/csrrc into each vector CSR from U-mode",
             )
-        tc.code.extend(_enable_vector(temp_reg))
         tc.code.extend(csr_walk_test(test_data, (csr, None), _CG, coverpoint))
 
 
@@ -75,7 +64,7 @@ def _gen_uvcsrwalk(test_data: TestData, temp_reg: int, test_chunks: list[TestChu
 def make_uv(test_data: TestData) -> list[TestChunk]:
     """Generate UV tests (vector CSR access from U-mode)."""
     test_chunks: list[TestChunk] = []
-    test_data.begin_test_chunk("vucsr")
+    test_data.begin_test_chunk("uvcsr")
     temp_reg = test_data.int_regs.get_register()
 
     _gen_uvcsr_access(test_data, temp_reg, test_chunks)

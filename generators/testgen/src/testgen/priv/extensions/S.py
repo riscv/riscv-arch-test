@@ -15,7 +15,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
-# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m); import rather than retype.
+# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
 # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
 
 # Create bit masks.  WPRI fields should be 0 to ignore reads.
@@ -28,7 +28,7 @@ S_SSTATUS_MASK = (
     | (1 << 8)  # SPP:  Supervisor Previous Privilege
     | (3 << 9)  # VS:   Vector Status
     | (3 << 13)  # FS:   Floating-Point Status
-    | (3 << 15)  # XS:   User-Mode Extension Status
+    | (3 << 15)  # XS:   Custom Extension Status
     | (1 << 18)  # SUM:  Supervisor User Memory Access
     | (1 << 19)  # MXR:  Make eXecutable Readable
     | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
@@ -261,11 +261,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_srets_tests(test_data: TestData) -> list[str]:
-    """
-    Generate sret from S-mode with spp, spie, sie sweep (no TSR: that needs M-mode and lives in Sm).
-
-    Runs entirely in S-mode; the only privileged operation is the T-SBI GOTO_SMODE after each sret.
-    """
+    """Generate sret from S-mode with spp, spie, sie sweep (no TSR: that needs M-mode and lives in Sm)."""
     ######################################
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_s"
@@ -330,10 +326,6 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     """Generate CSR tests, one test chunk per CSR so they can be split across files."""
     covergroup = "S_scsr_cg"
 
-    # S-mode CSR lists are module-level (shared with Sm.py); bind the local names used below
-    csrs = S_CSRS
-    csrs_nowalk = S_CSRS_NOWALK
-    csr_senvcfg = S_CSR_SENVCFG
     # Floating-point CSRs
     csrf = [("fflags", None), ("frm", None), ("fcsr", None)]
     # Vector CSRs
@@ -356,13 +348,13 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
     )
 
-    for csr in csrs + csrs_nowalk:
+    for csr in S_CSRS + S_CSRS_NOWALK:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
-    tc.code.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
+    tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
     tc.code.extend(["", "#endif"])
 
     ######################################
@@ -396,7 +388,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         "Set and clear each bit individually in all writable S-mode CSRs",
     )
 
-    for csr in csrs:
+    for csr in S_CSRS:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -407,7 +399,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     # legalize to any legal value, so those iterations check that the field is legal
     # instead of exact-matching the reference model.
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-    tc.code.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
+    tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
     tc.code.extend(["", "#endif"])
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare

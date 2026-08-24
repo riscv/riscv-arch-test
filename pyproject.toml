@@ -11,6 +11,9 @@ workspace.members = [ "framework", "generators/coverage", "generators/testgen" ]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
+# Pin explicitly: without it ruff infers the target from the nearest ancestor
+# requires-python, which is outside this repo when it is nested in another project.
+target-version = "py310"
 line-length = 120
 extend-exclude = [
   "docs/docs-resources",

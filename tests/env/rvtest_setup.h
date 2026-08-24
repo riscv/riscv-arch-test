@@ -85,9 +85,7 @@
   // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_TSBI_GOTO_MMODE     // T-SBI form: reaches M-mode from U even when U-mode ecalls are
-                                 // delegated (a0=1 -> S handler forwards via tsbi_Sforward_goto_m);
-                                 // the legacy a0=0 form would be treated as GOTO_SMODE by the S handler
+      RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code

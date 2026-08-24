@@ -8,8 +8,6 @@
 
 """CSR test utilities for privileged test generation."""
 
-from __future__ import annotations
-
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData

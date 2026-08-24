@@ -7,8 +7,6 @@
 # Python-native DAG build executor using graphlib.TopologicalSorter
 ##################################
 
-from __future__ import annotations
-
 import contextlib
 import os
 import re

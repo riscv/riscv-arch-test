@@ -8,8 +8,6 @@
 
 """Template loading and insertion for test files."""
 
-from __future__ import annotations
-
 import importlib.resources
 import re
 from pathlib import Path

@@ -12,8 +12,6 @@ Verifies that misaligned loads, stores, and AMOs that do not cross a
 naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 """
 
-from __future__ import annotations
-
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk

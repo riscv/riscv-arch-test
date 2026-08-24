@@ -51,7 +51,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
     goto_mode = {3: [], 1: ["RVTEST_TSBI_GOTO_SMODE"], 0: ["RVTEST_TSBI_GOTO_UMODE"]}[priv_mode]
     goto_back = ["RVTEST_TSBI_GOTO_MMODE"] if priv_mode != 3 else []
 
-    lines = ["csrr x{medeleg_orig}, medeleg  # save original medeleg value"]
+    lines = [f"csrr x{medeleg_orig}, medeleg  # save original medeleg value"]
 
     for medeleg_val in _MEDELEG_WALK:
         tag = f"mdlg_{medeleg_val:#06x}_{mode_tag}"

@@ -122,6 +122,10 @@
         `cover_info("//      ExceptionsZicboS - Enabled");
         `include "ExceptionsZicboS_coverage_init.svh"
     `endif
+    `ifdef COVER_EXCEPTIONSZICBOSM
+        `cover_info("//      ExceptionsZicboSm - Enabled");
+        `include "ExceptionsZicboSm_coverage_init.svh"
+    `endif
     `ifdef COVER_EXCEPTIONSZICBOU
         `cover_info("//      ExceptionsZicboU - Enabled");
         `include "ExceptionsZicboU_coverage_init.svh"

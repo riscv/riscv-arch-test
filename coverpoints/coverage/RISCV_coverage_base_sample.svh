@@ -94,6 +94,9 @@
     `ifdef COVER_EXCEPTIONSZICBOS
         exceptionszicbos_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSZICBOSM
+        exceptionszicbosm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSZICBOU
         exceptionszicbou_sample(hart, issue, ins);
     `endif

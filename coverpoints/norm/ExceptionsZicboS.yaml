@@ -69,7 +69,7 @@ normative_rule_definitions:
   # relevant *tval CSR is written with the faulting effective address (i.e. the
   # value of rs1).
   - name: fault_excep_csr
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_access"]
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_access_fault"]
 
   # CMO instructions do not generate address-misaligned exceptions.
   - name: no_addr_misaligned_excep

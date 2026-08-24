@@ -95,6 +95,9 @@
 `ifdef EXCEPTIONSZICBOS_COVERAGE
   `include "ExceptionsZicboS_coverage.svh"
 `endif
+`ifdef EXCEPTIONSZICBOSM_COVERAGE
+  `include "ExceptionsZicboSm_coverage.svh"
+`endif
 `ifdef EXCEPTIONSZICBOU_COVERAGE
   `include "ExceptionsZicboU_coverage.svh"
 `endif

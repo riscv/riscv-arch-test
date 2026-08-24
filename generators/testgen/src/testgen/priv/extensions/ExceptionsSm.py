@@ -237,9 +237,7 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
 def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     """
     ecall from S/U-mode with every combination of medeleg[8] (ecall-from-U delegated) and mstatus.MIE
-    and .SIE.  Runs from M-mode: medeleg and both mstatus bits are written directly (MPIE/SPIE alongside
-    MIE/SIE, so the mret/sret of the T-SBI hop that drops into the mode under test carries them
-    through), then RVTEST_TSBI_GOTO_SMODE/UMODE, ecall, and RVTEST_TSBI_GOTO_MMODE back.
+    and .SIE.
     """
     covergroup, coverpoint = _CG, "cp_xstatus_ie"
     save_reg, mask_mie, mask_sie, medeleg_reg = test_data.int_regs.get_registers(4)

@@ -14,7 +14,7 @@ ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting Sscsrind too
 # Sdtrig* not yet supported in Sail reference
-# InterruptsU fail on spike because wfi is not supported in U-mode. Filed issue to add UDB paramter support to exclude these tests on DUTs that don't support U-mode wfi: https://github.com/riscv/riscv-unified-db/issues/2520
+# InterruptsU fail on spike because wfi is not supported in U-mode. Filed issue to add UDB parameter support to exclude these tests on DUTs that don't support U-mode wfi: https://github.com/riscv/riscv-unified-db/issues/2520
 exclude_extensions: "Sm,Smstateen,SdtrigSm,SdtrigS,SdtrigU,InterruptsU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"

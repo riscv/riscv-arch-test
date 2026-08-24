@@ -24,7 +24,7 @@ ci_enabled: true
 # ZicntrS and ZicntrU fail on qemu because ecall increments instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4087
 # ExceptionsSm and ExceptionsU fail on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
 # InterruptsSm fail on qemu because minstret overcounts by 1 for wfi with a pending or taken interrupt. Files QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
-# InterruptsU fail on qemu because wfi is not supported in U-mode. Filed issue to add UDB paramter support to exclude these tests on DUTs that don't support U-mode wfi: https://github.com/riscv/riscv-unified-db/issues/2520
+# InterruptsU fail on qemu because wfi is not supported in U-mode. Filed issue to add UDB parameter support to exclude these tests on DUTs that don't support U-mode wfi: https://github.com/riscv/riscv-unified-db/issues/2520
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU,ExceptionSm,ExceptionsU,InterruptsSm,InterruptsU"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

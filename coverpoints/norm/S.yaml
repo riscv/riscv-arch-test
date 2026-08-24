@@ -360,11 +360,7 @@ normative_rule_definitions:
   # although CSRs and instructions are associated with one privilege level, they are
   # also accessible at all higher privilege levels.
   - name: Zicsr_higher_priv
-    coverpoint:
-      [
-        "Sm_mcsr_cg/cp_scsr_from_m (S-mode CSRs from M-mode; moved to the Sm suite)",
-        "S_scsr_cg/cp_ucsr_from_s",
-      ]
+    coverpoint: ["Sm_mcsr_cg/cp_scsr_from_m", "S_scsr_cg/cp_ucsr_from_s"]
 
   # The top two bits (csr[11:10]) indicate whether the register is read/write
   # (00,01, or 10) or read-only (11).

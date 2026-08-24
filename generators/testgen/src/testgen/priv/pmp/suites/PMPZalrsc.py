@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from testgen.priv.pmp import add_pmp_suite
 from testgen.priv.pmp.macros import LOCKED_LXWR_CASES, lxwr_napot_body, sigupd_count, template, test_case_str
+from testgen.priv.pmp.model import XLENS, PmpFile, Xlen
 
 #: Width the `test: <n>;` tag is padded to in this suite's reporting strings.
 _TAG_WIDTH = 9
-from testgen.priv.pmp.model import XLENS, PmpFile, Xlen
 
 _BANNER = """
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
@@ -104,8 +104,7 @@ def _success_macro(xlen: Xlen) -> str:
 
 
 def _runner_for(_n: int, lxwr: str, _entry: int) -> str:
-    macro = "VERIFICATION_RWX_SUCCESS" if lxwr in _SUCCESS_CASES else "VERIFICATION_RWX"
-    return f"{macro}    TEST_FOR_EXECUTION"
+    return "VERIFICATION_RWX_SUCCESS" if lxwr in _SUCCESS_CASES else "VERIFICATION_RWX"
 
 
 def _sig_strs(xlen: Xlen) -> tuple[tuple[str, str], ...]:

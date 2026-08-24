@@ -92,10 +92,11 @@ LXWR_PERM_NAMES: dict[str, str] = {
 }
 
 
-def case_banner(index: int, lxwr: str, entry: int) -> list[str]:
+def case_banner(index: int, lxwr: str, entry: int | None) -> list[str]:
     """The ``// Test Case: n : L -> b and <perms> given to the PMP Region e`` comment."""
     perms = LXWR_PERM_NAMES.get(lxwr[1:], f"{lxwr[1:]} Permissions")
-    return ["", f"// Test Case: {index} : L -> {lxwr[0]} and {perms} given to the PMP Region {entry}"]
+    where = "the PMP Region" if entry is None else f"the PMP Region {entry}"
+    return ["", f"// Test Case: {index} : L -> {lxwr[0]} and {perms} given to {where}"]
 
 
 def set_pmpaddr_napot(entry: int, addr_reg: str = "x5", tmp_reg: str = "x6") -> list[str]:
@@ -131,8 +132,22 @@ NAPOT_MASK_DEFINES = [
     "#endif",
 ]
 
-#: The region-under-test lives in the executable data blob emitted by the data section.
-REGIONSTART_DEFINE = "#define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE"
+
+def regionstart_define(region: str = "TEST_FOR_EXECUTION") -> str:
+    """``#define REGIONSTART`` pointing at the executable blob in the data section."""
+    return f"#define REGIONSTART            {region}    // RAM_BASE_ADDR + PROGRAM_SIZE"
+
+
+#: NAPOT address-mask defines for suites whose region is at least one page.
+PAGE_NAPOT_MASK_DEFINES = [
+    "#if UDB_PMP_GRANULARITY > 12",
+    "    #define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY",
+    "#else",
+    "    #define PMPZICBO_REGION_SHIFT  12",
+    "#endif",
+    "#define PMP_MASK                   ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)",
+    "#define PMP_REGION_SIZE            ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)",
+]
 
 VERIFICATION_SECTION_BANNER = "//                                            Verification Section"
 
@@ -142,7 +157,14 @@ def lxwr_napot_body(
     cases: list[tuple[str, int]],
     *,
     extra_setup: list[str] | None = None,
-    runner: str = "VERIFICATION_RWX    TEST_FOR_EXECUTION",
+    region: str = "TEST_FOR_EXECUTION",
+    mask_defines: list[str] | None = None,
+    extra_defines: list[str] | None = None,
+    post_background: list[str] | None = None,
+    addr_reg: str = "x5",
+    tmp_reg: str = "x6",
+    name_entry: bool = True,
+    runner: str = "VERIFICATION_RWX",
     runner_for: Callable[[int, str, int], str] | None = None,
 ) -> list[str]:
     """Body shared by the "walk every legal LXWR against one locked NAPOT region" tests.
@@ -150,21 +172,27 @@ def lxwr_napot_body(
     Clears the PMP CSRs, defines one ``PMPREGION_LXWR_*`` constant per case, sets a
     permissive background region, and then runs ``runner`` once per case with that
     case's configuration byte installed in its PMP entry. ``runner_for(n, lxwr, entry)``
-    overrides ``runner`` per case for suites whose permitted cases use a different macro.
+    overrides ``runner`` per case for suites whose permitted cases use a different macro;
+    ``region`` names the executable blob in the data section that the runner is pointed at.
     """
     lines = [*zero_pmp_regs(xlen)]
     if extra_setup:
         lines.extend(extra_setup)
     lines.extend(["", *lxwr_defines(xlen, cases, "PMP_NAPOT")])
-    lines.extend(["", REGIONSTART_DEFINE, *NAPOT_MASK_DEFINES])
-    lines.extend(["", "    RVTEST_PMP_SET_BACKGROUND x4", "", VERIFICATION_SECTION_BANNER])
+    if extra_defines:
+        lines.extend(["", *extra_defines])
+    lines.extend(["", regionstart_define(region), *(mask_defines or NAPOT_MASK_DEFINES)])
+    lines.extend(["", "    RVTEST_PMP_SET_BACKGROUND x4"])
+    if post_background:
+        lines.extend(["", *post_background])
+    lines.extend(["", VERIFICATION_SECTION_BANNER])
     for n, (lxwr, entry) in enumerate(cases, start=1):
-        lines.extend(case_banner(n, lxwr, entry))
+        lines.extend(case_banner(n, lxwr, entry if name_entry else None))
         lines.append("")
-        lines.extend(set_pmpaddr_napot(entry))
+        lines.extend(set_pmpaddr_napot(entry, addr_reg=addr_reg, tmp_reg=tmp_reg))
         lines.extend(["", f"    LI(x4, PMPREGION_LXWR_{lxwr})", f"    csrw {cfg_csr(xlen, entry)}, x4"])
         this_runner = runner_for(n, lxwr, entry) if runner_for else runner
-        lines.extend(["", "    RVTEST_SFENCE_VMA_IF_SUPPORTED", f"    {this_runner}, test_{n}"])
+        lines.extend(["", "    RVTEST_SFENCE_VMA_IF_SUPPORTED", f"    {this_runner}    {region}, test_{n}"])
     lines.extend(["", "    j exit                  // Verification Complete, exit the test", "", "exit:"])
     return lines
 

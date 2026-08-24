@@ -97,7 +97,6 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     "U",
     required_extensions=["U"],
     extra_defines=["#define BOOT_TO_UMODE"],
-    testcases_per_file=512,  # the ucsr tests throw costly illegal instruction exceptions, so limit them for runtime
 )
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""

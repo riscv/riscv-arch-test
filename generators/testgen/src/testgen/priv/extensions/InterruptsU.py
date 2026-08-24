@@ -318,8 +318,6 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "InterruptsU",
     required_extensions=["U"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
@@ -329,6 +327,7 @@ def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
+    tc.code.append("RVTEST_TSBI_GOTO_MMODE")
     tc.code.append("csrw mideleg, zero")
     tc.code.extend(clr_mtimer_int(r_temp, r_mtimecmp))
     tc.code.append("")

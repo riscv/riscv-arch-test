@@ -3,7 +3,8 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU"
+# Sscofpmf will be added back in CI once this issue is resolved: https://github.com/riscv/sail-riscv/issues/1733
+exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2

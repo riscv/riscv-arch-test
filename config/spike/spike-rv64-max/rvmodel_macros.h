@@ -195,4 +195,9 @@
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
+#define RVMODEL_MHPMEVENT   mhpmevent3
+#define RVMODEL_MHPMCOUNTER mhpmcounter3
+#define RVMODEL_MHPMEVENT_VAL 0x00000000  // will be updated once there is a way to increment counters Spike issue: https://github.com/riscv/sail-riscv/issues/1733
+#define RVMODEL_MHPMEVENT_CODE 0x00000000 // will be updated once there is a way to increment counters Spike issue: https://github.com/riscv/sail-riscv/issues/1733
+
 #endif // _RVMODEL_MACROS_H

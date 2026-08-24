@@ -38,12 +38,12 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
                                 `SAMPLE_CURRENT, "menvcfg", "lpe") {
         bins disabled = {0};
     }
-   xtval_lpad: coverpoint ins.current.csr[12'h343] {
-    bins code_2 = {2};
+    xtval_lpad: coverpoint ins.current.csr[12'h343] {
+        bins code_2 = {2};
     }
 
     instr_access_fault: coverpoint ins.current.csr[12'h342][4:0] {
-    bins cause_1 = {5'd1};
+        bins cause_1 = {5'd1};
     }
 
     cp_zicfilp_indirect_elp_state_update: cross priv_mode_u, menvcfg_lpe, indirect_ct_prev, rs1_all_prev, lpad_dest;
@@ -83,8 +83,8 @@ covergroup Zicfilp_u_cg with function sample(ins_t ins);
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         cp_exception_priority_zicfilp: cross priv_mode_u, elp_before, pc_fault_addr {
             ignore_bins ig_no_lp = binsof(elp_before.no_lp_expected);
-    }
-  `endif
+        }
+    `endif
 
 endgroup
 

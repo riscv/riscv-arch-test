@@ -71,11 +71,11 @@ covergroup Zicfilp_s_cg with function sample(ins_t ins);
         ignore_bins ig_no_lp    = binsof(elp_before.no_lp_expected);
     }
 
-   `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         cp_exception_priority_zicfilp: cross priv_mode_s, elp_before, pc_fault_addr {
             ignore_bins ig_no_lp = binsof(elp_before.no_lp_expected);
-    }
-   `endif
+        }
+    `endif
 
 endgroup
 

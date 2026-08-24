@@ -20,8 +20,8 @@ covergroup Zicfilpsu_cg with function sample(ins_t ins);
 
     spelp: coverpoint get_csr_val(ins.hart, ins.issue,
                                 `SAMPLE_CURRENT, "sstatus", "spelp") {
-            bins lp_expected    = {1};
-            bins no_lp_expected = {0};
+        bins lp_expected    = {1};
+        bins no_lp_expected = {0};
     }
     menvcfg_lpe: coverpoint get_csr_val(ins.hart, ins.issue,
                                 `SAMPLE_CURRENT, "menvcfg", "lpe") {
@@ -72,7 +72,7 @@ covergroup Zicfilpsu_cg with function sample(ins_t ins);
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         cp_exception_priority_zicfilp: cross priv_mode_u, spelp, pc_fault_addr {
             ignore_bins ig_no_lp = binsof(spelp.no_lp_expected);
-    }
+        }
     `endif
 endgroup
 

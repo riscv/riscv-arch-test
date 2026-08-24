@@ -63,10 +63,7 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
 
 
 def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int, test_chunks: list[TestChunk]) -> None:
-    """cp_vcsrs_walking1s: csrrw with walking-1s rs1 against each writable vector CSR.
-
-    One test chunk per CSR so the testcases can be split across files.
-    """
+    """cp_vcsrs_walking1s: csrrw with walking-1s rs1 against each writable vector CSR."""
     coverpoint = "cp_vcsrs_walking1s"
     walk_reg, mask_reg = test_data.int_regs.get_registers(2)
     for idx, csr in enumerate(_VECTOR_CSRS_WR):
@@ -485,12 +482,7 @@ def _gen_vstart_oob(test_data: TestData, temp_reg: int) -> list[str]:
 
 
 def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: list[TestChunk]) -> None:
-    """cp_vl_walking1s_sew_lmul: csrrw vl walking-1s after vsetivli for each (sew, lmul).
-
-    Every csrw vl traps (vl is read-only), so this is by far the most expensive
-    coverpoint in the suite (riscv-arch-test#2089). One test chunk per
-    (sew, lmul) combination so the testcases can be split across files.
-    """
+    """cp_vl_walking1s_sew_lmul: csrrw vl walking-1s after vsetivli for each (sew, lmul)."""
     coverpoint = "cp_vl_walking1s_sew_lmul"
     walk_reg = test_data.int_regs.get_register()
     first = True
@@ -534,15 +526,7 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: 
     testcases_per_file=512,  # csrw vl always traps, so split the vl_walk tests for runtime
 )
 def make_smv(test_data: TestData) -> list[TestChunk]:
-    """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V).
-
-    Tests are grouped into named splits so that no single generated file is too
-    large (riscv-arch-test#2089): "vcsr" holds the CSR access/walking tests,
-    "vset" holds the vset* / mstatus.VS / misa.V behavior tests, and "vl_walk"
-    holds the csrrw-vl walking-1s matrix, chunked per (sew, lmul) so it splits
-    across several files. Every chunk re-establishes mstatus.VS itself, so any
-    chunk can start a fresh test file.
-    """
+    """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V)."""
     test_chunks: list[TestChunk] = []
     temp_reg = test_data.int_regs.get_register()
 

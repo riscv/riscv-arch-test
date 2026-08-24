@@ -503,7 +503,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc = test_data.new_test_chunk(test_chunks)
-    warl_fields = [("mpp", 11, 2, 0b10)]
+    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode
+    warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "S_SUPPORTED")]
     tc.code.extend(
         csr_walk_test(
             test_data,

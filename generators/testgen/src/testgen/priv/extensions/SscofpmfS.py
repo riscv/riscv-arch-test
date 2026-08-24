@@ -100,49 +100,34 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
-    """cp_lcofip_priority: priority of LCOFI interrupt in S-mode."""
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_priority"
+    coverpoint = "cp_lcofip_priority_s"
+    priv_mode = "S"
     ######################################
 
-    LCOFIP_BIT = 1 << 13  # LCOFI
-    SSIP_BIT = 1 << 1  # SSIP
-    STIP_BIT = 1 << 5  # STIP
-    SEIP_BIT = 1 << 9  # SEIP
+    LCOFI_DELEG_BIT = 1 << 13  # mideleg bit 13
+    SIE_BIT = 0x2  # sstatus bit 1
 
-    SIE_BIT = 0x2  # sstatus.SIE / mstatus.SIE
+    DELEGABLE_MIDELEG_BIT = {
+        "seip": 1 << 9,  # SEIP
+        "stip": 1 << 5,  # STIP
+        "ssip": 1 << 0,  # SSIP
+    }
 
-    S_MODE_INTERRUPT_BITS = LCOFIP_BIT | SSIP_BIT | STIP_BIT | SEIP_BIT
-
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
+    r1, r_scratch, r_temp = test_data.int_regs.get_registers(3, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
             coverpoint,
-            "Priority of LCOFI interrupt in S-mode.\n"
-            "mstatus.SIE=1 and the LCOFI, SEIP, STIP, and SSIP interrupts\n"
-            "are delegated to S-mode. LCOFIP is pending together with one\n"
-            "of {SEIP, STIP, SSIP, none}. The highest-priority pending\n"
-            "S-mode interrupt fires; LCOFIP fires only when no competing\n"
-            "S-mode interrupt is pending.",
+            (
+                "Priority of LCOFI interrupt, mode = S.\n"
+                "Per testplan: sstatus.SIE=1, sie=0s, sip=LCOFIP + one of\n"
+                "{SEIP,STIP,SSIP,none}, then sie=all 1s (trigger). Only S-delegable\n"
+                "causes compete here -- MEIP/MTIP/MSIP cannot be delegated, so they\n"
+                "never contend with LCOFI for S-mode's destination.\n"
+            ),
         ),
-        "",
-        "# === M-MODE SETUP ===",
-        "csrw mip, zero      # clear all pending interrupts",
-        "csrw mie, zero      # disable all interrupts",
-        "",
-        "# Delegate LCOFI, SEIP, STIP and SSIP to S-mode",
-        f"LI(x{r_temp}, {hex(S_MODE_INTERRUPT_BITS)})",
-        f"csrs mideleg, x{r_temp}",
-        "",
-        "# Enable S-mode interrupt sources in mie.",
-        "# These enables are inherited by the delegated S-mode interrupts.",
-        f"csrs mie, x{r_temp}",
-        "",
-        "# Enable S-mode global interrupt enable.",
-        f"LI(x{r_temp}, {hex(SIE_BIT)})",
-        f"csrs mstatus, x{r_temp}   # mstatus.SIE = 1",
         "",
     ]
 
@@ -154,103 +139,92 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "",
+                "# === M-MODE SETUP ===",
                 f"# Testcase: competing interrupt = {other_int}, mode = S",
+                "csrw mie, zero      # disable all interrupts first",
+                "csrw RVMODEL_MHPMEVENT, zero",
                 "",
-                "# Set LCOFIP while still in M-mode.",
-                f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                f"csrs mip, x{r_scratch}   # set LCOFIP",
+                "# --- Drive mip.LCOFIP pending via a real counter overflow ---",
+                f"LI(x{r_scratch}, -1)",
+                f"csrw RVMODEL_MHPMCOUNTER, x{r_scratch}   # all 1s -> next count overflows",
+                f"LA(x{r_temp}, scratch)",
+                "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
+                f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_scratch})",
+                f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_scratch})   # run at least twice per spec",
+                f"csrr x{r_scratch}, mip   # readback -- confirm LCOFIP actually latched from OF",
+                "",
+                f"LI(x{r_scratch}, {hex(LCOFI_DELEG_BIT)})",
+                f"csrs mideleg, x{r_scratch}   # delegate LCOFI to S-mode",
             ]
         )
 
         if other_int == "seip":
             lines.append("RVTEST_SET_SEXT_INT")
-
         elif other_int == "stip":
-            # This helper directly accesses mip and therefore must
-            # execute while still in M-mode.
-            lines.extend(
-                set_stimer_mmode(
-                    r_scratch,
-                )
-            )
-
+            lines.extend(set_stimer_mmode(r_scratch))
         elif other_int == "ssip":
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrs mip, x{r1}   # mip.SSIP = 1"])
+        # "none" -- no competing interrupt triggered
+
+        if other_int in DELEGABLE_MIDELEG_BIT:
+            bit = DELEGABLE_MIDELEG_BIT[other_int]
             lines.extend(
                 [
-                    f"LI(x{r1}, {hex(SSIP_BIT)})",
-                    f"csrs mip, x{r1}   # set SSIP",
+                    f"LI(x{r_scratch}, {hex(bit)})",
+                    (
+                        f"csrs mideleg, x{r_scratch}   # also delegate {other_int} "
+                        "so it competes with LCOFI for S-mode's destination"
+                    ),
                 ]
             )
-
-        # "none" -- only LCOFIP is pending.
 
         lines.extend(
             [
                 "",
-                test_data.add_testcase(
-                    binname,
-                    coverpoint,
-                    covergroup,
-                ),
+                f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
+                f"    LI(x{r_temp}, {hex(SIE_BIT)})",
+                f"    csrs sstatus, x{r_temp}   # sstatus.SIE = 1",
+                "    csrw sie, zero            # sie = 0s",
+                f"    LI(x{r_temp}, -1)",
+                "    csrw sie, x" + str(r_temp) + "   # sie = all 1s -- fires immediately (SIE already 1)",
                 "",
-                "# Enter S-mode only for the actual interrupt-priority test.",
-                "RVTEST_TSBI_GOTO_SMODE",
-                "",
-                "    # S-mode test body.",
-                "    # Only delegated S-mode interrupts participate.",
-                "    # LCOFIP competes with SEIP/STIP/SSIP according to priority.",
-                f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
-                "",
-                "# Return to M-mode so machine CSRs and pending bits can be cleared.",
+                f"    {test_data.add_testcase(binname, coverpoint, covergroup)}",
+                "    nop",
+                "    nop",
+                "    nop",
+                "    nop",
                 "RVTEST_GOTO_MMODE",
-                "",
             ]
         )
 
-        #
-        # These operations must happen in M-mode.
-        #
+        # Cleanup -- back in M-mode
         if other_int == "seip":
             lines.append("RVTEST_CLR_SEXT_INT")
-
         elif other_int == "stip":
-            lines.extend(
-                clr_stimer_mmode(
-                    r_scratch,
-                )
-            )
-
+            lines.extend(clr_stimer_mmode(r_scratch))
         elif other_int == "ssip":
+            lines.extend([f"LI(x{r1}, 0x2)", f"csrc mip, x{r1}"])
+
+        if other_int in DELEGABLE_MIDELEG_BIT:
+            bit = DELEGABLE_MIDELEG_BIT[other_int]
             lines.extend(
                 [
-                    f"LI(x{r1}, {hex(SSIP_BIT)})",
-                    f"csrc mip, x{r1}   # clear SSIP",
+                    f"LI(x{r_scratch}, {hex(bit)})",
+                    f"csrc mideleg, x{r_scratch}   # {other_int} stays M-mode by default",
                 ]
             )
 
         lines.extend(
             [
-                f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-                f"csrc mip, x{r_scratch}   # clear LCOFIP",
-                "",
+                f"LI(x{r_scratch}, {hex(LCOFI_DELEG_BIT)})",
+                "csrc mideleg, x" + str(r_scratch) + "   # LCOFI stays M-mode by default",
+                "csrw RVMODEL_MHPMCOUNTER, zero   # reset counter -- clears LCOFIP's overflow source",
+                "csrw RVMODEL_MHPMEVENT, zero",
+                "csrw mie, zero",
             ]
         )
 
-    lines.extend(
-        [
-            "",
-            "# === M-MODE CLEANUP ===",
-            "csrw mie, zero",
-            f"LI(x{r_temp}, {hex(S_MODE_INTERRUPT_BITS)})",
-            f"csrc mideleg, x{r_temp}",
-            f"LI(x{r_temp}, {hex(SIE_BIT)})",
-            f"csrc mstatus, x{r_temp}   # clear mstatus.SIE",
-            "csrw mip, zero",
-        ]
-    )
-
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch])
-
+    test_data.int_regs.return_registers([r1, r_scratch, r_temp])
     return lines
 
 

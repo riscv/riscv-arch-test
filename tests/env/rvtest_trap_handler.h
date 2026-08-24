@@ -1546,7 +1546,7 @@ tsbi_\__MODE__\()goto_mode:
 
         // a0 still holds the caller's operation code
         li      T2, TSBI_GOTO_MMODE                  // can't handle GOTO_MMODE from S-mode
-        beq     a0, T2, tsbi_\__MODE__\()forward_to_m // -> forward to M-mode
+        beq     a0, T2, tsbi_\__MODE__\()forward_goto_m // -> forward to M-mode; caller resumes in M
 
         li      T2, TSBI_GOTO_SMODE                  // GOTO_SMODE: return to S-mode
         beq     a0, T2, tsbi_\__MODE__\()goto_s
@@ -1588,10 +1588,30 @@ tsbi_\__MODE__\()forward_to_m:
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
         ecall                                      // trap to M-mode with a0/a1 intact
-        // For GOTO_MMODE: M-mode's rtn2mmode returns directly to caller in M-mode (never returns here)
-        // For GOTO_VS/VU: M-mode sets MPP/MPV and mrets to target (never returns here)
-        // For CSR_ACCESS: M-mode executes CSR, mrets back to S-mode handler (here), which srets to caller
-        sret                                       // if M-mode returned here: sret back to U-mode caller
+        // For CSR_ACCESS: M-mode executes the CSR op and mrets back here in S-mode with the
+        //   result in a0; sret returns to the caller (sepc was bumped past its ecall already).
+        // For GOTO_VS/VU (H only): M-mode sets MPP/MPV and mrets back here in the target virtual
+        //   mode; the sret then uses the virtual sepc, which is NOT the caller's address -- known
+        //   limitation, use tsbi_*forward_goto_m-style handling when H support is completed.
+        sret                                       // sret back to the caller
+
+        //--- S-mode forwarding of GOTO_MMODE to M-mode ---
+        // Same forwarding as above, but the caller must RESUME IN M-MODE, so the plain sret path
+        // cannot be used: the M-mode handler sets MPP=M and mrets back to the instruction after
+        // our ecall (mepc = this stub, not the caller), leaving us in M-mode here.  sepc still
+        // holds the caller's ecall+4 (bumped in tsbi goto_mode before forwarding), so jump there
+        // directly, staying in M-mode.  a0 is documented as clobbered by RVTEST_TSBI_GOTO_*.
+tsbi_\__MODE__\()forward_goto_m:
+        LREG    T1, trap_sv_off+1*REGWIDTH(sp)    // restore T1 (x6)
+        LREG    T2, trap_sv_off+2*REGWIDTH(sp)    // restore T2 (x7)
+        LREG    T3, trap_sv_off+3*REGWIDTH(sp)    // restore T3 (x8)
+        LREG    T4, trap_sv_off+4*REGWIDTH(sp)    // restore T4 (x9)
+        LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
+        LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
+        LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
+        ecall                                      // trap to M-mode; M sets MPP=M and mrets back HERE in M-mode
+        csrr    a0, CSR_XEPC                       // caller's ecall+4 (bumped before forwarding)
+        jr      a0                                 // continue at the caller, in M-mode
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:
@@ -1600,7 +1620,15 @@ tsbi_\__MODE__\()csr_access:
         srli    T2, a0, 28                          // T2 = encoding[31:28] (top 4 bits)
         andi    T2, T2, 0x3                         // T2 = CSR_addr[11:10] (2 MSBs of CSR address)
         li      T4, 3                               // T4 = 3 (M-mode CSR indicator: addr[11:10]==11)
-        beq     T2, T4, tsbi_\__MODE__\()forward_to_m // M-mode CSR -> must forward to M-mode handler
+        bne     T2, T4, 11f                         // S/U CSR -> handle locally below
+        // M-mode CSR -> forward to the M-mode handler.  Bump sepc past the caller's ecall FIRST:
+        // M-mode bumps only its own mepc (the forwarding stub's ecall), and the stub's sret
+        // returns to sepc -- without this bump the caller re-executes its ecall forever.
+        csrr    T3, CSR_XEPC                        // T3 = sepc (caller's ecall address)
+        addi    T3, T3, 4                            // skip past ecall
+        csrw    CSR_XEPC, T3                         // sepc += 4
+        j       tsbi_\__MODE__\()forward_to_m
+11:
         // TODO: Replace this with dispatch table, remove code below
 
         // S-mode or U-mode CSR: can handle locally using scratch execution

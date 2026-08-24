@@ -85,7 +85,9 @@
   // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
-      RVTEST_GOTO_MMODE
+      RVTEST_TSBI_GOTO_MMODE     // T-SBI form: reaches M-mode from U even when U-mode ecalls are
+                                 // delegated (a0=1 -> S handler forwards via tsbi_Sforward_goto_m);
+                                 // the legacy a0=0 form would be treated as GOTO_SMODE by the S handler
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -806,7 +808,6 @@
     // mideleg[23] = 1: delegate store guest-page fault
     // higher bits are reserved or custom
     li t0, 0x0FCB5FF
-    li t0, 0x0FCB0FF # *** dh 4/24/26 temporary don't delegate any ecalls until SBI forwarding is implemented
     csrw medeleg, t0
 
     // Delegate supervisor interrupts to S-mode. Do not delege M-mode interrupts.

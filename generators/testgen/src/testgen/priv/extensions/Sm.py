@@ -1360,7 +1360,6 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm"],
-    testcases_per_file=512,  # split tests for runtime
 )
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""

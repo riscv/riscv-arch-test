@@ -3241,6 +3241,10 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
       segments  =     register_data['segments']
       if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul < 1:
         emul = 1
+      if instruction in whole_register_move:
+        # vmv<nr>r.v always moves NREG whole registers regardless of the vtype
+        # LMUL, so vd/vs2 must be NREG-aligned and must not run past v31.
+        emul = int(instruction[3])
       # Align to lmul even for scalar/mask registers so that scaffolding
       # loads/stores (which execute at the current vtype LMUL) don't trap
       # on misaligned register numbers.
@@ -3258,6 +3262,8 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
     emul_check = int(register_data['size_multiplier'] * lmul)
     if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
       emul_check = 1
+    if instruction in whole_register_move:
+      emul_check = int(instruction[3])
     if register + emul_check * register_data['segments'] > reg_count:
       raise ValueError(
         f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "

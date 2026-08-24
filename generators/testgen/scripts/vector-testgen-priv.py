@@ -365,6 +365,10 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
             vd_sig_lmul = lmul if isinstance(lmul, int) else 1
         vd_emul  = max(1, int(lmul * vec_data['vd' ].get('size_multiplier', 1) * vec_data['vd' ].get('segments', 1)), vd_sig_lmul)
         vs2_emul = max(1, int(lmul * vec_data['vs2'].get('size_multiplier', 1) * vec_data['vs2'].get('segments', 1)))
+        if instruction in whole_register_move:
+            # vmv<nr>r.v reads NREG whole source registers regardless of the vtype
+            # LMUL the testcase runs at, so initialize all NREG of them.
+            vs2_emul = max(vs2_emul, int(instruction[3]))
         vs1_emul = max(1, int(lmul * vec_data['vs1'].get('size_multiplier', 1) * vec_data['vs1'].get('segments', 1)))
     else:
         # Backwards-compatible legacy path (should not be used by new code).
@@ -640,6 +644,15 @@ if __name__ == '__main__':
 
             # insert generic header
             insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True, vdsew=64)
+
+            if extension == "SsstrictV":
+                writeLine("")
+                writeLine("// Every testcase instruction in this file is a reserved encoding: the point of")
+                writeLine("// the suite is that the DUT must raise an illegal-instruction trap on it. They")
+                writeLine("// are emitted as raw .insn words with the mnemonic in a trailing comment because")
+                writeLine("// assemblers disagree about whether the mnemonic may be written at all -- GNU as")
+                writeLine("// accepts most reserved operand combinations, clang's integrated assembler")
+                writeLine("// rejects them. The .insn word is the same instruction on every toolchain.")
 
             ###############################     test body      ###############################
             for instruction in chunk_instructions:

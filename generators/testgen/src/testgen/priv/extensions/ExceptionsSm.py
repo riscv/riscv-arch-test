@@ -43,21 +43,15 @@ _MEDELEG_WALK = (
 
 
 def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
-    """
-    Runs 10 exception tests x 17 medeleg values for one privilege mode.
-    Starts and ends in M-mode.  For each medeleg value: write medeleg in M-mode, drop to the mode
-    under test with RVTEST_TSBI_GOTO_SMODE / RVTEST_TSBI_GOTO_UMODE (nothing for M-mode), run the
-    tests, and return with RVTEST_TSBI_GOTO_MMODE (via RVTEST_TSBI_GOTO_SMODE first when returning
-    from U-mode with ecall-from-U delegated).
-    """
+    """Runs 10 exception tests x 17 medeleg values for one privilege mode."""
     covergroup = _CG
     coverpoint = "cp_medeleg_msu"
 
-    addr_reg, data_reg, check_reg, medeleg_reg = test_data.int_regs.get_registers(4)
+    addr_reg, data_reg, check_reg, medeleg_reg, medeleg_orig = test_data.int_regs.get_registers(5)
     goto_mode = {3: [], 1: ["RVTEST_TSBI_GOTO_SMODE"], 0: ["RVTEST_TSBI_GOTO_UMODE"]}[priv_mode]
     goto_back = ["RVTEST_TSBI_GOTO_MMODE"] if priv_mode != 3 else []
 
-    lines = []
+    lines = ["csrr x{medeleg_orig}, medeleg  # save original medeleg value"]
 
     for medeleg_val in _MEDELEG_WALK:
         tag = f"mdlg_{medeleg_val:#06x}_{mode_tag}"
@@ -67,7 +61,8 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend([f"LI(x{medeleg_reg}, {medeleg_val})", f"csrw medeleg, x{medeleg_reg}", *goto_mode])
 
         # Instruction misaligned: one aligned and one misaligned jalr target next to the access-fault
-        # address.
+        # address.  Also tests priority of misaligned and access faults.  Simple misalignment tests
+        # are in the ExceptionsCommon generator and are not repeated here.
         lines.extend(
             [
                 "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
@@ -191,8 +186,6 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             ]
         )
 
-        # Ecall (uses the T-SBI ECALL_TEST protocol: a bare ecall with a stale a0 would be
-        # misinterpreted by the trap handler as a T-SBI instruction-table request)
         lines.extend(
             [
                 test_data.add_testcase(f"ecall_{tag}", coverpoint, covergroup),
@@ -210,10 +203,10 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         else:
             lines.extend(goto_back)
 
-    # Clear medeleg (in M-mode)
-    lines.extend([f"LI(x{medeleg_reg}, 0)", f"csrw medeleg, x{medeleg_reg}"])
+    # Set medeleg to return to default state (in M-mode)
+    lines.extend([f"csrw medeleg, x{medeleg_orig}"])
 
-    test_data.int_regs.return_registers([addr_reg, data_reg, check_reg, medeleg_reg])
+    test_data.int_regs.return_registers([addr_reg, data_reg, check_reg, medeleg_reg, medeleg_orig])
     return lines
 
 
@@ -304,7 +297,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     "ExceptionsSm",
     required_extensions=["Sm"],
     extra_defines=[
-        "#define TRAP_SIGUPD_COUNT 3000",  # words; each medeleg walk file records 306 x up to 6-word trap signatures
+        "#define TRAP_SIGUPD_COUNT 3000",
     ],
 )
 def make_exceptionssm(test_data: TestData) -> list[TestChunk]:

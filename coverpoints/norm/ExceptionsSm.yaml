@@ -256,7 +256,6 @@ normative_rule_definitions:
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
       ]
 
-  # --- moved from ExceptionsS: the medeleg walk runs from M-, S- and U-mode and lives in ExceptionsSm ---
   # medeleg has a bit position allocated for every synchronous exception shown in
   # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position
   # equal to the value returned in the mcause register

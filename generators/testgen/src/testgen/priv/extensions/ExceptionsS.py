@@ -106,7 +106,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 
     for mie in (0, 1):
         for sie in (0, 1):
-            tag = f"{mode_tag}_mdlg_mie_{mie}_sie_{sie}"
+            tag = f"{mode_tag}_mie_{mie}_sie_{sie}"
             lines.extend(
                 [
                     f"\n# {tag}",

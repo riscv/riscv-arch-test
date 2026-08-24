@@ -62,54 +62,37 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
     return lines
 
 
-def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
-    """cp_vcsrs_walking1s: csrrw with walking-1s rs1 against each writable vector CSR."""
+def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int, test_chunks: list[TestChunk]) -> None:
+    """cp_vcsrs_walking1s: csrrw with walking-1s rs1 against each writable vector CSR.
+
+    One test chunk per CSR so the testcases can be split across files.
+    """
     coverpoint = "cp_vcsrs_walking1s"
-    lines = [
-        comment_banner(
-            coverpoint, "csrrw walking-1s into vstart/vxsat/vxrm/vcsr (covers walking_ones_rs1 bins 0..XLEN-1)"
-        ),
-    ]
-    lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
     walk_reg, mask_reg = test_data.int_regs.get_registers(2)
-    for csr in _VECTOR_CSRS_WR:
-        lines.append(f"# walking-1s on {csr}")
-        lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
-        lines.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
-        # We need to walk all XLEN bits; emit for both 32 and 64 via #if
-        lines.append(".rept __riscv_xlen")
-        # Note: .rept doesn't access __riscv_xlen as a number; emit per-bit explicitly with #if guard
-        lines.append(".endr")
-    # Replace the .rept stub with explicit unroll: emit bit-by-bit with #if for RV64 high bits
-    lines = lines[
-        : lines.index(
-            comment_banner(
+    for idx, csr in enumerate(_VECTOR_CSRS_WR):
+        tc = test_data.new_test_chunk(test_chunks, "vcsr")
+        if idx == 0:
+            tc.section_header = comment_banner(
                 coverpoint, "csrrw walking-1s into vstart/vxsat/vxrm/vcsr (covers walking_ones_rs1 bins 0..XLEN-1)"
             )
-        )
-        + 1
-    ]
-    lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
-    for csr in _VECTOR_CSRS_WR:
-        lines.append(f"# walking-1s on {csr}")
-        lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
-        lines.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
+        tc.code.extend(_set_vs(vs=3, temp_reg=temp_reg))
+        tc.code.extend(_vector_setup(temp_reg))
+        tc.code.append(f"# walking-1s on {csr}")
+        tc.code.append(f"LI(x{mask_reg}, -1)  # all 1s")
+        tc.code.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
         for i in range(32):
-            lines.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
-            lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
-            lines.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
-            lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
-        lines.append("#if __riscv_xlen == 64")
+            tc.code.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
+            tc.code.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
+            tc.code.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
+            tc.code.append(f"slli x{walk_reg}, x{walk_reg}, 1")
+        tc.code.append("#if __riscv_xlen == 64")
         for i in range(32, 64):
-            lines.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
-            lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
-            lines.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
-            lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
-        lines.append("#endif")
+            tc.code.append(f"csrc {csr}, x{mask_reg}  # clear all bits")
+            tc.code.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
+            tc.code.append(f"csrw {csr}, x{walk_reg}  # walking-1 bit {i}")
+            tc.code.append(f"slli x{walk_reg}, x{walk_reg}, 1")
+        tc.code.append("#endif")
     test_data.int_regs.return_registers([walk_reg, mask_reg])
-    return lines
 
 
 def _gen_mstatus_vs_dirty(test_data: TestData, temp_reg: int) -> list[str]:
@@ -501,32 +484,42 @@ def _gen_vstart_oob(test_data: TestData, temp_reg: int) -> list[str]:
     return lines
 
 
-def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
-    """cp_vl_walking1s_sew_lmul: csrrw vl walking-1s after vsetivli for each (sew, lmul)."""
+def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: list[TestChunk]) -> None:
+    """cp_vl_walking1s_sew_lmul: csrrw vl walking-1s after vsetivli for each (sew, lmul).
+
+    Every csrw vl traps (vl is read-only), so this is by far the most expensive
+    coverpoint in the suite (riscv-arch-test#2089). One test chunk per
+    (sew, lmul) combination so the testcases can be split across files.
+    """
     coverpoint = "cp_vl_walking1s_sew_lmul"
-    lines = [comment_banner(coverpoint, "csrrw vl walking-1s after vsetivli for each (sew, lmul)")]
-    lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     walk_reg = test_data.int_regs.get_register()
+    first = True
     for sew_name, _ in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
-            lines.append(f"# {sew_name}, {lmul_name}")
-            lines.append(f"LI(x{walk_reg}, 1)")
+            tc = test_data.new_test_chunk(test_chunks, "vl_walk")
+            if first:
+                tc.section_header = comment_banner(
+                    coverpoint, "csrrw vl walking-1s after vsetivli for each (sew, lmul)"
+                )
+                first = False
+            tc.code.append(f"# {sew_name}, {lmul_name}")
+            tc.code.extend(_set_vs(vs=3, temp_reg=temp_reg))
+            tc.code.append(f"LI(x{walk_reg}, 1)")
             for i in range(32):
                 # vsetivli must be the immediately-preceding instruction of the csrw
                 # so that ins.prev.insn == vsetivli at sample time.
-                lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
-                lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
-                lines.append(f"csrw vl, x{walk_reg}  # bit {i}")
-                lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
-            lines.append("#if __riscv_xlen == 64")
+                tc.code.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
+                tc.code.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
+                tc.code.append(f"csrw vl, x{walk_reg}  # bit {i}")
+                tc.code.append(f"slli x{walk_reg}, x{walk_reg}, 1")
+            tc.code.append("#if __riscv_xlen == 64")
             for i in range(32, 64):
-                lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
-                lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
-                lines.append(f"csrw vl, x{walk_reg}  # bit {i}")
-                lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
-            lines.append("#endif")
-    test_data.int_regs.return_registers([walk_reg])
-    return lines
+                tc.code.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
+                tc.code.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
+                tc.code.append(f"csrw vl, x{walk_reg}  # bit {i}")
+                tc.code.append(f"slli x{walk_reg}, x{walk_reg}, 1")
+            tc.code.append("#endif")
+    test_data.int_regs.return_register(walk_reg)
 
 
 @add_priv_test_generator(
@@ -538,30 +531,46 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],
+    testcases_per_file=512,  # csrw vl always traps, so split the vl_walk tests for runtime
 )
 def make_smv(test_data: TestData) -> list[TestChunk]:
-    """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V)."""
+    """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V).
+
+    Tests are grouped into named splits so that no single generated file is too
+    large (riscv-arch-test#2089): "vcsr" holds the CSR access/walking tests,
+    "vset" holds the vset* / mstatus.VS / misa.V behavior tests, and "vl_walk"
+    holds the csrrw-vl walking-1s matrix, chunked per (sew, lmul) so it splits
+    across several files. Every chunk re-establishes mstatus.VS itself, so any
+    chunk can start a fresh test file.
+    """
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
     temp_reg = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("vcsr")
     tc.code.extend(_gen_vcsrrswc(test_data, temp_reg))
-    tc.code.extend(_gen_vcsrs_walking1s(test_data, temp_reg))
-    tc.code.extend(_gen_mstatus_vs_dirty(test_data, temp_reg))
-    tc.code.extend(_gen_mstatus_vs_off(test_data, temp_reg))
-    tc.code.extend(_gen_misa_v(test_data, temp_reg))
-    tc.code.extend(_gen_sew_lmul_vsetvl(test_data, temp_reg))
-    tc.code.extend(_gen_sew_lmul_vset_i_vli(test_data, temp_reg))
-    tc.code.extend(_gen_vill_vsetvl(test_data, temp_reg))
-    tc.code.extend(_gen_vill_vset_i_vli(test_data, temp_reg))
-    tc.code.extend(_gen_vill_vsetvl_rs2_vill(test_data, temp_reg))
-    tc.code.extend(_gen_vsetvl_rs2_vill(test_data, temp_reg))
-    tc.code.extend(_gen_vtype_vill_set_vl_0(test_data, temp_reg))
-    tc.code.extend(_gen_vsetvl_i_rd_rs1(test_data, temp_reg))
-    tc.code.extend(_gen_avl_corners(test_data, temp_reg))
-    tc.code.extend(_gen_vsetivli_avl_edges(test_data, temp_reg))
+    _gen_vcsrs_walking1s(test_data, temp_reg, test_chunks)
+    tc = test_data.new_test_chunk(test_chunks, "vcsr")
     tc.code.extend(_gen_vstart_oob(test_data, temp_reg))
-    tc.code.extend(_gen_vl_walking1s_sew_lmul(test_data, temp_reg))
+
+    for gen in (
+        _gen_mstatus_vs_dirty,
+        _gen_mstatus_vs_off,
+        _gen_misa_v,
+        _gen_sew_lmul_vsetvl,
+        _gen_sew_lmul_vset_i_vli,
+        _gen_vill_vsetvl,
+        _gen_vill_vset_i_vli,
+        _gen_vill_vsetvl_rs2_vill,
+        _gen_vsetvl_rs2_vill,
+        _gen_vtype_vill_set_vl_0,
+        _gen_vsetvl_i_rd_rs1,
+        _gen_avl_corners,
+        _gen_vsetivli_avl_edges,
+    ):
+        tc = test_data.new_test_chunk(test_chunks, "vset")
+        tc.code.extend(gen(test_data, temp_reg))
+
+    _gen_vl_walking1s_sew_lmul(test_data, temp_reg, test_chunks)
 
     test_data.int_regs.return_registers([temp_reg])
     test_chunks.append(test_data.end_test_chunk())

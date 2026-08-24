@@ -591,7 +591,6 @@ def _add_shadow(
     "S",
     required_extensions=["S"],
     extra_defines=["#define BOOT_TO_SMODE"],
-    testcases_per_file=512,  # the scsr tests throw costly illegal instruction exceptions, so limit them for runtime
 )
 def make_s(test_data: TestData) -> list[TestChunk]:
     """Generate tests for S supervisor-mode testsuite."""

@@ -508,7 +508,6 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: 
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
     ],
-    testcases_per_file=512,  # csrw vl always traps, so split the vl_walk tests for runtime
 )
 def make_smv(test_data: TestData) -> list[TestChunk]:
     """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V)."""

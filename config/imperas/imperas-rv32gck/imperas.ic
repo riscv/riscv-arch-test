@@ -71,8 +71,9 @@
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
---override iss/cpu0/Zicfilp=T
---override iss/cpu0/Zicfiss=T
+--override cpu*/Zicfilp=T
+--override cpu*/Zicfiss=T
+--override cpu*/d_requires_f=T
 
 # PMA Settings
 # 'r': read access allowed

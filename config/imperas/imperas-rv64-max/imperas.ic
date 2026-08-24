@@ -100,13 +100,14 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # Pointer Masking
---override iss/cpu0/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
---override iss/cpu0/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
---override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
+--override cpu*/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
+--override cpu*/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
+--override cpu*/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
+--override cpu*/d_requires_f=T
 
 # PMA Settings
 # 'r': read access allowed

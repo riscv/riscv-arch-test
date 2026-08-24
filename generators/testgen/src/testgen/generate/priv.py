@@ -24,6 +24,7 @@ from testgen.priv import (
     get_priv_test_required_extensions,
     get_priv_test_testcases_per_file,
 )
+from testgen.priv.pmp import is_pmp_suite, write_pmp_suite
 
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
@@ -36,6 +37,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
+    if is_pmp_suite(testsuite):
+        # Pure PMP suites render to tests/priv/pmp/pmp{32,64}/<suite>/.
+        write_pmp_suite(testsuite, output_test_dir)
+        return
+
     output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 

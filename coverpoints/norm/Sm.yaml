@@ -16,7 +16,7 @@ normative_rule_definitions:
   - name: M_access_all_lower_priv_CSRs
     coverpoint:
       [
-        "S_scsr_cg/cp_scsr_from_m, UF_ufcsr_cg/cp_ufcsr_from_m, UV_vucsr_cg/cp_vucsr_from_m, H_mcsr_cg/cp_hcsr_access",
+        "Sm_mcsr_cg/cp_scsr_from_m, SmF_cg/cp_fcsr_access, SmV_cg/cp_vcsrrswc, H_mcsr_cg/cp_hcsr_access",
       ]
 
   # The misa CSR is a WARL read-write register
@@ -293,7 +293,10 @@ normative_rule_definitions:
         mstatus_xpp_xret_op,
         mstatus_mprv_xret_op,
       ]
-    coverpoint: ["Sm_mprivinst_cg/{cp_mret, cp_sret}"]
+    coverpoint:
+      [
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+      ]
 
   # Bits 30:4 of mstatush generally contain the same fields found in bits 62:36 of
   # mstatus for RV64. Fields SD, SXL, and UXL do not exist in mstatush.
@@ -390,7 +393,10 @@ normative_rule_definitions:
   # An MRET or SRET instruction that changes the privilege mode to a mode less
   # privileged than M also sets MPRV=0.
   - name: mstatus_mprv_clr_mret_sret_less_priv
-    coverpoint: ["{Sm_mprivinst_cg/S_sprivinst_cg}/{cp_mret, cp_sret}"]
+    coverpoint:
+      [
+        "Sm_mprivinst_cg/{cp_mret, cp_sret, cp_sret_s}, S_sprivinst_cg/cp_sret_s",
+      ]
 
   - name: mret_op
     coverpoint: ["Sm_mprivinst_cg/cp_mret"]
@@ -487,7 +493,7 @@ normative_rule_definitions:
   # illegal-instruction exception. When TSR=0, this operation is permitted in
   # S-mode.
   - name: mstatus_tsr_op
-    coverpoint: ["Sm_mprivinst/cp_sret"]
+    coverpoint: ["Sm_mprivinst_cg/cp_sret_s"]
 
   # TSR is read-only 0 when S-mode is not supported.
   - name: mstatus_tsr_acc

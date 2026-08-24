@@ -149,6 +149,12 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     }
     old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
         bins M_mode = {2'b11};
+        `ifdef S_SUPPORTED
+            bins S_mode = {2'b01};
+        `endif
+        `ifdef U_SUPPORTED
+            bins U_mode = {2'b00};
+        `endif
     }
     old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
     }
@@ -164,6 +170,17 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     cp_mprivinst: cross priv_mode_m, privinstrs;
     cp_mret:      cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
     cp_sret:      cross priv_mode_m, sret, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+
+    `ifdef S_SUPPORTED
+        // this version needs to be in Sm because it exercises TSR, which would cause a trap loop if illegal instructions are delegated to S-mode
+        old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
+        }
+        old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
+        }
+        old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
+        }
+        cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+    `endif
 endgroup
 
 covergroup Sm_mcsr_cg with function sample(ins_t ins);
@@ -559,6 +576,42 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             cp_mtime_wraparound:  cross priv_mode_m, sw, mtime_address, rs2_ones;
             cp_mtimeh_wraparound: cross priv_mode_m, sw, mtimeh_address, rs2_ones;
         `endif
+    `endif
+
+    // tests of S-mode features that need to be done from M-mode
+    `ifdef S_SUPPORTED
+        scsrname : coverpoint ins.current.insn[31:20] {
+            bins sstatus       = {CSR_SSTATUS};
+            bins sie           = {CSR_SIE};
+            // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+            bins scounteren    = {CSR_SCOUNTEREN};
+            bins sscratch      = {CSR_SSCRATCH};
+            bins sepc          = {CSR_SEPC};
+            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
+            bins stval         = {CSR_STVAL};
+            bins sip           = {CSR_SIP};
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+              bins senvcfg       = {CSR_SENVCFG};
+            `endif
+        }
+        shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+            bins mstatus_sstatus = { {CSR_MSTATUS, CSR_SSTATUS} };
+            bins mie_sie         = { {CSR_MIE, CSR_SIE} };
+            bins mip_sip         = { {CSR_MIP, CSR_SIP} };
+            bins sstatus_mstatus = { {CSR_SSTATUS, CSR_MSTATUS} };
+            bins sie_mie         = { {CSR_SIE, CSR_MIE} };
+            bins sip_mip         = { {CSR_SIP, CSR_MIP} };
+        }
+        csrw_prev: coverpoint ins.prev.insn {
+            wildcard bins csrw = {CSRW};
+        }
+        rs1_prev: coverpoint ins.prev.rs1_val {
+            bins zero = { 0 };
+            bins nonzero = { [1:$] };
+        }
+
+        cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
     `endif
 
 endgroup

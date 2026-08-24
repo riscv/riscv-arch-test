@@ -1,0 +1,26 @@
+
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, TEST_CASE
+
+  .if \level == LEVEL1
+    // Adjust offset of VA to point to test region
+    LI(  a5, (\VA>>22)<<22)
+    LA(  a0, rvtest_data_1)
+    slli a0, a0, 10
+    srli a0, a0, 10
+    add  a5, a5, a0
+  .else
+    LI(  a5, \VA)
+  .endif
+
+  SET_REQ_MSTATUS_VAL
+
+  VERIFICATION_RWX \TEST_CASE
+
+  LI(   t0, MSTATUS_MPRV)
+  csrc  mstatus, t0          // Clear mstatus.MPRV
+
+  // Signature Update
+  RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_load, \TEST_CASE\()_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_exec, \TEST_CASE\()_exec_str)
+.endm

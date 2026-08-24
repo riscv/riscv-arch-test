@@ -92,6 +92,7 @@ def render_file(spec: PmpFile) -> str:
         *_render_banner(spec),
         *_render_header(spec),
         *_render_macros(spec),
+        *((*spec.pre_main, "") if spec.pre_main else ()),
         "main:",
         *spec.body,
         "",

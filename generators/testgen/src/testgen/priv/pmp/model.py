@@ -56,6 +56,7 @@ class PmpFile:
     extra_defines: tuple[str, ...] = ()  # extra #defines before the framework #include
     post_include_defines: tuple[str, ...] = ()  # #defines that depend on riscv_arch_test.h
     macro_blocks: tuple[str, ...] = ()  # verbatim local .macro blocks, emitted after RVTEST_BEGIN
+    pre_main: tuple[str, ...] = ()  # lines emitted after RVTEST_BEGIN and before `main:`
     data: tuple[str, ...] = ()  # lines between RVTEST_DATA_BEGIN and RVTEST_DATA_END
     sig_strs: tuple[tuple[str, str], ...] = ()  # (label, message) -> `<label>_str: .string "\"<msg>\""`
     data_align: int | None = None  # `.p2align N` emitted at the top of the data section

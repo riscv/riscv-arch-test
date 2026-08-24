@@ -3,6 +3,20 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Absolute .option arch strings used to bracket the FP/vector register init below.
+// An absolute arch string resets the arch for the block (rather than adding to the
+// test's -march), so it drops any mutually-exclusive extension the test declared
+// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
+// restores the test's real march. Supersets are harmless: only the init instructions
+// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
+#if __riscv_xlen == 64
+  #define RVTEST_FP_INIT_ARCH  rv64if
+  #define RVTEST_VEC_INIT_ARCH rv64imfv
+#else
+  #define RVTEST_FP_INIT_ARCH  rv32if
+  #define RVTEST_VEC_INIT_ARCH rv32imfv
+#endif
+
 /*************************************** RVTEST_BEGIN **************************************/
 /**** RVTEST_BEGIN sets up the test environment and is run before the actual test code. ****/
 /**** - sets up main entry point labels                                                 ****/
@@ -928,7 +942,14 @@
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
-    #endif
+      csrw vstart, x0  // vstart = 0
+      #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
+        .option push
+        .option arch, RVTEST_VEC_INIT_ARCH
+        vsetivli t0, 1, e32, m1, tu, mu // predictable initial state with 1 element, 32-bit EEW, LMUL=1, tail and masked elements undistrubed
+        .option pop
+      #endif // ZVE32X_SUPPORTED
+    #endif // ZVL32B_SUPPORTED
 .endm
 
 /*****************************************************************/
@@ -944,20 +965,6 @@
 /************************************ RVTEST_INIT_REGS ********************************/
 /**** Initialize registers and signature/data pointers                             ****/
 /**************************************************************************************/
-
-// Absolute .option arch strings used to bracket the FP/vector register init below.
-// An absolute arch string resets the arch for the block (rather than adding to the
-// test's -march), so it drops any mutually-exclusive extension the test declared
-// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
-// restores the test's real march. Supersets are harmless: only the init instructions
-// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
-#if __riscv_xlen == 64
-  #define RVTEST_FP_INIT_ARCH  rv64if
-  #define RVTEST_VEC_INIT_ARCH rv64imfv
-#else
-  #define RVTEST_FP_INIT_ARCH  rv32if
-  #define RVTEST_VEC_INIT_ARCH rv32imfv
-#endif
 
 .macro RVTEST_INIT_REGS
   /* init regs, to ensure you catch any errors */

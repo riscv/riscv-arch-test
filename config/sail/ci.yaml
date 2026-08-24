@@ -10,7 +10,7 @@ config_shards:
   sail-RVA23S64: 2
   sail-RVA23S64-optional: 2
   sail-RVB23S64-optional: 2
-  sail-rv32-max: 3
-  sail-rv32-max-clang: 3
-  sail-rv64-max: 3
-  sail-rv64-max-clang: 3
+  sail-rv32-max: 4
+  sail-rv32-max-clang: 4
+  sail-rv64-max: 4
+  sail-rv64-max-clang: 4

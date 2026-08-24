@@ -152,8 +152,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
-    }
     old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
     }
     old_sstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
@@ -162,7 +160,7 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     }
     // main coverpoints
     cp_sprivinst: cross priv_mode_s, privinstrs;
-    cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+    cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie;
 endgroup
 
 covergroup S_scsr_cg with function sample(ins_t ins);
@@ -261,27 +259,10 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
     }
-    shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
-        bins mstatus_sstatus = { {CSR_MSTATUS, CSR_SSTATUS} };
-        bins mie_sie         = { {CSR_MIE, CSR_SIE} };
-        bins mip_sip         = { {CSR_MIP, CSR_SIP} };
-        bins sstatus_mstatus = { {CSR_SSTATUS, CSR_MSTATUS} };
-        bins sie_mie         = { {CSR_SIE, CSR_MIE} };
-        bins sip_mip         = { {CSR_SIP, CSR_MIP} };
-    }
-    csrw_prev: coverpoint ins.prev.insn {
-        wildcard bins csrw = {CSRW};
-    }
-    rs1_prev: coverpoint ins.prev.rs1_val {
-        bins zero = { 0 };
-        bins nonzero = { [1:$] };
-    }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
     cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
-    cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
-    cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
 

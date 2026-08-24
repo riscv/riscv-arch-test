@@ -28,14 +28,6 @@ def _set_vs(vs: int, temp_reg: int) -> list[str]:
     ]
 
 
-def _vector_setup(temp_reg: int) -> list[str]:
-    """Configure a legal vtype/vl (SEW=8, LMUL=1, vl=1) and clear vstart."""
-    return [
-        f"vsetivli x{temp_reg}, 1, e8, m1, tu, mu  # vill=0, vl=1",
-        "csrw vstart, x0",
-    ]
-
-
 # All 7 vector CSRs (writable + read-only)
 _VECTOR_CSRS = ("vstart", "vxsat", "vxrm", "vcsr", "vl", "vtype", "vlenb")
 # Writable subset (used for walking-1s)
@@ -51,7 +43,6 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
         ),
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
     save_reg = test_data.int_regs.get_register()
     lines.append(f"LI(x{save_reg}, -1)  # all 1s mask for csr ops")
     for csr in _VECTOR_CSRS:
@@ -73,7 +64,6 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int, test_chunks: list[T
                 coverpoint, "csrrw walking-1s into vstart/vxsat/vxrm/vcsr (covers walking_ones_rs1 bins 0..XLEN-1)"
             )
         tc.code.extend(_set_vs(vs=3, temp_reg=temp_reg))
-        tc.code.extend(_vector_setup(temp_reg))
         tc.code.append(f"# walking-1s on {csr}")
         tc.code.append(f"LI(x{mask_reg}, -1)  # all 1s")
         tc.code.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
@@ -102,7 +92,6 @@ def _gen_mstatus_vs_dirty(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     for vs in (1, 2):
         lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
         lines.extend(_set_vs(vs=vs, temp_reg=temp_reg))
@@ -113,7 +102,6 @@ def _gen_mstatus_vs_dirty(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(comment_banner("cp_mstatus_vs_set_dirty_csr", "VS=Initial/Clean -> vsetvli -> expect Dirty"))
     for vs in (1, 2):
         lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-        lines.extend(_vector_setup(temp_reg))
         lines.extend(_set_vs(vs=vs, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vsetvli_vs{vs}", "cp_mstatus_vs_set_dirty_csr", _CG))
         lines.append(f"vsetvli x{temp_reg}, x0, e16, m2, tu, mu")
@@ -130,7 +118,6 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
         ),
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
     lines.append("vmv.v.i v1, 1")
     lines.append("vmv.v.i v2, 2")
     # Ensure misa.V set (best effort)
@@ -143,7 +130,6 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
 
     lines.append(comment_banner("cp_mstatus_vs_off_csr", "VS=Off -> vsetvli traps illegal-instruction"))
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
     lines.append(f"LI(x{temp_reg}, 0x200000)")
     lines.append(f"csrs misa, x{temp_reg}")
     lines.extend(_set_vs(vs=0, temp_reg=temp_reg))
@@ -324,7 +310,6 @@ def _gen_vtype_vill_set_vl_0(test_data: TestData, temp_reg: int) -> list[str]:
         comment_banner(coverpoint, "vsetvl with rs2 vill bit set (rs1!=0 nonzero AVL); expect vl=0"),
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))  # ensure vl != 0 before
     rs1_reg, rs2_reg = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{rs1_reg}, 1)  # nonzero AVL")
     lines.append("#if __riscv_xlen == 32")

@@ -182,13 +182,14 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
-#define ALT_GOTO_MMODE      0x00000000           // a0 value: Used by RVTEST_GOTO_DELEGATED_MMODE
-#define TSBI_GOTO_MMODE     0x00000001           // a0 value: switch to Machine mode
-#define TSBI_GOTO_SMODE     0x00000002           // a0 value: switch to Supervisor (or HS) mode
-#define TSBI_GOTO_UMODE     0x00000003           // a0 value: switch to User mode
-#define TSBI_GOTO_VSMODE    0x00000004           // a0 value: switch to Virtual Supervisor mode (requires H)
-#define TSBI_GOTO_VUMODE    0x00000005           // a0 value: switch to Virtual User mode (requires H)
-#define TSBI_ECALL_TEST     0x00000073           // a0 value: test ecall trap path, returns xEPC in a0
+// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MODE is used by RVTEST_GOTO_DELEGATED_MMODE
+#define ALT_GOTO_MMODE      0x00000000
+#define TSBI_GOTO_MMODE     0x00000001
+#define TSBI_GOTO_SMODE     0x00000002
+#define TSBI_GOTO_UMODE     0x00000003
+#define TSBI_GOTO_VSMODE    0x00000004
+#define TSBI_GOTO_VUMODE    0x00000005
+#define TSBI_ECALL_TEST     0x00000073
 
 // CSR_ACCESS is not a single #define — it's any value where:
 //   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
@@ -1716,8 +1717,8 @@ tsbi_instr_not_found:
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
-        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
         TSBI_CSR_INSTR_TABLE(0x304) // mie
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren

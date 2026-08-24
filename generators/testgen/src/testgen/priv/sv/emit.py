@@ -80,6 +80,7 @@ def _render_header(spec: FileSpec) -> list[str]:
         "",
         "##### START_TEST_CONFIG #####",
         f"# REQUIRED_EXTENSIONS: [{', '.join(spec.required_extensions)}]",
+        *(["# params:", *(f"#   {p}" for p in spec.params)] if spec.params else []),
         f"# MARCH: {spec.march}",
         "##### END_TEST_CONFIG #####",
         "",
@@ -117,6 +118,9 @@ def _render_prologue(spec: FileSpec) -> list[str]:
     lines = ["", "main:"]
     if spec.sig_init:
         lines.append(spec.sig_init)
+    if spec.pre_va_asm:
+        lines.append("")
+        lines.extend(spec.pre_va_asm)
     lines += [
         "",
         HR,
@@ -234,9 +238,10 @@ def _render_footer(spec: FileSpec) -> list[str]:
     region = spec.data_region_body if spec.data_region_body is not None else DATA_REGION
     region = region.replace(".p2align 12", f".p2align {spec.data_align}", 1) if spec.data_align != 12 else region
     lines.extend(region.strip("\n").splitlines())
-    lines.extend(["", HR, "", "// Page Tables", ".p2align 12"])
-    for j in range(sv.levels - 1):
-        lines.extend([f"rvtest_slvl{j}_pg_tbl:", "    .skip(4096)"])
+    if spec.emit_page_tables:
+        lines.extend(["", HR, "", "// Page Tables", ".p2align 12"])
+        for j in range(sv.levels - 1):
+            lines.extend([f"rvtest_slvl{j}_pg_tbl:", "    .skip(4096)"])
     lines.append("")
     if spec.cases:
         for n in range(1, len(spec.cases) + 1):

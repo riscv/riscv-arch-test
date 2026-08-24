@@ -148,5 +148,8 @@ class FileSpec:
     sigupd_override: int | None = None  # explicit SIGUPD_COUNT (template files)
     trap_override: int | None = None  # explicit TRAP_SIGUPD_COUNT (template files)
     emit_trap_count: bool = True
+    params: tuple[str, ...] = ()  # YAML '# params:' entries, e.g. ("NUM_PMP_ENTRIES: '>0'",)
+    pre_va_asm: tuple[str, ...] = ()  # lines after the signature init, before the VA definitions
+    emit_page_tables: bool = True  # False when data_region_body already includes the page tables
     body_template: str | None = None  # bespoke files: fully verbatim body instead of cases
     banner_body: str | None = None  # bespoke files: verbatim banner text (case list etc.)

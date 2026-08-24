@@ -928,7 +928,11 @@
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
-    #endif
+      csrw vstart, x0  // vstart = 0
+      #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
+        vsetivli t0, 1, e32, m1, tu, mu // predictable initial state with 1 element, 32-bit EEW, LMUL=1, tail and masked elements undistrubed
+      #endif // ZVE32X_SUPPORTED
+    #endif // ZVL32B_SUPPORTED
 .endm
 
 /*****************************************************************/

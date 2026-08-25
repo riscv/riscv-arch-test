@@ -14,7 +14,7 @@
 covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    
+
     // building blocks for the main coverpoints
     `ifdef ZICBOM_SUPPORTED
         cbo_inval: coverpoint ins.current.insn {
@@ -37,7 +37,7 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
         menvcfg_cbze: coverpoint ins.current.csr[CSR_MENVCFG][7] {
         }
     `endif
-    
+
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
     }
     menvcfg_all_enable: coverpoint ins.current.csr[CSR_MENVCFG][7:4] {
@@ -56,20 +56,20 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
         wildcard bins prefetch_w  = {PREFETCH_W};
         wildcard bins prefetch_r  = {PREFETCH_R};
     }
-    
+
     // main coverpoints
     cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_m;
     cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_m;
     cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_m;
     cp_cbo_misaligned:  cross cbo_instrs,     adr_misaligned, priv_mode_m, menvcfg_all_enable;
-    
+
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         illegal_address: coverpoint {ins.current.rs1_val[XLEN-1:1], 1'b0} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, adr_misaligned, priv_mode_m, menvcfg_all_enable;
-    
+
     `endif
 endgroup
 

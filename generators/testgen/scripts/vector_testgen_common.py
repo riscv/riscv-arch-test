@@ -1712,11 +1712,13 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
-        if ext in ["Zvbb", "Zvbc", "Zvkb"]:
+        # Vector Bit Manipulation, Carryless Multiplication, and Crypto
+        if ext in ["Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh"]:
           # Assemblers require an explicit Zve base when only Zv* sub-extensions
-          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW.
-          zve_extension = f"Zve{max(32, sew, vdsew)}x"
+          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW;
+          # Zvknhb requires Zve64x regardless of the test SEW.
+          zve_sew = 64 if ext == "Zvknhb" else max(32, sew, vdsew)
+          zve_extension = f"Zve{zve_sew}x"
           ext_parts_no_I.append(zve_extension)
           ext_str_no_I += "_" + zve_extension.lower()
         ext_parts_no_I.append(ext)

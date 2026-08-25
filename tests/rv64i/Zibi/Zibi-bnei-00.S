@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zibi']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zibi_zicsr_zifencei
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
@@ -37,7 +37,7 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x50c7aeae7a826baa
   RVTEST_TESTDATA_LOAD_INT(x3, x29) # load branch taken value: x29 = 0x80fb219dcf554ac0
 Zibi_bnei_cg_cp_rs1_b0:
-  bnei x0, 24, 1f # perform operation
+  .insn b 0x63, 3, x0, x24, 1f # bnei x0, 24, 1f; perform operation
   LI(x29, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -47,7 +47,7 @@ Zibi_bnei_cg_cp_rs1_b0:
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x6cd52721077d5dee
   RVTEST_TESTDATA_LOAD_INT(x3, x24) # load branch taken value: x24 = 0xf617b83ddce86d1f
 Zibi_bnei_cg_cp_rs1_b1:
-  bnei x1, 16, 1f # perform operation
+  .insn b 0x63, 3, x1, x16, 1f # bnei x1, 16, 1f; perform operation
   LI(x24, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -58,7 +58,7 @@ Zibi_bnei_cg_cp_rs1_b1:
   RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x71a6a4af104acad6
   RVTEST_TESTDATA_LOAD_INT(x3, x27) # load branch taken value: x27 = 0x77cb68cfc4b0bdb8
 Zibi_bnei_cg_cp_rs1_b2:
-  bnei x2, 16, 1f # perform operation
+  .insn b 0x63, 3, x2, x16, 1f # bnei x2, 16, 1f; perform operation
   LI(x27, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x27 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -69,7 +69,7 @@ Zibi_bnei_cg_cp_rs1_b2:
   RVTEST_TESTDATA_LOAD_INT(x22, x3) # load rs1: x3 = 0x7f50532598381fef
   RVTEST_TESTDATA_LOAD_INT(x22, x28) # load branch taken value: x28 = 0xdc6ca90289a8acdc
 Zibi_bnei_cg_cp_rs1_b3:
-  bnei x3, 8, 1f # perform operation
+  .insn b 0x63, 3, x3, x8, 1f # bnei x3, 8, 1f; perform operation
   LI(x28, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x28 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -81,7 +81,7 @@ Zibi_bnei_cg_cp_rs1_b3:
   RVTEST_TESTDATA_LOAD_INT(x22, x4) # load rs1: x4 = 0x90d829b847280f1a
   RVTEST_TESTDATA_LOAD_INT(x22, x5) # load branch taken value: x5 = 0x5ebf6ac23ce6bb39
 Zibi_bnei_cg_cp_rs1_b4:
-  bnei x4, 17, 1f # perform operation
+  .insn b 0x63, 3, x4, x17, 1f # bnei x4, 17, 1f; perform operation
   LI(x5, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x5 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -91,7 +91,7 @@ Zibi_bnei_cg_cp_rs1_b4:
   RVTEST_TESTDATA_LOAD_INT(x22, x5) # load rs1: x5 = 0x82d2d107d38765ab
   RVTEST_TESTDATA_LOAD_INT(x22, x7) # load branch taken value: x7 = 0x83c39cde6df33b78
 Zibi_bnei_cg_cp_rs1_b5:
-  bnei x5, 10, 1f # perform operation
+  .insn b 0x63, 3, x5, x10, 1f # bnei x5, 10, 1f; perform operation
   LI(x7, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x7 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -101,7 +101,7 @@ Zibi_bnei_cg_cp_rs1_b5:
   RVTEST_TESTDATA_LOAD_INT(x22, x6) # load rs1: x6 = 0x90231ac0573bf559
   RVTEST_TESTDATA_LOAD_INT(x22, x9) # load branch taken value: x9 = 0x1235dfb2018499fa
 Zibi_bnei_cg_cp_rs1_b6:
-  bnei x6, 18, 1f # perform operation
+  .insn b 0x63, 3, x6, x18, 1f # bnei x6, 18, 1f; perform operation
   LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -111,7 +111,7 @@ Zibi_bnei_cg_cp_rs1_b6:
   RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs1: x7 = 0xb47e6868c56d96c3
   RVTEST_TESTDATA_LOAD_INT(x22, x8) # load branch taken value: x8 = 0xaf5a60d7895eb551
 Zibi_bnei_cg_cp_rs1_b7:
-  bnei x7, 12, 1f # perform operation
+  .insn b 0x63, 3, x7, x12, 1f # bnei x7, 12, 1f; perform operation
   LI(x8, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x8 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -121,7 +121,7 @@ Zibi_bnei_cg_cp_rs1_b7:
   RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs1: x8 = 0x42bdf754d3bcedc8
   RVTEST_TESTDATA_LOAD_INT(x22, x12) # load branch taken value: x12 = 0x45941cb362d4481e
 Zibi_bnei_cg_cp_rs1_b8:
-  bnei x8, 25, 1f # perform operation
+  .insn b 0x63, 3, x8, x25, 1f # bnei x8, 25, 1f; perform operation
   LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -131,7 +131,7 @@ Zibi_bnei_cg_cp_rs1_b8:
   RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs1: x9 = 0xe6732f118eb19d67
   RVTEST_TESTDATA_LOAD_INT(x22, x23) # load branch taken value: x23 = 0x960dbe47d17836c9
 Zibi_bnei_cg_cp_rs1_b9:
-  bnei x9, 23, 1f # perform operation
+  .insn b 0x63, 3, x9, x23, 1f # bnei x9, 23, 1f; perform operation
   LI(x23, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x23 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -141,7 +141,7 @@ Zibi_bnei_cg_cp_rs1_b9:
   RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs1: x10 = 0x811df0f02fdd6ba7
   RVTEST_TESTDATA_LOAD_INT(x22, x4) # load branch taken value: x4 = 0x19a5287f6c7f3509
 Zibi_bnei_cg_cp_rs1_b10:
-  bnei x10, 20, 1f # perform operation
+  .insn b 0x63, 3, x10, x20, 1f # bnei x10, 20, 1f; perform operation
   LI(x4, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -151,7 +151,7 @@ Zibi_bnei_cg_cp_rs1_b10:
   RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs1: x11 = 0x581c99ffc2313e4f
   RVTEST_TESTDATA_LOAD_INT(x22, x4) # load branch taken value: x4 = 0xcccacf21996b8fd8
 Zibi_bnei_cg_cp_rs1_b11:
-  bnei x11, 17, 1f # perform operation
+  .insn b 0x63, 3, x11, x17, 1f # bnei x11, 17, 1f; perform operation
   LI(x4, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x4 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -161,7 +161,7 @@ Zibi_bnei_cg_cp_rs1_b11:
   RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs1: x12 = 0x6c927269fbfcc997
   RVTEST_TESTDATA_LOAD_INT(x22, x25) # load branch taken value: x25 = 0x6049915ac42cd98d
 Zibi_bnei_cg_cp_rs1_b12:
-  bnei x12, 31, 1f # perform operation
+  .insn b 0x63, 3, x12, x31, 1f # bnei x12, 31, 1f; perform operation
   LI(x25, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x25 contains the expected result. x1 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
@@ -173,7 +173,7 @@ Zibi_bnei_cg_cp_rs1_b12:
   RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs1: x13 = 0x88131e2ccf25fa02
   RVTEST_TESTDATA_LOAD_INT(x22, x23) # load branch taken value: x23 = 0x4c154fc1b8a1307f
 Zibi_bnei_cg_cp_rs1_b13:
-  bnei x13, 17, 1f # perform operation
+  .insn b 0x63, 3, x13, x17, 1f # bnei x13, 17, 1f; perform operation
   LI(x23, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x23 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -183,7 +183,7 @@ Zibi_bnei_cg_cp_rs1_b13:
   RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs1: x14 = 0xc09449ebbacec1e0
   RVTEST_TESTDATA_LOAD_INT(x22, x15) # load branch taken value: x15 = 0xa74910807d82e1ca
 Zibi_bnei_cg_cp_rs1_b14:
-  bnei x14, 15, 1f # perform operation
+  .insn b 0x63, 3, x14, x15, 1f # bnei x14, 15, 1f; perform operation
   LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -193,7 +193,7 @@ Zibi_bnei_cg_cp_rs1_b14:
   RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs1: x15 = 0xe714730e41856434
   RVTEST_TESTDATA_LOAD_INT(x22, x13) # load branch taken value: x13 = 0x0be35066b9e6ac4e
 Zibi_bnei_cg_cp_rs1_b15:
-  bnei x15, 13, 1f # perform operation
+  .insn b 0x63, 3, x15, x13, 1f # bnei x15, 13, 1f; perform operation
   LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -203,7 +203,7 @@ Zibi_bnei_cg_cp_rs1_b15:
   RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs1: x16 = 0x48f85347ef09dbe0
   RVTEST_TESTDATA_LOAD_INT(x22, x6) # load branch taken value: x6 = 0x936aacbdd6f26ed6
 Zibi_bnei_cg_cp_rs1_b16:
-  bnei x16, 7, 1f # perform operation
+  .insn b 0x63, 3, x16, x7, 1f # bnei x16, 7, 1f; perform operation
   LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -213,7 +213,7 @@ Zibi_bnei_cg_cp_rs1_b16:
   RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs1: x17 = 0x8091ec5c76af1eee
   RVTEST_TESTDATA_LOAD_INT(x22, x6) # load branch taken value: x6 = 0x884110d99facd381
 Zibi_bnei_cg_cp_rs1_b17:
-  bnei x17, 4, 1f # perform operation
+  .insn b 0x63, 3, x17, x4, 1f # bnei x17, 4, 1f; perform operation
   LI(x6, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x6 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -223,7 +223,7 @@ Zibi_bnei_cg_cp_rs1_b17:
   RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs1: x18 = 0x13bd4cac4793513e
   RVTEST_TESTDATA_LOAD_INT(x22, x31) # load branch taken value: x31 = 0x63fe0719a1efdf7d
 Zibi_bnei_cg_cp_rs1_b18:
-  bnei x18, 18, 1f # perform operation
+  .insn b 0x63, 3, x18, x18, 1f # bnei x18, 18, 1f; perform operation
   LI(x31, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x31 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -233,7 +233,7 @@ Zibi_bnei_cg_cp_rs1_b18:
   RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs1: x19 = 0xf2f0fc337c028c98
   RVTEST_TESTDATA_LOAD_INT(x22, x3) # load branch taken value: x3 = 0x98b29c1626c3f807
 Zibi_bnei_cg_cp_rs1_b19:
-  bnei x19, 14, 1f # perform operation
+  .insn b 0x63, 3, x19, x14, 1f # bnei x19, 14, 1f; perform operation
   LI(x3, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x3 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -243,7 +243,7 @@ Zibi_bnei_cg_cp_rs1_b19:
   RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs1: x20 = 0xabd8de9745f3e25c
   RVTEST_TESTDATA_LOAD_INT(x22, x30) # load branch taken value: x30 = 0xcddf9ca5ae7efa85
 Zibi_bnei_cg_cp_rs1_b20:
-  bnei x20, 2, 1f # perform operation
+  .insn b 0x63, 3, x20, x2, 1f # bnei x20, 2, 1f; perform operation
   LI(x30, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x30 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -253,7 +253,7 @@ Zibi_bnei_cg_cp_rs1_b20:
   RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs1: x21 = 0xbff4d81d3782c91a
   RVTEST_TESTDATA_LOAD_INT(x22, x13) # load branch taken value: x13 = 0xc6ff656847075c61
 Zibi_bnei_cg_cp_rs1_b21:
-  bnei x21, 22, 1f # perform operation
+  .insn b 0x63, 3, x21, x22, 1f # bnei x21, 22, 1f; perform operation
   LI(x13, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -264,7 +264,7 @@ Zibi_bnei_cg_cp_rs1_b21:
   RVTEST_TESTDATA_LOAD_INT(x19, x22) # load rs1: x22 = 0x2b9c9f9d4602f94d
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load branch taken value: x26 = 0x4a921446eadc05e1
 Zibi_bnei_cg_cp_rs1_b22:
-  bnei x22, 7, 1f # perform operation
+  .insn b 0x63, 3, x22, x7, 1f # bnei x22, 7, 1f; perform operation
   LI(x26, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x26 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -274,7 +274,7 @@ Zibi_bnei_cg_cp_rs1_b22:
   RVTEST_TESTDATA_LOAD_INT(x19, x23) # load rs1: x23 = 0x8e76f354e1106a25
   RVTEST_TESTDATA_LOAD_INT(x19, x30) # load branch taken value: x30 = 0x2f6b4e28ba973a50
 Zibi_bnei_cg_cp_rs1_b23:
-  bnei x23, 9, 1f # perform operation
+  .insn b 0x63, 3, x23, x9, 1f # bnei x23, 9, 1f; perform operation
   LI(x30, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x30 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -284,7 +284,7 @@ Zibi_bnei_cg_cp_rs1_b23:
   RVTEST_TESTDATA_LOAD_INT(x19, x24) # load rs1: x24 = 0xdd286e338447a68c
   RVTEST_TESTDATA_LOAD_INT(x19, x20) # load branch taken value: x20 = 0x2751ff3dae316520
 Zibi_bnei_cg_cp_rs1_b24:
-  bnei x24, 4, 1f # perform operation
+  .insn b 0x63, 3, x24, x4, 1f # bnei x24, 4, 1f; perform operation
   LI(x20, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x20 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -294,7 +294,7 @@ Zibi_bnei_cg_cp_rs1_b24:
   RVTEST_TESTDATA_LOAD_INT(x19, x25) # load rs1: x25 = 0xc50ffb39decc74ec
   RVTEST_TESTDATA_LOAD_INT(x19, x30) # load branch taken value: x30 = 0xafba7ac6efef9911
 Zibi_bnei_cg_cp_rs1_b25:
-  bnei x25, 10, 1f # perform operation
+  .insn b 0x63, 3, x25, x10, 1f # bnei x25, 10, 1f; perform operation
   LI(x30, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x30 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -304,7 +304,7 @@ Zibi_bnei_cg_cp_rs1_b25:
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load rs1: x26 = 0x49268b97dae7e54e
   RVTEST_TESTDATA_LOAD_INT(x19, x20) # load branch taken value: x20 = 0xe7c3ddcc4b89c1f8
 Zibi_bnei_cg_cp_rs1_b26:
-  bnei x26, 2, 1f # perform operation
+  .insn b 0x63, 3, x26, x2, 1f # bnei x26, 2, 1f; perform operation
   LI(x20, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x20 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -314,7 +314,7 @@ Zibi_bnei_cg_cp_rs1_b26:
   RVTEST_TESTDATA_LOAD_INT(x19, x27) # load rs1: x27 = 0x89a8f6e90f24d4d4
   RVTEST_TESTDATA_LOAD_INT(x19, x24) # load branch taken value: x24 = 0x7a3a4fd82718b82c
 Zibi_bnei_cg_cp_rs1_b27:
-  bnei x27, 30, 1f # perform operation
+  .insn b 0x63, 3, x27, x30, 1f # bnei x27, 30, 1f; perform operation
   LI(x24, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x24 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -324,7 +324,7 @@ Zibi_bnei_cg_cp_rs1_b27:
   RVTEST_TESTDATA_LOAD_INT(x19, x28) # load rs1: x28 = 0x1db4891f24f91416
   RVTEST_TESTDATA_LOAD_INT(x19, x12) # load branch taken value: x12 = 0xb379654977f39fe7
 Zibi_bnei_cg_cp_rs1_b28:
-  bnei x28, 23, 1f # perform operation
+  .insn b 0x63, 3, x28, x23, 1f # bnei x28, 23, 1f; perform operation
   LI(x12, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -334,7 +334,7 @@ Zibi_bnei_cg_cp_rs1_b28:
   RVTEST_TESTDATA_LOAD_INT(x19, x29) # load rs1: x29 = 0x576451e21f84a9dc
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load branch taken value: x21 = 0xa99bcf0568b6cc93
 Zibi_bnei_cg_cp_rs1_b29:
-  bnei x29, 7, 1f # perform operation
+  .insn b 0x63, 3, x29, x7, 1f # bnei x29, 7, 1f; perform operation
   LI(x21, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x21 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -344,7 +344,7 @@ Zibi_bnei_cg_cp_rs1_b29:
   RVTEST_TESTDATA_LOAD_INT(x19, x30) # load rs1: x30 = 0xcad65486591e72fe
   RVTEST_TESTDATA_LOAD_INT(x19, x3) # load branch taken value: x3 = 0x1fffc53d30308d4a
 Zibi_bnei_cg_cp_rs1_b30:
-  bnei x30, -1, 1f # perform operation
+  .insn b 0x63, 3, x30, x0, 1f # bnei x30, -1, 1f; perform operation
   LI(x3, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x3 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -354,7 +354,7 @@ Zibi_bnei_cg_cp_rs1_b30:
   RVTEST_TESTDATA_LOAD_INT(x19, x31) # load rs1: x31 = 0x8b16e57e9901318f
   RVTEST_TESTDATA_LOAD_INT(x19, x24) # load branch taken value: x24 = 0xba3cbd0f17ff80d8
 Zibi_bnei_cg_cp_rs1_b31:
-  bnei x31, 10, 1f # perform operation
+  .insn b 0x63, 3, x31, x10, 1f # bnei x31, 10, 1f; perform operation
   LI(x24, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x24 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -368,7 +368,7 @@ Zibi_bnei_cg_cp_rs1_b31:
   RVTEST_TESTDATA_LOAD_INT(x19, x3) # load rs1: x3 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x19, x11) # load branch taken value: x11 = 0xc88bdb4cc212fe4f
 Zibi_bnei_cg_cp_rs1_edges_0x0:
-  bnei x3, 20, 1f # perform operation
+  .insn b 0x63, 3, x3, x20, 1f # bnei x3, 20, 1f; perform operation
   LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -378,7 +378,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x0:
   RVTEST_TESTDATA_LOAD_INT(x19, x23) # load rs1: x23 = 0x0000000000000001
   RVTEST_TESTDATA_LOAD_INT(x19, x24) # load branch taken value: x24 = 0x8af1ee0cfbb7a4f2
 Zibi_bnei_cg_cp_rs1_edges_0x1:
-  bnei x23, 14, 1f # perform operation
+  .insn b 0x63, 3, x23, x14, 1f # bnei x23, 14, 1f; perform operation
   LI(x24, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x24 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -388,7 +388,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x1:
   RVTEST_TESTDATA_LOAD_INT(x19, x13) # load rs1: x13 = 0x0000000000000002
   RVTEST_TESTDATA_LOAD_INT(x19, x29) # load branch taken value: x29 = 0x04a8f0257308e3f6
 Zibi_bnei_cg_cp_rs1_edges_0x2:
-  bnei x13, -1, 1f # perform operation
+  .insn b 0x63, 3, x13, x0, 1f # bnei x13, -1, 1f; perform operation
   LI(x29, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -398,7 +398,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x2:
   RVTEST_TESTDATA_LOAD_INT(x19, x17) # load rs1: x17 = 0x8000000000000000
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load branch taken value: x21 = 0x1988ef43d82769fc
 Zibi_bnei_cg_cp_rs1_edges_0x8000000000000000:
-  bnei x17, 15, 1f # perform operation
+  .insn b 0x63, 3, x17, x15, 1f # bnei x17, 15, 1f; perform operation
   LI(x21, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x21 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -408,7 +408,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x8000000000000000:
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load rs1: x21 = 0x8000000000000001
   RVTEST_TESTDATA_LOAD_INT(x19, x22) # load branch taken value: x22 = 0x3beef9a04ea815df
 Zibi_bnei_cg_cp_rs1_edges_0x8000000000000001:
-  bnei x21, 27, 1f # perform operation
+  .insn b 0x63, 3, x21, x27, 1f # bnei x21, 27, 1f; perform operation
   LI(x22, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x22 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -418,7 +418,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x8000000000000001:
   RVTEST_TESTDATA_LOAD_INT(x19, x28) # load rs1: x28 = 0x7fffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x19, x15) # load branch taken value: x15 = 0xcebaeaecf75fdb66
 Zibi_bnei_cg_cp_rs1_edges_0x7fffffffffffffff:
-  bnei x28, 1, 1f # perform operation
+  .insn b 0x63, 3, x28, x1, 1f # bnei x28, 1, 1f; perform operation
   LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -428,7 +428,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x7fffffffffffffff:
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load rs1: x21 = 0x7ffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x19, x17) # load branch taken value: x17 = 0x4a396544b648d72a
 Zibi_bnei_cg_cp_rs1_edges_0x7ffffffffffffffe:
-  bnei x21, 8, 1f # perform operation
+  .insn b 0x63, 3, x21, x8, 1f # bnei x21, 8, 1f; perform operation
   LI(x17, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x17 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -438,7 +438,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x7ffffffffffffffe:
   RVTEST_TESTDATA_LOAD_INT(x19, x28) # load rs1: x28 = 0xffffffffffffffff
   RVTEST_TESTDATA_LOAD_INT(x19, x29) # load branch taken value: x29 = 0x20b31514b48f5be1
 Zibi_bnei_cg_cp_rs1_edges_0xffffffffffffffff:
-  bnei x28, 6, 1f # perform operation
+  .insn b 0x63, 3, x28, x6, 1f # bnei x28, 6, 1f; perform operation
   LI(x29, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -448,7 +448,7 @@ Zibi_bnei_cg_cp_rs1_edges_0xffffffffffffffff:
   RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs1: x6 = 0xfffffffffffffffe
   RVTEST_TESTDATA_LOAD_INT(x19, x10) # load branch taken value: x10 = 0x5d05d577ef76261f
 Zibi_bnei_cg_cp_rs1_edges_0xfffffffffffffffe:
-  bnei x6, 9, 1f # perform operation
+  .insn b 0x63, 3, x6, x9, 1f # bnei x6, 9, 1f; perform operation
   LI(x10, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x10 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -458,7 +458,7 @@ Zibi_bnei_cg_cp_rs1_edges_0xfffffffffffffffe:
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load rs1: x26 = 0x5bbc887763ae86f2
   RVTEST_TESTDATA_LOAD_INT(x19, x29) # load branch taken value: x29 = 0xb2e9997f08690b2a
 Zibi_bnei_cg_cp_rs1_edges_0x5bbc887763ae86f2:
-  bnei x26, 1, 1f # perform operation
+  .insn b 0x63, 3, x26, x1, 1f # bnei x26, 1, 1f; perform operation
   LI(x29, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -468,7 +468,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x5bbc887763ae86f2:
   RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs1: x6 = 0xaaaaaaaaaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x19, x20) # load branch taken value: x20 = 0x845fdd0b0fc176ed
 Zibi_bnei_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
-  bnei x6, 2, 1f # perform operation
+  .insn b 0x63, 3, x6, x2, 1f # bnei x6, 2, 1f; perform operation
   LI(x20, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x20 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -478,7 +478,7 @@ Zibi_bnei_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
   RVTEST_TESTDATA_LOAD_INT(x19, x11) # load rs1: x11 = 0x5555555555555555
   RVTEST_TESTDATA_LOAD_INT(x19, x14) # load branch taken value: x14 = 0xc1d2b75e3f555454
 Zibi_bnei_cg_cp_rs1_edges_0x5555555555555555:
-  bnei x11, 11, 1f # perform operation
+  .insn b 0x63, 3, x11, x11, 1f # bnei x11, 11, 1f; perform operation
   LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -488,7 +488,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x5555555555555555:
   RVTEST_TESTDATA_LOAD_INT(x19, x10) # load rs1: x10 = 0x00000000ffffffff
   RVTEST_TESTDATA_LOAD_INT(x19, x15) # load branch taken value: x15 = 0x02c489cc4924b6e8
 Zibi_bnei_cg_cp_rs1_edges_0xffffffff:
-  bnei x10, 31, 1f # perform operation
+  .insn b 0x63, 3, x10, x31, 1f # bnei x10, 31, 1f; perform operation
   LI(x15, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x15 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -498,7 +498,7 @@ Zibi_bnei_cg_cp_rs1_edges_0xffffffff:
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load rs1: x26 = 0x00000000fffffffe
   RVTEST_TESTDATA_LOAD_INT(x19, x18) # load branch taken value: x18 = 0x3b82525914efbc2d
 Zibi_bnei_cg_cp_rs1_edges_0xfffffffe:
-  bnei x26, 28, 1f # perform operation
+  .insn b 0x63, 3, x26, x28, 1f # bnei x26, 28, 1f; perform operation
   LI(x18, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x18 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -508,7 +508,7 @@ Zibi_bnei_cg_cp_rs1_edges_0xfffffffe:
   RVTEST_TESTDATA_LOAD_INT(x19, x12) # load rs1: x12 = 0x0000000100000000
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load branch taken value: x26 = 0x92b8f77de03227a2
 Zibi_bnei_cg_cp_rs1_edges_0x100000000:
-  bnei x12, 14, 1f # perform operation
+  .insn b 0x63, 3, x12, x14, 1f # bnei x12, 14, 1f; perform operation
   LI(x26, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x26 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -518,7 +518,7 @@ Zibi_bnei_cg_cp_rs1_edges_0x100000000:
   RVTEST_TESTDATA_LOAD_INT(x19, x30) # load rs1: x30 = 0x0000000100000001
   RVTEST_TESTDATA_LOAD_INT(x19, x25) # load branch taken value: x25 = 0xe8b3a38271b0e07a
 Zibi_bnei_cg_cp_rs1_edges_0x100000001:
-  bnei x30, 6, 1f # perform operation
+  .insn b 0x63, 3, x30, x6, 1f # bnei x30, 6, 1f; perform operation
   LI(x25, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x25 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -536,8 +536,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, -1, 1b # backward branch, negative offset
-3: bnei x28, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x28, x0, 1b # bnei x28, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x28, x0, 4f # bnei x28, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -551,8 +551,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 1, 1b # backward branch, negative offset
-3: bnei x8, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x1, 1b # bnei x8, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x1, 4f # bnei x8, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -566,8 +566,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 2, 1b # backward branch, negative offset
-3: bnei x24, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x2, 1b # bnei x24, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x2, 4f # bnei x24, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -581,8 +581,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 3, 1b # backward branch, negative offset
-3: bnei x25, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x3, 1b # bnei x25, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x3, 4f # bnei x25, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -596,8 +596,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 4, 1b # backward branch, negative offset
-3: bnei x9, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x4, 1b # bnei x9, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x4, 4f # bnei x9, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -611,8 +611,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 8, 1b # backward branch, negative offset
-3: bnei x23, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x23, x8, 1b # bnei x23, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x23, x8, 4f # bnei x23, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -626,8 +626,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x9, x9, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 16, 1b # backward branch, negative offset
-3: bnei x25, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x16, 1b # bnei x25, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x16, 4f # bnei x25, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x9, x9, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -641,8 +641,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 30, 1b # backward branch, negative offset
-3: bnei x7, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x30, 1b # bnei x7, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x30, 4f # bnei x7, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -656,8 +656,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000000_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 31, 1b # backward branch, negative offset
-3: bnei x25, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x31, 1b # bnei x25, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x31, 4f # bnei x25, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -671,8 +671,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x10, x10, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, -1, 1b # backward branch, negative offset
-3: bnei x13, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x13, x0, 1b # bnei x13, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x13, x0, 4f # bnei x13, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x10, x10, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -686,8 +686,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, 1, 1b # backward branch, negative offset
-3: bnei x11, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x11, x1, 1b # bnei x11, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x11, x1, 4f # bnei x11, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -701,8 +701,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x20, x20, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 2, 1b # backward branch, negative offset
-3: bnei x26, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x2, 1b # bnei x26, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x2, 4f # bnei x26, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x20, x20, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -716,8 +716,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x24, x24, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 3, 1b # backward branch, negative offset
-3: bnei x23, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x23, x3, 1b # bnei x23, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x23, x3, 4f # bnei x23, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x24, x24, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -731,8 +731,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 4, 1b # backward branch, negative offset
-3: bnei x22, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x22, x4, 1b # bnei x22, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x22, x4, 4f # bnei x22, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -746,8 +746,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 8, 1b # backward branch, negative offset
-3: bnei x17, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x17, x8, 1b # bnei x17, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x17, x8, 4f # bnei x17, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -761,8 +761,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 16, 1b # backward branch, negative offset
-3: bnei x8, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x16, 1b # bnei x8, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x16, 4f # bnei x8, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -776,8 +776,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, 30, 1b # backward branch, negative offset
-3: bnei x14, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x14, x30, 1b # bnei x14, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x14, x30, 4f # bnei x14, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -791,8 +791,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000001_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 31, 1b # backward branch, negative offset
-3: bnei x2, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x2, x31, 1b # bnei x2, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x2, x31, 4f # bnei x2, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -806,8 +806,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, -1, 1b # backward branch, negative offset
-3: bnei x27, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x27, x0, 1b # bnei x27, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x27, x0, 4f # bnei x27, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -821,8 +821,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 1, 1b # backward branch, negative offset
-3: bnei x10, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x10, x1, 1b # bnei x10, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x10, x1, 4f # bnei x10, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -836,8 +836,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, 2, 1b # backward branch, negative offset
-3: bnei x28, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x28, x2, 1b # bnei x28, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x28, x2, 4f # bnei x28, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -851,8 +851,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 3, 1b # backward branch, negative offset
-3: bnei x2, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x2, x3, 1b # bnei x2, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x2, x3, 4f # bnei x2, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -866,8 +866,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 4, 1b # backward branch, negative offset
-3: bnei x9, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x4, 1b # bnei x9, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x4, 4f # bnei x9, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -881,8 +881,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x10, x10, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 8, 1b # backward branch, negative offset
-3: bnei x15, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x8, 1b # bnei x15, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x8, 4f # bnei x15, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x10, x10, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -896,8 +896,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 16, 1b # backward branch, negative offset
-3: bnei x15, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x16, 1b # bnei x15, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x16, 4f # bnei x15, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -911,8 +911,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x11, x11, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 30, 1b # backward branch, negative offset
-3: bnei x31, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x30, 1b # bnei x31, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x30, 4f # bnei x31, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x11, x11, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -926,8 +926,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000000000002_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, 31, 1b # backward branch, negative offset
-3: bnei x30, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x30, x31, 1b # bnei x30, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x30, x31, 4f # bnei x30, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -941,8 +941,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, -1, 1b # backward branch, negative offset
-3: bnei x12, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x12, x0, 1b # bnei x12, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x12, x0, 4f # bnei x12, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -956,8 +956,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, 1, 1b # backward branch, negative offset
-3: bnei x29, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x29, x1, 1b # bnei x29, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x29, x1, 4f # bnei x29, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -971,8 +971,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 2, 1b # backward branch, negative offset
-3: bnei x24, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x2, 1b # bnei x24, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x2, 4f # bnei x24, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -986,8 +986,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 3, 1b # backward branch, negative offset
-3: bnei x25, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x3, 1b # bnei x25, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x3, 4f # bnei x25, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1001,8 +1001,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, 4, 1b # backward branch, negative offset
-3: bnei x16, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x4, 1b # bnei x16, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x4, 4f # bnei x16, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1016,8 +1016,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, 8, 1b # backward branch, negative offset
-3: bnei x30, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x30, x8, 1b # bnei x30, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x30, x8, 4f # bnei x30, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1031,8 +1031,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 16, 1b # backward branch, negative offset
-3: bnei x24, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x16, 1b # bnei x24, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x16, 4f # bnei x24, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1046,8 +1046,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 30, 1b # backward branch, negative offset
-3: bnei x17, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x17, x30, 1b # bnei x17, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x17, x30, 4f # bnei x17, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1061,8 +1061,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000000_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 31, 1b # backward branch, negative offset
-3: bnei x31, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x31, 1b # bnei x31, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x31, 4f # bnei x31, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1076,8 +1076,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, -1, 1b # backward branch, negative offset
-3: bnei x26, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x0, 1b # bnei x26, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x0, 4f # bnei x26, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1091,8 +1091,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, 1, 1b # backward branch, negative offset
-3: bnei x12, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x12, x1, 1b # bnei x12, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x12, x1, 4f # bnei x12, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1106,8 +1106,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 2, 1b # backward branch, negative offset
-3: bnei x26, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x2, 1b # bnei x26, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x2, 4f # bnei x26, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1121,8 +1121,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 3, 1b # backward branch, negative offset
-3: bnei x27, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x27, x3, 1b # bnei x27, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x27, x3, 4f # bnei x27, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1136,8 +1136,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, 4, 1b # backward branch, negative offset
-3: bnei x13, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x13, x4, 1b # bnei x13, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x13, x4, 4f # bnei x13, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1151,8 +1151,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 8, 1b # backward branch, negative offset
-3: bnei x31, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x8, 1b # bnei x31, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x8, 4f # bnei x31, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1166,8 +1166,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x12, x12, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x20, 16, 1b # backward branch, negative offset
-3: bnei x20, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x20, x16, 1b # bnei x20, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x20, x16, 4f # bnei x20, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x12, x12, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1181,8 +1181,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x12, x12, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 30, 1b # backward branch, negative offset
-3: bnei x15, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x30, 1b # bnei x15, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x30, 4f # bnei x15, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x12, x12, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1196,8 +1196,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x8000000000000001_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 31, 1b # backward branch, negative offset
-3: bnei x10, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x10, x31, 1b # bnei x10, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x10, x31, 4f # bnei x10, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1211,8 +1211,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, -1, 1b # backward branch, negative offset
-3: bnei x16, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x0, 1b # bnei x16, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x0, 4f # bnei x16, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1226,8 +1226,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, 1, 1b # backward branch, negative offset
-3: bnei x13, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x13, x1, 1b # bnei x13, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x13, x1, 4f # bnei x13, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1241,8 +1241,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 2, 1b # backward branch, negative offset
-3: bnei x8, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x2, 1b # bnei x8, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x2, 4f # bnei x8, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1256,8 +1256,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, 3, 1b # backward branch, negative offset
-3: bnei x11, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x11, x3, 1b # bnei x11, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x11, x3, 4f # bnei x11, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1271,8 +1271,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 4, 1b # backward branch, negative offset
-3: bnei x23, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x23, x4, 1b # bnei x23, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x23, x4, 4f # bnei x23, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1286,8 +1286,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, 8, 1b # backward branch, negative offset
-3: bnei x12, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x12, x8, 1b # bnei x12, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x12, x8, 4f # bnei x12, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1301,8 +1301,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 16, 1b # backward branch, negative offset
-3: bnei x6, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x16, 1b # bnei x6, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x16, 4f # bnei x6, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1316,8 +1316,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x24, x24, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, 30, 1b # backward branch, negative offset
-3: bnei x29, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x29, x30, 1b # bnei x29, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x29, x30, 4f # bnei x29, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x24, x24, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1331,8 +1331,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7fffffffffffffff_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 31, 1b # backward branch, negative offset
-3: bnei x9, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x31, 1b # bnei x9, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x31, 4f # bnei x9, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1346,8 +1346,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, -1, 1b # backward branch, negative offset
-3: bnei x14, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x14, x0, 1b # bnei x14, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x14, x0, 4f # bnei x14, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1361,8 +1361,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x18, 1, 1b # backward branch, negative offset
-3: bnei x18, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x18, x1, 1b # bnei x18, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x18, x1, 4f # bnei x18, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1376,8 +1376,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, 2, 1b # backward branch, negative offset
-3: bnei x28, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x28, x2, 1b # bnei x28, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x28, x2, 4f # bnei x28, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1391,8 +1391,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, 3, 1b # backward branch, negative offset
-3: bnei x29, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x29, x3, 1b # bnei x29, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x29, x3, 4f # bnei x29, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1406,8 +1406,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 4, 1b # backward branch, negative offset
-3: bnei x9, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x4, 1b # bnei x9, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x4, 4f # bnei x9, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1421,8 +1421,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, 8, 1b # backward branch, negative offset
-3: bnei x16, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x8, 1b # bnei x16, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x8, 4f # bnei x16, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1436,8 +1436,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 16, 1b # backward branch, negative offset
-3: bnei x10, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x10, x16, 1b # bnei x10, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x10, x16, 4f # bnei x10, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1451,8 +1451,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 30, 1b # backward branch, negative offset
-3: bnei x24, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x30, 1b # bnei x24, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x30, 4f # bnei x24, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1466,8 +1466,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x7ffffffffffffffe_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 31, 1b # backward branch, negative offset
-3: bnei x22, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x22, x31, 1b # bnei x22, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x22, x31, 4f # bnei x22, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1481,8 +1481,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, -1, 1b # backward branch, negative offset
-3: bnei x6, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x0, 1b # bnei x6, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x0, 4f # bnei x6, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1496,8 +1496,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 1, 1b # backward branch, negative offset
-3: bnei x31, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x1, 1b # bnei x31, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x1, 4f # bnei x31, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1511,8 +1511,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 2, 1b # backward branch, negative offset
-3: bnei x26, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x2, 1b # bnei x26, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x2, 4f # bnei x26, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1526,8 +1526,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 3, 1b # backward branch, negative offset
-3: bnei x7, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x3, 1b # bnei x7, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x3, 4f # bnei x7, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1541,8 +1541,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 4, 1b # backward branch, negative offset
-3: bnei x9, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x4, 1b # bnei x9, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x4, 4f # bnei x9, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1556,8 +1556,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x6, x6, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 8, 1b # backward branch, negative offset
-3: bnei x24, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x8, 1b # bnei x24, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x8, 4f # bnei x24, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x6, x6, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1571,8 +1571,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 16, 1b # backward branch, negative offset
-3: bnei x23, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x23, x16, 1b # bnei x23, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x23, x16, 4f # bnei x23, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1586,8 +1586,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 30, 1b # backward branch, negative offset
-3: bnei x31, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x30, 1b # bnei x31, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x30, 4f # bnei x31, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1601,8 +1601,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xffffffffffffffff_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 31, 1b # backward branch, negative offset
-3: bnei x7, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x31, 1b # bnei x7, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x31, 4f # bnei x7, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1616,8 +1616,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x18, -1, 1b # backward branch, negative offset
-3: bnei x18, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x18, x0, 1b # bnei x18, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x18, x0, 4f # bnei x18, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1631,8 +1631,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 1, 1b # backward branch, negative offset
-3: bnei x17, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x17, x1, 1b # bnei x17, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x17, x1, 4f # bnei x17, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1646,8 +1646,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, 2, 1b # backward branch, negative offset
-3: bnei x13, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x13, x2, 1b # bnei x13, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x13, x2, 4f # bnei x13, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1661,8 +1661,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x18, 3, 1b # backward branch, negative offset
-3: bnei x18, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x18, x3, 1b # bnei x18, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x18, x3, 4f # bnei x18, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1676,8 +1676,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x13, 4, 1b # backward branch, negative offset
-3: bnei x13, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x13, x4, 1b # bnei x13, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x13, x4, 4f # bnei x13, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1691,8 +1691,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, 8, 1b # backward branch, negative offset
-3: bnei x11, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x11, x8, 1b # bnei x11, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x11, x8, 4f # bnei x11, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1706,8 +1706,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x9, x9, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 16, 1b # backward branch, negative offset
-3: bnei x6, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x16, 1b # bnei x6, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x16, 4f # bnei x6, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x9, x9, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1721,8 +1721,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 30, 1b # backward branch, negative offset
-3: bnei x22, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x22, x30, 1b # bnei x22, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x22, x30, 4f # bnei x22, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1736,8 +1736,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xfffffffffffffffe_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x3, 31, 1b # backward branch, negative offset
-3: bnei x3, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x3, x31, 1b # bnei x3, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x3, x31, 4f # bnei x3, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1751,8 +1751,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x18, -1, 1b # backward branch, negative offset
-3: bnei x18, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x18, x0, 1b # bnei x18, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x18, x0, 4f # bnei x18, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1766,8 +1766,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x10, x10, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 1, 1b # backward branch, negative offset
-3: bnei x24, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x1, 1b # bnei x24, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x1, 4f # bnei x24, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x10, x10, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1781,8 +1781,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 2, 1b # backward branch, negative offset
-3: bnei x6, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x2, 1b # bnei x6, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x2, 4f # bnei x6, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1796,8 +1796,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x12, 3, 1b # backward branch, negative offset
-3: bnei x12, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x12, x3, 1b # bnei x12, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x12, x3, 4f # bnei x12, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1811,8 +1811,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 4, 1b # backward branch, negative offset
-3: bnei x26, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x4, 1b # bnei x26, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x4, 4f # bnei x26, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1826,8 +1826,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 8, 1b # backward branch, negative offset
-3: bnei x8, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x8, 1b # bnei x8, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x8, 4f # bnei x8, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1841,8 +1841,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 16, 1b # backward branch, negative offset
-3: bnei x6, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x16, 1b # bnei x6, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x16, 4f # bnei x6, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1856,8 +1856,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 30, 1b # backward branch, negative offset
-3: bnei x6, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x30, 1b # bnei x6, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x30, 4f # bnei x6, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1871,8 +1871,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5bbc887763ae86f2_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x3, 31, 1b # backward branch, negative offset
-3: bnei x3, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x3, x31, 1b # bnei x3, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x3, x31, 4f # bnei x3, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1886,8 +1886,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, -1, 1b # backward branch, negative offset
-3: bnei x16, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x0, 1b # bnei x16, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x0, 4f # bnei x16, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1901,8 +1901,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, 1, 1b # backward branch, negative offset
-3: bnei x30, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x30, x1, 1b # bnei x30, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x30, x1, 4f # bnei x30, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1916,8 +1916,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 2, 1b # backward branch, negative offset
-3: bnei x15, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x2, 1b # bnei x15, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x2, 4f # bnei x15, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1931,8 +1931,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x24, 3, 1b # backward branch, negative offset
-3: bnei x24, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x24, x3, 1b # bnei x24, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x24, x3, 4f # bnei x24, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1946,8 +1946,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x20, x20, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, 4, 1b # backward branch, negative offset
-3: bnei x16, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x4, 1b # bnei x16, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x4, 4f # bnei x16, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x20, x20, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1961,8 +1961,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 8, 1b # backward branch, negative offset
-3: bnei x15, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x8, 1b # bnei x15, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x8, 4f # bnei x15, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1976,8 +1976,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 16, 1b # backward branch, negative offset
-3: bnei x17, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x17, x16, 1b # bnei x17, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x17, x16, 4f # bnei x17, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -1991,8 +1991,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x3, 30, 1b # backward branch, negative offset
-3: bnei x3, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x3, x30, 1b # bnei x3, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x3, x30, 4f # bnei x3, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2006,8 +2006,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0xaaaaaaaaaaaaaaaa_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 31, 1b # backward branch, negative offset
-3: bnei x2, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x2, x31, 1b # bnei x2, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x2, x31, 4f # bnei x2, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2021,8 +2021,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, -1, 1b # backward branch, negative offset
-3: bnei x7, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x0, 1b # bnei x7, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x0, 4f # bnei x7, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2036,8 +2036,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x20, 1, 1b # backward branch, negative offset
-3: bnei x20, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x20, x1, 1b # bnei x20, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x20, x1, 4f # bnei x20, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2051,8 +2051,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, 2, 1b # backward branch, negative offset
-3: bnei x21, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x21, x2, 1b # bnei x21, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x21, x2, 4f # bnei x21, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2066,8 +2066,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 3, 1b # backward branch, negative offset
-3: bnei x25, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x3, 1b # bnei x25, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x3, 4f # bnei x25, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2081,8 +2081,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x17, 4, 1b # backward branch, negative offset
-3: bnei x17, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x17, x4, 1b # bnei x17, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x17, x4, 4f # bnei x17, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2096,8 +2096,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x28, 8, 1b # backward branch, negative offset
-3: bnei x28, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x28, x8, 1b # bnei x28, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x28, x8, 4f # bnei x28, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2111,8 +2111,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x14, x14, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 16, 1b # backward branch, negative offset
-3: bnei x6, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x16, 1b # bnei x6, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x16, 4f # bnei x6, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x14, x14, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2126,8 +2126,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, 30, 1b # backward branch, negative offset
-3: bnei x21, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x21, x30, 1b # bnei x21, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x21, x30, 4f # bnei x21, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2141,8 +2141,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x5555555555555555_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 31, 1b # backward branch, negative offset
-3: bnei x7, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x31, 1b # bnei x7, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x31, 4f # bnei x7, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2156,8 +2156,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, -1, 1b # backward branch, negative offset
-3: bnei x26, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x0, 1b # bnei x26, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x0, 4f # bnei x26, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2171,8 +2171,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, 1, 1b # backward branch, negative offset
-3: bnei x26, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x1, 1b # bnei x26, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x1, 4f # bnei x26, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2186,8 +2186,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x7, x7, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 2, 1b # backward branch, negative offset
-3: bnei x8, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x2, 1b # bnei x8, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x2, 4f # bnei x8, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x7, x7, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2201,8 +2201,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x22, x22, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 3, 1b # backward branch, negative offset
-3: bnei x9, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x3, 1b # bnei x9, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x3, 4f # bnei x9, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x22, x22, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2216,8 +2216,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x9, x9, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x3, 4, 1b # backward branch, negative offset
-3: bnei x3, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x3, x4, 1b # bnei x3, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x3, x4, 4f # bnei x3, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x9, x9, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2231,8 +2231,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, 8, 1b # backward branch, negative offset
-3: bnei x14, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x14, x8, 1b # bnei x14, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x14, x8, 4f # bnei x14, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2246,8 +2246,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 16, 1b # backward branch, negative offset
-3: bnei x10, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x10, x16, 1b # bnei x10, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x10, x16, 4f # bnei x10, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2261,8 +2261,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 30, 1b # backward branch, negative offset
-3: bnei x2, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x2, x30, 1b # bnei x2, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x2, x30, 4f # bnei x2, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2276,8 +2276,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000ffffffff_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x12, x12, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x22, 31, 1b # backward branch, negative offset
-3: bnei x22, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x22, x31, 1b # bnei x22, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x22, x31, 4f # bnei x22, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x12, x12, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2291,8 +2291,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, -1, 1b # backward branch, negative offset
-3: bnei x9, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x0, 1b # bnei x9, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x0, 4f # bnei x9, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2306,8 +2306,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x30, x30, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x11, 1, 1b # backward branch, negative offset
-3: bnei x11, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x11, x1, 1b # bnei x11, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x11, x1, 4f # bnei x11, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x30, x30, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2321,8 +2321,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x21, x21, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x23, 2, 1b # backward branch, negative offset
-3: bnei x23, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x23, x2, 1b # bnei x23, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x23, x2, 4f # bnei x23, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x21, x21, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2336,8 +2336,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 3, 1b # backward branch, negative offset
-3: bnei x7, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x3, 1b # bnei x7, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x3, 4f # bnei x7, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2351,8 +2351,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x28, x28, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x10, 4, 1b # backward branch, negative offset
-3: bnei x10, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x10, x4, 1b # bnei x10, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x10, x4, 4f # bnei x10, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x28, x28, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2366,8 +2366,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x17, x17, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x15, 8, 1b # backward branch, negative offset
-3: bnei x15, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x15, x8, 1b # bnei x15, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x15, x8, 4f # bnei x15, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x17, x17, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2381,8 +2381,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x10, x10, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 16, 1b # backward branch, negative offset
-3: bnei x7, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x16, 1b # bnei x7, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x16, 4f # bnei x7, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x10, x10, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2396,8 +2396,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, 30, 1b # backward branch, negative offset
-3: bnei x29, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x29, x30, 1b # bnei x29, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x29, x30, 4f # bnei x29, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2411,8 +2411,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x00000000fffffffe_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x31, x31, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, 31, 1b # backward branch, negative offset
-3: bnei x16, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x31, 1b # bnei x16, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x31, 4f # bnei x16, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x31, x31, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2426,8 +2426,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x24, x24, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x30, -1, 1b # backward branch, negative offset
-3: bnei x30, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x30, x0, 1b # bnei x30, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x30, x0, 4f # bnei x30, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x24, x24, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2441,8 +2441,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x12, x12, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x14, 1, 1b # backward branch, negative offset
-3: bnei x14, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x14, x1, 1b # bnei x14, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x14, x1, 4f # bnei x14, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x12, x12, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2456,8 +2456,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x3, x3, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 2, 1b # backward branch, negative offset
-3: bnei x31, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x2, 1b # bnei x31, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x2, 4f # bnei x31, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x3, x3, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2471,8 +2471,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x9, x9, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 3, 1b # backward branch, negative offset
-3: bnei x27, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x27, x3, 1b # bnei x27, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x27, x3, 4f # bnei x27, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x9, x9, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2486,8 +2486,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x7, 4, 1b # backward branch, negative offset
-3: bnei x7, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x7, x4, 1b # bnei x7, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x7, x4, 4f # bnei x7, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2501,8 +2501,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x9, 8, 1b # backward branch, negative offset
-3: bnei x9, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x9, x8, 1b # bnei x9, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x9, x8, 4f # bnei x9, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2516,8 +2516,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x25, x25, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x2, 16, 1b # backward branch, negative offset
-3: bnei x2, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x2, x16, 1b # bnei x2, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x2, x16, 4f # bnei x2, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x25, x25, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2531,8 +2531,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x18, x18, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x6, 30, 1b # backward branch, negative offset
-3: bnei x6, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x6, x30, 1b # bnei x6, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x6, x30, 4f # bnei x6, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x18, x18, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2546,8 +2546,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000000_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x27, x27, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 31, 1b # backward branch, negative offset
-3: bnei x8, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x31, 1b # bnei x8, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x31, 4f # bnei x8, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x27, x27, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2561,8 +2561,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_m1:
   j 2f # enter the test past the backward-branch target
 1: ori x29, x29, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x26, -1, 1b # backward branch, negative offset
-3: bnei x26, -1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x26, x0, 1b # bnei x26, -1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x26, x0, 4f # bnei x26, -1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x29, x29, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2576,8 +2576,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_1:
   j 2f # enter the test past the backward-branch target
 1: ori x26, x26, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x16, 1, 1b # backward branch, negative offset
-3: bnei x16, 1, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x16, x1, 1b # bnei x16, 1, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x16, x1, 4f # bnei x16, 1, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x26, x26, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2591,8 +2591,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_2:
   j 2f # enter the test past the backward-branch target
 1: ori x13, x13, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x29, 2, 1b # backward branch, negative offset
-3: bnei x29, 2, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x29, x2, 1b # bnei x29, 2, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x29, x2, 4f # bnei x29, 2, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x13, x13, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2606,8 +2606,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_3:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 3, 1b # backward branch, negative offset
-3: bnei x31, 3, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x3, 1b # bnei x31, 3, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x3, 4f # bnei x31, 3, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2621,8 +2621,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_4:
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x25, 4, 1b # backward branch, negative offset
-3: bnei x25, 4, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x25, x4, 1b # bnei x25, 4, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x25, x4, 4f # bnei x25, 4, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2636,8 +2636,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_8:
   j 2f # enter the test past the backward-branch target
 1: ori x8, x8, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x21, 8, 1b # backward branch, negative offset
-3: bnei x21, 8, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x21, x8, 1b # bnei x21, 8, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x21, x8, 4f # bnei x21, 8, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x8, x8, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2651,8 +2651,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_16:
   j 2f # enter the test past the backward-branch target
 1: ori x15, x15, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x31, 16, 1b # backward branch, negative offset
-3: bnei x31, 16, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x31, x16, 1b # bnei x31, 16, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x31, x16, 4f # bnei x31, 16, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x15, x15, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2666,8 +2666,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_30:
   j 2f # enter the test past the backward-branch target
 1: ori x16, x16, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x27, 30, 1b # backward branch, negative offset
-3: bnei x27, 30, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x27, x30, 1b # bnei x27, 30, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x27, x30, 4f # bnei x27, 30, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x16, x16, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2681,8 +2681,8 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31:
   j 2f # enter the test past the backward-branch target
 1: ori x23, x23, 2 # backward branch (negative offset) taken
   j 3f # jump forward; the backward branch is never re-executed (no infinite loop)
-2: bnei x8, 31, 1b # backward branch, negative offset
-3: bnei x8, 31, 4f # forward branch, positive offset
+2: .insn b 0x63, 3, x8, x31, 1b # bnei x8, 31, 1b; backward branch, negative offset
+3: .insn b 0x63, 3, x8, x31, 4f # bnei x8, 31, 4f; forward branch, positive offset
   j 5f # forward branch not taken
 4: ori x23, x23, 1 # forward branch (positive offset) taken
 5: # done with test
@@ -2700,7 +2700,7 @@ Zibi_bnei_cg_cr_rs1_imm_edges_5bit_u_n0_offset_rs1_0x0000000100000001_imm_31:
 1: addi x13, x13, 4 # backward branch target, increment check value
   j 3f # jump past backward branch
 Zibi_bnei_cg_cp_offset_neg:
-2: bnei x24, 1, 1b # backward branch (cimm == 1)
+2: .insn b 0x63, 3, x24, x1, 1b # bnei x24, 1, 1b; backward branch
   addi x13, x13, -2 # branch not taken, decrement check value
 3:  # done with sequence
   # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2714,7 +2714,7 @@ Zibi_bnei_cg_cp_offset_neg:
   RVTEST_TESTDATA_LOAD_INT(x19, x23) # load rs1: x23 = 0x3b23d4d166f5dded
   RVTEST_TESTDATA_LOAD_INT(x19, x9) # load branch taken value: x9 = 0x4db99bd6a62317d3
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_m0x1:
-  bnei x23, -1, 1f # perform operation
+  .insn b 0x63, 3, x23, x0, 1f # bnei x23, -1, 1f; perform operation
   LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2724,7 +2724,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_m0x1:
   RVTEST_TESTDATA_LOAD_INT(x19, x8) # load rs1: x8 = 0xd18ef14abbcbe031
   RVTEST_TESTDATA_LOAD_INT(x19, x27) # load branch taken value: x27 = 0x786e1a3517117d9b
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x1:
-  bnei x8, 1, 1f # perform operation
+  .insn b 0x63, 3, x8, x1, 1f # bnei x8, 1, 1f; perform operation
   LI(x27, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x27 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2734,7 +2734,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x1:
   RVTEST_TESTDATA_LOAD_INT(x19, x29) # load rs1: x29 = 0x0bc8bab19f05e6a5
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load branch taken value: x21 = 0xe0b05c932d824d1b
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x2:
-  bnei x29, 2, 1f # perform operation
+  .insn b 0x63, 3, x29, x2, 1f # bnei x29, 2, 1f; perform operation
   LI(x21, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x21 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2744,7 +2744,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x2:
   RVTEST_TESTDATA_LOAD_INT(x19, x15) # load rs1: x15 = 0xba903017457488c4
   RVTEST_TESTDATA_LOAD_INT(x19, x21) # load branch taken value: x21 = 0xbffe094697a169dc
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x3:
-  bnei x15, 3, 1f # perform operation
+  .insn b 0x63, 3, x15, x3, 1f # bnei x15, 3, 1f; perform operation
   LI(x21, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x21 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2754,7 +2754,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x3:
   RVTEST_TESTDATA_LOAD_INT(x19, x9) # load rs1: x9 = 0x3c802c612835d378
   RVTEST_TESTDATA_LOAD_INT(x19, x14) # load branch taken value: x14 = 0xc2bf3e9b75412885
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x4:
-  bnei x9, 4, 1f # perform operation
+  .insn b 0x63, 3, x9, x4, 1f # bnei x9, 4, 1f; perform operation
   LI(x14, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x14 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2764,7 +2764,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x4:
   RVTEST_TESTDATA_LOAD_INT(x19, x22) # load rs1: x22 = 0xcce1288dd5ad13a5
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load branch taken value: x26 = 0x00f2fd2b4fa7ca22
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x8:
-  bnei x22, 8, 1f # perform operation
+  .insn b 0x63, 3, x22, x8, 1f # bnei x22, 8, 1f; perform operation
   LI(x26, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x26 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2774,7 +2774,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x8:
   RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs1: x6 = 0x94681b927adca777
   RVTEST_TESTDATA_LOAD_INT(x19, x11) # load branch taken value: x11 = 0xa0727d2ecb084f64
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x10:
-  bnei x6, 16, 1f # perform operation
+  .insn b 0x63, 3, x6, x16, 1f # bnei x6, 16, 1f; perform operation
   LI(x11, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x11 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2784,7 +2784,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x10:
   RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs1: x6 = 0xab425ef249081ce3
   RVTEST_TESTDATA_LOAD_INT(x19, x23) # load branch taken value: x23 = 0x283c1eba40131812
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x1e:
-  bnei x6, 30, 1f # perform operation
+  .insn b 0x63, 3, x6, x30, 1f # bnei x6, 30, 1f; perform operation
   LI(x23, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x23 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2794,7 +2794,7 @@ Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x1e:
   RVTEST_TESTDATA_LOAD_INT(x19, x16) # load rs1: x16 = 0x0450b53e451b51a5
   RVTEST_TESTDATA_LOAD_INT(x19, x9) # load branch taken value: x9 = 0x5d491aad86d5045e
 Zibi_bnei_cg_cp_imm_edges_5bit_u_n0_0x1f:
-  bnei x16, 31, 1f # perform operation
+  .insn b 0x63, 3, x16, x31, 1f # bnei x16, 31, 1f; perform operation
   LI(x9, -1) # branch not taken, set temp_reg to -1
 1:
   # Check if x9 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

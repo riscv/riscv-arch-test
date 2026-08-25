@@ -7,7 +7,7 @@
 
 """cr_rs1_imm_edges coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import format_zibi_branch, load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import IMMEDIATE_EDGES, get_general_edges
 from testgen.data.state import TestData, return_testcase_registers
@@ -90,8 +90,14 @@ def make_cr_rs1_imm_edges_5bit_u_n0_offset(
                     "j 2f # enter the test past the backward-branch target",
                     f"1: ori x{params.temp_reg}, x{params.temp_reg}, 2 # backward branch (negative offset) taken",
                     "j 3f # jump forward; the backward branch is never re-executed (no infinite loop)",
-                    f"2: {instr_name} x{params.rs1}, {params.immval}, 1b # backward branch, negative offset",
-                    f"3: {instr_name} x{params.rs1}, {params.immval}, 4f # forward branch, positive offset",
+                    (
+                        f"2: {format_zibi_branch(instr_name, params.rs1, params.immval, '1b')} "
+                        f"# {instr_name} x{params.rs1}, {params.immval}, 1b; backward branch, negative offset"
+                    ),
+                    (
+                        f"3: {format_zibi_branch(instr_name, params.rs1, params.immval, '4f')} "
+                        f"# {instr_name} x{params.rs1}, {params.immval}, 4f; forward branch, positive offset"
+                    ),
                     "j 5f # forward branch not taken",
                     f"4: ori x{params.temp_reg}, x{params.temp_reg}, 1 # forward branch (positive offset) taken",
                     "5: # done with test",

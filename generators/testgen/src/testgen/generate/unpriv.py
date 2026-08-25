@@ -80,7 +80,17 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    required_extensions = ["Zibi"] if testsuite == "Zibi" else None
+    march_extensions = [] if testsuite == "Zibi" else None
+    test_config = TestConfig(
+        xlen=xlen,
+        flen=flen,
+        testsuite=testsuite,
+        E_ext=E_ext,
+        sew=sew,
+        required_extensions=required_extensions,
+        march_extensions=march_extensions,
+    )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:

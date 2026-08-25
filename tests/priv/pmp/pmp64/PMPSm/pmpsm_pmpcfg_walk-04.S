@@ -4,19 +4,17 @@
 // Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : PMP configuration CSR walk verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
-//                  Jordan Carlin
+// Title       : PMP configuration CSR walk verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
+//               Jordan Carlin
 //
 // Description : This test verifies WARL-safe writes to PMP configuration CSRs.
-//               It writes walking-one values to implemented pmpcfg CSRs and
-//               checks the readback signature.
 //
-// Coverpoints : cp_pmpcfg_walk for PMPSm is fully covered in
-//               this test file.
+// Coverpoints : cp_pmpcfg_walk for PMPSm is partially covered in this test file.
 //
-// Test Cases  : Write walking-one values to pmpcfg CSRs and check readback.
+// Test Cases  : Write a walking one through bits 16..23 of every pmpcfg CSR and check
+//               the readback, skipping the reserved R=0/W=1 encoding and the A=NA4 bit.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -30,9 +28,6 @@
 // Define the size of the signature region
 #define SIGUPD_COUNT 60
 
-// Enable the M-mode trap handler
-#define RVTEST_PRIV_TEST
-
 // Include framework macros
 #include "riscv_arch_test.h"
 
@@ -40,84 +35,64 @@
 RVTEST_BEGIN
 
 main:
-    RVTEST_GOTO_MMODE
-
-    // -----------------------------------------------------------------------
-    // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).
-    // Count of even pmpcfg registers:
-    //   16 PMPs -> 2 even regs (pmpcfg0, pmpcfg2)
-    //   64 PMPs -> 8 even regs (pmpcfg0 .. pmpcfg14, step 2)
-    // -----------------------------------------------------------------------
-
-    // --- pmpcfg even walking ones, bit 13 ---
-
+// Test Case: 1 : write 1 << 16 to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 13)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_0_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-
-    // --- pmpcfg even walking ones, bit 14 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 14)
+1:  LI(t2, 1 << 16)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 15 ---
-
+// Test Case: 2 : write 1 << 18 to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 15)
+1:  LI(t2, 1 << 18)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_2_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 16 ---
-
+// Test Case: 3 : write 1 << 19 to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 16)
+1:  LI(t2, 1 << 19)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_3_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 17 ---
-    // Skipped, R=0,W=1 is reserved
-
-    // --- pmpcfg even walking ones, bit 18 ---
-
+// Test Case: 4 : write 1 << 21 to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 18)
+1:  LI(t2, 1 << 21)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_4_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 19 ---
-
+// Test Case: 5 : write 1 << 22 to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  LI(t2, 1 << 19)
+1:  LI(t2, 1 << 22)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    RVTEST_GOTO_MMODE
+// Test Case: 6 : write 1 << 23 to every pmpcfg CSR
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 23)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
+    .set pmpcfgi, pmpcfgi+2
+    .endr
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_0_str: .string "\"write walking-one bit 13 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
-test_1_str: .string "\"write walking-one bit 14 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
-test_2_str: .string "\"write walking-one bit 15 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
-test_3_str: .string "\"write walking-one bit 16 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
-test_4_str: .string "\"write walking-one bit 18 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
-test_5_str: .string "\"write walking-one bit 19 to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
+test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_bit16\""
+test_2_str: .string "\"test: 2; cp: cp_pmpcfg_walk_bit18\""
+test_3_str: .string "\"test: 3; cp: cp_pmpcfg_walk_bit19\""
+test_4_str: .string "\"test: 4; cp: cp_pmpcfg_walk_bit21\""
+test_5_str: .string "\"test: 5; cp: cp_pmpcfg_walk_bit22\""
+test_6_str: .string "\"test: 6; cp: cp_pmpcfg_walk_bit23\""
 
 RVTEST_DATA_END
 

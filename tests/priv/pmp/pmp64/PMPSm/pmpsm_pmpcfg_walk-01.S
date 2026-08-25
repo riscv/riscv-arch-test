@@ -4,19 +4,16 @@
 // Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : PMP configuration CSR walk verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
-//                  Jordan Carlin
+// Title       : PMP configuration CSR walk verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
+//               Jordan Carlin
 //
 // Description : This test verifies WARL-safe writes to PMP configuration CSRs.
-//               It writes zero to implemented pmpcfg CSRs and checks the
-//               readback signature.
 //
-// Coverpoints : cp_pmpcfg_walk for PMPSm is fully covered in
-//               this test file.
+// Coverpoints : cp_pmpcfg_walk for PMPSm is partially covered in this test file.
 //
-// Test Cases  : Write zero to pmpcfg CSRs and check readback.
+// Test Cases  : Write zero to every pmpcfg CSR and check the readback.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -30,9 +27,6 @@
 // Define the size of the signature region
 #define SIGUPD_COUNT 20
 
-// Enable the M-mode trap handler
-#define RVTEST_PRIV_TEST
-
 // Include framework macros
 #include "riscv_arch_test.h"
 
@@ -40,23 +34,19 @@
 RVTEST_BEGIN
 
 main:
-
-    // -----------------------------------------------------------------------
-    // SET even pmpcfg CSRs to zero
-    // -----------------------------------------------------------------------
+// Test Case: 1 : write zero to every pmpcfg CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x0, 1b, test_0_str)
+1:  LI(t2, 0)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
-
-    RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_0_str: .string "\"write zero to even pmpcfg CSRs; cp: cp_pmpcfg_walk\""
+test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_zero\""
 
 RVTEST_DATA_END
 

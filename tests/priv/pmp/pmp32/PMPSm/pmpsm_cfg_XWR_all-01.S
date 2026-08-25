@@ -3,9 +3,9 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title       : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,13 +14,9 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all
-//                 and cp_cfg_RW11_all for PMPM is partially covered in this file.
+// Coverpoints : cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all and cp_cfg_RW11_all for PMPSm is fully covered in this test file.
 //
-// Test Cases  : Rolling legal XWR starting from region with lowest priority i.e.,
-//               region 14 to region with highest priority i.e., region 0 such
-//               that each of the writable registers gets each of the 6 legal
-//               combinations at least once.
+// Test Cases  : Every load and store width plus a jalr at a locked NAPOT region, rolling the six legal XWR over entries 14..0.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -41,29 +37,25 @@
 RVTEST_BEGIN
 
 main:
-    // Loop to SET ALL pmpcfg REGs to zero
+    // Clear every pmpcfg and pmpaddr CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi , x0
+    csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+1
     .endr
-
-    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMPREGION_XWR_000   ((PMP_L|                  PMP_NAPOT)&0xFF)
-#define PMPREGION_XWR_100   ((PMP_L|            PMP_X|PMP_NAPOT)&0xFF)
-#define PMPREGION_XWR_001   ((PMP_L|PMP_R|            PMP_NAPOT)&0xFF)
-#define PMPREGION_XWR_101   ((PMP_L|PMP_R|      PMP_X|PMP_NAPOT)&0xFF)
-#define PMPREGION_XWR_011   ((PMP_L|PMP_R|PMP_W      |PMP_NAPOT)&0xFF)
-#define PMPREGION_XWR_111   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)
-
-
-#define PMPADDRESS            TEST_FOR_EXECUTION                              // Test section address
+#define PMPREGION_XWR_000 (((PMP_L|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_001 (((PMP_L|PMP_R|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_100 (((PMP_L|PMP_X|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_101 (((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << 0)
+#define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
     #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
@@ -74,176 +66,149 @@ main:
 
     RVTEST_PMP_SET_BACKGROUND x4
 
-    LA(x4, PMPADDRESS)
-    srl x4, x4, PMP_SHIFT
-
-.if UDB_PMP_GRANULARITY != 2
-    LI(t0, PMP_MASK)
-    and x4, x4, t0
-    LI(t0, PMP_REGION_SIZE)
-    or x4, x4, t0
-.endif
-
+    // Every entry covers the region; only its permissions vary below.
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x4
+    csrw pmpaddri, x5
     .set pmpaddri, pmpaddri+1
     .endr
 
-//                                            Verification Section
-// Test Case: 1 -- No Permissions given to the PMP Region 14
+// ---------------------------- Verification Section ----------------------------
 
+// Test Case: 1 : L -> 1 and XWR -> 000 on PMP entry 14
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_1
 
-// Test Case: 2 -- X Permissions given to the PMP Region 13
-
+// Test Case: 2 : L -> 1 and XWR -> 100 on PMP entry 13
     LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_2
 
-// Test Case: 3 -- R Permissions given to the PMP Region 12
-
+// Test Case: 3 : L -> 1 and XWR -> 001 on PMP entry 12
     LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_3
 
-// Test Case: 4 -- XR Permissions given to the PMP Region 11
-
+// Test Case: 4 : L -> 1 and XWR -> 101 on PMP entry 11
     LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_4
 
-// Test Case: 5 -- WR Permissions given to the PMP Region 10
-
+// Test Case: 5 : L -> 1 and XWR -> 011 on PMP entry 10
     LI(x4, (PMPREGION_XWR_011 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_5
 
-// Test Case: 6 -- XWR Permissions given to the PMP Region 9
-
+// Test Case: 6 : L -> 1 and XWR -> 111 on PMP entry 9
     LI(x4, (PMPREGION_XWR_111 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_6
 
-// Test Case: 7 -- No Permissions given to the PMP Region 8
-
+// Test Case: 7 : L -> 1 and XWR -> 000 on PMP entry 8
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_7
 
-// Test Case: 8 -- X Permissions given to the PMP Region 7
-
+// Test Case: 8 : L -> 1 and XWR -> 100 on PMP entry 7
     LI(x4, (PMPREGION_XWR_100 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_8
 
-// Test Case: 9 -- R Permissions given to the PMP Region 6
-
+// Test Case: 9 : L -> 1 and XWR -> 001 on PMP entry 6
     LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_9
 
-// Test Case: 10 -- XR Permissions given to the PMP Region 5
-
+// Test Case: 10 : L -> 1 and XWR -> 101 on PMP entry 5
     LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_10
 
-// Test Case: 11 -- XR Permissions given to the PMP Region 4
-
+// Test Case: 11 : L -> 1 and XWR -> 011 on PMP entry 4
     LI(x4, (PMPREGION_XWR_011 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_11
 
-// Test Case: 12 -- XWR Permissions given to the PMP Region 3
-
+// Test Case: 12 : L -> 1 and XWR -> 111 on PMP entry 3
     LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_12
 
-// Test Case: 13 -- No Permissions given to the PMP Region 2
-
+// Test Case: 13 : L -> 1 and XWR -> 000 on PMP entry 2
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_13
 
-// Test Case: 14 -- X Permissions given to the PMP Region 1
-
+// Test Case: 14 : L -> 1 and XWR -> 100 on PMP entry 1
     LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_14
 
-// Test Case: 15 -- R Permissions given to the PMP Region 0
-
+// Test Case: 15 : L -> 1 and XWR -> 001 on PMP entry 0
     LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_15
 
+    j exit
+
+exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpm_cfg_XWR_all_sb\""
-test_2_str: .string "\"test: 2; cp: pmpm_cfg_XWR_all_sh\""
-test_3_str: .string "\"test: 3; cp: pmpm_cfg_XWR_all_sw\""
-test_4_str: .string "\"test: 4; cp: pmpm_cfg_XWR_all_lb\""
-test_5_str: .string "\"test: 5; cp: pmpm_cfg_XWR_all_lbu\""
-test_6_str: .string "\"test: 6; cp: pmpm_cfg_XWR_all_lh\""
-test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
-test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
-test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
+test_1_str: .string "\"test: 1; cp: pmpsm_cfg_XWR_all_sb\""
+test_2_str: .string "\"test: 2; cp: pmpsm_cfg_XWR_all_sh\""
+test_3_str: .string "\"test: 3; cp: pmpsm_cfg_XWR_all_sw\""
+test_4_str: .string "\"test: 4; cp: pmpsm_cfg_XWR_all_lb\""
+test_5_str: .string "\"test: 5; cp: pmpsm_cfg_XWR_all_lbu\""
+test_6_str: .string "\"test: 6; cp: pmpsm_cfg_XWR_all_lh\""
+test_7_str: .string "\"test: 7; cp: pmpsm_cfg_XWR_all_lhu\""
+test_8_str: .string "\"test: 8; cp: pmpsm_cfg_XWR_all_lw\""
+test_9_str: .string "\"test: 9; cp: pmpsm_cfg_XWR_all_jalr\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
+    .option push
+    .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
+    .rept PMP_NAPOT_REGION_PAD_WORDS
     jr ra
     .endr
-
-.p2align (UDB_PMP_GRANULARITY)
+    .option pop
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))
     nop
     .endr
-
+    .option push
+    .option norvc
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra
+    .option pop
 
 RVTEST_DATA_END
 

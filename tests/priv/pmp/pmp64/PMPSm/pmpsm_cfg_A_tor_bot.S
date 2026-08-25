@@ -3,9 +3,9 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title       : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,17 +14,9 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_cfg_A_tor_bot for PMPM is fully covered in this test file.
+// Coverpoints : cp_cfg_A_tor_bot for PMPSm is fully covered in this test file.
 //
-// Test cases  : In this test, we check that region 1 extends from pmpaddr0 to
-//                pmpaddr1. We set up a default TOR region, then make accesses
-//                {lw,sw,jalr} at addresses {pmpadr0-4, pmpadr0, pmpadr1-4, pmpadr1}.
-//
-//                Test case 1: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101,
-//               pmpcfg0.L = 0, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
-//
-//              Test case 2: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101,
-//               pmpcfg0.L = 1, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
+// Test Cases  : {sw, lw, jalr} at pmpaddr0-4, pmpaddr0, pmpaddr1-4 and pmpaddr1 with entry 1 = L, TOR, XR and entry 0 = OFF, unlocked then locked.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -37,7 +29,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 30
+#define SIGUPD_COUNT 40
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -45,176 +37,86 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g         (1<<(UDB_PMP_GRANULARITY))
-
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-
-    LI(a4, DOUBLE_NOP)                                      // Value to write (DOUBLE_NOP)
-
-    LA(a5, (\ADDRESS-4))                                // Address to be verified
-    \TEST_CASE\()_1:
-    sw a4, 0(a5)                                            // word-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    LA(a5, (\ADDRESS))                                // Address to be verified
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                            // word-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    LA(a5, ((\ADDRESS+g)-4))                                // Address to be verified
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)                                            // word-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    LA(a5, (\ADDRESS+g))                                // Address to be verified
-    \TEST_CASE\()_4:
-    sw a4, 0(a5)                                            // word-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-    LA(a5, (\ADDRESS-4))                                // Address to be verified
-    \TEST_CASE\()_5:
-    lw a4, 0(a5)                                            // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
-
-    LA(a5, (\ADDRESS))                                // Address to be verified
-    \TEST_CASE\()_6:
-    lw a4, 0(a5)                                            // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
-
-    LA(a5, ((\ADDRESS+g)-4))                                // Address to be verified
-    \TEST_CASE\()_7:
-    lw a4, 0(a5)                                            // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
-
-    LA(a5, (\ADDRESS+g))                                // Address to be verified
-    \TEST_CASE\()_8:
-    lw a4, 0(a5)                                            // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
-
-   RVTEST_FENCEI
-
-    LA (a4, (\ADDRESS-4))
-    LA(x1, 1f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-
-    LA (a4, (\ADDRESS))
-    LA(x1, 2f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-2:
-    nop
-
-    LA (a4, ((\ADDRESS+g)-4))
-    LA(x1, 3f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-3:
-    nop
-
-    LA (a4, (\ADDRESS+g))
-    LA(x1, 4f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
-    nop
-4:
-    nop
-
-.endm
-
 main:
-    // Loop to SET ALL pmpcfg REGs to zero
+    // Clear every pmpcfg and pmpaddr CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi , x0
+    csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+2
     .endr
-
-    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMPREGION_UPPER_BOUND        ((((PMP_L|PMP_R      |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LOWER_BOUND        ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_UPPER_BOUND (((PMP_L|PMP_R|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LOWER_BOUND (((PMP_L)&0xFF) << PMP0_CFG_SHIFT)
 
     RVTEST_PMP_SET_BACKGROUND x4
 
-    // x4 = base address of TEST_FOR_EXECUTION (must be g-byte aligned)
-    // x5 = x4 + g (upper bound, also g-byte aligned)
-    // After >> PMP_SHIFT (>>2): bit[0] of pmpaddr will be 0
-    LA(x4, TEST_FOR_EXECUTION)
-    LI(t0, g)
-    add      x5, x4, t0
-    srl      x4, x4, PMP_SHIFT
-    srl      x5, x5, PMP_SHIFT
+    LA(x5, TEST_FOR_EXECUTION)
+    srl x5, x5, PMP_SHIFT
+    csrw pmpaddr0, x5
+    LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
+    add x5, x5, x6
+    csrw pmpaddr1, x5
 
-    csrw     pmpaddr0, x4
-    csrw     pmpaddr1, x5
+// ---------------------------- Verification Section ----------------------------
 
-//                                            Verification Section
-// Test Case: 1
-
+// Test Case: 1 : pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, unlocked
     LI(x4, PMPREGION_UPPER_BOUND)
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX_TOR_BOT    TEST_FOR_EXECUTION, test_1
 
-// Test Case: 2
-
-    LI(x4, PMPREGION_UPPER_BOUND)
+// Test Case: 2 : pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, locked
+    LI(x4, PMPREGION_UPPER_BOUND|PMPREGION_LOWER_BOUND)
     csrw pmpcfg0, x4
-    LI(x4, PMPREGION_LOWER_BOUND)
-    csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX_TOR_BOT    TEST_FOR_EXECUTION, test_2
 
-    RVTEST_GOTO_MMODE
+    j exit
+
+exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_tor_bot_store_access_at_pmpaddr0-4\""
-test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_tor_bot_store_access_at_pmpaddr0+4\""
-test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_tor_bot_store_access_at_pmpaddr1-4\""
-test_4_str: .string "\"test: 4; cp: pmpm_cfg_A_tor_bot_store_access_at_pmpaddr1+4\""
-test_5_str: .string "\"test: 5; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr0-4\""
-test_6_str: .string "\"test: 6; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr0+4\""
-test_7_str: .string "\"test: 7; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1-4\""
-test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1+4\""
+test_1_str:  .string "\"test: 1; cp: pmpsm_cfg_A_tor_bot_sw_bot-4\""
+test_2_str:  .string "\"test: 2; cp: pmpsm_cfg_A_tor_bot_sw_bot\""
+test_3_str:  .string "\"test: 3; cp: pmpsm_cfg_A_tor_bot_sw_top-4\""
+test_4_str:  .string "\"test: 4; cp: pmpsm_cfg_A_tor_bot_sw_top\""
+test_5_str:  .string "\"test: 5; cp: pmpsm_cfg_A_tor_bot_lw_bot-4\""
+test_6_str:  .string "\"test: 6; cp: pmpsm_cfg_A_tor_bot_lw_bot\""
+test_7_str:  .string "\"test: 7; cp: pmpsm_cfg_A_tor_bot_lw_top-4\""
+test_8_str:  .string "\"test: 8; cp: pmpsm_cfg_A_tor_bot_lw_top\""
+test_9_str:  .string "\"test: 9; cp: pmpsm_cfg_A_tor_bot_jalr_bot-4\""
+test_10_str: .string "\"test: 10; cp: pmpsm_cfg_A_tor_bot_jalr_bot\""
+test_11_str: .string "\"test: 11; cp: pmpsm_cfg_A_tor_bot_jalr_top-4\""
+test_12_str: .string "\"test: 12; cp: pmpsm_cfg_A_tor_bot_jalr_top\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
+    .option push
+    .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    .rept (PMP_TOR_REGION_BYTES / 4)
     jr ra
     .endr
-
-.p2align (UDB_PMP_GRANULARITY)
+    .option pop
 TEST_FOR_EXECUTION:
-    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    .rept (PMP_TOR_REGION_BYTES / 4)
     jr ra
     .endr
-
+    .option push
+    .option norvc
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra
+    .option pop
 
 RVTEST_DATA_END
 

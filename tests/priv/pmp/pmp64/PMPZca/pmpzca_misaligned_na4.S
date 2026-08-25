@@ -3,9 +3,9 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title        : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors      : Umer Shahid, Allen Baum, David Harris
-//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title       : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,14 +14,9 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_misaligned_na4 for PMPZca is partially covered
-//               in this test file.
+// Coverpoints : cp_misaligned_na4 for PMPZca is fully covered in this test file.
 //
-// Test Cases  : Check that misaligned 32-bit fetches that cross a NA4 PMP boundary fail.
-//               Setting up 3 standard consecutive NA4 PMP regions with L=1, XWR=111
-//               (XWR = 000 for region 3). Place an uncompressed ret = jalr straddling the
-//               start and end of the second regions. Attempt jalr to each ret.
-//
+// Test Cases  : An uncompressed jalr straddling the start and the end of the second of three consecutive NA4 regions.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -30,7 +25,7 @@
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_NA4_SUPPORTED: true
-# MARCH: rv64i_zca_zicsr_zifencei
+# MARCH: rv64i_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
@@ -42,99 +37,83 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE     4
-
 main:
-    // Loop to SET ALL pmpcfg REGs to zero
+    // Clear every pmpcfg and pmpaddr CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi , x0
+    csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+2
     .endr
-
-    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4) &0xFF) << PMP0_CFG_SHIFT))
-#define PMP1CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4) &0xFF) << PMP1_CFG_SHIFT))
-#define PMP2CFG             ((((PMP_L|PMP_NA4) &0xFF) << PMP2_CFG_SHIFT))
+#define PMP0CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT)
+#define PMP1CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT)
+#define PMP2CFG (((PMP_L|PMP_NA4)&0xFF) << PMP2_CFG_SHIFT)
 
-#define REGIONSTART             TEST_FOR_EXECUTION_0
+#define REGIONSTART TEST_FOR_EXECUTION_0
+#define REGION_SIZE 4
 
     RVTEST_PMP_SET_BACKGROUND x4
 
-//                                          Verification Section
+// ---------------------------- Verification Section ----------------------------
+
 // Test Case: three consecutive NA4 regions, the third locked with XWR = 000
-
     LA(x5, REGIONSTART)
-    srl x5, x5 ,PMP_SHIFT
+    LI(x6, 0 * REGION_SIZE)
+    add x5, x5, x6
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
-
-    LI(x4, PMP0CFG)
-    csrw pmpcfg0, x4
-
     LA(x5, REGIONSTART)
-    LI(x4, REGION_SIZE)
-    add x5, x5, x4
-    srl x5, x5 ,PMP_SHIFT
+    LI(x6, 1 * REGION_SIZE)
+    add x5, x5, x6
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr1, x5
-
-    LI(x4, PMP1CFG)
-    csrw pmpcfg0, x4
-
     LA(x5, REGIONSTART)
-    LI(x4, 2*REGION_SIZE)
-    add x5, x5, x4
-    srl x5, x5 ,PMP_SHIFT
+    LI(x6, 2 * REGION_SIZE)
+    add x5, x5, x6
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr2, x5
-
-    LI(x4, PMP2CFG)
+    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    // Test Case 1: execute at TEST_FOR_EXECUTION_1
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
 
-    // Test Case 2: execute at TEST_FOR_EXECUTION_2
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
 
-    j exit                                                      // Verification Complete, exit the test
+    j exit
 
 exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_na4_region_execute\""
+test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_na4_execute\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_X:
     jalr x0, x1, 0
-
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    c.nop                                                       // 2-byte filler: offsets _1/_2 so their jalr straddles the region boundary
-
-// No .p2align here (and none before the later labels): the c.nop offsets above must survive
-// unrounded so these uncompressed jalr instructions land mid-word, genuinely straddling the
-// region boundary, instead of being pushed back onto the next grain-aligned boundary.
+    c.nop
+// No alignment before these labels: the c.nop offsets above make the jalr straddle the region boundary
 TEST_FOR_EXECUTION_1:
-    jalr x0, x1, 0                                              // straddles the start of the 2nd region
-
+    jalr x0, x1, 0
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0                                              // straddles the end of the 2nd region
-
+    jalr x0, x1, 0
+    .option push
+    .option norvc
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra
+    .option pop
 
 RVTEST_DATA_END
 

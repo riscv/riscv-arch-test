@@ -3,9 +3,9 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title        : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors      : Umer Shahid, Allen Baum, David Harris
-//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title       : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,22 +14,18 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_misaligned_napot for PMPZca is partially covered
-//               in this test file.
+// Coverpoints : cp_aligned_napot for PMPZca is fully covered in this test file.
 //
-// Test Cases  : Setting up 3 standard consecutive NAPOT PMP regions with L=1, XWR=111
-//               (XWR = 000 for region 3). Place an uncompressed ret = jalr ra inside
-//               first region and inside second region. Attempt jalr to each ret.
-//
+// Test Cases  : An uncompressed jalr inside each of the first two of three consecutive NAPOT regions, the third locked with XWR = 000.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Zca','Sm']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_NAPOT_SUPPORTED: true
-# MARCH: rv32i_zca_zicsr_zifencei
+# MARCH: rv32i_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
@@ -41,32 +37,25 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#if UDB_PMP_GRANULARITY != 2
-    #define REGION_SIZE  (1<<(UDB_PMP_GRANULARITY))
-#else
-    #define REGION_SIZE 8
-#endif
-
 main:
-    // Loop to SET ALL pmpcfg REGs to zero
+    // Clear every pmpcfg and pmpaddr CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi , x0
+    csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+1
     .endr
-
-    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
-#define PMP1CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
-#define PMP2CFG             ((((PMP_L|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
+#define PMP0CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
+#define PMP1CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
+#define PMP2CFG (((PMP_L|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT)
 
-#define REGIONSTART             TEST_FOR_EXECUTION_1
+#define REGIONSTART TEST_FOR_EXECUTION_1
+#define REGION_SIZE PMP_NAPOT_REGION_BYTES
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
     #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
@@ -75,56 +64,47 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#define NEWREGION1          (REGIONSTART)
-#define NEWREGION2          (REGIONSTART+REGION_SIZE)
-#define NEWREGION3          (REGIONSTART+(2*REGION_SIZE))
-
     RVTEST_PMP_SET_BACKGROUND x4
 
-//                                          Verification Section
-// Test Case: three consecutive NAPOT regions, the third locked with XWR = 000
+// ---------------------------- Verification Section ----------------------------
 
-    LA(x5, NEWREGION1)
+// Test Case: three consecutive NAPOT regions, the third locked with XWR = 000
+    LA(x5, REGIONSTART)
+    LI(x6, 0 * REGION_SIZE)
+    add x5, x5, x6
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr0, x5
-
-    LA(x4, PMP0CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, NEWREGION2)
+    LA(x5, REGIONSTART)
+    LI(x6, 1 * REGION_SIZE)
+    add x5, x5, x6
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr1, x5
-
-    LA(x4, PMP1CFG)
-    csrw pmpcfg0, x4
-
-    LA(x5, NEWREGION3)
+    LA(x5, REGIONSTART)
+    LI(x6, 2 * REGION_SIZE)
+    add x5, x5, x6
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr2, x5
-
-    LA(x4, PMP2CFG)
+    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    // Test Case 1: execute at TEST_FOR_EXECUTION_1
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
 
-    // Test Case 2: execute at TEST_FOR_EXECUTION_2
     PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
 
-    j exit                                                      // Verification Complete, exit the test
+    j exit
 
 exit:
 
@@ -132,37 +112,36 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_napot_execute\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
-
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
-    jalr x0, x1, 0                                              // Uncompressed return inside the first region
+    jalr x0, x1, 0
     .rept ((REGION_SIZE - 4) / 2)
     nop
     .endr
-
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0                                              // Uncompressed return inside the second region
+    jalr x0, x1, 0
     .rept ((REGION_SIZE - 4) / 2)
     nop
     .endr
-
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
-    .rept (REGION_SIZE)
+    .rept (REGION_SIZE / 2)
     nop
     .endr
-
+    .option push
+    .option norvc
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra
+    .option pop
 
 RVTEST_DATA_END
 

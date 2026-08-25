@@ -3,9 +3,9 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title       : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     : Umer Shahid, Allen Baum, David Harris
+//               Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,12 +14,9 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_cfg_A_off_all for PMPM is fully covered in this test file.
+// Coverpoints : cp_cfg_A_off_all for PMPSm is fully covered in this test file.
 //
-// Test Cases  : Checking that A=OFF never matches for each region. For each
-//               standard region with pmpcfg.L=1, pmpcfg.A=OFF, pmpcfg.XWR=000.
-//               Fetching, reading and writing from that region. Should succeed
-//               because region is off even though inaccessible.
+// Test Cases  : {jalr, sw, lw} at a region whose entry has L = 1, A = OFF, XWR = 000, for every entry; all succeed.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -39,54 +36,20 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
-    \TEST_CASE\()_3:
-    jalr ra, 0(a4)
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)               // Signature update for jalr
-    nop
-    nop
-1:
-    nop
-    nop
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                             // Word store test
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)               // Signature update for sw
-    nop
-    nop
-
-    // Load Access Check
-    \TEST_CASE\()_1:
-    lw a4, 0(a5)                                             // Word load test
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)               // Signature update for lw
-    nop
-    nop
-
-.endm
-
 main:
-    // Loop to SET ALL pmpcfg REGs to zero
+    // Clear every pmpcfg and pmpaddr CSR
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi , x0
+    csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+2
     .endr
-
-    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
     #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
@@ -97,9 +60,9 @@ main:
 
     RVTEST_PMP_SET_BACKGROUND x4
 
-//                                            Verification Section
-// Test Case: 1 -- No Permissions given to the PMP Region 14
+// ---------------------------- Verification Section ----------------------------
 
+// Test Case: 1 : PMP entry 14
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -107,17 +70,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr14, x5
-
-    LI(x4, (0x80 << PMP6_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 2 -- No Permissions given to the PMP Region 13
-
+// Test Case: 2 : PMP entry 13
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -125,17 +83,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr13, x5
-
-    LI(x4, (0x80 << PMP5_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 3 -- No Permissions given to the PMP Region 12
-
+// Test Case: 3 : PMP entry 12
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -143,17 +96,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr12, x5
-
-    LI(x4, (0x80 << PMP4_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 4 -- No Permissions given to the PMP Region 11
-
+// Test Case: 4 : PMP entry 11
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -161,17 +109,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr11, x5
-
-    LI(x4, (0x80 << PMP3_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 5 -- No Permissions given to the PMP Region 10
-
+// Test Case: 5 : PMP entry 10
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -179,17 +122,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr10, x5
-
-    LI(x4, (0x80 << PMP2_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 6 -- No Permissions given to the PMP Region 9
-
+// Test Case: 6 : PMP entry 9
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -197,17 +135,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr9, x5
-
-    LI(x4, (0x80 << PMP1_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 7 -- No Permissions given to the PMP Region 8
-
+// Test Case: 7 : PMP entry 8
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -215,17 +148,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr8, x5
-
-    LI(x4, (0x80 << PMP0_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 8 -- No Permissions given to the PMP Region 7
-
+// Test Case: 8 : PMP entry 7
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -233,17 +161,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr7, x5
-
-    LI(x4, (0x80 << PMP7_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 9 -- No Permissions given to the PMP Region 6
-
+// Test Case: 9 : PMP entry 6
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -251,17 +174,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr6, x5
-
-    LI(x4, (0x80 << PMP6_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP6_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 10 -- No Permissions given to the PMP Region 5
-
+// Test Case: 10 : PMP entry 5
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -269,17 +187,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr5, x5
-
-    LI(x4, (0x80 << PMP5_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP5_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 11 -- No Permissions given to the PMP Region 4
-
+// Test Case: 11 : PMP entry 4
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -287,17 +200,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr4, x5
-
-    LI(x4, (0x80 << PMP4_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP4_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 12 -- No Permissions given to the PMP Region 3
-
+// Test Case: 12 : PMP entry 3
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -305,17 +213,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr3, x5
-
-    LI(x4, (0x80 << PMP3_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 13 -- No Permissions given to the PMP Region 2
-
+// Test Case: 13 : PMP entry 2
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -323,17 +226,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr2, x5
-
-    LI(x4, (0x80 << PMP2_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 14 -- No Permissions given to the PMP Region 1
-
+// Test Case: 14 : PMP entry 1
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -341,17 +239,12 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr1, x5
-
-    LI(x4, (0x80 << PMP1_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
-    RVTEST_GOTO_MMODE
-
-// Test Case: 15 -- No Permissions given to the PMP Region 0
-
+// Test Case: 15 : PMP entry 0
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
     LI(x6, PMP_MASK)
@@ -359,57 +252,43 @@ main:
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
     csrw pmpaddr0, x5
-
-    LI(x4, (0x80 << PMP0_CFG_SHIFT))
+    LI(x4, ((((PMP_L)&0xFF) << 0) << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
-
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-    RVTEST_GOTO_MMODE
+    j exit
 
-// Test Case: 16 -- No Permissions given to the PMP Region 0
-
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-
-    LI(x4, (0x80 << PMP0_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
-
+exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.p2align 4
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_cfg_A_off_all_lw\""
-test_2_str: .string "\"test: 2; cp: cp_cfg_A_off_all_sw\""
-test_3_str: .string "\"test: 3; cp: cp_cfg_A_off_all_x\""
+test_1_str: .string "\"test: 1; cp: pmpsm_cfg_A_off_all_jalr\""
+test_2_str: .string "\"test: 2; cp: pmpsm_cfg_A_off_all_sw\""
+test_3_str: .string "\"test: 3; cp: pmpsm_cfg_A_off_all_lw\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
+    .option push
+    .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
+    .rept PMP_NAPOT_REGION_PAD_WORDS
     jr ra
     .endr
-
+    .option pop
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))
     nop
     .endr
-
+    .option push
+    .option norvc
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra
+    .option pop
 
 RVTEST_DATA_END
 

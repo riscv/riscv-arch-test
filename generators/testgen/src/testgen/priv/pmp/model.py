@@ -5,16 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Declarative data model for the generated ``tests/priv/pmp`` test suites.
-
-These suites are machine-mode PMP tests with no page tables, so they share
-nothing with the Sv* model in :mod:`testgen.priv.sv.model` beyond the general
-"describe the file, render it" shape.
-"""
+"""Declarative data model for the generated ``tests/priv/pmp`` test suites."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -45,19 +40,14 @@ class PmpFile:
 
     filename: str
     xlen: Xlen
-    banner: str  # verbatim comment block: Title/Authors/Description/Coverpoints/Test Cases
+    banner: str  # comment block: Title/Authors/Description/Coverpoints/Test Cases
     required_extensions: tuple[str, ...]
     sigupd: int
     body: tuple[str, ...]  # assembly between `main:` and RVTEST_CODE_END
     params: tuple[str, ...] = ()  # YAML '# params:' entries; MXLEN is added automatically
     march: str | None = None  # defaults to xlen.march
-    trap_sigupd: int | None = None
-    priv_test: bool = True  # emit `#define RVTEST_PRIV_TEST`
-    extra_defines: tuple[str, ...] = ()  # extra #defines before the framework #include
-    post_include_defines: tuple[str, ...] = ()  # #defines that depend on riscv_arch_test.h
-    macro_blocks: tuple[str, ...] = ()  # verbatim local .macro blocks, emitted after RVTEST_BEGIN
+    extra_defines: tuple[str, ...] = ()  # #defines before the framework #include
     pre_main: tuple[str, ...] = ()  # lines emitted after RVTEST_BEGIN and before `main:`
     data: tuple[str, ...] = ()  # lines between RVTEST_DATA_BEGIN and RVTEST_DATA_END
     sig_strs: tuple[tuple[str, str], ...] = ()  # (label, message) -> `<label>_str: .string "\"<msg>\""`
-    data_align: int | None = None  # `.p2align N` emitted at the top of the data section
-    copyright: tuple[str, ...] = field(default_factory=tuple)  # extra copyright lines above the title
+    copyright: tuple[str, ...] = ()  # extra copyright holders named above the title

@@ -1474,13 +1474,14 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_sret_s_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
-    tc = test_data.begin_test_chunk("mcsr_minstret")
-    tc.code.extend(_generate_mcsr_minstret_tests(test_data))
     tc = test_data.begin_test_chunk("mcsr_cntr")
     tc.code.extend(_generate_mcsr_cntr_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     _generate_mcsr_tests(test_data, test_chunks)
 
+    tc = test_data.begin_test_chunk("mcsr_minstret")
+    tc.code.extend(_generate_mcsr_minstret_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

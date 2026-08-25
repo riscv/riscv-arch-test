@@ -438,6 +438,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
     tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     tc.code.extend(_generate_mstatus_ie_tests(test_data))
+    tc.code.extend(_generate_minstret_trap_tests(test_data))
     tc.code.append("#ifdef S_SUPPORTED")
     tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))
     tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_u", priv_mode=0))
@@ -450,7 +451,7 @@ def make_exceptionssm(test_data: TestData) -> list[TestChunk]:
         tc = test_data.begin_test_chunk(f"medeleg_{mode_tag[-1]}")
         tc.code.append("#ifdef S_SUPPORTED")
         tc.code.extend(_generate_medeleg_msu_tests(test_data, mode_tag, priv_mode))
-        tc.code.append("#endif // S_SUPPORTED")    tc.code.extend(_generate_minstret_trap_tests(test_data))
-
+        tc.code.append("#endif // S_SUPPORTED")
         test_chunks.append(test_data.end_test_chunk())
+
     return test_chunks

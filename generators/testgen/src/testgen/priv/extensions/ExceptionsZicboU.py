@@ -167,7 +167,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
 
 def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate cbo misaligned trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboU_cg", "cp_cbo_misaligned"
+    covergroup, coverpoint = "ExceptionsZicboU_cg", "cp_cbo_address_misaligned"
 
     addr_reg, menvcfg_reg = test_data.int_regs.get_registers(2)
 

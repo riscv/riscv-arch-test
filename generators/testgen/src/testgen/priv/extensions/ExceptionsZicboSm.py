@@ -166,7 +166,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
 
 def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate cbo misaligned trap tests in machine mode."""
-    covergroup, coverpoint = "ExceptionsZicboSm_cg", "cp_cbo_misaligned"
+    covergroup, coverpoint = "ExceptionsZicboSm_cg", "cp_cbo_address_misaligned"
 
     addr_reg, menvcfg_reg = test_data.int_regs.get_registers(2)
 
@@ -215,7 +215,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZicboSm",
-    required_extensions=["Sm", "Zicbom", "Zicboz", "Zicbop"],
+    required_extensions=["Sm", "Zicbom"],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbosm(test_data: TestData) -> list[TestChunk]:

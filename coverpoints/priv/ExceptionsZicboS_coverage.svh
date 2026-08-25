@@ -75,7 +75,7 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
     `ifdef ZICBOZ_SUPPORTED
         cp_cbze:                    cross cbo_zero,       menvcfg_cbze,  senvcfg_cbze,  priv_mode_s_u;
     `endif
-    cp_cbo_misaligned:  cross cbo_instrs,     adr_misaligned, priv_mode_s_u, menvcfg_all_enable, senvcfg_all_enable;
+    cp_cbo_address_misaligned:  cross cbo_instrs,     adr_misaligned, priv_mode_s_u, menvcfg_all_enable, senvcfg_all_enable;
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

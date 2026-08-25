@@ -260,11 +260,82 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
 
+    // Valid virtual address walks: stvec, sepc, and stval must hold every canonical virtual address.
+    // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
+    // (31 for Sv32, where VALEN = XLEN).
+    `ifdef SV39_SUPPORTED
+        `define S_VADDR_WALK
+    `elsif SV32_SUPPORTED
+        `define S_VADDR_WALK
+    `endif
+    `ifdef S_VADDR_WALK
+        `ifdef SV57_SUPPORTED
+            `define S_VADDR_WALK_MSB 55
+        `elsif SV48_SUPPORTED
+            `define S_VADDR_WALK_MSB 46
+        `elsif SV39_SUPPORTED
+            `define S_VADDR_WALK_MSB 37
+        `else
+            `define S_VADDR_WALK_MSB 31
+        `endif
+        stvec: coverpoint ins.current.insn[31:20] {
+            bins stvec = {CSR_STVEC};
+        }
+        sepc: coverpoint ins.current.insn[31:20] {
+            bins sepc = {CSR_SEPC};
+        }
+        stval: coverpoint ins.current.insn[31:20] {
+            bins stval = {CSR_STVAL};
+        }
+        // stvec: BASE holds the address >> 2 with MODE = Direct, so bits 1:0 stay 0
+        stvec_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
+        }
+        stvec_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
+                           iff ($onehot(~(ins.current.rs1_val | 3)) && ins.current.rs1_val[1:0] == 2'b00) {
+            bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
+        }
+        // sepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
+        sepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            `ifdef ZCA_SUPPORTED
+                bins b_1[] = { [1:`S_VADDR_WALK_MSB] };
+            `else
+                bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
+            `endif
+        }
+        `ifdef ZCA_SUPPORTED
+            sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 1))
+                              iff ($onehot(~(ins.current.rs1_val | 1)) && ins.current.rs1_val[0] == 1'b0) {
+                bins b_0[] = { [1:`S_VADDR_WALK_MSB] };
+            }
+        `else
+            sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
+                              iff ($onehot(~(ins.current.rs1_val | 3)) && ins.current.rs1_val[1:0] == 2'b00) {
+                bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
+            }
+        `endif
+        // stval: any byte address is a valid virtual address
+        stval_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`S_VADDR_WALK_MSB] };
+        }
+        stval_vaddr_walk0: coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`S_VADDR_WALK_MSB] };
+        }
+    `endif
+
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
     cp_scsrwalk:              cross priv_mode_s, csrwalk, csrop, walking_ones;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
+    `ifdef S_VADDR_WALK
+        cp_stvec_vaddr_walk1:     cross priv_mode_s, csrw, stvec, stvec_vaddr_walk1;
+        cp_stvec_vaddr_walk0:     cross priv_mode_s, csrw, stvec, stvec_vaddr_walk0;
+        cp_sepc_vaddr_walk1:      cross priv_mode_s, csrw, sepc, sepc_vaddr_walk1;
+        cp_sepc_vaddr_walk0:      cross priv_mode_s, csrw, sepc, sepc_vaddr_walk0;
+        cp_stval_vaddr_walk1:     cross priv_mode_s, csrw, stval, stval_vaddr_walk1;
+        cp_stval_vaddr_walk0:     cross priv_mode_s, csrw, stval, stval_vaddr_walk0;
+    `endif
 
 // waived because behavior of other fields is UNSPECIFIED when satp.MODE=Bare
 //    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;

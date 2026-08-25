@@ -48,13 +48,35 @@ S_CSRS = [
     ("sip", 0xFFFF),  # only test standard non-reserved portion
     ("sie", 0xFFFF),  # only test standard non-reserved portion
 ]
-# skip walking 1s on this because valid virtual addresses is not described adequately
+# Not walked with csr_walk_test: these only have to hold valid virtual addresses, which
+# the canonical-address walks in _generate_vaddr_walk_tests cover.
 S_CSRS_NOWALK = [
     ("sepc", None),  # only has to be able to hold all valid virtual addresses
     ("stval", None),  # only has to be able to hold all valid virtual addresses and 0
 ]
 # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
 S_CSR_SENVCFG = ("senvcfg", None)
+
+# Address CSRs that must hold every valid virtual address. The value written is the address
+# itself: stvec carries it in BASE (address >> 2) with MODE = Direct, so its two low bits are
+# held at 0; sepc holds bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
+# stval holds any byte address. Each entry is (csr, held-low mask, {bit: gate define}).
+S_VADDR_CSRS = [
+    ("stvec", 0b11, {}),
+    ("sepc", 0b01, {1: "ZCA_SUPPORTED"}),
+    ("stval", 0b00, {}),
+]
+
+# Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal, so the msb that can be walked
+# independently is VALEN-2 (31 for Sv32, where VALEN = XLEN). Each tier is (msb, guard) and extends
+# the walk to the wider scheme when it is supported.
+S_VADDR_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
+S_VADDR_TIERS = [
+    (31, None),
+    (37, "#ifdef SV39_SUPPORTED"),
+    (46, "#ifdef SV48_SUPPORTED"),
+    (55, "#ifdef SV57_SUPPORTED"),
+]
 
 
 def _generate_scause_tests(test_data: TestData) -> list[str]:
@@ -322,6 +344,96 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _vaddr_walk_test(test_data: TestData, csr_name: str, held_low: int, gated_bits: dict[int, str]) -> list[str]:
+    """Write every canonical virtual address with one bit walked to csr_name and check it reads back exactly."""
+    covergroup = "S_scsr_cg"
+    csr = (csr_name, None)
+    save_reg, ones_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
+    low_bit = held_low.bit_length()
+    ones = -1 & ~held_low
+    for bit in gated_bits:
+        ones &= ~(1 << bit)
+
+    def iteration(i: int, walking_ones: bool) -> list[str]:
+        if walking_ones:
+            coverpoint = f"cp_{csr_name}_vaddr_walk1"
+            lines = [
+                "",
+                f"# Testcase: {csr_name} = bit {i} set, 0s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                test_data.add_testcase(f"walking1_{i}", coverpoint, covergroup),
+                f"csrw {csr_name}, x{walk_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        else:
+            coverpoint = f"cp_{csr_name}_vaddr_walk0"
+            lines = [
+                "",
+                f"# Testcase: {csr_name} = bit {i} clear, 1s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                f"xor x{check_reg}, x{ones_reg}, x{walk_reg}    # clear bit {i}",
+                test_data.add_testcase(f"walking0_{i}", coverpoint, covergroup),
+                f"csrw {csr_name}, x{check_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        if i in gated_bits:
+            lines = [f"#ifdef {gated_bits[i]}", *lines, f"#endif // {gated_bits[i]}"]
+        return lines
+
+    def walk_pass(walking_ones: bool) -> list[str]:
+        lines = []
+        endifs = []
+        start = low_bit
+        for msb, guard in S_VADDR_TIERS:
+            if guard is not None:
+                lines.append(guard)
+                endifs.append(f"#endif // {guard.split(' ', 1)[1]}")
+            for i in range(start, msb + 1):
+                lines.extend(iteration(i, walking_ones))
+            start = msb + 1
+        lines.extend(reversed(endifs))
+        return lines
+
+    lines = [
+        "",
+        f"# Valid virtual address walk tests for {csr_name}",
+        S_VADDR_GATE,
+        f"csrr x{save_reg}, {csr_name}      # Save CSR",
+        f"LI(x{ones_reg}, {ones})    # all 1s with bits {(~ones) & 0xFF:#b} held low",
+    ]
+    for bit, gate in gated_bits.items():
+        lines.extend(
+            [
+                f"#ifdef {gate}",
+                f"ori x{ones_reg}, x{ones_reg}, {1 << bit}    # bit {bit} is walkable with {gate}",
+                f"#endif // {gate}",
+            ]
+        )
+    lines.append(f"\n# Walking 1s through {csr_name} with 0s in the msbs")
+    lines.extend(walk_pass(True))
+    lines.append(f"\n# Walking 0s through {csr_name} with 1s in the msbs")
+    lines.extend(walk_pass(False))
+    lines.extend(
+        [f"csrw {csr_name}, x{save_reg}            # restore CSR", f"#endif // {S_VADDR_GATE.split(' ', 1)[1]}"]
+    )
+    test_data.int_regs.return_registers([save_reg, ones_reg, walk_reg, check_reg])
+    return lines
+
+
+def _generate_vaddr_walk_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate the valid virtual address walks for stvec, sepc, and stval, one chunk per CSR."""
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        "cp_{stvec,sepc,stval}_vaddr_walk{1,0}",
+        "Write every valid virtual address as a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs)\n"
+        "to stvec (BASE with MODE = Direct), sepc, and stval. Canonical addresses have bits XLEN-1:VALEN-1\n"
+        "equal, so bits low..VALEN-2 are walked; requires Sv32 or Sv39 and extends the walk to Sv48/Sv57 when supported",
+    )
+    for csr_name, held_low, gated_bits in S_VADDR_CSRS:
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(_vaddr_walk_test(test_data, csr_name, held_low, gated_bits))
+
+
 def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     """Generate CSR tests, one test chunk per CSR so they can be split across files."""
     covergroup = "S_scsr_cg"
@@ -401,6 +513,8 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
     tc.code.extend(["", "#endif"])
+
+    _generate_vaddr_walk_tests(test_data, test_chunks)
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################

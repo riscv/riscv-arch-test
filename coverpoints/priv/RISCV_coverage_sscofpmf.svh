@@ -55,24 +55,31 @@
         wildcard bins write_ones  = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '1);
         wildcard bins write_zeros = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMCOUNTER && ins.current.rs1_val == '0);
    }
+   of_walking_one: coverpoint $clog2(`OF_VEC) iff ($onehot(`OF_VEC)) {
+            bins b_of[] = {[0:28]};  // one bin per OF bit position (mhpmevent3..mhpmevent31 = 29 bits)
+    }
+   of_pattern_class: coverpoint $countones(`OF_VEC) {
+            bins all_zeros   = {0};
+            bins all_ones    = {29};
+    }
 
     // Pack the 29 OF bits (mhpmevent3..mhpmevent31) into one expression via macro
     `ifdef UDB_MXLEN_64
-        `define OF_VEC {ins.current.csr[CSR_MHPMEVENTH31][63], ins.current.csr[CSR_MHPMEVENTH30][63], \
-                     ins.current.csr[CSR_MHPMEVENTH29][63], ins.current.csr[CSR_MHPMEVENTH28][63], \
-                     ins.current.csr[CSR_MHPMEVENTH27][63], ins.current.csr[CSR_MHPMEVENTH26][63], \
-                     ins.current.csr[CSR_MHPMEVENTH25][63], ins.current.csr[CSR_MHPMEVENTH24][63], \
-                     ins.current.csr[CSR_MHPMEVENTH23][63], ins.current.csr[CSR_MHPMEVENTH22][63], \
-                     ins.current.csr[CSR_MHPMEVENTH21][63], ins.current.csr[CSR_MHPMEVENTH20][63], \
-                     ins.current.csr[CSR_MHPMEVENTH19][63], ins.current.csr[CSR_MHPMEVENTH18][63], \
-                     ins.current.csr[CSR_MHPMEVENTH17][63], ins.current.csr[CSR_MHPMEVENTH16][63], \
-                     ins.current.csr[CSR_MHPMEVENTH15][63], ins.current.csr[CSR_MHPMEVENTH14][63], \
-                     ins.current.csr[CSR_MHPMEVENTH13][63], ins.current.csr[CSR_MHPMEVENTH12][63], \
-                     ins.current.csr[CSR_MHPMEVENTH11][63], ins.current.csr[CSR_MHPMEVENTH10][63], \
-                     ins.current.csr[CSR_MHPMEVENTH9][63],  ins.current.csr[CSR_MHPMEVENTH8][63], \
-                     ins.current.csr[CSR_MHPMEVENTH7][63],  ins.current.csr[CSR_MHPMEVENTH6][63], \
-                     ins.current.csr[CSR_MHPMEVENTH5][63],  ins.current.csr[CSR_MHPMEVENTH4][63], \
-                     ins.current.csr[CSR_MHPMEVENTH3][63]}
+        `define OF_VEC {ins.current.csr[CSR_MHPMEVENT31][63], ins.current.csr[CSR_MHPMEVENT30][63], \
+                     ins.current.csr[CSR_MHPMEVENT29][63], ins.current.csr[CSR_MHPMEVENT28][63], \
+                     ins.current.csr[CSR_MHPMEVENT27][63], ins.current.csr[CSR_MHPMEVENT26][63], \
+                     ins.current.csr[CSR_MHPMEVENT25][63], ins.current.csr[CSR_MHPMEVENT24][63], \
+                     ins.current.csr[CSR_MHPMEVENT23][63], ins.current.csr[CSR_MHPMEVENT22][63], \
+                     ins.current.csr[CSR_MHPMEVENT21][63], ins.current.csr[CSR_MHPMEVENT20][63], \
+                     ins.current.csr[CSR_MHPMEVENT19][63], ins.current.csr[CSR_MHPMEVENT18][63], \
+                     ins.current.csr[CSR_MHPMEVENT17][63], ins.current.csr[CSR_MHPMEVENT16][63], \
+                     ins.current.csr[CSR_MHPMEVENT15][63], ins.current.csr[CSR_MHPMEVENT14][63], \
+                     ins.current.csr[CSR_MHPMEVENT13][63], ins.current.csr[CSR_MHPMEVENT12][63], \
+                     ins.current.csr[CSR_MHPMEVENT11][63], ins.current.csr[CSR_MHPMEVENT10][63], \
+                     ins.current.csr[CSR_MHPMEVENT9][63],  ins.current.csr[CSR_MHPMEVENT8][63], \
+                     ins.current.csr[CSR_MHPMEVENT7][63],  ins.current.csr[CSR_MHPMEVENT6][63], \
+                     ins.current.csr[CSR_MHPMEVENT5][63],  ins.current.csr[CSR_MHPMEVENT4][63], \
+                     ins.current.csr[CSR_MHPMEVENT3][63]}
     `else
         `define OF_VEC {ins.current.csr[CSR_MHPMEVENT31][31], ins.current.csr[CSR_MHPMEVENTH30][31], \
                      ins.current.csr[CSR_MHPMEVENTH29][31], ins.current.csr[CSR_MHPMEVENTH28][31], \
@@ -155,7 +162,8 @@
 
     hpm_csr_target: coverpoint ins.current.insn[31:20] {
             bins scountovf   = {CSR_SCOUNTOVF};
-            bins mhpmevent[] = {CSR_MHPMEVENTH3,  CSR_MHPMEVENTH4,  CSR_MHPMEVENTH5,
+            `ifdef UDB_MXLEN_32
+                bins mhpmevent[] = {CSR_MHPMEVENTH3,  CSR_MHPMEVENTH4,  CSR_MHPMEVENTH5,
                                 CSR_MHPMEVENTH6,  CSR_MHPMEVENTH7,  CSR_MHPMEVENTH8,
                                 CSR_MHPMEVENTH9,  CSR_MHPMEVENTH10, CSR_MHPMEVENTH11,
                                 CSR_MHPMEVENTH12, CSR_MHPMEVENTH13, CSR_MHPMEVENTH14,
@@ -165,6 +173,7 @@
                                 CSR_MHPMEVENTH24, CSR_MHPMEVENTH25, CSR_MHPMEVENTH26,
                                 CSR_MHPMEVENTH27, CSR_MHPMEVENTH28, CSR_MHPMEVENTH29,
                                 CSR_MHPMEVENTH30, CSR_MHPMEVENTH31};
+             `endif
     }
     lcofi_ip_one: coverpoint ins.current.csr[CSR_MIP][13] {
             bins one  = {1};

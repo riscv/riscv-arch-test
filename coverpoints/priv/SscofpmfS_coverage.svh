@@ -15,13 +15,6 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_sscofpmf.svh"
-    of_walking_one: coverpoint $clog2(`OF_VEC) iff ($onehot(`OF_VEC)) {
-            bins b_of[] = {[0:28]};  // one bin per OF bit position (mhpmevent3..mhpmevent31 = 29 bits)
-    }
-    of_pattern_class: coverpoint $countones(`OF_VEC) {
-            bins all_zeros   = {0};
-            bins all_ones    = {29};
-    }
     sstatus_sie_set: coverpoint ins.current.csr[CSR_SSTATUS][1] {
             bins one = {1};
     }
@@ -54,9 +47,8 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     cp_scountovf_shadow:       cross priv_mode_s, mcounteren_write_all_ones, of_pattern_class, of_walking_one;
     cp_scountovf_mcounteren:   cross priv_mode_s, of_write_pattern, mcounteren_write_pattern, mcounteren_walking_one;
     cp_sscofpmf_access:        cross priv_mode_s, csr_access_pattern, hpm_csr_target ;
-    cp_lcofi:                  cross priv_mode_s, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
     cp_lcofi_sip_s:            cross priv_mode_s, sstatus_sie_set, sie_lcofi, sip_lcofi, lcofi_mideleg_one;
-    cp_lcofip_priority:        cross priv_mode_s, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
+    cp_lcofip_priority_s:      cross priv_mode_s, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
 endgroup
 
 function void sscofpmfs_sample(int hart, int issue, ins_t ins);

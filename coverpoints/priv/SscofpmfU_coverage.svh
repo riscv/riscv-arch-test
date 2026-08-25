@@ -31,7 +31,7 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     `else
         cp_overflow_hw_only:   cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_write_extremes, mhpmevent_all_zero, mhpmevent_base_zero;
     `endif
-    cp_lcofi:                  cross priv_mode_u, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
+    cp_lcofip_hw_only:         cross priv_mode_u, mhpmevent_of;
     cp_lcofi_sip_u:            cross priv_mode_u, sstatus_sie_clear, lcofi_ie, lcofi_ip, lcofi_mideleg_one ;
     cp_lcofip_priority:        cross priv_mode_u, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
 

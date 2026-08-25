@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['U']
+# REQUIRED_EXTENSIONS:  ['U','Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -30,6 +30,9 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 80
+
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -78,9 +81,9 @@ main:
     LI(x4, PMPREGION_LXWR_0000)
     csrw pmpcfg1, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Umode
+    RVTEST_TSBI_GOTO_UMODE
     PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_1
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 2 : L -> 0 and R Permissions given to PMP entry 4
     LA(x5, REGIONSTART)
@@ -93,9 +96,9 @@ main:
     LI(x4, PMPREGION_LXWR_0001)
     csrw pmpcfg1, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Umode
+    RVTEST_TSBI_GOTO_UMODE
     PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_2
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 3 : L -> 0 and WR Permissions given to PMP entry 3
     LA(x5, REGIONSTART)
@@ -108,9 +111,9 @@ main:
     LI(x4, PMPREGION_LXWR_0011)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Umode
+    RVTEST_TSBI_GOTO_UMODE
     PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_3
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
     j exit
 

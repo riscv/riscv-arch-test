@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['U']
+# REQUIRED_EXTENSIONS:  ['U','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -29,6 +29,9 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 30
+
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"

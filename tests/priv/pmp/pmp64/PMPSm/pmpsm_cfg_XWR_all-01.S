@@ -30,6 +30,9 @@
 // Define the size of the signature region
 #define SIGUPD_COUNT 190
 
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
+
 // Include framework macros
 #include "riscv_arch_test.h"
 

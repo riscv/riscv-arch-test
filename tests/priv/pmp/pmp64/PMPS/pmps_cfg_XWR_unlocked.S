@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['S']
+# REQUIRED_EXTENSIONS:  ['S','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -29,6 +29,9 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 90
+
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -80,9 +83,9 @@ main:
     LI(x4, PMPREGION_LXWR_0000)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_1
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 2 : L -> 0 and R Permissions given to PMP entry 4
     LA(x5, REGIONSTART)
@@ -95,9 +98,9 @@ main:
     LI(x4, PMPREGION_LXWR_0001)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_2
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 3 : L -> 0 and WR Permissions given to PMP entry 3
     LA(x5, REGIONSTART)
@@ -110,9 +113,9 @@ main:
     LI(x4, PMPREGION_LXWR_0011)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_3
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 4 : L -> 0 and X Permissions given to PMP entry 2
     LA(x5, REGIONSTART)
@@ -125,9 +128,9 @@ main:
     LI(x4, PMPREGION_LXWR_0100)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_4
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 5 : L -> 0 and XR Permissions given to PMP entry 1
     LA(x5, REGIONSTART)
@@ -140,9 +143,9 @@ main:
     LI(x4, PMPREGION_LXWR_0101)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_5
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
 // Test Case: 6 : L -> 0 and XWR Permissions given to PMP entry 0
     LA(x5, REGIONSTART)
@@ -155,9 +158,9 @@ main:
     LI(x4, PMPREGION_LXWR_0111)
     csrw pmpcfg0, x4
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_6
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
     j exit
 

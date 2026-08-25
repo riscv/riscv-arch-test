@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['U']
+# REQUIRED_EXTENSIONS:  ['U','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -29,6 +29,9 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 90
+
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -45,22 +48,22 @@ main:
     LI(x4, -1)
     .set pmpaddri, CSR_PMPADDR0
     .rept 64
-    RVTEST_GOTO_LOWER_MODE    Umode
+    RVTEST_TSBI_GOTO_UMODE
     99:
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x4, 99b, test_1_str)
     nop
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
     .set pmpaddri, pmpaddri+1
     .endr
 
 // Test Case: 2 : write all ones to every pmpcfg CSR from U mode
     .set pmpcfgi, CSR_PMPCFG0
     .rept 16
-    RVTEST_GOTO_LOWER_MODE    Umode
+    RVTEST_TSBI_GOTO_UMODE
     99:
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x4, 99b, test_2_str)
     nop
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
     .set pmpcfgi, pmpcfgi+1
     .endr
 

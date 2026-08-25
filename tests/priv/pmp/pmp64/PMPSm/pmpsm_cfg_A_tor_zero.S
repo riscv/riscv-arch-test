@@ -31,6 +31,9 @@
 // Define the size of the signature region
 #define SIGUPD_COUNT 20
 
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
+
 #define SKIP_MTVAL
 
 // Include framework macros

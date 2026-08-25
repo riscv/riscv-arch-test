@@ -41,6 +41,9 @@ def _render_header(spec: PmpFile) -> list[str]:
         "",
         "// Define the size of the signature region",
         f"#define SIGUPD_COUNT {spec.sigupd}",
+        "",
+        "// Every PMP test configures the PMP from M mode",
+        "#define BOOT_TO_MMODE",
     ]
     if spec.extra_defines:
         lines.append("")

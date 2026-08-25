@@ -270,10 +270,10 @@ def run_case(
     """Run ``PMP_VERIFICATION_<macro>`` for test case ``index``, from ``lower_mode`` if given."""
     lines = ["    RVTEST_SFENCE_VMA_IF_SUPPORTED"]
     if lower_mode:
-        lines.append(f"    RVTEST_GOTO_LOWER_MODE    {lower_mode}mode")
+        lines.append(f"    RVTEST_TSBI_GOTO_{lower_mode}MODE")
     lines.append(f"    PMP_VERIFICATION_{macro}    {region}, test_{index}{extra}")
     if lower_mode:
-        lines.append("    RVTEST_GOTO_MMODE")
+        lines.append("    RVTEST_TSBI_GOTO_MMODE")
     return lines
 
 

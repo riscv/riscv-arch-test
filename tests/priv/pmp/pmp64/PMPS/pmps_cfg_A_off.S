@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['S']
+# REQUIRED_EXTENSIONS:  ['S','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -29,6 +29,9 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 20
+
+// Every PMP test configures the PMP from M mode
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -58,9 +61,9 @@ main:
     csrw pmpaddr0, x5
     csrw pmpcfg0, x0
     RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_GOTO_LOWER_MODE    Smode
+    RVTEST_TSBI_GOTO_SMODE
     PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
-    RVTEST_GOTO_MMODE
+    RVTEST_TSBI_GOTO_MMODE
 
     j exit
 

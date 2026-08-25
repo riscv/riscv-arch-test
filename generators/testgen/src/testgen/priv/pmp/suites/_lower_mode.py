@@ -44,6 +44,11 @@ class Mode:
     mpp: str  # mstatus.MPP encoding of the mode
 
     @property
+    def required(self) -> tuple[str, ...]:
+        """The test runs only where M mode is implemented as well as the probed mode."""
+        return (self.letter, "Sm")
+
+    @property
     def prefix(self) -> str:
         return f"pmp{self.letter.lower()}"
 
@@ -78,7 +83,7 @@ def _file(
         filename=f"{mode.prefix}_{name}.S",
         xlen=xlen,
         banner=banner,
-        required_extensions=(mode.letter,),
+        required_extensions=mode.required,
         params=params or amode_params(None),
         sigupd=sigupd_count(cases * len(probes(macro, xlen))),
         body=tuple(body),
@@ -131,7 +136,7 @@ def _cfg_xwr(mode: Mode, xlen: Xlen, *, locked: bool) -> PmpFile:
             f"L = {int(locked)}, each legal XWR.",
         ),
         prefix=f"{mode.prefix}_{name}",
-        required_extensions=(mode.letter,),
+        required_extensions=mode.required,
         lower_mode=mode.letter,
         data=REGION_BLOBS["off"],
     )
@@ -142,11 +147,11 @@ def _csr_walk(symbol: str, first: str, count: int, index: int, mode: Mode) -> li
     return [
         f"    .set {symbol}, {first}",
         f"    .rept {count}",
-        f"    RVTEST_GOTO_LOWER_MODE    {mode.letter}mode",
+        f"    RVTEST_TSBI_GOTO_{mode.letter}MODE",
         "    99:",
         f"    RVTEST_SIGUPD_CSR_WRITE({symbol}, x4, 99b, test_{index}_str)",
         "    nop",
-        "    RVTEST_GOTO_MMODE",
+        "    RVTEST_TSBI_GOTO_MMODE",
         f"    .set {symbol}, {symbol}+1",
         "    .endr",
     ]
@@ -174,7 +179,7 @@ def _csr_access(mode: Mode, xlen: Xlen) -> PmpFile:
             f"cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low} are fully covered in this test file.",
             f"Write every pmpaddr and pmpcfg CSR from {mode.letter} mode; each traps with an illegal instruction.",
         ),
-        required_extensions=(mode.letter,),
+        required_extensions=mode.required,
         params=amode_params(None),
         sigupd=sigupd_count(64 + 16),
         body=tuple(body),
@@ -249,7 +254,7 @@ def _legal(mode: Mode, xlen: Xlen, amode: str, part: int | None = None) -> PmpFi
             f"{{jalr, sw, lw}} from {mode.letter} mode at and around a {amode.upper()} region, L = 0, each legal XWR.",
         ),
         prefix=f"{mode.prefix}_{amode}_legal_lxwr",
-        required_extensions=(mode.letter,),
+        required_extensions=mode.required,
         params=amode_params(amode),
         first=1 if part is None else 3 * (part - 1) + 1,
         lower_mode=mode.letter,

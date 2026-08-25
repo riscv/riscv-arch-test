@@ -215,7 +215,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZicboSm",
-    required_extensions=["Sm"],
+    required_extensions=["Sm", "Zicbom", "Zicboz", "Zicbop"],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbosm(test_data: TestData) -> list[TestChunk]:

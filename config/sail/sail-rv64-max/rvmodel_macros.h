@@ -160,5 +160,3 @@
   nop
 
 #endif // _RVMODEL_MACROS_H
-
-#endif // _RVMODEL_MACROS_H

@@ -44,9 +44,8 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_Svpbmt_Umode.S"
 #define SIGUPD_COUNT 50
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -68,7 +67,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -127,7 +125,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_PBMTE)
-  CSRS(menvcfg, t0)                                                      // Enable Svpbmt
+  csrs menvcfg, t0                                                      // Enable Svpbmt
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -156,11 +154,13 @@ main:
 //                    256TB PAGE    Region 1 under test at level 4 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 3: Test in U-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, ((3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL4, test3
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -192,12 +192,14 @@ main:
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 6: Test in U-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, ((3 << 61) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL3, test6
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -231,6 +233,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 9: Test in U-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -238,6 +241,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test9
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -273,6 +277,7 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 12: Test in U-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -281,6 +286,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test12
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -318,6 +324,7 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 15: Test in U-Mode | RWX bit set | PTE.PBMT=3 | expected = Store, Load & Instr page faults
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
@@ -327,6 +334,7 @@ main:
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL0, test15
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -337,7 +345,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2, 3 and 4
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -351,7 +359,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

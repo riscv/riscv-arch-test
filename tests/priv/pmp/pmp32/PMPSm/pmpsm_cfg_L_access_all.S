@@ -31,12 +31,11 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_L_access_all.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -47,8 +46,8 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -90,13 +89,12 @@ main:
 //                                          Verification Section
 // Test Case: 0 -- M-mode access succeeds when all PMP are off
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_0
     RVTEST_GOTO_MMODE
 
-#define PMP_REGION_GLOBAL   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPREGION_XWR_000   ((                        PMP_NAPOT)&0xFF)
 
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -107,12 +105,7 @@ main:
 #endif
 
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL<<24))
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 14
@@ -128,6 +121,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 0 and No Permissions given to the PMP Region 13
@@ -143,6 +137,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 0 and No Permissions given to the PMP Region 12
@@ -158,6 +153,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 0 and No Permissions given to the PMP Region 11
@@ -173,6 +169,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 0 and No Permissions given to the PMP Region 10
@@ -188,6 +185,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 0 and No Permissions given to the PMP Region 9
@@ -203,6 +201,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 
@@ -219,6 +218,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 0 and No Permissions given to the PMP Region 7
@@ -234,6 +234,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 0 and No Permissions given to the PMP Region 6
@@ -249,6 +250,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 0 and No Permissions given to the PMP Region 5
@@ -264,6 +266,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 0 and No Permissions given to the PMP Region 4
@@ -279,6 +282,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 0 and No Permissions given to the PMP Region 3
@@ -294,6 +298,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 0 and No Permissions given to the PMP Region 2
@@ -309,6 +314,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 0 and No Permissions given to the PMP Region 1
@@ -324,6 +330,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 0 and No Permissions given to the PMP Region 0
@@ -339,6 +346,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 RVTEST_CODE_END
@@ -348,9 +356,9 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_access_all_lw and cp_none_lw\""
 test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all_sw and cp_none_sw\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
     .endr
 

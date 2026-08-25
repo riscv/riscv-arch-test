@@ -20,10 +20,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_mstatus_sbe_and_sum_set_Smode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -115,9 +114,9 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(   t0, MSTATUS_SBE)
-  CSRS( mstatus, t0)                                                     // Set mstatus.SBE (Supervisor Big Endian)
+  csrs  mstatus, t0                                                     // Set mstatus.SBE (Supervisor Big Endian)
   LI(   t0, MSTATUS_SUM)
-  CSRS( mstatus, t0)                                                     // Set mstatus.SUM
+  csrs  mstatus, t0                                                     // Set mstatus.SUM
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +175,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1 and 2
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -190,7 +189,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

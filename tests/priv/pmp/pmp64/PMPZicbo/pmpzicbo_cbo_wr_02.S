@@ -26,43 +26,14 @@
 # MARCH: rv64i_zicsr_zifencei_zicbom_zicboz
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpzicbo_cbo_wr_02.S"
 #define SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    // Address must be aligned to the cache block
-    LA(a4, \ADDRESS)
-
-    \TEST_CASE\()_1:
-    cbo.zero  (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    \TEST_CASE\()_2:
-    cbo.clean (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    \TEST_CASE\()_3:
-    cbo.flush (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    \TEST_CASE\()_4:
-    cbo.inval (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -79,23 +50,21 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL                ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPCFG_1                         ((((PMP_L|PMP_R|             PMP_TOR)&0xFF)   << PMP1_CFG_SHIFT))
-#define PMPCFG_0                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)   << PMP0_CFG_SHIFT))
+#define PMPCFG_0                         ((((PMP_L|PMP_R               |PMP_NAPOT)&0xFF)   << PMP0_CFG_SHIFT))
+
+#define REGIONSTART                       TEST_FOR_EXECUTION_1
+#if UDB_PMP_GRANULARITY > 12
+    #define PMPZICBO_REGION_SHIFT         UDB_PMP_GRANULARITY
+#else
+    #define PMPZICBO_REGION_SHIFT         12
+#endif
+#define PMP_MASK                          ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)
+#define PMP_REGION_SIZE                   ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)
 
 #define MENVCFG                            0xF0                                                             // menvcfg.CBIE, CBCFE, CBZE = 1
-#define PMPADDRESS_TOP_GLOBAL            -1            // All memory region
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
     li t0, MENVCFG
     csrrs zero, menvcfg, t0
@@ -103,18 +72,19 @@ main:
 //                                                Verification Section
 // Test Case: 2 : {cbo.zero, cbo.flush, cbo.clean, cbo.inval} for XWR-001
 
-    LA(x4, TEST_FOR_EXECUTION_1)
+    LA(x4, REGIONSTART)
     srl x4, x4, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x4, x4, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x4, x4, x6
     csrw pmpaddr0, x4
 
-    LA(x4, TEST_FOR_EXECUTION_2)
-    srl x4, x4, PMP_SHIFT
-    csrw pmpaddr1, x4
-
-    LI(x4, PMPCFG_1|PMPCFG_0)
+    LI(x4, PMPCFG_0)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_1
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
+    PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     RVTEST_GOTO_MMODE
 
@@ -130,14 +100,14 @@ test_2_str:  .string "\"test: 2;  cp: pmpzicbo_cbo_clean\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_cbo_flush\""
 test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

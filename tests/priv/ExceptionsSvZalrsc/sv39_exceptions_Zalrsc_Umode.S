@@ -41,10 +41,9 @@
 # MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv39_exceptions_Zalrsc_Umode.S"
 #define SIGUPD_COUNT 90
 #define TRAP_SIGUPD_COUNT 190
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -89,29 +88,27 @@ RVTEST_BEGIN
   .elseif (\ECALL_DELEG == 1)
     RVTEST_GOTO_DELEGATED_MMODE
   .elseif (\ECALL_DELEG == 2)
-    // When everything except S-Ecall is delegated. From U-Mode, set x3=0 and execute GOTO_S_OP. This will leave us in S-mode
+    // When everything except S-Ecall is delegated. From U-Mode, set a0=0 and execute GOTO_S_OP. This will leave us in S-mode
     // (as U-Ecall is delegated) on PC+4 (nop). The nop will raise a fetch-page-fault as PTE.U is set for that page. Now we can
-    // utilize a special functionality of the trap handler to return to address in x1 if x4 has 0xACCE. Modify x1 to have the VA
+    // utilize the trap handler's fetch-fault handling, which resumes at the address in x1 (ra). Modify x1 to have the VA
     // of an Spage pointing to 1f. Then we can normally execute in S-Mode. Modify save-area to have the VA of Spage instead of
     // Upage and execute RVTEST_GOTO_MMODE. This way we can reach M-mode. Restore save-area to point to the Upage again.
 
-    LI( x4, 0xACCE)
-    LA( x1, 1f)         // Return address in case of fetch-page-fault
+    LA( x1, 1f)         // Return address: the trap handler resumes at x1 (ra) on a fetch fault
 
-    lui a0, 0x40000     // Adding this to the current PC (VA) will point to the next entry (Spage) in the level 2 page table
-    add x1, x1, a0      // VA of an Spage that points to 1f
+    lui t0, 0x40000     // Adding this to the current PC (VA) will point to the next entry (Spage) in the level 2 page table
+    add x1, x1, t0      // VA of an Spage that points to 1f
 
-    mv  t0, x3          // Temporarily store x3
-    li  x3, 0
+    li  a0, 0           // a0==0 signals GOTO_SMODE to the trap handler (x3 is no longer the flag)
     GOTO_S_OP           // Go to Smode
     nop                 // GOTO_S_OP returns here. This will raise a fetch-page-fault (S-mode accessing Upage).
   1:
-    mv   x3, t0         // Fetch-page-fault after being handled returns here (Spage)
+    // Fetch-page-fault after being handled returns here (Spage)
 
     csrr a1, sscratch
     LREG a4, code_bgn_off(a1) // Load VA of Upage
 
-    add  t0, a4, a0
+    add  t0, a4, t0     // t0 still holds the Upage->Spage offset
     SREG t0, code_bgn_off(a1) // Replace with VA of Spage
 
     RVTEST_GOTO_MMODE         // Finally, go to M-mode
@@ -179,6 +176,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 3-4: Test in U-Mode | Valid PTE | RWX set | Points to RVMODEL_ACCESS_FAULT_ADDRESS | expected = 4 faults
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -186,6 +184,7 @@ main:
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test3, RVMODEL_ACCESS_FAULT_ADDRESS
   sfence.vma
   TEST_CASES_RUNNER Umode, (va_data+0x2), LEVEL2, test4, RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
@@ -203,6 +202,7 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef RVMODEL_ACCESS_FAULT_ADDRESS   // skipped when the DUT has no reliably-faulting address
   // Test case 7-8: Test in U-Mode | Invalid PTE | RWX set | Points to RVMODEL_ACCESS_FAULT_ADDRESS | expected = 4 faults
   SUPERPAGE_PTE_SETUP_SV39(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
@@ -210,6 +210,7 @@ main:
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test7, RVMODEL_ACCESS_FAULT_ADDRESS
   sfence.vma
   TEST_CASES_RUNNER Umode, (va_data+0x2), LEVEL2, test8, RVMODEL_ACCESS_FAULT_ADDRESS
+#endif
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +223,7 @@ main:
 
   // Test case 9-10: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[0] set | expected = 2 faults
   li a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test9
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test10
@@ -230,7 +231,7 @@ main:
 
   // Test case 11-12: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[1] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test11
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test12
@@ -238,7 +239,7 @@ main:
 
   // Test case 13-14: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[2] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test13
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test14
@@ -246,7 +247,7 @@ main:
 
   // Test case 15-16: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[3] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test15
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test16
@@ -254,7 +255,7 @@ main:
 
   // Test case 17-18: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[4] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test17
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test18
@@ -262,7 +263,7 @@ main:
 
   // Test case 19-20: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[5] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test19
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test20
@@ -270,7 +271,7 @@ main:
 
   // Test case 21-22: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[6] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test21
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test22
@@ -278,7 +279,7 @@ main:
 
   // Test case 23-24: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[7] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test23
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test24
@@ -286,7 +287,7 @@ main:
 
   // Test case 25-26: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[8] set | expected = 2+2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test25, ECALL_DELEG=1
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test26, ECALL_DELEG=1
@@ -294,7 +295,7 @@ main:
 
   // Test case 27-28: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[9] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test27
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test28
@@ -302,7 +303,7 @@ main:
 
   // Test case 29-30: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[12] set | expected = 2 faults
   slli a1, a1, 3
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test29
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test30
@@ -310,7 +311,7 @@ main:
 
   // Test case 31-32: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[13] set | expected = 2 faults
   slli a1, a1, 1
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test31
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test32
@@ -318,7 +319,7 @@ main:
 
   // Test case 33-34: Test in U-Mode | Valid & Invalid PTEs | RWX set | medeleg[15] set | expected = 2 faults
   slli a1, a1, 2
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test33
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test34
@@ -326,7 +327,7 @@ main:
 
   // Test case 35-36: Test in U-Mode | Valid & Invalid PTEs | RWX set | set medeleg = 0xB1FF | expected = 2+2 faults
   LI(a1, 0xB1FF)
-  CSRW(medeleg, a1)
+  csrw medeleg, a1
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test35, ECALL_DELEG=2
   sfence.vma
   TEST_CASES_RUNNER Umode, va_data_inv, LEVEL2, test36, ECALL_DELEG=2
@@ -341,7 +342,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1 and 2
-.align 12
+.p2align 12
 rvtest_data_1:
   .word 0xbeef0000
   addi a4, a2, 4
@@ -355,7 +356,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

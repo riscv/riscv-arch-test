@@ -28,12 +28,11 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_A_off_all.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -44,8 +43,8 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_3:
     jalr ra, 0(a4)
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)               // Signature update for jalr
@@ -89,7 +88,6 @@ main:
     .endr
 
 
-#define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)      // Background region with RWX enable.
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -99,12 +97,7 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-    LA(x4, -1)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                            Verification Section
 // Test Case: 1 -- No Permissions given to the PMP Region 14
@@ -120,6 +113,7 @@ main:
     LI(x4, (0x80 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE
@@ -137,6 +131,7 @@ main:
     LI(x4, (0x80 << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
@@ -154,6 +149,7 @@ main:
     LI(x4, (0x80 << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
     RVTEST_GOTO_MMODE
@@ -171,6 +167,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
     RVTEST_GOTO_MMODE
@@ -188,6 +185,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
     RVTEST_GOTO_MMODE
@@ -205,6 +203,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
     RVTEST_GOTO_MMODE
@@ -222,6 +221,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
     RVTEST_GOTO_MMODE
@@ -239,6 +239,7 @@ main:
     LI(x4, (0x80 << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
     RVTEST_GOTO_MMODE
@@ -256,6 +257,7 @@ main:
     LI(x4, (0x80 << PMP6_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
     RVTEST_GOTO_MMODE
@@ -273,6 +275,7 @@ main:
     LI(x4, (0x80 << PMP5_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
     RVTEST_GOTO_MMODE
@@ -290,6 +293,7 @@ main:
     LI(x4, (0x80 << PMP4_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
     RVTEST_GOTO_MMODE
@@ -307,6 +311,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
     RVTEST_GOTO_MMODE
@@ -324,6 +329,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
     RVTEST_GOTO_MMODE
@@ -341,6 +347,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
     RVTEST_GOTO_MMODE
@@ -358,6 +365,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
     RVTEST_GOTO_MMODE
@@ -375,21 +383,24 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_cfg_A_off_all_lw\""
 test_2_str: .string "\"test: 2; cp: cp_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: cp_cfg_A_off_all_x\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept PMP_NAPOT_REGION_PAD_WORDS   // g_napot-byte pad -> NAPOT region-under-test at 0x80005008 (PMP_NAPOT_REGION_START); pmpaddr matches STANDARD_REGION, region does not cover the pad
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

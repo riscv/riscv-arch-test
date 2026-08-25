@@ -2,7 +2,7 @@
 [appendix]
 == Unprivileged Test Plan
 
-Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
+Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress interrupts arriving in the midst of multicycle instructions.
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
@@ -73,7 +73,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fs1_badNB|12|The fs1 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs2_badNB|12|The fs2 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs3_badNB|12|The fs3 register contains an incorrectly-NaN-boxed lower-precision value.
-|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard.
+|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard. [TODO: this should be dropped when full hazards are implemented]
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
@@ -188,6 +188,120 @@ Notes:
 ====
 The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and an arbitrary intermediate value.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
 ====
+
+==== Hazards
+
+Hazard tests are applied to every unprivileged _Instruction Under Test_ (IUT) that uses a source or destination.
+The hazard receives the source from _Secondary_Producer_Instruction_ (SPI) or sends the destination value to a _Secondary Consumer Instruction_ (SCI).  All relevant
+Read-After-Write (RAW), Write-After-Read (WAR), and Write-After-Write (WAW) hazards are exercised.  They are tested
+with the SI being adjacent to the IUT, and being separated by a small amount.  The SI is selected as a representative
+instruction from each of many categories of instructions to exercise forwarding between different functional units.
+
+The categories of SPI and SCI are given in <<t-secondary-producer-instruction-categories>> and <<t-secondary-consumer-instruction-categories>>, respectively.
+
+[[t-secondary-producer-instruction-categories]]
+.Secondary Producer Instruction Categories
+[options=header]
+|===
+|Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
+|Int (rd)|auipc, li|sll, cpop (Zbb), clmul (Zbc), sha256sig0 (Zknh)|lw, amoswap.w (Zaamo)|jal|csrr|mul, div|fcvt.w.s, fmv.x.w, fclass.s, feq.s|vmv.x.s|
+|PC||||jal, jalr, beq|||||
+|FP (fd)|||flw||||fmadd.s, fdiv.s, fli.s (Zfa), fsqrt.d (D), fsqrt.h (Zfh), fsqrt.q (Q)||vmv.f.s
+|Vector (vd)|||vle32.v|||||vadd.vi|vfadd.vf
+|Memory|||sw, amoswap.w (Zaamo), cbo.zero (Zicboz)||||fsw|vse32.v|
+|CSR (rd)|||||||csrr fflags|csrr vcsr|
+|===
+
+[[t-secondary-consumer-instruction-categories]]
+.Secondary Consumer Instruction Categories
+[options=header]
+|===
+|Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
+|Int|add (rs1/2), addi (rs1)|srl, sh1add (Zba), binv (Zbs), aes32dsmi (Zknd32), aes64dsm (Zknd32)|sw (rs2), amoswap.w (rs2, Zaamo)|beq (rs1/2)|csrw (rs1)|mul (rs1/2), div (rs1/2)|fcvt.s.w (rs1), fmv.w.x (rs1)|vadd.vx (rs1), vmv.v.x (rs1)|
+|PC|auipc (implicit)|||jal, jalr (implicit)|||||
+|FP|||fsw (fs2)||||fmadd.s (fs1/2/3), fdiv.s (fs1/2), fli.s (fs1), fsqrt.d (fs1, D), fsqrt.h (fs1, Zfh), fsqrt.q (fs1, Q)||vfadd.vf (fs1), vmv.v.f (fs1)
+|Vector|||vse32.v(vs2)|||||vadd.vv (vs1/2), vadd.vi (vs2), vmacc.vv (vs1/2/vd)|vfadd.vv (vs1/2), vfsqrt.v (vs2), vfmacc.vv (vs1/2/vd)
+|Memory|||lw, amoswap.w (Zaamo)||||fsw|vle32.v|
+|CSR|||||||csrw fflags|csrw vcsr|
+|===
+
+The types of hazards exercised are given in <<t-hazard-types>>. Not all IUT have a source or destination, so not all hazard types are exercised for every IUT.
+
+[[t-hazard-types]]
+.Hazard Types
+[options=header]
+|===
+|Type|IUT First|IUT Second
+|RAW|IUT dest -> SCI source|SPI dest -> IUT source
+|WAR|IUT source -> SPI dest|SCI source -> IUT dest
+|WAW|IUT dest -> SPI dest|SPI dest -> IUT dest
+|===
+
+When multiple representative instructions are listed, one is randomly selected from the list for each test. Certain categories and certain instructions in a category (amoswap, fli, fsqrt.d/h/q) only may be selected if the relevant extension is present.  Different source instructions consume one, two, or three sources.  Loads, stores, and atomics always use rs1 as a pointer to a scratch memory location holding a random value. Subword load, store, and atomic IUTs use a random naturally aligned offset in the range [0, 3]. Tests assume mstatus.FS/VS are dirty, if applicable.  Loads and atomics have a memory source operand.  Stores, atomics, and cbo.zero have a memory destination operand.  Vector instructions operate on a vector of 2 32-bit elements.  They are omitted if the vector unit does not support this. Note that li is the pseudo-instruction for addi rd, x0, imm12.
+
+The test cases are as follows:
+
+* If the IUT has {int/pc/fp/vector/memory/CSR} source operand:
+** For each IUT source
+*** For each hazard_type in {RAW, WAR}
+**** For each supported SPI category that can produce the source category (gated by #ifdef EXT_SUPPORTED)
+***** For each delay in (0, random[1,3])
+****** Pick random unused registers for IUT source(s) and destination from X1-x31 (-x15 for E), f0-f31, v0-v31.  Ok to duplicate source registers.
+****** Pick random representative SPI from category, and random unused source registers for SPI.
+****** Initialize IUT and SPI sources to random values
+****** If hazard_type = RAW // SPI dest -> IUT source
+******* SPI dest = random IUT source
+******* Perform SPI
+******* If delay > 0, perform delay dependent instructions
+******* Perform IUT
+******* SIGUPD IUT dest or otherwise test IUT result
+****** If hazard_type = WAR // IUT source -> SPI dest
+******* SPI dest = random IUT source
+******* Perform IUT
+******* If delay > 0, perform delay dependent instructions
+******* Perform SPI
+******* SIGUPD IUT dest or otherwise test IUT result
+******* SIGUPD SPI dest
+
+* If the IUT has {int/pc/fp/vector/memory/CSR} destination operand:
+** For each hazard_type in {RAW, WAR}
+*** For each supported SCI category that can read the source category (gated by #ifdef EXT_SUPPORTED)
+**** For each delay in (0, random[1,3])
+***** Pick random unused registers for IUT source(s) and destination from X1-x15, f0-f31, v0-v31.  Ok to duplicate source registers.
+***** Pick random representative SCI from category, and random unused source registers for SCI.
+***** Initialize IUT and SCI sources to random values
+***** If hazard_type = RAW // IUT dest -> SCI source
+****** random SCI source = IUT dest
+****** Perform IUT
+****** If delay > 0, perform delay dependent instructions
+****** Perform SCI
+****** SIGUPD SI dest or otherwise test SI result
+***** If hazard_type = WAR // SCI source -> IUT dest
+****** random SCI source = IUT dest
+****** Perform SCI
+****** If delay > 0, perform delay dependent instructions
+****** Perform IUT
+****** SIGUPD IUT dest or otherwise test IUT result
+****** SIGUPD SCI dest
+** For hazard_type = WAW
+**** For each supported SPI category that can produce the source category (gated by #ifdef EXT_SUPPORTED)
+***** For each delay in (0, random[1,3])
+****** Pick random unused registers for IUT source(s) and destination from X1-x31 (-x15 for E), f0-f31, v0-v31.  Ok to duplicate source registers.
+****** Pick random representative SPI from category, and random unused source registers for SPI.
+****** Initialize IUT and SPI sources to random values
+****** SPI dest = IUT dest
+****** Perform SPI // SPI dest -> IUT dest
+****** If delay > 0, perform delay dependent instructions
+****** Perform IUT
+****** SIGUPD IUT dest or otherwise test IUT result
+****** Perform IUT // IUT dest -> SPI dest
+****** If delay > 0, perform delay dependent instructions
+****** Perform SPI
+****** SIGUPD SPI dest or otherwise test SPI result
+
+Hazard coverpoints are named cp_hazard_{hazard_type}_{IUT source/dest}_{to/from}_{SI category}_{delay}. IUT source/dest is one of {rs1, rs2, rd, fs1, fs2, fs3, fd, vs1, vs2, vd, memr, memw, csrr, csrw, pc}.
+
+The number of hazard bins for a typical R-type integer IUT is ((2 sources) * (2 hazard types) + (1 destination) * (4 hazard types)) * (8 categories) * (2 delays) = 128 bins.
 
 include::i.adoc[]
 include::m.adoc[]

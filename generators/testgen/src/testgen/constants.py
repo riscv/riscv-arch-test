@@ -29,7 +29,7 @@ def indent_asm(line: str) -> str:
 # Max testcases per test file before splitting into multiple files. Individual test
 # chunks won't be split, so if one test chunk exceeds this, the file will exceed this limit.
 TESTCASES_PER_FILE = 1000
-TESTCASES_PER_PRIV_FILE = 6000
+TESTCASES_PER_PRIV_FILE = 512
 
 # =============================================================================
 # Extension Configuration
@@ -132,3 +132,10 @@ SKIP_COVERPOINTS = frozenset(
         "cp_fclass",
     }
 )
+
+# =============================================================================
+# Vector Configuration
+# =============================================================================
+MIN_SEW_MIN = 8
+ELEN_MAX = 64
+VLEN_MAX = 1024

@@ -25,11 +25,10 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pmp_on_pa_Smode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 50
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -51,7 +50,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -83,7 +81,6 @@ RVTEST_BEGIN
 .endm
 
 // PMP Macros
-#define PMP_GLOBAL_RWX        (((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP3_CFG_SHIFT)
 #define PMP1CFG_RX            (((PMP_NAPOT | PMP_X | PMP_R) & 0xFF) << PMP1_CFG_SHIFT)
 #define PMP1CFG_RW            (((PMP_NAPOT | PMP_W | PMP_R) & 0xFF) << PMP1_CFG_SHIFT)
 #define PMP1CFG_X             (((PMP_NAPOT | PMP_X) & 0xFF) << PMP1_CFG_SHIFT)
@@ -96,10 +93,7 @@ main:
 //                                                    Setup pmpaddr registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                  // Set PMP permission for all memory in pmp3cfg0 (TOR)
-  csrw pmpaddr2, t2
-  li t2, -1
-  csrw pmpaddr3, t2
+  RVTEST_PMP_SET_BACKGROUND t2
 
   LA (t2, rvtest_data_1)    // Configure test region as NAPOT
   srl t2, t2, PMP_SHIFT
@@ -111,7 +105,8 @@ main:
   .endif
 
   or t2, t2, t1
-  CSRW(pmpaddr1, t2)
+  csrw pmpaddr1, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -145,10 +140,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RX)
+  LI (t2, PMP1CFG_RX)
   pmpcfg0_rx:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rx, pmpcfg0_rx_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -177,10 +172,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RW)
+  LI (t2, PMP1CFG_RW)
   pmpcfg0_rw:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rw, pmpcfg0_rw_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -209,10 +204,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  LI (t2, PMP_GLOBAL_RWX | PMP1CFG_X)
+  LI (t2, PMP1CFG_X)
   pmpcfg0_x:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -243,8 +238,8 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -255,11 +250,11 @@ rvtest_data_1:
   nop
   jr ra
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

@@ -45,10 +45,9 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_Svadu_no_pmp_perm_Umode.S"
 #define SIGUPD_COUNT 55
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -70,7 +69,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -114,7 +112,6 @@ RVTEST_BEGIN
 .endm
 
 // PMP Macros
-#define PMP_GLOBAL_RWX        (((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP2_CFG_SHIFT)
 #define PMP0CFG_RX            (((PMP_NAPOT | PMP_X | PMP_R) & 0xFF) << PMP0_CFG_SHIFT)
 
 
@@ -125,10 +122,7 @@ main:
 //                                                    Setup pmpaddr registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                  // Set PMP permission for all memory in pmp2cfg0 (TOR)
-  csrw pmpaddr1, t2
-  li t2, -1
-  csrw pmpaddr2, t2
+  RVTEST_PMP_SET_BACKGROUND t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -157,7 +151,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   LI(t0, MENVCFG_ADUE)
-  CSRS(menvcfg, t0)                                                      // Enable Svadu
+  csrs menvcfg, t0                                                      // Enable Svadu
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -169,12 +163,12 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
 
-  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_RX)
+  LI (t2, PMP0CFG_RX)
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
-
+  sfence.vma
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 3
@@ -219,7 +213,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -268,7 +263,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -320,7 +316,8 @@ main:
   srl t2, t2, PMP_SHIFT
   LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
-  CSRW(pmpaddr0, t2)
+  csrw pmpaddr0, t2
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -373,7 +370,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2 and 3
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -387,17 +384,17 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl2_pg_tbl:
     .skip(4096)
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""

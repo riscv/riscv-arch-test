@@ -12,6 +12,8 @@ Verifies that misaligned loads, stores, and AMOs that do not cross a
 naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 """
 
+from __future__ import annotations
+
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -170,7 +172,6 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
-                        "nop",
                         f"{storeback} f{fp_reg}, 0(x{base_reg})        # store FP result back to scratch",
                         f"lw x{dest_reg}, 0(x{base_reg})        # read back lower word as evidence",
                         write_sigupd(dest_reg, test_data),
@@ -180,7 +181,6 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         f"{mnemonic} x{dest_reg}, 0(x{addr_reg})",
-                        "nop",
                         write_sigupd(dest_reg, test_data),
                     ]
                 )
@@ -255,7 +255,6 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
                     [
                         test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
-                        "nop",
                     ]
                 )
             else:
@@ -264,7 +263,6 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
                         f"LI(x{data_reg}, 0xA5A5A5A5)   # value to store",
                         test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
-                        "nop",
                     ]
                 )
 
@@ -291,7 +289,13 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "Zama16b_cg"
 
-    addr_reg, src_reg, dest_reg, base_reg = test_data.int_regs.get_registers(4)
+    addr_reg, base_reg = test_data.int_regs.get_registers(2)
+    # amocas.q operates on register pairs: its rd and rs2 must be EVEN-numbered
+    # registers (each names the pair reg, reg+1), otherwise the assembler
+    # rejects the operands. Allocate even pairs for src/dest so the same
+    # registers are legal for every AMO mnemonic in the sweep, incl. amocas.q.
+    src_reg = test_data.int_regs.get_register_pair()
+    dest_reg = test_data.int_regs.get_register_pair()
 
     lines = [
         comment_banner(
@@ -332,7 +336,6 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
                     f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
                     test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                     f"{mnemonic} x{dest_reg}, x{src_reg}, (x{addr_reg})",
-                    "nop",
                 ]
             )
 
@@ -342,14 +345,16 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     if prev_guard is not None:
         lines.append("#endif")
 
-    test_data.int_regs.return_registers([addr_reg, src_reg, dest_reg, base_reg])
+    test_data.int_regs.return_registers([addr_reg, base_reg])
+    test_data.int_regs.return_register_pair(src_reg)
+    test_data.int_regs.return_register_pair(dest_reg)
     return lines
 
 
 @add_priv_test_generator(
     "Zama16b",
     required_extensions=["Zama16b"],
-    march_extensions=["I", "Zicsr", "Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
+    march_extensions=["Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
 )
 def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""

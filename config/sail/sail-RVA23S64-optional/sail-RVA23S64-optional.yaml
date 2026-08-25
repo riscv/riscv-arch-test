@@ -3,11 +3,12 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-RVA23S64
-description: RVA23S64 with only required extensions
+name: sail-RVA23S64-optional
+description: RVA23S64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: A, version: "= 2.1.0" }
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }
@@ -110,6 +111,7 @@ implemented_extensions:
   - { name: Zvks, version: "= 1.0.0" }
   - { name: Zkr, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
+  - { name: Smnpm, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.0.0" }
   - { name: Sv57, version: "= 1.0.0" }
@@ -205,12 +207,11 @@ params:
       true,
       true,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
@@ -250,7 +251,11 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 4
+  PMP_GRANULARITY: 2
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -395,8 +400,7 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
+  VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 63
@@ -495,3 +499,5 @@ params:
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
   PMLEN: 17
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

@@ -712,6 +712,8 @@ widening_mac_ins = [
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
+saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx", "vsmul.vv", "vsmul.vx"]
+
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",
 
@@ -1172,7 +1174,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
   vectordata += writeData(f"// {test}_{vs}_data for {vs}")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   vectordata += writeData("// Corner Vectors")
 
   eew = sew * emul
@@ -1230,7 +1232,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
             else:
               vectordata += writeData(f"   .word 0x{word:08x}")
         else:
-          for i in range(num_words),:
+          for i in range(num_words):
               randomElem = getrandbits(32)
               vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
@@ -1244,7 +1246,7 @@ def genRandomVectorLS():
   vectordata += writeData("// vector_ls_random_base data")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 4")
+  vectordata += writeData("    .p2align 4")
   vectordata += writeData("// Corner Vectors")
 
   # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
@@ -1309,7 +1311,7 @@ def genVMaskedges():
   num_words = math.ceil(maxVLEN / 32)
 
   # generating random masks for length suite
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for name in range(3):
     vectordata += writeData(f"random_mask_{name}:")
     val = getrandbits(maxVLEN)
@@ -1389,7 +1391,7 @@ def genVsedges(test, sew, emul, crypto=False):
   while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
   v_register_edges["random"] = r
 
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in v_register_edges:
       val = v_register_edges[corner]
       val &= (1 << eew) - 1
@@ -1438,7 +1440,7 @@ def genVsedgesFP(test, sew, emul):
   vectordata += writeData("///////////////////////////////////////////")
   vectordata += writeData("// vector edges data (floating point)")
   vectordata += writeData("///////////////////////////////////////////\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in vs_edges_f:
       val = vs_edges_f[corner]
       vectordata += writeData(f"vs_corner_f_{corner}_{ending}:")
@@ -1505,7 +1507,7 @@ def genCustomData():
     data += writeData("///////////////////////////////////////////")
     data += writeData("// custom coverpoint data labels")
     data += writeData("///////////////////////////////////////////\n")
-    data += writeData("    .align 3")
+    data += writeData("    .p2align 3")
     for label, entries in _custom_data_labels.items():
         data += writeData(f"{label}:")
         for directive, value in entries:
@@ -1517,7 +1519,7 @@ def clearCustomData():
     _custom_data_labels.clear()
 
 def genVtestdata(test, sew):
-  test_data = ".align 4\n"
+  test_data = ".p2align 4\n"
   test_data += "vector_data:\n"
 
   if test in vector_loads:
@@ -1610,10 +1612,9 @@ def getPrivExtraDefines(sew):
     sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
-        "#define rvtest_mtrap_routine",
-        "#define rvtest_strap_routine",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
+        f"#define SEWMINSIZE e{minSEW_MIN}",
         f"#define ELEN {maxELEN}",
         f"#define SEWSIZE {sewsize}",
         f"#define VLESEWMIN {vle}",
@@ -1641,7 +1642,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
+    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
       ext_str_no_I = "_M_V_Zicsr_Zifencei"
       # Vector-FP priv suites need scalar/vector FP extensions in -march so the
@@ -1757,7 +1758,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@MARCH@", march.lower())
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
-        .replace("@TEST_FILE_NAME@", f"{test}.S")
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
@@ -1778,9 +1778,9 @@ def writeSIGUPD(inst_ptr, rd):
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
-    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
-    linkOptions = [lr for lr in (5, 8, 13)
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != rd and lr - 1 != rd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD: no legal linkReg given sigReg={sigReg} rd={rd}")
@@ -1794,8 +1794,8 @@ def writeSIGUPD_F(fd):
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
     str_ptr = "test_" + str(testcase_count)
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != fd and lr - 1 != fd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_F: no legal linkReg given sigReg={sigReg} fd={fd}")
@@ -1805,6 +1805,37 @@ def writeSIGUPD_F(fd):
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
     writeLine(f"{str_ptr}:")
     writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {str_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
+
+def writeSIGUPD_FFLAGS(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 14)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_FFLAGS: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_FFLAGS(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check fflags in signature")
+
+def writeSIGUPD_VXSAT(inst_ptr):
+    global sigupd_count  # Allow modification of global variable
+    sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count) + "_str"
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 14} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 14)
+                   if lr != sigReg and lr - 1 != sigReg]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
+    tempReg = linkReg - 1
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
+
 
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
 
@@ -1866,7 +1897,10 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     # the same formula at runtime (bytes = vl << vsew, +4 pad, round up to 8)
     # and advances _SIG_PTR accordingly.  Here we compute the worst case so
     # the reserved signature region is large enough.
-    if length_macro or vlmax_mask_prod:
+    if vd_mask:
+      emul_for_bytes = 8
+      worst_bytes = (maxVLEN * emul_for_bytes) // 8
+    elif length_macro or vlmax_mask_prod:
       # _LEN macro sets vl = VLMAX for (sew, emul) → bytes = maxVLEN_bits * emul / 8.
       emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1 and not whole_register_operation) else 1
       worst_bytes = (maxVLEN * emul_for_bytes) // 8
@@ -1881,8 +1915,8 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 
-    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
-    linkOptions = [lr for lr in (5, 8, 13)
+    # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 14)
                    if lr != sigReg and lr - 1 != sigReg and lr != vd and lr - 1 != vd]
     if not linkOptions:
       raise RuntimeError(f"writeSIGUPD_V: no legal linkReg given sigReg={sigReg} vd={vd}")
@@ -1984,24 +2018,24 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
         writeLine("# for the reference model, it will store a value. This is because for a mask-producing operation, there are 3 valid outputs")
         writeLine("# in the tail region, as given by the spec: undisturbed, all ones, or computed as if vl = vlmax. So, to have self-checking tests")
         writeLine("# this must be included as a no-op")
-        writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL)")
-        writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd}, {sew}, {emul})")
+        writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR)")
+        writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd})")
       elif length_macro:
         scalar_dst_flag = 1 if scalar_dst else 0
-        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
+        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
         if "vcompress" in inst_ptr:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 1, {sew}, {emul}, 0, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 1, {sew}, {emul}, 0, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
         elif vd_mask:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 1, {masked_flag}, 0, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 1, {masked_flag}, 0, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
           writeLine("# This is a mask producing operation, so in the tail region, there are 3 valid outputs: undisturbed, all onees, or computed as if vl = vlmax. This means")
           writeLine("# that the next test will be a duplication of the work done in this test, so that a reference model can give an output in the two non-trivial cases.")
         else:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       elif is_crypto:
         writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
@@ -2438,7 +2472,6 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"vsetivli x0, 1, e{sew}, m{lmulflag}, tu, mu", "# Restore valid vtype after vill test")
 
     if (priv):
-      writeLine("nop",                                           "# nop after possible trap")
       # The test instruction may have trapped or otherwise left mstatus.VS in a
       # state where vector CSR access (csrw vstart) is itself illegal. Restore
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
@@ -2470,10 +2503,10 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
         writeLine(reset_vl_post_load, "# reset vl to the previous value")
 
     if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
-      fcsrsaveReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(fcsrsaveReg)
-      writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
-      writeSIGUPD(inst_ptr, fcsrsaveReg)
+      writeSIGUPD_FFLAGS(inst_ptr)
+
+    if test in saturating_ins:
+      writeSIGUPD_VXSAT(inst_ptr)
 
     if skip_sigupd:
       # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.
@@ -2679,8 +2712,13 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
     writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -2",                 f"# x{vstart_reg} = VLMAX-2")
     writeLine(f"li x{scratch2}, {randvstart}")
-    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
+    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % (VLMAX - 2) (0 <= x{scratch2} < VLMAX-2)")
+    writeLine(f"bgt x{vstart_reg}, x0, 1f")
+    writeLine(f"addi x{scratch2}, x{vstart_reg}, -1",                    f"# x{scratch2} = VLMAX - 3")
+    writeLine("1:")
+    writeLine(f"addi x{scratch2}, x{scratch2}, 2",                       f"# 2 <= x{scratch2} < VLMAX")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
   writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")
 
@@ -2842,6 +2880,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
 
     if instruction in vfloattypes and clear_fflags:
       writeLine("fsflagsi 0b00000", "# clear all fflags")
+
+    if instruction in saturating_ins:
+      writeLine("csrwi vxsat, 0", "# clear vxsat bit")
 
     # If mask value specified, load to v0 (must be before prepBaseV for types that
     # do their own vsetvli, so prepBaseV restores the correct vl/vtype afterward)
@@ -3047,7 +3088,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         # _LMUL (= sig_lmul, capped to integer EMUL since whole-register/mask
         # paths use sig_lmul=1 and fractional groups fit in one register).
         sig_emul = max(int(sig_lmul), 1) if sig_lmul is not None and sig_lmul >= 1 else 1
-        reload_zero_lmul = getLmulFlag(sig_emul)
+        # Whole-register store reloads zero each physical destination register individually.
+        # Use LMUL=1 for that setup so v8/v9/... are all legal vmv.v.i destinations.
+        reload_zero_lmul = 1 if instruction in whole_register_stores else getLmulFlag(sig_emul)
         default_lmul_flag = getLmulFlag(lmul)
         reload_pre_init = [
           f"csrr x{mi_t1}, vl",
@@ -3663,7 +3706,7 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv")))
+                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignV", "V", "Zv")))
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:

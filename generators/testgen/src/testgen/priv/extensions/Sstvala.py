@@ -67,13 +67,13 @@ def _generate_page_table_data_section() -> list[str]:
         "# already declared by the framework). Injected into .data via .pushsection.",
         ".pushsection .data",
         "#ifdef SV39_SUPPORTED",
-        ".align 12",
+        ".p2align 12",
         "rvtest_slvl1_pg_tbl: .zero 4096   # Sv39 L1 intermediate PT (unused on Sv32)",
         "#endif  // SV39_SUPPORTED",
         "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
-        ".align 12",
+        ".p2align 12",
         "rvtest_slvl0_pg_tbl: .zero 4096   # leaf PT (Sv39/Sv32)",
-        ".align 12",
+        ".p2align 12",
         "rvtest_pf_data:      .zero 4096   # physical backing page for the fault VA",
         "#endif  // SV39_SUPPORTED || SV32_SUPPORTED",
         ".popsection",
@@ -164,6 +164,7 @@ def _emit_pf_block(
     instrs_rv32: list[tuple[str, list[str]]],
     section_title: str,
     extra_setup: list[str] | None = None,
+    requires_s1p12: bool = False,
 ) -> list[str]:
     """Emit one page-fault test section.
 
@@ -180,20 +181,27 @@ def _emit_pf_block(
             block.extend(extra_setup)
             block.append(test_data.add_testcase(name, coverpoint, covergroup))
             block.extend(asm)
-            block.append("nop")
         block.extend(["RVTEST_GOTO_MMODE", "csrwi satp, 0", "sfence.vma", ""])
         return block
 
     lines = [comment_banner(coverpoint, section_title), ""]
     lines.append("#if __riscv_xlen == 64")
     lines.append("#ifdef SV39_SUPPORTED")
+    if requires_s1p12:
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV64: Sv39")
     lines.extend(_xlen_block(["SATP_SETUP_RV64(sv39)"], _pf_pte_setup_sv39(_VA_PF_PAGE_RV64, pte_flags), instrs_rv64))
+    if requires_s1p12:
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV39_SUPPORTED")
     lines.append("#else")
     lines.append("#ifdef SV32_SUPPORTED")
+    if requires_s1p12:
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     lines.append("# RV32: Sv32")
     lines.extend(_xlen_block(["SATP_SETUP_SV32"], _pf_pte_setup_sv32(_VA_PF_PAGE_RV32, pte_flags), instrs_rv32))
+    if requires_s1p12:
+        lines.append("#endif  // S1P12P0_OR_LATER_SUPPORTED")
     lines.append("#endif  // SV32_SUPPORTED")
     lines.append("#endif  // xlen")
     return lines
@@ -217,6 +225,7 @@ def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> lis
         instrs_rv64=[_load("lw", _VA_PF_PAGE_RV64, "rv64"), _load("ld", _VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_load("lw", _VA_PF_PAGE_RV32, "rv32")],
         section_title="Load Page Fault (W-only PTE, no R)",
+        requires_s1p12=True,
     )
     test_data.int_regs.return_registers([addr_reg, data_reg])
     return lines
@@ -255,7 +264,9 @@ def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> li
 def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_instr_page_fault — R|W PTE (no X) → instruction page fault on jalr.
 
-    x4 = 0xACCE signals the trap handler to use ra (x1) as the return address.
+    The jalr uses x1 (ra) as its link register, so ra holds the fall-through
+    address; the trap handler resumes there after the instruction page fault
+    (advancing past a fetch fault would just re-fault).
     """
     addr_reg = test_data.int_regs.get_register()
 
@@ -273,7 +284,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
         instrs_rv64=[_jalr(_VA_PF_PAGE_RV64, "rv64")],
         instrs_rv32=[_jalr(_VA_PF_PAGE_RV32, "rv32")],
         section_title="Instruction Page Fault (R|W PTE, no X)",
-        extra_setup=["LI(x4, 0xACCE)"],
+        extra_setup=[],
     )
     test_data.int_regs.return_registers([addr_reg])
     return lines
@@ -282,10 +293,8 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 @add_priv_test_generator(
     "Sstvala",
     required_extensions=["Sstvala"],
-    march_extensions=["S", "Zicsr"],
-    extra_defines=[
-        "#define SKIP_MEPC",
-    ],
+    march_extensions=["S"],
+    extra_defines=[],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""

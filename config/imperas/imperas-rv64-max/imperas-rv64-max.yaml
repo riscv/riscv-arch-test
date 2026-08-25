@@ -14,7 +14,7 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 1.0.0" }
+  - { name: Q, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
@@ -66,7 +66,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
+  # - { name: Svrsw60t59b, version: "= 1.0.0" } # Imperas ISS does not implement Svrsw60t59b; PTE bits 60:59 remain reserved and page fault
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
@@ -245,12 +245,11 @@ params:
       true,
       true,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
@@ -291,6 +290,10 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 6
+  NUM_USABLE_PMP_ENTRIES: 64
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -435,8 +438,7 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
+  VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 63
@@ -567,3 +569,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

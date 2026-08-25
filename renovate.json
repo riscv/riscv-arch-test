@@ -21,6 +21,10 @@
   "pre-commit": {
     "enabled": true
   },
+  "pep723": {
+    "enabled": true,
+    "managerFilePatterns": ["/^\\.github/scripts/ci_config\\.py$/"]
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 6am on monday"]
@@ -140,7 +144,7 @@
   ],
   "packageRules": [
     {
-      "description": "Always use the latest version of specified packages",
+      "description": "Limit hash-pinned dependency updates to once per day",
       "matchDepNames": [
         "tenstorrent/whisper",
         "riscv/riscv-isa-sim",
@@ -148,19 +152,23 @@
         "openhwgroup/cv32e20-dv",
         "openhwgroup/cv32e40p-dv-review",
         "openhwgroup/cv32e40x-dv",
-        "openhwgroup/cv32e40x",
-        "udb",
-        "udb-gen",
-        "idlc",
-        "udb_helpers"
+        "openhwgroup/cv32e40x"
       ],
-      "minimumReleaseAge": null
+      "minimumReleaseAge": null,
+      "schedule": ["after 12am and before 5am"]
     },
     {
       "description": "Do not update Ruby major versions",
       "matchDepNames": ["ruby"],
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "description": "Always use the latest version of UDB Ruby gems and keep in one update PR",
+      "matchDepNames": ["udb", "udb-gen", "idlc", "udb_helpers"],
+      "minimumReleaseAge": null,
+      "groupName": "udb ruby gems",
+      "groupSlug": "udb-ruby-gems"
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",

@@ -18,6 +18,8 @@ import rich
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator, model_validator
 from ruamel.yaml import YAML
 
+from act.toolchain import CompilerType, Toolchain
+
 
 class RefModelType(str, Enum):
     """Reference model types with their associated flags."""
@@ -72,13 +74,6 @@ def spike_isa_string(xlen: int) -> str:
     return _SPIKE_ISA[xlen]
 
 
-class CompilerType(str, Enum):
-    """Compiler types."""
-
-    CLANG = "clang"
-    GCC = "gcc"
-
-
 class CoverageSimulator(str, Enum):
     """Coverage simulator backends."""
 
@@ -106,6 +101,8 @@ class Config(BaseModel):
     @classmethod
     def validate_executable(cls, v: Path | None, info: ValidationInfo) -> Path | None:
         """Ensure the executable can be found."""
+        if info.context is not None and not info.context.get("validate_tools", True):
+            return v
         if v is not None:
             full_path = shutil.which(v)
             if full_path is None:
@@ -171,7 +168,7 @@ class Config(BaseModel):
 
 
 # Minimum required tool versions
-REQUIRED_SAIL_VERSION = "0.12"
+REQUIRED_SAIL_VERSION = "0.13.1"
 REQUIRED_GCC_MAJOR_VERSION = 15
 REQUIRED_CLANG_MAJOR_VERSION = 20
 
@@ -226,40 +223,26 @@ def check_ref_model_version(config: Config) -> None:
 
 
 def check_compiler_version(config: Config) -> None:
-    """Check that the compiler version is compatible."""
-    try:
-        result = subprocess.run(
-            [str(config.compiler_exe), "-dumpversion"],
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=5,
+    """Check that the compiler is a new enough version."""
+    toolchain = Toolchain(config.compiler_exe, config.compiler_type)
+    version_str = toolchain.version()
+    major_version = int(version_str.split(".")[0])
+
+    if config.compiler_type == CompilerType.GCC:
+        required_major = REQUIRED_GCC_MAJOR_VERSION
+        compiler_name = "GCC"
+    else:
+        required_major = REQUIRED_CLANG_MAJOR_VERSION
+        compiler_name = "Clang"
+
+    if major_version < required_major:
+        raise ValueError(
+            f"Compiler version mismatch. ACT4 requires {compiler_name} {required_major} or later, but {version_str} was found. "
+            "Refer to the ACT4 README for details: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-compiler",
         )
-        version_str = result.stdout.strip()
-        try:
-            major_version = int(version_str.split(".")[0])
-        except ValueError:
-            raise RuntimeError(f"Unable to parse compiler version from: {version_str!r}")
-
-        if config.compiler_type == CompilerType.GCC:
-            required_major = REQUIRED_GCC_MAJOR_VERSION
-            compiler_name = "GCC"
-        else:
-            required_major = REQUIRED_CLANG_MAJOR_VERSION
-            compiler_name = "Clang"
-
-        if major_version < required_major:
-            raise ValueError(
-                f"Compiler version mismatch. ACT4 requires {compiler_name} {required_major} or later, but {version_str} was found. "
-                "Refer to the ACT4 README for details: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-compiler",
-            )
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to check compiler version: {e}") from e
-    except subprocess.TimeoutExpired as e:
-        raise RuntimeError(f"Timeout while checking compiler version: {e}") from e
 
 
-def load_config(config_file: Path) -> Config:
+def load_config(config_file: Path, *, validate_tools: bool = True) -> Config:
     """Load riscv-arch-test framework configuration from a YAML file."""
     if not config_file.exists():
         raise FileNotFoundError(f"Configuration file not found: {config_file}")
@@ -271,7 +254,10 @@ def load_config(config_file: Path) -> Config:
     if yaml_data is None:
         raise ValueError(f"Configuration file is empty: {config_file}")
 
-    config = Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
-    check_ref_model_version(config)
-    check_compiler_version(config)
+    config = Config.model_validate(
+        yaml_data, context={"config_file_dir": config_file.parent, "validate_tools": validate_tools}
+    )
+    if validate_tools:
+        check_ref_model_version(config)
+        check_compiler_version(config)
     return config

@@ -3,22 +3,26 @@
 # CI configuration for QEMU simulator
 # Shared across all QEMU configs
 
-# SsstrictS & SsstrictU excluded as they are not supported by the old trap handler
-# SsstrictSm excluded because of Sail bugs
-# 1. incorrect decoding of add.uw instruction) Link: https://github.com/riscv/sail-riscv/issues/1711
-# 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
-# 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
-# 4. Spike mtval reports cache-block-aligned address on CBO access fault instead of faulting virtual address, Link: https://github.com/riscv-software-src/riscv-isa-sim/issues/2296
-# 5. RISC-V: CBO instructions (cbo.clean/flush/inval) decoded as `lq` instead of cache block operations, Link: https://gitlab.com/qemu-project/qemu/-/work_items/3480
-# 6. RISC-V: Reserved opcode 1111111 (op31) causes infinite trap loop instead of illegal instruction trap, Link: https://gitlab.com/qemu-project/qemu/-/work_items/3479
-# 7. QEMU is not Ssstrict compliant, and does not raise illegal exceptions on M-mode read only CSRs, which causes some tests to fail.
 ci_enabled: true
-# TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
-# TODO: Remove Zama16b when Qemu starts supporting it.
-# TODO: Remove UV when Qemu VXRM register issue is fixed
+# Status as of QEMU v11.1.0:
+# Sm: Multiple issues:
+#     need H support in Sail
+#     menvcfg.CBIE can be written with reserved 0b10 QEMU #4216
+#     menvcfg.LPE not writable QEMU #4045
+#     minstret one too high after wraparound (could be #4087, check after fixed)
+#     mcycleh write dropped (#4219)
+#     mstatus.MPELP not writable (#4220)
+# S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
+#     UXL https://gitlab.com/qemu-project/qemu/-/work_items/3367
+# Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
+# ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
+#        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.1.0)
+# ExceptionsZicboU/S, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
+# ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
+#        but cross-granule word/doubleword AMOs execute instead of trapping.
+# Zkr: QEMU sign-extends the CSR read of seed on RV64 (https://gitlab.com/qemu-project/qemu/-/work_items/4121)
+# SsstrictSm/SsstrictS/SsstrictU: Sail does not implement H, qemu#4200, qemu#4201, sail#1882, sail #1880 in Sail 0.14
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-# ExceptionsZicboU/S fail because of https://gitlab.com/qemu-project/qemu/-/work_items/3380
-# Zicntr fails on QEMU11.0.0 due to https://gitlab.com/qemu-project/qemu/-/work_items/3498, https://gitlab.com/qemu-project/qemu/-/work_items/3504
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # ZicntrS and ZicntrU fail on qemu because ecall increments instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4087
@@ -28,3 +32,7 @@ ci_enabled: true
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU,ExceptionsSm,ExceptionsU,InterruptsSm,InterruptsU"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
+shards: 1
+config_shards:
+  qemu-rv64-max: 2
+  qemu-rv32-max: 2

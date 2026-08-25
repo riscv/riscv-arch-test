@@ -20,11 +20,10 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei_svinval
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "Svinval_mstatus_tvm.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 50
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -67,7 +66,7 @@ main:
 
   // Set mstatus.TVM
   LI(   a0, MSTATUS_TVM)
-  CSRS( mstatus, a0)
+  csrs  mstatus, a0
   tvm:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, tvm, tvm_str)
 

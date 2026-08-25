@@ -27,10 +27,9 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_mstatus_mprv_Umode.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -54,7 +53,6 @@ RVTEST_BEGIN
   LA(a5, rvtest_data_1)       // Using physical address for fetch
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -78,7 +76,7 @@ RVTEST_BEGIN
   VERIFICATION_RWX \TEST_CASE
 
   LI(   t0, MSTATUS_MPRV)
-  CSRC( mstatus, t0)          // Clear mstatus.MPRV
+  csrc  mstatus, t0          // Clear mstatus.MPRV
 
   // Signature Update
   RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
@@ -89,9 +87,9 @@ RVTEST_BEGIN
 
 .macro SET_REQ_MSTATUS_VAL
   LI(   t0, MSTATUS_MPRV)
-  CSRS( mstatus, t0)
+  csrs  mstatus, t0
   LI(   t0, 0x1800)
-  CSRC( mstatus, t0)          // Set to Umode
+  csrc  mstatus, t0          // Set to Umode
 .endm
 
 
@@ -160,7 +158,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -174,7 +172,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

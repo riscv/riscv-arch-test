@@ -19,7 +19,7 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
         f"LI(x{temp_reg}, 1)",
-        ".align 2",
+        ".p2align 2",
         test_data.add_testcase("taken_branch_pc_6", coverpoint, covergroup),
     ]
 
@@ -57,7 +57,7 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
             coverpoint,
             "Branch to an unaligned address is NOT taken (PC+6). Should not cause an exception",
         ),
-        ".align 2",
+        ".p2align 2",
         f"LI(x{temp_reg}, 1)",
         f"LI(x{check_reg}, 0)",
         test_data.add_testcase("nottaken_branch_pc_6", coverpoint, covergroup),
@@ -114,7 +114,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
             lines.extend(
                 [
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
-                    ".align 2",
+                    ".p2align 2",
                     f"auipc x{addr_reg}, 0 # PC+0 addr_reg = PC",
                     f"addi x{addr_reg}, x{addr_reg}, {base_off} # PC+4 addr_reg[1:0] = rs1_lsb",
                     test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
@@ -139,10 +139,8 @@ def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> l
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Instruction Access Fault"),
         f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        "LI(x4, 0xACCE)",  # trap handler checks x4 value and uses x1 (ra) as return address instead of mepc
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
-        "nop",
         "#endif",
     ]
 
@@ -161,8 +159,9 @@ def generate_ecall_tests(
     lines = [
         comment_banner(coverpoint, description),
         test_data.add_testcase(testcase_name, coverpoint, covergroup),
-        "ecall",
-        "nop",
+        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
+        "# ecall returns mepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
+        write_sigupd(10, test_data),
     ]
     return lines
 
@@ -172,14 +171,12 @@ def generate_illegal_instruction_tests(test_data: TestData, covergroup: str) -> 
 
     lines = [
         comment_banner(coverpoint, "Illegal Instruction"),
-        ".align 2",
+        ".p2align 2",
         test_data.add_testcase("illegal_0x00000000", coverpoint, covergroup),
         ".word 0x00000000",
-        "nop",
-        ".align 2",
+        ".p2align 2",
         test_data.add_testcase("illegal_0xFFFFFFFF", coverpoint, covergroup),
         ".word 0xFFFFFFFF",
-        "nop",
     ]
     return lines
 
@@ -192,16 +189,12 @@ def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str
         comment_banner(coverpoint, "Illegal Instruction Seed"),
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
         f"csrrs x{dest_regs[0]}, seed, x0",
-        "nop",
         test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
         f"csrrc x{dest_regs[1]}, seed, x0",
-        "nop",
         test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
         f"csrrsi x{dest_regs[2]}, seed, 0",
-        "nop",
         test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
         f"csrrci x{dest_regs[3]}, seed, 0",
-        "nop",
     ]
 
     test_data.int_regs.return_registers(dest_regs)
@@ -215,7 +208,6 @@ def generate_breakpoint_tests(test_data: TestData, covergroup: str) -> list[str]
         comment_banner(coverpoint, "Breakpoint"),
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "ebreak",
-        "nop",
     ]
     return lines
 
@@ -242,7 +234,6 @@ def add_load_misaligned_test(
         [
             test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
             f"{op} x{check_reg}, 0(x{addr_reg})",
-            "nop",
             write_sigupd(check_reg, test_data),
         ]
     )
@@ -266,7 +257,6 @@ def add_store_misaligned_test(
         f"addi x{addr_reg}, x{addr_reg}, {offset}",
         test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
         f"{op} x{data_reg}, 0(x{addr_reg})",
-        "nop",
         # Read back scratch memory to verify store result
         f"LA(x{addr_reg}, scratch)",
         f"lw x{check_reg}, 0(x{addr_reg})",
@@ -355,7 +345,6 @@ def generate_load_access_fault_tests(
             [
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
         if use_sigupd:
@@ -371,7 +360,6 @@ def generate_load_access_fault_tests(
             [
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
         if use_sigupd:
@@ -399,7 +387,6 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
                 f"LI(x{data_reg}, {test_values[op]})",
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{data_reg}, 0(x{addr_reg})",
-                "nop",
             ]
         )
 
@@ -412,7 +399,6 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
             f"LI(x{data_reg}, {test_values['sd']})",
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
             f"sd x{data_reg}, 0(x{addr_reg})",
-            "nop",
             "",
             "#endif",
             "#endif",
@@ -447,7 +433,6 @@ def generate_misaligned_priority_load_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
                 ]
             )
 
@@ -458,7 +443,6 @@ def generate_misaligned_priority_load_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
                 ]
             )
         lines.append("\n#endif\n")
@@ -495,7 +479,6 @@ def generate_misaligned_priority_store_tests(
                     f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{data_reg}, 0(x{addr_reg})",
-                    "nop",
                 ]
             )
 
@@ -506,7 +489,6 @@ def generate_misaligned_priority_store_tests(
                 f"\n# Testcase: sd with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                 test_data.add_testcase(f"sd{name_infix}off{offset}_priority", coverpoint, covergroup),
                 f"sd x{data_reg}, 0(x{addr_reg})",
-                "nop",
                 "",
                 "#endif",
                 "",
@@ -536,21 +518,17 @@ def generate_misaligned_priority_fetch_tests(
             "\n# misaligned fetch - existent address",
             f"LA(x{addr_reg}, {target_label})",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",  # trap handler checks x4 value to use x1 (ra) as return address instead of mepc
             test_data.add_testcase(f"{name_prefix}misaligned_existent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
-            "nop",
-            ".align 4",
+            ".p2align 4",
             f"{target_label}:",
             "nop",
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",  # trap handler checks x4 value to use x1 (ra) as return address instead of mepc
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
-            "nop",
             "#endif",
         ]
     )

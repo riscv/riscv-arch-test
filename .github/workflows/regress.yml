@@ -13,9 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SAIL_VERSION: "0.12"
-  RISCV_TOOLCHAIN_VERSION: "2026.06.06"
+  SAIL_VERSION: "0.13.1"
+  RISCV_TOOLCHAIN_VERSION: "2026.08.24"
   LLVM_VERSION: "22"
+
+permissions:
+  contents: read
 
 jobs:
   lint:
@@ -24,13 +27,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Run prek
-        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
 
   # Data-driven regression.
   # Configs are auto-discovered from the config directory.
@@ -44,41 +49,87 @@ jobs:
       matrix: ${{ steps.discover.outputs.matrix }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
+
+      # The act build cache is content-hash based and self-validating, so a
+      # stale restore is safe: only configs whose UDB yaml changed rebuild.
+      # Gemfile.lock stays in the primary prefix (not just restore-keys)
+      # because the build cache hashes commands, not tool binaries — a udb
+      # gem update must drop these caches entirely.
+      - name: Cache UDB outputs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: work/ci-config
+          key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
+          restore-keys: |
+            ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-
+
+      # Generated tests (e.g. priv) are not checked in but count toward the
+      # suite weights used for shard bin-packing, so generate them first.
+      - name: Generate tests
+        run: make tests --jobs "$(nproc)"
 
       - name: Discover CI configs
         id: discover
-        run: echo "matrix=$(.github/scripts/ci_config.py)" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/ci_config.py
 
   regress:
-    name: ${{ matrix.simulator }} (${{ matrix.config }})
+    name: ${{ matrix.simulator }} (${{ matrix.config }})${{ matrix.shard_suffix }}
     needs: discover-configs
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.discover-configs.outputs.matrix) }}
+    env:
+      MATRIX_CONFIG: ${{ matrix.config }}
+      MATRIX_EXTENSIONS: ${{ matrix.extensions }}
+      MATRIX_SIMULATOR: ${{ matrix.simulator }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
+
+      - name: Report shard assignment
+        env:
+          MATRIX_SHARD_INDEX: ${{ matrix.shard_index }}
+          MATRIX_SHARD_TOTAL: ${{ matrix.shard_total }}
+        run: |
+          if [ -z "${MATRIX_EXTENSIONS}" ]; then
+            echo "::notice::Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} for ${MATRIX_CONFIG} is empty after exclusions; skipping heavy steps."
+          else
+            echo "Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} extensions: ${MATRIX_EXTENSIONS}"
+          fi
 
       - name: Install sail-riscv model
+        if: matrix.extensions != ''
         run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
+        if: matrix.extensions != ''
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
+        if: matrix.extensions != ''
         run: |
           retry() {
             local max_attempts="$1"
@@ -105,19 +156,22 @@ jobs:
           retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
           retry 3 sudo apt-get update
           retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
-            clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+            clang-"$LLVM_VERSION" lld-"$LLVM_VERSION" llvm-"$LLVM_VERSION"
           for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-            sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
+            sudo ln -sf "/usr/bin/${tool}-${LLVM_VERSION}" "/usr/bin/${tool}"
           done
 
       - name: Install runtime dependencies
-        if: matrix.apt_packages != ''
+        if: matrix.extensions != '' && matrix.apt_packages != ''
+        env:
+          MATRIX_APT_PACKAGES: ${{ matrix.apt_packages }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y ${{ matrix.apt_packages }}
+          read -r -a apt_packages <<< "${MATRIX_APT_PACKAGES}"
+          sudo apt-get install -y "${apt_packages[@]}"
 
       - name: Restore cached simulator
-        if: matrix.cache_key != ''
+        if: matrix.extensions != '' && matrix.cache_key != ''
         id: cache-restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
@@ -125,45 +179,57 @@ jobs:
           key: ${{ matrix.cache_key }}
 
       - name: Install simulator
-        if: matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
-        run: bash ${{ matrix.install_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        if: matrix.extensions != '' && matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
+        env:
+          MATRIX_INSTALL_SCRIPT: ${{ matrix.install_script }}
+        run: bash "${MATRIX_INSTALL_SCRIPT}" "${GITHUB_WORKSPACE}/${MATRIX_SIMULATOR}"
 
       - name: Save cached simulator
-        if: matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
+        if: matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
           key: ${{ matrix.cache_key }}
 
       - name: Add simulator to PATH
-        if: matrix.install_script != ''
-        run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
+        if: matrix.extensions != '' && matrix.install_script != ''
+        run: echo "$GITHUB_WORKSPACE/${MATRIX_SIMULATOR}/bin" >> "$GITHUB_PATH"
 
       - name: Run setup script
-        if: matrix.setup_script != ''
-        run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+        if: matrix.extensions != '' && matrix.setup_script != ''
+        env:
+          MATRIX_SETUP_SCRIPT: ${{ matrix.setup_script }}
+        run: bash "${MATRIX_SETUP_SCRIPT}" "${GITHUB_WORKSPACE}/${MATRIX_SIMULATOR}"
 
       - name: Generate tests and coverpoints
-        run: make tests --jobs $(nproc)
+        if: matrix.extensions != ''
+        run: EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
 
       - name: Build ELFs
+        if: matrix.extensions != ''
+        env:
+          MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
+          MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
         run: |
           FAST=True \
-          EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
-          CONFIG_FILES=${{ matrix.config_file }} \
-          make elfs --jobs $(nproc)
+          EXTENSIONS="${MATRIX_EXTENSIONS}" \
+          EXCLUDE_EXTENSIONS="${MATRIX_EXCLUDE_EXTENSIONS}" \
+          CONFIG_FILES="${MATRIX_CONFIG_FILE}" \
+          make elfs --jobs "$(nproc)"
 
       - name: Run tests
-        if: matrix.run_cmd != ''
+        if: matrix.extensions != '' && matrix.run_cmd != ''
         run: |
-          ./run_tests.py "${{ matrix.run_cmd }}" \
-          work/${{ matrix.config }}/elfs
+          ./run_tests.py "${MATRIX_RUN_CMD}" \
+          "work/${MATRIX_CONFIG}/elfs"
+        env:
+          MATRIX_RUN_CMD: ${{ matrix.run_cmd }}
 
       - name: Upload logs
-        if: always()
+        if: always() && matrix.extensions != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ${{ matrix.config }}-logs
+          name: ${{ matrix.config }}${{ matrix.shard_suffix }}-logs
           path: work/${{ matrix.config }}/logs
 
   vector-testgen:
@@ -171,38 +237,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Generate vector tests
-        run: make vector-tests --jobs $(nproc)
+        run: make vector-tests --jobs "$(nproc)"
 
   ctp-build:
     name: Build CTP
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
-        run: cd docs/ctp && make -j2
+        run: cd docs/ctp && make docker-pull-latest && make -j6
 
   crd-build:
     name: Build CRD
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CRD
-        run: cd docs/crd && make -j2
+        run: cd docs/crd && make docker-pull-latest && make -j6
 
   check-tests:
     name: Check generated tests
@@ -210,22 +282,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
         run: make clean-tests tests
 
       - name: Check for differences
         run: |
-          dirs="tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage"
-          changed=$(git diff --name-only -- $dirs)
-          untracked=$(git ls-files --others --exclude-standard -- $dirs)
+          dirs=(tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage)
+          changed=$(git diff --name-only -- "${dirs[@]}")
+          untracked=$(git ls-files --others --exclude-standard -- "${dirs[@]}")
           if [ -n "$changed" ] || [ -n "$untracked" ]; then
             echo "::error::Checked-in generated files are out of sync with the generators. Run 'make tests' and commit the results."
-            [ -n "$changed" ] && echo "Changed files:" && git diff -- $dirs
+            [ -n "$changed" ] && echo "Changed files:" && git diff -- "${dirs[@]}"
             [ -n "$untracked" ] && echo "New files:" && echo "$untracked"
             exit 1
           fi
@@ -241,26 +315,32 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Pin Python version for this job
         run: echo "${{ matrix.python-version }}" > .python-version
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version
 
       - name: Install sail-riscv model
         run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)

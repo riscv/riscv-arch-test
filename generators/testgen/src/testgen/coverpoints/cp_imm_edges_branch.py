@@ -8,12 +8,12 @@
 
 """cp_imm_edges coverpoint generators."""
 
-from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges_branch")
@@ -51,21 +51,21 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             f"addi x{params.temp_reg}, x{params.temp_reg}, 16 # should happen",
             "",
             "# branch forward by 2048",
-            ".align 11 # align to 2048 bytes",
+            ".p2align 11 # align to 2048 bytes",
             f"{instr_name} x{params.rs1}, x{params.rs2}, 4f",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -32 # shouldn't happen",
             "j 19f # shouldn't happen",
-            ".align 11 # align to 2048 bytes",
+            ".p2align 11 # align to 2048 bytes",
             "4:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 64 # should happen",
             "",
             "# branch forward by 4092",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "nop # use up 4 bytes",
             f"{instr_name} x{params.rs1}, x{params.rs2}, 5f",
             f"addi x{params.temp_reg}, x{params.temp_reg}, -128 # shouldn't happen",
             "j 19f # shouldn't happen",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "5:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 256 # should happen",
             "",
@@ -89,11 +89,11 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             "j 19f # shouldn't happen",
             "",
             "# backward branch by 4096",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "10:",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 1 # should happen",
             "j 20f # backward branch succeeded",
-            ".align 12 # align to 4096 bytes",
+            ".p2align 12 # align to 4096 bytes",
             "11:",
             f".insn {encode_branch(instr_name, params.rs1, params.rs2, 4096):#x} # {instr_name} x{params.rs1}, x{params.rs2}, -4096; GCC is turning this into a small branch and a jump",
             f"addi x{params.temp_reg}, x{params.temp_reg}, 300 # shouldn't happen",
@@ -109,7 +109,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             write_sigupd(params.temp_reg, test_data),
         ]
     )
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [test_data.end_test_chunk()]
 
 

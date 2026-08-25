@@ -3465,7 +3465,7 @@ covergroup Vx16_vcompress_vm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -5303,7 +5303,7 @@ covergroup Vx16_vmadc_vi_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -5707,7 +5707,7 @@ covergroup Vx16_vmadc_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -6123,7 +6123,7 @@ covergroup Vx16_vmadc_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -6953,7 +6953,7 @@ covergroup Vx16_vmand_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -7183,7 +7183,7 @@ covergroup Vx16_vmandn_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -9515,7 +9515,7 @@ covergroup Vx16_vmnand_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -9745,7 +9745,7 @@ covergroup Vx16_vmnor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -9975,7 +9975,7 @@ covergroup Vx16_vmor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -10205,7 +10205,7 @@ covergroup Vx16_vmorn_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -10405,7 +10405,7 @@ covergroup Vx16_vmsbc_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -10821,7 +10821,7 @@ covergroup Vx16_vmsbc_vx_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17377,7 +17377,7 @@ covergroup Vx16_vmv_s_x_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17464,7 +17464,7 @@ covergroup Vx16_vmv_v_i_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17589,7 +17589,7 @@ covergroup Vx16_vmv_v_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17710,7 +17710,7 @@ covergroup Vx16_vmv_v_x_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17888,7 +17888,7 @@ covergroup Vx16_vmv_x_s_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -17991,7 +17991,7 @@ covergroup Vx16_vmv1r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -18142,7 +18142,7 @@ covergroup Vx16_vmv2r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -18301,7 +18301,7 @@ covergroup Vx16_vmv4r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -18464,7 +18464,7 @@ covergroup Vx16_vmv8r_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -18684,7 +18684,7 @@ covergroup Vx16_vmxnor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -18914,7 +18914,7 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -28290,6 +28290,18 @@ covergroup Vx16_vsadd_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
     }
@@ -28479,6 +28491,18 @@ covergroup Vx16_vsadd_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -28653,6 +28677,18 @@ covergroup Vx16_vsadd_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28834,6 +28870,18 @@ covergroup Vx16_vsaddu_vi_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
@@ -29024,6 +29072,18 @@ covergroup Vx16_vsaddu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -29198,6 +29258,18 @@ covergroup Vx16_vsaddu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -31637,6 +31709,18 @@ covergroup Vx16_vsmul_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31829,6 +31913,24 @@ covergroup Vx16_vsmul_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat_no_rv32_sew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
+    }
+
+    //// end cp_csr_vxsat_no_rv32_sew64 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -34567,6 +34669,18 @@ covergroup Vx16_vssub_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34741,6 +34855,18 @@ covergroup Vx16_vssub_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -34953,6 +35079,18 @@ covergroup Vx16_vssubu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35127,6 +35265,18 @@ covergroup Vx16_vssubu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

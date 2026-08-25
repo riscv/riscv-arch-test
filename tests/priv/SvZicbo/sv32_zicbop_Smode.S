@@ -16,10 +16,9 @@
 # MARCH: rv32i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_zicbop_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 10
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -127,7 +126,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -141,7 +140,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

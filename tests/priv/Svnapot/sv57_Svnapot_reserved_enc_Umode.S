@@ -28,13 +28,14 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_Svnapot_reserved_enc_Umode.S"
 #define SIGUPD_COUNT 30
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
 RVTEST_BEGIN
+
+#ifdef S1P12P0_OR_LATER_SUPPORTED
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
@@ -52,7 +53,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -234,6 +234,8 @@ main:
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
+#endif
+
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
@@ -241,7 +243,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing (Aligned to 64KiB)
-.align 16
+.p2align 16
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -255,7 +257,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

@@ -8,12 +8,13 @@ description: RVI20U32 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: A, version: "= 2.1.0" }
   - { name: F, version: "= 2.2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
-  # - { name: Zihpm, version: "= 2.0" } # TODO: Disabled because hpmcounter CSRs are not accessible without U mode. See https://github.com/riscv/sail-riscv/pull/1649.
+  - { name: Zihpm, version: "= 2.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }

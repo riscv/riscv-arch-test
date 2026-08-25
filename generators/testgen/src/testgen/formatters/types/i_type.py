@@ -11,8 +11,12 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 i_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits=12, imm_signed=True)
+i_rd_nx0_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits=12, imm_signed=True, excluded_regs={"rd": {0}}
+)
 
 
+@add_instruction_formatter("I_RD_NX0", i_rd_nx0_config)
 @add_instruction_formatter("I", i_config)
 def format_i_type(
     instr_name: str, test_data: TestData, params: InstructionParams

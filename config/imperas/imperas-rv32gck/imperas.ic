@@ -60,6 +60,7 @@
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
+--override cpu*/Zam=T # misaligned AMOs are supported
 
 # PMP Configuration
 --override cpu*/PMP_registers=16
@@ -68,10 +69,11 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # More extensions
-#--override cpu*/Smdbltrp=T
-#--override cpu*/Ssdbltrp=T
---override iss/cpu0/Zicfilp=T
---override iss/cpu0/Zicfiss=T
+--override cpu*/Smdbltrp=T
+--override cpu*/Ssdbltrp=T
+--override cpu*/Zicfilp=T
+--override cpu*/Zicfiss=T
+--override cpu*/d_requires_f=T
 
 # PMA Settings
 # 'r': read access allowed
@@ -88,6 +90,7 @@
 #
 # SVxx Memory 0x0000000000 0x7FFFFFFFFF
 #
+--override iss/cpu0/CLINT_address=0x02000000 # enables mtime and msip memory-mapped registers
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0x7FFFFFFFFF -attributes " ---a-- ---- " # INITIAL
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x000200FFFF -attributes " rw-aA- 1248 " # CLINT

@@ -3,8 +3,8 @@
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
-        .align 8; .global tohost; tohost: .dword 0;         \
-        .align 8; .global fromhost; fromhost: .dword 0;     \
+        .balign 8; .global tohost; tohost: .dword 0;         \
+        .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
 
 #define STANDARD_SM_SUPPORTED
@@ -99,7 +99,12 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+// Wally's mtime advances one tick per core clock, and the code between arming
+// mtimecmp and reaching the lower privilege mode (three CLINT stores plus
+// RVTEST_GOTO_LOWER_MODE) can take well over 100 cycles on a pipelined core
+// with caches.  With a delay of 100 the timer interrupt fires while still in
+// M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
+#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 

@@ -25,6 +25,10 @@ _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 _SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
+# Simulator-reported failure reasons worth surfacing verbatim in FAIL messages, e.g.
+# whisper's "Error: Failed stop: Hart 0: Core entered critical-error state ..." or
+# qemu's "qemu: fatal: M-mode double trap"
+_ERROR_LINE_RE = re.compile(r"Error:|Failed stop:|critical[-_ ]error|fatal", re.IGNORECASE)
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -70,10 +74,20 @@ def dim(text: str) -> str:
     return _color("2", text)
 
 
+def _simulator_error_lines(log_file: Path, limit: int = 3) -> list[str]:
+    """Extract simulator-reported error lines from a run log (skipping the 2-line header)."""
+    try:
+        lines = log_file.read_text(errors="replace").splitlines()
+    except OSError:
+        return []
+    # "Monitoring net ...critical_error" is imperas's startup registration line, not an error
+    return [line.strip() for line in lines[2:] if _ERROR_LINE_RE.search(line) and "Monitoring net" not in line][:limit]
+
+
 def run_test(
     command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool, timeout: int
-) -> tuple[bool, Path, str]:
-    """Run a single ELF and return (failed, elf_path, rvcp_summary_line)."""
+) -> tuple[bool, Path, str, str]:
+    """Run a single ELF and return (failed, elf_path, rvcp_summary_line, fail_message)."""
 
     # Create log, trace, and summary file paths mirroring the ELF subdirectory hierarchy
     rel = elf_path.relative_to(elf_dir)
@@ -112,8 +126,9 @@ def run_test(
     full_cmd = [*cmd, str(elf_path)]
     display_cmd = f"{test_command} {elf_path}"
 
+    # Safe to print from the worker: --verbose forces --jobs 1, so nothing races with it.
     if verbose:
-        print(f"\nRunning {display_cmd}")
+        print(f"\nRunning {display_cmd}", flush=True)
 
     timed_out = False
     with log_file.open("w") as f:
@@ -132,24 +147,34 @@ def run_test(
             proc.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             timed_out = True
+            # SIGTERM first so simulators with graceful handlers (e.g. imperas
+            # --stoponcontrolc) can flush trace output; escalate if they don't exit.
             try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
             except (ProcessLookupError, PermissionError):
-                proc.kill()
-            proc.wait()
+                proc.terminate()
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except (ProcessLookupError, PermissionError):
+                    proc.kill()
+                proc.wait()
 
     returncode = proc.returncode
 
     # Build trace/summary file references for failure output
     trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
     summary_msg = f"\n         Summary: {dim(str(summary_file))}" if has_summary_file else ""
+    error_msg = "".join(f"\n         {dim(line)}" for line in _simulator_error_lines(log_file))
 
     if timed_out:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — timed out after {timeout}s, simulator process group killed"
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
-        return True, elf_path, f"TIMEOUT after {timeout}s"
+        return True, elf_path, f"TIMEOUT after {timeout}s", message
 
     # Check exit code
     exit_failed = returncode != 0
@@ -170,44 +195,45 @@ def run_test(
     # Overall failure for test
     failed = exit_failed or summary_failed or summary_sigrun or no_summary
 
-    # Print failure message for test
+    # Build failure message for test
+    message = ""
     if summary_sigrun:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
             f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and no_summary:
-        print(
+        message = (
             f"  {red('FAIL')} {bold(elf_path.name)} — exit code {returncode} indicates failure, no RVCP-SUMMARY line found"
             f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and summary_failed:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code {returncode}"
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif summary_failed and not exit_failed:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif exit_failed and not summary_failed:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
     elif no_summary and not exit_failed:
-        print(
+        message = (
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
             f"\n         Test may have been killed externally or hung without producing output."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}{error_msg}"
         )
 
-    return failed, elf_path, rvcp_summary
+    return failed, elf_path, rvcp_summary, message
 
 
 def main() -> int:
@@ -281,12 +307,18 @@ def main() -> int:
 
     # Run individual tests
     with Pool(args.jobs) as pool, summary_log.open("w") as f:
-        for fail_status, elf_path, rvcp_summary in pool.imap_unordered(partial_run_test, elf_files):
+        for fail_status, elf_path, rvcp_summary, fail_message in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
+            # Printed here, in the parent, so concurrent workers cannot interleave with
+            # each other mid-message (see run_test's docstring).
+            if fail_message:
+                print(fail_message, flush=True)
             rel_log = str(elf_path.relative_to(elf_dir).with_suffix(".log"))
             entries.append((rel_log, rvcp_summary))
             print(f"{rel_log}  {rvcp_summary}", file=f, flush=True)
+        pool.close()
+        pool.join()
 
     # Rewrite the top-level summary log sorted and column-aligned now that all results are in.
     entries.sort()

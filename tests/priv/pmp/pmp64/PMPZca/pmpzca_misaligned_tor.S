@@ -28,15 +28,15 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_TOR_SUPPORTED: true
 # MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpzca_misaligned_tor.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -46,13 +46,6 @@ RVTEST_BEGIN
 
 #define REGION_SIZE (1<<(UDB_PMP_GRANULARITY))
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -69,21 +62,14 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL               ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP1CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
 #define PMP2CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP2_CFG_SHIFT))
 #define PMP3CFG                         ((((PMP_L|                  PMP_TOR)   &0xFF)   << PMP3_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL           -1                  // All memory region
 
 #define REGIONSTART                     TEST_FOR_EXECUTION_1
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case: Setting up three TOR regions with L = 1, and XWR = 111 and XWR = 000 for third region
@@ -119,11 +105,12 @@ main:
     LI(x4, PMP3CFG)
     csrw pmpcfg0, x4
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     // Test Case 1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1
 
     // Test Case 2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -132,37 +119,34 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_tor_start\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
-    nop
+    c.nop                                                        // 2-byte filler: lands TEST_FOR_EXECUTION_2 2 bytes before the region2 boundary so its uncompressed jalr genuinely straddles it
     .endr
 
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                            // Uncompressed return straddling the start
 
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                             // Uncompressed return straddling the end
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_5:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

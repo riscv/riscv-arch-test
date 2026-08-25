@@ -38,12 +38,11 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_L_modify_off.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 50
 
 
-#define SKIP_MEPC
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -66,16 +65,9 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 //                                          Verification Section
 // Test Case 1 : Setting region 1 to be OFF with L->0, XWR->111 and pmpaddr->0x100
@@ -181,9 +173,9 @@ test_12_str: .string "\"test: 12; cp: cp_cfg_L_modify_12\""
 test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify_13\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_14\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

@@ -104,7 +104,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
@@ -158,6 +158,38 @@ _TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
     "VSXM": (True, False, False),
     "VSXVM": (True, False, True),
     "VSXXM": (True, False, False),
+    # Vector integer types from Vx.csv
+    "WVV": (True, True, True),
+    "WVX": (True, False, True),
+    "WVV_ACC": (True, True, True),
+    "WVX_ACC": (True, False, True),
+    "WWV": (True, True, True),
+    "WWX": (True, False, True),
+    "VWV": (True, True, True),
+    "VWX": (True, False, True),
+    "VWI": (True, False, True),
+    "VVV_ACC": (True, True, True),
+    "VVX_ACC": (True, False, True),
+    "VVV_SAT": (True, True, True),
+    "VVX_SAT": (True, False, True),
+    "VVI_SAT": (True, False, True),
+    "VVSR": (True, True, True),
+    "WVWSR": (True, True, True),
+    "MVV": (True, True, True),
+    "MVX": (True, False, True),
+    "MVI": (True, False, True),
+    "MVVM": (True, True, True),
+    "MVXM": (True, False, True),
+    "MVIM": (True, False, True),
+    "MMM": (True, True, True),
+    "MM": (True, False, True),
+    "VVVP": (True, True, True),
+    "VVXP": (True, False, True),
+    "VVIP": (True, False, True),
+    "VEXT": (True, False, True),
+    "VMVR": (True, False, True),
+    "VCOMPRESS": (True, True, True),
+    "VID": (True, False, False),
 }
 
 
@@ -258,7 +290,9 @@ def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
                 if not isinstance(value, str) or value == "":
                     continue
                 if key == "Type":
-                    cps.append(f"sample_{value}")
+                    # TODO: Expand the list of aliased types to avoid duplicate sample function templates
+                    sample_type = value.removesuffix("_RD_NX0")
+                    cps.append(f"sample_{sample_type}")
                 else:
                     # For special entries, append the value as a suffix
                     # e.g. cp_rd_edges with value "lui" becomes cp_rd_edges_lui
@@ -452,7 +486,7 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
     """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
     Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    MAXINDEXEEW_GE{eew}. Priv MisalignV / ExceptionsVls covergroups gate
     behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
     (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
     EEW=64 indexed LS while other sims take a load access fault, producing
@@ -463,7 +497,7 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
         return None
     if arch in _VLS_PER_SEW_ARCHES:
         return (eew, "MAXINDEXEEW_GE")
-    if arch in ("MisalignedV", "ExceptionsVls"):
+    if arch in ("MisalignV", "ExceptionsVls"):
         # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
         if eew >= 64:
             return (eew, "XLEN")
@@ -511,9 +545,14 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
     if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
         return None
 
-    # cp_custom_ffLS requires LMUL=2; skip where that is infeasible at this SEW.
+    # cp_custom_ffLS requires LMUL=2; Use a fallback when this isn't possible
     if cp == "cp_custom_ffLS" and _is_vector(arch) and not _ffLS_feasible(instr, int(_get_effew(arch))):
-        return None
+        cp = "cp_custom_ffLS_lmul_lt2"
+
+        eew_m = re.search(r"e(\d+)ff", instr)
+        eew = int(eew_m.group(1)) if eew_m else 0
+        if eew >= 32:
+            cp += f"_eew{eew}"
 
     # _sew_ge{N}: only applies when arch SEW >= N; strip the suffix when it does.
     ge_match = re.search(r"_sew_ge(\d+)$", cp)
@@ -567,7 +606,7 @@ def _gen_instrs(
         vectorwiden = _is_vector_widen(arch, instr)
 
         # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
         # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
         # takes illegal-instruction on EEW=64 indexed LS while other sims
         # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
@@ -708,7 +747,7 @@ def _write_extension_files(
         try:
             effew = _get_effew(arch)
         except ValueError:
-            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignedV) have no SEW expansion or EFFEW.
+            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) have no SEW expansion or EFFEW.
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 
@@ -808,14 +847,15 @@ def write_coverage_headers(
 
 def _merge_instruction_testplans(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
 ) -> dict[tuple[str, str], list[str]]:
-    """Merge all testplans into a single mapping with unique instruction entries.
+    """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
 
     Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
     instruction appears in multiple testplan variants.  Merging first-occurrence-wins
     collapses those duplicates before the instruction sample file is generated.
     """
-    merged: dict[tuple[str, str], list[str]] = {}
+    merged = dict(instruction_formats)
     for arch in sorted(test_plans.keys()):
         if arch == "E":
             continue  # E is a duplicate of I
@@ -828,6 +868,7 @@ def _merge_instruction_testplans(
 
 def write_instruction_sample_file(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
+    instruction_formats: dict[tuple[str, str], list[str]],
     templates: dict[str, str],
     output_dir: Path,
 ) -> None:
@@ -839,7 +880,7 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    merged_tp = _merge_instruction_testplans(test_plans)
+    merged_tp = _merge_instruction_testplans(test_plans, instruction_formats)
     instr_keys = sorted(merged_tp.keys())
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
@@ -909,6 +950,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
+    instruction_formats = _parse_testplan_csv(testplan_dir / "coverage" / "instruction_formats.csv")
 
     jobs = _plan_unpriv_jobs(test_plans, output_dir)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
@@ -919,5 +961,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
             progress.advance(task_id)
 
     write_coverage_headers(all_test_plans, output_dir, templates)
-    write_instruction_sample_file(all_test_plans, templates, output_dir)
+    write_instruction_sample_file(all_test_plans, instruction_formats, templates, output_dir)
     rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

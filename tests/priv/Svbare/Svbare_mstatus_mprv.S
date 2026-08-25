@@ -14,11 +14,10 @@
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "Svbare_mstatus_mprv.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 10
 #define BOOT_TO_MMODE
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -55,7 +54,7 @@ RVTEST_BEGIN
 main:
   LI( a2, 0x800)              // Test signature initialization
 
-  CSRW(satp, x0)              // Set satp.MODE = Bare
+  csrw satp, x0              // Set satp.MODE = Bare
 
   satp_bare:
   RVTEST_SIGUPD_CSR_READ(satp, a4, satp_bare, satp_bare_str)
@@ -65,11 +64,11 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(   t0, MSTATUS_MPRV)
-  CSRS( mstatus, t0)
+  csrs  mstatus, t0
   LI(   t0, 0x1800)
-  CSRC( mstatus, t0)
+  csrc  mstatus, t0
   LI(   t0, 0x800)
-  CSRS( mstatus, t0)          // Set to Smode
+  csrs  mstatus, t0          // Set to Smode
 
   test1_mstatus:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, test1_mstatus, test1_mstatus_str)
@@ -83,9 +82,9 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(   s7, MSTATUS_MPRV)
-  CSRS( mstatus, s7)
+  csrs  mstatus, s7
   LI(   s7, 0x1800)
-  CSRC( mstatus, s7)          // Set to Umode
+  csrc  mstatus, s7          // Set to Umode
 
   test2_mstatus:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, test2_mstatus, test2_mstatus_str)
@@ -102,7 +101,7 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4

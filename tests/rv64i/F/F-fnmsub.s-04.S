@@ -15,8 +15,7 @@
 # MARCH: rv64if_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "F-fnmsub.s-04.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 2010
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.

@@ -43,6 +43,30 @@
     #define LREG lq
 #endif
 
+// RVTEST_FENCEI: instruction that synchronizes the instruction stream after code
+// has been written to memory (relocating the trampoline, writing a dynamic
+// instruction to scratch, or storing into an executable PMP region before jumping
+// into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
+// I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
+// (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
+// (or a JAL) so code size is constant.
+#ifdef   RVMODEL_FENCEI
+  #define RVTEST_FENCEI RVMODEL_FENCEI
+#else
+  #ifdef ZIFENCEI_SUPPORTED
+    #define RVTEST_FENCEI fence.i
+  #else
+    #define RVTEST_FENCEI nop
+  #endif
+#endif
+
+// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+.macro RVTEST_SFENCE_VMA_IF_SUPPORTED
+  #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+    sfence.vma
+  #endif
+.endm
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only
@@ -363,52 +387,12 @@
   .ifnc(reg, X0)    ;\
     .option push    ;\
     .option rvc     ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option norvc   ;\
     la reg,val      ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
-
-// CSR Macros
-// each access is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define CSRRW(_R2, _CSR, _R1) \
-    csrrw _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRS(_R2, _CSR, _R1) \
-    csrrs _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRC(_R2, _CSR, _R1) \
-    csrrc _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRR(_R2, _CSR) \
-    csrr _R2, _CSR      ;\
-    nop
-
-#define CSRW(_CSR, _R1) \
-    csrw _CSR, _R1      ;\
-    nop
-
-#define CSRS(_CSR, _R1) \
-    csrs _CSR, _R1      ;\
-    nop
-
-#define CSRC(_CSR, _R1) \
-    csrc _CSR, _R1      ;\
-    nop
-
-// Macros for instructions that can trap
-// each instruction is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define SFENCE_VMA \
-    sfence.vma         ;\
-    nop
 
 // Utility Macros
 

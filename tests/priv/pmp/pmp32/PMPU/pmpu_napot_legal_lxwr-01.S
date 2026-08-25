@@ -27,14 +27,13 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmpu_napot_legal_lxwr.S"
 #define SIGUPD_COUNT 150
-#define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define SKIP_MEPC
+
 
 #include "riscv_arch_test.h"
 
@@ -48,9 +47,8 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
@@ -63,7 +61,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
     \TEST_CASE\()_18:
@@ -75,7 +72,6 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
 
-    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
     \TEST_CASE\()_19:
@@ -247,7 +243,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((                        PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1001 ((((      PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((      PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
@@ -255,7 +250,6 @@ main:
 #define PMPREGION_LXWR_1101 ((((      PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region                                    // Test section address
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
     #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
@@ -265,16 +259,8 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef S_SUPPORTED
-    csrw satp, zero                // Disable address translation.
-#endif
 
-    LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw     pmpaddr15, x4
-
-    //Lock the Background region.
-    LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    RVTEST_PMP_SET_BACKGROUND x4
 
 
 //                                            Verification Section
@@ -291,6 +277,7 @@ main:
     LI(t1, PMPREGION_LXWR_1000)
     csrw pmpcfg1, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
@@ -308,6 +295,7 @@ main:
     LI(t1, PMPREGION_LXWR_1000|PMPREGION_LXWR_1001)
     csrw pmpcfg1, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
     RVTEST_GOTO_MMODE
@@ -325,6 +313,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011)
     csrw pmpcfg0, t1
 
+    RVTEST_SFENCE_VMA_IF_SUPPORTED
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
     RVTEST_GOTO_MMODE
@@ -335,7 +324,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 
@@ -361,14 +350,14 @@ test_19_str: .string "\"test: 14; cp: pmps_napot_legal_lwxr_jalr_address+4\""
 test_20_str: .string "\"test: 15; cp: pmps_napot_legal_lwxr_jalr_address+g-4\""
 test_21_str: .string "\"test: 16; cp: pmps_napot_legal_lwxr_jalr_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept (g>>2)
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (g>>2)
     jr ra

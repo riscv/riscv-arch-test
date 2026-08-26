@@ -1333,7 +1333,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             "#endif",
             test_data.add_testcase("mtime_wrap", coverpoint, covergroup),
             f"SREG x{r_val}, 0(x{r_temp})          # write all-ones to the base word; arms the counter",
-            f"LI(x{r_counter}, 1000)                # Wait loop for counter ticks",
+            f"LI(x{r_counter}, RVMODEL_MAX_CYCLES_PER_TIMER_TICK * 2) # Wait loop for two timer ticks",
             "1:",
             "nop",
             f"addi x{r_counter}, x{r_counter}, -1",

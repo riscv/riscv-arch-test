@@ -22,6 +22,11 @@
 #endif
 
 ########## rvmodel_macros.h CHECKS ##########
+// Implementation macros (halt, IO, interrupt set/clear) come from the shim in a
+// kit build, so skip those checks under RVMODEL_SHIM_EXTERN. Value macros (device
+// addresses, timings) are still required — they come from dut_environment.h.
+#ifndef RVMODEL_SHIM_EXTERN
+
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -39,6 +44,8 @@
 #ifndef RVMODEL_IO_WRITE_STR
   #error "RVMODEL_IO_WRITE_STR not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+#endif // RVMODEL_SHIM_EXTERN (implementation checks)
 
 ##### ADDRESSES #####
 // If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
@@ -68,6 +75,9 @@
 #endif
 
 ##### Machine Interrupts #####
+// Implementations again: supplied by rvmodel_shim.S in a kit build.
+#ifndef RVMODEL_SHIM_EXTERN
+
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -100,7 +110,7 @@
 #ifndef RVMODEL_CLR_SSW_INT
   #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
-
+#endif
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTIRES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

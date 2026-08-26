@@ -118,24 +118,8 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-#ifndef T1
-  #define T1      x6                             // handler temporary 1
-#endif
-#ifndef T2
-  #define T2      x7                             // handler temporary 2
-#endif
-#ifndef T3
-  #define T3      x8                             // handler temporary 3
-#endif
-#ifndef T4
-  #define T4      x9                             // handler temporary 4
-#endif
-#ifndef T5
-  #define T5      x14                            // handler temporary 5
-#endif
-#ifndef T6
-  #define T6      x15                            // handler temporary 6
-#endif
+// T1..T6 now live in utils.h (included before this file) so the shim can use
+// them without pulling in the whole trap handler.
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS
@@ -2314,6 +2298,21 @@ excpt_\__MODE__\()hndlr_tbl:
 // reference don't affect .text.rvtest size.
 //==============================================================================
 
+// RVTEST_MODEL_INT_CLR(_SHIM, _MACRO): interrupt-clear from handler context.
+// Normally expands _MACRO inline; in a kit build it calls _SHIM instead so the
+// object stays DUT-free. The _SHIM routines may only touch ra/T2/T5 (matching the
+// old _MACRO(T2,T5) contract; T2/T5 restored by resto_Xrtn) — a0/a1 are live, so
+// don't use the a0/a1 entry points. ra is spilled to save-area slot 0 around the
+// call, as in the T-SBI CSR_ACCESS dispatch above.
+#ifdef RVMODEL_SHIM_EXTERN
+  #define RVTEST_MODEL_INT_CLR(_SHIM, _MACRO)                   \
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)                 ;\
+        call    _SHIM                                          ;\
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)
+#else
+  #define RVTEST_MODEL_INT_CLR(_SHIM, _MACRO) _MACRO(T2, T5)
+#endif
+
 .pushsection .text.rvmodel, "ax"
 
 // These routines are placed after .data, which can be larger than the jal range
@@ -2321,7 +2320,7 @@ excpt_\__MODE__\()hndlr_tbl:
 // of using direct jumps.
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt: invoke RVMODEL macro
-        RVMODEL_CLR_MSW_INT(T2, T5)
+        RVTEST_MODEL_INT_CLR(rvmodel_clr_msw_int_h, RVMODEL_CLR_MSW_INT)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
@@ -2338,7 +2337,7 @@ excpt_\__MODE__\()hndlr_tbl:
         jr      T2
 
 \__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
-        RVMODEL_CLR_MEXT_INT(T2, T5)
+        RVTEST_MODEL_INT_CLR(rvmodel_clr_mext_int_h, RVMODEL_CLR_MEXT_INT)
         // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
         // removed because cause mepc might be different across different DUTs
         la      T2, resto_\__MODE__\()rtn
@@ -2348,16 +2347,16 @@ excpt_\__MODE__\()hndlr_tbl:
         .ifc \__MODE__ , M
             li T2, 2                                  // SSIP bit
             csrc mip, T2                              // M-mode: clear via mip (sip.SSIP is read-only from M)
-            RVMODEL_CLR_SSW_INT(T2, T5)
+            RVTEST_MODEL_INT_CLR(rvmodel_clr_ssw_int_h, RVMODEL_CLR_SSW_INT)
         .else
                 .ifc \__MODE__ , S
                         li T2, 2
                         csrc sip, T2                  // S-mode: clear via sip (writable when delegated)
-                        RVMODEL_CLR_SSW_INT(T2, T5)
+                        RVTEST_MODEL_INT_CLR(rvmodel_clr_ssw_int_h, RVMODEL_CLR_SSW_INT)
                 .else
                         li T2, 2
                         csrc sip, T2
-                        RVMODEL_CLR_SSW_INT(T2, T5)
+                        RVTEST_MODEL_INT_CLR(rvmodel_clr_ssw_int_h, RVMODEL_CLR_SSW_INT)
                 .endif
         .endif
         la      T2, resto_\__MODE__\()rtn
@@ -2402,7 +2401,7 @@ excpt_\__MODE__\()hndlr_tbl:
         li T1, 0x800
         and T3, T3, T1
         beq T1, T3, 1f
-        RVMODEL_CLR_SEXT_INT(T2, T5)
+        RVTEST_MODEL_INT_CLR(rvmodel_clr_sext_int_h, RVMODEL_CLR_SEXT_INT)
     1:
         la      T2, resto_\__MODE__\()rtn
         jr      T2

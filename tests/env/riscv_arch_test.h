@@ -8,7 +8,13 @@
 #include "derived_config.h"
 #include "encoding.h"
 #include "utils.h"
-#include "rvmodel_macros.h"
+// Kit builds never see rvmodel_macros.h (implementations come from the shim,
+// values from dut_environment.h). Normal builds include it as before, and
+// dut_environment.h cross-checks the two.
+#ifndef RVMODEL_SHIM_EXTERN
+  #include "rvmodel_macros.h"
+#endif
+#include "dut_environment.h"
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"
 #endif

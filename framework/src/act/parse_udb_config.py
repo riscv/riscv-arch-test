@@ -23,6 +23,7 @@ from ruamel.yaml import YAML
 
 from act.build import build
 from act.build_types import BuildTask, PythonAction
+from act.dut_environment import generate_dut_environment_header
 from act.dut_macros import generate_rvmodel_svh
 
 if TYPE_CHECKING:
@@ -166,6 +167,12 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
                 PythonAction(_generate_one_dut_header, (src, config_dir / "rvtest_config.svh", "cfg-svh-header")),
             ),
             (config_dir / "extensions.txt", PythonAction(generate_extension_list, (src, config_dir))),
+            # dut_environment is an ACT-specific top-level block. UDB validates it
+            # happily but udb-gen does not emit it, so ACT generates this one itself.
+            (
+                config_dir / "dut_environment.h",
+                PythonAction(generate_dut_environment_header, (src, config_dir / "dut_environment.h")),
+            ),
         ]
         for out, action in udb_outputs:
             tasks.append(BuildTask(outputs=(out,), action=action, extra_inputs=(src,), deps=(marker,)))

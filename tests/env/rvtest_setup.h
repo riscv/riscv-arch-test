@@ -206,11 +206,18 @@
   .pushsection .text.rvmodel,"ax",@progbits
   // Model specific boot code
   rvmodel_boot:
-    #ifdef RVMODEL_BOOT
-      RVMODEL_BOOT
-    #endif
-    #ifdef RVMODEL_IO_INIT
-      RVMODEL_IO_INIT(T1, T2, T3)
+    #ifdef RVMODEL_SHIM_EXTERN
+      // Kit build: boot/IO-init come from the shim. ra is dead here (rvmodel_boot
+      // ends with `jr T1`), so `call` is free to clobber it.
+      call rvmodel_dut_boot
+      call rvmodel_dut_io_init
+    #else
+      #ifdef RVMODEL_BOOT
+        RVMODEL_BOOT
+      #endif
+      #ifdef RVMODEL_IO_INIT
+        RVMODEL_IO_INIT(T1, T2, T3)
+      #endif
     #endif
 
     // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
@@ -280,6 +287,10 @@
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test
 
+  // Everything below expands DUT-private RVMODEL_* macros. In a kit build the
+  // shim supplies these instead, keeping DUT code out of the test object.
+  #ifndef RVMODEL_SHIM_EXTERN
+
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
     // Use rvmodel_io_write_str_c for C-ABI compatible version.
@@ -345,6 +356,8 @@
       csrc sip, a0 // clear sip.SEIP
       ret
   #endif
+
+  #endif // RVMODEL_SHIM_EXTERN
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -511,8 +524,10 @@
 
   // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
   // Placed after the signature so variable-size DUT data does not affect any
-  // test-visible symbol addresses.
-  RVMODEL_DATA_SECTION
+  // test-visible symbol addresses. In a kit build it comes from the shim.
+  #ifndef RVMODEL_SHIM_EXTERN
+    RVMODEL_DATA_SECTION
+  #endif
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 

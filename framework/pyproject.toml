@@ -29,3 +29,5 @@ dependencies = [
   "typer>=0.23.1",
 ]
 scripts.act = "act.act:main"
+scripts.act-package = "act.package:main"
+scripts.act-verify-logs = "act.verify_logs:main"

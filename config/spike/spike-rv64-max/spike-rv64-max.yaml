@@ -569,3 +569,29 @@ params:
   MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
+
+# DUT values baked into certified test code; the reference model needs the same
+# ones. Latency/timer differ from the sail configs: Spike ticks the CLINT every
+# 100 instructions.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 4096
+  RVMODEL_TIMER_INT_SOON_DELAY: 100
+  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 100
+  STANDARD_SM_SUPPORTED: true
+
+# Sail settings UDB can't express, applied over the generated config. Each path
+# must already exist in sail_template.json.
+sail_overrides:
+  base.writable_fiom: false
+  extensions.V.vlen_exp: 7
+  memory.misaligned.allowed_within_exp: 12 # Spike/QEMU doubleword-boundary behaviour
+  platform.archid: 5
+  platform.reservation.require_exact_reservation_addr: true
+  platform.wfi_available_to_user_mode: false
+  # These two disagree with UDB (which lists both implemented). Pinned to keep
+  # current behaviour; no test needs either yet. Fix in Sail or the UDB config.
+  extensions.Ssqosid.supported: false
+  extensions.Svrsw60t59b.supported: false

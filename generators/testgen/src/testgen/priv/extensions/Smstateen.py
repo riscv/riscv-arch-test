@@ -6,8 +6,6 @@
 
 """Smstateen privileged extension test generator."""
 
-from __future__ import annotations
-
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT

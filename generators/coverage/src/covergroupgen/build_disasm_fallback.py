@@ -14,8 +14,6 @@ to extend coverage.
 Output: framework/src/act/fcov/coverage/RISCV_disasm_fallback.svh
 """
 
-from __future__ import annotations
-
 import re
 from pathlib import Path
 

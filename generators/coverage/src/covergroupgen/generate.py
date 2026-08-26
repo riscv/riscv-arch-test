@@ -7,8 +7,6 @@
 # Generate functional covergroups for RISC-V instructions
 ##################################
 
-from __future__ import annotations
-
 import csv
 import importlib.resources
 import math

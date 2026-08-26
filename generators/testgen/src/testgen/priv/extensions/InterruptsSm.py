@@ -9,7 +9,7 @@
 
 """InterruptsSm privileged extension test generator for machine-mode interrupts."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -455,7 +455,215 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsSm", required_extensions=["Sm"])
+def _generate_minstret_interrupt_tests(test_data: TestData) -> list[str]:
+    """
+    minstret retirement checks around wfi (timeout, pending-not-taken, and
+    interrupt-taken) and wrs.nto/wrs.sto.
+    """
+    covergroup = "InterruptsSm_cg"
+    lines = []
+
+    # ######################################
+    # coverpoint = "cp_minstret_wfi_timeout"
+    # ######################################
+    # lines.append(comment_banner(coverpoint, "wfi with nothing armed: minstret delta, no trap expected"))
+    # r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    # lines.extend(
+    #     [
+    #         "",
+    #         test_data.add_testcase("minstret_wfi_timeout", coverpoint, covergroup),
+    #         "csrw mie, zero              # nothing enabled, nothing pending",
+    #         "csrci mstatus, 8             # mstatus.MIE = 0",
+    #         f"csrr x{r_before}, minstret",
+    #         "wfi                          # no event armed",
+    #         f"csrr x{r_after}, minstret",
+    #         f"sub x{r_diff}, x{r_after}, x{r_before}",
+    #         write_sigupd(r_diff, test_data),
+    #     ]
+    # )
+    # test_data.int_regs.return_registers([r_before, r_after, r_diff])
+
+    ######################################
+    coverpoint = "cp_minstret_wfi_pending"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "wfi: minstret delta with pending timer interrupt, MIE=0 (retires immediately, no trap)",
+        ),
+    )
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("minstret_wfi_pending", coverpoint, covergroup),
+            "csrw mie, zero                        # MIE bits off; we only need MTIP pending, not taken",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+    lines.extend(
+        [
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrs mie, x{r_scratch}                # enable MTIE so mip.MTIP can go pending",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
+        ]
+    )
+    test_data.int_regs.return_registers([r_scratch])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"csrr x{r_before}, minstret",
+            "wfi                          # interrupt already pending, retires immediately, mstatus.MIE=0 so no trap",
+            f"csrr x{r_after}, minstret",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            *clr_mtimer_int(r_t0, r_mtimecmp),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp, r_t0, r_before, r_after, r_diff])
+
+    #####################################
+    coverpoint = "cp_minstret_wfi_taken"
+    ######################################
+    lines.append(comment_banner(coverpoint, "wfi: minstret delta with MIE=1, interrupt taken (full trap round-trip)"))
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("minstret_wfi_taken", coverpoint, covergroup),
+            "csrw mie, zero",
+            "csrci mstatus, 8                       # MIE=0 while arming, avoid trapping before wfi is reached",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_scratch),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+    lines.extend(
+        [
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrs mie, x{r_scratch}                # enable MTIE",
+            "csrsi mstatus, 8                       # MIE=1: interrupt will be taken once wfi is reached",
+        ]
+    )
+    test_data.int_regs.return_registers([r_scratch])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"csrr x{r_before}, minstret",
+            "wfi                          # interrupt taken here; traps, handler runs, returns after wfi",
+            f"csrr x{r_after}, minstret",
+            "csrci mstatus, 8",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            *clr_mtimer_int(r_t0, r_mtimecmp),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp, r_t0, r_before, r_after, r_diff])
+
+    ######################################
+    coverpoint = "cp_minstret_wrs_nto"
+    ######################################
+    lines.append("\n#ifdef ZAWRS_SUPPORTED")
+    lines.append(comment_banner(coverpoint, "wrs.nto: minstret delta, no trap"))
+    r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.append("#ifndef UDB_ZAWRS_NTO_IS_NOP")
+    lines.extend(
+        [
+            "",
+            "csrw mie, zero",
+            "csrci mstatus, 8",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrs mie, x{r_scratch}",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+        ]
+    )
+    lines.append("#else")
+    lines.extend(
+        [
+            "",
+            "csrci mstatus, 8    # MIE=0, unaffected either way",
+        ]
+    )
+    lines.append("#endif // UDB_ZAWRS_NTO_IS_NOP")
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
+            f"csrr x{r_before}, minstret",
+            test_data.add_testcase("minstret_wrs_nto", coverpoint, covergroup),
+            "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+            "csrsi mstatus, 8    # MIE=1 right before wrs.nto",
+            "#endif // UDB_ZAWRS_NTO_IS_NOP",
+            "wrs.nto",
+            f"csrr x{r_after}, minstret",
+            "csrci mstatus, 8",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            "#ifndef UDB_ZAWRS_NTO_IS_NOP",
+            *clr_mtimer_int(r_t02, r_mtimecmp2),
+            "#endif // UDB_ZAWRS_NTO_IS_NOP",
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp2, r_t02, r_scratch, r_before, r_after, r_diff])
+    lines.append("#endif // ZAWRS_SUPPORTED")
+
+    ######################################
+    coverpoint = "cp_minstret_wrs_sto"
+    ######################################
+    lines.append("\n#ifdef ZAWRS_SUPPORTED")
+    lines.append(comment_banner(coverpoint, "wrs.sto: minstret delta, interrupt taken during the wait"))
+    r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(6)
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("minstret_wrs_sto_taken", coverpoint, covergroup),
+            "csrw mie, zero",
+            "csrci mstatus, 8    # keep MIE=0 while arming, don't trap before wrs.sto is reached",
+            *set_mtimer_int_soon(r_mtime, r_mtimecmp2, r_t02, r_t1, r_t2, r_scratch),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtime, r_t1, r_t2])
+    lines.extend(
+        [
+            f"LI(x{r_scratch}, 0x80)",
+            f"csrs mie, x{r_scratch}",
+            f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})   # spin until MTIP pending",
+        ]
+    )
+    test_data.int_regs.return_registers([r_scratch])
+
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    lines.extend(
+        [
+            f"LA(x{r_scratch}, scratch)",
+            f"lr.w x{r_diff}, (x{r_scratch})",
+            f"csrr x{r_before}, minstret",
+            "csrsi mstatus, 8                       # MIE=1, immediately before wrs.sto so the trap lands there",
+            "wrs.sto                     # interrupt taken here; traps",
+            f"csrr x{r_after}, minstret",
+            "csrci mstatus, 8",
+            f"sub x{r_diff}, x{r_after}, x{r_before}",
+            write_sigupd(r_diff, test_data),
+            *clr_mtimer_int(r_t02, r_mtimecmp2),
+        ]
+    )
+    test_data.int_regs.return_registers([r_mtimecmp2, r_t02, r_before, r_after, r_diff])
+    lines.append("#endif // ZAWRS_SUPPORTED")
+
+    return lines
+
+
+@add_priv_test_generator(
+    "InterruptsSm",
+    required_extensions=["Sm"],
+    march_extensions=["Sm", "Zawrs", "Zalrsc"],
+)
 def make_interruptssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
     test_chunks: list[TestChunk] = []
@@ -468,6 +676,7 @@ def make_interruptssm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_vectored_tests(test_data))
     tc.code.extend(_generate_priority_tests(test_data))
     tc.code.extend(_generate_wfi_tests(test_data))
+    tc.code.extend(_generate_minstret_interrupt_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

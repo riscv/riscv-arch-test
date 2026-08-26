@@ -613,6 +613,21 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
     `endif
+    retiring_insns: coverpoint ins.current.insn {
+        wildcard bins add  = {ADD};
+        wildcard bins mret = {MRET};
+    }
+
+    sret_insn: coverpoint ins.current.insn {
+        wildcard bins sret = {SRET};
+    }
+
+    cp_minstret_insn: cross priv_mode_m, retiring_insns;
+
+    `ifdef S_SUPPORTED
+        cp_minstret_sret: cross priv_mode_m, sret_insn;
+    `endif
+
 
 endgroup
 

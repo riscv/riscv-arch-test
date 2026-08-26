@@ -399,7 +399,7 @@
       "supported": false
     },
     "Zicntr": {
-      "supported": false
+      "supported": true
     },
     "Zicsr": {
       "supported": true

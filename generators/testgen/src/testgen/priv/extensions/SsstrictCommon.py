@@ -36,16 +36,15 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
 # Number of CSR addresses per CSR-sweep chunk. Each CSR contributes 5 testcases
-# (read / write-ones / write-zeros / set / clear). Deliberately small so that a
-# failing test aborts only a few testcases: a test stops at its first signature
-# mismatch, so large chunks hide every later discrepancy in the same file.
-CSRS_PER_CHUNK = 8
+# (read / write-ones / write-zeros / set / clear), so this keeps each chunk well
+# under TESTCASES_PER_PRIV_FILE while giving the splitter enough boundaries.
+CSRS_PER_CHUNK = 100
 
 # Maximum number of encoding words per chunk. Large templates (e.g. the 14-E-bit
-# compressed quadrants = 16384 encodings) are split across chunks. Deliberately
-# small for the same reason as CSRS_PER_CHUNK: one discrepancy per test file
-# rather than one per sweep.
-MAX_WORDS_PER_CHUNK = 8
+# compressed quadrants = 16384 encodings) are split into several chunks so no
+# single block becomes an oversized, unsplittable file. Kept below
+# TESTCASES_PER_PRIV_FILE so the splitter can still pack a few chunks per file.
+MAX_WORDS_PER_CHUNK = 3000
 
 
 @dataclass(frozen=True)
@@ -589,26 +588,13 @@ def _generate_vector_illegal_instr(
                 RawSweep(f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111"),
                 RawSweep(f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111"),
                 RawSweep(f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111"),
+                RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111"),
                 RawSweep(f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111"),
                 RawSweep(f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111"),
             ],
             setup=_vector_setup(sew, avl=1),
             section_header=sew_header,
         )
-
-    # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
-    for sew in ["8", "16", "32", "64"]:
-        for vl in [1, 4, 8]:
-            sew_header: str | None = comment_banner(f"Vector crypto SEW={sew} VL={vl}", f"funct6 sweeps with e{sew}")
-            _emit_raw_sweeps(
-                test_data,
-                test_chunks,
-                [
-                    RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111"),
-                ],
-                setup=_vector_setup(sew, avl=vl),
-                section_header=sew_header,
-            )
 
     return test_chunks
 

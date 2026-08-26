@@ -59,6 +59,7 @@
 # Timeout
 --override cpu*/TW_time_limit=100
 --override cpu*/STO_time_limit=100
+--override iss/quantum=1e-5 # affects timer comparator scheduling
 
 # PMP Configuration
 --override cpu*/PMP_registers=16

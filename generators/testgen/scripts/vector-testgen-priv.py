@@ -53,6 +53,7 @@ from vector_testgen_common import (
   getInstructionArguments,
   getInstructionSegments,
   getLengthLmul,
+  getWholeRegisterCount,
   getLengthSuiteTestCount,
   getSigSpace,
   handleSignaturePointerConflict,
@@ -349,6 +350,7 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
         vd_reg  = vec_data['vd']['reg']
         vs2_reg = vec_data['vs2']['reg']
         vs1_reg = vec_data['vs1']['reg']
+        vs3_reg = vec_data['vs3']['reg']
         # vd's SIGUPD_V_LEN comparison runs at sig_lmul (= getLengthLmul for
         # whole-register moves, otherwise = test lmul, otherwise = 1 for mask/scalar).
         # The init must cover at least sig_lmul regs of vd so the data-vector
@@ -365,17 +367,21 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
             vd_sig_lmul = lmul if isinstance(lmul, int) else 1
         vd_emul  = max(1, int(lmul * vec_data['vd' ].get('size_multiplier', 1) * vec_data['vd' ].get('segments', 1)), vd_sig_lmul)
         vs2_emul = max(1, int(lmul * vec_data['vs2'].get('size_multiplier', 1) * vec_data['vs2'].get('segments', 1)))
-        if instruction in whole_register_move:
-            # vmv<nr>r.v reads NREG whole source registers regardless of the vtype
-            # LMUL the testcase runs at, so initialize all NREG of them.
-            vs2_emul = max(vs2_emul, int(instruction[3]))
         vs1_emul = max(1, int(lmul * vec_data['vs1'].get('size_multiplier', 1) * vec_data['vs1'].get('segments', 1)))
+        vs3_emul = max(1, int(lmul * vec_data['vs3'].get('size_multiplier', 1) * vec_data['vs3'].get('segments', 1)))
+        nreg = getWholeRegisterCount(instruction)
+        if nreg is not None:
+            # vmv<nr>r.v / vl<nr>re<eew>.v / vs<nr>r.v access NREG whole registers
+            # regardless of the vtype LMUL the testcase runs at, so initialize all NREG.
+            vd_emul  = max(vd_emul,  nreg)
+            vs2_emul = max(vs2_emul, nreg)
+            vs3_emul = max(vs3_emul, nreg)
     else:
         # Backwards-compatible legacy path (should not be used by new code).
         if scratch is None:
             scratch = 8
-        vd_reg, vs2_reg, vs1_reg = 8, 16, 24
-        vd_emul = vs2_emul = vs1_emul = 1
+        vd_reg, vs2_reg, vs1_reg, vs3_reg = 8, 16, 24, 8
+        vd_emul = vs2_emul = vs1_emul = vs3_emul = 1
 
     # Init each constituent vector register of every operand at LMUL=1 vl=VLMAX.
     # This fully initializes every architectural vreg the test instruction will
@@ -412,7 +418,10 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
             writeLine(f"vremu.vx v{base_reg}, v{base_reg}, x{scratch}",              "# ensure all values are within [0, 2*vlmax)")
             writeLine(f"vand.vi v{base_reg}, v{base_reg}, {sew_aligned}",             "# sew-aligning elements")
 
+    # vs3 before vs2: an indexed store's data group may legally overlap its index
+    # register, and the vs2 init bounds the indices, so it must run last.
     _emit_init("vd",  vd_reg,  vd_emul)
+    _emit_init("vs3", vs3_reg, vs3_emul)
     _emit_init("vs2", vs2_reg, vs2_emul)
     _emit_init("vs1", vs1_reg, vs1_emul)
     if maskval:

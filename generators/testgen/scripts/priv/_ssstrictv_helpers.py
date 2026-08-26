@@ -180,10 +180,9 @@ def build_testline(instruction: str, instruction_data: list, *,
         testline += ", "
 
     testline = testline[:-2]
-    if common.extension == "SsstrictV":
-        word = encode_testcase(instruction, instruction_data, maskval)
-        if word is not None:
-            testline = f".insn 4, 0x{word:08x}  # {testline}"
+    word = encode_testcase(instruction, instruction_data, maskval)
+    if word is not None:
+        testline = f".insn 4, 0x{word:08x}  # {testline}"
     vd = vec_data["vd"]["reg"]
     rd = scalar_data["rd"]["reg"]
     return testline, vd, rd

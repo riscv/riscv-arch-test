@@ -1,5 +1,4 @@
-# Normalize all text files to LF line endings on checkin, regardless of the
-# committer's OS or editor settings, to prevent CRLF from creeping back in.
+# Normalize line endings to LF
 * text=auto eol=lf
 
 # Treat Sail and Whisper model configs as JSON with Comments on GitHub.

@@ -20,6 +20,7 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: check-symlinks
       - id: end-of-file-fixer
+      - id: mixed-line-ending
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
       - id: check-merge-conflict

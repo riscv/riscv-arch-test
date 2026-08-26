@@ -8,6 +8,8 @@
 
 """Sm privileged extension test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
@@ -15,6 +17,30 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_CSRS_NOWALK, S_SSTATUS_MASK
 from testgen.priv.registry import add_priv_test_generator
+
+# Address CSRs not walked with csr_walk_test: they only have to hold valid virtual addresses,
+# which the canonical-address walks in _generate_vaddr_walk_tests cover.
+SM_CSRS_NOWALK = ["mepc", "mtval"]
+
+# Address CSRs that must hold every valid virtual address. The value written is the address
+# itself: mepc and mnepc hold bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
+# mtval holds any byte address. Each entry is (csr, held-low mask, {bit: gate define}, gate define).
+SM_VADDR_CSRS = [
+    ("mepc", 0b01, {1: "ZCA_SUPPORTED"}, None),
+    ("mtval", 0b00, {}, None),
+    ("mnepc", 0b01, {1: "ZCA_SUPPORTED"}, "SMRNMI_SUPPORTED"),
+]
+
+# Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal, so the msb that can be walked
+# independently is VALEN-2 (31 for Sv32, where VALEN = XLEN). Each tier is (msb, guard) and extends
+# the walk to the wider scheme when it is supported.
+SM_VADDR_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
+SM_VADDR_TIERS = [
+    (31, None),
+    (37, "#ifdef SV39_SUPPORTED"),
+    (46, "#ifdef SV48_SUPPORTED"),
+    (55, "#ifdef SV57_SUPPORTED"),
+]
 
 
 def _gen_misa_dependencies(
@@ -442,6 +468,152 @@ def _add_shadow(
     )
 
 
+def _mtval_value_tests(test_data: TestData) -> list[str]:
+    """Write 0 and, when illegal-instruction encodings are reported, every ILEN-bit value to mtval."""
+    covergroup = "Sm_mcsr_cg"
+    csr = ("mtval", None)
+    save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "",
+        "# mtval must hold 0",
+        f"csrr x{save_reg}, mtval      # Save CSR",
+        "",
+        "# Testcase: mtval = 0",
+        f"LI(x{walk_reg}, 0)",
+        test_data.add_testcase("zero", "cp_mtval_zero", covergroup),
+        f"csrw mtval, x{walk_reg}",
+        gen_csr_read_sigupd(check_reg, csr, test_data),
+        "",
+        "# mtval must hold every ILEN-bit value when the illegal instruction encoding is reported in it",
+        "#ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
+    ]
+    for i in range(32):
+        lines.extend(
+            [
+                "",
+                f"# Testcase: mtval = bit {i} set, 0s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                test_data.add_testcase(f"walking1_{i}", "cp_mtval_ilen_walk1", covergroup),
+                f"csrw mtval, x{walk_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "# Testcase: mtval = all 32 encoding bits set",
+            f"LI(x{walk_reg}, 0xFFFFFFFF)",
+            test_data.add_testcase("ones", "cp_mtval_ilen_ones", covergroup),
+            f"csrw mtval, x{walk_reg}",
+            gen_csr_read_sigupd(check_reg, csr, test_data),
+            "#endif // UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
+            f"csrw mtval, x{save_reg}            # restore CSR",
+        ]
+    )
+    test_data.int_regs.return_registers([save_reg, walk_reg, check_reg])
+    return lines
+
+
+def _vaddr_walk_test(
+    test_data: TestData, csr_name: str, held_low: int, gated_bits: dict[int, str], gate: str | None
+) -> list[str]:
+    """Write every canonical virtual address with one bit walked to csr_name and check it reads back exactly."""
+    covergroup = "Sm_mcsr_cg"
+    csr = (csr_name, None)
+    save_reg, ones_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
+    low_bit = held_low.bit_length()
+    ones = -1 & ~held_low
+    for bit in gated_bits:
+        ones &= ~(1 << bit)
+
+    def iteration(i: int, walking_ones: bool) -> list[str]:
+        if walking_ones:
+            coverpoint = f"cp_{csr_name}_vaddr_walk1"
+            lines = [
+                "",
+                f"# Testcase: {csr_name} = bit {i} set, 0s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                test_data.add_testcase(f"walking1_{i}", coverpoint, covergroup),
+                f"csrw {csr_name}, x{walk_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        else:
+            coverpoint = f"cp_{csr_name}_vaddr_walk0"
+            lines = [
+                "",
+                f"# Testcase: {csr_name} = bit {i} clear, 1s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                f"xor x{check_reg}, x{ones_reg}, x{walk_reg}    # clear bit {i}",
+                test_data.add_testcase(f"walking0_{i}", coverpoint, covergroup),
+                f"csrw {csr_name}, x{check_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        if i in gated_bits:
+            lines = [f"#ifdef {gated_bits[i]}", *lines, f"#endif // {gated_bits[i]}"]
+        return lines
+
+    def walk_pass(walking_ones: bool) -> list[str]:
+        lines = []
+        endifs = []
+        start = low_bit
+        for msb, guard in SM_VADDR_TIERS:
+            if guard is not None:
+                lines.append(guard)
+                endifs.append(f"#endif // {guard.split(' ', 1)[1]}")
+            for i in range(start, msb + 1):
+                lines.extend(iteration(i, walking_ones))
+            start = msb + 1
+        lines.extend(reversed(endifs))
+        return lines
+
+    lines = ["", f"# Valid virtual address walk tests for {csr_name}"]
+    if gate is not None:
+        lines.append(f"#ifdef {gate}")
+    lines.extend(
+        [
+            SM_VADDR_GATE,
+            f"csrr x{save_reg}, {csr_name}      # Save CSR",
+            f"LI(x{ones_reg}, {ones})    # all 1s with bits {(~ones) & 0xFF:#b} held low",
+        ]
+    )
+    for bit, bit_gate in gated_bits.items():
+        lines.extend(
+            [
+                f"#ifdef {bit_gate}",
+                f"ori x{ones_reg}, x{ones_reg}, {1 << bit}    # bit {bit} is walkable with {bit_gate}",
+                f"#endif // {bit_gate}",
+            ]
+        )
+    lines.append(f"\n# Walking 1s through {csr_name} with 0s in the msbs")
+    lines.extend(walk_pass(True))
+    lines.append(f"\n# Walking 0s through {csr_name} with 1s in the msbs")
+    lines.extend(walk_pass(False))
+    lines.extend(
+        [f"csrw {csr_name}, x{save_reg}            # restore CSR", f"#endif // {SM_VADDR_GATE.split(' ', 1)[1]}"]
+    )
+    if gate is not None:
+        lines.append(f"#endif // {gate}")
+    test_data.int_regs.return_registers([save_reg, ones_reg, walk_reg, check_reg])
+    return lines
+
+
+def _generate_vaddr_walk_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
+    """Generate the mtval value tests and the valid virtual address walks for mepc, mtval, and mnepc."""
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_vaddr")
+    tc.section_header = comment_banner(
+        "cp_mtval_{zero,ilen_walk1,ilen_ones}, cp_{mepc,mtval,mnepc}_vaddr_walk{1,0}",
+        "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal instruction\n"
+        "encoding is reported in mtval. Write every valid virtual address as a walking 1 (0s in the msbs) and a\n"
+        "walking 0 (1s in the msbs) to mepc, mtval, and mnepc (Smrnmi). Canonical addresses have bits\n"
+        "XLEN-1:VALEN-1 equal, so bits low..VALEN-2 are walked; requires Sv32 or Sv39 and extends the walk to\n"
+        "Sv48/Sv57 when supported",
+    )
+    tc.code.extend(_mtval_value_tests(test_data))
+    for csr_name, held_low, gated_bits, gate in SM_VADDR_CSRS:
+        tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(_vaddr_walk_test(test_data, csr_name, held_low, gated_bits, gate))
+
+
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -512,9 +684,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
         ("mcounteren", None),
         ("mscratch", None),
-        ("mepc", None),
+        ("mepc", None),  # only accessed here; walked as a valid virtual address in cp_mepc_vaddr_walk*
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
-        ("mtval", None),
+        ("mtval", None),  # only accessed here; walked in cp_mtval_* instead
         ("mip", 0xFFFF),  # limit to standard interrupt bits
         # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
         ("mcountinhibit", 0b111),
@@ -644,6 +816,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     for csr in csrm:
+        if csr[0] in SM_CSRS_NOWALK:
+            continue
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -680,6 +854,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
+
+    _generate_vaddr_walk_tests(test_data, test_chunks)
 
     ######################################
     coverpoint = "cp_csr_insufficient_priv"

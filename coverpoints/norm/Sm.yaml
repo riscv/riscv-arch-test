@@ -1204,7 +1204,8 @@ normative_rule_definitions:
   # Prior to writing mepc, implementations may convert an invalid address into some
   # other invalid address that mepc is capable of holding.
   - name: mepc_inv_addr_conv
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mepc_vaddr_walk1, Sm_mcsr_cg/cp_mepc_vaddr_walk0"]
 
   - name: mepc_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
@@ -1237,6 +1238,35 @@ normative_rule_definitions:
   - name: mcause_exccode_wlrl
     coverpoint:
       ["Sm_mcause_cg/{cp_mcause_write_exception, cp_mcause_write_interrupt}"]
+
+  # The mtval register is an MXLEN-bit read-write register formatted as shown in
+  # &lt;&lt;norm:mtval_enc_img&gt;&gt;
+  - names: [mtval_sz, mtval_acc]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtval"]
+
+  # must be able to hold all valid virtual addresses and the value zero.
+  - name: mtval_vaddr_and_0_sz
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mtval_zero, Sm_mcsr_cg/cp_mtval_vaddr_walk1, Sm_mcsr_cg/cp_mtval_vaddr_walk0",
+      ]
+
+  # If the feature to return the faulting instruction bits is implemented, mtval
+  # must also be able to hold all values less than 2^N^, where N is the smaller of
+  # MXLEN and ILEN.
+  - name: mtval_instr_bits_sz
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtval_ilen_walk1, Sm_mcsr_cg/cp_mtval_ilen_ones"]
+
+  # If mtval is not read-only zero, it is a WARL register
+  - name: mtval_warl
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtval"]
+
+  # Prior to writing mtval, implementations may convert an invalid address into some
+  # other invalid address that mtval is capable of holding.
+  - name: mtval_inv_addr_conv
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtval_vaddr_walk1, Sm_mcsr_cg/cp_mtval_vaddr_walk0"]
 
   # The effective XLEN in S-mode and U-mode are termed SXLEN and UXLEN,
   # respectively. When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32

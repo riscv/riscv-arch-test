@@ -38,16 +38,16 @@
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
     `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32
-    uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "uxl") {
-        bins uxl_01 = {2'b01};
-    }
+        uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "uxl") {
+            bins uxl_01 = {2'b01};
+        }
     `endif // UDB_UXLEN_32
 
     // Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, a_upper_bits, pm_insn;
     cp_pmlen_misaligned_word: cross priv_mode_u, pm_misalign;
     `ifdef UDB_UXLEN_32
-    cp_pmm_uxl_clear: cross pmm, uxl_rv32;
+        cp_pmm_uxl_clear: cross pmm, uxl_rv32;
     `endif // UDB_UXLEN_32
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
 

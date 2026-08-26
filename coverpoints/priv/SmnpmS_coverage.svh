@@ -39,9 +39,9 @@
         bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
     }
     `ifdef UDB_SXLEN_32  // SXL=01 is only reachable when S-mode supports RV32
-    sxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sxl") {
-        bins sxl_01 = {2'b01};
-    }
+        sxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sxl") {
+            bins sxl_01 = {2'b01};
+        }
     `endif // UDB_SXLEN_32
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins sepc     = {CSR_SEPC};
@@ -55,7 +55,7 @@
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
     `ifdef UDB_SXLEN_32
-    cp_pmm_sxl_clear: cross pmm, sxl_rv32;
+        cp_pmm_sxl_clear: cross pmm, sxl_rv32;
     `endif // UDB_SXLEN_32
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 

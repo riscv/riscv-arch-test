@@ -1607,7 +1607,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global f, legalvlmuls, redgesv, redges_ls_e8, redges_ls_e16, redges_ls_e32, redges_ls_e64
   global immedgesv, NaNBox_tests, test, xlen, extension
 
-  flen = getFlen()
   xlen = xlen_arg
   extension = extension_arg
 
@@ -1671,7 +1670,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     f = open(tempfname, "w")
 
-    insertTemplate(test, getSigSpace(xlen, flen), "testgen_header.S", sew=sew, vdsew=vdsew)
+    insertTemplate(test, getSigSpace(xlen, getFlen()), "testgen_header.S", sew=sew, vdsew=vdsew)
 
     if test in vfloattypes:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
@@ -1710,13 +1709,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     test_data = genVtestdata(test, sew)
 
-    signatureWords = getSigSpace(xlen, flen)
+    signatureWords = getSigSpace(xlen, getFlen())
     sigReg = getSigReg()
     f.write(f"mv x2, x{sigReg} # restore signature pointer to default register for teardown\n")
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()
-    finalizeSigupdCount(tempfname, xlen, flen)
+    finalizeSigupdCount(tempfname, xlen, getFlen())
     fname_p = Path(fname)
     tempfname_p = Path(tempfname)
     if fname_p.exists():

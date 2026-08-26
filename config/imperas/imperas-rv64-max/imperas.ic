@@ -91,7 +91,9 @@
 --override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
 
 # Timeout
-#--override cpu*/TW_time_limit=65536  # *** attempted adding this summer 2025 for interrupt tests, but it breaks WALLY-status-tw-01.elf test and tests/coverage/priv.elf.  Not in rv32gc either
+--override cpu*/TW_time_limit=100
+--override cpu*/STO_time_limit=100
+--override iss/quantum=1e-5 # affects timer comparator scheduling
 
 # PMP Configuration
 --override cpu*/PMP_registers=64
@@ -124,6 +126,9 @@
 #
 # SVxx Memory 0x0000000000 0x7FFFFFFFFF
 #
+# Restrict ISS memory to defined regions so fetches from unmapped addresses
+# raise instruction access faults (setPMA only polices data accesses)
+--memory ram:0x80000000:0x8FFFFFFF:rwx,io:0x10010000:0x1001FFFF:rw
 --override iss/cpu0/CLINT_address=0x02000000 # enables mtime and msip memory-mapped registers
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0x00007FFFFFFFFF -attributes " ---a-- ---- " # INITIAL

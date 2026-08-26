@@ -9,8 +9,6 @@
 
 """Build action and task definitions shared by the executor and cache layers."""
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path

@@ -67,7 +67,6 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
@@ -496,5 +495,3 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
-  # Zawrs params
-  ZAWRS_NTO_IS_NOP: true

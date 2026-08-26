@@ -26,8 +26,6 @@ to rules in the JSON file, where dots in instruction names are replaced with
 underscores and "_op" is appended.
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json

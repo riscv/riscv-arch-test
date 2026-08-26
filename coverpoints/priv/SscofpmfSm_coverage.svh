@@ -16,19 +16,19 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_sscofpmf.svh"
     `ifdef UDB_MXLEN_64
-        mhpmevent_minh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][62] {
+        mhpmevent_minh: coverpoint ins.current.csr[CSR_MHPMEVENT3][62] {
             bins zero = {0};  // not inhibited -> should count in M-mode
             bins one  = {1};  // inhibited     -> should NOT count in M-mode
     }
-        mhpmevent_xinh_combos: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][62:58] {
+        mhpmevent_xinh_combos: coverpoint ins.current.csr[CSR_MHPMEVENT3][62:58] {
             bins combo[] = {[0:31]};  // all MINH/SINH/UINH/VSINH/VUINH combinations
     }
     `else
-        mhpmevent_minh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][30] {
+        mhpmevent_minh: coverpoint ins.current.csr[CSR_MHPMEVENT3 + 12'h400][30] {
             bins zero = {0};
             bins one  = {1};
     }
-        mhpmevent_xinh_combos: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][30:26] {
+        mhpmevent_xinh_combos: coverpoint ins.current.csr[CSR_MHPMEVENT3 + 12'h400][30:26] {
             bins combo[] = {[0:31]};
     }
     `endif
@@ -40,7 +40,7 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     `else
         cp_overflow_hw_only:   cross priv_mode_m, mip_clear, mie_clear, mhpmcounter_write_extremes, mhpmevent_all_zero, mhpmevent_base_zero;
     `endif
-    cp_lcofip_hw_only:         cross priv_mode_s, mhpmevent_of;
+    cp_lcofip_hw_only:         cross priv_mode_m, mhpmevent_of;
     cp_scountovf_mcounteren:   cross priv_mode_m, of_write_pattern, mcounteren_write_pattern, mcounteren_walking_one;
     cp_scountovf_shadow:       cross priv_mode_m, mcounteren_write_all_ones, of_pattern_class, of_walking_one;
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target ;

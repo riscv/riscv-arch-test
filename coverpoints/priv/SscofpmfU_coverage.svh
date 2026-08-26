@@ -19,7 +19,7 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     sstatus_sie_clear: coverpoint ins.current.csr[CSR_SSTATUS][1] {
             bins zero = {0};
     }
-    mhpmevent_uinh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][60] {
+    mhpmevent_uinh: coverpoint ins.current.csr[CSR_MHPMEVENT3][60] {
             bins zero = {0};
             bins one  = {1};
     }

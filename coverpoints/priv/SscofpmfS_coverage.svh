@@ -15,23 +15,20 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_sscofpmf.svh"
-    sstatus_sie_set: coverpoint ins.current.csr[CSR_SSTATUS][1] {
-            bins one = {1};
-    }
     `ifdef UDB_MXLEN_64
-        mhpmevent_sinh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][61] {
+        mhpmevent_sinh: coverpoint ins.current.csr[CSR_MHPMEVENT3][61] {
                 bins zero = {0};
                 bins one  = {1};
         }
-        mhpmevent_xinh_combos: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][62:58] {
+        mhpmevent_xinh_combos: coverpoint ins.current.csr[CSR_MHPMEVENT3][62:58] {
                 bins combo[] = {[0:31]};
         }
         `else
-        mhpmevent_sinh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][29] {
+        mhpmevent_sinh: coverpoint ins.current.csr[CSR_MHPMEVENT3 + 12'h400][29] {
                 bins zero = {0};
                 bins one  = {1};
         }
-        mhpmevent_xinh_combos: coverpoint ins.current.csr[RVMODEL_MHPMEVENT + 12'h400][30:26] {
+        mhpmevent_xinh_combos: coverpoint ins.current.csr[CSR_MHPMEVENT3 + 12'h400][30:26] {
                 bins combo[] = {[0:31]};
         }
         `endif

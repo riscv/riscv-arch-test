@@ -37,6 +37,7 @@ _MSTATUS_UXL_SHIFT = 32
 
 def _emit_file(td: TestData, regs: Regs) -> list[str]:
     lines = [
+        "#ifndef S_SUPPORTED",
         ".pushsection .data",
         *data_pm_lo_page(),
         ".popsection",
@@ -71,6 +72,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
         )
 
     lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)
+    lines += ["#endif"]
     return lines
 
 

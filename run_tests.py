@@ -8,8 +8,6 @@
 # Run all ELFs from a directory using the input command in parallel
 ##################################
 
-from __future__ import annotations
-
 import argparse
 import os
 import re

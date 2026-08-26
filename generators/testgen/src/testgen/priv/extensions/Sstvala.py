@@ -8,8 +8,6 @@
 
 """Sstvala S-mode test generator."""
 
-from __future__ import annotations
-
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk

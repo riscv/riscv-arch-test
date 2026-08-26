@@ -180,7 +180,6 @@ def _generate_supervisor_sti_tests(test_data: TestData) -> list[str]:
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"csrc mip, x{r_scratch}",
                             "csrsi mcounteren, 2",
                         ]
 
@@ -362,7 +361,6 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"csrc mip, x{r_scratch}",
                             *set_menvcfg_stce(r_stce, bool(stce)),
                         ]
 

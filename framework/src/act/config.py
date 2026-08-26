@@ -7,8 +7,6 @@
 # Parse test framework configuration files
 ##################################
 
-from __future__ import annotations
-
 import shutil
 import subprocess
 from enum import Enum

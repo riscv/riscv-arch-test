@@ -46,7 +46,6 @@ from vector_testgen_common import (
   eew64_ins,
   encodeIndexedLSAsInsn,
   finalizeSigupdCount,
-  flen,
   genRandomVectorLS,
   genVMaskedges,
   getBaseSuiteTestCount,
@@ -663,7 +662,7 @@ if __name__ == '__main__':
             test_data += genRandomVectorLS()
 
             # print footer with test data and signature
-            signatureWords = getSigSpace(xlen, flen)
+            signatureWords = getSigSpace(xlen, common.getFlen())
             insertTemplate(chunk_basename, signatureWords, "testgen_footer.S", test_data=test_data)
 
             # Finish
@@ -673,7 +672,7 @@ if __name__ == '__main__':
             # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
             # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
             # works.
-            finalizeSigupdCount(tempfname, xlen, flen)
+            finalizeSigupdCount(tempfname, xlen, common.getFlen())
             # if new file is different from old file, replace old file with new file
             if pathlib.Path(fname).exists():
                 if filecmp.cmp(fname, tempfname): # files are the same

@@ -91,7 +91,7 @@
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 ##### Machine Interrupts #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 128
 
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10

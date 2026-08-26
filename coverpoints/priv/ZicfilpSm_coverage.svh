@@ -42,7 +42,7 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
         bins disabled = {0};
     }
     xtval_lpad: coverpoint ins.current.csr[12'h343] {
-    bins code_2 = {2};
+        bins code_2 = {2};
     }
     `ifdef XLEN64
         mpelp: coverpoint get_csr_val(ins.hart, ins.issue,

@@ -297,6 +297,8 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     "ExceptionsZicboU",
     required_extensions=["U"],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboU coverpoints"""

@@ -796,6 +796,8 @@ When debug mode enables simulator tracing, trace output can interleave with `RVC
 
 Both placeholders should be placed inside `{debug:...}` blocks since they are only needed when trace output is enabled. When debug is off, the placeholders are stripped along with the rest of the block.
 
+- **`{path:NAME:...}`** — Include flags only while running an ELF whose relative directory path contains the named component. Multiple names may be comma-separated. For example, `{path:Zibi:--enable-experimental-extensions}` enables Sail's experimental extensions only for Zibi ELFs, without changing the instruction set seen by strict illegal-instruction tests.
+
 Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
 
 ```bash

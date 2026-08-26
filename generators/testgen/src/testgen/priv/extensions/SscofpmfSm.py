@@ -6,7 +6,7 @@
 ##################################
 
 from testgen.asm.helpers import comment_banner
-from testgen.asm.interrupts import clr_mtimer_int, clr_stimer_mmode, set_mtimer_int, set_stimer_mmode
+from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SscofpmfCommon import generate_sscofpmf_suite
@@ -103,47 +103,50 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
-    """cp_lcofip_priority: priority of LCOFI interrupt in M-mode."""
+    """cp_lcofip_priority: priority of LCOFI interrupt."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_lcofip_priority"
     ######################################
 
     LCOFIP_BIT = 1 << 13  # mip bit 13, per coverpoints file: ins.current.csr[CSR_MIP][13]
-    MIE_BIT = 0x8
-    SIE_BIT = 0x2
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
             coverpoint,
-            "Priority of LCOFI interrupt (mode = M; 7 interrupts).\n"
+            "Priority of LCOFI interrupt (4 cases).\n"
             "mstatus.MIE=1, mstatus.SIE=1, mie=all 0s.\n"
-            "mip = 1 in LCOFIP and one of {MEIP,MTIP,MSIP,SEIP,STIP,SSIP,none}.\n"
+            "mip = 1 in LCOFIP and one of {MEIP,MTIP,MSIP,none}.\n"
             "mie = all 1s. Highest priority interrupt fires; LCOFIP only fires\n"
-            "if none of the others are pending (lowest priority).",
+            "if none of the others are pending (lowest priority).\n"
+            "Note: SEI/SSI/STI are excluded -- they are delegated to S-mode by\n"
+            "the baseline mideleg configuration and the hart never leaves\n"
+            "M-mode in this test, so those interrupts are always masked here\n"
+            "and cannot actually compete with LCOFI for M-mode priority.",
         ),
         "",
-        "# === M-MODE SETUP ===",
-        "csrw mip, zero      # clear all pending interrupts",
-        "csrw mie, zero      # disable all interrupts",
-        f"LI(x{r_temp}, {hex(MIE_BIT)})",
-        f"csrs mstatus, x{r_temp}   # mstatus.MIE = 1",
-        f"LI(x{r_temp}, {hex(SIE_BIT)})",
-        f"csrs mstatus, x{r_temp}   # mstatus.SIE = 1",
+        "# Setup: mstatus.MIE=1, mstatus.SIE=1",
+        "csrsi mstatus, 0x8   # MIE",
+        "csrsi mstatus, 0x2   # SIE",
+        "csrw mie, zero      # mie = all 0s initially",
         "",
     ]
 
-    other_interrupts = ["meip", "mtip", "msip", "seip", "stip", "ssip", "none"]
+    other_interrupts = [
+        "meip",
+        "mtip",
+        "msip",
+        "none",
+    ]
 
     for other_int in other_interrupts:
-        binname = f"lcofip_priority_m_{other_int}"
+        binname = f"lcofip_priority_{other_int}"
 
         lines.extend(
             [
-                "",
-                f"# Testcase: competing interrupt = {other_int}, mode = M",
+                f"# Testcase: competing interrupt = {other_int}",
                 f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
                 f"csrs mip, x{r_scratch}   # set mip.LCOFIP directly",
             ]
@@ -151,21 +154,20 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
 
         if other_int == "meip":
             lines.append("RVTEST_SET_MEXT_INT")
+
         elif other_int == "mtip":
-            lines.extend(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
+            lines.extend(
+                set_mtimer_int(
+                    r_mtime,
+                    r_mtimecmp,
+                    r_temp,
+                    r_temp2,
+                )
+            )
+
         elif other_int == "msip":
             lines.append("RVTEST_SET_MSW_INT")
-        elif other_int == "seip":
-            lines.append("RVTEST_SET_SEXT_INT")
-        elif other_int == "stip":
-            lines.extend(set_stimer_mmode(r_scratch))
-        elif other_int == "ssip":
-            lines.extend(
-                [
-                    f"LI(x{r1}, 0x2)",
-                    f"csrs mip, x{r1}",
-                ]
-            )
+
         # "none" -- no competing interrupt triggered
 
         lines.extend(
@@ -173,11 +175,11 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
                 f"LI(x{r_temp}, -1)",
                 f"csrw mie, x{r_temp}   # mie = all 1s",
                 "",
-                test_data.add_testcase(binname, coverpoint, covergroup),
-                "    # Stays in M-mode throughout.",
-                "    # With all interrupt enables set, the highest-priority pending",
-                "    # interrupt should fire. LCOFI is expected to fire only when",
-                "    # no higher-priority interrupt is pending.",
+                test_data.add_testcase(
+                    binname,
+                    coverpoint,
+                    covergroup,
+                ),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                 "",
             ]
@@ -185,21 +187,17 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
 
         if other_int == "meip":
             lines.append("RVTEST_CLR_MEXT_INT")
+
         elif other_int == "mtip":
-            lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
+            lines.extend(
+                clr_mtimer_int(
+                    r_temp,
+                    r_mtimecmp,
+                )
+            )
+
         elif other_int == "msip":
             lines.append("RVTEST_CLR_MSW_INT")
-        elif other_int == "seip":
-            lines.append("RVTEST_CLR_SEXT_INT")
-        elif other_int == "stip":
-            lines.extend(clr_stimer_mmode(r_scratch))
-        elif other_int == "ssip":
-            lines.extend(
-                [
-                    f"LI(x{r1}, 0x2)",
-                    f"csrc mip, x{r1}",
-                ]
-            )
 
         lines.extend(
             [
@@ -210,19 +208,8 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    lines.extend(
-        [
-            "",
-            "# === M-MODE CLEANUP ===",
-            f"LI(x{r_scratch}, {hex(LCOFIP_BIT)})",
-            f"csrc mip, x{r_scratch}      # clear LCOFIP",
-            "csrw mie, zero             # disable all interrupts",
-            f"LI(x{r_temp}, {hex(MIE_BIT | SIE_BIT)})",
-            f"csrc mstatus, x{r_temp}   # clear mstatus.MIE and mstatus.SIE",
-        ]
-    )
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch])
 
-    test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch])
     return lines
 
 
@@ -236,7 +223,7 @@ def make_sscofpmfsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfSm performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
-    # tc.code.extend(_generate_lcofi_m_tests(test_data))
+    tc.code.extend(_generate_lcofi_m_tests(test_data))
     tc.code.extend(_generate_lcofip_priority_sm_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "Sm"))

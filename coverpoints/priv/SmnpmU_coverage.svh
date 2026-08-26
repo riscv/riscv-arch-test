@@ -23,11 +23,12 @@
 ///////////////////////////////////////////
 
 `define COVER_SMNPMU
-    `ifndef S_SUPPORTED
 
-        covergroup SmnpmU_cg with function sample(ins_t ins);
-        option.per_instance = 0;
-        `include "general/RISCV_coverage_standard_coverpoints.svh"
+    covergroup SmnpmU_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    `ifndef S_SUPPORTED
 
         pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
             bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
@@ -56,11 +57,10 @@
             // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
             cp_hardware_csr_writes_fault: cross priv_mode_u, pm_fault;
         `endif
+    `endif // S_SUPPORTED
 
     endgroup
 
-    function void smnpmu_sample(int hart, int issue, ins_t ins);
-        SmnpmU_cg.sample(ins);
-    endfunction
-
-`endif // S_SUPPORTED
+function void smnpmu_sample(int hart, int issue, ins_t ins);
+    SmnpmU_cg.sample(ins);
+endfunction

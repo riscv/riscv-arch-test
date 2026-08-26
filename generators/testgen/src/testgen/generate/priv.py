@@ -24,6 +24,7 @@ from testgen.priv import (
     get_priv_test_required_extensions,
     get_priv_test_testcases_per_file,
 )
+from testgen.priv.sv import is_sv_suite, write_sv_suite
 
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
@@ -36,6 +37,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
+    if is_sv_suite(testsuite):
+        # Sv* virtual-memory suites bypass the TestData/TestChunk pipeline: they need
+        # per-file REQUIRED_EXTENSIONS/MARCH headers, local .macro blocks, and custom
+        # data sections (page tables, executable test region).
+        write_sv_suite(testsuite, output_test_dir)
+        return
+
     output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 

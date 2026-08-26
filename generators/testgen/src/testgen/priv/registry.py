@@ -101,8 +101,10 @@ def _get_entry(testsuite: str) -> PrivTestRegistryEntry:
 
 
 def get_priv_test_extensions() -> list[str]:
-    """Get list of all registered privileged test extensions."""
-    return list(_PRIV_TEST_GENERATORS.keys())
+    """Get list of all registered privileged test extensions (TestChunk and Sv* suite generators)."""
+    from testgen.priv.sv import get_sv_suite_names
+
+    return list(_PRIV_TEST_GENERATORS.keys()) + get_sv_suite_names()
 
 
 def get_priv_test_generator(testsuite: str) -> PrivTestGenerator:

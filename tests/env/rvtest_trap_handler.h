@@ -1723,6 +1723,9 @@ tsbi_instr_table:
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
         TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
+        #endif
         TSBI_CSR_INSTR_TABLE(0x344) // mip
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
@@ -1736,6 +1739,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
+        #endif
         TSBI_CSR_INSTR_TABLE(0x180) // satp
         TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
         TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1

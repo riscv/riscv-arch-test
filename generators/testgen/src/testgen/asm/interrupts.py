@@ -236,12 +236,15 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) ->
     return lines
 
 
-def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int) -> list[str]:
+def set_stimer_int_soon_sstc(
+    r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int, delay: str | int | None = None
+) -> list[str]:
     """Set supervisor timer interrupt to fire soon WITH Sstc extension.
 
 
     Uses stimecmp CSR (not MTIMECMP memory). Otherwise identical to set_mtimer_int_soon.
     """
+    delay_val = str(delay) if delay is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [
         f"{INDENT}# Set supervisor timer interrupt to fire soon with Sstc extension",
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)  # NOTE: This will need to be replaced by a SBI call because MTIME might not exist or be accessible",
@@ -251,21 +254,26 @@ def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: 
         f"csrw stimecmp, x{r_temp1}",
         f"{INDENT}# Read current time and add delay",
         f"ld x{r_temp1}, 0(x{r_mtime})",
-        f"addi x{r_temp1}, x{r_temp1}, RVMODEL_TIMER_INT_SOON_DELAY",
+        f"addi x{r_temp1}, x{r_temp1}, {delay_val}",
         f"csrw stimecmp, x{r_temp1}",
         "#elif __riscv_xlen == 32",
         f"{INDENT}# Disable comparator first --> set to high value to prevent early firing",
         f"LI(x{r_temp1}, -1)",
         f"csrw stimecmp, x{r_temp1}",
         f"csrw stimecmph, x{r_temp1}",
-        f"{INDENT}# Read current time",
-        f"lw x{r_temp1}, 0(x{r_mtime})",
+        f"{INDENT}# Write the high word while the low word is still all ones, so the comparator only",
+        f"{INDENT}# becomes live at the final low-word write; redo if the high word changed or the",
+        f"{INDENT}# low word would carry, so the two words stay consistent",
+        "7:",
         f"lw x{r_temp2}, 4(x{r_mtime})",
-        f"addi x{r_temp3}, x{r_temp1}, RVMODEL_TIMER_INT_SOON_DELAY",
-        f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",
-        f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",
-        f"csrw stimecmp, x{r_temp3}",
         f"csrw stimecmph, x{r_temp2}",
+        f"lw x{r_temp1}, 0(x{r_mtime})",
+        f"lw x{r_temp4}, 4(x{r_mtime})",
+        f"bne x{r_temp2}, x{r_temp4}, 7b",
+        f"addi x{r_temp3}, x{r_temp1}, {delay_val}",
+        f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",
+        f"bnez x{r_temp4}, 7b",
+        f"csrw stimecmp, x{r_temp3}",
         "#endif",
     ]
 

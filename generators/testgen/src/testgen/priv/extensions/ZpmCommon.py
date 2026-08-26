@@ -1089,11 +1089,15 @@ def pass_clear_on_xlen_change(
     ifdef_guard: str | None = None,
 ) -> list[str]:
     """Setting status_csr's 2-bit field to 01 (RV32) must clear pmm_csr.PMM to 00.
-    Generalizes Ssnpm's, SmnpmU's UXL-clear pass and SmnpmS's SXL-clear pass
+    Generalizes Ssnpm's, SmnpmU's UXL-clear pass and SmnpmS's SXL-clear pass.
+
+    ifdef_guard names the UDB define (UDB_UXLEN_32 / UDB_SXLEN_32) that says the mode
+    can actually be switched to RV32; on a fixed-XLEN-64 config the write is a WARL
+    no-op and the pass is skipped (the matching coverpoint is guarded the same way).
     """
     lines = [""]
     if ifdef_guard:
-        lines.append(f"#ifndef {ifdef_guard}")
+        lines.append(f"#ifdef {ifdef_guard}")
     lines += [
         comment_banner(f"{prefix}: {status_csr} field=01 must clear {pmm_csr}.PMM"),
         "RVTEST_GOTO_MMODE",
@@ -1192,7 +1196,6 @@ def pass_i_mprv_mxr_pmm_loop(
                 # ============================================================
                 lines += [f"LA(x{regs.base}, pm_lo_page)"]
                 prefix_m = f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppm"
-                lines += set_mprv(True, _MPP_M, regs.tmp)
                 for upper in _MPRV_UPPER_PATTERNS:
                     lines += [
                         f"LI(x{regs.tmp}, {hex(upper << 48)})",
@@ -1202,6 +1205,7 @@ def pass_i_mprv_mxr_pmm_loop(
                     lines += [
                         *_seed(regs),
                         *_sentinel(regs),
+                        *set_mprv(True, _MPP_M, regs.tmp),
                         td.add_testcase(tid_load, "cp_pm_mprv_mpp_m", cg),
                         *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
                         write_sigupd(regs.chk, td),
@@ -1210,8 +1214,10 @@ def pass_i_mprv_mxr_pmm_loop(
                     lines += [
                         *_seed(regs),
                         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
+                        *set_mprv(True, _MPP_M, regs.tmp),
                         td.add_testcase(tid_store, "cp_pm_mprv_mpp_m", cg),
                         *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                        *set_mprv(True, _MPP_M, regs.tmp),
                         *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
                         write_sigupd(regs.chk, td),
                     ]
@@ -1244,7 +1250,6 @@ def pass_i_mprv_mxr_pmm_loop(
                             f"menvcfg{menvcfg_pmm:02b}_senvcfg{senvcfg_pmm:02b}_"
                             f"{satp_mode}_mppu"
                         )
-                        lines += set_mprv(True, _MPP_U, regs.tmp)
                         for upper in _MPRV_UPPER_PATTERNS:
                             lines += [
                                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
@@ -1254,6 +1259,7 @@ def pass_i_mprv_mxr_pmm_loop(
                             lines += [
                                 *_seed(regs),
                                 *_sentinel(regs),
+                                *set_mprv(True, _MPP_U, regs.tmp),
                                 td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_s", cg),
                                 *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
                                 write_sigupd(regs.chk, td),
@@ -1262,8 +1268,10 @@ def pass_i_mprv_mxr_pmm_loop(
                             lines += [
                                 *_seed(regs),
                                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
+                                *set_mprv(True, _MPP_U, regs.tmp),
                                 td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_s", cg),
                                 *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                                *set_mprv(True, _MPP_U, regs.tmp),
                                 *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
                                 write_sigupd(regs.chk, td),
                             ]
@@ -1282,7 +1290,6 @@ def pass_i_mprv_mxr_pmm_loop(
                 prefix_u_nos = (
                     f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppu"
                 )
-                lines += set_mprv(True, _MPP_U, regs.tmp)
                 for upper in _MPRV_UPPER_PATTERNS:
                     lines += [
                         f"LI(x{regs.tmp}, {hex(upper << 48)})",
@@ -1292,6 +1299,7 @@ def pass_i_mprv_mxr_pmm_loop(
                     lines += [
                         *_seed(regs),
                         *_sentinel(regs),
+                        *set_mprv(True, _MPP_U, regs.tmp),
                         td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_no_s", cg),
                         *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
                         write_sigupd(regs.chk, td),
@@ -1300,8 +1308,10 @@ def pass_i_mprv_mxr_pmm_loop(
                     lines += [
                         *_seed(regs),
                         f"LI(x{regs.data}, {hex(VALUE_NEW)})",
+                        *set_mprv(True, _MPP_U, regs.tmp),
                         td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_no_s", cg),
                         *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                        *set_mprv(True, _MPP_U, regs.tmp),
                         *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
                         write_sigupd(regs.chk, td),
                     ]
@@ -1327,7 +1337,6 @@ def pass_i_mprv_mxr_pmm_loop(
                             f"menvcfg{menvcfg_pmm:02b}_senvcfg{senvcfg_pmm:02b}_"
                             f"{satp_mode}_mpps"
                         )
-                        lines += set_mprv(True, _MPP_S, regs.tmp)
                         for upper in _MPRV_UPPER_PATTERNS:
                             lines += [
                                 f"LI(x{regs.tmp}, {hex(upper << 48)})",
@@ -1337,6 +1346,7 @@ def pass_i_mprv_mxr_pmm_loop(
                             lines += [
                                 *_seed(regs),
                                 *_sentinel(regs),
+                                *set_mprv(True, _MPP_S, regs.tmp),
                                 td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_s", cg),
                                 *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
                                 write_sigupd(regs.chk, td),
@@ -1345,8 +1355,10 @@ def pass_i_mprv_mxr_pmm_loop(
                             lines += [
                                 *_seed(regs),
                                 f"LI(x{regs.data}, {hex(VALUE_NEW)})",
+                                *set_mprv(True, _MPP_S, regs.tmp),
                                 td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_s", cg),
                                 *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+                                *set_mprv(True, _MPP_S, regs.tmp),
                                 *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
                                 write_sigupd(regs.chk, td),
                             ]

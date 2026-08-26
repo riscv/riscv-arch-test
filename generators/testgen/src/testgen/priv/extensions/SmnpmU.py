@@ -67,7 +67,7 @@ def _emit_file(td: TestData, regs: Regs) -> list[str]:
             pmm_shift=_MENVCFG_PMM,
             status_csr="mstatus",
             status_shift=_MSTATUS_UXL_SHIFT,
-            ifdef_guard="UDB_UXLEN_64",
+            ifdef_guard="UDB_UXLEN_32",
         )
 
     lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)

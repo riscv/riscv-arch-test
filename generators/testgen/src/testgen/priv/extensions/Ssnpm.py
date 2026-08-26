@@ -107,7 +107,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs, finegrained_map: list[str] |
             pmm_shift=32,
             status_csr="sstatus",
             status_shift=32,
-            ifdef_guard="UDB_UXLEN_64",
+            ifdef_guard="UDB_UXLEN_32",
         )
 
     lines += ["RVTEST_GOTO_MMODE"]

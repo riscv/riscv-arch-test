@@ -105,6 +105,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
             pmm_shift=32,
             status_csr="mstatus",
             status_shift=34,
+            ifdef_guard="UDB_SXLEN_32",
         )
 
     lines += ["RVTEST_GOTO_MMODE"] + set_pmm_field("menvcfg", _MENVCFG_PMM, 0b00, 0, regs.tmp)

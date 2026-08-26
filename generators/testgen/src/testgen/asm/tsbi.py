@@ -8,8 +8,6 @@
 
 """Assembly generation helpers for test code."""
 
-from __future__ import annotations
-
 import re
 
 from testgen.constants import INDENT

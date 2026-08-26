@@ -7,8 +7,6 @@
 ##################################
 
 
-from __future__ import annotations
-
 from testgen.constants import INDENT
 
 

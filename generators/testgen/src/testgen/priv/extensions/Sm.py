@@ -28,7 +28,7 @@ SM_CSRS_NOWALK = ["mepc", "mtval"]
 SM_VADDR_CSRS = [
     ("mepc", 0b01, {1: "ZCA_SUPPORTED"}, None),
     ("mtval", 0b00, {}, None),
-    ("mnepc", 0b01, {1: "ZCA_SUPPORTED"}, "SMRNMI_SUPPORTED"),
+    # ("mnepc", 0b01, {1: "ZCA_SUPPORTED"}, "SMRNMI_SUPPORTED"),  # until the Sail reference model supports Smrnmi
 ]
 
 # Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal, so the msb that can be walked

@@ -42,5 +42,5 @@ normative_rule_definitions:
   # Prior to writing mnepc, implementations may convert an invalid address into some
   # other invalid address that mnepc is capable of holding.
   - name: mnepc_invalid_convert
-    coverpoint:
-      ["Sm_mcsr_cg/cp_mnepc_vaddr_walk1, Sm_mcsr_cg/cp_mnepc_vaddr_walk0"]
+    # ["Sm_mcsr_cg/cp_mnepc_vaddr_walk1, Sm_mcsr_cg/cp_mnepc_vaddr_walk0"] once the Sail reference model supports Smrnmi
+    coverpoint: [""]

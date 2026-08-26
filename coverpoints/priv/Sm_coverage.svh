@@ -488,11 +488,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         mepc: coverpoint ins.current.insn[31:20] {
             bins mepc = {CSR_MEPC};
         }
-        `ifdef SMRNMI_SUPPORTED
-            mnepc: coverpoint ins.current.insn[31:20] {
-                bins mnepc = {CSR_MNEPC};
-            }
-        `endif
+        // mnepc walks are disabled until the Sail reference model supports Smrnmi
+        // `ifdef SMRNMI_SUPPORTED
+        //     mnepc: coverpoint ins.current.insn[31:20] {
+        //         bins mnepc = {CSR_MNEPC};
+        //     }
+        // `endif
         // mepc, mnepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
         xepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
             `ifdef ZCA_SUPPORTED
@@ -565,10 +566,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         cp_mepc_vaddr_walk0:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk0;
         cp_mtval_vaddr_walk1:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk1;
         cp_mtval_vaddr_walk0:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk0;
-        `ifdef SMRNMI_SUPPORTED
-            cp_mnepc_vaddr_walk1: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk1;
-            cp_mnepc_vaddr_walk0: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk0;
-        `endif
+        // `ifdef SMRNMI_SUPPORTED
+        //     cp_mnepc_vaddr_walk1: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk1;
+        //     cp_mnepc_vaddr_walk0: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk0;
+        // `endif
     `endif
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;

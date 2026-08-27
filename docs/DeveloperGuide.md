@@ -136,15 +136,15 @@ REQUIRED_EXTENSIONS:
 
 Each top-level item is required. A string requires that extension. A nested
 list requires at least one extension in that list. More than one nested list
-can be used. For example, `[I, [A, B], [F, D]]` means `I AND (A OR B) AND
-(F OR D)`.
+can be used. For example, `[I, [Zicboz, Zicbom, Zicbop], [Sm, U]]` means `I AND
+(Zicboz OR Zicbom OR Zicbop) AND (Sm OR U)`.
 
 #### `FORBIDDEN_EXTENSIONS`
 
 An optional YAML list of extensions that the DUT must not implement:
 
 ```yaml
-FORBIDDEN_EXTENSIONS: [Zca]
+FORBIDDEN_EXTENSIONS: [S]
 ```
 
 The framework skips the test if the DUT implements one or more extensions in

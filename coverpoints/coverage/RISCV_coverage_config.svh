@@ -422,6 +422,18 @@
 `ifdef ZICBOZ_COVERAGE
   `include "Zicboz_coverage.svh"
 `endif
+`ifdef ZICFISSH_COVERAGE
+  `include "ZicfissH_coverage.svh"
+`endif
+`ifdef ZICFISSS_COVERAGE
+  `include "ZicfissS_coverage.svh"
+`endif
+`ifdef ZICFISSSM_COVERAGE
+  `include "ZicfissSm_coverage.svh"
+`endif
+`ifdef ZICFISSU_COVERAGE
+  `include "ZicfissU_coverage.svh"
+`endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
 `endif

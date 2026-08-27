@@ -46,7 +46,15 @@ def insert_header_template(
     testsuite = test_config.testsuite
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
+    alternative_extensions = (
+        [] if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, list)]
+    )
+    required_extensions = (
+        None if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, str)]
+    )
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
+    extension_requirements = [*ext_components, *alternative_extensions]
+    flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
     if test_config.extra_params:
         params.extend(test_config.extra_params)
     march_extensions = test_config.march_extensions
@@ -54,16 +62,16 @@ def insert_header_template(
         march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions, sew, instr_name)
         march = generate_march_string(march_ext_components, xlen)
         # combine required_extensions and march_extensions for extra_defines
-        all_extensions = list(dict.fromkeys(ext_components + march_ext_components))
+        all_extensions = list(dict.fromkeys(flat_ext_components + march_ext_components))
     else:
-        march = generate_march_string(ext_components, xlen)
-        all_extensions = ext_components
+        all_extensions = flat_ext_components
+        march = generate_march_string(all_extensions, xlen)
     all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@EXTENSION_LIST@", f"{ext_components}")
-        .replace("@PARAMS@", format_params(params, ext_components))
+        .replace("@EXTENSION_LIST@", f"{extension_requirements}")
+        .replace("@PARAMS@", format_params(params, flat_ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(all_defines))
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))

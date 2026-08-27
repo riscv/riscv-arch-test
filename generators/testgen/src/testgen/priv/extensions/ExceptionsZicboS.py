@@ -339,7 +339,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZicboS",
-    required_extensions=["S"],
+    required_extensions=["S", ["Zicbom", "Zicboz", "Zicbop"]],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:

@@ -120,7 +120,6 @@ The following top-level keys are recognized. No other keys are permitted
 #### `REQUIRED_EXTENSIONS`
 
 A YAML list of extension name strings or nested lists.
-Nested lists indicate at least one of the extensions must be supported
 Both quoted and unquoted strings are accepted:
 
 ```yaml

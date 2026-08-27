@@ -117,7 +117,7 @@ def _emit_mode(mode: str, td: TestData, regs: Regs) -> list[str]:
 
 @add_priv_test_generator(
     "SmnpmS",
-    required_extensions=["Smnpm"],
+    required_extensions=["Smnpm", "S"],
     march_extensions=["I", "A", "F", "D", "C", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpms(td: TestData) -> list[TestChunk]:

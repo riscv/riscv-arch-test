@@ -606,11 +606,11 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsF",
-    required_extensions=[
-        "F",
-        "Sm",
-    ],  # Some priv mode is needed to set up trap handler.  Generalize so that this could run in U mode in the future.  Applies to many other Exceptions tests.
+    # Some priv mode is needed to set up trap handler.  Generalize so that this could run in U mode in the future.  Applies to many other Exceptions tests.
+    required_extensions=["F", "Sm"],
     march_extensions=["Zfa", "D", "Zfhmin"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionsf(test_data: TestData) -> list[TestChunk]:
     """Main entry point for F exception test generation."""

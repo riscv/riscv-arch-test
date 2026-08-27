@@ -28,7 +28,7 @@
 
 #define SIGUPD_COUNT 50
 #define RVTEST_PRIV_TEST
-
+#define BOOT_TO_MMODE
 
 #include "riscv_arch_test.h"
 

@@ -182,13 +182,14 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
-#define ALT_GOTO_MMODE      0x00000000           // a0 value: Used by RVTEST_GOTO_DELEGATED_MMODE
-#define TSBI_GOTO_MMODE     0x00000001           // a0 value: switch to Machine mode
-#define TSBI_GOTO_SMODE     0x00000002           // a0 value: switch to Supervisor (or HS) mode
-#define TSBI_GOTO_UMODE     0x00000003           // a0 value: switch to User mode
-#define TSBI_GOTO_VSMODE    0x00000004           // a0 value: switch to Virtual Supervisor mode (requires H)
-#define TSBI_GOTO_VUMODE    0x00000005           // a0 value: switch to Virtual User mode (requires H)
-#define TSBI_ECALL_TEST     0x00000073           // a0 value: test ecall trap path, returns xEPC in a0
+// a0 values for TSBI_GOTO_xMODE.  ALT_GOTO_MODE is used by RVTEST_GOTO_DELEGATED_MMODE
+#define ALT_GOTO_MMODE      0x00000000
+#define TSBI_GOTO_MMODE     0x00000001
+#define TSBI_GOTO_SMODE     0x00000002
+#define TSBI_GOTO_UMODE     0x00000003
+#define TSBI_GOTO_VSMODE    0x00000004
+#define TSBI_GOTO_VUMODE    0x00000005
+#define TSBI_ECALL_TEST     0x00000073
 
 // CSR_ACCESS is not a single #define — it's any value where:
 //   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
@@ -1716,8 +1717,8 @@ tsbi_instr_not_found:
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
-        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg  // TODO: This might need to record the intended delegation state for delegating in software when bits are read-only zero
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
         TSBI_CSR_INSTR_TABLE(0x304) // mie
         //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
         TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
@@ -2610,6 +2611,22 @@ trap_handler_fastillegalinstr:
         csrr a1, mcause                 // read trap cause
         xori a1, a1, 2                  // a1 = 0 iff cause == 2 (illegal instruction)
         bnez a1, fast_Mothertrap        // not illegal — restore regs and use regular handler
+        // Only traps taken in the test body may use the fast path. It signature-updates
+        // through x2, which RVTEST_INIT_REGS does not load until the end of boot, so a
+        // trap taken earlier — e.g. a boot-time CSR write that the reference model does
+        // not implement — would write through an uninitialized register. Forward those to
+        // the standard handler, which works off mscratch and records nothing in the
+        // signature (so the reference model taking such a trap does not diverge from a DUT
+        // that does not). Ask whether xEPC is in the test code segment rather than
+        // inferring it from x2's contents. This compares unrelocated addresses, which is
+        // already the fast path's assumption: RVTEST_SIGUPD_FAST_TRAP writes through x2 raw.
+        SREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // stash caller's a2 (rvmodel_sv slot 3 is free)
+        csrr a1, mepc
+        LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
+        sub  a1, a1, a2                 // a1 = mepc - code_begin (wraps if mepc is below it)
+        LREG a2, code_seg_siz(a0)       // a2 = code segment size
+        bgeu a1, a2, fast_Mbootrap      // outside the test code — use the standard handler
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
 fast_Millegalinstruction:
@@ -2635,6 +2652,8 @@ fast_Mdone:
         csrw mepc, a0
         mret
 
+fast_Mbootrap:
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Mothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
@@ -2667,6 +2686,16 @@ strap_handler_fastillegalinstr:
         bnez a1, fast_Sothertrap        // not illegal — restore regs and use the S framework handler
                                         // (NOT fast_Mothertrap: the M trampoline's mscratch access
                                         // is itself illegal from S-mode and creates a trap loop)
+        // Same test-body check as the M handler: only traps taken in the test code segment
+        // may use the fast path, because it signature-updates through x2, which is not
+        // loaded until the end of boot. See the M handler for the full rationale.
+        SREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // stash caller's a2 (rvmodel_sv slot 3 is free)
+        csrr a1, sepc
+        LREG a2, code_bgn_off(a0)       // a2 = rvtest_code_begin
+        sub  a1, a1, a2                 // a1 = sepc - code_begin (wraps if sepc is below it)
+        LREG a2, code_seg_siz(a0)       // a2 = code segment size
+        bgeu a1, a2, fast_Sbootrap      // outside the test code — use the S framework handler
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0
 fast_Sillegalinstruction:
@@ -2693,6 +2722,8 @@ fast_Sdone:
                                         // is itself an illegal instruction and re-enters this
                                         // handler forever
 
+fast_Sbootrap:
+        LREG a2, rvmodel_sv_off+3*REGWIDTH(a0)  // restore caller's a2, then fall through
 fast_Sothertrap:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_SSCRATCH, a0      // restore sscratch = save ptr; a0 = caller's a0

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pyjson5
 
-from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
@@ -488,6 +488,7 @@ def gen_coverage_tasks(
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
                 intermediate=True,
+                timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
         )
 

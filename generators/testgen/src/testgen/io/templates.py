@@ -8,8 +8,6 @@
 
 """Template loading and insertion for test files."""
 
-from __future__ import annotations
-
 import importlib.resources
 import re
 from pathlib import Path
@@ -203,6 +201,11 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
     if "Zve32x" in mapped and instr_name.startswith(("vw", "vn")) and sew == 32:
         # Zve32x allows for an ELEN of 32, so a widening instruction at sew = 32 would widen to an eew of 64, which
         # requires Zve64x.
+        mapped.remove("Zve32x")
+        mapped.append("Zve64x")
+
+    if "Zve32x" in mapped and "64" in instr_name:
+        # This is an unsupported EEW (happens for vle64.v)
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
 

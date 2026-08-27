@@ -8,8 +8,6 @@
 
 """Sstvala S-mode test generator."""
 
-from __future__ import annotations
-
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -294,7 +292,8 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
     "Sstvala",
     required_extensions=["Sstvala"],
     march_extensions=["S"],
-    extra_defines=[],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def _generate_sstvala_tests(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstvala tests running in S-mode."""

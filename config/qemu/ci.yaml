@@ -5,8 +5,15 @@
 
 ci_enabled: true
 # Status as of QEMU v11.1.0:
-# Sm: medeleg WARL parameter mismatch (config issue, not a QEMU bug)
-# S: sstatus WARL mismatch (QEMU supports dynamic XLEN)
+# Sm: Multiple issues:
+#     need H support in Sail
+#     menvcfg.CBIE can be written with reserved 0b10 QEMU #4216
+#     menvcfg.LPE not writable QEMU #4045
+#     minstret one too high after wraparound (could be #4087, check after fixed)
+#     mcycleh write dropped (#4219)
+#     mstatus.MPELP not writable (#4220)
+# S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
+#     UXL https://gitlab.com/qemu-project/qemu/-/work_items/3367
 # Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
 # ExceptionsZalrsc/ExceptionsSvZalrsc: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/3323, still failing in v11.1.0)
@@ -14,7 +21,7 @@ ci_enabled: true
 # ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
 #        but cross-granule word/doubleword AMOs execute instead of trapping.
 # Zkr: QEMU sign-extends the CSR read of seed on RV64 (https://gitlab.com/qemu-project/qemu/-/work_items/4121)
-# SsstrictSm/SsstrictS/SsstrictU: Sail does not implement all extensions supported by QEMU.
+# SsstrictSm/SsstrictS/SsstrictU: Sail does not implement H, qemu#4200, qemu#4201, sail#1882, sail #1880 in Sail 0.14
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen will be added back once sail starts supporting SM1P13 too
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
@@ -25,3 +32,4 @@ apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1
 config_shards:
   qemu-rv64-max: 2
+  qemu-rv32-max: 2

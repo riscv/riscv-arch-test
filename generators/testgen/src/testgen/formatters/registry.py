@@ -8,8 +8,6 @@
 
 """Instruction formatter registration, lookup, and rendering."""
 
-from __future__ import annotations
-
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -52,6 +50,7 @@ class VectorTypeConfig:
         mask_regs: Set of registers used as mask registers
         scalar_regs: Set of registers used as scalar registers
         widened_regs: Set of registers that are widened
+        random_element_generator: Add custom random element generation (used in unordered operations)
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
@@ -59,6 +58,7 @@ class VectorTypeConfig:
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
     widened_regs: set[str] = field(default_factory=set)
+    random_element_generator: Callable[[int, int], list[int]] | None = None
 
 
 @dataclass
@@ -77,6 +77,7 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+        excluded_regs: Registers to exclude for each operand.
         instruction_class: List of strings containing broader instruction categories (e.g. "load", "store", "indexed")
         vector_data: Optional attribute containing data necessary for vector instructions
     """
@@ -88,7 +89,8 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
-    instruction_class: list[Literal["load", "store", "indexed"]] = field(default_factory=list)
+    excluded_regs: dict[str, set[int]] = field(default_factory=dict)
+    instruction_class: list[Literal["load", "store", "indexed", "strided", "segmented"]] = field(default_factory=list)
     vector_data: VectorTypeConfig | None = None
 
 

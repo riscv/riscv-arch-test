@@ -50,13 +50,9 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     ######################################
 
     tc = test_data.new_test_chunk(test_chunks, "ucsr")
-    tc.code.extend(
-        [
-            comment_banner(
-                coverpoint,
-                "Attempt to read non-user-mode registers.  Should throw illegal instruction",
-            ),
-        ]
+    tc.section_header = comment_banner(
+        coverpoint,
+        "Attempt to read non-user-mode registers.  Should throw illegal instruction",
     )
 
     for csr in (
@@ -101,7 +97,6 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     "U",
     required_extensions=["U"],
     extra_defines=["#define BOOT_TO_UMODE"],
-    testcases_per_file=512,  # the ucsr tests throw costly illegal instruction exceptions, so limit them for runtime
 )
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""

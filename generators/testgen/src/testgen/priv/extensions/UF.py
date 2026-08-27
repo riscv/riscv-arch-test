@@ -23,8 +23,6 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
     csrf = [("fcsr", None), ("frm", None), ("fflags", None)]
     lines = []
 
-    lines.extend(["RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
-
     ######################################
     coverpoint = "cp_ufcsr_access"
     ######################################
@@ -54,7 +52,10 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("UF", required_extensions=["U", "F"])
+@add_priv_test_generator(
+    "UF",
+    required_extensions=["U", "F"],
+)
 def make_uf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for UF user-mode floating-point testsuite."""
     test_chunks: list[TestChunk] = []

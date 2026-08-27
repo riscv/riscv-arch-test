@@ -33,7 +33,7 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  # - { name: Smrnmi, version: "= 1.0.0" } spike does not support Smrnmi
+  # - { name: Smrnmi, version: "= 1.0.0" } # spike does not support Smrnmi
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -45,7 +45,8 @@ implemented_extensions:
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
-  - { name: Ssstrict, version: "= 1.0.0" }
+  # - { name: Ssstrict, version: "= 1.0.0" } # Spike does not aim to support Ssstrict as of 8/20/2026
+  # https://github.com/riscv-software-src/riscv-isa-sim/issues/1976#issuecomment-5335375358
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }

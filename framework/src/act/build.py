@@ -7,8 +7,6 @@
 # Python-native DAG build executor using graphlib.TopologicalSorter
 ##################################
 
-from __future__ import annotations
-
 import contextlib
 import os
 import re
@@ -40,8 +38,6 @@ from act.build_types import (
     SubprocessAction,
     SymlinkAction,
 )
-
-BUILD_STEP_TIMEOUT_SECONDS = 300
 
 
 @dataclass
@@ -79,16 +75,16 @@ def _kill_subprocess_tree(pgid: int, proc: subprocess.Popen[str] | None = None) 
             proc.kill()
 
 
-def _communicate_with_timeout(proc: subprocess.Popen[str], pgid: int) -> tuple[str, int]:
+def _communicate_with_timeout(proc: subprocess.Popen[str], pgid: int, timeout: int | None) -> tuple[str, int]:
     """Collect subprocess output, killing its process group if it times out."""
     try:
-        stdout, stderr = proc.communicate(timeout=BUILD_STEP_TIMEOUT_SECONDS)
+        stdout, stderr = proc.communicate(timeout=timeout)
         return stderr + stdout, proc.returncode if proc.returncode is not None else -1
     except subprocess.TimeoutExpired:
         _kill_subprocess_tree(pgid, proc)
         stdout, stderr = proc.communicate()
         output = stderr + stdout
-        timeout_msg = f"Timed out after {BUILD_STEP_TIMEOUT_SECONDS}s; process group killed."
+        timeout_msg = f"Timed out after {timeout}s; process group killed."
         return (f"{timeout_msg}\n{output}" if output else timeout_msg), -signal.SIGKILL
 
 
@@ -127,7 +123,7 @@ def execute_task(
                 _kill_subprocess_tree(pgid, proc)
 
             try:
-                output, returncode = _communicate_with_timeout(proc, pgid)
+                output, returncode = _communicate_with_timeout(proc, pgid, task.timeout)
             finally:
                 with pgids_lock:
                     active_pgids.discard(pgid)

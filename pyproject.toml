@@ -3,7 +3,7 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 [dependency-groups]
-dev = [ "pyright==1.1.411", "ruff==0.16.2" ]
+dev = [ "pyright==1.1.411", "ruff==0.16.3" ]
 
 [tool.uv]
 exclude-newer = "7 days"
@@ -11,6 +11,7 @@ workspace.members = [ "framework", "generators/coverage", "generators/testgen" ]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
+target-version = "py310"
 line-length = 120
 extend-exclude = [
   "docs/docs-resources",

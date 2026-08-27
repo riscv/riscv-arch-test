@@ -28,8 +28,8 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
 
-    if not extension.startswith("Vx"):
-        # Only Vx is supported for now
+    if not extension.startswith(("Vx", "Vls")):
+        # Only Vx and Vls are supported for now
         return []
 
     if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:

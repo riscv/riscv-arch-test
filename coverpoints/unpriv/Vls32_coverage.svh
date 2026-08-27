@@ -3451,7 +3451,7 @@ covergroup Vls32_vlm_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -3586,26 +3586,6 @@ covergroup Vls32_vloxei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -3847,26 +3827,6 @@ covergroup Vls32_vloxei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -4080,24 +4040,18 @@ covergroup Vls32_vloxei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew64////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -4321,26 +4275,6 @@ covergroup Vls32_vloxei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -4502,26 +4436,6 @@ covergroup Vls32_vloxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -4691,26 +4605,6 @@ covergroup Vls32_vloxseg2ei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -4877,24 +4771,18 @@ covergroup Vls32_vloxseg2ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -5062,26 +4950,6 @@ covergroup Vls32_vloxseg2ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -5221,26 +5089,6 @@ covergroup Vls32_vloxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -5385,26 +5233,6 @@ covergroup Vls32_vloxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -5547,24 +5375,18 @@ covergroup Vls32_vloxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -5706,26 +5528,6 @@ covergroup Vls32_vloxseg3ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -5891,26 +5693,6 @@ covergroup Vls32_vloxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -6080,26 +5862,6 @@ covergroup Vls32_vloxseg4ei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6267,24 +6029,18 @@ covergroup Vls32_vloxseg4ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -6453,26 +6209,6 @@ covergroup Vls32_vloxseg4ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6613,26 +6349,6 @@ covergroup Vls32_vloxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -6778,26 +6494,6 @@ covergroup Vls32_vloxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6941,24 +6637,18 @@ covergroup Vls32_vloxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7101,26 +6791,6 @@ covergroup Vls32_vloxseg5ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7267,26 +6937,6 @@ covergroup Vls32_vloxseg6ei16_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -7429,26 +7079,6 @@ covergroup Vls32_vloxseg6ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7595,24 +7225,18 @@ covergroup Vls32_vloxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7756,26 +7380,6 @@ covergroup Vls32_vloxseg6ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -7923,26 +7527,6 @@ covergroup Vls32_vloxseg7ei16_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -8086,26 +7670,6 @@ covergroup Vls32_vloxseg7ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -8253,24 +7817,18 @@ covergroup Vls32_vloxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -8415,26 +7973,6 @@ covergroup Vls32_vloxseg7ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -8607,26 +8145,6 @@ covergroup Vls32_vloxseg8ei16_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -8795,26 +8313,6 @@ covergroup Vls32_vloxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -8987,24 +8485,18 @@ covergroup Vls32_vloxseg8ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -9174,26 +8666,6 @@ covergroup Vls32_vloxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -11606,6 +11078,53 @@ covergroup Vls32_vlseg3e64ff_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL128B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew64 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -12681,6 +12200,53 @@ covergroup Vls32_vlseg4e64ff_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew64
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL128B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew64 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -13476,6 +13042,57 @@ covergroup Vls32_vlseg5e32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL64B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+                bins one = {0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew32 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -14279,6 +13896,57 @@ covergroup Vls32_vlseg6e32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL64B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+                bins one = {0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew32 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -15088,6 +14756,57 @@ covergroup Vls32_vlseg7e32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL64B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+                bins one = {0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew32 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -15903,6 +15622,57 @@ covergroup Vls32_vlseg8e32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS_lmul1_eew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef ZVL64B_SUPPORTED
+
+            ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+            } {
+                bins true = {1'b1};
+            }
+
+            ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+                bins two = {2};
+            }
+
+            ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+                bins masked = {1'b0};
+            }
+
+            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+                bins one = {0};
+            }
+
+            ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+                bins ge2 = {[2:$]};
+            }
+
+            ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins at_fault_addr = {1'b1};
+            }
+
+            cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vl_ge2, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+        `endif
+    `endif
+
+    //// end cp_custom_ffLS_lmul1_eew32 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19306,26 +19076,6 @@ covergroup Vls32_vluxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19552,26 +19302,6 @@ covergroup Vls32_vluxei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_overlap_eew32////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19773,24 +19503,18 @@ covergroup Vls32_vluxei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_overlap_eew64////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20000,26 +19724,6 @@ covergroup Vls32_vluxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20169,26 +19873,6 @@ covergroup Vls32_vluxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20344,26 +20028,6 @@ covergroup Vls32_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20518,24 +20182,18 @@ covergroup Vls32_vluxseg2ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20689,26 +20347,6 @@ covergroup Vls32_vluxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20836,26 +20474,6 @@ covergroup Vls32_vluxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20985,26 +20603,6 @@ covergroup Vls32_vluxseg3ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21136,24 +20734,18 @@ covergroup Vls32_vluxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21282,26 +20874,6 @@ covergroup Vls32_vluxseg3ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21454,26 +21026,6 @@ covergroup Vls32_vluxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21628,26 +21180,6 @@ covergroup Vls32_vluxseg4ei32_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21804,24 +21336,18 @@ covergroup Vls32_vluxseg4ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21976,26 +21502,6 @@ covergroup Vls32_vluxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22124,26 +21630,6 @@ covergroup Vls32_vluxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22274,26 +21760,6 @@ covergroup Vls32_vluxseg5ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22426,24 +21892,18 @@ covergroup Vls32_vluxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22573,26 +22033,6 @@ covergroup Vls32_vluxseg5ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22725,26 +22165,6 @@ covergroup Vls32_vluxseg6ei16_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22875,26 +22295,6 @@ covergroup Vls32_vluxseg6ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23028,24 +22428,18 @@ covergroup Vls32_vluxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23176,26 +22570,6 @@ covergroup Vls32_vluxseg6ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23329,26 +22703,6 @@ covergroup Vls32_vluxseg7ei16_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23480,26 +22834,6 @@ covergroup Vls32_vluxseg7ei32_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23634,24 +22968,18 @@ covergroup Vls32_vluxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23783,26 +23111,6 @@ covergroup Vls32_vluxseg7ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23961,26 +23269,6 @@ covergroup Vls32_vluxseg8ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24137,26 +23425,6 @@ covergroup Vls32_vluxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24316,24 +23584,18 @@ covergroup Vls32_vluxseg8ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24490,26 +23752,6 @@ covergroup Vls32_vluxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -25737,7 +24979,7 @@ covergroup Vls32_vsm_v_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -25781,26 +25023,6 @@ covergroup Vls32_vsoxei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -25954,26 +25176,6 @@ covergroup Vls32_vsoxei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26114,24 +25316,18 @@ covergroup Vls32_vsoxei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -26271,26 +25467,6 @@ covergroup Vls32_vsoxei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -26454,26 +25630,6 @@ covergroup Vls32_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -26653,26 +25809,6 @@ covergroup Vls32_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -26839,24 +25975,18 @@ covergroup Vls32_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27024,26 +26154,6 @@ covergroup Vls32_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27183,26 +26293,6 @@ covergroup Vls32_vsoxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27358,26 +26448,6 @@ covergroup Vls32_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27520,24 +26590,18 @@ covergroup Vls32_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27679,26 +26743,6 @@ covergroup Vls32_vsoxseg3ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -27864,26 +26908,6 @@ covergroup Vls32_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -28065,26 +27089,6 @@ covergroup Vls32_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -28252,24 +27256,18 @@ covergroup Vls32_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -28438,26 +27436,6 @@ covergroup Vls32_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -28598,26 +27576,6 @@ covergroup Vls32_vsoxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -28776,26 +27734,6 @@ covergroup Vls32_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -28939,24 +27877,18 @@ covergroup Vls32_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -29101,26 +28033,6 @@ covergroup Vls32_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -29263,26 +28175,6 @@ covergroup Vls32_vsoxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -29443,26 +28335,6 @@ covergroup Vls32_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -29607,24 +28479,18 @@ covergroup Vls32_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -29770,26 +28636,6 @@ covergroup Vls32_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -29933,26 +28779,6 @@ covergroup Vls32_vsoxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30115,26 +28941,6 @@ covergroup Vls32_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -30280,24 +29086,18 @@ covergroup Vls32_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30442,26 +29242,6 @@ covergroup Vls32_vsoxseg7ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30632,26 +29412,6 @@ covergroup Vls32_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -30840,26 +29600,6 @@ covergroup Vls32_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -31030,24 +29770,18 @@ covergroup Vls32_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -31217,26 +29951,6 @@ covergroup Vls32_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ordered_index_overlap
@@ -37321,26 +36035,6 @@ covergroup Vls32_vsuxei16_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37479,26 +36173,6 @@ covergroup Vls32_vsuxei32_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37627,24 +36301,18 @@ covergroup Vls32_vsuxei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -37771,26 +36439,6 @@ covergroup Vls32_vsuxei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -37941,26 +36589,6 @@ covergroup Vls32_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38126,26 +36754,6 @@ covergroup Vls32_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38300,24 +36908,18 @@ covergroup Vls32_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38471,26 +37073,6 @@ covergroup Vls32_vsuxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38618,26 +37200,6 @@ covergroup Vls32_vsuxseg3ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38779,26 +37341,6 @@ covergroup Vls32_vsuxseg3ei32_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38929,24 +37471,18 @@ covergroup Vls32_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39075,26 +37611,6 @@ covergroup Vls32_vsuxseg3ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39247,26 +37763,6 @@ covergroup Vls32_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39434,26 +37930,6 @@ covergroup Vls32_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -39609,24 +38085,18 @@ covergroup Vls32_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39781,26 +38251,6 @@ covergroup Vls32_vsuxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -39929,26 +38379,6 @@ covergroup Vls32_vsuxseg5ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40093,26 +38523,6 @@ covergroup Vls32_vsuxseg5ei32_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -40244,24 +38654,18 @@ covergroup Vls32_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40391,26 +38795,6 @@ covergroup Vls32_vsuxseg5ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40542,26 +38926,6 @@ covergroup Vls32_vsuxseg6ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40708,26 +39072,6 @@ covergroup Vls32_vsuxseg6ei32_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -40860,24 +39204,18 @@ covergroup Vls32_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41008,26 +39346,6 @@ covergroup Vls32_vsuxseg6ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41160,26 +39478,6 @@ covergroup Vls32_vsuxseg7ei16_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41328,26 +39626,6 @@ covergroup Vls32_vsuxseg7ei32_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -41481,24 +39759,18 @@ covergroup Vls32_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41630,26 +39902,6 @@ covergroup Vls32_vsuxseg7ei8_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41807,26 +40059,6 @@ covergroup Vls32_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42001,26 +40233,6 @@ covergroup Vls32_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -42179,24 +40391,18 @@ covergroup Vls32_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_ls_indexed_truncated
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs2_val, 64) {
             bins target = {64'hFFFF_FFFF_0000_0000};
         }
 
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
+        cp_custom_ls_indexed_truncated  : cross std_vec, vs2_element_zero_top_32_ones_bottom_zero;
     `endif
 
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
+    //// end cp_custom_ls_indexed_truncated ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42353,26 +40559,6 @@ covergroup Vls32_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
-    //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef UDB_MXLEN_32
-    `ifdef COVER_VLS64
-        vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins target = {64'hFFFF_FFFF_0000_0000};
-        }
-
-        vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-            bins e64 = {3};
-        }
-
-        cp_custom_ls_indexed_truncated  : cross std_vec, vtype_sew_64, vs2_element_zero_top_32_ones_bottom_zero;
-    `endif
-    `endif
-
-    //// end cp_custom_ls_indexed////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

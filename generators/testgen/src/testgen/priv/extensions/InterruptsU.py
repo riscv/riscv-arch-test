@@ -199,9 +199,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_wfi",
-            "WFI in U-mode waits for interrupt\n"
-            "Cross: mstatus.MIE={0/1} x mstatus.TW={0/1}\n"
-            "mie.MTIE=1, timer fires soon",
+            "WFI in U-mode waits for interrupt\nCross: mstatus.MIE={0/1}\nmie.MTIE=1, timer fires soon",
         ),
         "",
     ]
@@ -317,7 +315,10 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsU", required_extensions=["U"])
+@add_priv_test_generator(
+    "InterruptsU",
+    required_extensions=["U"],
+)
 def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
     test_chunks: list[TestChunk] = []
@@ -326,6 +327,7 @@ def make_interruptsu(test_data: TestData) -> list[TestChunk]:
     r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
+    tc.code.append("RVTEST_TSBI_GOTO_MMODE")
     tc.code.append("csrw mideleg, zero")
     tc.code.extend(clr_mtimer_int(r_temp, r_mtimecmp))
     tc.code.append("")

@@ -96,7 +96,7 @@
       // does not exist.
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_2AAA"
+        "value": "0x0000_2222"
       }
     },
     // These settings control whether the specified exceptions
@@ -493,7 +493,7 @@
       // The maximum index EEW for indexed vector addressing mode, as
       // a power of 2.  This must be at least 3 but must not exceed
       // the supported ELEN.
-      "max_index_eew_exp": 5,
+      "max_index_eew_exp": 6,
       "vstart": {
         // The vector specification permits implementations to raise an
         // illegal instruction exception when `vstart` is non-zero for

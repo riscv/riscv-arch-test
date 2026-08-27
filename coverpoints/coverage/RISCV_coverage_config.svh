@@ -433,6 +433,17 @@
 `endif
 `ifdef ZICFISSU_COVERAGE
   `include "ZicfissU_coverage.svh"
+`ifdef ZICFILPS_COVERAGE
+  `include "ZicfilpS_coverage.svh"
+`endif
+`ifdef ZICFILPSU_COVERAGE
+  `include "ZicfilpSU_coverage.svh"
+`endif
+`ifdef ZICFILPSM_COVERAGE
+  `include "ZicfilpSm_coverage.svh"
+`endif
+`ifdef ZICFILPU_COVERAGE
+  `include "ZicfilpU_coverage.svh"
 `endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"

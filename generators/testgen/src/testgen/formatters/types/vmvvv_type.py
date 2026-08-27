@@ -7,7 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    handle_lmul_ifdef,
+    handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
     write_sigupd_v,
@@ -31,9 +31,9 @@ def format_vmvvv_type(
     assert params.vd is not None and params.vd_val_pointer is not None, (
         "vd and vd_val_pointer must be provided for VMVVV-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must provided for be VMVVV-type instructions"
-    assert params.sew is not None, "sew must provided for be VMVVV-type instructions"
-    assert params.lmul is not None, "lmul must provided for be VMVVV-type instructions"
+    assert params.temp_reg is not None, "temp_reg must be provided for VMVVV-type instructions"
+    assert params.sew is not None, "sew must be provided for VMVVV-type instructions"
+    assert params.lmul is not None, "lmul must be provided for VMVVV-type instructions"
     assert params.maskval is None, "VMVVV-Type instructions are not maskable"
     assert test_data.test_chunk is not None, "format_vmvvv_type must be used with an active TestChunk"
 
@@ -69,10 +69,10 @@ def format_vmvvv_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs1}"]
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
+        check = [*write_sigupd_v_len(test_data, params, params.lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 
-    handle_lmul_ifdef(params.lmul, setup, check)
+    handle_parameter_exclusions(params.lmul, setup, check)
 
     return (setup, test, check)

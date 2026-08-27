@@ -14,7 +14,7 @@ concurrency:
 
 env:
   SAIL_VERSION: "0.13.1"
-  RISCV_TOOLCHAIN_VERSION: "2026.07.15"
+  RISCV_TOOLCHAIN_VERSION: "2026.08.24"
   LLVM_VERSION: "22"
 
 permissions:

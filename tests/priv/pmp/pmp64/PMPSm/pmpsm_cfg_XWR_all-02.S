@@ -30,6 +30,8 @@
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
+#define BOOT_TO_MMODE
+
 // Define the size of the signature region
 #define SIGUPD_COUNT 200
 

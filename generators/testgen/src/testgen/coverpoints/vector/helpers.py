@@ -2,10 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Helpers shared only by vector coverpoint generators."""
 
-from __future__ import annotations
-
 import re
 
+from testgen.constants import VLEN_MAX
 from testgen.data.edges import get_vector_edge
 from testgen.data.state import TestData
 
@@ -29,7 +28,12 @@ def make_and_register_edge_label(reg_name: str, edge_name: str, suffix: str, tes
         emul = int(emul_match.group(1))
 
     label = f"{reg_name}_edge_{edge_name}_{suffix}"
-    if not ("random" in label and label in test_data.vector_labels):
+    if label.startswith("vs2_edge_zero_emul8_ls"):
+        # FIXME: Coverage workaround because it requires all zeros in the register
+        eew = int(sew * emul)
+        max_elements = VLEN_MAX // eew * 8
+        test_data.register_vector_data(label, eew, elements=[0] * max_elements)
+    elif not ("random" in label and label in test_data.vector_labels):
         eew = int(sew * emul)
         test_data.register_vector_data(label, eew, elements=[get_vector_edge(edge_name, suffix, sew)])
 

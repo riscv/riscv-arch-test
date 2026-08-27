@@ -27,14 +27,10 @@ ci_enabled: true
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # ZicntrS and ZicntrU fail on qemu because ecall increments instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4087
 # ZicfissU, ZicfissS, ZicfissSm excluded due to QEMU bugs (to be reported upstream):
-#  1. Shadow stack instructions do not remap the reported fault to the store/AMO
-#     flavour. A faulting sspopchk reports load page fault (13) where the spec
-#     requires store/AMO page fault (15). See [norm:ss_fault_exception_code].
-#  2. The sspopchk software-check exception is not correctly deprioritised. With a
-#     faulting load address AND a value mismatch, QEMU reports software check (18,
-#     tval=3) where the memory fault must win. See [norm:sspop_exception].
-#  3. mtval is reported as 0 on the M-mode SSAMOSWAP access fault, disagreeing with
-#     the reference model.
+#  1. Zicfiss: sspopchk raises a software-check exception where a store/AMO access fault must take priority
+#  (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
+#  2. mtval is reported as 0 on the M-mode SSAMOSWAP access fault, disagreeing with
+#     the reference model. (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,Zama16b,SsstrictV,Smstateen,Zkr,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicntrS,ZicntrU,ZicfissU,ZicfissS,ZicfissSm"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

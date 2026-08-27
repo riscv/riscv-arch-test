@@ -8,12 +8,8 @@
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
 # Vx excluded because of https://github.com/tenstorrent/whisper/issues/35
 # Sdtrig* not yet implemented in Sail
-# ZicfissU, ZicfissS, ZicfissSm excluded due to a Whisper bug (to be reported upstream):
-# menvcfg.SSE and senvcfg.SSE are not writable -- a csrs of bit 3 reads back 0 -- even
-# though zicfiss is in the config's isa string and Whisper implements the instructions
-# (enableZicfiss/execSspush are present in the binary). Zicfiss can therefore never be
-# activated, so every shadow stack instruction and every ssp CSR access raises an
-# illegal-instruction exception where Sail takes the architectural memory fault.
+# ZicfissU, ZicfissS, ZicfissSm excluded due to a Whisper bug (https://github.com/tenstorrent/whisper/issues/51):
+# menvcfg.SSE / senvcfg.SSE are not writable, so Zicfiss can never be activated
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,SsstrictV,Smstateen,Vx8,Vx16,Vx32,Vx64,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm"

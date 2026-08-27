@@ -5,8 +5,7 @@
 parameter_definitions:
   - name: REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
     coverpoint: ["cp_sspopchk_mismatch, cp_sspopchk_mismatch_s"]
-    effect:
-      [
+    effect: [
         "When true, a shadow stack software-check exception taken to M-mode reports the
         shadow stack fault code (3) in `mtval`. When false, `mtval` is 0 and the test
         cannot distinguish the cause from the tval alone.",
@@ -24,12 +23,8 @@ parameter_definitions:
         "Same as the mtval parameter, for a software-check exception delegated to VS-mode.",
       ]
   - name: MISALIGNED_LDST
-    coverpoint:
-      [
-        "cp_ss_address_alignment_swap, cp_ss_address_alignment_swap_s",
-      ]
-    effect:
-      [
+    coverpoint: ["cp_ss_address_alignment_swap, cp_ss_address_alignment_swap_s"]
+    effect: [
         "SSAMOSWAP takes the same exception options as A-extension AMOs for a
         non-naturally-aligned address, so the expected result of the addr[2:0] sweep is
         implementation-defined and must be compared against the reference model rather

@@ -43,7 +43,11 @@ from testgen.priv.registry import add_priv_test_generator
 
 _CG = "ZicfissS_cg"
 
-_PUSH_FORMS = [("sspush x1", False, "sspush_x1"), ("sspush x5", False, "sspush_x5"), ("c.sspush x1", True, "c_sspush_x1")]
+_PUSH_FORMS = [
+    ("sspush x1", False, "sspush_x1"),
+    ("sspush x5", False, "sspush_x5"),
+    ("c.sspush x1", True, "c_sspush_x1"),
+]
 _POP_FORMS = [
     ("sspopchk x1", False, "sspopchk_x1"),
     ("sspopchk x5", False, "sspopchk_x5"),
@@ -252,7 +256,10 @@ def _generate_instr_s(test_data: TestData) -> list[str]:
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
-    return [comment_banner("ZicfissS instructions", "Shadow stack instruction behaviour re-run in S-mode"), *both_xlens(build)]
+    return [
+        comment_banner("ZicfissS instructions", "Shadow stack instruction behaviour re-run in S-mode"),
+        *both_xlens(build),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -279,11 +286,15 @@ def _generate_alignment_s(test_data: TestData) -> list[str]:
                     *ss_insn("sspush x1"),
                     f"LI(x{addr_reg}, {hex(base + offset)})",
                     f"csrw ssp, x{addr_reg}",
-                    test_data.add_testcase(f"sspopchk_ssp_off{offset}_s_rv{xlen}", "cp_ss_address_alignment_pop_s", _CG),
+                    test_data.add_testcase(
+                        f"sspopchk_ssp_off{offset}_s_rv{xlen}", "cp_ss_address_alignment_pop_s", _CG
+                    ),
                     *ss_insn("sspopchk x1"),
                     f"LI(x{addr_reg}, {hex(base + offset)})",
                     f"LI(x{rs2_reg}, 0x11223344)",
-                    test_data.add_testcase(f"ssamoswap_w_off{offset}_s_rv{xlen}", "cp_ss_address_alignment_swap_s", _CG),
+                    test_data.add_testcase(
+                        f"ssamoswap_w_off{offset}_s_rv{xlen}", "cp_ss_address_alignment_swap_s", _CG
+                    ),
                     *ss_insn(f"ssamoswap.w x{rd_reg}, x{rs2_reg}, (x{addr_reg})"),
                 ]
             )
@@ -303,7 +314,10 @@ def _generate_alignment_s(test_data: TestData) -> list[str]:
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
-    return [comment_banner("cp_ss_address_alignment_*_s", "ssp and SSAMOSWAP alignment sweep in S-mode"), *both_xlens(build)]
+    return [
+        comment_banner("cp_ss_address_alignment_*_s", "ssp and SSAMOSWAP alignment sweep in S-mode"),
+        *both_xlens(build),
+    ]
 
 
 # ---------------------------------------------------------------------------

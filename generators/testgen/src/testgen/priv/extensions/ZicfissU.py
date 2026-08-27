@@ -42,7 +42,11 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ZicfissU_cg"
 
 # (mnemonic, compressed, short name) for the three push and three pop encodings.
-_PUSH_FORMS = [("sspush x1", False, "sspush_x1"), ("sspush x5", False, "sspush_x5"), ("c.sspush x1", True, "c_sspush_x1")]
+_PUSH_FORMS = [
+    ("sspush x1", False, "sspush_x1"),
+    ("sspush x5", False, "sspush_x5"),
+    ("c.sspush x1", True, "c_sspush_x1"),
+]
 _POP_FORMS = [
     ("sspopchk x1", False, "sspopchk_x1"),
     ("sspopchk x5", False, "sspopchk_x5"),
@@ -201,7 +205,10 @@ def _generate_push_pop(test_data: TestData) -> list[str]:
         test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
         return lines
 
-    return [comment_banner("cp_sspush/cp_sspopchk", "Shadow stack push and pop, matching and mismatching"), *both_xlens(build)]
+    return [
+        comment_banner("cp_sspush/cp_sspopchk", "Shadow stack push and pop, matching and mismatching"),
+        *both_xlens(build),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -450,7 +457,9 @@ def _generate_alignment(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         f"LI(x{addr_reg}, {hex(base + offset)})",
-                        test_data.add_testcase(f"ssamoswap_d_off{offset}_rv{xlen}", "cp_ss_address_alignment_swap", _CG),
+                        test_data.add_testcase(
+                            f"ssamoswap_d_off{offset}_rv{xlen}", "cp_ss_address_alignment_swap", _CG
+                        ),
                         *ss_insn(f"ssamoswap.d x{rd_reg}, x{rs2_reg}, (x{addr_reg})"),
                     ]
                 )
@@ -460,7 +469,10 @@ def _generate_alignment(test_data: TestData) -> list[str]:
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
-    return [comment_banner("cp_ss_address_alignment", "ssp and SSAMOSWAP address alignment sweep over addr[2:0]"), *both_xlens(build)]
+    return [
+        comment_banner("cp_ss_address_alignment", "ssp and SSAMOSWAP address alignment sweep over addr[2:0]"),
+        *both_xlens(build),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -547,7 +559,9 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{data_reg}, 0x1)",
-                    test_data.add_testcase(f"{mnemonic.replace('.', '_')}_on_ss_page_rv{xlen}", "cp_ss_page_access_amo", _CG),
+                    test_data.add_testcase(
+                        f"{mnemonic.replace('.', '_')}_on_ss_page_rv{xlen}", "cp_ss_page_access_amo", _CG
+                    ),
                     f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})",
                 ]
             )
@@ -558,7 +572,9 @@ def _generate_page_access(test_data: TestData) -> list[str]:
         for mnemonic in ["cbo.clean", "cbo.flush", "cbo.inval"]:
             lines.extend(
                 [
-                    test_data.add_testcase(f"{mnemonic.replace('.', '_')}_on_ss_page_rv{xlen}", "cp_ss_page_access_cbo", _CG),
+                    test_data.add_testcase(
+                        f"{mnemonic.replace('.', '_')}_on_ss_page_rv{xlen}", "cp_ss_page_access_cbo", _CG
+                    ),
                     f"{mnemonic} (x{addr_reg})",
                 ]
             )

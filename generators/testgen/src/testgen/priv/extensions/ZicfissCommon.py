@@ -56,9 +56,9 @@ VA_RO_RV32 = 0xC0302000
 VA_UNMAPPED_RV32 = 0xC0400000
 
 # PTE permission encodings. pte.xwr occupies bits [3:1]; V is bit 0.
-PTE_SS = "PTE_D | PTE_A | PTE_W | PTE_V"                    # xwr = 010, the SS page encoding
-PTE_RW = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_V"            # xwr = 011
-PTE_RO = "PTE_D | PTE_A | PTE_R | PTE_V"                    # xwr = 001
+PTE_SS = "PTE_D | PTE_A | PTE_W | PTE_V"  # xwr = 010, the SS page encoding
+PTE_RW = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_V"  # xwr = 011
+PTE_RO = "PTE_D | PTE_A | PTE_R | PTE_V"  # xwr = 001
 
 # menvcfg/senvcfg/henvcfg SSE field is bit 3.
 SSE_BIT = 3
@@ -85,6 +85,7 @@ def guard_ss_page(lines: list[str], *, reason: str) -> list[str]:
         *lines,
         f"#endif  // {SS_PAGE_GUARD}",
     ]
+
 
 GOTO_UMODE = "RVTEST_GOTO_LOWER_MODE Umode  # enter U-mode"
 GOTO_SMODE = "RVTEST_GOTO_LOWER_MODE Smode  # enter S-mode"

@@ -43,7 +43,12 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sstvecd", required_extensions=["S"])
+@add_priv_test_generator(
+    "Sstvecd",
+    required_extensions=["S"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_sstvecd(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()

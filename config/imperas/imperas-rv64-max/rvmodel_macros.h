@@ -1,4 +1,4 @@
- # rvmodel_macros.h
+# rvmodel_macros.h
 # DUT-specific macro definitions for Imperas ISS
 # Jordan Carlin jcarlin@hmc.edu Jan 2026 and David_Harris@hmc.edu March 2026
 # SPDX-License-Identifier: BSD-3-Clause

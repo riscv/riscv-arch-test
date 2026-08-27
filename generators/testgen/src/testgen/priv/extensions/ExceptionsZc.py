@@ -418,6 +418,8 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     "ExceptionsZc",
     required_extensions=["Sm", "Zca"],
     march_extensions=["Zca", "Zcb", "Zcd", "C", "F", "D"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionszc(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Zc exception test generation."""

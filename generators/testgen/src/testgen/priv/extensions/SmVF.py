@@ -160,6 +160,8 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
+        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+        "#define BOOT_TO_MMODE",
     ],
 )
 def make_smvf(test_data: TestData) -> list[TestChunk]:

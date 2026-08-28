@@ -383,7 +383,9 @@ Once the configuration files accurately reflect your design, remaining mismatche
 - ACT errors, such as producing uncompilable tests for a certain configuration, or testing a features whose behavior should be UNSPECIFIED. [Open an ACT issue](https://github.com/riscv/riscv-arch-test/issues/new).
 - Parameter errors, in which the specification permits one of several behaviors. Your design has one behavior and the reference model expects a different behavior, and the configuration file lacks a parameter to choose the behavior. [Open a request for a new UDB parameter](https://github.com/riscv/riscv-unified-db/issues).
 - Reference errors, in which the expected behavior is well-defined by the spec but is not produced by Sail. [Open a Sail issue](https://github.com/riscv/sail-riscv/issues/new).
-- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open a ISA Manual claraification issue](https://github.com/riscv/riscv-isa-manual/issues).
+- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open a ISA Manual clarification issue](https://github.com/riscv/riscv-isa-manual/issues).
+
+Each of these repositories are maintained by volunteers. If you are seeking commercial support, many companies offer paid design verification services.
 
 #### Debug Flag
 

@@ -40,6 +40,6 @@ Once the program is operational, anticipate that obtaining a certificate will in
 - uploading your configuration files
 - receiving ELFs applicable to your configuration
 - running the ELFS on your DUT
-- uploading your log files
+- uploading your log files for review
 
 Successfully running the ACTs in your local environment is valuable to find errors, promote software compatibility, and ease the process of certification testing, but is not sufficient to obtain a certificate.

@@ -23,7 +23,7 @@ _CG = "ExceptionsZicboU_cg"
 
 @add_priv_test_generator(
     "ExceptionsZicboU",
-    required_extensions=["U"],
+    required_extensions=["U", ["Zicbom", "Zicboz", "Zicbop"]],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
     extra_defines=["#define BOOT_TO_UMODE"],
 )

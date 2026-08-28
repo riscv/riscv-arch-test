@@ -86,7 +86,7 @@ normative_rule_definitions:
   # address translation does not permit any access or raises a store access-fault
   # exception otherwise.
   - name: cbm_unperm_fault
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_access"]
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_access_fault"]
 
   # A cache-block zero instruction is permitted to access the specified cache block
   # whenever a store instruction is permitted to access the corresponding physical

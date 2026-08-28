@@ -1360,6 +1360,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""

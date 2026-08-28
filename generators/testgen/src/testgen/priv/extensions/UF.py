@@ -55,7 +55,6 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "UF",
     required_extensions=["U", "F"],
-    extra_defines=["#define BOOT_TO_UMODE"],  # fp CSR tests run in U-mode (priv_mode_u crosses)
 )
 def make_uf(test_data: TestData) -> list[TestChunk]:
     """Generate tests for UF user-mode floating-point testsuite."""

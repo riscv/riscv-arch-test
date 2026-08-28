@@ -89,6 +89,15 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
+    // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so {menvcfg=0, senvcfg=1} is
+    // architecturally unreachable.
+    s_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
+                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)} {
+        bins men0_sen0 = {2'b00};
+        bins men1_sen0 = {2'b10};
+        bins men1_sen1 = {2'b11};
+        illegal_bins men0_sen1 = {2'b01};
+    }
 
     // ── Page / alignment building blocks ──────────────────────────────────
     pte_xwr: coverpoint ins.current.pte_d[3:1] {
@@ -100,6 +109,12 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     }
     pte_ss_page: coverpoint ins.current.pte_d[3:1] {
         bins ss_page = {3'b010};
+    }
+    // pte_d is not carried by the Sail->RVVI converter; use the address instead.
+    ss_target_page: coverpoint ins.prev.csr[CSR_SSP][13:12] {
+        bins ss_page = {2'd0};
+        bins rw_page = {2'd1};
+        bins ro_page = {2'd2};
     }
     ssp_LSBs: coverpoint ins.prev.csr[CSR_SSP][2:0] {
         // auto fills 000 through 111
@@ -128,6 +143,37 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         `endif
     }
 
+    // U/SUM/MXR are part of address translation and resolve before any Zicfiss rule.
+    // sstatus.SUM is bit 18, sstatus.MXR is bit 19.
+    pte_u: coverpoint ins.current.pte_d[4] {
+        bins supervisor = {1'b0};
+        bins user       = {1'b1};
+    }
+    sstatus_sum: coverpoint ins.prev.csr[CSR_SSTATUS][18] {
+        bins sum_clear = {1'b0};
+        bins sum_set   = {1'b1};
+    }
+    sstatus_mxr: coverpoint ins.prev.csr[CSR_SSTATUS][19] {
+        bins mxr_clear = {1'b0};
+        bins mxr_set   = {1'b1};
+    }
+    // What was written into senvcfg bit 3, and what it reads back as.
+    sse_bit_written: coverpoint ins.current.rs1_val[3] {
+        bins wrote_zero = {1'b0};
+        bins wrote_one  = {1'b1};
+    }
+    senvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "sse") {
+        bins reads_zero = {1'b0};
+        bins reads_one  = {1'b1};
+    }
+    senvcfg_csr: coverpoint ins.current.insn[31:20] {
+        bins senvcfg = {CSR_SENVCFG};
+    }
+    csr_write_ops: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+        wildcard bins csrrs = {CSRRS};
+    }
+
     // SSPOPCHK's base is implicitly ssp, so the faulting address is ssp itself.
     // ssp pointed at an unmapped VA so the pop's load faults. The memory fault must
     // outrank the software-check exception that the value mismatch would otherwise raise.
@@ -141,7 +187,7 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
 
     // ── Main coverpoints ──────────────────────────────────────────────────
     // S-specific gating: menvcfg.SSE gates, senvcfg.SSE must not.
-    cp_ssp_csr_gating_s:           cross priv_mode_s, csrops, ssp_csr, menvcfg_sse, senvcfg_sse;
+    cp_ssp_csr_gating_s:           cross priv_mode_s, csrops, ssp_csr, s_sse_state;
 
     // SS page encoding is recognised only when menvcfg.SSE=1.
     cp_ss_page_enc:                cross priv_mode_s, ss_mem_instr, pte_ss_page, menvcfg_sse;
@@ -149,20 +195,34 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ss_page_enc_store:          cross priv_mode_s, ordinary_storeops, pte_ss_page, menvcfg_sse;
 
     // S-mode re-run of the ZicfissU instruction coverpoints.
-    cp_sspush_s:                   cross priv_mode_s, ss_push_instr;
-    cp_sspopchk_match_s:           cross priv_mode_s, ss_pop_instr, sspopchk_outcome {
+    cp_sspush_s:                   cross priv_mode_s, ss_push_instr, pte_ss_page;
+    cp_sspopchk_match_s:           cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
-    cp_sspopchk_mismatch_s:        cross priv_mode_s, ss_pop_instr, sspopchk_outcome {
+    cp_sspopchk_mismatch_s:        cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
     cp_sspopchk_fault_priority_s:  cross priv_mode_s, ss_pop_instr, ssp_fault_address;
     cp_ssrdp_s:                    cross priv_mode_s, ssrdp_instr;
-    cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr;
+    cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
     cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
     cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
-    cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
+    cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, ss_target_page;
+
+    // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
+    // the two disagree the translation fault is what gets reported.
+    cp_ss_page_perm_priority:      cross priv_mode_s, ss_mem_instr, pte_u, sstatus_sum, sstatus_mxr;
+    cp_ss_page_perm_priority_load: cross priv_mode_s, ordinary_loadops, pte_u, sstatus_sum, sstatus_mxr;
+
+    // senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
+    cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, csr_write_ops, senvcfg_csr, menvcfg_sse,
+                                         sse_bit_written, senvcfg_sse_readback {
+        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, so a read-back of 1 is
+        // architecturally impossible in that half of the cross.
+        ignore_bins rdonly0_cannot_read_one =
+            binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
+    }
 
 endgroup
 

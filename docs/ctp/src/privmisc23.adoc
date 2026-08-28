@@ -122,11 +122,26 @@ In Privileged section because it has both unpriv and privileged behaviors.
 
 In Privileged section because it has both unpriv and privileged behaviors.
 
-[[t-Zicfiss-coverpoints]]
-.Zicfiss Coverpoints
-//,===
-//include::{testplansdir}/Zicfiss.adoc[]
-//,===
+Split into four suites by the privilege mode the tests execute in, mirroring the
+Exceptions suites: ZicfissU (U-mode), ZicfissS (S/HS-mode), ZicfissSm (M-mode control
+plane) and ZicfissH (VS/VU-mode). ZicfissH has covergroups but no generator yet, since
+the H extension is currently disabled in the test environment.
+
+[[t-ZicfissU-coverpoints]]
+.ZicfissU Coverpoints
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?usp=sharing[Google Sheet Testplan]
+
+[[t-ZicfissS-coverpoints]]
+.ZicfissS Coverpoints
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?usp=sharing[Google Sheet Testplan]
+
+[[t-ZicfissSm-coverpoints]]
+.ZicfissSm Coverpoints
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?usp=sharing[Google Sheet Testplan]
+
+[[t-ZicfissH-coverpoints]]
+.ZicfissH Coverpoints
+https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?usp=sharing[Google Sheet Testplan]
 
 ==== Zawrs Wait on Reservation Set
 

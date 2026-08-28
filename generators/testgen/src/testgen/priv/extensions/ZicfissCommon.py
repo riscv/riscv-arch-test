@@ -162,29 +162,31 @@ def set_envcfg_sse(csr: str, value: int, test_data: TestData) -> list[str]:
 def page_table_data_section() -> list[str]:
     """Declare the page-table and backing-page labels used by the Zicfiss tests.
 
-    ``rvtest_Sroot_pg_tbl`` is emitted by the framework, so only the intermediate
-    and leaf tables plus the three backing pages are declared here.
+    Emitted once per generated file. Test chunks are distributed across files when a
+    suite is split, so the block guards itself with .ifndef and is prepended to every
+    chunk rather than living in a chunk of its own.
     """
     return [
         "",
-        "# Page-table labels for Zicfiss shadow stack tests.",
-        "# rvtest_Sroot_pg_tbl is already declared by the framework.",
+        ".ifndef rvtest_zicfiss_pages_declared",
+        ".set rvtest_zicfiss_pages_declared, 1",
         ".pushsection .data",
         "#ifdef SV39_SUPPORTED",
         ".p2align 12",
-        "rvtest_slvl1_pg_tbl: .zero 4096   # Sv39 L1 intermediate PT (unused on Sv32)",
+        "rvtest_slvl1_pg_tbl: .zero 4096",
         "#endif  // SV39_SUPPORTED",
         "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
         ".p2align 12",
-        "rvtest_slvl0_pg_tbl: .zero 4096   # leaf PT (Sv39/Sv32)",
+        "rvtest_slvl0_pg_tbl: .zero 4096",
         ".p2align 12",
-        "rvtest_zicfiss_ss_page:     .zero 4096   # backing page mapped as an SS page (xwr=010)",
+        "rvtest_zicfiss_ss_page:     .zero 4096   # mapped as an SS page (xwr=010)",
         ".p2align 12",
-        "rvtest_zicfiss_rw_page:     .zero 4096   # backing page mapped read/write (xwr=011)",
+        "rvtest_zicfiss_rw_page:     .zero 4096   # mapped read/write (xwr=011)",
         ".p2align 12",
-        "rvtest_zicfiss_ro_page:     .zero 4096   # backing page mapped read-only (xwr=001)",
+        "rvtest_zicfiss_ro_page:     .zero 4096   # mapped read-only (xwr=001)",
         "#endif  // SV39_SUPPORTED || SV32_SUPPORTED",
         ".popsection",
+        ".endif",
         "",
     ]
 

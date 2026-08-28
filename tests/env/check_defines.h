@@ -93,13 +93,8 @@
   #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_SET_SSW_INT
-  #error "RVMODEL_SET_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
-
-#ifndef RVMODEL_CLR_SSW_INT
-  #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+// RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are optional: platforms without a supervisor
+// software interrupt controller leave them undefined and the trap handler uses mip.SSIP.
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTIRES > 0

@@ -305,46 +305,333 @@
     RVMODEL_HALT_FAIL
     j . // Explicit non-returning tail if the macro returns (it should not)
 
-  // ***DH 4/8/26 check this is proper gating
+  //////////////////////
+  // Interrupt functions
+  // All these functions can touch a0 and a1 and a2
+  //////////////////////
+
+  // Flavors to run from M-mode
+
   #ifdef STANDARD_SM_SUPPORTED
-    rvtest_set_msw_int:
-      RVMODEL_SET_MSW_INT(a0, a1)
+
+    rvtest_set_mtime_int_soon_m:
+      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+        LA(a1, RVMODEL_MTIME_ADDRESS)
+        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        #if UDB_MXLEN == 32
+          lw a0, 0(a1) // read mtime low word
+          add a0, a0, a2 // add delay to mtime low word
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sw a0, 0(a1) // write to mtimecmp low word
+          mv a2, a0 // Save mtimecmp low word
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          lw a0, 4(a1) // read mtime high word
+          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          bgeu a2, a1, 1f // skip if didn't wrap
+          addi a0, a0, 1 // increment mtime high word
+          1:
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sw a0, 4(a1) // write to mtimecmp high word
+        #else
+          ld a0, 0(a1) // read mtime
+          add a0, a2, a0 // add delay to mtime
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          sd a0, 0(a1) // write to mtimecmp
+        #endif
+      #endif
       ret
 
-    rvtest_clr_msw_int:
-      RVMODEL_CLR_MSW_INT(a0, a1)
+    rvtest_set_mtime_int_m:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        sw zero, 4(a1)
+        sw zero, 0(a1)
+      #endif
       ret
 
-    rvtest_set_mext_int:
-      RVMODEL_SET_MEXT_INT(a0, a1)
+    rvtest_clr_mtime_int_m:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, -1 // all 1s
+        sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
+      #endif
       ret
 
-    rvtest_clr_mext_int:
-      RVMODEL_CLR_MEXT_INT(a0, a1)
-      ret
-  #endif
-
-  #ifdef S_SUPPORTED
-    rvtest_set_ssw_int:
-      RVMODEL_SET_SSW_INT(a0, a1)
-      ret
-
-    rvtest_clr_ssw_int:
-      RVMODEL_CLR_SSW_INT(a0, a1)
-      li a0, 2
-      csrc mip, a0              /* Always called from M-mode; mip.SSIP must be cleared via mip */
+    rvtest_set_msw_int_m:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 1
+        sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
+      #elif defined(RVMODEL_SET_MSW_INT)
+        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
       ret
 
-    rvtest_set_sext_int:
+    rvtest_clr_msw_int_m:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+      #elif defined(RVMODEL_CLR_MSW_INT)
+        RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_set_mext_int_m:
+      #ifdef RVMODEL_SET_MEXT_INT
+        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    rvtest_clr_mext_int_m:
+      #ifdef RVMODEL_CLR_MEXT_INT
+        RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    rvtest_set_sstc_int_soon_m:
+      #if defined(RVMODEL_MTIME_ADDRESS) && defined(SSTC_SUPPORTED) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+        LA(a1, RVMODEL_MTIME_ADDRESS)
+        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        #if UDB_MXLEN == 32
+          lw a0, 0(a1) // read mtime low word
+          add a1, a0, a2 // add delay to mtime low word
+          csrw stimecmp, a1 // write low word of timer compare
+          mv a2, a1 // save mtime low word
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          lw a0, 4(a1) // read mtime high word
+          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          bgeu a2, a1, 1f // skip if didn't wrap
+          addi a0, a0, 1 // increment mtime high word
+          1:
+          csrw stimecmph, a0 // write high word of timer compare
+        #else
+          ld a0, 0(a1) // read mtime
+          add a1, a2, a0 // add delay to mtime
+          csrw stimecmp, a1 // write to timer compare
+        #endif
+      #endif
+      ret
+
+    // Set STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+    rvtest_set_sstc_int_ms:
+      #ifdef SSTC_SUPPORTED
+        #if UDB_MXLEN == 32
+          csrw stimecmph, zero // clear upper word of stimecmp
+        #endif
+        csrw stimecmp, zero // clear stimecmp, set STI
+      #endif
+      ret
+
+    // Clear STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+    rvtest_clr_sstc_int_ms:
+      #ifdef SSTC_SUPPORTED
+        li a1, -1 // all 1s
+        #if UDB_MXLEN == 32
+          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
+        #else
+          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
+        #endif
+      #endif
+      ret
+
+    rvtest_set_stime_int_m:
+      li a1, 1<<5 // STIP bit
+      csrs mip, a1        // Trigger mip.STIP
+      ret
+
+    rvtest_clr_stime_int_m:
+      li a1, 1<<5 // STIP bit
+      csrc mip, a1        // Clear mip.STIP
+      ret
+
+    rvtest_set_ssw_int_m:
+      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP
+      #ifdef RVMODEL_SET_SSW_INT
+        RVMODEL_SET_SSW_INT(a0, a1)
+      #else
+        csrsi mip, 1<<1 // Trigger mip.SSIP
+      #endif
+      ret
+
+    rvtest_clr_ssw_int_m:
+      // clear using both platform-specific interrupt controller if it exists and mip.SSIP
+      #ifdef RVMODEL_CLR_SSW_INT
+        RVMODEL_CLR_SSW_INT(a0, a1)
+      #endif
+      csrci mip, 1<<1             /* Always called from M-mode; mip.SSIP must be cleared via mip */
+      ret
+
+    rvtest_set_sext_int_m:
+      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
+      #ifdef RVMODEL_SET_SEXT_INT
+        RVMODEL_SET_SEXT_INT(a0, a1)
+      #else
+        li a1, 1<<9 // SEIP bit
+        csrs mip, a1        // Trigger mip.SEIP
+      #endif
       RVMODEL_SET_SEXT_INT(a0, a1)
       ret
 
-    rvtest_clr_sext_int:
-      RVMODEL_CLR_SEXT_INT(a0, a1)
-      LI(a0, 512)
-      csrc sip, a0 // clear sip.SEIP
+    rvtest_clr_sext_int_m:
+      // clear both platform-specific interrupt controller if it exists and mip.SEIP
+      #ifdef RVMODEL_CLR_SEXT_INT
+        RVMODEL_CLR_SEXT_INT(a0, a1)
+      #endif
+      li a1, 1<<9 // SEIP bit
+      csrc mip, a1 // clear mip.SEIP
       ret
   #endif
+
+  // Flavors to run from supervisor mode
+
+  #ifdef STANDARD_SM_SUPPORTED
+
+    rvtest_set_mtime_int_soon_s:
+      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+        LA(a1, RVMODEL_MTIME_ADDRESS)
+        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+        #if UDB_MXLEN == 32
+          RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
+          add a2, a0, a2 // add delay to mtime low word
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          RVTEST_TSBI_SW // sw a2, 0(a1) // write to mtimecmp low word
+          LA(a1, RVMODEL_MTIME_ADDRESS)
+          RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
+          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+          bgeu a2, a1, 1f // skip if didn't wrap
+          addi a0, a0, 1 // increment mtime high word
+          1:
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          mv a2, a0 // Save mtimecmp high word
+          RVTEST_TSBI_SWP4 // sw a2, 4(a1) // write to mtimecmp high word
+        #else
+          RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
+          add a2, a2, a0 // add delay to mtime
+          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+          RVTEST_TSBI_SD // sd a2, 0(a1) // write to mtimecmp
+        #endif
+      #endif
+      ret
+
+
+    rvtest_set_mtime_int_s:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, 0 // store zero
+        #if UDB_MXLEN == 32
+          RVTEST_TSBI_SW // sw a2, 0(a1)
+          RVTEST_TSBI_SWP4 // sw a2, 4(a1)
+        #else
+          RVTEST_TSBI_SD // sd a2, 0(a1)
+        #endif
+      #endif
+      ret
+
+    rvtest_clr_mtime_int_s:
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
+        li a2, -1 // all 1s
+        RVTEST_TSBI_SWP4 // sw a2, 4(a11)      // don't bother with lower bits, which stay at 0
+      #endif
+      ret
+
+    rvtest_set_msw_int_s:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 1
+        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
+      #elif defined(RVMODEL_SET_MSW_INT)
+        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_clr_msw_int_s:
+      #ifdef RVMODEL_MSIP_ADDRESS
+        LA(a1, RVMODEL_MSIP_ADDRESS)
+        li a2, 0
+        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
+      #elif defined(RVMODEL_CLR_MSW_INT)
+        RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
+      #endif
+      ret
+
+    rvtest_set_mext_int_s:
+      #ifdef RVMODEL_SET_MEXT_INT
+        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+
+    rvtest_clr_mext_int_s:
+      #ifdef RVMODEL_CLR_MEXT_INT
+        RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #endif
+      ret
+  #endif
+
+  rvtest_set_sstc_int_soon_s:
+    #if defined(RVMODEL_MTIME_ADDRESS) && defined(SSTC_SUPPORTED) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
+      LA(a1, RVMODEL_MTIME_ADDRESS)
+      LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
+      #if UDB_MXLEN == 32
+        RVTEST_TSBI_LW // a0, 0(a1) // read mtime low word
+        add a0, a0, a2 // add delay to mtime low word
+        csrw stimecmp, a0 // write low word of timer compare
+        mv a2, a0 // save mtime low word
+        RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
+        LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
+        bgeu a2, a1, 1f // skip if didn't wrap
+        addi a0, a0, 1 // increment mtime high word
+        1:
+        csrw stimecmph, a0 // write high word of timer compare
+      #else
+        RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
+        add a1, a2, a0 // add delay to mtime
+        csrw stimecmp, a1 // write to timer compare
+      #endif
+    #endif
+    ret
+
+  rvtest_set_stime_int_s:
+    RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<5) // set mip.STIP
+    ret
+
+  rvtest_clr_stime_int_s:
+    RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<5) // clear mip.STIP
+    ret
+
+  rvtest_set_ssw_int_s:
+    // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP
+    #ifdef RVMODEL_SET_SSW_INT
+      RVMODEL_SET_SSW_INT(a0, a1)
+    #else
+      RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<1) // set mip.SSIP
+    #endif
+    ret
+
+  rvtest_clr_ssw_int_s:
+    // clear using both platform-specific interrupt controller if it exists and mip.SSIP
+    #ifdef RVMODEL_CLR_SSW_INT
+      RVMODEL_CLR_SSW_INT(a0, a1)
+    #endif
+    RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1) // clear mip.SSIP
+    ret
+
+  rvtest_set_sext_int_s:
+    // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
+    #ifdef RVMODEL_SET_SEXT_INT
+      RVMODEL_SET_SEXT_INT(a0, a1)
+    #else
+      RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<9) // set mip.SEIP
+    #endif
+    ret
+
+  rvtest_clr_sext_int_s:
+    // clear both platform-specific interrupt controller if it exists and mip.SEIP
+    #ifdef RVMODEL_CLR_SEXT_INT
+      RVMODEL_CLR_SEXT_INT(a0, a1)
+    #endif
+    RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9) // clear mip.SEIP
+    ret
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -725,6 +1012,27 @@
         csrw mhpmevent30h, zero
         csrw mhpmevent31h, zero
         #endif
+      #endif
+
+      #ifdef RVMODEL_MTIME_ADDRESS
+        // Initialize mtime to 0
+        LA(t0, RVMODEL_MTIME_ADDRESS)
+        sw zero, 0(t0)
+        sw zero, 4(t0)
+      #endif
+
+      #ifdef RVMODEL_MTIMECMP_ADDRESS
+        // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
+        LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+        addi t1, zero, -1
+        sw t1, 0(t0)
+        sw t1, 4(t0)
+      #endif
+
+      #ifdef RVMODEL_MSIP_ADDRESS
+        // Initialize msip to 0 to avoid generating a software interrupt prematurely
+        LA(t0, RVMODEL_MSIP_ADDRESS)
+        sw zero, 0(t0)
       #endif
 
       // make counters accessible to a lower privilege mode if one exists

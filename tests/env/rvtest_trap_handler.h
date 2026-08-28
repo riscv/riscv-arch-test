@@ -103,12 +103,14 @@
 //    TSBI_GOTO_VUMODE (a0=5)          — Switch caller to VU-mode (H required)
 //    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
+//    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
+//    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
 //    Any other value                  — Returns -1 in a0 (TSBI_RESERVED_RET)
 //
 //  Dispatch hierarchy:
 //    M-mode handler:  handles all operations directly
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
-//                     forwards GOTO_M/VS/VU and M-mode CSR_ACCESS to M-mode via ecall
+//                     forwards GOTO_M/VS/VU, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
 //
 //************************************************************************************
 
@@ -190,6 +192,19 @@
 #define TSBI_GOTO_VSMODE    0x00000004
 #define TSBI_GOTO_VUMODE    0x00000005
 #define TSBI_ECALL_TEST     0x00000073
+#define TSBI_LW             0x0005a503
+#define TSBI_LWP4           0x0045a503
+#define TSBI_LD             0x0005b503
+#define TSBI_SW             0x00c5a023
+#define TSBI_SWP4           0x00c5a223
+#define TSBI_SD             0x00c5b023
+
+// CSR access operation codes: the encoding of a CSR instruction with rs1 = a1 and rd = a0.
+// csr is a 12-bit CSR number such as CSR_MIP from encoding.h.
+#define TSBI_CSR_SET(csr)    ((((csr) & 0xFFF) << 20) | 0x0005a073)  // csrrs x0, csr, a1
+#define TSBI_CSR_CLEAR(csr)  ((((csr) & 0xFFF) << 20) | 0x0005b073)  // csrrc x0, csr, a1
+#define TSBI_CSR_WRITE(csr)  ((((csr) & 0xFFF) << 20) | 0x00059073)  // csrrw x0, csr, a1
+#define TSBI_CSR_READ(csr)   ((((csr) & 0xFFF) << 20) | 0x00002573)  // csrrs a0, csr, x0
 
 // CSR_ACCESS is not a single #define — it's any value where:
 //   bits[6:0]   == 0x73 (SYSTEM opcode)    AND
@@ -548,14 +563,61 @@
   .option pop
 .endm
 
+.macro RVTEST_TSBI_LW
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LW                               // code for lw a0, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_LWP4
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LWP4                             // code for lw a0, 4(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_LD
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_LD                               // code for ld a0, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SW
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SW                               // code for sw a2, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SWP4
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SWP4                             // code for sw a2, 4(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
+.macro RVTEST_TSBI_SD
+  .option push
+  .option norvc                                  // ensure consistent code size
+  li   a0, TSBI_SD                               // code for sd a2, 0(a1)
+  ecall                                          // T-SBI call
+  .option pop
+.endm
+
 // Access a CSR via T-SBI (read, write, or read-modify-write).
 //
 // Parameters:
 //   encoding: the 32-bit RISC-V CSR instruction encoding to execute.
 //             The rd field MUST be a0 (x10, register 10) for reads.
 //             The rs1 field SHOULD be a1 (x11, register 11) for writes.
-//   arg:      value to place in a1 before the ecall (default: zero).
-//             This becomes the rs1 value for csrrs/csrrc/csrrw.
+//   a1 holds the rs1 value for csrrs/csrrc/csrrw; the caller loads it before the macro.
 //
 // After this macro, a0 contains the CSR read result (if rd==a0 in encoding).
 //
@@ -567,17 +629,23 @@
 // Example: Set mstatus.TVM via csrrs x0, mstatus, a1 (a1 has bit 20 set)
 //   Encoding: imm=0x300, rs1=01011(a1), funct3=010, rd=00000(x0), opcode=1110011
 //   Binary:   0011_0000_0000_01011_010_00000_1110011 = 0x3005A073
-//   Usage:    li t0, (1 << 20)
-//             RVTEST_TSBI_CSR_ACCESS 0x3005A073, t0
-.macro RVTEST_TSBI_CSR_ACCESS encoding, arg=zero
+//   Usage:    li a1, (1 << 20)
+//             RVTEST_TSBI_CSR_ACCESS 0x3005A073
+.macro RVTEST_TSBI_CSR_ACCESS encoding
   .option push
   .option norvc                                  // ensure consistent code size
-  LI(a0, \encoding)                              // a0 = CSR instruction encoding
-  mv a1, \arg                                    // a1 = argument value (for rs1 of CSR instruction)
+  li a0, \encoding                               // a0 = CSR instruction encoding (32-bit value)
   ecall                                          // trap to handler; handler executes CSR instr dynamically
   // a0 now contains the CSR read result (if rd==a0 in the encoding)
   .option pop
 .endm
+
+// CSR access by CSR number: csr is a 12-bit CSR number such as CSR_MIP from encoding.h,
+// imm is a constant loaded into a1 with li before the call.
+#define RVTEST_TSBI_CSR_SET(csr, imm)    li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(csr)
+#define RVTEST_TSBI_CSR_CLEAR(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(csr)
+#define RVTEST_TSBI_CSR_WRITE(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
+#define RVTEST_TSBI_CSR_READ(csr)        RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(csr)
 
 #ifdef H_SUPPORTED
 // Switch to VS-mode via T-SBI. Requires hypervisor extension.
@@ -848,12 +916,6 @@
 #endif
 
 // S-mode interrupt defaults
-#ifndef RVMODEL_SET_SSW_INT
-        #define  RVMODEL_SET_SSW_INT     RVTEST_DFLT_INT_HNDLR  // S-mode SW interrupt set: abort
-#endif
-#ifndef RVMODEL_CLR_SSW_INT
-        #define  RVMODEL_CLR_SSW_INT     RVTEST_DFLT_INT_HNDLR  // S-mode SW interrupt clear: abort
-#endif
 #ifndef RVMODEL_CLR_STIMER_INT
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR  // S-mode timer interrupt clear: abort
 #endif
@@ -1476,12 +1538,13 @@ tsbi_\__MODE__\()goto_vu:
 //   - GOTO_VSMODE: needs M-mode to set MPV  TODO: can do with SPV
 //   - GOTO_VUMODE: needs M-mode to set MPV  TODO: can do with SPV
 //   - CSR_ACCESS for M-mode CSRs: needs M-mode privilege (CSR addr[9:8] == 11)
+//   - LW/LWP4/LD/SW/SWP4/SD: physical memory-mapped I/O access needs M-mode
 //
 // FORWARDING MECHANISM:
 //   The S-mode handler restores all handler temporary registers, then executes
 //   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9).
-//   The caller's a0/a1 pass through unchanged because:
-//   - a0/a1 are never touched by the handler (its temporaries are
+//   The caller's a0/a1/a2 pass through unchanged because:
+//   - a0/a1/a2 are never touched by the handler (its temporaries are
 //     T1..T6 = x6..x9, x14, x15)
 //   M-mode's T-SBI dispatch sees the S-mode ecall, detects a0!=0 and a0 as
 //   a valid SBI op, and handles it directly.
@@ -1514,6 +1577,11 @@ tsbi_\__MODE__\()dispatch:
         // Check for ECALL_TEST (a0 == 0x73)
         LI(     T2, TSBI_ECALL_TEST)              // T2 = 0x73
         beq     a0, T2, tsbi_\__MODE__\()ecall_test // match -> ECALL_TEST handler
+
+        // Check for LOAD/STORE (a0[6:0] == 0?00011): physical memory access needs M-mode
+        andi    T2, a0, 0x5F                       // T2 = a0[6:0] ignoring bit 5 (LOAD=0x03, STORE=0x23)
+        li      T4, 0x03                            // T4 = LOAD opcode with bit 5 cleared
+        beq     T2, T4, tsbi_\__MODE__\()forward_to_m // LOAD/STORE -> forward to M-mode
 
         // Check for CSR_ACCESS
         andi    T2, a0, 0x7F                       // T2 = a0[6:0]

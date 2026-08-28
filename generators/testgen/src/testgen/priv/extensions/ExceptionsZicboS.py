@@ -8,283 +8,113 @@
 
 """Zicbo extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner
-from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.ExceptionsZicboCommon import (
+    cbo_access_fault_helper,
+    cbo_config_helper,
+    cbo_misaligned_helper,
+)
 from testgen.priv.registry import add_priv_test_generator
 
-
-def _generate_cbie_tests(test_data: TestData) -> list[str]:
-    """Generate cbie trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbie"
-
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute cbo.inval in {supervisor/user} mode with {menvcfg x senvcfg}.cbie = {00/01/11 x 00/01/11}, via T-SBI",
-        ),
-        "",
-        "#ifdef ZICBOM_SUPPORTED",
-    ]
-    modes = ["1", "0"]
-    menvcfg = ["00", "01", "11"]
-    senvcfg = ["00", "01", "11"]
-    for mode in modes:
-        if mode == "0":
-            lines.append("RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode")
-        else:
-            lines.append("RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode")
-        for m_val in menvcfg:
-            for s_val in senvcfg:
-                lines.extend(
-                    [
-                        f"LA(x{addr_reg}, scratch)",
-                        f"LI(x{envcfg_reg}, {int(m_val, 2) << 4})",
-                        tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                        f"LI(x{envcfg_reg}, {int(s_val, 2) << 4})",
-                        tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                        "nop",
-                        test_data.add_testcase(
-                            f"cbo.inval_mode{mode}_menvcfg.cbie{m_val}_senvcfg.cbie{s_val}", coverpoint, covergroup
-                        ),
-                        f"cbo.inval    (x{addr_reg})",
-                    ]
-                )
-    lines.append("#endif")
-    test_data.int_regs.return_registers([addr_reg, envcfg_reg])
-    return lines
-
-
-def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
-    """Generate cbcfe trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbcfe"
-
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute cbo.{clean, flush} in {supervisor/user} mode with {menvcfg x senvcfg}.cbcfe = {0/1 x 0/1}, via T-SBI",
-        ),
-        "",
-        "#ifdef ZICBOM_SUPPORTED",
-    ]
-    modes = ["1", "0"]
-    menvcfg = ["0", "1"]
-    senvcfg = ["0", "1"]
-    for mode in modes:
-        if mode == "0":
-            lines.append("RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode")
-        else:
-            lines.append("RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode")
-        for m_val in menvcfg:
-            for s_val in senvcfg:
-                lines.extend(
-                    [
-                        f"LA(x{addr_reg}, scratch)",
-                        f"LI(x{envcfg_reg}, {int(m_val, 2) << 6})",
-                        tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                        f"LI(x{envcfg_reg}, {int(s_val, 2) << 6})",
-                        tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                        "nop",
-                        test_data.add_testcase(
-                            f"cbo.clean_mode{mode}_menvcfg.cbcfe{m_val}_senvcfg.cbcfe{s_val}", coverpoint, covergroup
-                        ),
-                        f"cbo.clean    (x{addr_reg})",
-                        test_data.add_testcase(
-                            f"cbo.flush_mode{mode}_menvcfg.cbcfe{m_val}_senvcfg.cbcfe{s_val}", coverpoint, covergroup
-                        ),
-                        f"cbo.flush    (x{addr_reg})",
-                    ]
-                )
-    lines.append("#endif")
-    test_data.int_regs.return_registers([addr_reg, envcfg_reg])
-    return lines
-
-
-def _generate_cbze_tests(test_data: TestData) -> list[str]:
-    """Generate cbze trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbze"
-
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute cbo.zero in {supervisor/user} mode with {menvcfg x senvcfg}.cbze = {0/1 x 0/1}, via T-SBI",
-        ),
-        "",
-        "#ifdef ZICBOZ_SUPPORTED",
-    ]
-    modes = ["1", "0"]
-    menvcfg = ["0", "1"]
-    senvcfg = ["0", "1"]
-    for mode in modes:
-        if mode == "0":
-            lines.append("RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode")
-        else:
-            lines.append("RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode")
-        for m_val in menvcfg:
-            for s_val in senvcfg:
-                lines.extend(
-                    [
-                        f"LA(x{addr_reg}, scratch)",
-                        f"LI(x{envcfg_reg}, {int(m_val, 2) << 7})",
-                        tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                        f"LI(x{envcfg_reg}, {int(s_val, 2) << 7})",
-                        tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                        "nop",
-                        test_data.add_testcase(
-                            f"cbo.zero_mode{mode}_menvcfg.cbze{m_val}_senvcfg.cbze{s_val}", coverpoint, covergroup
-                        ),
-                        f"cbo.zero    (x{addr_reg})",
-                    ]
-                )
-    lines.append("#endif")
-    test_data.int_regs.return_registers([addr_reg, envcfg_reg])
-    return lines
-
-
-def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
-    """Generate cbo access fault trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_access_fault"
-
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
-
-    lines = [
-        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        comment_banner(
-            coverpoint,
-            "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} Execute op to RVMODEL_ACCESS_FAULT_ADDRESS in {supervisor/user} mode with menvcfg and senvcfg enabled, via T-SBI",
-        ),
-        "",
-    ]
-    modes = ["1", "0"]
-    cbo_instrs = ["inval", "clean", "flush", "zero"]
-    prefetch_instrs = ["i", "r", "w"]
-    for mode in modes:
-        if mode == "0":
-            lines.append("RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode")
-        else:
-            lines.append("RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode")
-        for cbo in cbo_instrs:
-            if cbo == "zero":
-                lines.append("#ifdef ZICBOZ_SUPPORTED")
-            else:
-                lines.append("#ifdef ZICBOM_SUPPORTED")
-            lines.extend(
-                [
-                    f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                    f"LI(x{envcfg_reg}, 240)",  # setting all relevant bits in menvcfg/senvcfg to 1
-                    tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                    tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                    "nop",
-                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault_0", coverpoint, covergroup),
-                    f"cbo.{cbo}    0(x{addr_reg})",
-                    f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment, check misaligned address is reported in mtval if applicable",
-                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault_1", coverpoint, covergroup),
-                    f"cbo.{cbo}    0(x{addr_reg})",
-                    "#endif",
-                ]
-            )
-        for prefetch in prefetch_instrs:
-            lines.extend(
-                [
-                    f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                    f"LI(x{envcfg_reg}, 240)",  # setting all relevant bits in menvcfg/senvcfg to 1
-                    tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                    tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                    "nop",
-                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
-                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault_0", coverpoint, covergroup),
-                    f"prefetch.{prefetch}    0(x{addr_reg})",
-                    f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
-                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault_1", coverpoint, covergroup),
-                    f"prefetch.{prefetch}    0(x{addr_reg})",
-                ]
-            )
-    lines.append("#endif")
-    test_data.int_regs.return_registers([addr_reg, envcfg_reg])
-    return lines
-
-
-def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
-    """Generate cbo misaligned trap tests."""
-    covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_address_misaligned"
-
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} Execute op to valid address + 1 in {supervisor/user} mode with menvcfg and senvcfg enabled, via T-SBI",
-        ),
-        "",
-    ]
-    modes = ["1", "0"]
-    cbo_instrs = ["inval", "clean", "flush", "zero"]
-    prefetch_instrs = ["i", "r", "w"]
-    for mode in modes:
-        if mode == "0":
-            lines.append("RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode")
-        else:
-            lines.append("RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode")
-        for cbo in cbo_instrs:
-            if cbo == "zero":
-                lines.append("#ifdef ZICBOZ_SUPPORTED")
-            else:
-                lines.append("#ifdef ZICBOM_SUPPORTED")
-            lines.extend(
-                [
-                    f"LA(x{addr_reg}, scratch)",
-                    f"addi x{addr_reg}, x{addr_reg}, 1",
-                    f"LI(x{envcfg_reg}, 240)",  # setting all relevant bits in menvcfg/senvcfg to 1
-                    tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                    tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                    "nop",
-                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_misaligned", coverpoint, covergroup),
-                    f"cbo.{cbo}    0(x{addr_reg})",
-                    "#endif",
-                ]
-            )
-        for prefetch in prefetch_instrs:
-            lines.extend(
-                [
-                    f"LA(x{addr_reg}, scratch)",
-                    f"addi x{addr_reg}, x{addr_reg}, 1",
-                    f"LI(x{envcfg_reg}, 240)",  # setting all relevant bits in menvcfg/senvcfg to 1
-                    tsbi_call(f"csrw  menvcfg, x{envcfg_reg}"),
-                    tsbi_call(f"csrw  senvcfg, x{envcfg_reg}"),
-                    "nop",
-                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
-                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_misaligned", coverpoint, covergroup),
-                    f"prefetch.{prefetch}    0(x{addr_reg})",
-                ]
-            )
-    test_data.int_regs.return_registers([addr_reg, envcfg_reg])
-    return lines
+_CG = "ExceptionsZicboS_cg"
+_MODES = ["1", "0"]  # supervisor, then user
 
 
 @add_priv_test_generator(
     "ExceptionsZicboS",
     required_extensions=["S", ["Zicbom", "Zicboz", "Zicbop"]],
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboS coverpoints"""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
-    tc.code.extend(_generate_cbie_tests(test_data))
-    tc.code.extend(_generate_cbcfe_tests(test_data))
-    tc.code.extend(_generate_cbze_tests(test_data))
-    tc.code.extend(_generate_cbo_access_fault_tests(test_data))
-    tc.code.extend(_generate_cbo_misaligned_tests(test_data))
+    tc.code.extend(
+        cbo_config_helper(
+            test_data,
+            _CG,
+            coverpoint="cp_cbie",
+            tag="cbie",
+            shift=4,
+            bins=["00", "01", "11"],
+            instrs=["cbo.inval"],
+            guard="ZICBOM_SUPPORTED",
+            description=(
+                "Execute cbo.inval in {supervisor/user} mode with {menvcfg x senvcfg}.cbie = "
+                "{00/01/11 x 00/01/11}, via T-SBI"
+            ),
+            use_tsbi=True,
+            modes=_MODES,
+            cross_senvcfg=True,
+        )
+    )
+    tc.code.extend(
+        cbo_config_helper(
+            test_data,
+            _CG,
+            coverpoint="cp_cbcfe",
+            tag="cbcfe",
+            shift=6,
+            bins=["0", "1"],
+            instrs=["cbo.clean", "cbo.flush"],
+            guard="ZICBOM_SUPPORTED",
+            description=(
+                "Execute cbo.{clean, flush} in {supervisor/user} mode with {menvcfg x senvcfg}.cbcfe = "
+                "{0/1 x 0/1}, via T-SBI"
+            ),
+            use_tsbi=True,
+            modes=_MODES,
+            cross_senvcfg=True,
+        )
+    )
+    tc.code.extend(
+        cbo_config_helper(
+            test_data,
+            _CG,
+            coverpoint="cp_cbze",
+            tag="cbze",
+            shift=7,
+            bins=["0", "1"],
+            instrs=["cbo.zero"],
+            guard="ZICBOZ_SUPPORTED",
+            description=(
+                "Execute cbo.zero in {supervisor/user} mode with {menvcfg x senvcfg}.cbze = {0/1 x 0/1}, via T-SBI"
+            ),
+            use_tsbi=True,
+            modes=_MODES,
+            cross_senvcfg=True,
+        )
+    )
+    tc.code.extend(
+        cbo_access_fault_helper(
+            test_data,
+            _CG,
+            description=(
+                "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} "
+                "Execute op to RVMODEL_ACCESS_FAULT_ADDRESS in {supervisor/user} mode with menvcfg "
+                "and senvcfg enabled, via T-SBI"
+            ),
+            use_tsbi=True,
+            modes=_MODES,
+            cross_senvcfg=True,
+        )
+    )
+    tc.code.extend(
+        cbo_misaligned_helper(
+            test_data,
+            _CG,
+            description=(
+                "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} "
+                "Execute op to valid address + 1 in {supervisor/user} mode with menvcfg and senvcfg "
+                "enabled, via T-SBI"
+            ),
+            use_tsbi=True,
+            modes=_MODES,
+            cross_senvcfg=True,
+        )
+    )
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

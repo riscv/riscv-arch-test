@@ -283,6 +283,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     "ExceptionsSm",
     required_extensions=["Sm"],
     extra_defines=[
+        "#define BOOT_TO_MMODE",
         "#define TRAP_SIGUPD_COUNT 3000",
     ],
 )

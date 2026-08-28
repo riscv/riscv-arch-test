@@ -180,7 +180,6 @@ def _generate_supervisor_sti_tests(test_data: TestData) -> list[str]:
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"csrc mip, x{r_scratch}",
                             "csrsi mcounteren, 2",
                         ]
 
@@ -362,7 +361,6 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             # load 0x20 once; reused for mip/mideleg/mie below
                             # (set_menvcfg_stce uses r_stce so r_scratch stays valid)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"csrc mip, x{r_scratch}",
                             *set_menvcfg_stce(r_stce, bool(stce)),
                         ]
 
@@ -515,7 +513,12 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-@add_priv_test_generator("InterruptsSstc", required_extensions=["Sm", "S", "Sstc"])
+@add_priv_test_generator(
+    "InterruptsSstc",
+    required_extensions=["Sm", "S", "Sstc"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstc interrupt tests (machine, supervisor, user modes)."""
     test_chunks: list[TestChunk] = []

@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 
 #define SIGUPD_COUNT 200
-
+#define BOOT_TO_MMODE
 
 
 #include "riscv_arch_test.h"

@@ -7,10 +7,9 @@
 # Parse YAML comment header from test files
 ##################################
 
-from __future__ import annotations
-
 import re
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import BaseModel, Field, FilePath, ValidationError
 from rich.console import Console
@@ -19,6 +18,8 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 _TEST_FILE_SUFFIXES = (".S", ".c")
+
+ExtensionRequirement = str | Annotated[frozenset[str], Field(min_length=1)]
 
 
 class TestYamlHeaderError(Exception):
@@ -45,7 +46,8 @@ class TestMetadata(BaseModel):
     """Metadata for a RISC-V test case extracted from YAML configuration."""
 
     test_path: FilePath
-    required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
+    required_extensions: frozenset[ExtensionRequirement] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
+    forbidden_extensions: frozenset[str] = Field(alias="FORBIDDEN_EXTENSIONS", default_factory=frozenset)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     needs_signature: bool = Field(alias="NEEDS_SIGNATURE", default=True)
     params: dict[str, int | bool | str] = Field(default_factory=dict)

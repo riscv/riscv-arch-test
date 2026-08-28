@@ -415,7 +415,7 @@ covergroup PMPSm_cg with function sample(
 
   // pmpaddr[0] here is compared against an all-ones value, not a region address, so it needs no mask.
   pmp_addr_for_tor_nonoverlap3: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                            (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
+                                            (pmpaddr[0]==({(`EFFECTIVE_PMPADDR + 1){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
     bins range3 = {1};
   }
 

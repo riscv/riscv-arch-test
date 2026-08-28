@@ -31,6 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
+#define BOOT_TO_MMODE
 #define SIGUPD_COUNT 100
 #define RVTEST_PRIV_TEST
 

@@ -19,6 +19,7 @@
 
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
+// TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
 #define BOOT_TO_MMODE
 
 

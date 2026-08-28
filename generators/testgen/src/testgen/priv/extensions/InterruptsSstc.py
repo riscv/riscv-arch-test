@@ -513,7 +513,12 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-@add_priv_test_generator("InterruptsSstc", required_extensions=["Sm", "S", "Sstc"])
+@add_priv_test_generator(
+    "InterruptsSstc",
+    required_extensions=["Sm", "S", "Sstc"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstc interrupt tests (machine, supervisor, user modes)."""
     test_chunks: list[TestChunk] = []

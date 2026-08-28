@@ -68,7 +68,9 @@ def cbo_config_helper(
                         _csrw("menvcfg", cfg_reg, use_tsbi),
                     ]
                 )
+
                 if cross_senvcfg:
+                    assert s_val is not None
                     lines.extend(
                         [
                             f"LI(x{cfg_reg}, {int(s_val, 2) << shift})",

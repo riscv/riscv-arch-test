@@ -524,6 +524,55 @@
 #define RVTEST_CLR_SEXT_INT_S \
   jal rvtest_clr_sext_int_s     /* Clear supervisor external interrupt */
 
+// Flavors to run from User mode
+
+#define RVTEST_SET_MTIME_INT_SOON_U \
+  jal rvtest_set_mtime_int_soon_su     /* Trigger machine timer interrupt after a delay */
+
+#define RVTEST_SET_MTIME_INT_U \
+  jal rvtest_set_mtime_int_su     /* Trigger machine timer interrupt */
+
+#define RVTEST_CLR_MTIME_INT_U \
+  jal rvtest_clr_mtime_int_su     /* Clear machine timer interrupt */
+
+#define RVTEST_SET_MSW_INT_U \
+  jal rvtest_set_msw_int_su     /* Trigger machine software interrupt */
+
+#define RVTEST_CLR_MSW_INT_U \
+  jal rvtest_clr_msw_int_su     /* Clear machine software interrupt */
+
+#define RVTEST_SET_MEXT_INT_U \
+  jal rvtest_set_mext_int_su     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT_U \
+  jal rvtest_clr_mext_int_su     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSTC_INT_SOON_U \
+  jal rvtest_set_sstc_int_soon_u     /* Trigger supervisor timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_SSTC_INT_U \
+  jal rvtest_set_sstc_int_u     /* Trigger supervisor timer interrupt with Sstc */
+
+#define RVTEST_CLR_SSTC_INT_U \
+  jal rvtest_clr_sstc_int_u     /* Clear supervisor timer interrupt with Sstc */
+
+#define RVTEST_SET_STIME_INT_U \
+  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
+
+#define RVTEST_CLR_STIME_INT_U \
+  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
+
+#define RVTEST_SET_SSW_INT_U \
+  jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT_U \
+  jal rvtest_clr_ssw_int_su     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT_U \
+  jal rvtest_set_sext_int_su     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT_U \
+  jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
 
 
 // V-mode interrupts not yet supported in Sail reference model

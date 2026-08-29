@@ -89,9 +89,9 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             "# Testcase: mstatus.MIE = 0 should NOT take interrupt",
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "csrci mstatus, 8    # mstatus.MIE = 0",
-            "RVTEST_SET_MSW_INT     # Trigger software interrupt",
+            "RVTEST_SET_MSW_INT_M     # Trigger software interrupt",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
-            "RVTEST_CLR_MSW_INT     # Clear interrupt",
+            "RVTEST_CLR_MSW_INT_M     # Clear interrupt",
             "",
         ]
     )
@@ -101,7 +101,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             "# Testcase: mstatus.MIE = 1 should take interrupt",
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "csrsi mstatus, 8    # mstatus.MIE = 1",
-            "RVTEST_SET_MSW_INT     # Interrupt fires",
+            "RVTEST_SET_MSW_INT_M     # Interrupt fires",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
@@ -136,9 +136,9 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             "# Testcase: mstatus.MIE = 0 should NOT take interrupt",
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "csrci mstatus, 8",
-            "RVTEST_SET_MEXT_INT",
+            "RVTEST_SET_MEXT_INT_M",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
-            "RVTEST_CLR_MEXT_INT",
+            "RVTEST_CLR_MEXT_INT_M",
             "",
         ]
     )
@@ -148,7 +148,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             "# Testcase: mstatus.MIE = 1 should take interrupt",
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "csrsi mstatus, 8",
-            "RVTEST_SET_MEXT_INT",
+            "RVTEST_SET_MEXT_INT_M",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "",
         ]
@@ -215,22 +215,22 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
 
                 # Trigger interrupt
                 if int_pending == "meip":
-                    lines.append("RVTEST_SET_MEXT_INT")
+                    lines.append("RVTEST_SET_MEXT_INT_M")
                 elif int_pending == "mtip":
                     lines.extend(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
                 else:  # msip
-                    lines.append("RVTEST_SET_MSW_INT")
+                    lines.append("RVTEST_SET_MSW_INT_M")
 
                 # More settling
                 lines.extend([f"csrw mie, x{r_mie_val}", f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})"])
 
                 # Clear to prevent leakage
                 if int_pending == "meip":
-                    lines.append("RVTEST_CLR_MEXT_INT")
+                    lines.append("RVTEST_CLR_MEXT_INT_M")
                 elif int_pending == "mtip":
                     lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
                 else:  # msip
-                    lines.append("RVTEST_CLR_MSW_INT")
+                    lines.append("RVTEST_CLR_MSW_INT_M")
 
                 lines.append("")
 
@@ -283,11 +283,11 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
             # Trigger interrupt
             if int_pending == "meip":
-                lines.append("RVTEST_SET_MEXT_INT")
+                lines.append("RVTEST_SET_MEXT_INT_M")
             elif int_pending == "mtip":
                 lines.extend(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
             else:  # msip
-                lines.append("RVTEST_SET_MSW_INT")
+                lines.append("RVTEST_SET_MSW_INT_M")
 
             # Settling time
             lines.extend(
@@ -299,11 +299,11 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
             # Always clear for safety
             if int_pending == "meip":
-                lines.append("RVTEST_CLR_MEXT_INT")
+                lines.append("RVTEST_CLR_MEXT_INT_M")
             elif int_pending == "mtip":
                 lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
             else:
-                lines.append("RVTEST_CLR_MSW_INT")
+                lines.append("RVTEST_CLR_MSW_INT_M")
 
             lines.append("")
 
@@ -357,20 +357,20 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
             )
 
             if mip_bits & 4:
-                lines.append("RVTEST_SET_MEXT_INT")
+                lines.append("RVTEST_SET_MEXT_INT_M")
             if mip_bits & 2:
                 lines.extend(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
             if mip_bits & 1:
-                lines.append("RVTEST_SET_MSW_INT")
+                lines.append("RVTEST_SET_MSW_INT_M")
 
             lines.extend(
                 [
                     f"csrw mie, x{r_mie_mask}",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "# Clear and disable interrupts to reset for next testcase",
-                    "RVTEST_CLR_MEXT_INT",
+                    "RVTEST_CLR_MEXT_INT_M",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
-                    "RVTEST_CLR_MSW_INT",
+                    "RVTEST_CLR_MSW_INT_M",
                     "csrw mie, zero",
                     "",
                 ]

@@ -68,6 +68,9 @@
 #endif
 
 ##### Machine Interrupts #####
+// TODO: Gate which interrupts macros need to be defined by whether they are supported
+
+// Only external must be defined because software may be handled through MSIP and timer through MTIME
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -76,25 +79,53 @@
   #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_SET_MSW_INT
-  #error "RVMODEL_SET_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+  #ifndef RVMODEL_CLR_MEXT_INT_M
+    #ifdef RVMODEL_CLR_MEXT_INT
+      #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
+    #endif
+  #endif
 
-#ifndef RVMODEL_CLR_MSW_INT
-  #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+#ifndef RVMODEL_MSIP_ADDRESS
+  #ifndef RVMODEL_SET_MSW_INT
+    #error "RVMODEL_SET_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MSW_INT
+    #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MSW_INT_M
+    #ifdef RVMODEL_CLR_MSW_INT
+      #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
+    #endif
+  #endif
 #endif
 
 ##### Supervisor Interrupts #####
-#ifndef RVMODEL_SET_SEXT_INT
-  #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+#ifdef S_SUPPORTED
+  #ifndef RVMODEL_SET_SEXT_INT
+    #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
 
-#ifndef RVMODEL_CLR_SEXT_INT
-  #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+  #ifndef RVMODEL_CLR_SEXT_INT
+    #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
 
-// RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are optional: platforms without a supervisor
-// software interrupt controller leave them undefined and the trap handler uses mip.SSIP.
+  #ifdef RVMODEL_CLR_SEXT_INT
+    #ifndef RVMODEL_CLR_SEXT_INT_M
+      #error "RVMODEL_CLR_SEXT_INT_M not defined. Make sure to define it in rvmodel_macros.h."
+    #endif
+  #endif
+
+  // RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are optional: platforms without a supervisor
+  // software interrupt controller leave them undefined and the trap handler uses mip.SSIP.
+
+  #ifndef RVMODEL_CLR_SSW_INT_M
+    #ifdef RVMODEL_CLR_SSW_INT
+      #define RVMODEL_CLR_SSW_INT_M RVMODEL_CLR_SSW_INT
+    #endif
+  #endif
+#endif
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTIRES > 0

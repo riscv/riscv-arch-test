@@ -649,7 +649,7 @@
 #define RVTEST_TSBI_CSR_CLEAR(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(csr)
 #define RVTEST_TSBI_CSR_WRITE(csr, imm)  li a1, imm; RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
 // write value in a1 to CSR
-#define RVTEST_TSBI_CSR_WRITE(csr)       RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
+#define RVTEST_TSBI_CSR_WRITE_A1(csr)       RVTEST_TSBI_CSR_ACCESS TSBI_CSR_WRITE(csr)
 // read value from CSR into a0
 #define RVTEST_TSBI_CSR_READ(csr)        RVTEST_TSBI_CSR_ACCESS TSBI_CSR_READ(csr)
 

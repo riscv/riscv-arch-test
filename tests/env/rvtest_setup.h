@@ -643,18 +643,18 @@
         RVTEST_TSBI_LW // a0, 0(a1) // read mtime low word
         add a0, a0, a2 // add delay to mtime low word
         // csrw stimecmp, a0 // write low word of timer compare
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP) // write low word of timer compare
+        RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write low word of timer compare
         mv a2, a0 // save mtime low word
         RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
         LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
         bgeu a2, a1, 1f // skip if didn't wrap
         addi a0, a0, 1 // increment mtime high word
         1:
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMPH) // write high word of timer compare
+        RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // write high word of timer compare
       #else
         RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
         add a1, a2, a0 // add delay to mtime
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP) // write timer compare
+        RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write timer compare
       #endif
     #endif
     ret
@@ -674,9 +674,9 @@
     #ifdef SSTC_SUPPORTED
       li a1, -1 // all 1s
       #if UDB_MXLEN == 32
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
+        RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
       #else
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
+        RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
       #endif
     #endif
     ret

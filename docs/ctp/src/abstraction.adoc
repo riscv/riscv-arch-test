@@ -239,6 +239,7 @@ The following macros are defined for developer convenience to access the T-SBI a
 * RVTEST_TSBI_CSR_SET(csr, imm)
 * RVTEST_TSBI_CSR_CLEAR(csr, imm)
 * RVTEST_TSBI_CSR_WRITE(csr, imm)
+* RVTEST_TSBI_CSR_WRITE_A1(csr): write value in `a1`
 * RVTEST_TSBI_CSR_READ(csr): returns value in `a0`
 +
 `csr` is the 12-bit CSR number (e.g. `CSR_MIP` from `encoding.h`) and `imm` is a constant that the macro loads into `a1` with `li` before the call.

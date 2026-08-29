@@ -111,9 +111,9 @@
     #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
   #endif
 
-  #ifdef RVMODEL_CLR_SEXT_INT
-    #ifndef RVMODEL_CLR_SEXT_INT_M
-      #error "RVMODEL_CLR_SEXT_INT_M not defined. Make sure to define it in rvmodel_macros.h."
+  #ifndef RVMODEL_CLR_SEXT_INT_M
+    #ifdef RVMODEL_CLR_SEXT_INT
+      #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
     #endif
   #endif
 

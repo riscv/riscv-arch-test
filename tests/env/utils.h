@@ -477,25 +477,25 @@
 // Flavors to run from Supervisor mode
 
 #define RVTEST_SET_MTIME_INT_SOON_S \
-  jal rvtest_set_mtime_int_soon_s     /* Trigger machine timer interrupt after a delay */
+  jal rvtest_set_mtime_int_soon_su     /* Trigger machine timer interrupt after a delay */
 
 #define RVTEST_SET_MTIME_INT_S \
-  jal rvtest_set_mtime_int_s     /* Trigger machine timer interrupt */
+  jal rvtest_set_mtime_int_su     /* Trigger machine timer interrupt */
 
 #define RVTEST_CLR_MTIME_INT_S \
-  jal rvtest_clr_mtime_int_s     /* Clear machine timer interrupt */
+  jal rvtest_clr_mtime_int_su     /* Clear machine timer interrupt */
 
 #define RVTEST_SET_MSW_INT_S \
-  jal rvtest_set_msw_int_s     /* Trigger machine software interrupt */
+  jal rvtest_set_msw_int_su     /* Trigger machine software interrupt */
 
 #define RVTEST_CLR_MSW_INT_S \
-  jal rvtest_clr_msw_int_s     /* Clear machine software interrupt */
+  jal rvtest_clr_msw_int_su     /* Clear machine software interrupt */
 
 #define RVTEST_SET_MEXT_INT_S \
-  jal rvtest_set_mext_int_s     /* Trigger machine external interrupt */
+  jal rvtest_set_mext_int_su     /* Trigger machine external interrupt */
 
 #define RVTEST_CLR_MEXT_INT_S \
-  jal rvtest_clr_mext_int_s     /* Clear machine external interrupt */
+  jal rvtest_clr_mext_int_su     /* Clear machine external interrupt */
 
 #define RVTEST_SET_SSTC_INT_SOON_S \
   jal rvtest_set_sstc_int_soon_s     /* Trigger supervisor timer interrupt with Sstc after a delay */
@@ -507,22 +507,22 @@
   jal rvtest_clr_sstc_int_ms     /* Clear supervisor timer interrupt with Sstc */
 
 #define RVTEST_SET_STIME_INT_S \
-  jal rvtest_set_stime_int_s     /* Trigger supervisor timer interrupt */
+  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
 
 #define RVTEST_CLR_STIME_INT_S \
-  jal rvtest_clr_stime_int_s     /* Clear supervisor timer interrupt */
+  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
 
 #define RVTEST_SET_SSW_INT_S \
-  jal rvtest_set_ssw_int_s     /* Trigger supervisor software interrupt */
+  jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */
 
 #define RVTEST_CLR_SSW_INT_S \
-  jal rvtest_clr_ssw_int_s     /* Clear supervisor software interrupt */
+  jal rvtest_clr_ssw_int_su     /* Clear supervisor software interrupt */
 
 #define RVTEST_SET_SEXT_INT_S \
-  jal rvtest_set_sext_int_s     /* Trigger supervisor external interrupt */
+  jal rvtest_set_sext_int_su     /* Trigger supervisor external interrupt */
 
 #define RVTEST_CLR_SEXT_INT_S \
-  jal rvtest_clr_sext_int_s     /* Clear supervisor external interrupt */
+  jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
 
 // Flavors to run from User mode
 

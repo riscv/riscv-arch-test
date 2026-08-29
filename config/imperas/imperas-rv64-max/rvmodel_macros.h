@@ -111,4 +111,4 @@
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        nop
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        nop
 
-  #endif // _RVMODEL_MACROS_H
+#endif // _RVMODEL_MACROS_H

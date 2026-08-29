@@ -300,6 +300,9 @@
   // All these functions can touch a0 and a1 and a2
   //////////////////////
 
+  // Note: _ms and _su are shared implementations
+  // used for multiple privilege modes
+
   // Flavors to run from M-mode
 
   #ifdef STANDARD_SM_SUPPORTED
@@ -387,7 +390,7 @@
             lw a0, 0(a1) // read mtime low word
             add a1, a0, a2 // add delay to mtime low word
             csrw stimecmp, a1 // write low word of timer compare
-            mv a2, a1 // save mtime low word
+            mv a2, a1 // save stimecmp low word
             LA(a1, RVMODEL_MTIME_ADDRESS)
             lw a0, 4(a1) // read mtime high word
             LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
@@ -403,7 +406,7 @@
         #endif
         ret
 
-      // Set STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+      // Set STI using Sstc.  Assumes menvcfg.STCE=1
       rvtest_set_sstc_int_ms:
         #if UDB_MXLEN == 32
           csrw stimecmph, zero // clear upper word of stimecmp
@@ -411,7 +414,7 @@
         csrw stimecmp, zero // clear stimecmp, set STI
         ret
 
-      // Clear STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
       rvtest_clr_sstc_int_ms:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
@@ -520,7 +523,7 @@
       #ifdef RVMODEL_MTIMECMP_ADDRESS
         LA(a1, RVMODEL_MTIMECMP_ADDRESS)
         li a2, -1 // all 1s
-        RVTEST_TSBI_SWP4 // sw a2, 4(a11)      // don't bother with lower bits, which stay at 0
+        RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
       #endif
       ret
 
@@ -564,10 +567,10 @@
           LA(a1, RVMODEL_MTIME_ADDRESS)
           LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
           #if UDB_MXLEN == 32
-            RVTEST_TSBI_LW // a0, 0(a1) // read mtime low word
+            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
             add a0, a0, a2 // add delay to mtime low word
             csrw stimecmp, a0 // write low word of timer compare
-            mv a2, a0 // save mtime low word
+            mv a2, a0 // save stimecmp low word
             RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
             LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
             bgeu a2, a1, 1f // skip if didn't wrap
@@ -633,11 +636,10 @@
           LA(a1, RVMODEL_MTIME_ADDRESS)
           LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
           #if UDB_MXLEN == 32
-            RVTEST_TSBI_LW // a0, 0(a1) // read mtime low word
+            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
             add a0, a0, a2 // add delay to mtime low word
-            // csrw stimecmp, a0 // write low word of timer compare
             RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write low word of timer compare
-            mv a2, a0 // save mtime low word
+            mv a2, a0 // save stimecmp low word
             RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
             LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
             bgeu a2, a1, 1f // skip if didn't wrap
@@ -652,7 +654,7 @@
         #endif
         ret
 
-      // Set STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+      // Set STI using Sstc.  Assumes menvcfg.STCE=1
       rvtest_set_sstc_int_u:
         #if UDB_MXLEN == 32
           RVTEST_TSBI_CSR_WRITE(CSR_STIMECMPH, 0) // clear upper word of stimecmp
@@ -660,7 +662,7 @@
         RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP, 0) // clear stimecmp, set STI
         ret
 
-      // Clear STI using Sstc.  Assumes SSTC_SUPPORRTED and menvcfg.STCE=1
+      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
       rvtest_clr_sstc_int_u:
         li a1, -1 // all 1s
         #if UDB_MXLEN == 32
@@ -1052,13 +1054,6 @@
         csrw mhpmevent30h, zero
         csrw mhpmevent31h, zero
         #endif
-      #endif
-
-      #ifdef RVMODEL_MTIME_ADDRESS
-        // Initialize mtime to 0
-        LA(t0, RVMODEL_MTIME_ADDRESS)
-        sw zero, 0(t0)
-        sw zero, 4(t0)
       #endif
 
       #ifdef RVMODEL_MTIMECMP_ADDRESS

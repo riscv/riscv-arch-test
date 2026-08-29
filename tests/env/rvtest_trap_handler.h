@@ -517,7 +517,7 @@
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
 //   RVTEST_TSBI_GOTO_UMODE              // switch to U-mode, clobbers a0
 //   RVTEST_TSBI_ECALL_TEST              // test ecall path, result in a0
-//   RVTEST_TSBI_CSR_ACCESS 0x30052573, zero  // read mstatus into a0
+//   RVTEST_TSBI_CSR_ACCESS 0x30052573   // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
 // PRESERVES: all other registers

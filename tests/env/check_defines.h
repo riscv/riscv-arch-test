@@ -1,5 +1,6 @@
 # check_defines.h
 # Ensures all RVMODEL macros are defined
+# Define _M flavors of RVMODEL_CLR_<type>_INT_M to match non-M if not defined by user
 # Jordan Carlin jcarlin@hmc.edu December 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -79,11 +80,11 @@
   #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-  #ifndef RVMODEL_CLR_MEXT_INT_M
-    #ifdef RVMODEL_CLR_MEXT_INT
-      #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
-    #endif
+#ifndef RVMODEL_CLR_MEXT_INT_M
+  #ifdef RVMODEL_CLR_MEXT_INT
+    #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
   #endif
+#endif
 
 #ifndef RVMODEL_MSIP_ADDRESS
   #ifndef RVMODEL_SET_MSW_INT

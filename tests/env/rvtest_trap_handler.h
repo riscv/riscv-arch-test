@@ -912,13 +912,13 @@
 
 // M-mode interrupt defaults
 #ifndef RVMODEL_SET_MSW_INT
-        #define  RVMODEL_SET_MSW_INT     RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt set: abort
+        #define  RVMODEL_SET_MSW_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt set: abort
 #endif
 #ifndef RVMODEL_CLR_MSW_INT
-        #define  RVMODEL_CLR_MSW_INT     RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt clear: abort
+        #define  RVMODEL_CLR_MSW_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode SW interrupt clear: abort
 #endif
 #ifndef RVMODEL_CLR_MEXT_INT
-        #define  RVMODEL_CLR_MEXT_INT    RVTEST_DFLT_INT_HNDLR  // M-mode ext interrupt clear: abort
+        #define  RVMODEL_CLR_MEXT_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // M-mode ext interrupt clear: abort
 #endif
 
 // S-mode interrupt defaults
@@ -926,7 +926,7 @@
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR  // S-mode timer interrupt clear: abort
 #endif
 #ifndef RVMODEL_CLR_SEXT_INT
-        #define  RVMODEL_CLR_SEXT_INT    RVTEST_DFLT_INT_HNDLR  // S-mode ext interrupt clear: abort
+        #define  RVMODEL_CLR_SEXT_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // S-mode ext interrupt clear: abort
 #endif
 
 // VS-mode interrupt defaults
@@ -2454,6 +2454,7 @@ excpt_\__MODE__\()hndlr_tbl:
   .endif
         CLR_INT_RETURN \__MODE__
 
+#ifdef S_SUPPORTED
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
         CLR_INT_ENTER
   .ifc \__MODE__ , M
@@ -2462,12 +2463,17 @@ excpt_\__MODE__\()hndlr_tbl:
         RVTEST_CLR_SSW_INT_S
   .endif
         CLR_INT_RETURN \__MODE__
+#else
+\__MODE__\()clr_Ssw_int:
+        RVTEST_DFLT_INT_HNDLR
+#endif
 
 \__MODE__\()clr_Stmr_int:                            // S-mode timer interrupt
         RVTEST_CLR_STIMER_INT
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
+#ifdef S_SUPPORTED
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt
         CLR_INT_ENTER
         // A PLIC may drive the M and S external contexts from one source, so
@@ -2492,6 +2498,10 @@ excpt_\__MODE__\()hndlr_tbl:
 1:      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9)
   .endif
 2:      CLR_INT_RETURN \__MODE__
+#else
+\__MODE__\()clr_Sext_int:
+        RVTEST_DFLT_INT_HNDLR
+#endif
 
 #else
 

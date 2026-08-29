@@ -193,7 +193,11 @@ def _generate_wrs_nto_timeout_h_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator(
-    "ZawrsS", required_extensions=["S", "Zawrs", "Zalrsc"], march_extensions=["H", "Zawrs", "Zalrsc"]
+    "ZawrsS",
+    required_extensions=["S", "Zawrs", "Zalrsc"],
+    march_extensions=["H", "Zawrs", "Zalrsc"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zawrss(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrsS WRS instructions at S-mode (and H if supported)."""

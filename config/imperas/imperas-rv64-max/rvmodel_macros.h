@@ -99,29 +99,16 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 // TODO: remove support for external machine and supervisor interrupts for Imperas configs when UDB adds parameter
-#define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-  li _R1, 1;               \
-  li _R2, RVMODEL_MEXT_ADDRESS; \
-  sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
+// In the meantime, leave as nop
 
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
-  li _R2, RVMODEL_MEXT_ADDRESS; \
-  sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)        nop
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)        nop
 
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 ##### Supervisor Interrupts #####
 
-#define SAIL_SEXT_ADDRESS  0x80000004  /* Address of a memory mapped supervisor external interrupt generator */
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, 1;               \
-  li _R2, SAIL_SEXT_ADDRESS; \
-  sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
+#define RVMODEL_SET_SEXT_INT(_R1, _R2)        nop
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2)        nop
 
-
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R2, SAIL_SEXT_ADDRESS; \
-  sw zero, 0(_R2)            ; /* Clear SEXT interrupt */
-
-#endif // _RVMODEL_MACROS_H
+  #endif // _RVMODEL_MACROS_H

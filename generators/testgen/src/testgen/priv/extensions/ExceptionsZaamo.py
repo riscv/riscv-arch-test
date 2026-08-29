@@ -236,7 +236,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZaamo",
-    required_extensions=["Zaamo", "Sm"],
+    required_extensions=["Zaamo", ["Sm", "U"]],
     march_extensions=["Zaamo", "Zabha", "Zacas"],
 )
 def make_exceptionszaamo(test_data: TestData) -> list[TestChunk]:

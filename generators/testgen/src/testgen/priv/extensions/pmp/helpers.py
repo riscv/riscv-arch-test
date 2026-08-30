@@ -35,8 +35,8 @@ def zero_pmp_regs() -> list[str]:
 
 
 def cfg_shift(entry: int) -> str:
-    """Name of the XLEN-aware shift for ``entry`` inside its pmpcfg CSR."""
-    return f"PMP{entry}_CFG_SHIFT"
+    """Expression for the XLEN-aware shift of ``entry`` inside its pmpcfg CSR."""
+    return f"PMP_CFG_SHIFT({entry})"
 
 
 _AMODE_CONST = {"off": None, "na4": "PMP_NA4", "napot": "PMP_NAPOT", "tor": "PMP_TOR"}

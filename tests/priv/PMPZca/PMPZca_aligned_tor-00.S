@@ -47,9 +47,9 @@ RVTEST_BEGIN
   .set pmpaddri, pmpaddri + 1
   .endr
 
-#define PMP1CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP1_CFG_SHIFT)
-#define PMP2CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP2_CFG_SHIFT)
-#define PMP3CFG (((PMP_L | PMP_TOR) & 0xFF) << PMP3_CFG_SHIFT)
+#define PMP1CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(1))
+#define PMP2CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(2))
+#define PMP3CFG (((PMP_L | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(3))
 
 #define REGIONSTART TEST_FOR_EXECUTION_1
 #define REGION_SIZE PMP_TOR_REGION_BYTES

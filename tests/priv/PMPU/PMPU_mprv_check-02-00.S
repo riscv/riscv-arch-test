@@ -46,8 +46,8 @@ RVTEST_BEGIN
   .set pmpaddri, pmpaddri + 1
   .endr
 
-#define PMPREGION_LXWR_0111 (((PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
-#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_0111 (((PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0))
+#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0))
 #define MPRV       (1 << 17)
 #define MPP        (3 << 11)
 #define MPP_LOWER  0

@@ -51,7 +51,7 @@ RVTEST_BEGIN
   .set pmpaddri, pmpaddri + 1
   .endr
 
-#define PMPCFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPCFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0))
 #define REGIONSTART TEST_FOR_EXECUTION_1
 #if UDB_PMP_GRANULARITY != 2
 #define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)

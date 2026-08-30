@@ -70,7 +70,7 @@ RVTEST_BEGIN
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr62, x5
-  LI(x4, (PMP_REGION_CFG << PMP62_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(62)))
 #if __riscv_xlen == 32
   csrw pmpcfg15, x4
 #else
@@ -105,7 +105,7 @@ PMPSm_cp_pmp64_pmp64_entry62_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr61, x5
-  LI(x4, (PMP_REGION_CFG << PMP61_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(61)))
 #if __riscv_xlen == 32
   csrw pmpcfg15, x4
 #else
@@ -140,7 +140,7 @@ PMPSm_cp_pmp64_pmp64_entry61_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr60, x5
-  LI(x4, (PMP_REGION_CFG << PMP60_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(60)))
 #if __riscv_xlen == 32
   csrw pmpcfg15, x4
 #else
@@ -175,7 +175,7 @@ PMPSm_cp_pmp64_pmp64_entry60_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr59, x5
-  LI(x4, (PMP_REGION_CFG << PMP59_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(59)))
   csrw pmpcfg14, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -206,7 +206,7 @@ PMPSm_cp_pmp64_pmp64_entry59_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr58, x5
-  LI(x4, (PMP_REGION_CFG << PMP58_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(58)))
   csrw pmpcfg14, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -237,7 +237,7 @@ PMPSm_cp_pmp64_pmp64_entry58_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr57, x5
-  LI(x4, (PMP_REGION_CFG << PMP57_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(57)))
   csrw pmpcfg14, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -268,7 +268,7 @@ PMPSm_cp_pmp64_pmp64_entry57_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr56, x5
-  LI(x4, (PMP_REGION_CFG << PMP56_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(56)))
   csrw pmpcfg14, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -299,7 +299,7 @@ PMPSm_cp_pmp64_pmp64_entry56_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr55, x5
-  LI(x4, (PMP_REGION_CFG << PMP55_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(55)))
 #if __riscv_xlen == 32
   csrw pmpcfg13, x4
 #else
@@ -334,7 +334,7 @@ PMPSm_cp_pmp64_pmp64_entry55_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr54, x5
-  LI(x4, (PMP_REGION_CFG << PMP54_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(54)))
 #if __riscv_xlen == 32
   csrw pmpcfg13, x4
 #else
@@ -369,7 +369,7 @@ PMPSm_cp_pmp64_pmp64_entry54_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr53, x5
-  LI(x4, (PMP_REGION_CFG << PMP53_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(53)))
 #if __riscv_xlen == 32
   csrw pmpcfg13, x4
 #else
@@ -404,7 +404,7 @@ PMPSm_cp_pmp64_pmp64_entry53_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr52, x5
-  LI(x4, (PMP_REGION_CFG << PMP52_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(52)))
 #if __riscv_xlen == 32
   csrw pmpcfg13, x4
 #else
@@ -439,7 +439,7 @@ PMPSm_cp_pmp64_pmp64_entry52_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr51, x5
-  LI(x4, (PMP_REGION_CFG << PMP51_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(51)))
   csrw pmpcfg12, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -470,7 +470,7 @@ PMPSm_cp_pmp64_pmp64_entry51_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr50, x5
-  LI(x4, (PMP_REGION_CFG << PMP50_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(50)))
   csrw pmpcfg12, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -501,7 +501,7 @@ PMPSm_cp_pmp64_pmp64_entry50_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr49, x5
-  LI(x4, (PMP_REGION_CFG << PMP49_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(49)))
   csrw pmpcfg12, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -532,7 +532,7 @@ PMPSm_cp_pmp64_pmp64_entry49_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr48, x5
-  LI(x4, (PMP_REGION_CFG << PMP48_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(48)))
   csrw pmpcfg12, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -563,7 +563,7 @@ PMPSm_cp_pmp64_pmp64_entry48_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr47, x5
-  LI(x4, (PMP_REGION_CFG << PMP47_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(47)))
 #if __riscv_xlen == 32
   csrw pmpcfg11, x4
 #else
@@ -598,7 +598,7 @@ PMPSm_cp_pmp64_pmp64_entry47_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr46, x5
-  LI(x4, (PMP_REGION_CFG << PMP46_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(46)))
 #if __riscv_xlen == 32
   csrw pmpcfg11, x4
 #else
@@ -633,7 +633,7 @@ PMPSm_cp_pmp64_pmp64_entry46_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr45, x5
-  LI(x4, (PMP_REGION_CFG << PMP45_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(45)))
 #if __riscv_xlen == 32
   csrw pmpcfg11, x4
 #else
@@ -668,7 +668,7 @@ PMPSm_cp_pmp64_pmp64_entry45_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr44, x5
-  LI(x4, (PMP_REGION_CFG << PMP44_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(44)))
 #if __riscv_xlen == 32
   csrw pmpcfg11, x4
 #else
@@ -703,7 +703,7 @@ PMPSm_cp_pmp64_pmp64_entry44_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr43, x5
-  LI(x4, (PMP_REGION_CFG << PMP43_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(43)))
   csrw pmpcfg10, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -734,7 +734,7 @@ PMPSm_cp_pmp64_pmp64_entry43_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr42, x5
-  LI(x4, (PMP_REGION_CFG << PMP42_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(42)))
   csrw pmpcfg10, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -765,7 +765,7 @@ PMPSm_cp_pmp64_pmp64_entry42_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr41, x5
-  LI(x4, (PMP_REGION_CFG << PMP41_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(41)))
   csrw pmpcfg10, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -796,7 +796,7 @@ PMPSm_cp_pmp64_pmp64_entry41_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr40, x5
-  LI(x4, (PMP_REGION_CFG << PMP40_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(40)))
   csrw pmpcfg10, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -827,7 +827,7 @@ PMPSm_cp_pmp64_pmp64_entry40_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr39, x5
-  LI(x4, (PMP_REGION_CFG << PMP39_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(39)))
 #if __riscv_xlen == 32
   csrw pmpcfg9, x4
 #else
@@ -862,7 +862,7 @@ PMPSm_cp_pmp64_pmp64_entry39_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr38, x5
-  LI(x4, (PMP_REGION_CFG << PMP38_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(38)))
 #if __riscv_xlen == 32
   csrw pmpcfg9, x4
 #else
@@ -897,7 +897,7 @@ PMPSm_cp_pmp64_pmp64_entry38_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr37, x5
-  LI(x4, (PMP_REGION_CFG << PMP37_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(37)))
 #if __riscv_xlen == 32
   csrw pmpcfg9, x4
 #else
@@ -932,7 +932,7 @@ PMPSm_cp_pmp64_pmp64_entry37_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr36, x5
-  LI(x4, (PMP_REGION_CFG << PMP36_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(36)))
 #if __riscv_xlen == 32
   csrw pmpcfg9, x4
 #else
@@ -967,7 +967,7 @@ PMPSm_cp_pmp64_pmp64_entry36_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr35, x5
-  LI(x4, (PMP_REGION_CFG << PMP35_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(35)))
   csrw pmpcfg8, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -998,7 +998,7 @@ PMPSm_cp_pmp64_pmp64_entry35_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr34, x5
-  LI(x4, (PMP_REGION_CFG << PMP34_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(34)))
   csrw pmpcfg8, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1029,7 +1029,7 @@ PMPSm_cp_pmp64_pmp64_entry34_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr33, x5
-  LI(x4, (PMP_REGION_CFG << PMP33_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(33)))
   csrw pmpcfg8, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1060,7 +1060,7 @@ PMPSm_cp_pmp64_pmp64_entry33_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr32, x5
-  LI(x4, (PMP_REGION_CFG << PMP32_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(32)))
   csrw pmpcfg8, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1091,7 +1091,7 @@ PMPSm_cp_pmp64_pmp64_entry32_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr31, x5
-  LI(x4, (PMP_REGION_CFG << PMP31_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(31)))
 #if __riscv_xlen == 32
   csrw pmpcfg7, x4
 #else
@@ -1126,7 +1126,7 @@ PMPSm_cp_pmp64_pmp64_entry31_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr30, x5
-  LI(x4, (PMP_REGION_CFG << PMP30_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(30)))
 #if __riscv_xlen == 32
   csrw pmpcfg7, x4
 #else
@@ -1161,7 +1161,7 @@ PMPSm_cp_pmp64_pmp64_entry30_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr29, x5
-  LI(x4, (PMP_REGION_CFG << PMP29_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(29)))
 #if __riscv_xlen == 32
   csrw pmpcfg7, x4
 #else
@@ -1196,7 +1196,7 @@ PMPSm_cp_pmp64_pmp64_entry29_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr28, x5
-  LI(x4, (PMP_REGION_CFG << PMP28_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(28)))
 #if __riscv_xlen == 32
   csrw pmpcfg7, x4
 #else
@@ -1231,7 +1231,7 @@ PMPSm_cp_pmp64_pmp64_entry28_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr27, x5
-  LI(x4, (PMP_REGION_CFG << PMP27_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(27)))
   csrw pmpcfg6, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1262,7 +1262,7 @@ PMPSm_cp_pmp64_pmp64_entry27_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr26, x5
-  LI(x4, (PMP_REGION_CFG << PMP26_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(26)))
   csrw pmpcfg6, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1293,7 +1293,7 @@ PMPSm_cp_pmp64_pmp64_entry26_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr25, x5
-  LI(x4, (PMP_REGION_CFG << PMP25_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(25)))
   csrw pmpcfg6, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1324,7 +1324,7 @@ PMPSm_cp_pmp64_pmp64_entry25_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr24, x5
-  LI(x4, (PMP_REGION_CFG << PMP24_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(24)))
   csrw pmpcfg6, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1355,7 +1355,7 @@ PMPSm_cp_pmp64_pmp64_entry24_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr23, x5
-  LI(x4, (PMP_REGION_CFG << PMP23_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(23)))
 #if __riscv_xlen == 32
   csrw pmpcfg5, x4
 #else
@@ -1390,7 +1390,7 @@ PMPSm_cp_pmp64_pmp64_entry23_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr22, x5
-  LI(x4, (PMP_REGION_CFG << PMP22_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(22)))
 #if __riscv_xlen == 32
   csrw pmpcfg5, x4
 #else
@@ -1425,7 +1425,7 @@ PMPSm_cp_pmp64_pmp64_entry22_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr21, x5
-  LI(x4, (PMP_REGION_CFG << PMP21_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(21)))
 #if __riscv_xlen == 32
   csrw pmpcfg5, x4
 #else
@@ -1460,7 +1460,7 @@ PMPSm_cp_pmp64_pmp64_entry21_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr20, x5
-  LI(x4, (PMP_REGION_CFG << PMP20_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(20)))
 #if __riscv_xlen == 32
   csrw pmpcfg5, x4
 #else
@@ -1495,7 +1495,7 @@ PMPSm_cp_pmp64_pmp64_entry20_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr19, x5
-  LI(x4, (PMP_REGION_CFG << PMP19_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(19)))
   csrw pmpcfg4, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1526,7 +1526,7 @@ PMPSm_cp_pmp64_pmp64_entry19_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr18, x5
-  LI(x4, (PMP_REGION_CFG << PMP18_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(18)))
   csrw pmpcfg4, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1557,7 +1557,7 @@ PMPSm_cp_pmp64_pmp64_entry18_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr17, x5
-  LI(x4, (PMP_REGION_CFG << PMP17_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(17)))
   csrw pmpcfg4, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1588,7 +1588,7 @@ PMPSm_cp_pmp64_pmp64_entry17_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr16, x5
-  LI(x4, (PMP_REGION_CFG << PMP16_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(16)))
   csrw pmpcfg4, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1619,7 +1619,7 @@ PMPSm_cp_pmp64_pmp64_entry16_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr15, x5
-  LI(x4, (PMP_REGION_CFG << PMP15_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(15)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -1654,7 +1654,7 @@ PMPSm_cp_pmp64_pmp64_entry15_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr14, x5
-  LI(x4, (PMP_REGION_CFG << PMP14_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(14)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -1689,7 +1689,7 @@ PMPSm_cp_pmp64_pmp64_entry14_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr13, x5
-  LI(x4, (PMP_REGION_CFG << PMP13_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(13)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -1724,7 +1724,7 @@ PMPSm_cp_pmp64_pmp64_entry13_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr12, x5
-  LI(x4, (PMP_REGION_CFG << PMP12_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(12)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -1759,7 +1759,7 @@ PMPSm_cp_pmp64_pmp64_entry12_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr11, x5
-  LI(x4, (PMP_REGION_CFG << PMP11_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(11)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1790,7 +1790,7 @@ PMPSm_cp_pmp64_pmp64_entry11_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr10, x5
-  LI(x4, (PMP_REGION_CFG << PMP10_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(10)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1821,7 +1821,7 @@ PMPSm_cp_pmp64_pmp64_entry10_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr9, x5
-  LI(x4, (PMP_REGION_CFG << PMP9_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(9)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1852,7 +1852,7 @@ PMPSm_cp_pmp64_pmp64_entry9_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr8, x5
-  LI(x4, (PMP_REGION_CFG << PMP8_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(8)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1883,7 +1883,7 @@ PMPSm_cp_pmp64_pmp64_entry8_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr7, x5
-  LI(x4, (PMP_REGION_CFG << PMP7_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(7)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -1918,7 +1918,7 @@ PMPSm_cp_pmp64_pmp64_entry7_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr6, x5
-  LI(x4, (PMP_REGION_CFG << PMP6_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(6)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -1953,7 +1953,7 @@ PMPSm_cp_pmp64_pmp64_entry6_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr5, x5
-  LI(x4, (PMP_REGION_CFG << PMP5_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(5)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -1988,7 +1988,7 @@ PMPSm_cp_pmp64_pmp64_entry5_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr4, x5
-  LI(x4, (PMP_REGION_CFG << PMP4_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(4)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -2023,7 +2023,7 @@ PMPSm_cp_pmp64_pmp64_entry4_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr3, x5
-  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(3)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2054,7 +2054,7 @@ PMPSm_cp_pmp64_pmp64_entry3_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr2, x5
-  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(2)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2085,7 +2085,7 @@ PMPSm_cp_pmp64_pmp64_entry2_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr1, x5
-  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(1)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2116,7 +2116,7 @@ PMPSm_cp_pmp64_pmp64_entry1_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr0, x5
-  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(0)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2148,7 +2148,7 @@ PMPSm_cp_pmp64_pmp64_entry0_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr14, x5
-  LI(x4, (PMP_REGION_CFG << PMP14_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(14)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -2183,7 +2183,7 @@ PMPSm_cp_pmp64_pmp16_entry14_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr13, x5
-  LI(x4, (PMP_REGION_CFG << PMP13_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(13)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -2218,7 +2218,7 @@ PMPSm_cp_pmp64_pmp16_entry13_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr12, x5
-  LI(x4, (PMP_REGION_CFG << PMP12_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(12)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -2253,7 +2253,7 @@ PMPSm_cp_pmp64_pmp16_entry12_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr11, x5
-  LI(x4, (PMP_REGION_CFG << PMP11_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(11)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2284,7 +2284,7 @@ PMPSm_cp_pmp64_pmp16_entry11_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr10, x5
-  LI(x4, (PMP_REGION_CFG << PMP10_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(10)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2315,7 +2315,7 @@ PMPSm_cp_pmp64_pmp16_entry10_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr9, x5
-  LI(x4, (PMP_REGION_CFG << PMP9_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(9)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2346,7 +2346,7 @@ PMPSm_cp_pmp64_pmp16_entry9_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr8, x5
-  LI(x4, (PMP_REGION_CFG << PMP8_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(8)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2377,7 +2377,7 @@ PMPSm_cp_pmp64_pmp16_entry8_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr7, x5
-  LI(x4, (PMP_REGION_CFG << PMP7_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(7)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -2412,7 +2412,7 @@ PMPSm_cp_pmp64_pmp16_entry7_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr6, x5
-  LI(x4, (PMP_REGION_CFG << PMP6_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(6)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -2447,7 +2447,7 @@ PMPSm_cp_pmp64_pmp16_entry6_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr5, x5
-  LI(x4, (PMP_REGION_CFG << PMP5_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(5)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -2482,7 +2482,7 @@ PMPSm_cp_pmp64_pmp16_entry5_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr4, x5
-  LI(x4, (PMP_REGION_CFG << PMP4_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(4)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -2517,7 +2517,7 @@ PMPSm_cp_pmp64_pmp16_entry4_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr3, x5
-  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(3)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2548,7 +2548,7 @@ PMPSm_cp_pmp64_pmp16_entry3_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr2, x5
-  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(2)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2579,7 +2579,7 @@ PMPSm_cp_pmp64_pmp16_entry2_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr1, x5
-  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(1)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -2610,7 +2610,7 @@ PMPSm_cp_pmp64_pmp16_entry1_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr0, x5
-  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  LI(x4, (PMP_REGION_CFG << PMP_CFG_SHIFT(0)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 

@@ -78,7 +78,7 @@ RVTEST_BEGIN
 
 
 // PMP configuration 46: L = 1 and XWR = 001 on PMP entry 14
-  LI(x4, (PMPREGION_XWR_001 << PMP14_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_001 << PMP_CFG_SHIFT(14)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -151,7 +151,7 @@ PMPSm_cp_cfg_RW_entry14_lxwr001_11_ld:
 #endif
 
 // PMP configuration 47: L = 1 and XWR = 100 on PMP entry 13
-  LI(x4, (PMPREGION_XWR_100 << PMP13_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_100 << PMP_CFG_SHIFT(13)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -224,7 +224,7 @@ PMPSm_cp_cfg_RW_entry13_lxwr100_11_ld:
 #endif
 
 // PMP configuration 48: L = 1 and XWR = 000 on PMP entry 12
-  LI(x4, (PMPREGION_XWR_000 << PMP12_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_000 << PMP_CFG_SHIFT(12)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -297,7 +297,7 @@ PMPSm_cp_cfg_RW_entry12_lxwr000_11_ld:
 #endif
 
 // PMP configuration 49: L = 1 and XWR = 111 on PMP entry 11
-  LI(x4, (PMPREGION_XWR_111 << PMP11_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_111 << PMP_CFG_SHIFT(11)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -366,7 +366,7 @@ PMPSm_cp_cfg_RW_entry11_lxwr111_11_ld:
 #endif
 
 // PMP configuration 50: L = 1 and XWR = 001 on PMP entry 10
-  LI(x4, (PMPREGION_XWR_001 << PMP10_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_001 << PMP_CFG_SHIFT(10)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -435,7 +435,7 @@ PMPSm_cp_cfg_RW_entry10_lxwr001_11_ld:
 #endif
 
 // PMP configuration 51: L = 1 and XWR = 101 on PMP entry 9
-  LI(x4, (PMPREGION_XWR_101 << PMP9_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_101 << PMP_CFG_SHIFT(9)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -504,7 +504,7 @@ PMPSm_cp_cfg_RW_entry9_lxwr101_11_ld:
 #endif
 
 // PMP configuration 52: L = 1 and XWR = 001 on PMP entry 8
-  LI(x4, (PMPREGION_XWR_001 << PMP8_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_001 << PMP_CFG_SHIFT(8)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -573,7 +573,7 @@ PMPSm_cp_cfg_RW_entry8_lxwr001_11_ld:
 #endif
 
 // PMP configuration 53: L = 1 and XWR = 100 on PMP entry 7
-  LI(x4, (PMPREGION_XWR_100 << PMP7_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_100 << PMP_CFG_SHIFT(7)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -646,7 +646,7 @@ PMPSm_cp_cfg_RW_entry7_lxwr100_11_ld:
 #endif
 
 // PMP configuration 54: L = 1 and XWR = 000 on PMP entry 6
-  LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_000 << PMP_CFG_SHIFT(6)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -719,7 +719,7 @@ PMPSm_cp_cfg_RW_entry6_lxwr000_11_ld:
 #endif
 
 // PMP configuration 55: L = 1 and XWR = 111 on PMP entry 5
-  LI(x4, (PMPREGION_XWR_111 << PMP5_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_111 << PMP_CFG_SHIFT(5)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -792,7 +792,7 @@ PMPSm_cp_cfg_RW_entry5_lxwr111_11_ld:
 #endif
 
 // PMP configuration 56: L = 1 and XWR = 011 on PMP entry 4
-  LI(x4, (PMPREGION_XWR_011 << PMP4_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_011 << PMP_CFG_SHIFT(4)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -865,7 +865,7 @@ PMPSm_cp_cfg_RW_entry4_lxwr011_11_ld:
 #endif
 
 // PMP configuration 57: L = 1 and XWR = 101 on PMP entry 3
-  LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_101 << PMP_CFG_SHIFT(3)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -934,7 +934,7 @@ PMPSm_cp_cfg_RW_entry3_lxwr101_11_ld:
 #endif
 
 // PMP configuration 58: L = 1 and XWR = 001 on PMP entry 2
-  LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_001 << PMP_CFG_SHIFT(2)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1003,7 +1003,7 @@ PMPSm_cp_cfg_RW_entry2_lxwr001_11_ld:
 #endif
 
 // PMP configuration 59: L = 1 and XWR = 100 on PMP entry 1
-  LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_100 << PMP_CFG_SHIFT(1)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -1072,7 +1072,7 @@ PMPSm_cp_cfg_RW_entry1_lxwr100_11_ld:
 #endif
 
 // PMP configuration 60: L = 1 and XWR = 000 on PMP entry 0
-  LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
+  LI(x4, (PMPREGION_XWR_000 << PMP_CFG_SHIFT(0)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 

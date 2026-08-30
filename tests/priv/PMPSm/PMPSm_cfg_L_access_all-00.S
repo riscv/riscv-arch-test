@@ -87,7 +87,7 @@ PMPSm_cp_none_all_off_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr14, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP14_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(14)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -122,7 +122,7 @@ PMPSm_cp_cfg_L_access_all_entry14_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr13, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP13_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(13)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -157,7 +157,7 @@ PMPSm_cp_cfg_L_access_all_entry13_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr12, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP12_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(12)))
 #if __riscv_xlen == 32
   csrw pmpcfg3, x4
 #else
@@ -192,7 +192,7 @@ PMPSm_cp_cfg_L_access_all_entry12_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr11, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP11_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(11)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -223,7 +223,7 @@ PMPSm_cp_cfg_L_access_all_entry11_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr10, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP10_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(10)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -254,7 +254,7 @@ PMPSm_cp_cfg_L_access_all_entry10_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr9, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP9_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(9)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -285,7 +285,7 @@ PMPSm_cp_cfg_L_access_all_entry9_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr8, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP8_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(8)))
   csrw pmpcfg2, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -316,7 +316,7 @@ PMPSm_cp_cfg_L_access_all_entry8_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr7, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP7_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(7)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -351,7 +351,7 @@ PMPSm_cp_cfg_L_access_all_entry7_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr6, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP6_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(6)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -386,7 +386,7 @@ PMPSm_cp_cfg_L_access_all_entry6_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr5, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP5_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(5)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -421,7 +421,7 @@ PMPSm_cp_cfg_L_access_all_entry5_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr4, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP4_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(4)))
 #if __riscv_xlen == 32
   csrw pmpcfg1, x4
 #else
@@ -456,7 +456,7 @@ PMPSm_cp_cfg_L_access_all_entry4_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr3, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP3_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(3)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -487,7 +487,7 @@ PMPSm_cp_cfg_L_access_all_entry3_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr2, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP2_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(2)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -518,7 +518,7 @@ PMPSm_cp_cfg_L_access_all_entry2_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr1, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP1_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(1)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
@@ -549,7 +549,7 @@ PMPSm_cp_cfg_L_access_all_entry1_3_lw:
   LI(x6, PMP_REGION_SIZE)
   or x5, x5, x6
   csrw pmpaddr0, x5
-  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP0_CFG_SHIFT))
+  LI(x4, ((((PMP_NAPOT) & 0xFF) << 0) << PMP_CFG_SHIFT(0)))
   csrw pmpcfg0, x4
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 

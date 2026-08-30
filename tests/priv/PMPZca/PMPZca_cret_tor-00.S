@@ -51,7 +51,7 @@ RVTEST_BEGIN
   .set pmpaddri, pmpaddri + 1
   .endr
 
-#define PMPCFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMPCFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP_CFG_SHIFT(1))
 #define REGIONSTART TEST_FOR_EXECUTION_1
 
   RVTEST_PMP_SET_BACKGROUND x4

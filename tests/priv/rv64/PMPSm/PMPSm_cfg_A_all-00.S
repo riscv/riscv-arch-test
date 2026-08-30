@@ -35,133 +35,131 @@ RVTEST_BEGIN
 //   Write A = NA4, NAPOT, TOR and OFF into every byte of every pmpcfg CSR and read it back.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
-
-// Test Case: write A = NA4 to every byte of every pmpcfg CSR
-    LI(x4, ((PMP_NA4&0xFF) << PMP0_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP1_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP2_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP3_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP4_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP5_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP6_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP7_CFG_SHIFT))
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg0:
+// PMP configuration: write A = NA4 to every byte of every pmpcfg CSR
+  LI(x4, ((PMP_NA4&0xFF) << PMP0_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP1_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP2_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP3_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP4_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP5_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP6_CFG_SHIFT)|((PMP_NA4&0xFF) << PMP7_CFG_SHIFT))
+PMPSm_cp_cfg_A_all_NA4_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg0, PMPSm_cp_cfg_A_all_NA4_pmpcfg0_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg2:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg2:
   # Write x4 to pmpcfg2, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg2, PMPSm_cp_cfg_A_all_NA4_pmpcfg2_str)
   .if UDB_NUM_PMP_ENTRIES == 64
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg4:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg4:
   # Write x4 to pmpcfg4, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg4, PMPSm_cp_cfg_A_all_NA4_pmpcfg4_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg6:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg6:
   # Write x4 to pmpcfg6, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg6, PMPSm_cp_cfg_A_all_NA4_pmpcfg6_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg8:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg8:
   # Write x4 to pmpcfg8, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg8, PMPSm_cp_cfg_A_all_NA4_pmpcfg8_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg10:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg10:
   # Write x4 to pmpcfg10, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg10, PMPSm_cp_cfg_A_all_NA4_pmpcfg10_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg12:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg12:
   # Write x4 to pmpcfg12, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg12, PMPSm_cp_cfg_A_all_NA4_pmpcfg12_str)
-    PMPSm_cp_cfg_A_all_NA4_pmpcfg14:
+PMPSm_cp_cfg_A_all_NA4_pmpcfg14:
   # Write x4 to pmpcfg14, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMPSm_cp_cfg_A_all_NA4_pmpcfg14, PMPSm_cp_cfg_A_all_NA4_pmpcfg14_str)
   .endif
 
-// Test Case: write A = NAPOT to every byte of every pmpcfg CSR
-    LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0:
+// PMP configuration: write A = NAPOT to every byte of every pmpcfg CSR
+  LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP4_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP5_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP6_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP7_CFG_SHIFT))
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2:
   # Write x4 to pmpcfg2, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2_str)
   .if UDB_NUM_PMP_ENTRIES == 64
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4:
   # Write x4 to pmpcfg4, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6:
   # Write x4 to pmpcfg6, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8:
   # Write x4 to pmpcfg8, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10:
   # Write x4 to pmpcfg10, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12:
   # Write x4 to pmpcfg12, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12_str)
-    PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14:
+PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14:
   # Write x4 to pmpcfg14, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14_str)
   .endif
 
-// Test Case: write A = TOR to every byte of every pmpcfg CSR
-    LI(x4, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP4_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP5_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP6_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP7_CFG_SHIFT))
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg0:
+// PMP configuration: write A = TOR to every byte of every pmpcfg CSR
+  LI(x4, ((PMP_TOR&0xFF) << PMP0_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP1_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP2_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP3_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP4_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP5_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP6_CFG_SHIFT)|((PMP_TOR&0xFF) << PMP7_CFG_SHIFT))
+PMPSm_cp_cfg_A_all_TOR_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg0, PMPSm_cp_cfg_A_all_TOR_pmpcfg0_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg2:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg2:
   # Write x4 to pmpcfg2, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg2, PMPSm_cp_cfg_A_all_TOR_pmpcfg2_str)
   .if UDB_NUM_PMP_ENTRIES == 64
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg4:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg4:
   # Write x4 to pmpcfg4, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg4, PMPSm_cp_cfg_A_all_TOR_pmpcfg4_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg6:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg6:
   # Write x4 to pmpcfg6, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg6, PMPSm_cp_cfg_A_all_TOR_pmpcfg6_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg8:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg8:
   # Write x4 to pmpcfg8, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg8, PMPSm_cp_cfg_A_all_TOR_pmpcfg8_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg10:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg10:
   # Write x4 to pmpcfg10, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg10, PMPSm_cp_cfg_A_all_TOR_pmpcfg10_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg12:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg12:
   # Write x4 to pmpcfg12, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg12, PMPSm_cp_cfg_A_all_TOR_pmpcfg12_str)
-    PMPSm_cp_cfg_A_all_TOR_pmpcfg14:
+PMPSm_cp_cfg_A_all_TOR_pmpcfg14:
   # Write x4 to pmpcfg14, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMPSm_cp_cfg_A_all_TOR_pmpcfg14, PMPSm_cp_cfg_A_all_TOR_pmpcfg14_str)
   .endif
 
-// Test Case: write A = OFF to every byte of every pmpcfg CSR
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg0:
+// PMP configuration: write A = OFF to every byte of every pmpcfg CSR
+PMPSm_cp_cfg_A_all_OFF_pmpcfg0:
   # Write x0 to pmpcfg0, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg0, PMPSm_cp_cfg_A_all_OFF_pmpcfg0_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg2:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg2:
   # Write x0 to pmpcfg2, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg2, PMPSm_cp_cfg_A_all_OFF_pmpcfg2_str)
   .if UDB_NUM_PMP_ENTRIES == 64
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg4:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg4:
   # Write x0 to pmpcfg4, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg4, PMPSm_cp_cfg_A_all_OFF_pmpcfg4_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg6:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg6:
   # Write x0 to pmpcfg6, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg6, PMPSm_cp_cfg_A_all_OFF_pmpcfg6_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg8:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg8:
   # Write x0 to pmpcfg8, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg8, PMPSm_cp_cfg_A_all_OFF_pmpcfg8_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg10:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg10:
   # Write x0 to pmpcfg10, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg10, PMPSm_cp_cfg_A_all_OFF_pmpcfg10_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg12:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg12:
   # Write x0 to pmpcfg12, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg12, PMPSm_cp_cfg_A_all_OFF_pmpcfg12_str)
-    PMPSm_cp_cfg_A_all_OFF_pmpcfg14:
+PMPSm_cp_cfg_A_all_OFF_pmpcfg14:
   # Write x0 to pmpcfg14, read back and check against expected.
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg14, PMPSm_cp_cfg_A_all_OFF_pmpcfg14_str)
   .endif

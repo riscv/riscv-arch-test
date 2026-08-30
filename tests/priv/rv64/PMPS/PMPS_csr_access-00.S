@@ -35,38 +35,32 @@ RVTEST_BEGIN
 //   Write every pmpaddr and pmpcfg CSR from S mode; each traps with an illegal instruction.
 /////////////////////////////////
 
-    RVTEST_PMP_SET_BACKGROUND x4
-
-// ---------------------------- Verification Section ----------------------------
+  RVTEST_PMP_SET_BACKGROUND x4
 
 PMPS_cp_pmpaddr_access_s_write_all:
 // Write all ones to every pmpaddr CSR from S mode
-    LI(x4, -1)
-    .set pmpaddri, CSR_PMPADDR0
-    .rept 64
-    RVTEST_TSBI_GOTO_SMODE
-    99:
-    RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x4, 99b, PMPS_cp_pmpaddr_access_s_write_all_str)
-    nop
-    RVTEST_TSBI_GOTO_MMODE
-    .set pmpaddri, pmpaddri+1
-    .endr
+  LI(x4, -1)
+  .set pmpaddri, CSR_PMPADDR0
+  .rept 64
+  RVTEST_TSBI_GOTO_SMODE
+99:
+  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x4, 99b, PMPS_cp_pmpaddr_access_s_write_all_str)
+  nop
+  RVTEST_TSBI_GOTO_MMODE
+  .set pmpaddri, pmpaddri+1
+  .endr
 
 PMPS_cp_pmpcfg_access_s_write_all:
 // Write all ones to every pmpcfg CSR from S mode
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept 16
-    RVTEST_TSBI_GOTO_SMODE
-    99:
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x4, 99b, PMPS_cp_pmpcfg_access_s_write_all_str)
-    nop
-    RVTEST_TSBI_GOTO_MMODE
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-
-    j exit
-
-exit:
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept 16
+  RVTEST_TSBI_GOTO_SMODE
+99:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x4, 99b, PMPS_cp_pmpcfg_access_s_write_all_str)
+  nop
+  RVTEST_TSBI_GOTO_MMODE
+  .set pmpcfgi, pmpcfgi+1
+  .endr
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -78,8 +72,8 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPS_cp_pmpaddr_access_s_write_all_str: .string "\"test: 1; cg: PMPS; cp: cp_pmpaddr_access_s; bin: write_all\""
-PMPS_cp_pmpcfg_access_s_write_all_str: .string "\"test: 2; cg: PMPS; cp: cp_pmpcfg_access_s; bin: write_all\""
+PMPS_cp_pmpaddr_access_s_write_all_str: .string "\"test: 148; cg: PMPS; cp: cp_pmpaddr_access_s; bin: write_all\""
+PMPS_cp_pmpcfg_access_s_write_all_str: .string "\"test: 149; cg: PMPS; cp: cp_pmpcfg_access_s; bin: write_all\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

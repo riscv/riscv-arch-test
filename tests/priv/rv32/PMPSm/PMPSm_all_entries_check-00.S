@@ -18,7 +18,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 199
+#define SIGUPD_COUNT 244
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -36,1054 +36,2530 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} at a locked NAPOT XR region, for every entry below the background entry (16 or 64 entries).
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 4
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 1
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMP_REGION_CFG (((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << 0)
+#define PMP_REGION_CFG (((PMP_L | PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << 0)
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
-
-// ---------------------------- Verification Section ----------------------------
+  RVTEST_PMP_SET_BACKGROUND x4
 
 // Every entry below the background entry, lowest priority first.
 #if UDB_NUM_PMP_ENTRIES == 64
 
-// Test Case: 1 : PMP entry 62
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr62, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg15, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+// PMP configuration 1: entry 62
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr62, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg15, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 2 : PMP entry 61
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr61, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg15, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry62_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry62_1_jalr, PMPSm_cp_pmp64_pmp64_entry62_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry62_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry62_2_sw, PMPSm_cp_pmp64_pmp64_entry62_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry62_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry62_3_lw, PMPSm_cp_pmp64_pmp64_entry62_3_lw_str)
 
-// Test Case: 3 : PMP entry 60
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr60, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg15, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+// PMP configuration 2: entry 61
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr61, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg15, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 4 : PMP entry 59
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr59, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg14, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry61_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry61_1_jalr, PMPSm_cp_pmp64_pmp64_entry61_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry61_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry61_2_sw, PMPSm_cp_pmp64_pmp64_entry61_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry61_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry61_3_lw, PMPSm_cp_pmp64_pmp64_entry61_3_lw_str)
 
-// Test Case: 5 : PMP entry 58
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr58, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg14, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+// PMP configuration 3: entry 60
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr60, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg15, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 6 : PMP entry 57
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr57, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg14, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry60_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry60_1_jalr, PMPSm_cp_pmp64_pmp64_entry60_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry60_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry60_2_sw, PMPSm_cp_pmp64_pmp64_entry60_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry60_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry60_3_lw, PMPSm_cp_pmp64_pmp64_entry60_3_lw_str)
 
-// Test Case: 7 : PMP entry 56
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr56, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg14, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
+// PMP configuration 4: entry 59
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr59, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg14, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 8 : PMP entry 55
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr55, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg13, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry59_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry59_1_jalr, PMPSm_cp_pmp64_pmp64_entry59_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry59_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry59_2_sw, PMPSm_cp_pmp64_pmp64_entry59_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry59_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry59_3_lw, PMPSm_cp_pmp64_pmp64_entry59_3_lw_str)
 
-// Test Case: 9 : PMP entry 54
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr54, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg13, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
+// PMP configuration 5: entry 58
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr58, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg14, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 10 : PMP entry 53
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr53, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg13, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry58_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry58_1_jalr, PMPSm_cp_pmp64_pmp64_entry58_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry58_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry58_2_sw, PMPSm_cp_pmp64_pmp64_entry58_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry58_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry58_3_lw, PMPSm_cp_pmp64_pmp64_entry58_3_lw_str)
 
-// Test Case: 11 : PMP entry 52
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr52, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg13, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
+// PMP configuration 6: entry 57
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr57, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg14, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 12 : PMP entry 51
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr51, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg12, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry57_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry57_1_jalr, PMPSm_cp_pmp64_pmp64_entry57_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry57_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry57_2_sw, PMPSm_cp_pmp64_pmp64_entry57_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry57_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry57_3_lw, PMPSm_cp_pmp64_pmp64_entry57_3_lw_str)
 
-// Test Case: 13 : PMP entry 50
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr50, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg12, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
+// PMP configuration 7: entry 56
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr56, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg14, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 14 : PMP entry 49
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr49, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg12, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry56_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry56_1_jalr, PMPSm_cp_pmp64_pmp64_entry56_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry56_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry56_2_sw, PMPSm_cp_pmp64_pmp64_entry56_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry56_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry56_3_lw, PMPSm_cp_pmp64_pmp64_entry56_3_lw_str)
 
-// Test Case: 15 : PMP entry 48
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr48, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg12, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+// PMP configuration 8: entry 55
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr55, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg13, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 16 : PMP entry 47
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr47, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg11, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry55_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry55_1_jalr, PMPSm_cp_pmp64_pmp64_entry55_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry55_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry55_2_sw, PMPSm_cp_pmp64_pmp64_entry55_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry55_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry55_3_lw, PMPSm_cp_pmp64_pmp64_entry55_3_lw_str)
 
-// Test Case: 17 : PMP entry 46
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr46, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg11, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
+// PMP configuration 9: entry 54
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr54, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg13, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 18 : PMP entry 45
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr45, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg11, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry54_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry54_1_jalr, PMPSm_cp_pmp64_pmp64_entry54_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry54_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry54_2_sw, PMPSm_cp_pmp64_pmp64_entry54_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry54_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry54_3_lw, PMPSm_cp_pmp64_pmp64_entry54_3_lw_str)
 
-// Test Case: 19 : PMP entry 44
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr44, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg11, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
+// PMP configuration 10: entry 53
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr53, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg13, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 20 : PMP entry 43
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr43, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg10, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry53_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry53_1_jalr, PMPSm_cp_pmp64_pmp64_entry53_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry53_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry53_2_sw, PMPSm_cp_pmp64_pmp64_entry53_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry53_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry53_3_lw, PMPSm_cp_pmp64_pmp64_entry53_3_lw_str)
 
-// Test Case: 21 : PMP entry 42
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr42, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg10, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
+// PMP configuration 11: entry 52
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr52, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg13, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 22 : PMP entry 41
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr41, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg10, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry52_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry52_1_jalr, PMPSm_cp_pmp64_pmp64_entry52_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry52_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry52_2_sw, PMPSm_cp_pmp64_pmp64_entry52_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry52_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry52_3_lw, PMPSm_cp_pmp64_pmp64_entry52_3_lw_str)
 
-// Test Case: 23 : PMP entry 40
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr40, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg10, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
+// PMP configuration 12: entry 51
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr51, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg12, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 24 : PMP entry 39
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr39, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg9, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry51_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry51_1_jalr, PMPSm_cp_pmp64_pmp64_entry51_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry51_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry51_2_sw, PMPSm_cp_pmp64_pmp64_entry51_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry51_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry51_3_lw, PMPSm_cp_pmp64_pmp64_entry51_3_lw_str)
 
-// Test Case: 25 : PMP entry 38
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr38, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg9, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
+// PMP configuration 13: entry 50
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr50, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg12, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 26 : PMP entry 37
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr37, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg9, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry50_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry50_1_jalr, PMPSm_cp_pmp64_pmp64_entry50_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry50_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry50_2_sw, PMPSm_cp_pmp64_pmp64_entry50_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry50_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry50_3_lw, PMPSm_cp_pmp64_pmp64_entry50_3_lw_str)
 
-// Test Case: 27 : PMP entry 36
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr36, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg9, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
+// PMP configuration 14: entry 49
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr49, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg12, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 28 : PMP entry 35
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr35, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg8, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry49_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry49_1_jalr, PMPSm_cp_pmp64_pmp64_entry49_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry49_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry49_2_sw, PMPSm_cp_pmp64_pmp64_entry49_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry49_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry49_3_lw, PMPSm_cp_pmp64_pmp64_entry49_3_lw_str)
 
-// Test Case: 29 : PMP entry 34
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr34, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg8, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
+// PMP configuration 15: entry 48
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr48, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg12, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 30 : PMP entry 33
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr33, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg8, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry48_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry48_1_jalr, PMPSm_cp_pmp64_pmp64_entry48_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry48_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry48_2_sw, PMPSm_cp_pmp64_pmp64_entry48_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry48_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry48_3_lw, PMPSm_cp_pmp64_pmp64_entry48_3_lw_str)
 
-// Test Case: 31 : PMP entry 32
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr32, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg8, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_31
+// PMP configuration 16: entry 47
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr47, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg11, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 32 : PMP entry 31
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr31, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg7, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_32
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry47_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry47_1_jalr, PMPSm_cp_pmp64_pmp64_entry47_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry47_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry47_2_sw, PMPSm_cp_pmp64_pmp64_entry47_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry47_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry47_3_lw, PMPSm_cp_pmp64_pmp64_entry47_3_lw_str)
 
-// Test Case: 33 : PMP entry 30
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr30, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg7, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_33
+// PMP configuration 17: entry 46
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr46, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg11, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 34 : PMP entry 29
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr29, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg7, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_34
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry46_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry46_1_jalr, PMPSm_cp_pmp64_pmp64_entry46_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry46_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry46_2_sw, PMPSm_cp_pmp64_pmp64_entry46_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry46_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry46_3_lw, PMPSm_cp_pmp64_pmp64_entry46_3_lw_str)
 
-// Test Case: 35 : PMP entry 28
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr28, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg7, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_35
+// PMP configuration 18: entry 45
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr45, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg11, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 36 : PMP entry 27
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr27, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg6, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_36
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry45_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry45_1_jalr, PMPSm_cp_pmp64_pmp64_entry45_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry45_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry45_2_sw, PMPSm_cp_pmp64_pmp64_entry45_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry45_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry45_3_lw, PMPSm_cp_pmp64_pmp64_entry45_3_lw_str)
 
-// Test Case: 37 : PMP entry 26
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr26, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg6, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_37
+// PMP configuration 19: entry 44
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr44, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg11, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 38 : PMP entry 25
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr25, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg6, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_38
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry44_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry44_1_jalr, PMPSm_cp_pmp64_pmp64_entry44_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry44_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry44_2_sw, PMPSm_cp_pmp64_pmp64_entry44_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry44_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry44_3_lw, PMPSm_cp_pmp64_pmp64_entry44_3_lw_str)
 
-// Test Case: 39 : PMP entry 24
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr24, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg6, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_39
+// PMP configuration 20: entry 43
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr43, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg10, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 40 : PMP entry 23
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr23, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg5, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_40
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry43_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry43_1_jalr, PMPSm_cp_pmp64_pmp64_entry43_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry43_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry43_2_sw, PMPSm_cp_pmp64_pmp64_entry43_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry43_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry43_3_lw, PMPSm_cp_pmp64_pmp64_entry43_3_lw_str)
 
-// Test Case: 41 : PMP entry 22
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr22, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg5, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_41
+// PMP configuration 21: entry 42
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr42, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg10, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 42 : PMP entry 21
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr21, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg5, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_42
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry42_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry42_1_jalr, PMPSm_cp_pmp64_pmp64_entry42_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry42_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry42_2_sw, PMPSm_cp_pmp64_pmp64_entry42_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry42_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry42_3_lw, PMPSm_cp_pmp64_pmp64_entry42_3_lw_str)
 
-// Test Case: 43 : PMP entry 20
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr20, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg5, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_43
+// PMP configuration 22: entry 41
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr41, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg10, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 44 : PMP entry 19
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr19, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg4, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_44
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry41_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry41_1_jalr, PMPSm_cp_pmp64_pmp64_entry41_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry41_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry41_2_sw, PMPSm_cp_pmp64_pmp64_entry41_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry41_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry41_3_lw, PMPSm_cp_pmp64_pmp64_entry41_3_lw_str)
 
-// Test Case: 45 : PMP entry 18
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr18, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg4, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_45
+// PMP configuration 23: entry 40
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr40, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg10, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 46 : PMP entry 17
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr17, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg4, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_46
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry40_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry40_1_jalr, PMPSm_cp_pmp64_pmp64_entry40_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry40_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry40_2_sw, PMPSm_cp_pmp64_pmp64_entry40_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry40_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry40_3_lw, PMPSm_cp_pmp64_pmp64_entry40_3_lw_str)
 
-// Test Case: 47 : PMP entry 16
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr16, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg4, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
+// PMP configuration 24: entry 39
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr39, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg9, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 48 : PMP entry 15
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr15, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry39_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry39_1_jalr, PMPSm_cp_pmp64_pmp64_entry39_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry39_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry39_2_sw, PMPSm_cp_pmp64_pmp64_entry39_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry39_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry39_3_lw, PMPSm_cp_pmp64_pmp64_entry39_3_lw_str)
 
-// Test Case: 49 : PMP entry 14
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr14, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
+// PMP configuration 25: entry 38
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr38, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg9, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 50 : PMP entry 13
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr13, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry38_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry38_1_jalr, PMPSm_cp_pmp64_pmp64_entry38_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry38_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry38_2_sw, PMPSm_cp_pmp64_pmp64_entry38_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry38_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry38_3_lw, PMPSm_cp_pmp64_pmp64_entry38_3_lw_str)
 
-// Test Case: 51 : PMP entry 12
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr12, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
+// PMP configuration 26: entry 37
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr37, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg9, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 52 : PMP entry 11
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr11, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry37_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry37_1_jalr, PMPSm_cp_pmp64_pmp64_entry37_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry37_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry37_2_sw, PMPSm_cp_pmp64_pmp64_entry37_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry37_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry37_3_lw, PMPSm_cp_pmp64_pmp64_entry37_3_lw_str)
 
-// Test Case: 53 : PMP entry 10
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr10, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
+// PMP configuration 27: entry 36
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr36, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg9, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 54 : PMP entry 9
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr9, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry36_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry36_1_jalr, PMPSm_cp_pmp64_pmp64_entry36_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry36_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry36_2_sw, PMPSm_cp_pmp64_pmp64_entry36_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry36_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry36_3_lw, PMPSm_cp_pmp64_pmp64_entry36_3_lw_str)
 
-// Test Case: 55 : PMP entry 8
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr8, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
+// PMP configuration 28: entry 35
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr35, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg8, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 56 : PMP entry 7
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr7, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry35_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry35_1_jalr, PMPSm_cp_pmp64_pmp64_entry35_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry35_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry35_2_sw, PMPSm_cp_pmp64_pmp64_entry35_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry35_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry35_3_lw, PMPSm_cp_pmp64_pmp64_entry35_3_lw_str)
 
-// Test Case: 57 : PMP entry 6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr6, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
+// PMP configuration 29: entry 34
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr34, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg8, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 58 : PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry34_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry34_1_jalr, PMPSm_cp_pmp64_pmp64_entry34_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry34_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry34_2_sw, PMPSm_cp_pmp64_pmp64_entry34_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry34_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry34_3_lw, PMPSm_cp_pmp64_pmp64_entry34_3_lw_str)
 
-// Test Case: 59 : PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr4, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
+// PMP configuration 30: entry 33
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr33, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg8, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 60 : PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry33_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry33_1_jalr, PMPSm_cp_pmp64_pmp64_entry33_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry33_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry33_2_sw, PMPSm_cp_pmp64_pmp64_entry33_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry33_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry33_3_lw, PMPSm_cp_pmp64_pmp64_entry33_3_lw_str)
 
-// Test Case: 61 : PMP entry 2
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr2, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
+// PMP configuration 31: entry 32
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr32, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg8, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 62 : PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr1, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry32_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry32_1_jalr, PMPSm_cp_pmp64_pmp64_entry32_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry32_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry32_2_sw, PMPSm_cp_pmp64_pmp64_entry32_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry32_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry32_3_lw, PMPSm_cp_pmp64_pmp64_entry32_3_lw_str)
 
-// Test Case: 63 : PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_63
+// PMP configuration 32: entry 31
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr31, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg7, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry31_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry31_1_jalr, PMPSm_cp_pmp64_pmp64_entry31_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry31_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry31_2_sw, PMPSm_cp_pmp64_pmp64_entry31_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry31_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry31_3_lw, PMPSm_cp_pmp64_pmp64_entry31_3_lw_str)
+
+// PMP configuration 33: entry 30
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr30, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg7, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry30_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry30_1_jalr, PMPSm_cp_pmp64_pmp64_entry30_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry30_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry30_2_sw, PMPSm_cp_pmp64_pmp64_entry30_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry30_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry30_3_lw, PMPSm_cp_pmp64_pmp64_entry30_3_lw_str)
+
+// PMP configuration 34: entry 29
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr29, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg7, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry29_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry29_1_jalr, PMPSm_cp_pmp64_pmp64_entry29_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry29_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry29_2_sw, PMPSm_cp_pmp64_pmp64_entry29_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry29_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry29_3_lw, PMPSm_cp_pmp64_pmp64_entry29_3_lw_str)
+
+// PMP configuration 35: entry 28
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr28, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg7, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry28_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry28_1_jalr, PMPSm_cp_pmp64_pmp64_entry28_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry28_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry28_2_sw, PMPSm_cp_pmp64_pmp64_entry28_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry28_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry28_3_lw, PMPSm_cp_pmp64_pmp64_entry28_3_lw_str)
+
+// PMP configuration 36: entry 27
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr27, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg6, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry27_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry27_1_jalr, PMPSm_cp_pmp64_pmp64_entry27_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry27_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry27_2_sw, PMPSm_cp_pmp64_pmp64_entry27_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry27_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry27_3_lw, PMPSm_cp_pmp64_pmp64_entry27_3_lw_str)
+
+// PMP configuration 37: entry 26
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr26, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg6, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry26_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry26_1_jalr, PMPSm_cp_pmp64_pmp64_entry26_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry26_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry26_2_sw, PMPSm_cp_pmp64_pmp64_entry26_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry26_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry26_3_lw, PMPSm_cp_pmp64_pmp64_entry26_3_lw_str)
+
+// PMP configuration 38: entry 25
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr25, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg6, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry25_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry25_1_jalr, PMPSm_cp_pmp64_pmp64_entry25_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry25_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry25_2_sw, PMPSm_cp_pmp64_pmp64_entry25_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry25_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry25_3_lw, PMPSm_cp_pmp64_pmp64_entry25_3_lw_str)
+
+// PMP configuration 39: entry 24
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr24, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg6, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry24_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry24_1_jalr, PMPSm_cp_pmp64_pmp64_entry24_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry24_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry24_2_sw, PMPSm_cp_pmp64_pmp64_entry24_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry24_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry24_3_lw, PMPSm_cp_pmp64_pmp64_entry24_3_lw_str)
+
+// PMP configuration 40: entry 23
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr23, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg5, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry23_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry23_1_jalr, PMPSm_cp_pmp64_pmp64_entry23_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry23_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry23_2_sw, PMPSm_cp_pmp64_pmp64_entry23_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry23_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry23_3_lw, PMPSm_cp_pmp64_pmp64_entry23_3_lw_str)
+
+// PMP configuration 41: entry 22
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr22, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg5, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry22_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry22_1_jalr, PMPSm_cp_pmp64_pmp64_entry22_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry22_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry22_2_sw, PMPSm_cp_pmp64_pmp64_entry22_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry22_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry22_3_lw, PMPSm_cp_pmp64_pmp64_entry22_3_lw_str)
+
+// PMP configuration 42: entry 21
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr21, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg5, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry21_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry21_1_jalr, PMPSm_cp_pmp64_pmp64_entry21_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry21_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry21_2_sw, PMPSm_cp_pmp64_pmp64_entry21_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry21_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry21_3_lw, PMPSm_cp_pmp64_pmp64_entry21_3_lw_str)
+
+// PMP configuration 43: entry 20
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr20, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg5, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry20_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry20_1_jalr, PMPSm_cp_pmp64_pmp64_entry20_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry20_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry20_2_sw, PMPSm_cp_pmp64_pmp64_entry20_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry20_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry20_3_lw, PMPSm_cp_pmp64_pmp64_entry20_3_lw_str)
+
+// PMP configuration 44: entry 19
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr19, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg4, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry19_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry19_1_jalr, PMPSm_cp_pmp64_pmp64_entry19_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry19_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry19_2_sw, PMPSm_cp_pmp64_pmp64_entry19_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry19_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry19_3_lw, PMPSm_cp_pmp64_pmp64_entry19_3_lw_str)
+
+// PMP configuration 45: entry 18
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr18, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg4, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry18_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry18_1_jalr, PMPSm_cp_pmp64_pmp64_entry18_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry18_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry18_2_sw, PMPSm_cp_pmp64_pmp64_entry18_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry18_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry18_3_lw, PMPSm_cp_pmp64_pmp64_entry18_3_lw_str)
+
+// PMP configuration 46: entry 17
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr17, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg4, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry17_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry17_1_jalr, PMPSm_cp_pmp64_pmp64_entry17_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry17_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry17_2_sw, PMPSm_cp_pmp64_pmp64_entry17_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry17_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry17_3_lw, PMPSm_cp_pmp64_pmp64_entry17_3_lw_str)
+
+// PMP configuration 47: entry 16
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr16, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg4, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry16_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry16_1_jalr, PMPSm_cp_pmp64_pmp64_entry16_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry16_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry16_2_sw, PMPSm_cp_pmp64_pmp64_entry16_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry16_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry16_3_lw, PMPSm_cp_pmp64_pmp64_entry16_3_lw_str)
+
+// PMP configuration 48: entry 15
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr15, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry15_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry15_1_jalr, PMPSm_cp_pmp64_pmp64_entry15_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry15_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry15_2_sw, PMPSm_cp_pmp64_pmp64_entry15_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry15_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry15_3_lw, PMPSm_cp_pmp64_pmp64_entry15_3_lw_str)
+
+// PMP configuration 49: entry 14
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr14, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry14_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry14_1_jalr, PMPSm_cp_pmp64_pmp64_entry14_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry14_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry14_2_sw, PMPSm_cp_pmp64_pmp64_entry14_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry14_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry14_3_lw, PMPSm_cp_pmp64_pmp64_entry14_3_lw_str)
+
+// PMP configuration 50: entry 13
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr13, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry13_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry13_1_jalr, PMPSm_cp_pmp64_pmp64_entry13_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry13_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry13_2_sw, PMPSm_cp_pmp64_pmp64_entry13_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry13_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry13_3_lw, PMPSm_cp_pmp64_pmp64_entry13_3_lw_str)
+
+// PMP configuration 51: entry 12
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr12, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry12_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry12_1_jalr, PMPSm_cp_pmp64_pmp64_entry12_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry12_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry12_2_sw, PMPSm_cp_pmp64_pmp64_entry12_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry12_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry12_3_lw, PMPSm_cp_pmp64_pmp64_entry12_3_lw_str)
+
+// PMP configuration 52: entry 11
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr11, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry11_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry11_1_jalr, PMPSm_cp_pmp64_pmp64_entry11_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry11_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry11_2_sw, PMPSm_cp_pmp64_pmp64_entry11_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry11_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry11_3_lw, PMPSm_cp_pmp64_pmp64_entry11_3_lw_str)
+
+// PMP configuration 53: entry 10
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr10, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry10_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry10_1_jalr, PMPSm_cp_pmp64_pmp64_entry10_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry10_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry10_2_sw, PMPSm_cp_pmp64_pmp64_entry10_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry10_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry10_3_lw, PMPSm_cp_pmp64_pmp64_entry10_3_lw_str)
+
+// PMP configuration 54: entry 9
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr9, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry9_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry9_1_jalr, PMPSm_cp_pmp64_pmp64_entry9_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry9_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry9_2_sw, PMPSm_cp_pmp64_pmp64_entry9_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry9_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry9_3_lw, PMPSm_cp_pmp64_pmp64_entry9_3_lw_str)
+
+// PMP configuration 55: entry 8
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr8, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry8_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry8_1_jalr, PMPSm_cp_pmp64_pmp64_entry8_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry8_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry8_2_sw, PMPSm_cp_pmp64_pmp64_entry8_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry8_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry8_3_lw, PMPSm_cp_pmp64_pmp64_entry8_3_lw_str)
+
+// PMP configuration 56: entry 7
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr7, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry7_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry7_1_jalr, PMPSm_cp_pmp64_pmp64_entry7_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry7_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry7_2_sw, PMPSm_cp_pmp64_pmp64_entry7_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry7_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry7_3_lw, PMPSm_cp_pmp64_pmp64_entry7_3_lw_str)
+
+// PMP configuration 57: entry 6
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr6, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry6_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry6_1_jalr, PMPSm_cp_pmp64_pmp64_entry6_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry6_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry6_2_sw, PMPSm_cp_pmp64_pmp64_entry6_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry6_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry6_3_lw, PMPSm_cp_pmp64_pmp64_entry6_3_lw_str)
+
+// PMP configuration 58: entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry5_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry5_1_jalr, PMPSm_cp_pmp64_pmp64_entry5_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry5_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry5_2_sw, PMPSm_cp_pmp64_pmp64_entry5_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry5_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry5_3_lw, PMPSm_cp_pmp64_pmp64_entry5_3_lw_str)
+
+// PMP configuration 59: entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr4, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry4_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry4_1_jalr, PMPSm_cp_pmp64_pmp64_entry4_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry4_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry4_2_sw, PMPSm_cp_pmp64_pmp64_entry4_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry4_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry4_3_lw, PMPSm_cp_pmp64_pmp64_entry4_3_lw_str)
+
+// PMP configuration 60: entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry3_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry3_1_jalr, PMPSm_cp_pmp64_pmp64_entry3_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry3_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry3_2_sw, PMPSm_cp_pmp64_pmp64_entry3_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry3_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry3_3_lw, PMPSm_cp_pmp64_pmp64_entry3_3_lw_str)
+
+// PMP configuration 61: entry 2
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr2, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry2_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry2_1_jalr, PMPSm_cp_pmp64_pmp64_entry2_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry2_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry2_2_sw, PMPSm_cp_pmp64_pmp64_entry2_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry2_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry2_3_lw, PMPSm_cp_pmp64_pmp64_entry2_3_lw_str)
+
+// PMP configuration 62: entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr1, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry1_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry1_1_jalr, PMPSm_cp_pmp64_pmp64_entry1_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry1_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry1_2_sw, PMPSm_cp_pmp64_pmp64_entry1_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry1_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry1_3_lw, PMPSm_cp_pmp64_pmp64_entry1_3_lw_str)
+
+// PMP configuration 63: entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp64_entry0_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry0_1_jalr, PMPSm_cp_pmp64_pmp64_entry0_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp64_entry0_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry0_2_sw, PMPSm_cp_pmp64_pmp64_entry0_2_sw_str)
+PMPSm_cp_pmp64_pmp64_entry0_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp64_entry0_3_lw, PMPSm_cp_pmp64_pmp64_entry0_3_lw_str)
 #else
 
-// Test Case: 1 : PMP entry 14
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr14, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+// PMP configuration 1: entry 14
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr14, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 2 : PMP entry 13
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr13, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry14_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry14_1_jalr, PMPSm_cp_pmp64_pmp16_entry14_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry14_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry14_2_sw, PMPSm_cp_pmp64_pmp16_entry14_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry14_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry14_3_lw, PMPSm_cp_pmp64_pmp16_entry14_3_lw_str)
 
-// Test Case: 3 : PMP entry 12
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr12, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg3, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+// PMP configuration 2: entry 13
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr13, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 4 : PMP entry 11
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr11, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry13_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry13_1_jalr, PMPSm_cp_pmp64_pmp16_entry13_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry13_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry13_2_sw, PMPSm_cp_pmp64_pmp16_entry13_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry13_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry13_3_lw, PMPSm_cp_pmp64_pmp16_entry13_3_lw_str)
 
-// Test Case: 5 : PMP entry 10
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr10, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+// PMP configuration 3: entry 12
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr12, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg3, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 6 : PMP entry 9
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr9, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry12_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry12_1_jalr, PMPSm_cp_pmp64_pmp16_entry12_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry12_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry12_2_sw, PMPSm_cp_pmp64_pmp16_entry12_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry12_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry12_3_lw, PMPSm_cp_pmp64_pmp16_entry12_3_lw_str)
 
-// Test Case: 7 : PMP entry 8
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr8, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
+// PMP configuration 4: entry 11
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr11, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 8 : PMP entry 7
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr7, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry11_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry11_1_jalr, PMPSm_cp_pmp64_pmp16_entry11_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry11_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry11_2_sw, PMPSm_cp_pmp64_pmp16_entry11_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry11_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry11_3_lw, PMPSm_cp_pmp64_pmp16_entry11_3_lw_str)
 
-// Test Case: 9 : PMP entry 6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr6, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
+// PMP configuration 5: entry 10
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr10, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 10 : PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry10_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry10_1_jalr, PMPSm_cp_pmp64_pmp16_entry10_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry10_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry10_2_sw, PMPSm_cp_pmp64_pmp16_entry10_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry10_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry10_3_lw, PMPSm_cp_pmp64_pmp16_entry10_3_lw_str)
 
-// Test Case: 11 : PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr4, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
+// PMP configuration 6: entry 9
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr9, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 12 : PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry9_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry9_1_jalr, PMPSm_cp_pmp64_pmp16_entry9_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry9_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry9_2_sw, PMPSm_cp_pmp64_pmp16_entry9_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry9_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry9_3_lw, PMPSm_cp_pmp64_pmp16_entry9_3_lw_str)
 
-// Test Case: 13 : PMP entry 2
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr2, x5
-    LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
+// PMP configuration 7: entry 8
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr8, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 14 : PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr1, x5
-    LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry8_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry8_1_jalr, PMPSm_cp_pmp64_pmp16_entry8_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry8_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry8_2_sw, PMPSm_cp_pmp64_pmp16_entry8_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry8_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry8_3_lw, PMPSm_cp_pmp64_pmp16_entry8_3_lw_str)
 
-// Test Case: 15 : PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+// PMP configuration 8: entry 7
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr7, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry7_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry7_1_jalr, PMPSm_cp_pmp64_pmp16_entry7_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry7_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry7_2_sw, PMPSm_cp_pmp64_pmp16_entry7_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry7_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry7_3_lw, PMPSm_cp_pmp64_pmp16_entry7_3_lw_str)
+
+// PMP configuration 9: entry 6
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr6, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry6_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry6_1_jalr, PMPSm_cp_pmp64_pmp16_entry6_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry6_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry6_2_sw, PMPSm_cp_pmp64_pmp16_entry6_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry6_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry6_3_lw, PMPSm_cp_pmp64_pmp16_entry6_3_lw_str)
+
+// PMP configuration 10: entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry5_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry5_1_jalr, PMPSm_cp_pmp64_pmp16_entry5_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry5_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry5_2_sw, PMPSm_cp_pmp64_pmp16_entry5_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry5_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry5_3_lw, PMPSm_cp_pmp64_pmp16_entry5_3_lw_str)
+
+// PMP configuration 11: entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr4, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry4_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry4_1_jalr, PMPSm_cp_pmp64_pmp16_entry4_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry4_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry4_2_sw, PMPSm_cp_pmp64_pmp16_entry4_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry4_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry4_3_lw, PMPSm_cp_pmp64_pmp16_entry4_3_lw_str)
+
+// PMP configuration 12: entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, (PMP_REGION_CFG << PMP3_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry3_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry3_1_jalr, PMPSm_cp_pmp64_pmp16_entry3_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry3_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry3_2_sw, PMPSm_cp_pmp64_pmp16_entry3_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry3_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry3_3_lw, PMPSm_cp_pmp64_pmp16_entry3_3_lw_str)
+
+// PMP configuration 13: entry 2
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr2, x5
+  LI(x4, (PMP_REGION_CFG << PMP2_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry2_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry2_1_jalr, PMPSm_cp_pmp64_pmp16_entry2_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry2_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry2_2_sw, PMPSm_cp_pmp64_pmp16_entry2_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry2_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry2_3_lw, PMPSm_cp_pmp64_pmp16_entry2_3_lw_str)
+
+// PMP configuration 14: entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr1, x5
+  LI(x4, (PMP_REGION_CFG << PMP1_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry1_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry1_1_jalr, PMPSm_cp_pmp64_pmp16_entry1_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry1_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry1_2_sw, PMPSm_cp_pmp64_pmp16_entry1_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry1_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry1_3_lw, PMPSm_cp_pmp64_pmp16_entry1_3_lw_str)
+
+// PMP configuration 15: entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, (PMP_REGION_CFG << PMP0_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_pmp64_pmp16_entry0_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry0_1_jalr, PMPSm_cp_pmp64_pmp16_entry0_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPSm_cp_pmp64_pmp16_entry0_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry0_2_sw, PMPSm_cp_pmp64_pmp16_entry0_2_sw_str)
+PMPSm_cp_pmp64_pmp16_entry0_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_pmp64_pmp16_entry0_3_lw, PMPSm_cp_pmp64_pmp16_entry0_3_lw_str)
 #endif
-
-    j exit
-
-exit:
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1093,31 +2569,262 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS
-    jr ra
-    .endr
-    .option pop
+  .rept PMP_NAPOT_REGION_PAD_WORDS
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpsm_all_entries_check_jalr\""
-test_2_str: .string "\"test: 2; cp: pmpsm_all_entries_check_sw\""
-test_3_str: .string "\"test: 3; cp: pmpsm_all_entries_check_lw\""
+PMPSm_cp_pmp64_pmp64_entry62_1_jalr_str: .string "\"test: 210; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry62_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry62_2_sw_str: .string "\"test: 211; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry62_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry62_3_lw_str: .string "\"test: 212; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry62_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry61_1_jalr_str: .string "\"test: 213; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry61_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry61_2_sw_str: .string "\"test: 214; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry61_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry61_3_lw_str: .string "\"test: 215; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry61_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry60_1_jalr_str: .string "\"test: 216; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry60_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry60_2_sw_str: .string "\"test: 217; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry60_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry60_3_lw_str: .string "\"test: 218; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry60_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry59_1_jalr_str: .string "\"test: 219; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry59_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry59_2_sw_str: .string "\"test: 220; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry59_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry59_3_lw_str: .string "\"test: 221; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry59_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry58_1_jalr_str: .string "\"test: 222; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry58_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry58_2_sw_str: .string "\"test: 223; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry58_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry58_3_lw_str: .string "\"test: 224; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry58_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry57_1_jalr_str: .string "\"test: 225; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry57_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry57_2_sw_str: .string "\"test: 226; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry57_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry57_3_lw_str: .string "\"test: 227; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry57_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry56_1_jalr_str: .string "\"test: 228; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry56_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry56_2_sw_str: .string "\"test: 229; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry56_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry56_3_lw_str: .string "\"test: 230; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry56_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry55_1_jalr_str: .string "\"test: 231; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry55_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry55_2_sw_str: .string "\"test: 232; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry55_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry55_3_lw_str: .string "\"test: 233; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry55_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry54_1_jalr_str: .string "\"test: 234; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry54_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry54_2_sw_str: .string "\"test: 235; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry54_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry54_3_lw_str: .string "\"test: 236; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry54_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry53_1_jalr_str: .string "\"test: 237; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry53_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry53_2_sw_str: .string "\"test: 238; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry53_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry53_3_lw_str: .string "\"test: 239; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry53_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry52_1_jalr_str: .string "\"test: 240; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry52_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry52_2_sw_str: .string "\"test: 241; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry52_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry52_3_lw_str: .string "\"test: 242; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry52_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry51_1_jalr_str: .string "\"test: 243; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry51_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry51_2_sw_str: .string "\"test: 244; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry51_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry51_3_lw_str: .string "\"test: 245; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry51_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry50_1_jalr_str: .string "\"test: 246; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry50_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry50_2_sw_str: .string "\"test: 247; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry50_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry50_3_lw_str: .string "\"test: 248; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry50_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry49_1_jalr_str: .string "\"test: 249; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry49_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry49_2_sw_str: .string "\"test: 250; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry49_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry49_3_lw_str: .string "\"test: 251; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry49_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry48_1_jalr_str: .string "\"test: 252; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry48_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry48_2_sw_str: .string "\"test: 253; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry48_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry48_3_lw_str: .string "\"test: 254; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry48_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry47_1_jalr_str: .string "\"test: 255; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry47_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry47_2_sw_str: .string "\"test: 256; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry47_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry47_3_lw_str: .string "\"test: 257; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry47_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry46_1_jalr_str: .string "\"test: 258; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry46_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry46_2_sw_str: .string "\"test: 259; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry46_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry46_3_lw_str: .string "\"test: 260; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry46_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry45_1_jalr_str: .string "\"test: 261; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry45_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry45_2_sw_str: .string "\"test: 262; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry45_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry45_3_lw_str: .string "\"test: 263; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry45_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry44_1_jalr_str: .string "\"test: 264; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry44_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry44_2_sw_str: .string "\"test: 265; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry44_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry44_3_lw_str: .string "\"test: 266; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry44_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry43_1_jalr_str: .string "\"test: 267; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry43_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry43_2_sw_str: .string "\"test: 268; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry43_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry43_3_lw_str: .string "\"test: 269; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry43_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry42_1_jalr_str: .string "\"test: 270; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry42_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry42_2_sw_str: .string "\"test: 271; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry42_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry42_3_lw_str: .string "\"test: 272; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry42_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry41_1_jalr_str: .string "\"test: 273; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry41_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry41_2_sw_str: .string "\"test: 274; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry41_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry41_3_lw_str: .string "\"test: 275; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry41_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry40_1_jalr_str: .string "\"test: 276; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry40_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry40_2_sw_str: .string "\"test: 277; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry40_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry40_3_lw_str: .string "\"test: 278; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry40_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry39_1_jalr_str: .string "\"test: 279; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry39_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry39_2_sw_str: .string "\"test: 280; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry39_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry39_3_lw_str: .string "\"test: 281; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry39_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry38_1_jalr_str: .string "\"test: 282; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry38_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry38_2_sw_str: .string "\"test: 283; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry38_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry38_3_lw_str: .string "\"test: 284; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry38_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry37_1_jalr_str: .string "\"test: 285; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry37_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry37_2_sw_str: .string "\"test: 286; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry37_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry37_3_lw_str: .string "\"test: 287; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry37_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry36_1_jalr_str: .string "\"test: 288; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry36_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry36_2_sw_str: .string "\"test: 289; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry36_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry36_3_lw_str: .string "\"test: 290; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry36_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry35_1_jalr_str: .string "\"test: 291; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry35_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry35_2_sw_str: .string "\"test: 292; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry35_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry35_3_lw_str: .string "\"test: 293; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry35_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry34_1_jalr_str: .string "\"test: 294; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry34_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry34_2_sw_str: .string "\"test: 295; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry34_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry34_3_lw_str: .string "\"test: 296; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry34_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry33_1_jalr_str: .string "\"test: 297; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry33_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry33_2_sw_str: .string "\"test: 298; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry33_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry33_3_lw_str: .string "\"test: 299; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry33_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry32_1_jalr_str: .string "\"test: 300; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry32_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry32_2_sw_str: .string "\"test: 301; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry32_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry32_3_lw_str: .string "\"test: 302; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry32_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry31_1_jalr_str: .string "\"test: 303; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry31_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry31_2_sw_str: .string "\"test: 304; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry31_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry31_3_lw_str: .string "\"test: 305; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry31_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry30_1_jalr_str: .string "\"test: 306; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry30_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry30_2_sw_str: .string "\"test: 307; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry30_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry30_3_lw_str: .string "\"test: 308; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry30_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry29_1_jalr_str: .string "\"test: 309; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry29_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry29_2_sw_str: .string "\"test: 310; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry29_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry29_3_lw_str: .string "\"test: 311; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry29_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry28_1_jalr_str: .string "\"test: 312; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry28_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry28_2_sw_str: .string "\"test: 313; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry28_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry28_3_lw_str: .string "\"test: 314; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry28_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry27_1_jalr_str: .string "\"test: 315; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry27_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry27_2_sw_str: .string "\"test: 316; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry27_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry27_3_lw_str: .string "\"test: 317; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry27_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry26_1_jalr_str: .string "\"test: 318; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry26_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry26_2_sw_str: .string "\"test: 319; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry26_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry26_3_lw_str: .string "\"test: 320; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry26_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry25_1_jalr_str: .string "\"test: 321; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry25_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry25_2_sw_str: .string "\"test: 322; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry25_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry25_3_lw_str: .string "\"test: 323; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry25_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry24_1_jalr_str: .string "\"test: 324; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry24_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry24_2_sw_str: .string "\"test: 325; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry24_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry24_3_lw_str: .string "\"test: 326; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry24_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry23_1_jalr_str: .string "\"test: 327; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry23_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry23_2_sw_str: .string "\"test: 328; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry23_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry23_3_lw_str: .string "\"test: 329; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry23_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry22_1_jalr_str: .string "\"test: 330; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry22_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry22_2_sw_str: .string "\"test: 331; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry22_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry22_3_lw_str: .string "\"test: 332; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry22_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry21_1_jalr_str: .string "\"test: 333; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry21_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry21_2_sw_str: .string "\"test: 334; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry21_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry21_3_lw_str: .string "\"test: 335; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry21_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry20_1_jalr_str: .string "\"test: 336; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry20_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry20_2_sw_str: .string "\"test: 337; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry20_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry20_3_lw_str: .string "\"test: 338; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry20_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry19_1_jalr_str: .string "\"test: 339; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry19_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry19_2_sw_str: .string "\"test: 340; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry19_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry19_3_lw_str: .string "\"test: 341; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry19_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry18_1_jalr_str: .string "\"test: 342; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry18_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry18_2_sw_str: .string "\"test: 343; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry18_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry18_3_lw_str: .string "\"test: 344; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry18_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry17_1_jalr_str: .string "\"test: 345; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry17_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry17_2_sw_str: .string "\"test: 346; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry17_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry17_3_lw_str: .string "\"test: 347; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry17_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry16_1_jalr_str: .string "\"test: 348; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry16_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry16_2_sw_str: .string "\"test: 349; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry16_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry16_3_lw_str: .string "\"test: 350; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry16_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry15_1_jalr_str: .string "\"test: 351; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry15_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry15_2_sw_str: .string "\"test: 352; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry15_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry15_3_lw_str: .string "\"test: 353; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry15_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry14_1_jalr_str: .string "\"test: 354; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry14_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry14_2_sw_str: .string "\"test: 355; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry14_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry14_3_lw_str: .string "\"test: 356; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry14_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry13_1_jalr_str: .string "\"test: 357; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry13_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry13_2_sw_str: .string "\"test: 358; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry13_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry13_3_lw_str: .string "\"test: 359; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry13_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry12_1_jalr_str: .string "\"test: 360; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry12_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry12_2_sw_str: .string "\"test: 361; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry12_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry12_3_lw_str: .string "\"test: 362; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry12_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry11_1_jalr_str: .string "\"test: 363; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry11_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry11_2_sw_str: .string "\"test: 364; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry11_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry11_3_lw_str: .string "\"test: 365; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry11_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry10_1_jalr_str: .string "\"test: 366; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry10_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry10_2_sw_str: .string "\"test: 367; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry10_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry10_3_lw_str: .string "\"test: 368; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry10_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry9_1_jalr_str: .string "\"test: 369; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry9_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry9_2_sw_str: .string "\"test: 370; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry9_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry9_3_lw_str: .string "\"test: 371; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry9_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry8_1_jalr_str: .string "\"test: 372; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry8_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry8_2_sw_str: .string "\"test: 373; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry8_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry8_3_lw_str: .string "\"test: 374; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry8_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry7_1_jalr_str: .string "\"test: 375; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry7_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry7_2_sw_str: .string "\"test: 376; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry7_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry7_3_lw_str: .string "\"test: 377; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry7_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry6_1_jalr_str: .string "\"test: 378; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry6_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry6_2_sw_str: .string "\"test: 379; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry6_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry6_3_lw_str: .string "\"test: 380; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry6_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry5_1_jalr_str: .string "\"test: 381; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry5_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry5_2_sw_str: .string "\"test: 382; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry5_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry5_3_lw_str: .string "\"test: 383; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry5_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry4_1_jalr_str: .string "\"test: 384; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry4_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry4_2_sw_str: .string "\"test: 385; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry4_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry4_3_lw_str: .string "\"test: 386; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry4_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry3_1_jalr_str: .string "\"test: 387; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry3_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry3_2_sw_str: .string "\"test: 388; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry3_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry3_3_lw_str: .string "\"test: 389; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry3_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry2_1_jalr_str: .string "\"test: 390; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry2_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry2_2_sw_str: .string "\"test: 391; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry2_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry2_3_lw_str: .string "\"test: 392; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry2_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry1_1_jalr_str: .string "\"test: 393; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry1_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry1_2_sw_str: .string "\"test: 394; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry1_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry1_3_lw_str: .string "\"test: 395; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry1_3_lw\""
+PMPSm_cp_pmp64_pmp64_entry0_1_jalr_str: .string "\"test: 396; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry0_1_jalr\""
+PMPSm_cp_pmp64_pmp64_entry0_2_sw_str: .string "\"test: 397; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry0_2_sw\""
+PMPSm_cp_pmp64_pmp64_entry0_3_lw_str: .string "\"test: 398; cg: PMPSm; cp: cp_pmp64; bin: pmp64_entry0_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry14_1_jalr_str: .string "\"test: 399; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry14_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry14_2_sw_str: .string "\"test: 400; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry14_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry14_3_lw_str: .string "\"test: 401; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry14_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry13_1_jalr_str: .string "\"test: 402; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry13_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry13_2_sw_str: .string "\"test: 403; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry13_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry13_3_lw_str: .string "\"test: 404; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry13_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry12_1_jalr_str: .string "\"test: 405; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry12_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry12_2_sw_str: .string "\"test: 406; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry12_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry12_3_lw_str: .string "\"test: 407; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry12_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry11_1_jalr_str: .string "\"test: 408; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry11_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry11_2_sw_str: .string "\"test: 409; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry11_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry11_3_lw_str: .string "\"test: 410; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry11_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry10_1_jalr_str: .string "\"test: 411; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry10_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry10_2_sw_str: .string "\"test: 412; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry10_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry10_3_lw_str: .string "\"test: 413; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry10_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry9_1_jalr_str: .string "\"test: 414; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry9_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry9_2_sw_str: .string "\"test: 415; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry9_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry9_3_lw_str: .string "\"test: 416; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry9_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry8_1_jalr_str: .string "\"test: 417; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry8_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry8_2_sw_str: .string "\"test: 418; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry8_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry8_3_lw_str: .string "\"test: 419; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry8_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry7_1_jalr_str: .string "\"test: 420; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry7_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry7_2_sw_str: .string "\"test: 421; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry7_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry7_3_lw_str: .string "\"test: 422; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry7_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry6_1_jalr_str: .string "\"test: 423; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry6_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry6_2_sw_str: .string "\"test: 424; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry6_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry6_3_lw_str: .string "\"test: 425; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry6_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry5_1_jalr_str: .string "\"test: 426; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry5_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry5_2_sw_str: .string "\"test: 427; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry5_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry5_3_lw_str: .string "\"test: 428; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry5_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry4_1_jalr_str: .string "\"test: 429; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry4_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry4_2_sw_str: .string "\"test: 430; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry4_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry4_3_lw_str: .string "\"test: 431; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry4_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry3_1_jalr_str: .string "\"test: 432; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry3_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry3_2_sw_str: .string "\"test: 433; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry3_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry3_3_lw_str: .string "\"test: 434; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry3_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry2_1_jalr_str: .string "\"test: 435; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry2_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry2_2_sw_str: .string "\"test: 436; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry2_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry2_3_lw_str: .string "\"test: 437; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry2_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry1_1_jalr_str: .string "\"test: 438; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry1_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry1_2_sw_str: .string "\"test: 439; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry1_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry1_3_lw_str: .string "\"test: 440; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry1_3_lw\""
+PMPSm_cp_pmp64_pmp16_entry0_1_jalr_str: .string "\"test: 441; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry0_1_jalr\""
+PMPSm_cp_pmp64_pmp16_entry0_2_sw_str: .string "\"test: 442; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry0_2_sw\""
+PMPSm_cp_pmp64_pmp16_entry0_3_lw_str: .string "\"test: 443; cg: PMPSm; cp: cp_pmp64; bin: pmp16_entry0_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

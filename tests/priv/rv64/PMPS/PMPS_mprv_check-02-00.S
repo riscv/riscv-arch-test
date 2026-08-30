@@ -35,73 +35,208 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} from M mode with mstatus.MPRV = {0, 1} and MPP = S, region L = {0, 1}, XWR = 111.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_0111 (((PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
-#define PMPREGION_LXWR_1111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_0111 (((PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
 #define MPRV       (1 << 17)
 #define MPP        (3 << 11)
 #define MPP_LOWER  (1 << 11)
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
 
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_0111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_0111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : mstatus.MPRV = 0, mstatus.MPP = S mode, L = 0, XWR = 111
-    PMP_VERIFICATION_RWX_MPRV    TEST_FOR_EXECUTION, test_1, MPP_LOWER
+// PMP configuration 1: mstatus.MPRV = 0, mstatus.MPP = S mode, L = 0, XWR = 111
 
-// Test Case: 2 : mstatus.MPRV = 1, mstatus.MPP = S mode, L = 0, XWR = 111
-    PMP_VERIFICATION_RWX_MPRV    TEST_FOR_EXECUTION, test_2, MPP_LOWER|MPRV
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+  LA(ra, 1f)
+PMPS_cp_mprv_lock0_mprv0_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv0_1_jalr, PMPS_cp_mprv_lock0_mprv0_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock0_mprv0_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv0_2_sw, PMPS_cp_mprv_lock0_mprv0_2_sw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock0_mprv0_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv0_3_lw, PMPS_cp_mprv_lock0_mprv0_3_lw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, 0)
+  csrs mstatus, t0
 
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_1111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
+// PMP configuration 2: mstatus.MPRV = 1, mstatus.MPP = S mode, L = 0, XWR = 111
 
-// Test Case: 3 : mstatus.MPRV = 0, mstatus.MPP = S mode, L = 1, XWR = 111
-    PMP_VERIFICATION_RWX_MPRV    TEST_FOR_EXECUTION, test_3, MPP_LOWER
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+  LA(ra, 1f)
+PMPS_cp_mprv_lock0_mprv1_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv1_1_jalr, PMPS_cp_mprv_lock0_mprv1_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock0_mprv1_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv1_2_sw, PMPS_cp_mprv_lock0_mprv1_2_sw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock0_mprv1_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock0_mprv1_3_lw, PMPS_cp_mprv_lock0_mprv1_3_lw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, 0)
+  csrs mstatus, t0
 
-// Test Case: 4 : mstatus.MPRV = 1, mstatus.MPP = S mode, L = 1, XWR = 111
-    PMP_VERIFICATION_RWX_MPRV    TEST_FOR_EXECUTION, test_4, MPP_LOWER|MPRV
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_1111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    j exit
+// PMP configuration 3: mstatus.MPRV = 0, mstatus.MPP = S mode, L = 1, XWR = 111
 
-exit:
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+  LA(ra, 1f)
+PMPS_cp_mprv_lock1_mprv0_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv0_1_jalr, PMPS_cp_mprv_lock1_mprv0_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock1_mprv0_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv0_2_sw, PMPS_cp_mprv_lock1_mprv0_2_sw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock1_mprv0_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv0_3_lw, PMPS_cp_mprv_lock1_mprv0_3_lw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, 0)
+  csrs mstatus, t0
+
+// PMP configuration 4: mstatus.MPRV = 1, mstatus.MPP = S mode, L = 1, XWR = 111
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+  LA(ra, 1f)
+PMPS_cp_mprv_lock1_mprv1_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv1_1_jalr, PMPS_cp_mprv_lock1_mprv1_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock1_mprv1_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv1_2_sw, PMPS_cp_mprv_lock1_mprv1_2_sw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, MPP_LOWER|MPRV)
+  csrs mstatus, t0
+PMPS_cp_mprv_lock1_mprv1_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPS_cp_mprv_lock1_mprv1_3_lw, PMPS_cp_mprv_lock1_mprv1_3_lw_str)
+  LI(t0, (1 << 17) | (3 << 11))
+  csrc mstatus, t0
+  LI(t0, 0)
+  csrs mstatus, t0
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -111,31 +246,40 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS
-    jr ra
-    .endr
-    .option pop
+  .rept PMP_NAPOT_REGION_PAD_WORDS
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmps_mprv_check_jalr\""
-test_2_str: .string "\"test: 2; cp: pmps_mprv_check_sw\""
-test_3_str: .string "\"test: 3; cp: pmps_mprv_check_lw\""
+PMPS_cp_mprv_lock0_mprv0_1_jalr_str: .string "\"test: 162; cg: PMPS; cp: cp_mprv; bin: lock0_mprv0_1_jalr\""
+PMPS_cp_mprv_lock0_mprv0_2_sw_str: .string "\"test: 163; cg: PMPS; cp: cp_mprv; bin: lock0_mprv0_2_sw\""
+PMPS_cp_mprv_lock0_mprv0_3_lw_str: .string "\"test: 164; cg: PMPS; cp: cp_mprv; bin: lock0_mprv0_3_lw\""
+PMPS_cp_mprv_lock0_mprv1_1_jalr_str: .string "\"test: 165; cg: PMPS; cp: cp_mprv; bin: lock0_mprv1_1_jalr\""
+PMPS_cp_mprv_lock0_mprv1_2_sw_str: .string "\"test: 166; cg: PMPS; cp: cp_mprv; bin: lock0_mprv1_2_sw\""
+PMPS_cp_mprv_lock0_mprv1_3_lw_str: .string "\"test: 167; cg: PMPS; cp: cp_mprv; bin: lock0_mprv1_3_lw\""
+PMPS_cp_mprv_lock1_mprv0_1_jalr_str: .string "\"test: 168; cg: PMPS; cp: cp_mprv; bin: lock1_mprv0_1_jalr\""
+PMPS_cp_mprv_lock1_mprv0_2_sw_str: .string "\"test: 169; cg: PMPS; cp: cp_mprv; bin: lock1_mprv0_2_sw\""
+PMPS_cp_mprv_lock1_mprv0_3_lw_str: .string "\"test: 170; cg: PMPS; cp: cp_mprv; bin: lock1_mprv0_3_lw\""
+PMPS_cp_mprv_lock1_mprv1_1_jalr_str: .string "\"test: 171; cg: PMPS; cp: cp_mprv; bin: lock1_mprv1_1_jalr\""
+PMPS_cp_mprv_lock1_mprv1_2_sw_str: .string "\"test: 172; cg: PMPS; cp: cp_mprv; bin: lock1_mprv1_2_sw\""
+PMPS_cp_mprv_lock1_mprv1_3_lw_str: .string "\"test: 173; cg: PMPS; cp: cp_mprv; bin: lock1_mprv1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -35,52 +35,63 @@ RVTEST_BEGIN
 //   cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = 11.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_1011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1011 (((PMP_L | PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY > 12
-    #define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY
+#define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY
 #else
-    #define PMPZICBO_REGION_SHIFT  12
+#define PMPZICBO_REGION_SHIFT  12
 #endif
 #define PMP_MASK                   ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)
 #define PMP_REGION_SIZE            ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-    LI(t0, 0xF0)
-    csrrs zero, menvcfg, t0
+  LI(t0, 0xF0)
+  csrrs zero, menvcfg, t0
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 3: L = 1, WR permissions, entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_1011)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 3 : L -> 1 and WR Permissions given to PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION, test_3
-
-    j exit
-
-exit:
+  LA(a4, TEST_FOR_EXECUTION)
+PMPZicbo_cp_cbo_entry0_lxwr1011_1_cbo_zero:
+  cbo.zero (a4)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1011_1_cbo_zero, PMPZicbo_cp_cbo_entry0_lxwr1011_1_cbo_zero_str)
+PMPZicbo_cp_cbo_entry0_lxwr1011_2_cbo_clean:
+  cbo.clean (a4)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1011_2_cbo_clean, PMPZicbo_cp_cbo_entry0_lxwr1011_2_cbo_clean_str)
+PMPZicbo_cp_cbo_entry0_lxwr1011_3_cbo_flush:
+  cbo.flush (a4)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1011_3_cbo_flush, PMPZicbo_cp_cbo_entry0_lxwr1011_3_cbo_flush_str)
+PMPZicbo_cp_cbo_entry0_lxwr1011_4_cbo_inval:
+  cbo.inval (a4)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1011_4_cbo_inval, PMPZicbo_cp_cbo_entry0_lxwr1011_4_cbo_inval_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -90,25 +101,25 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept 1024
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept 1024
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpzicbo_cbo_cbo.zero\""
-test_2_str: .string "\"test: 2; cp: pmpzicbo_cbo_cbo.clean\""
-test_3_str: .string "\"test: 3; cp: pmpzicbo_cbo_cbo.flush\""
-test_4_str: .string "\"test: 4; cp: pmpzicbo_cbo_cbo.inval\""
+PMPZicbo_cp_cbo_entry0_lxwr1011_1_cbo_zero_str: .string "\"test: 9; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1011_1_cbo.zero\""
+PMPZicbo_cp_cbo_entry0_lxwr1011_2_cbo_clean_str: .string "\"test: 10; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1011_2_cbo.clean\""
+PMPZicbo_cp_cbo_entry0_lxwr1011_3_cbo_flush_str: .string "\"test: 11; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1011_3_cbo.flush\""
+PMPZicbo_cp_cbo_entry0_lxwr1011_4_cbo_inval_str: .string "\"test: 12; cg: PMPZicbo; cp: cp_cbo; bin: entry0_lxwr1011_4_cbo.inval\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

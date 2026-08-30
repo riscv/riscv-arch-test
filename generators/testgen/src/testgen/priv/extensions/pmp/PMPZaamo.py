@@ -14,7 +14,9 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     lxwr_walk_body,
     make_exec_region,
-    make_sig_strings,
+)
+from testgen.priv.extensions.pmp.probes import (
+    gen_amo,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -29,10 +31,6 @@ from testgen.priv.registry import add_priv_test_generator
 def make_pmpzaamo(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("cfg_wr")
     chunk.section_header = comment_banner("cp_cfg_RW", "Every AMO against a locked NAPOT region with each legal XWR.")
-    chunk.code.extend(lxwr_walk_body(test_data.xlen, LOCKED_LXWR_CASES, "napot", "AMO"))
-    strings = make_sig_strings("AMO", test_data.xlen, "pmpzaamo_cfg_wr")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_amo, "cp_cfg_RW"))
     chunk.raw_data.extend(make_exec_region(pad=None))
     return [test_data.end_test_chunk()]

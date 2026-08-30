@@ -35,143 +35,1008 @@ RVTEST_BEGIN
 //   Every load and store width plus a jalr at a locked NAPOT region, rolling the six legal XWR over entries 14..0.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_XWR_000 (((PMP_L|PMP_NAPOT)&0xFF) << 0)
-#define PMPREGION_XWR_001 (((PMP_L|PMP_R|PMP_NAPOT)&0xFF) << 0)
-#define PMPREGION_XWR_011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << 0)
-#define PMPREGION_XWR_100 (((PMP_L|PMP_X|PMP_NAPOT)&0xFF) << 0)
-#define PMPREGION_XWR_101 (((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << 0)
-#define PMPREGION_XWR_111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << 0)
+#define PMPREGION_XWR_000 (((PMP_L | PMP_NAPOT) & 0xFF) << 0)
+#define PMPREGION_XWR_001 (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << 0)
+#define PMPREGION_XWR_011 (((PMP_L | PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << 0)
+#define PMPREGION_XWR_100 (((PMP_L | PMP_X | PMP_NAPOT) & 0xFF) << 0)
+#define PMPREGION_XWR_101 (((PMP_L | PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << 0)
+#define PMPREGION_XWR_111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << 0)
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-    // Every entry covers the region; only its permissions vary below.
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x5
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Every entry covers the region; only its permissions vary below.
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x5
+  .set pmpaddri, pmpaddri+1
+  .endr
 
-// ---------------------------- Verification Section ----------------------------
 
-// Test Case: 46 : L -> 1 and XWR -> 001 on PMP entry 14
-    LI(x4, (PMPREGION_XWR_001 << PMP6_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_46
+// PMP configuration 46: L = 1 and XWR = 001 on PMP entry 14
+  LI(x4, (PMPREGION_XWR_001 << PMP6_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 47 : L -> 1 and XWR -> 100 on PMP entry 13
-    LI(x4, (PMPREGION_XWR_100 << PMP5_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_47
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry14_lxwr001_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_12_jalr, PMPSm_cp_cfg_RW_entry14_lxwr001_12_jalr_str)
 
-// Test Case: 48 : L -> 1 and XWR -> 000 on PMP entry 12
-    LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_48
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry14_lxwr001_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_1_sb, PMPSm_cp_cfg_RW_entry14_lxwr001_1_sb_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_2_sh, PMPSm_cp_cfg_RW_entry14_lxwr001_2_sh_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_3_sw, PMPSm_cp_cfg_RW_entry14_lxwr001_3_sw_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_4_sd, PMPSm_cp_cfg_RW_entry14_lxwr001_4_sd_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_5_lb, PMPSm_cp_cfg_RW_entry14_lxwr001_5_lb_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_6_lbu, PMPSm_cp_cfg_RW_entry14_lxwr001_6_lbu_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_7_lh, PMPSm_cp_cfg_RW_entry14_lxwr001_7_lh_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_8_lhu, PMPSm_cp_cfg_RW_entry14_lxwr001_8_lhu_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_9_lw, PMPSm_cp_cfg_RW_entry14_lxwr001_9_lw_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_10_lwu, PMPSm_cp_cfg_RW_entry14_lxwr001_10_lwu_str)
+PMPSm_cp_cfg_RW_entry14_lxwr001_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry14_lxwr001_11_ld, PMPSm_cp_cfg_RW_entry14_lxwr001_11_ld_str)
 
-// Test Case: 49 : L -> 1 and XWR -> 111 on PMP entry 11
-    LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_49
+// PMP configuration 47: L = 1 and XWR = 100 on PMP entry 13
+  LI(x4, (PMPREGION_XWR_100 << PMP5_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 50 : L -> 1 and XWR -> 001 on PMP entry 10
-    LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_50
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry13_lxwr100_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_12_jalr, PMPSm_cp_cfg_RW_entry13_lxwr100_12_jalr_str)
 
-// Test Case: 51 : L -> 1 and XWR -> 101 on PMP entry 9
-    LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_51
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry13_lxwr100_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_1_sb, PMPSm_cp_cfg_RW_entry13_lxwr100_1_sb_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_2_sh, PMPSm_cp_cfg_RW_entry13_lxwr100_2_sh_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_3_sw, PMPSm_cp_cfg_RW_entry13_lxwr100_3_sw_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_4_sd, PMPSm_cp_cfg_RW_entry13_lxwr100_4_sd_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_5_lb, PMPSm_cp_cfg_RW_entry13_lxwr100_5_lb_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_6_lbu, PMPSm_cp_cfg_RW_entry13_lxwr100_6_lbu_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_7_lh, PMPSm_cp_cfg_RW_entry13_lxwr100_7_lh_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_8_lhu, PMPSm_cp_cfg_RW_entry13_lxwr100_8_lhu_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_9_lw, PMPSm_cp_cfg_RW_entry13_lxwr100_9_lw_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_10_lwu, PMPSm_cp_cfg_RW_entry13_lxwr100_10_lwu_str)
+PMPSm_cp_cfg_RW_entry13_lxwr100_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry13_lxwr100_11_ld, PMPSm_cp_cfg_RW_entry13_lxwr100_11_ld_str)
 
-// Test Case: 52 : L -> 1 and XWR -> 001 on PMP entry 8
-    LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
-    csrw pmpcfg2, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_52
+// PMP configuration 48: L = 1 and XWR = 000 on PMP entry 12
+  LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 53 : L -> 1 and XWR -> 100 on PMP entry 7
-    LI(x4, (PMPREGION_XWR_100 << PMP7_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_53
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry12_lxwr000_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_12_jalr, PMPSm_cp_cfg_RW_entry12_lxwr000_12_jalr_str)
 
-// Test Case: 54 : L -> 1 and XWR -> 000 on PMP entry 6
-    LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_54
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry12_lxwr000_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_1_sb, PMPSm_cp_cfg_RW_entry12_lxwr000_1_sb_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_2_sh, PMPSm_cp_cfg_RW_entry12_lxwr000_2_sh_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_3_sw, PMPSm_cp_cfg_RW_entry12_lxwr000_3_sw_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_4_sd, PMPSm_cp_cfg_RW_entry12_lxwr000_4_sd_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_5_lb, PMPSm_cp_cfg_RW_entry12_lxwr000_5_lb_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_6_lbu, PMPSm_cp_cfg_RW_entry12_lxwr000_6_lbu_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_7_lh, PMPSm_cp_cfg_RW_entry12_lxwr000_7_lh_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_8_lhu, PMPSm_cp_cfg_RW_entry12_lxwr000_8_lhu_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_9_lw, PMPSm_cp_cfg_RW_entry12_lxwr000_9_lw_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_10_lwu, PMPSm_cp_cfg_RW_entry12_lxwr000_10_lwu_str)
+PMPSm_cp_cfg_RW_entry12_lxwr000_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry12_lxwr000_11_ld, PMPSm_cp_cfg_RW_entry12_lxwr000_11_ld_str)
 
-// Test Case: 55 : L -> 1 and XWR -> 111 on PMP entry 5
-    LI(x4, (PMPREGION_XWR_111 << PMP5_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_55
+// PMP configuration 49: L = 1 and XWR = 111 on PMP entry 11
+  LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 56 : L -> 1 and XWR -> 011 on PMP entry 4
-    LI(x4, (PMPREGION_XWR_011 << PMP4_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_56
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry11_lxwr111_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_12_jalr, PMPSm_cp_cfg_RW_entry11_lxwr111_12_jalr_str)
 
-// Test Case: 57 : L -> 1 and XWR -> 101 on PMP entry 3
-    LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_57
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry11_lxwr111_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_1_sb, PMPSm_cp_cfg_RW_entry11_lxwr111_1_sb_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_2_sh, PMPSm_cp_cfg_RW_entry11_lxwr111_2_sh_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_3_sw, PMPSm_cp_cfg_RW_entry11_lxwr111_3_sw_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_4_sd, PMPSm_cp_cfg_RW_entry11_lxwr111_4_sd_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_5_lb, PMPSm_cp_cfg_RW_entry11_lxwr111_5_lb_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_6_lbu, PMPSm_cp_cfg_RW_entry11_lxwr111_6_lbu_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_7_lh, PMPSm_cp_cfg_RW_entry11_lxwr111_7_lh_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_8_lhu, PMPSm_cp_cfg_RW_entry11_lxwr111_8_lhu_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_9_lw, PMPSm_cp_cfg_RW_entry11_lxwr111_9_lw_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_10_lwu, PMPSm_cp_cfg_RW_entry11_lxwr111_10_lwu_str)
+PMPSm_cp_cfg_RW_entry11_lxwr111_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry11_lxwr111_11_ld, PMPSm_cp_cfg_RW_entry11_lxwr111_11_ld_str)
 
-// Test Case: 58 : L -> 1 and XWR -> 001 on PMP entry 2
-    LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_58
+// PMP configuration 50: L = 1 and XWR = 001 on PMP entry 10
+  LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 59 : L -> 1 and XWR -> 100 on PMP entry 1
-    LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_59
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry10_lxwr001_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_12_jalr, PMPSm_cp_cfg_RW_entry10_lxwr001_12_jalr_str)
 
-// Test Case: 60 : L -> 1 and XWR -> 000 on PMP entry 0
-    LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_60
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry10_lxwr001_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_1_sb, PMPSm_cp_cfg_RW_entry10_lxwr001_1_sb_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_2_sh, PMPSm_cp_cfg_RW_entry10_lxwr001_2_sh_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_3_sw, PMPSm_cp_cfg_RW_entry10_lxwr001_3_sw_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_4_sd, PMPSm_cp_cfg_RW_entry10_lxwr001_4_sd_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_5_lb, PMPSm_cp_cfg_RW_entry10_lxwr001_5_lb_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_6_lbu, PMPSm_cp_cfg_RW_entry10_lxwr001_6_lbu_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_7_lh, PMPSm_cp_cfg_RW_entry10_lxwr001_7_lh_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_8_lhu, PMPSm_cp_cfg_RW_entry10_lxwr001_8_lhu_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_9_lw, PMPSm_cp_cfg_RW_entry10_lxwr001_9_lw_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_10_lwu, PMPSm_cp_cfg_RW_entry10_lxwr001_10_lwu_str)
+PMPSm_cp_cfg_RW_entry10_lxwr001_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry10_lxwr001_11_ld, PMPSm_cp_cfg_RW_entry10_lxwr001_11_ld_str)
 
-    j exit
+// PMP configuration 51: L = 1 and XWR = 101 on PMP entry 9
+  LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-exit:
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry9_lxwr101_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_12_jalr, PMPSm_cp_cfg_RW_entry9_lxwr101_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry9_lxwr101_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_1_sb, PMPSm_cp_cfg_RW_entry9_lxwr101_1_sb_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_2_sh, PMPSm_cp_cfg_RW_entry9_lxwr101_2_sh_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_3_sw, PMPSm_cp_cfg_RW_entry9_lxwr101_3_sw_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_4_sd, PMPSm_cp_cfg_RW_entry9_lxwr101_4_sd_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_5_lb, PMPSm_cp_cfg_RW_entry9_lxwr101_5_lb_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_6_lbu, PMPSm_cp_cfg_RW_entry9_lxwr101_6_lbu_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_7_lh, PMPSm_cp_cfg_RW_entry9_lxwr101_7_lh_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_8_lhu, PMPSm_cp_cfg_RW_entry9_lxwr101_8_lhu_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_9_lw, PMPSm_cp_cfg_RW_entry9_lxwr101_9_lw_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_10_lwu, PMPSm_cp_cfg_RW_entry9_lxwr101_10_lwu_str)
+PMPSm_cp_cfg_RW_entry9_lxwr101_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry9_lxwr101_11_ld, PMPSm_cp_cfg_RW_entry9_lxwr101_11_ld_str)
+
+// PMP configuration 52: L = 1 and XWR = 001 on PMP entry 8
+  LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
+  csrw pmpcfg2, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry8_lxwr001_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_12_jalr, PMPSm_cp_cfg_RW_entry8_lxwr001_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry8_lxwr001_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_1_sb, PMPSm_cp_cfg_RW_entry8_lxwr001_1_sb_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_2_sh, PMPSm_cp_cfg_RW_entry8_lxwr001_2_sh_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_3_sw, PMPSm_cp_cfg_RW_entry8_lxwr001_3_sw_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_4_sd, PMPSm_cp_cfg_RW_entry8_lxwr001_4_sd_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_5_lb, PMPSm_cp_cfg_RW_entry8_lxwr001_5_lb_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_6_lbu, PMPSm_cp_cfg_RW_entry8_lxwr001_6_lbu_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_7_lh, PMPSm_cp_cfg_RW_entry8_lxwr001_7_lh_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_8_lhu, PMPSm_cp_cfg_RW_entry8_lxwr001_8_lhu_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_9_lw, PMPSm_cp_cfg_RW_entry8_lxwr001_9_lw_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_10_lwu, PMPSm_cp_cfg_RW_entry8_lxwr001_10_lwu_str)
+PMPSm_cp_cfg_RW_entry8_lxwr001_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry8_lxwr001_11_ld, PMPSm_cp_cfg_RW_entry8_lxwr001_11_ld_str)
+
+// PMP configuration 53: L = 1 and XWR = 100 on PMP entry 7
+  LI(x4, (PMPREGION_XWR_100 << PMP7_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry7_lxwr100_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_12_jalr, PMPSm_cp_cfg_RW_entry7_lxwr100_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry7_lxwr100_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_1_sb, PMPSm_cp_cfg_RW_entry7_lxwr100_1_sb_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_2_sh, PMPSm_cp_cfg_RW_entry7_lxwr100_2_sh_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_3_sw, PMPSm_cp_cfg_RW_entry7_lxwr100_3_sw_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_4_sd, PMPSm_cp_cfg_RW_entry7_lxwr100_4_sd_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_5_lb, PMPSm_cp_cfg_RW_entry7_lxwr100_5_lb_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_6_lbu, PMPSm_cp_cfg_RW_entry7_lxwr100_6_lbu_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_7_lh, PMPSm_cp_cfg_RW_entry7_lxwr100_7_lh_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_8_lhu, PMPSm_cp_cfg_RW_entry7_lxwr100_8_lhu_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_9_lw, PMPSm_cp_cfg_RW_entry7_lxwr100_9_lw_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_10_lwu, PMPSm_cp_cfg_RW_entry7_lxwr100_10_lwu_str)
+PMPSm_cp_cfg_RW_entry7_lxwr100_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry7_lxwr100_11_ld, PMPSm_cp_cfg_RW_entry7_lxwr100_11_ld_str)
+
+// PMP configuration 54: L = 1 and XWR = 000 on PMP entry 6
+  LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry6_lxwr000_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_12_jalr, PMPSm_cp_cfg_RW_entry6_lxwr000_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry6_lxwr000_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_1_sb, PMPSm_cp_cfg_RW_entry6_lxwr000_1_sb_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_2_sh, PMPSm_cp_cfg_RW_entry6_lxwr000_2_sh_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_3_sw, PMPSm_cp_cfg_RW_entry6_lxwr000_3_sw_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_4_sd, PMPSm_cp_cfg_RW_entry6_lxwr000_4_sd_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_5_lb, PMPSm_cp_cfg_RW_entry6_lxwr000_5_lb_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_6_lbu, PMPSm_cp_cfg_RW_entry6_lxwr000_6_lbu_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_7_lh, PMPSm_cp_cfg_RW_entry6_lxwr000_7_lh_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_8_lhu, PMPSm_cp_cfg_RW_entry6_lxwr000_8_lhu_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_9_lw, PMPSm_cp_cfg_RW_entry6_lxwr000_9_lw_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_10_lwu, PMPSm_cp_cfg_RW_entry6_lxwr000_10_lwu_str)
+PMPSm_cp_cfg_RW_entry6_lxwr000_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry6_lxwr000_11_ld, PMPSm_cp_cfg_RW_entry6_lxwr000_11_ld_str)
+
+// PMP configuration 55: L = 1 and XWR = 111 on PMP entry 5
+  LI(x4, (PMPREGION_XWR_111 << PMP5_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry5_lxwr111_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_12_jalr, PMPSm_cp_cfg_RW_entry5_lxwr111_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry5_lxwr111_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_1_sb, PMPSm_cp_cfg_RW_entry5_lxwr111_1_sb_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_2_sh, PMPSm_cp_cfg_RW_entry5_lxwr111_2_sh_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_3_sw, PMPSm_cp_cfg_RW_entry5_lxwr111_3_sw_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_4_sd, PMPSm_cp_cfg_RW_entry5_lxwr111_4_sd_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_5_lb, PMPSm_cp_cfg_RW_entry5_lxwr111_5_lb_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_6_lbu, PMPSm_cp_cfg_RW_entry5_lxwr111_6_lbu_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_7_lh, PMPSm_cp_cfg_RW_entry5_lxwr111_7_lh_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_8_lhu, PMPSm_cp_cfg_RW_entry5_lxwr111_8_lhu_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_9_lw, PMPSm_cp_cfg_RW_entry5_lxwr111_9_lw_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_10_lwu, PMPSm_cp_cfg_RW_entry5_lxwr111_10_lwu_str)
+PMPSm_cp_cfg_RW_entry5_lxwr111_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry5_lxwr111_11_ld, PMPSm_cp_cfg_RW_entry5_lxwr111_11_ld_str)
+
+// PMP configuration 56: L = 1 and XWR = 011 on PMP entry 4
+  LI(x4, (PMPREGION_XWR_011 << PMP4_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry4_lxwr011_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_12_jalr, PMPSm_cp_cfg_RW_entry4_lxwr011_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry4_lxwr011_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_1_sb, PMPSm_cp_cfg_RW_entry4_lxwr011_1_sb_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_2_sh, PMPSm_cp_cfg_RW_entry4_lxwr011_2_sh_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_3_sw, PMPSm_cp_cfg_RW_entry4_lxwr011_3_sw_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_4_sd, PMPSm_cp_cfg_RW_entry4_lxwr011_4_sd_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_5_lb, PMPSm_cp_cfg_RW_entry4_lxwr011_5_lb_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_6_lbu, PMPSm_cp_cfg_RW_entry4_lxwr011_6_lbu_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_7_lh, PMPSm_cp_cfg_RW_entry4_lxwr011_7_lh_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_8_lhu, PMPSm_cp_cfg_RW_entry4_lxwr011_8_lhu_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_9_lw, PMPSm_cp_cfg_RW_entry4_lxwr011_9_lw_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_10_lwu, PMPSm_cp_cfg_RW_entry4_lxwr011_10_lwu_str)
+PMPSm_cp_cfg_RW_entry4_lxwr011_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry4_lxwr011_11_ld, PMPSm_cp_cfg_RW_entry4_lxwr011_11_ld_str)
+
+// PMP configuration 57: L = 1 and XWR = 101 on PMP entry 3
+  LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry3_lxwr101_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_12_jalr, PMPSm_cp_cfg_RW_entry3_lxwr101_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry3_lxwr101_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_1_sb, PMPSm_cp_cfg_RW_entry3_lxwr101_1_sb_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_2_sh, PMPSm_cp_cfg_RW_entry3_lxwr101_2_sh_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_3_sw, PMPSm_cp_cfg_RW_entry3_lxwr101_3_sw_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_4_sd, PMPSm_cp_cfg_RW_entry3_lxwr101_4_sd_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_5_lb, PMPSm_cp_cfg_RW_entry3_lxwr101_5_lb_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_6_lbu, PMPSm_cp_cfg_RW_entry3_lxwr101_6_lbu_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_7_lh, PMPSm_cp_cfg_RW_entry3_lxwr101_7_lh_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_8_lhu, PMPSm_cp_cfg_RW_entry3_lxwr101_8_lhu_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_9_lw, PMPSm_cp_cfg_RW_entry3_lxwr101_9_lw_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_10_lwu, PMPSm_cp_cfg_RW_entry3_lxwr101_10_lwu_str)
+PMPSm_cp_cfg_RW_entry3_lxwr101_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry3_lxwr101_11_ld, PMPSm_cp_cfg_RW_entry3_lxwr101_11_ld_str)
+
+// PMP configuration 58: L = 1 and XWR = 001 on PMP entry 2
+  LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry2_lxwr001_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_12_jalr, PMPSm_cp_cfg_RW_entry2_lxwr001_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry2_lxwr001_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_1_sb, PMPSm_cp_cfg_RW_entry2_lxwr001_1_sb_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_2_sh, PMPSm_cp_cfg_RW_entry2_lxwr001_2_sh_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_3_sw, PMPSm_cp_cfg_RW_entry2_lxwr001_3_sw_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_4_sd, PMPSm_cp_cfg_RW_entry2_lxwr001_4_sd_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_5_lb, PMPSm_cp_cfg_RW_entry2_lxwr001_5_lb_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_6_lbu, PMPSm_cp_cfg_RW_entry2_lxwr001_6_lbu_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_7_lh, PMPSm_cp_cfg_RW_entry2_lxwr001_7_lh_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_8_lhu, PMPSm_cp_cfg_RW_entry2_lxwr001_8_lhu_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_9_lw, PMPSm_cp_cfg_RW_entry2_lxwr001_9_lw_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_10_lwu, PMPSm_cp_cfg_RW_entry2_lxwr001_10_lwu_str)
+PMPSm_cp_cfg_RW_entry2_lxwr001_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry2_lxwr001_11_ld, PMPSm_cp_cfg_RW_entry2_lxwr001_11_ld_str)
+
+// PMP configuration 59: L = 1 and XWR = 100 on PMP entry 1
+  LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry1_lxwr100_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_12_jalr, PMPSm_cp_cfg_RW_entry1_lxwr100_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry1_lxwr100_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_1_sb, PMPSm_cp_cfg_RW_entry1_lxwr100_1_sb_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_2_sh, PMPSm_cp_cfg_RW_entry1_lxwr100_2_sh_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_3_sw, PMPSm_cp_cfg_RW_entry1_lxwr100_3_sw_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_4_sd, PMPSm_cp_cfg_RW_entry1_lxwr100_4_sd_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_5_lb, PMPSm_cp_cfg_RW_entry1_lxwr100_5_lb_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_6_lbu, PMPSm_cp_cfg_RW_entry1_lxwr100_6_lbu_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_7_lh, PMPSm_cp_cfg_RW_entry1_lxwr100_7_lh_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_8_lhu, PMPSm_cp_cfg_RW_entry1_lxwr100_8_lhu_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_9_lw, PMPSm_cp_cfg_RW_entry1_lxwr100_9_lw_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_10_lwu, PMPSm_cp_cfg_RW_entry1_lxwr100_10_lwu_str)
+PMPSm_cp_cfg_RW_entry1_lxwr100_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry1_lxwr100_11_ld, PMPSm_cp_cfg_RW_entry1_lxwr100_11_ld_str)
+
+// PMP configuration 60: L = 1 and XWR = 000 on PMP entry 0
+  LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+// Execute probe
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_RW_entry0_lxwr000_12_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_12_jalr, PMPSm_cp_cfg_RW_entry0_lxwr000_12_jalr_str)
+
+// Load and store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_RW_entry0_lxwr000_1_sb:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_1_sb, PMPSm_cp_cfg_RW_entry0_lxwr000_1_sb_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_2_sh:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_2_sh, PMPSm_cp_cfg_RW_entry0_lxwr000_2_sh_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_3_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_3_sw, PMPSm_cp_cfg_RW_entry0_lxwr000_3_sw_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_4_sd:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_4_sd, PMPSm_cp_cfg_RW_entry0_lxwr000_4_sd_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_5_lb:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_5_lb, PMPSm_cp_cfg_RW_entry0_lxwr000_5_lb_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_6_lbu:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_6_lbu, PMPSm_cp_cfg_RW_entry0_lxwr000_6_lbu_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_7_lh:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_7_lh, PMPSm_cp_cfg_RW_entry0_lxwr000_7_lh_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_8_lhu:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_8_lhu, PMPSm_cp_cfg_RW_entry0_lxwr000_8_lhu_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_9_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_9_lw, PMPSm_cp_cfg_RW_entry0_lxwr000_9_lw_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_10_lwu:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_10_lwu, PMPSm_cp_cfg_RW_entry0_lxwr000_10_lwu_str)
+PMPSm_cp_cfg_RW_entry0_lxwr000_11_ld:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_RW_entry0_lxwr000_11_ld, PMPSm_cp_cfg_RW_entry0_lxwr000_11_ld_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -181,40 +1046,208 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS
-    jr ra
-    .endr
-    .option pop
+  .rept PMP_NAPOT_REGION_PAD_WORDS
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpsm_cfg_XWR_all_sb\""
-test_2_str: .string "\"test: 2; cp: pmpsm_cfg_XWR_all_sh\""
-test_3_str: .string "\"test: 3; cp: pmpsm_cfg_XWR_all_sw\""
-test_4_str: .string "\"test: 4; cp: pmpsm_cfg_XWR_all_sd\""
-test_5_str: .string "\"test: 5; cp: pmpsm_cfg_XWR_all_lb\""
-test_6_str: .string "\"test: 6; cp: pmpsm_cfg_XWR_all_lbu\""
-test_7_str: .string "\"test: 7; cp: pmpsm_cfg_XWR_all_lh\""
-test_8_str: .string "\"test: 8; cp: pmpsm_cfg_XWR_all_lhu\""
-test_9_str: .string "\"test: 9; cp: pmpsm_cfg_XWR_all_lw\""
-test_10_str: .string "\"test: 10; cp: pmpsm_cfg_XWR_all_lwu\""
-test_11_str: .string "\"test: 11; cp: pmpsm_cfg_XWR_all_ld\""
-test_12_str: .string "\"test: 12; cp: pmpsm_cfg_XWR_all_jalr\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_1_sb_str: .string "\"test: 729; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_1_sb\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_2_sh_str: .string "\"test: 730; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_2_sh\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_3_sw_str: .string "\"test: 731; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_3_sw\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_4_sd_str: .string "\"test: 732; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_4_sd\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_5_lb_str: .string "\"test: 733; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_5_lb\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_6_lbu_str: .string "\"test: 734; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_6_lbu\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_7_lh_str: .string "\"test: 735; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_7_lh\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_8_lhu_str: .string "\"test: 736; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_8_lhu\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_9_lw_str: .string "\"test: 737; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_9_lw\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_10_lwu_str: .string "\"test: 738; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_10_lwu\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_11_ld_str: .string "\"test: 739; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_11_ld\""
+PMPSm_cp_cfg_RW_entry14_lxwr001_12_jalr_str: .string "\"test: 740; cg: PMPSm; cp: cp_cfg_RW; bin: entry14_lxwr001_12_jalr\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_1_sb_str: .string "\"test: 741; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_1_sb\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_2_sh_str: .string "\"test: 742; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_2_sh\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_3_sw_str: .string "\"test: 743; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_3_sw\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_4_sd_str: .string "\"test: 744; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_4_sd\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_5_lb_str: .string "\"test: 745; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_5_lb\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_6_lbu_str: .string "\"test: 746; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_6_lbu\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_7_lh_str: .string "\"test: 747; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_7_lh\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_8_lhu_str: .string "\"test: 748; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_8_lhu\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_9_lw_str: .string "\"test: 749; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_9_lw\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_10_lwu_str: .string "\"test: 750; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_10_lwu\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_11_ld_str: .string "\"test: 751; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_11_ld\""
+PMPSm_cp_cfg_RW_entry13_lxwr100_12_jalr_str: .string "\"test: 752; cg: PMPSm; cp: cp_cfg_RW; bin: entry13_lxwr100_12_jalr\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_1_sb_str: .string "\"test: 753; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_1_sb\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_2_sh_str: .string "\"test: 754; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_2_sh\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_3_sw_str: .string "\"test: 755; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_3_sw\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_4_sd_str: .string "\"test: 756; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_4_sd\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_5_lb_str: .string "\"test: 757; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_5_lb\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_6_lbu_str: .string "\"test: 758; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_6_lbu\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_7_lh_str: .string "\"test: 759; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_7_lh\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_8_lhu_str: .string "\"test: 760; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_8_lhu\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_9_lw_str: .string "\"test: 761; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_9_lw\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_10_lwu_str: .string "\"test: 762; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_10_lwu\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_11_ld_str: .string "\"test: 763; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_11_ld\""
+PMPSm_cp_cfg_RW_entry12_lxwr000_12_jalr_str: .string "\"test: 764; cg: PMPSm; cp: cp_cfg_RW; bin: entry12_lxwr000_12_jalr\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_1_sb_str: .string "\"test: 765; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_1_sb\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_2_sh_str: .string "\"test: 766; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_2_sh\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_3_sw_str: .string "\"test: 767; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_3_sw\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_4_sd_str: .string "\"test: 768; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_4_sd\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_5_lb_str: .string "\"test: 769; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_5_lb\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_6_lbu_str: .string "\"test: 770; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_6_lbu\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_7_lh_str: .string "\"test: 771; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_7_lh\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_8_lhu_str: .string "\"test: 772; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_8_lhu\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_9_lw_str: .string "\"test: 773; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_9_lw\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_10_lwu_str: .string "\"test: 774; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_10_lwu\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_11_ld_str: .string "\"test: 775; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_11_ld\""
+PMPSm_cp_cfg_RW_entry11_lxwr111_12_jalr_str: .string "\"test: 776; cg: PMPSm; cp: cp_cfg_RW; bin: entry11_lxwr111_12_jalr\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_1_sb_str: .string "\"test: 777; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_1_sb\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_2_sh_str: .string "\"test: 778; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_2_sh\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_3_sw_str: .string "\"test: 779; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_3_sw\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_4_sd_str: .string "\"test: 780; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_4_sd\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_5_lb_str: .string "\"test: 781; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_5_lb\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_6_lbu_str: .string "\"test: 782; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_6_lbu\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_7_lh_str: .string "\"test: 783; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_7_lh\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_8_lhu_str: .string "\"test: 784; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_8_lhu\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_9_lw_str: .string "\"test: 785; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_9_lw\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_10_lwu_str: .string "\"test: 786; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_10_lwu\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_11_ld_str: .string "\"test: 787; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_11_ld\""
+PMPSm_cp_cfg_RW_entry10_lxwr001_12_jalr_str: .string "\"test: 788; cg: PMPSm; cp: cp_cfg_RW; bin: entry10_lxwr001_12_jalr\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_1_sb_str: .string "\"test: 789; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_1_sb\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_2_sh_str: .string "\"test: 790; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_2_sh\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_3_sw_str: .string "\"test: 791; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_3_sw\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_4_sd_str: .string "\"test: 792; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_4_sd\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_5_lb_str: .string "\"test: 793; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_5_lb\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_6_lbu_str: .string "\"test: 794; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_6_lbu\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_7_lh_str: .string "\"test: 795; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_7_lh\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_8_lhu_str: .string "\"test: 796; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_8_lhu\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_9_lw_str: .string "\"test: 797; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_9_lw\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_10_lwu_str: .string "\"test: 798; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_10_lwu\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_11_ld_str: .string "\"test: 799; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_11_ld\""
+PMPSm_cp_cfg_RW_entry9_lxwr101_12_jalr_str: .string "\"test: 800; cg: PMPSm; cp: cp_cfg_RW; bin: entry9_lxwr101_12_jalr\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_1_sb_str: .string "\"test: 801; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_1_sb\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_2_sh_str: .string "\"test: 802; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_2_sh\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_3_sw_str: .string "\"test: 803; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_3_sw\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_4_sd_str: .string "\"test: 804; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_4_sd\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_5_lb_str: .string "\"test: 805; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_5_lb\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_6_lbu_str: .string "\"test: 806; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_6_lbu\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_7_lh_str: .string "\"test: 807; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_7_lh\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_8_lhu_str: .string "\"test: 808; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_8_lhu\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_9_lw_str: .string "\"test: 809; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_9_lw\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_10_lwu_str: .string "\"test: 810; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_10_lwu\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_11_ld_str: .string "\"test: 811; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_11_ld\""
+PMPSm_cp_cfg_RW_entry8_lxwr001_12_jalr_str: .string "\"test: 812; cg: PMPSm; cp: cp_cfg_RW; bin: entry8_lxwr001_12_jalr\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_1_sb_str: .string "\"test: 813; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_1_sb\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_2_sh_str: .string "\"test: 814; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_2_sh\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_3_sw_str: .string "\"test: 815; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_3_sw\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_4_sd_str: .string "\"test: 816; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_4_sd\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_5_lb_str: .string "\"test: 817; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_5_lb\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_6_lbu_str: .string "\"test: 818; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_6_lbu\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_7_lh_str: .string "\"test: 819; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_7_lh\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_8_lhu_str: .string "\"test: 820; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_8_lhu\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_9_lw_str: .string "\"test: 821; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_9_lw\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_10_lwu_str: .string "\"test: 822; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_10_lwu\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_11_ld_str: .string "\"test: 823; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_11_ld\""
+PMPSm_cp_cfg_RW_entry7_lxwr100_12_jalr_str: .string "\"test: 824; cg: PMPSm; cp: cp_cfg_RW; bin: entry7_lxwr100_12_jalr\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_1_sb_str: .string "\"test: 825; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_1_sb\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_2_sh_str: .string "\"test: 826; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_2_sh\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_3_sw_str: .string "\"test: 827; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_3_sw\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_4_sd_str: .string "\"test: 828; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_4_sd\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_5_lb_str: .string "\"test: 829; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_5_lb\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_6_lbu_str: .string "\"test: 830; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_6_lbu\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_7_lh_str: .string "\"test: 831; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_7_lh\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_8_lhu_str: .string "\"test: 832; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_8_lhu\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_9_lw_str: .string "\"test: 833; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_9_lw\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_10_lwu_str: .string "\"test: 834; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_10_lwu\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_11_ld_str: .string "\"test: 835; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_11_ld\""
+PMPSm_cp_cfg_RW_entry6_lxwr000_12_jalr_str: .string "\"test: 836; cg: PMPSm; cp: cp_cfg_RW; bin: entry6_lxwr000_12_jalr\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_1_sb_str: .string "\"test: 837; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_1_sb\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_2_sh_str: .string "\"test: 838; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_2_sh\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_3_sw_str: .string "\"test: 839; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_3_sw\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_4_sd_str: .string "\"test: 840; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_4_sd\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_5_lb_str: .string "\"test: 841; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_5_lb\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_6_lbu_str: .string "\"test: 842; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_6_lbu\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_7_lh_str: .string "\"test: 843; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_7_lh\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_8_lhu_str: .string "\"test: 844; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_8_lhu\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_9_lw_str: .string "\"test: 845; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_9_lw\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_10_lwu_str: .string "\"test: 846; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_10_lwu\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_11_ld_str: .string "\"test: 847; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_11_ld\""
+PMPSm_cp_cfg_RW_entry5_lxwr111_12_jalr_str: .string "\"test: 848; cg: PMPSm; cp: cp_cfg_RW; bin: entry5_lxwr111_12_jalr\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_1_sb_str: .string "\"test: 849; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_1_sb\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_2_sh_str: .string "\"test: 850; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_2_sh\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_3_sw_str: .string "\"test: 851; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_3_sw\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_4_sd_str: .string "\"test: 852; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_4_sd\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_5_lb_str: .string "\"test: 853; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_5_lb\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_6_lbu_str: .string "\"test: 854; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_6_lbu\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_7_lh_str: .string "\"test: 855; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_7_lh\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_8_lhu_str: .string "\"test: 856; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_8_lhu\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_9_lw_str: .string "\"test: 857; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_9_lw\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_10_lwu_str: .string "\"test: 858; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_10_lwu\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_11_ld_str: .string "\"test: 859; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_11_ld\""
+PMPSm_cp_cfg_RW_entry4_lxwr011_12_jalr_str: .string "\"test: 860; cg: PMPSm; cp: cp_cfg_RW; bin: entry4_lxwr011_12_jalr\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_1_sb_str: .string "\"test: 861; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_1_sb\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_2_sh_str: .string "\"test: 862; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_2_sh\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_3_sw_str: .string "\"test: 863; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_3_sw\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_4_sd_str: .string "\"test: 864; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_4_sd\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_5_lb_str: .string "\"test: 865; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_5_lb\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_6_lbu_str: .string "\"test: 866; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_6_lbu\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_7_lh_str: .string "\"test: 867; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_7_lh\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_8_lhu_str: .string "\"test: 868; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_8_lhu\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_9_lw_str: .string "\"test: 869; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_9_lw\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_10_lwu_str: .string "\"test: 870; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_10_lwu\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_11_ld_str: .string "\"test: 871; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_11_ld\""
+PMPSm_cp_cfg_RW_entry3_lxwr101_12_jalr_str: .string "\"test: 872; cg: PMPSm; cp: cp_cfg_RW; bin: entry3_lxwr101_12_jalr\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_1_sb_str: .string "\"test: 873; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_1_sb\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_2_sh_str: .string "\"test: 874; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_2_sh\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_3_sw_str: .string "\"test: 875; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_3_sw\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_4_sd_str: .string "\"test: 876; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_4_sd\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_5_lb_str: .string "\"test: 877; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_5_lb\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_6_lbu_str: .string "\"test: 878; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_6_lbu\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_7_lh_str: .string "\"test: 879; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_7_lh\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_8_lhu_str: .string "\"test: 880; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_8_lhu\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_9_lw_str: .string "\"test: 881; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_9_lw\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_10_lwu_str: .string "\"test: 882; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_10_lwu\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_11_ld_str: .string "\"test: 883; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_11_ld\""
+PMPSm_cp_cfg_RW_entry2_lxwr001_12_jalr_str: .string "\"test: 884; cg: PMPSm; cp: cp_cfg_RW; bin: entry2_lxwr001_12_jalr\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_1_sb_str: .string "\"test: 885; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_1_sb\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_2_sh_str: .string "\"test: 886; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_2_sh\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_3_sw_str: .string "\"test: 887; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_3_sw\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_4_sd_str: .string "\"test: 888; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_4_sd\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_5_lb_str: .string "\"test: 889; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_5_lb\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_6_lbu_str: .string "\"test: 890; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_6_lbu\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_7_lh_str: .string "\"test: 891; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_7_lh\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_8_lhu_str: .string "\"test: 892; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_8_lhu\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_9_lw_str: .string "\"test: 893; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_9_lw\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_10_lwu_str: .string "\"test: 894; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_10_lwu\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_11_ld_str: .string "\"test: 895; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_11_ld\""
+PMPSm_cp_cfg_RW_entry1_lxwr100_12_jalr_str: .string "\"test: 896; cg: PMPSm; cp: cp_cfg_RW; bin: entry1_lxwr100_12_jalr\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_1_sb_str: .string "\"test: 897; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_1_sb\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_2_sh_str: .string "\"test: 898; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_2_sh\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_3_sw_str: .string "\"test: 899; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_3_sw\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_4_sd_str: .string "\"test: 900; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_4_sd\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_5_lb_str: .string "\"test: 901; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_5_lb\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_6_lbu_str: .string "\"test: 902; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_6_lbu\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_7_lh_str: .string "\"test: 903; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_7_lh\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_8_lhu_str: .string "\"test: 904; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_8_lhu\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_9_lw_str: .string "\"test: 905; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_9_lw\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_10_lwu_str: .string "\"test: 906; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_10_lwu\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_11_ld_str: .string "\"test: 907; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_11_ld\""
+PMPSm_cp_cfg_RW_entry0_lxwr000_12_jalr_str: .string "\"test: 908; cg: PMPSm; cp: cp_cfg_RW; bin: entry0_lxwr000_12_jalr\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

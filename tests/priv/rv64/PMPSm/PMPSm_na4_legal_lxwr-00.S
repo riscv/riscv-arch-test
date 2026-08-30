@@ -36,88 +36,400 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} in M mode at and around a locked NA4 region, each legal XWR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_1000 (((PMP_L|PMP_NA4)&0xFF) << PMP5_CFG_SHIFT)
-#define PMPREGION_LXWR_1001 (((PMP_L|PMP_R|PMP_NA4)&0xFF) << PMP4_CFG_SHIFT)
-#define PMPREGION_LXWR_1011 (((PMP_L|PMP_R|PMP_W|PMP_NA4)&0xFF) << PMP3_CFG_SHIFT)
-#define PMPREGION_LXWR_1100 (((PMP_L|PMP_X|PMP_NA4)&0xFF) << PMP2_CFG_SHIFT)
-#define PMPREGION_LXWR_1101 (((PMP_L|PMP_R|PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT)
-#define PMPREGION_LXWR_1111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1000 (((PMP_L | PMP_NA4) & 0xFF) << PMP5_CFG_SHIFT)
+#define PMPREGION_LXWR_1001 (((PMP_L | PMP_R | PMP_NA4) & 0xFF) << PMP4_CFG_SHIFT)
+#define PMPREGION_LXWR_1011 (((PMP_L | PMP_R | PMP_W | PMP_NA4) & 0xFF) << PMP3_CFG_SHIFT)
+#define PMPREGION_LXWR_1100 (((PMP_L | PMP_X | PMP_NA4) & 0xFF) << PMP2_CFG_SHIFT)
+#define PMPREGION_LXWR_1101 (((PMP_L | PMP_R | PMP_X | PMP_NA4) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP0_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: L = 1, No permissions, entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr5, x5
+  LI(x4, PMPREGION_LXWR_1000)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : L -> 1 and No Permissions given to PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr5, x5
-    LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_1
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_1_jalr_address, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_4_sw_address, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_5_lw_address, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry5_lxwr1000_9_lw_address_4_str)
 
-// Test Case: 2 : L -> 1 and R Permissions given to PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_2
+// PMP configuration 2: L = 1, R permissions, entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr4, x5
+  LI(x4, PMPREGION_LXWR_1001)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 3 : L -> 1 and WR Permissions given to PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr3, x5
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_3
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_1_jalr_address, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_4_sw_address, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_5_lw_address, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry4_lxwr1001_9_lw_address_4_str)
 
-// Test Case: 4 : L -> 1 and X Permissions given to PMP entry 2
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_1100)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_4
+// PMP configuration 3: L = 1, WR permissions, entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr3, x5
+  LI(x4, PMPREGION_LXWR_1011)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 5 : L -> 1 and XR Permissions given to PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr1, x5
-    LI(x4, PMPREGION_LXWR_1101)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_5
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_1_jalr_address, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_4_sw_address, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_5_lw_address, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry3_lxwr1011_9_lw_address_4_str)
 
-// Test Case: 6 : L -> 1 and XWR Permissions given to PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_1111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_6
+// PMP configuration 4: L = 1, X permissions, entry 2
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr2, x5
+  LI(x4, PMPREGION_LXWR_1100)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    j exit
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_1_jalr_address, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_4_sw_address, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_5_lw_address, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry2_lxwr1100_9_lw_address_4_str)
 
-exit:
+// PMP configuration 5: L = 1, XR permissions, entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr1, x5
+  LI(x4, PMPREGION_LXWR_1101)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_1_jalr_address, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_4_sw_address, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_5_lw_address, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry1_lxwr1101_9_lw_address_4_str)
+
+// PMP configuration 6: L = 1, XWR permissions, entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_1111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_1_jalr_address, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_2_jalr_addressm4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_3_jalr_address_4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_4_sw_address, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_4_sw_address_str)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_5_lw_address, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_6_sw_addressm4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_7_lw_addressm4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_8_sw_address_4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_8_sw_address_4_str)
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_9_lw_address_4, PMPSm_cp_cfg_A_na4_entry0_lxwr1111_9_lw_address_4_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -127,37 +439,82 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option pop
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpsm_na4_jalr_address\""
-test_2_str: .string "\"test: 2; cp: pmpsm_na4_jalr_address-4\""
-test_3_str: .string "\"test: 3; cp: pmpsm_na4_jalr_address+4\""
-test_4_str: .string "\"test: 4; cp: pmpsm_na4_sw_address\""
-test_5_str: .string "\"test: 5; cp: pmpsm_na4_lw_address\""
-test_6_str: .string "\"test: 6; cp: pmpsm_na4_sw_address-4\""
-test_7_str: .string "\"test: 7; cp: pmpsm_na4_lw_address-4\""
-test_8_str: .string "\"test: 8; cp: pmpsm_na4_sw_address+4\""
-test_9_str: .string "\"test: 9; cp: pmpsm_na4_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_1_jalr_address_str: .string "\"test: 46; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_2_jalr_addressm4_str: .string "\"test: 47; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_3_jalr_address_4_str: .string "\"test: 48; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_4_sw_address_str: .string "\"test: 49; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_5_lw_address_str: .string "\"test: 50; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_6_sw_addressm4_str: .string "\"test: 51; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_7_lw_addressm4_str: .string "\"test: 52; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_8_sw_address_4_str: .string "\"test: 53; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry5_lxwr1000_9_lw_address_4_str: .string "\"test: 54; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry5_lxwr1000_9_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_1_jalr_address_str: .string "\"test: 55; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_2_jalr_addressm4_str: .string "\"test: 56; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_3_jalr_address_4_str: .string "\"test: 57; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_4_sw_address_str: .string "\"test: 58; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_5_lw_address_str: .string "\"test: 59; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_6_sw_addressm4_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_7_lw_addressm4_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_8_sw_address_4_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry4_lxwr1001_9_lw_address_4_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry4_lxwr1001_9_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_1_jalr_address_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_2_jalr_addressm4_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_3_jalr_address_4_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_4_sw_address_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_5_lw_address_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_6_sw_addressm4_str: .string "\"test: 69; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_7_lw_addressm4_str: .string "\"test: 70; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_8_sw_address_4_str: .string "\"test: 71; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry3_lxwr1011_9_lw_address_4_str: .string "\"test: 72; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry3_lxwr1011_9_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_1_jalr_address_str: .string "\"test: 73; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_2_jalr_addressm4_str: .string "\"test: 74; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_3_jalr_address_4_str: .string "\"test: 75; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_4_sw_address_str: .string "\"test: 76; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_5_lw_address_str: .string "\"test: 77; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_6_sw_addressm4_str: .string "\"test: 78; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_7_lw_addressm4_str: .string "\"test: 79; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_8_sw_address_4_str: .string "\"test: 80; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry2_lxwr1100_9_lw_address_4_str: .string "\"test: 81; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry2_lxwr1100_9_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_1_jalr_address_str: .string "\"test: 82; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_2_jalr_addressm4_str: .string "\"test: 83; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_3_jalr_address_4_str: .string "\"test: 84; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_4_sw_address_str: .string "\"test: 85; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_5_lw_address_str: .string "\"test: 86; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_6_sw_addressm4_str: .string "\"test: 87; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_7_lw_addressm4_str: .string "\"test: 88; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_8_sw_address_4_str: .string "\"test: 89; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry1_lxwr1101_9_lw_address_4_str: .string "\"test: 90; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry1_lxwr1101_9_lw_address+4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_1_jalr_address_str: .string "\"test: 91; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_1_jalr_address\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_2_jalr_addressm4_str: .string "\"test: 92; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_2_jalr_address-4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_3_jalr_address_4_str: .string "\"test: 93; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_3_jalr_address+4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_4_sw_address_str: .string "\"test: 94; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_4_sw_address\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_5_lw_address_str: .string "\"test: 95; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_5_lw_address\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_6_sw_addressm4_str: .string "\"test: 96; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_6_sw_address-4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_7_lw_addressm4_str: .string "\"test: 97; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_7_lw_address-4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_8_sw_address_4_str: .string "\"test: 98; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_8_sw_address+4\""
+PMPSm_cp_cfg_A_na4_entry0_lxwr1111_9_lw_address_4_str: .string "\"test: 99; cg: PMPSm; cp: cp_cfg_A_na4; bin: entry0_lxwr1111_9_lw_address+4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

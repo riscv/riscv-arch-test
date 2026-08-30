@@ -35,33 +35,31 @@ RVTEST_BEGIN
 //   Write all ones to pmpaddr0 with pmpcfg0 = 0 and read it back; the lowest set bit gives the grain.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 4
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 1
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
 #define PMP_GRAIN_CHECK_MASK ((1 << (UDB_PMP_GRANULARITY - 1)) - 1)
 
-    RVTEST_PMP_SET_BACKGROUND x4
-
-// ---------------------------- Verification Section ----------------------------
+  RVTEST_PMP_SET_BACKGROUND x4
 
 PMPSm_cp_grain_check_readback:
 // Write 0 to pmpcfg0 and all ones to pmpaddr0, then read back pmpaddr0
-    csrw pmpcfg0, x0
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(t3, PMP_GRAIN_CHECK_MASK)
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_check_readback, PMPSm_cp_grain_check_readback_str)
+  csrw pmpcfg0, x0
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(t3, PMP_GRAIN_CHECK_MASK)
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_check_readback, PMPSm_cp_grain_check_readback_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -73,7 +71,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_grain_check_readback_str: .string "\"test: 122; cg: PMPSm; cp: cp_grain_check; bin: readback\""
+PMPSm_cp_grain_check_readback_str: .string "\"test: 755; cg: PMPSm; cp: cp_grain_check; bin: readback\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

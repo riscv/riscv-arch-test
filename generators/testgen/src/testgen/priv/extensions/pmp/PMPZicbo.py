@@ -14,21 +14,24 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     lxwr_walk_body,
     make_exec_region,
-    make_sig_strings,
+)
+from testgen.priv.extensions.pmp.probes import (
+    gen_cbo,
+    gen_prefetch,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 _PAGE_MASK_DEFINES = [
     "#if UDB_PMP_GRANULARITY > 12",
-    "    #define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY",
+    "#define PMPZICBO_REGION_SHIFT  UDB_PMP_GRANULARITY",
     "#else",
-    "    #define PMPZICBO_REGION_SHIFT  12",
+    "#define PMPZICBO_REGION_SHIFT  12",
     "#endif",
     "#define PMP_MASK                   ~((1 << (PMPZICBO_REGION_SHIFT - 3))-1)",
     "#define PMP_REGION_SIZE            ((1 << (PMPZICBO_REGION_SHIFT - 3)) - 1)",
 ]
 
-_ENABLE_CBO = ["    LI(t0, 0xF0)", "    csrrs zero, menvcfg, t0"]
+_ENABLE_CBO = ["LI(t0, 0xF0)", "csrrs zero, menvcfg, t0"]
 _PAGE_REGION = make_exec_region(("1024", "nop"), pad=None)
 
 
@@ -48,19 +51,16 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
         )
         chunk.code.extend(
             lxwr_walk_body(
-                test_data.xlen,
+                test_data,
                 [(lxwr, 0)],
                 "napot",
-                "CBO",
+                gen_cbo,
+                "cp_cbo",
                 first=number,
                 extra_setup=_ENABLE_CBO,
                 napot_mask=_PAGE_MASK_DEFINES,
             )
         )
-        strings = make_sig_strings("CBO", test_data.xlen, "pmpzicbo_cbo")
-        chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-        chunk.sigupd_count = len(strings)
-        chunk.num_testcases = len(strings)
         chunk.raw_data.extend(_PAGE_REGION)
         chunks.append(test_data.end_test_chunk())
     return chunks
@@ -80,17 +80,14 @@ def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
     )
     chunk.code.extend(
         lxwr_walk_body(
-            test_data.xlen,
+            test_data,
             LOCKED_LXWR_CASES,
             "napot",
-            "PREFETCH",
+            gen_prefetch,
+            "cp_prefetch",
             extra_setup=_ENABLE_CBO,
             napot_mask=_PAGE_MASK_DEFINES,
         )
     )
-    strings = make_sig_strings("PREFETCH", test_data.xlen, "pmpzicbo")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
     chunk.raw_data.extend(_PAGE_REGION)
     return [test_data.end_test_chunk()]

@@ -11,25 +11,29 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
-    EXIT,
     LOCKED_LXWR_CASES,
     NAPOT_MASK_DEFINES,
     NAPOT_REGION_WORDS,
     RETURN_TRAMPOLINE,
     TOR_REGION_WORDS,
-    VERIFICATION_SECTION,
     cfg_byte,
     cfg_shift,
     lxwr_walk_body,
     make_exec_region,
-    make_sig_strings,
     set_pmpaddr,
     set_pmpcfg,
     zero_pmp_regs,
 )
+from testgen.priv.extensions.pmp.probes import (
+    gen_compressed_execute,
+    gen_zca,
+    gen_zcb,
+    gen_zcd,
+    gen_zcf,
+)
 from testgen.priv.registry import add_priv_test_generator
 
-_JALR = "    jalr x0, x1, 0"
+_JALR = "jalr x0, x1, 0"
 
 #: Bytes in the smallest region of each address mode.
 _REGION_BYTES = {
@@ -45,7 +49,8 @@ _REGION_BYTES = {
 #####################################################################
 
 
-def _cret_body(xlen: int, amode: str) -> list[str]:
+def _cret_body(test_data: TestData, amode: str) -> list[str]:
+    xlen = test_data.xlen
     entry = 1 if amode == "tor" else 0
     lines = [
         *zero_pmp_regs(xlen),
@@ -54,18 +59,19 @@ def _cret_body(xlen: int, amode: str) -> list[str]:
         "#define REGIONSTART TEST_FOR_EXECUTION_1",
         *(NAPOT_MASK_DEFINES if amode == "napot" else []),
         "",
-        "    RVTEST_PMP_SET_BACKGROUND x4",
+        "RVTEST_PMP_SET_BACKGROUND x4",
         "",
-        VERIFICATION_SECTION,
-        "",
-        f"// Test Case: {amode.upper()} region with L -> 1 and XWR -> 111, c.ret just below, at the bottom, at the top and just above it",
+        f"// PMP configuration: {amode.upper()} region with L = 1 and XWR = 111, c.ret just below, at the bottom, at the top and just above it",
         *set_pmpaddr(amode, entry),
         *set_pmpcfg(xlen, entry, "PMPCFG"),
-        "    RVTEST_SFENCE_VMA_IF_SUPPORTED",
+        "RVTEST_SFENCE_VMA_IF_SUPPORTED",
     ]
     for n in range(4):
-        lines.extend(["", f"    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_{n}, test{n + 1}"])
-    lines.extend(EXIT)
+        lines.extend(
+            [
+                *gen_compressed_execute(test_data, f"boundary{n}", f"cp_cret_{amode}", f"TEST_FOR_EXECUTION_{n}"),
+            ]
+        )
     return lines
 
 
@@ -75,13 +81,13 @@ def _cret_data(xlen: int, amode: str) -> list[str]:
         f".p2align {11 if xlen == 32 else 10}",
         f".skip {'0x806' if amode == 'napot' else '0x802'}",
         "TEST_FOR_EXECUTION_0:",
-        "    ret",
+        "ret",
         "TEST_FOR_EXECUTION_1:",
-        "    ret",
+        "ret",
     ]
     if amode != "na4":
-        lines.extend([f"    .rept (({_REGION_BYTES[amode]} - 4) / 2)", "    c.nop", "    .endr"])
-    lines.extend(["TEST_FOR_EXECUTION_2:", "    ret", "TEST_FOR_EXECUTION_3:", "    ret", *RETURN_TRAMPOLINE])
+        lines.extend([f".rept (({_REGION_BYTES[amode]} - 4) / 2)", "c.nop", ".endr"])
+    lines.extend(["TEST_FOR_EXECUTION_2:", "ret", "TEST_FOR_EXECUTION_3:", "ret", *RETURN_TRAMPOLINE])
     return lines
 
 
@@ -94,10 +100,7 @@ above PMP region, half of which are on 16-bit boundaries.
 Attempt jalr to each c.ret."""
     chunk = test_data.begin_test_chunk(f"cret_{amode}")
     chunk.section_header = comment_banner(f"cp_cret_{amode}", test_cases)
-    chunk.code.extend(_cret_body(test_data.xlen, amode))
-    chunk.data_strings.append(f'test_1_str: .string "\\"test: 1; cp: pmpzca_cret_{amode}_execute\\""')
-    chunk.sigupd_count = 4
-    chunk.num_testcases = 1
+    chunk.code.extend(_cret_body(test_data, amode))
     chunk.raw_data.extend(_cret_data(test_data.xlen, amode))
     return test_data.end_test_chunk()
 
@@ -109,7 +112,8 @@ Attempt jalr to each c.ret."""
 #####################################################################
 
 
-def _region_body(xlen: int, amode: str, misaligned: bool) -> list[str]:
+def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]:
+    xlen = test_data.xlen
     size = _REGION_BYTES[amode]
     entries = (1, 2, 3) if amode == "tor" else (0, 1, 2)
     lines = [*zero_pmp_regs(xlen), ""]
@@ -119,26 +123,24 @@ def _region_body(xlen: int, amode: str, misaligned: bool) -> list[str]:
     lines.extend(["", f"#define REGIONSTART {region}", f"#define REGION_SIZE {size}"])
     if amode == "napot":
         lines.extend(NAPOT_MASK_DEFINES)
-    lines.extend(["", "    RVTEST_PMP_SET_BACKGROUND x4", "", VERIFICATION_SECTION, ""])
-    lines.append(f"// Test Case: three consecutive {amode.upper()} regions, the third locked with XWR = 000")
+    lines.extend(["", "RVTEST_PMP_SET_BACKGROUND x4"])
+    lines.append(f"// PMP configuration: three consecutive {amode.upper()} regions, the third locked with XWR = 000")
     if amode == "tor":
-        lines.extend(["    LA(x5, REGIONSTART)", "    srl x5, x5, PMP_SHIFT", "    csrw pmpaddr0, x5"])
+        lines.extend(["LA(x5, REGIONSTART)", "srl x5, x5, PMP_SHIFT", "csrw pmpaddr0, x5"])
     for i, entry in enumerate(entries):
         lines.extend(
             [
-                "    LA(x5, REGIONSTART)",
-                f"    LI(x6, {i + 1 if amode == 'tor' else i} * REGION_SIZE)",
-                "    add x5, x5, x6",
-                "    srl x5, x5, PMP_SHIFT",
+                "LA(x5, REGIONSTART)",
+                f"LI(x6, {i + 1 if amode == 'tor' else i} * REGION_SIZE)",
+                "add x5, x5, x6",
+                "srl x5, x5, PMP_SHIFT",
             ]
         )
         if amode == "napot":
-            lines.extend(
-                ["    LI(x6, PMP_MASK)", "    and x5, x5, x6", "    LI(x6, PMP_REGION_SIZE)", "    or x5, x5, x6"]
-            )
-        lines.append(f"    csrw pmpaddr{entry}, x5")
+            lines.extend(["LI(x6, PMP_MASK)", "and x5, x5, x6", "LI(x6, PMP_REGION_SIZE)", "or x5, x5, x6"])
+        lines.append(f"csrw pmpaddr{entry}, x5")
     lines.extend(set_pmpcfg(xlen, entries[0], "|".join(f"PMP{entry}CFG" for entry in entries)))
-    lines.append("    RVTEST_SFENCE_VMA_IF_SUPPORTED")
+    lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
     calls = (
         ["TEST_FOR_EXECUTION_2", "TEST_FOR_EXECUTION_4"]
         if misaligned and amode != "na4"
@@ -146,9 +148,9 @@ def _region_body(xlen: int, amode: str, misaligned: bool) -> list[str]:
     )
     if misaligned and amode == "napot":
         calls += ["REGIONSTART", "REGIONSTART + REGION_SIZE"]
+    prefix = "misaligned" if misaligned else "aligned"
     for n, target in enumerate(calls, start=1):
-        lines.extend(["", f"    PMP_VERIFICATION_X_C {target}, test_{n}"])
-    lines.extend(EXIT)
+        lines.extend([*gen_compressed_execute(test_data, f"region{n}", f"cp_{prefix}_{amode}", target)])
     return lines
 
 
@@ -159,7 +161,7 @@ _STRADDLE_NOTE = (
 
 
 def _filler(count: str, insn: str = "nop") -> list[str]:
-    return [f"    .rept {count}", f"    {insn}", "    .endr"]
+    return [f".rept {count}", f"{insn}", ".endr"]
 
 
 def _aligned_data(amode: str) -> list[str]:
@@ -189,7 +191,7 @@ def _misaligned_data(amode: str) -> list[str]:
                 _JALR,
                 _GRAIN_ALIGN,
                 "TEST_FOR_EXECUTION_0:",
-                "    c.nop",
+                "c.nop",
                 _STRADDLE_NOTE,
                 "TEST_FOR_EXECUTION_1:",
                 _JALR,
@@ -201,7 +203,7 @@ def _misaligned_data(amode: str) -> list[str]:
         if amode == "off":
             lines.extend(["TEST_FOR_EXECUTION_0:", *_filler(NAPOT_REGION_WORDS, "jalr x0, x1, 0")])
         elif amode == "napot":
-            lines.extend(["TEST_FOR_EXECUTION_0:", _JALR, "    nop", _GRAIN_ALIGN])
+            lines.extend(["TEST_FOR_EXECUTION_0:", _JALR, "nop", _GRAIN_ALIGN])
         else:
             lines.extend(["TEST_FOR_EXECUTION_0:", _JALR, _GRAIN_ALIGN])
         lines.extend(
@@ -232,10 +234,7 @@ def _make_region_chunk(test_data: TestData, amode: str, misaligned: bool) -> Tes
         test_cases = f"An uncompressed jalr inside each of the first two of three consecutive {amode.upper()} regions, the third locked with XWR = 000."
     chunk = test_data.begin_test_chunk(f"{prefix}_{amode}")
     chunk.section_header = comment_banner(f"cp_{prefix}_{amode}", test_cases)
-    chunk.code.extend(_region_body(test_data.xlen, amode, misaligned))
-    chunk.data_strings.append(f'test_1_str: .string "\\"test: 1; cp: pmpzca_{prefix}_{amode}_execute\\""')
-    chunk.sigupd_count = 4 if misaligned and amode == "napot" else 2
-    chunk.num_testcases = 1
+    chunk.code.extend(_region_body(test_data, amode, misaligned))
     chunk.raw_data.extend(_misaligned_data(amode) if misaligned else _aligned_data(amode))
     return test_data.end_test_chunk()
 
@@ -251,24 +250,16 @@ _LEGAL_TEST_CASES = "Compressed loads, stores and a c.jalr against a locked NAPO
 def _make_legal_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("legal_lwrx")
     chunk.section_header = comment_banner("cp_cfg_RW", _LEGAL_TEST_CASES)
-    chunk.code.extend(lxwr_walk_body(test_data.xlen, LOCKED_LXWR_CASES, "napot", "ZCA"))
-    strings = make_sig_strings("ZCA", test_data.xlen, "pmpzca_legal_lxwr")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
-    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\n    c.nop")))
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, "cp_cfg_RW"))
+    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop")))
     return test_data.end_test_chunk()
 
 
 def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
     chunk = test_data.begin_test_chunk(f"{subset}_legal_lxwr")
     chunk.section_header = comment_banner("cp_cfg_RW", _LEGAL_TEST_CASES)
-    macro = subset.upper()
-    chunk.code.extend(lxwr_walk_body(test_data.xlen, LOCKED_LXWR_CASES, "napot", macro))
-    strings = make_sig_strings(macro, test_data.xlen, f"pmp{subset}_cfg_wr")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
+    generator = {"zcb": gen_zcb, "zcd": gen_zcd, "zcf": gen_zcf}[subset]
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, "cp_cfg_RW"))
     chunk.raw_data.extend(make_exec_region())
     return test_data.end_test_chunk()
 

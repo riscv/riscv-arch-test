@@ -36,73 +36,364 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} from U mode at and around a TOR region, L = 0, each legal XWR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_0100 (((PMP_X|PMP_TOR)&0xFF) << PMP5_CFG_SHIFT)
-#define PMPREGION_LXWR_0101 (((PMP_R|PMP_X|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT)
-#define PMPREGION_LXWR_0111 (((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LXWR_0100 (((PMP_X | PMP_TOR) & 0xFF) << PMP5_CFG_SHIFT)
+#define PMPREGION_LXWR_0101 (((PMP_R | PMP_X | PMP_TOR) & 0xFF) << PMP3_CFG_SHIFT)
+#define PMPREGION_LXWR_0111 (((PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP1_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 4: L = 0, X permissions, entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr4, x5
+  LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
+  add x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, PMPREGION_LXWR_0100)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+  RVTEST_TSBI_GOTO_UMODE
 
-// Test Case: 4 : L -> 0 and X Permissions given to PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr4, x5
-    LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
-    add x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, PMPREGION_LXWR_0100)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_TSBI_GOTO_UMODE
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_4
-    RVTEST_TSBI_GOTO_MMODE
+  RVTEST_FENCEI
+  LI(t0, PMP_TOR_REGION_BYTES - 8)
 
-// Test Case: 5 : L -> 0 and XR Permissions given to PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr2, x5
-    LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
-    add x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, PMPREGION_LXWR_0101)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_TSBI_GOTO_UMODE
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_5
-    RVTEST_TSBI_GOTO_MMODE
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_1_jalr_address, PMPU_cp_cfg_A_tor_entry5_lxwr0100_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_2_jalr_addressm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_3_jalr_address_4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_3_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_4_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_4_jalr_address_gm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_4_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_5_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_5_jalr_address_g, PMPU_cp_cfg_A_tor_entry5_lxwr0100_5_jalr_address_g_str)
 
-// Test Case: 6 : L -> 0 and XWR Permissions given to PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr0, x5
-    LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
-    add x5, x5, x6
-    csrw pmpaddr1, x5
-    LI(x4, PMPREGION_LXWR_0111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_TSBI_GOTO_UMODE
-    PMP_VERIFICATION_RWX_LEGAL    TEST_FOR_EXECUTION, test_6
-    RVTEST_TSBI_GOTO_MMODE
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_6_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_6_sw_address, PMPU_cp_cfg_A_tor_entry5_lxwr0100_6_sw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_7_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_7_sw_addressm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_7_sw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_8_sw_address_4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_8_sw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_9_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_9_sw_address_gm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_9_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_10_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_10_sw_address_g, PMPU_cp_cfg_A_tor_entry5_lxwr0100_10_sw_address_g_str)
 
-    j exit
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_11_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_11_lw_address, PMPU_cp_cfg_A_tor_entry5_lxwr0100_11_lw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_12_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_12_lw_addressm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_12_lw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_13_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_13_lw_address_4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_13_lw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_14_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_14_lw_address_gm4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_14_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g, PMPU_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g_str)
+  RVTEST_TSBI_GOTO_MMODE
 
-exit:
+// PMP configuration 5: L = 0, XR permissions, entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr2, x5
+  LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
+  add x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, PMPREGION_LXWR_0101)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+  RVTEST_TSBI_GOTO_UMODE
+
+  RVTEST_FENCEI
+  LI(t0, PMP_TOR_REGION_BYTES - 8)
+
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_1_jalr_address, PMPU_cp_cfg_A_tor_entry3_lxwr0101_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_2_jalr_addressm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_3_jalr_address_4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_3_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_4_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_4_jalr_address_gm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_4_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_5_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_5_jalr_address_g, PMPU_cp_cfg_A_tor_entry3_lxwr0101_5_jalr_address_g_str)
+
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_6_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_6_sw_address, PMPU_cp_cfg_A_tor_entry3_lxwr0101_6_sw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_7_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_7_sw_addressm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_7_sw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_8_sw_address_4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_8_sw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_9_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_9_sw_address_gm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_9_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_10_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_10_sw_address_g, PMPU_cp_cfg_A_tor_entry3_lxwr0101_10_sw_address_g_str)
+
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_11_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_11_lw_address, PMPU_cp_cfg_A_tor_entry3_lxwr0101_11_lw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_12_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_12_lw_addressm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_12_lw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_13_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_13_lw_address_4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_13_lw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_14_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_14_lw_address_gm4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_14_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g, PMPU_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g_str)
+  RVTEST_TSBI_GOTO_MMODE
+
+// PMP configuration 6: L = 0, XWR permissions, entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr0, x5
+  LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)
+  add x5, x5, x6
+  csrw pmpaddr1, x5
+  LI(x4, PMPREGION_LXWR_0111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+  RVTEST_TSBI_GOTO_UMODE
+
+  RVTEST_FENCEI
+  LI(t0, PMP_TOR_REGION_BYTES - 8)
+
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_1_jalr_address, PMPU_cp_cfg_A_tor_entry1_lxwr0111_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_2_jalr_addressm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_3_jalr_address_4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_3_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_4_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_4_jalr_address_gm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_4_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_5_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_5_jalr_address_g, PMPU_cp_cfg_A_tor_entry1_lxwr0111_5_jalr_address_g_str)
+
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_6_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_6_sw_address, PMPU_cp_cfg_A_tor_entry1_lxwr0111_6_sw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_7_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_7_sw_addressm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_7_sw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_8_sw_address_4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_8_sw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_9_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_9_sw_address_gm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_9_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_10_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_10_sw_address_g, PMPU_cp_cfg_A_tor_entry1_lxwr0111_10_sw_address_g_str)
+
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_11_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_11_lw_address, PMPU_cp_cfg_A_tor_entry1_lxwr0111_11_lw_address_str)
+  addi a5, a5, -4
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_12_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_12_lw_addressm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_12_lw_addressm4_str)
+  addi a5, a5, 8
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_13_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_13_lw_address_4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_13_lw_address_4_str)
+  add a5, a5, t0
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_14_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_14_lw_address_gm4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_14_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g, PMPU_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g_str)
+  RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -112,43 +403,73 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option pop
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpu_tor_legal_lxwr_jalr_address\""
-test_2_str: .string "\"test: 2; cp: pmpu_tor_legal_lxwr_jalr_address-4\""
-test_3_str: .string "\"test: 3; cp: pmpu_tor_legal_lxwr_jalr_address+4\""
-test_4_str: .string "\"test: 4; cp: pmpu_tor_legal_lxwr_jalr_address+g-4\""
-test_5_str: .string "\"test: 5; cp: pmpu_tor_legal_lxwr_jalr_address+g\""
-test_6_str: .string "\"test: 6; cp: pmpu_tor_legal_lxwr_sw_address\""
-test_7_str: .string "\"test: 7; cp: pmpu_tor_legal_lxwr_sw_address-4\""
-test_8_str: .string "\"test: 8; cp: pmpu_tor_legal_lxwr_sw_address+4\""
-test_9_str: .string "\"test: 9; cp: pmpu_tor_legal_lxwr_sw_address+g-4\""
-test_10_str: .string "\"test: 10; cp: pmpu_tor_legal_lxwr_sw_address+g\""
-test_11_str: .string "\"test: 11; cp: pmpu_tor_legal_lxwr_lw_address\""
-test_12_str: .string "\"test: 12; cp: pmpu_tor_legal_lxwr_lw_address-4\""
-test_13_str: .string "\"test: 13; cp: pmpu_tor_legal_lxwr_lw_address+4\""
-test_14_str: .string "\"test: 14; cp: pmpu_tor_legal_lxwr_lw_address+g-4\""
-test_15_str: .string "\"test: 15; cp: pmpu_tor_legal_lxwr_lw_address+g\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_1_jalr_address_str: .string "\"test: 46; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_1_jalr_address\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_2_jalr_addressm4_str: .string "\"test: 47; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_2_jalr_address-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_3_jalr_address_4_str: .string "\"test: 48; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_3_jalr_address+4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_4_jalr_address_gm4_str: .string "\"test: 49; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_4_jalr_address+g-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_5_jalr_address_g_str: .string "\"test: 50; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_5_jalr_address+g\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_6_sw_address_str: .string "\"test: 51; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_6_sw_address\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_7_sw_addressm4_str: .string "\"test: 52; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_7_sw_address-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_8_sw_address_4_str: .string "\"test: 53; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_8_sw_address+4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_9_sw_address_gm4_str: .string "\"test: 54; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_9_sw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_10_sw_address_g_str: .string "\"test: 55; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_10_sw_address+g\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_11_lw_address_str: .string "\"test: 56; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_11_lw_address\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_12_lw_addressm4_str: .string "\"test: 57; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_12_lw_address-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_13_lw_address_4_str: .string "\"test: 58; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_13_lw_address+4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_14_lw_address_gm4_str: .string "\"test: 59; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_14_lw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry5_lxwr0100_15_lw_address_g_str: .string "\"test: 60; cg: PMPU; cp: cp_cfg_A_tor; bin: entry5_lxwr0100_15_lw_address+g\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_1_jalr_address_str: .string "\"test: 61; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_1_jalr_address\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_2_jalr_addressm4_str: .string "\"test: 62; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_2_jalr_address-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_3_jalr_address_4_str: .string "\"test: 63; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_3_jalr_address+4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_4_jalr_address_gm4_str: .string "\"test: 64; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_4_jalr_address+g-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_5_jalr_address_g_str: .string "\"test: 65; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_5_jalr_address+g\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_6_sw_address_str: .string "\"test: 66; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_6_sw_address\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_7_sw_addressm4_str: .string "\"test: 67; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_7_sw_address-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_8_sw_address_4_str: .string "\"test: 68; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_8_sw_address+4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_9_sw_address_gm4_str: .string "\"test: 69; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_9_sw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_10_sw_address_g_str: .string "\"test: 70; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_10_sw_address+g\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_11_lw_address_str: .string "\"test: 71; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_11_lw_address\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_12_lw_addressm4_str: .string "\"test: 72; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_12_lw_address-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_13_lw_address_4_str: .string "\"test: 73; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_13_lw_address+4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_14_lw_address_gm4_str: .string "\"test: 74; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_14_lw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry3_lxwr0101_15_lw_address_g_str: .string "\"test: 75; cg: PMPU; cp: cp_cfg_A_tor; bin: entry3_lxwr0101_15_lw_address+g\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_1_jalr_address_str: .string "\"test: 76; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_1_jalr_address\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_2_jalr_addressm4_str: .string "\"test: 77; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_2_jalr_address-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_3_jalr_address_4_str: .string "\"test: 78; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_3_jalr_address+4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_4_jalr_address_gm4_str: .string "\"test: 79; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_4_jalr_address+g-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_5_jalr_address_g_str: .string "\"test: 80; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_5_jalr_address+g\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_6_sw_address_str: .string "\"test: 81; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_6_sw_address\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_7_sw_addressm4_str: .string "\"test: 82; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_7_sw_address-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_8_sw_address_4_str: .string "\"test: 83; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_8_sw_address+4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_9_sw_address_gm4_str: .string "\"test: 84; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_9_sw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_10_sw_address_g_str: .string "\"test: 85; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_10_sw_address+g\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_11_lw_address_str: .string "\"test: 86; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_11_lw_address\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_12_lw_addressm4_str: .string "\"test: 87; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_12_lw_address-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_13_lw_address_4_str: .string "\"test: 88; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_13_lw_address+4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_14_lw_address_gm4_str: .string "\"test: 89; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_14_lw_address+g-4\""
+PMPU_cp_cfg_A_tor_entry1_lxwr0111_15_lw_address_g_str: .string "\"test: 90; cg: PMPU; cp: cp_cfg_A_tor; bin: entry1_lxwr0111_15_lw_address+g\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

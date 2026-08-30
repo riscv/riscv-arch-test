@@ -36,60 +36,59 @@ RVTEST_BEGIN
 //   the readback, skipping the reserved R=0/W=1 encoding and the A=NA4 bit.
 /////////////////////////////////
 
-
 PMPSm_cp_pmpcfg_walk_bit48:
 // Write 1 << 48 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 48)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit48_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit48_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 PMPSm_cp_pmpcfg_walk_bit50:
 // Write 1 << 50 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 50)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit50_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit50_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 PMPSm_cp_pmpcfg_walk_bit51:
 // Write 1 << 51 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 51)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit51_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit51_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 PMPSm_cp_pmpcfg_walk_bit53:
 // Write 1 << 53 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 53)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit53_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit53_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 PMPSm_cp_pmpcfg_walk_bit54:
 // Write 1 << 54 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 54)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit54_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit54_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 PMPSm_cp_pmpcfg_walk_bit55:
 // Write 1 << 55 to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/8
 1:  LI(t2, 1 << 55)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit55_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit55_str)
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

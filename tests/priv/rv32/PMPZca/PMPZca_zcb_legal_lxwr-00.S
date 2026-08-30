@@ -35,119 +35,305 @@ RVTEST_BEGIN
 //   Compressed loads, stores and a c.jalr against a locked NAPOT region with each legal XWR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 4
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 1
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_1000 (((PMP_L|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
-#define PMPREGION_LXWR_1001 (((PMP_L|PMP_R|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
-#define PMPREGION_LXWR_1011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
-#define PMPREGION_LXWR_1100 (((PMP_L|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT)
-#define PMPREGION_LXWR_1101 (((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
-#define PMPREGION_LXWR_1111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1000 (((PMP_L | PMP_NAPOT) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LXWR_1001 (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1011 (((PMP_L | PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP3_CFG_SHIFT)
+#define PMPREGION_LXWR_1100 (((PMP_L | PMP_X | PMP_NAPOT) & 0xFF) << PMP2_CFG_SHIFT)
+#define PMPREGION_LXWR_1101 (((PMP_L | PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: L = 1, No permissions, entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, PMPREGION_LXWR_1000)
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : L -> 1 and No Permissions given to PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_1
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_sb, PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_lbu, PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_sh, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_lhu, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_5_c_sh, PMPZca_cp_cfg_RW_entry5_lxwr1000_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_lh, PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_lh_str)
 
-// Test Case: 2 : L -> 1 and R Permissions given to PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg1, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_2
+// PMP configuration 2: L = 1, R permissions, entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr4, x5
+  LI(x4, PMPREGION_LXWR_1001)
+  csrw pmpcfg1, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 3 : L -> 1 and WR Permissions given to PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_3
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_sb, PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_lbu, PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_sh, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_lhu, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_5_c_sh, PMPZca_cp_cfg_RW_entry4_lxwr1001_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_lh, PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_lh_str)
 
-// Test Case: 4 : L -> 1 and X Permissions given to PMP entry 2
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_1100)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_4
+// PMP configuration 3: L = 1, WR permissions, entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, PMPREGION_LXWR_1011)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 5 : L -> 1 and XR Permissions given to PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr1, x5
-    LI(x4, PMPREGION_LXWR_1101)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_5
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_sb, PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_lbu, PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_sh, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_lhu, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_5_c_sh, PMPZca_cp_cfg_RW_entry3_lxwr1011_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_lh, PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_lh_str)
 
-// Test Case: 6 : L -> 1 and XWR Permissions given to PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_1111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_ZCB    TEST_FOR_EXECUTION, test_6
+// PMP configuration 4: L = 1, X permissions, entry 2
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr2, x5
+  LI(x4, PMPREGION_LXWR_1100)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    j exit
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_sb, PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_lbu, PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_sh, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_lhu, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_5_c_sh, PMPZca_cp_cfg_RW_entry2_lxwr1100_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_lh, PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_lh_str)
 
-exit:
+// PMP configuration 5: L = 1, XR permissions, entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr1, x5
+  LI(x4, PMPREGION_LXWR_1101)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_sb, PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_lbu, PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_sh, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_lhu, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_5_c_sh, PMPZca_cp_cfg_RW_entry1_lxwr1101_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_lh, PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_lh_str)
+
+// PMP configuration 6: L = 1, XWR permissions, entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_1111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  LI(x15, NOP)
+  LA(x8, TEST_FOR_EXECUTION)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_sb:
+  c.sb x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_sb, PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_sb_str)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_lbu:
+  c.lbu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_lbu, PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_lbu_str)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_sh, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_sh_str)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_lhu:
+  c.lhu x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_lhu, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_lhu_str)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_5_c_sh:
+  c.sh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_5_c_sh, PMPZca_cp_cfg_RW_entry0_lxwr1111_5_c_sh_str)
+PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_lh:
+  c.lh x15, 0(x8)
+  c.nop
+  c.nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_lh, PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_lh_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -157,34 +343,64 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option pop
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpzcb_cfg_wr_c.sb\""
-test_2_str: .string "\"test: 2; cp: pmpzcb_cfg_wr_c.lbu\""
-test_3_str: .string "\"test: 3; cp: pmpzcb_cfg_wr_c.sh\""
-test_4_str: .string "\"test: 4; cp: pmpzcb_cfg_wr_c.lhu\""
-test_5_str: .string "\"test: 5; cp: pmpzcb_cfg_wr_c.sh\""
-test_6_str: .string "\"test: 6; cp: pmpzcb_cfg_wr_c.lh\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_sb_str: .string "\"test: 1; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_c.sb\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_lbu_str: .string "\"test: 2; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_sh_str: .string "\"test: 3; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_c.sh\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_lhu_str: .string "\"test: 4; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_5_c_sh_str: .string "\"test: 5; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_5_c.sh\""
+PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_lh_str: .string "\"test: 6; cg: PMPZca; cp: cp_cfg_RW; bin: entry5_lxwr1000_6_c.lh\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_sb_str: .string "\"test: 7; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_c.sb\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_lbu_str: .string "\"test: 8; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_sh_str: .string "\"test: 9; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_c.sh\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_lhu_str: .string "\"test: 10; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_5_c_sh_str: .string "\"test: 11; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_5_c.sh\""
+PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_lh_str: .string "\"test: 12; cg: PMPZca; cp: cp_cfg_RW; bin: entry4_lxwr1001_6_c.lh\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_sb_str: .string "\"test: 13; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_c.sb\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_lbu_str: .string "\"test: 14; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_sh_str: .string "\"test: 15; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_c.sh\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_lhu_str: .string "\"test: 16; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_5_c_sh_str: .string "\"test: 17; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_5_c.sh\""
+PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_lh_str: .string "\"test: 18; cg: PMPZca; cp: cp_cfg_RW; bin: entry3_lxwr1011_6_c.lh\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_sb_str: .string "\"test: 19; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_c.sb\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_lbu_str: .string "\"test: 20; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_sh_str: .string "\"test: 21; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_c.sh\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_lhu_str: .string "\"test: 22; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_5_c_sh_str: .string "\"test: 23; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_5_c.sh\""
+PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_lh_str: .string "\"test: 24; cg: PMPZca; cp: cp_cfg_RW; bin: entry2_lxwr1100_6_c.lh\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_sb_str: .string "\"test: 25; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_c.sb\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_lbu_str: .string "\"test: 26; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_sh_str: .string "\"test: 27; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_c.sh\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_lhu_str: .string "\"test: 28; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_5_c_sh_str: .string "\"test: 29; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_5_c.sh\""
+PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_lh_str: .string "\"test: 30; cg: PMPZca; cp: cp_cfg_RW; bin: entry1_lxwr1101_6_c.lh\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_sb_str: .string "\"test: 31; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_c.sb\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_lbu_str: .string "\"test: 32; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_c.lbu\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_sh_str: .string "\"test: 33; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_c.sh\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_lhu_str: .string "\"test: 34; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_c.lhu\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_5_c_sh_str: .string "\"test: 35; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_5_c.sh\""
+PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_lh_str: .string "\"test: 36; cg: PMPZca; cp: cp_cfg_RW; bin: entry0_lxwr1111_6_c.lh\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

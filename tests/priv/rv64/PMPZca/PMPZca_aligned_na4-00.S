@@ -36,56 +36,57 @@ RVTEST_BEGIN
 //   An uncompressed jalr inside each of the first two of three consecutive NA4 regions, the third locked with XWR = 000.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMP0CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT)
-#define PMP1CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT)
-#define PMP2CFG (((PMP_L|PMP_NA4)&0xFF) << PMP2_CFG_SHIFT)
+#define PMP0CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMP1CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMP2CFG (((PMP_L | PMP_NA4) & 0xFF) << PMP2_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION_1
 #define REGION_SIZE 4
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
+// PMP configuration: three consecutive NA4 regions, the third locked with XWR = 000
+  LA(x5, REGIONSTART)
+  LI(x6, 0 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr0, x5
+  LA(x5, REGIONSTART)
+  LI(x6, 1 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr1, x5
+  LA(x5, REGIONSTART)
+  LI(x6, 2 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr2, x5
+  LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// ---------------------------- Verification Section ----------------------------
+  LA(x15, TEST_FOR_EXECUTION_1)
+PMPZca_cp_aligned_na4_region1_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_aligned_na4_region1_1_c_jalr, PMPZca_cp_aligned_na4_region1_1_c_jalr_str)
 
-// Test Case: three consecutive NA4 regions, the third locked with XWR = 000
-    LA(x5, REGIONSTART)
-    LI(x6, 0 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr0, x5
-    LA(x5, REGIONSTART)
-    LI(x6, 1 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr1, x5
-    LA(x5, REGIONSTART)
-    LI(x6, 2 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr2, x5
-    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-
-    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
-
-    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
-
-    j exit
-
-exit:
+  LA(x15, TEST_FOR_EXECUTION_2)
+PMPZca_cp_aligned_na4_region2_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_aligned_na4_region2_1_c_jalr, PMPZca_cp_aligned_na4_region2_1_c_jalr_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -95,26 +96,27 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    jalr x0, x1, 0
-.p2align (UDB_PMP_GRANULARITY)
+  jalr x0, x1, 0
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
-    jalr x0, x1, 0
-.p2align (UDB_PMP_GRANULARITY)
+  jalr x0, x1, 0
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0
-    .option push
-    .option norvc
+  jalr x0, x1, 0
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_execute\""
+PMPZca_cp_aligned_na4_region1_1_c_jalr_str: .string "\"test: 5; cg: PMPZca; cp: cp_aligned_na4; bin: region1_1_c.jalr\""
+PMPZca_cp_aligned_na4_region2_1_c_jalr_str: .string "\"test: 6; cg: PMPZca; cp: cp_aligned_na4; bin: region2_1_c.jalr\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

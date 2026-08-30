@@ -14,7 +14,9 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     REGION_BLOBS,
     lxwr_walk_body,
-    make_sig_strings,
+)
+from testgen.priv.extensions.pmp.probes import (
+    gen_float,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -32,10 +34,6 @@ def make_pmpf(test_data: TestData) -> list[TestChunk]:
     chunk.section_header = comment_banner(
         "cp_cfg_RW", "Every floating-point load and store width against a locked NAPOT region with each legal XWR."
     )
-    chunk.code.extend(lxwr_walk_body(test_data.xlen, LOCKED_LXWR_CASES, "napot", "F"))
-    strings = make_sig_strings("F", test_data.xlen, "pmpf_cfg_wr")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
+    chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_float, "cp_cfg_RW"))
     chunk.raw_data.extend(REGION_BLOBS["off"])
     return [test_data.end_test_chunk()]

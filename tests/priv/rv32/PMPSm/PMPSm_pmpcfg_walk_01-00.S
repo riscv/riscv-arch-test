@@ -37,12 +37,12 @@ RVTEST_BEGIN
 
 PMPSm_cp_pmpcfg_walk_zero:
 // Write zero to every pmpcfg CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES/4
 1:  LI(t2, 0)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_zero_str)
-    .set pmpcfgi, pmpcfgi+1
-    .endr
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_zero_str)
+  .set pmpcfgi, pmpcfgi+1
+  .endr
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

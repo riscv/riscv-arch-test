@@ -35,256 +35,255 @@ RVTEST_BEGIN
 //   Write zeros, ones and a checkerboard to pmpaddr0 with A = NAPOT and OFF; read back with A = OFF, NAPOT and TOR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_OFF (((PMP_R|PMP_W|PMP_X)&0xFF) << PMP0_CFG_SHIFT)
-#define PMPREGION_NAPOT (((PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
-#define PMPREGION_TOR (((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_OFF (((PMP_R | PMP_W | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_NAPOT (((PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_TOR (((PMP_R | PMP_W | PMP_X | PMP_TOR) & 0xFF) << PMP0_CFG_SHIFT)
 #define PMP_GRAIN_MASK ((1 << (UDB_PMP_GRANULARITY - 2)) - 1)
 #define CHECKERBOARD 0xAAAAAAAAAAAAAAAA
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-    LI(t3, PMP_GRAIN_MASK)
+  LI(t3, PMP_GRAIN_MASK)
 
-// ---------------------------- Verification Section ----------------------------
 
 PMPSm_cp_grain_zeros_write_NAPOT_read_OFF:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = OFF
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF_str)
 
 PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = NAPOT
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_zeros_write_NAPOT_read_TOR:
 // Write zeros to pmpaddr0 with A = NAPOT, read back with A = TOR
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR_str)
 #endif
 
 PMPSm_cp_grain_zeros_write_OFF_read_OFF:
 // Write zeros to pmpaddr0 with A = OFF, read back with A = OFF
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_OFF, PMPSm_cp_grain_zeros_write_OFF_read_OFF_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_OFF, PMPSm_cp_grain_zeros_write_OFF_read_OFF_str)
 
 PMPSm_cp_grain_zeros_write_OFF_read_NAPOT:
 // Write zeros to pmpaddr0 with A = OFF, read back with A = NAPOT
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_zeros_write_OFF_read_TOR:
 // Write zeros to pmpaddr0 with A = OFF, read back with A = TOR
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, 0)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_TOR, PMPSm_cp_grain_zeros_write_OFF_read_TOR_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, 0)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_TOR, PMPSm_cp_grain_zeros_write_OFF_read_TOR_str)
 #endif
 
 PMPSm_cp_grain_ones_write_NAPOT_read_OFF:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = OFF
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_OFF, PMPSm_cp_grain_ones_write_NAPOT_read_OFF_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_OFF, PMPSm_cp_grain_ones_write_NAPOT_read_OFF_str)
 
 PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = NAPOT
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_ones_write_NAPOT_read_TOR:
 // Write ones to pmpaddr0 with A = NAPOT, read back with A = TOR
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_TOR, PMPSm_cp_grain_ones_write_NAPOT_read_TOR_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_TOR, PMPSm_cp_grain_ones_write_NAPOT_read_TOR_str)
 #endif
 
 PMPSm_cp_grain_ones_write_OFF_read_OFF:
 // Write ones to pmpaddr0 with A = OFF, read back with A = OFF
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_OFF, PMPSm_cp_grain_ones_write_OFF_read_OFF_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_OFF, PMPSm_cp_grain_ones_write_OFF_read_OFF_str)
 
 PMPSm_cp_grain_ones_write_OFF_read_NAPOT:
 // Write ones to pmpaddr0 with A = OFF, read back with A = NAPOT
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_NAPOT, PMPSm_cp_grain_ones_write_OFF_read_NAPOT_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_NAPOT, PMPSm_cp_grain_ones_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_ones_write_OFF_read_TOR:
 // Write ones to pmpaddr0 with A = OFF, read back with A = TOR
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, -1)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_TOR, PMPSm_cp_grain_ones_write_OFF_read_TOR_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, -1)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_TOR, PMPSm_cp_grain_ones_write_OFF_read_TOR_str)
 #endif
 
 PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = OFF
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF_str)
 
 PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = NAPOT
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR:
 // Write checkerboard to pmpaddr0 with A = NAPOT, read back with A = TOR
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR_str)
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR_str)
 #endif
 
 PMPSm_cp_grain_checkerboard_write_OFF_read_OFF:
 // Write checkerboard to pmpaddr0 with A = OFF, read back with A = OFF
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF_str)
 
 PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT:
 // Write checkerboard to pmpaddr0 with A = OFF, read back with A = NAPOT
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
 
 PMPSm_cp_grain_checkerboard_write_OFF_read_TOR:
 // Write checkerboard to pmpaddr0 with A = OFF, read back with A = TOR
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    LI(x6, CHECKERBOARD)
-    csrw pmpaddr0, x6
-    LI(x6, PMPREGION_TOR)
-    csrw pmpcfg0, x6
-        csrr x7, pmpaddr0
-        and x7, x7, t3
-        RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR_str)
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  LI(x6, CHECKERBOARD)
+  csrw pmpaddr0, x6
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
+  and x7, x7, t3
+  RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR_str)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -297,24 +296,24 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_grain_zeros_write_NAPOT_read_OFF_str: .string "\"test: 96; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_OFF\""
-PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT_str: .string "\"test: 97; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_NAPOT\""
-PMPSm_cp_grain_zeros_write_NAPOT_read_TOR_str: .string "\"test: 98; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_TOR\""
-PMPSm_cp_grain_zeros_write_OFF_read_OFF_str: .string "\"test: 99; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_OFF\""
-PMPSm_cp_grain_zeros_write_OFF_read_NAPOT_str: .string "\"test: 100; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_NAPOT\""
-PMPSm_cp_grain_zeros_write_OFF_read_TOR_str: .string "\"test: 101; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_TOR\""
-PMPSm_cp_grain_ones_write_NAPOT_read_OFF_str: .string "\"test: 102; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_OFF\""
-PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT_str: .string "\"test: 103; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_NAPOT\""
-PMPSm_cp_grain_ones_write_NAPOT_read_TOR_str: .string "\"test: 104; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_TOR\""
-PMPSm_cp_grain_ones_write_OFF_read_OFF_str: .string "\"test: 105; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_OFF\""
-PMPSm_cp_grain_ones_write_OFF_read_NAPOT_str: .string "\"test: 106; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_NAPOT\""
-PMPSm_cp_grain_ones_write_OFF_read_TOR_str: .string "\"test: 107; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_TOR\""
-PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF_str: .string "\"test: 108; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_OFF\""
-PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT_str: .string "\"test: 109; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_NAPOT\""
-PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR_str: .string "\"test: 110; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_TOR\""
-PMPSm_cp_grain_checkerboard_write_OFF_read_OFF_str: .string "\"test: 111; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_OFF\""
-PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT_str: .string "\"test: 112; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_NAPOT\""
-PMPSm_cp_grain_checkerboard_write_OFF_read_TOR_str: .string "\"test: 113; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_TOR\""
+PMPSm_cp_grain_zeros_write_NAPOT_read_OFF_str: .string "\"test: 909; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_OFF\""
+PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT_str: .string "\"test: 910; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_NAPOT\""
+PMPSm_cp_grain_zeros_write_NAPOT_read_TOR_str: .string "\"test: 911; cg: PMPSm; cp: cp_grain; bin: zeros_write_NAPOT_read_TOR\""
+PMPSm_cp_grain_zeros_write_OFF_read_OFF_str: .string "\"test: 912; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_OFF\""
+PMPSm_cp_grain_zeros_write_OFF_read_NAPOT_str: .string "\"test: 913; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_NAPOT\""
+PMPSm_cp_grain_zeros_write_OFF_read_TOR_str: .string "\"test: 914; cg: PMPSm; cp: cp_grain; bin: zeros_write_OFF_read_TOR\""
+PMPSm_cp_grain_ones_write_NAPOT_read_OFF_str: .string "\"test: 915; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_OFF\""
+PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT_str: .string "\"test: 916; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_NAPOT\""
+PMPSm_cp_grain_ones_write_NAPOT_read_TOR_str: .string "\"test: 917; cg: PMPSm; cp: cp_grain; bin: ones_write_NAPOT_read_TOR\""
+PMPSm_cp_grain_ones_write_OFF_read_OFF_str: .string "\"test: 918; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_OFF\""
+PMPSm_cp_grain_ones_write_OFF_read_NAPOT_str: .string "\"test: 919; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_NAPOT\""
+PMPSm_cp_grain_ones_write_OFF_read_TOR_str: .string "\"test: 920; cg: PMPSm; cp: cp_grain; bin: ones_write_OFF_read_TOR\""
+PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF_str: .string "\"test: 921; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_OFF\""
+PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT_str: .string "\"test: 922; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_NAPOT\""
+PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR_str: .string "\"test: 923; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_NAPOT_read_TOR\""
+PMPSm_cp_grain_checkerboard_write_OFF_read_OFF_str: .string "\"test: 924; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_OFF\""
+PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT_str: .string "\"test: 925; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_NAPOT\""
+PMPSm_cp_grain_checkerboard_write_OFF_read_TOR_str: .string "\"test: 926; cg: PMPSm; cp: cp_grain; bin: checkerboard_write_OFF_read_TOR\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

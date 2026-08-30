@@ -14,7 +14,10 @@ from testgen.priv.extensions.pmp.helpers import (
     LOCKED_LXWR_CASES,
     lxwr_walk_body,
     make_exec_region,
-    make_sig_strings,
+)
+from testgen.priv.extensions.pmp.probes import (
+    gen_lrsc,
+    gen_lrsc_success,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -31,15 +34,12 @@ def make_pmpzalrsc(test_data: TestData) -> list[TestChunk]:
     chunk.section_header = comment_banner("cp_cfg_RW", "LR/SC pairs against a locked NAPOT region with each legal XWR.")
     chunk.code.extend(
         lxwr_walk_body(
-            test_data.xlen,
+            test_data,
             LOCKED_LXWR_CASES,
             "napot",
-            lambda lxwr: "LRSC_SUCCESS" if lxwr in ("1011", "1111") else "LRSC",
+            {lxwr: gen_lrsc_success if lxwr in ("1011", "1111") else gen_lrsc for lxwr, _ in LOCKED_LXWR_CASES},
+            "cp_cfg_RW",
         )
     )
-    strings = make_sig_strings("LRSC", test_data.xlen, "pmpzalrsc_cfg_wr")
-    chunk.data_strings.extend(f'{label}_str: .string "\\"{message}\\""' for label, message in strings)
-    chunk.sigupd_count = len(LOCKED_LXWR_CASES) * len(strings)
-    chunk.num_testcases = len(strings)
     chunk.raw_data.extend(make_exec_region(pad=None))
     return [test_data.end_test_chunk()]

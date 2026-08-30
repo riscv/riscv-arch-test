@@ -116,7 +116,8 @@ def write_test_file(
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
     test_data_section += generate_vector_data_section(vector_data_labels)
     if raw_data:
-        test_data_section += "\n" + "\n".join(raw_data)
+        raw_data_lines = "\n".join(raw_data).splitlines()
+        test_data_section += "\n" + "\n".join(indent_asm(line) for line in raw_data_lines)
     test_string_section = generate_test_string_section(data_strings)
     footer = insert_footer_template(test_data_section, test_string_section)
 

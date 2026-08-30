@@ -35,34 +35,47 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} from U mode at a region whose entry has A = OFF, XWR = 000 and pmpaddr = all ones; all succeed.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 4
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 1
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: L = 0, A = OFF and no permissions given to PMP entry 0, pmpaddr0 = all ones
+  LI(x5, -1)
+  csrw pmpaddr0, x5
+  csrw pmpcfg0, x0
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+  RVTEST_TSBI_GOTO_UMODE
 
-// Test Case: 1 : L -> 0, A = OFF and No Permissions given to PMP entry 0, pmpaddr0 = all ones
-    LI(x5, -1)
-    csrw pmpaddr0, x5
-    csrw pmpcfg0, x0
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    RVTEST_TSBI_GOTO_UMODE
-    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
-    RVTEST_TSBI_GOTO_MMODE
-
-    j exit
-
-exit:
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPU_cp_cfg_A_off_off_1_jalr:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_off_off_1_jalr, PMPU_cp_cfg_A_off_off_1_jalr_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x00008067)
+PMPU_cp_cfg_A_off_off_2_sw:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_off_off_2_sw, PMPU_cp_cfg_A_off_off_2_sw_str)
+PMPU_cp_cfg_A_off_off_3_lw:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPU_cp_cfg_A_off_off_3_lw, PMPU_cp_cfg_A_off_off_3_lw_str)
+  RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -72,31 +85,31 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option pop
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpu_cfg_A_off_jalr\""
-test_2_str: .string "\"test: 2; cp: pmpu_cfg_A_off_sw\""
-test_3_str: .string "\"test: 3; cp: pmpu_cfg_A_off_lw\""
+PMPU_cp_cfg_A_off_off_1_jalr_str: .string "\"test: 1; cg: PMPU; cp: cp_cfg_A_off; bin: off_1_jalr\""
+PMPU_cp_cfg_A_off_off_2_sw_str: .string "\"test: 2; cg: PMPU; cp: cp_cfg_A_off; bin: off_2_sw\""
+PMPU_cp_cfg_A_off_off_3_lw_str: .string "\"test: 3; cg: PMPU; cp: cp_cfg_A_off; bin: off_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

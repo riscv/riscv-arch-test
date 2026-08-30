@@ -36,79 +36,88 @@ RVTEST_BEGIN
 //   An uncompressed jalr straddling the start and the end of the second of three consecutive NAPOT regions.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMP0CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
-#define PMP1CFG (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
-#define PMP2CFG (((PMP_L|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT)
+#define PMP0CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
+#define PMP1CFG (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMP2CFG (((PMP_L | PMP_NAPOT) & 0xFF) << PMP2_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION_1
 #define REGION_SIZE PMP_NAPOT_REGION_BYTES
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
+// PMP configuration: three consecutive NAPOT regions, the third locked with XWR = 000
+  LA(x5, REGIONSTART)
+  LI(x6, 0 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LA(x5, REGIONSTART)
+  LI(x6, 1 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr1, x5
+  LA(x5, REGIONSTART)
+  LI(x6, 2 * REGION_SIZE)
+  add x5, x5, x6
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr2, x5
+  LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// ---------------------------- Verification Section ----------------------------
+  LA(x15, TEST_FOR_EXECUTION_2)
+PMPZca_cp_misaligned_napot_region1_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_misaligned_napot_region1_1_c_jalr, PMPZca_cp_misaligned_napot_region1_1_c_jalr_str)
 
-// Test Case: three consecutive NAPOT regions, the third locked with XWR = 000
-    LA(x5, REGIONSTART)
-    LI(x6, 0 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LA(x5, REGIONSTART)
-    LI(x6, 1 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr1, x5
-    LA(x5, REGIONSTART)
-    LI(x6, 2 * REGION_SIZE)
-    add x5, x5, x6
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr2, x5
-    LI(x4, PMP0CFG|PMP1CFG|PMP2CFG)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
+  LA(x15, TEST_FOR_EXECUTION_4)
+PMPZca_cp_misaligned_napot_region2_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_misaligned_napot_region2_1_c_jalr, PMPZca_cp_misaligned_napot_region2_1_c_jalr_str)
 
-    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1
+  LA(x15, REGIONSTART)
+PMPZca_cp_misaligned_napot_region3_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_misaligned_napot_region3_1_c_jalr, PMPZca_cp_misaligned_napot_region3_1_c_jalr_str)
 
-    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
-
-    PMP_VERIFICATION_X_C REGIONSTART, test_3
-
-    PMP_VERIFICATION_X_C REGIONSTART + REGION_SIZE, test_4
-
-    j exit
-
-exit:
+  LA(x15, REGIONSTART + REGION_SIZE)
+PMPZca_cp_misaligned_napot_region4_1_c_jalr:
+  c.jalr x15
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZca_cp_misaligned_napot_region4_1_c_jalr, PMPZca_cp_misaligned_napot_region4_1_c_jalr_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -118,40 +127,43 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    jalr x0, x1, 0
-    nop
-.p2align (UDB_PMP_GRANULARITY)
+  jalr x0, x1, 0
+  nop
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
-    .rept ((REGION_SIZE / 2) - 1)
-    c.nop
-    .endr
+  .rept ((REGION_SIZE / 2) - 1)
+  c.nop
+  .endr
 // No alignment before these labels: the c.nop offsets above make the jalr straddle the region boundary
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0
+  jalr x0, x1, 0
 TEST_FOR_EXECUTION_3:
-    .rept ((REGION_SIZE / 2) - 2)
-    c.nop
-    .endr
+  .rept ((REGION_SIZE / 2) - 2)
+  c.nop
+  .endr
 TEST_FOR_EXECUTION_4:
-    jalr x0, x1, 0
-.p2align (UDB_PMP_GRANULARITY)
+  jalr x0, x1, 0
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_5:
-    .rept (REGION_SIZE / 2)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (REGION_SIZE / 2)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_napot_execute\""
+PMPZca_cp_misaligned_napot_region1_1_c_jalr_str: .string "\"test: 7; cg: PMPZca; cp: cp_misaligned_napot; bin: region1_1_c.jalr\""
+PMPZca_cp_misaligned_napot_region2_1_c_jalr_str: .string "\"test: 8; cg: PMPZca; cp: cp_misaligned_napot; bin: region2_1_c.jalr\""
+PMPZca_cp_misaligned_napot_region3_1_c_jalr_str: .string "\"test: 9; cg: PMPZca; cp: cp_misaligned_napot; bin: region3_1_c.jalr\""
+PMPZca_cp_misaligned_napot_region4_1_c_jalr_str: .string "\"test: 10; cg: PMPZca; cp: cp_misaligned_napot; bin: region4_1_c.jalr\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

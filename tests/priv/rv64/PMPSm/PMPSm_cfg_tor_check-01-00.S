@@ -36,38 +36,85 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} around a locked TOR entry 1 with no permissions while pmpaddr0 = pmpaddr1; no match, so all succeed.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_UPPER_BOUND (((PMP_L|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_UPPER_BOUND (((PMP_L | PMP_TOR) & 0xFF) << PMP1_CFG_SHIFT)
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-    LA(x5, TEST_FOR_EXECUTION)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr1, x5
-    csrw pmpaddr0, x5
+  LA(x5, TEST_FOR_EXECUTION)
+  srl x5, x5, PMP_SHIFT
+  csrw pmpaddr1, x5
+  csrw pmpaddr0, x5
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: pmpcfg1 = L, TOR, no permissions; pmpaddr0 = pmpaddr1
+  LI(x4, PMPREGION_UPPER_BOUND)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : pmpcfg1 = L, TOR, no permissions; pmpaddr0 = pmpaddr1
-    LI(x4, PMPREGION_UPPER_BOUND)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NA4    TEST_FOR_EXECUTION, test_1
-
-    j exit
-
-exit:
+  RVTEST_FENCEI
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str)
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str)
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -77,37 +124,37 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    jr ra
-    .endr
-    .option pop
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpsm_cfg_tor_check1_jalr_address\""
-test_2_str: .string "\"test: 2; cp: pmpsm_cfg_tor_check1_jalr_address-4\""
-test_3_str: .string "\"test: 3; cp: pmpsm_cfg_tor_check1_jalr_address+4\""
-test_4_str: .string "\"test: 4; cp: pmpsm_cfg_tor_check1_sw_address\""
-test_5_str: .string "\"test: 5; cp: pmpsm_cfg_tor_check1_lw_address\""
-test_6_str: .string "\"test: 6; cp: pmpsm_cfg_tor_check1_sw_address-4\""
-test_7_str: .string "\"test: 7; cp: pmpsm_cfg_tor_check1_lw_address-4\""
-test_8_str: .string "\"test: 8; cp: pmpsm_cfg_tor_check1_sw_address+4\""
-test_9_str: .string "\"test: 9; cp: pmpsm_cfg_tor_check1_lw_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_1_jalr_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_2_jalr_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_3_jalr_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_4_sw_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_5_lw_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_6_sw_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_7_lw_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_8_sw_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_9_lw_address+4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

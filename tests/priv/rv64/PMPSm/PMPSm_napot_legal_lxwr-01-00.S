@@ -36,77 +36,479 @@ RVTEST_BEGIN
 //   {jalr, sw, lw} in M mode at and around a locked NAPOT region, each legal XWR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_1000 (((PMP_L|PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT)
-#define PMPREGION_LXWR_1001 (((PMP_L|PMP_R|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT)
-#define PMPREGION_LXWR_1011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
+#define PMPREGION_LXWR_1000 (((PMP_L | PMP_NAPOT) & 0xFF) << PMP5_CFG_SHIFT)
+#define PMPREGION_LXWR_1001 (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP4_CFG_SHIFT)
+#define PMPREGION_LXWR_1011 (((PMP_L | PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP3_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: L = 1, No permissions, entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, PMPREGION_LXWR_1000)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : L -> 1 and No Permissions given to PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_1
+  RVTEST_FENCEI
+  LI(t0, PMP_NAPOT_REGION_BYTES - 8)
 
-// Test Case: 2 : L -> 1 and R Permissions given to PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_2
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_17_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_17_jalr_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_17_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_18_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_18_jalr_addressm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_18_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_19_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_19_jalr_address_4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_19_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_20_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_20_jalr_address_gm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_20_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_21_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_21_jalr_address_g, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_21_jalr_address_g_str)
 
-// Test Case: 3 : L -> 1 and WR Permissions given to PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_RWX_NAPOT    TEST_FOR_EXECUTION, test_3
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_1_sb_address:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_1_sb_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_1_sb_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_2_sh_address:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_2_sh_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_2_sh_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_3_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_3_sw_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_3_sw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_4_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_4_sw_addressm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_4_sw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_5_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_5_sw_address_4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_5_sw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_6_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_6_sw_address_gm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_6_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_7_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_7_sw_address_g, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_7_sw_address_g_str)
 
-    j exit
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_8_lb_address:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_8_lb_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_8_lb_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_9_lbu_address:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_9_lbu_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_9_lbu_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_10_lh_address:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_10_lh_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_10_lh_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_11_lhu_address:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_11_lhu_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_11_lhu_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_12_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_12_lw_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_12_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_13_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_13_lw_addressm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_13_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_14_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_14_lw_address_4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_14_lw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_15_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_15_lw_address_gm4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_15_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_16_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_16_lw_address_g, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_16_lw_address_g_str)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_22_sd_address:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_22_sd_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_22_sd_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_23_ld_address:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_23_ld_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_23_ld_address_str)
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_24_lwu_address:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_24_lwu_address, PMPSm_cp_cfg_A_napot_entry5_lxwr1000_24_lwu_address_str)
 
-exit:
+// PMP configuration 2: L = 1, R permissions, entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr4, x5
+  LI(x4, PMPREGION_LXWR_1001)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LI(t0, PMP_NAPOT_REGION_BYTES - 8)
+
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_17_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_17_jalr_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_17_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_18_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_18_jalr_addressm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_18_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_19_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_19_jalr_address_4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_19_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_20_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_20_jalr_address_gm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_20_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_21_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_21_jalr_address_g, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_21_jalr_address_g_str)
+
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_1_sb_address:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_1_sb_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_1_sb_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_2_sh_address:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_2_sh_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_2_sh_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_3_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_3_sw_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_3_sw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_4_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_4_sw_addressm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_4_sw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_5_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_5_sw_address_4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_5_sw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_6_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_6_sw_address_gm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_6_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_7_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_7_sw_address_g, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_7_sw_address_g_str)
+
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_8_lb_address:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_8_lb_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_8_lb_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_9_lbu_address:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_9_lbu_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_9_lbu_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_10_lh_address:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_10_lh_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_10_lh_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_11_lhu_address:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_11_lhu_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_11_lhu_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_12_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_12_lw_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_12_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_13_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_13_lw_addressm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_13_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_14_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_14_lw_address_4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_14_lw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_15_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_15_lw_address_gm4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_15_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_16_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_16_lw_address_g, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_16_lw_address_g_str)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_22_sd_address:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_22_sd_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_22_sd_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_23_ld_address:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_23_ld_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_23_ld_address_str)
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_24_lwu_address:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_24_lwu_address, PMPSm_cp_cfg_A_napot_entry4_lxwr1001_24_lwu_address_str)
+
+// PMP configuration 3: L = 1, WR permissions, entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, PMPREGION_LXWR_1011)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  RVTEST_FENCEI
+  LI(t0, PMP_NAPOT_REGION_BYTES - 8)
+
+// Execute probes
+  LA(a4, TEST_FOR_EXECUTION)
+  LA(ra, 1f)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_17_jalr_address:
+  jalr x0, 0(a4)
+  nop
+1:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_17_jalr_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_17_jalr_address_str)
+  addi a4, a4, -4
+  LA(ra, 2f)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_18_jalr_addressm4:
+  jalr x0, 0(a4)
+  nop
+2:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_18_jalr_addressm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_18_jalr_addressm4_str)
+  addi a4, a4, 8
+  LA(ra, 3f)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_19_jalr_address_4:
+  jalr x0, 0(a4)
+  nop
+3:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_19_jalr_address_4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_19_jalr_address_4_str)
+  add a4, a4, t0
+  LA(ra, 4f)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_20_jalr_address_gm4:
+  jalr x0, 0(a4)
+  nop
+4:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_20_jalr_address_gm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_20_jalr_address_gm4_str)
+  addi a4, a4, 4
+  LA(ra, 5f)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_21_jalr_address_g:
+  jalr x0, 0(a4)
+  nop
+5:
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_21_jalr_address_g, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_21_jalr_address_g_str)
+
+// Store probes
+  LA(a5, TEST_FOR_EXECUTION)
+  LI(a4, 0x0000806700008067)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_1_sb_address:
+  sb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_1_sb_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_1_sb_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_2_sh_address:
+  sh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_2_sh_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_2_sh_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_3_sw_address:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_3_sw_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_3_sw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_4_sw_addressm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_4_sw_addressm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_4_sw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_5_sw_address_4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_5_sw_address_4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_5_sw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_6_sw_address_gm4:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_6_sw_address_gm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_6_sw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_7_sw_address_g:
+  sw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_7_sw_address_g, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_7_sw_address_g_str)
+
+// Load probes
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_8_lb_address:
+  lb a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_8_lb_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_8_lb_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_9_lbu_address:
+  lbu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_9_lbu_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_9_lbu_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_10_lh_address:
+  lh a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_10_lh_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_10_lh_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_11_lhu_address:
+  lhu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_11_lhu_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_11_lhu_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_12_lw_address:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_12_lw_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_12_lw_address_str)
+  addi a5, a5, -4
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_13_lw_addressm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_13_lw_addressm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_13_lw_addressm4_str)
+  addi a5, a5, 8
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_14_lw_address_4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_14_lw_address_4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_14_lw_address_4_str)
+  add a5, a5, t0
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_15_lw_address_gm4:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_15_lw_address_gm4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_15_lw_address_gm4_str)
+  addi a5, a5, 4
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_16_lw_address_g:
+  lw a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_16_lw_address_g, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_16_lw_address_g_str)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_22_sd_address:
+  sd a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_22_sd_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_22_sd_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_23_ld_address:
+  ld a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_23_ld_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_23_ld_address_str)
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_24_lwu_address:
+  lwu a4, 0(a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_24_lwu_address, PMPSm_cp_cfg_A_napot_entry3_lxwr1011_24_lwu_address_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -116,52 +518,100 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
-    .option push
-    .option norvc
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
+  .option push
+  .option norvc
 TEST_FOR_EXECUTION_0:
-    .rept PMP_NAPOT_REGION_PAD_WORDS
-    jr ra
-    .endr
-    .option pop
+  .rept PMP_NAPOT_REGION_PAD_WORDS
+  jr ra
+  .endr
+  .option pop
 TEST_FOR_EXECUTION:
-    .rept PMP_NAPOT_REGION_PAD_WORDS
-    jr ra
-    .endr
-    .option push
-    .option norvc
+  .rept PMP_NAPOT_REGION_PAD_WORDS
+  jr ra
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpsm_napot_sb_address\""
-test_2_str: .string "\"test: 2; cp: pmpsm_napot_sh_address\""
-test_3_str: .string "\"test: 3; cp: pmpsm_napot_sw_address\""
-test_4_str: .string "\"test: 4; cp: pmpsm_napot_sw_address-4\""
-test_5_str: .string "\"test: 5; cp: pmpsm_napot_sw_address+4\""
-test_6_str: .string "\"test: 6; cp: pmpsm_napot_sw_address+g-4\""
-test_7_str: .string "\"test: 7; cp: pmpsm_napot_sw_address+g\""
-test_8_str: .string "\"test: 8; cp: pmpsm_napot_lb_address\""
-test_9_str: .string "\"test: 9; cp: pmpsm_napot_lbu_address\""
-test_10_str: .string "\"test: 10; cp: pmpsm_napot_lh_address\""
-test_11_str: .string "\"test: 11; cp: pmpsm_napot_lhu_address\""
-test_12_str: .string "\"test: 12; cp: pmpsm_napot_lw_address\""
-test_13_str: .string "\"test: 13; cp: pmpsm_napot_lw_address-4\""
-test_14_str: .string "\"test: 14; cp: pmpsm_napot_lw_address+4\""
-test_15_str: .string "\"test: 15; cp: pmpsm_napot_lw_address+g-4\""
-test_16_str: .string "\"test: 16; cp: pmpsm_napot_lw_address+g\""
-test_17_str: .string "\"test: 17; cp: pmpsm_napot_jalr_address\""
-test_18_str: .string "\"test: 18; cp: pmpsm_napot_jalr_address-4\""
-test_19_str: .string "\"test: 19; cp: pmpsm_napot_jalr_address+4\""
-test_20_str: .string "\"test: 20; cp: pmpsm_napot_jalr_address+g-4\""
-test_21_str: .string "\"test: 21; cp: pmpsm_napot_jalr_address+g\""
-test_22_str: .string "\"test: 22; cp: pmpsm_napot_sd_address\""
-test_23_str: .string "\"test: 23; cp: pmpsm_napot_ld_address\""
-test_24_str: .string "\"test: 24; cp: pmpsm_napot_lwu_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_1_sb_address_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_1_sb_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_2_sh_address_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_2_sh_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_3_sw_address_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_3_sw_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_4_sw_addressm4_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_4_sw_address-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_5_sw_address_4_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_5_sw_address+4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_6_sw_address_gm4_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_6_sw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_7_sw_address_g_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_7_sw_address+g\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_8_lb_address_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_8_lb_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_9_lbu_address_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_9_lbu_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_10_lh_address_str: .string "\"test: 69; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_10_lh_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_11_lhu_address_str: .string "\"test: 70; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_11_lhu_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_12_lw_address_str: .string "\"test: 71; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_12_lw_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_13_lw_addressm4_str: .string "\"test: 72; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_13_lw_address-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_14_lw_address_4_str: .string "\"test: 73; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_14_lw_address+4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_15_lw_address_gm4_str: .string "\"test: 74; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_15_lw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_16_lw_address_g_str: .string "\"test: 75; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_16_lw_address+g\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_17_jalr_address_str: .string "\"test: 76; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_17_jalr_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_18_jalr_addressm4_str: .string "\"test: 77; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_18_jalr_address-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_19_jalr_address_4_str: .string "\"test: 78; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_19_jalr_address+4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_20_jalr_address_gm4_str: .string "\"test: 79; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_20_jalr_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_21_jalr_address_g_str: .string "\"test: 80; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_21_jalr_address+g\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_22_sd_address_str: .string "\"test: 81; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_22_sd_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_23_ld_address_str: .string "\"test: 82; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_23_ld_address\""
+PMPSm_cp_cfg_A_napot_entry5_lxwr1000_24_lwu_address_str: .string "\"test: 83; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry5_lxwr1000_24_lwu_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_1_sb_address_str: .string "\"test: 84; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_1_sb_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_2_sh_address_str: .string "\"test: 85; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_2_sh_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_3_sw_address_str: .string "\"test: 86; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_3_sw_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_4_sw_addressm4_str: .string "\"test: 87; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_4_sw_address-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_5_sw_address_4_str: .string "\"test: 88; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_5_sw_address+4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_6_sw_address_gm4_str: .string "\"test: 89; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_6_sw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_7_sw_address_g_str: .string "\"test: 90; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_7_sw_address+g\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_8_lb_address_str: .string "\"test: 91; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_8_lb_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_9_lbu_address_str: .string "\"test: 92; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_9_lbu_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_10_lh_address_str: .string "\"test: 93; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_10_lh_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_11_lhu_address_str: .string "\"test: 94; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_11_lhu_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_12_lw_address_str: .string "\"test: 95; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_12_lw_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_13_lw_addressm4_str: .string "\"test: 96; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_13_lw_address-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_14_lw_address_4_str: .string "\"test: 97; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_14_lw_address+4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_15_lw_address_gm4_str: .string "\"test: 98; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_15_lw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_16_lw_address_g_str: .string "\"test: 99; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_16_lw_address+g\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_17_jalr_address_str: .string "\"test: 100; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_17_jalr_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_18_jalr_addressm4_str: .string "\"test: 101; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_18_jalr_address-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_19_jalr_address_4_str: .string "\"test: 102; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_19_jalr_address+4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_20_jalr_address_gm4_str: .string "\"test: 103; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_20_jalr_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_21_jalr_address_g_str: .string "\"test: 104; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_21_jalr_address+g\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_22_sd_address_str: .string "\"test: 105; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_22_sd_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_23_ld_address_str: .string "\"test: 106; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_23_ld_address\""
+PMPSm_cp_cfg_A_napot_entry4_lxwr1001_24_lwu_address_str: .string "\"test: 107; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry4_lxwr1001_24_lwu_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_1_sb_address_str: .string "\"test: 108; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_1_sb_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_2_sh_address_str: .string "\"test: 109; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_2_sh_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_3_sw_address_str: .string "\"test: 110; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_3_sw_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_4_sw_addressm4_str: .string "\"test: 111; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_4_sw_address-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_5_sw_address_4_str: .string "\"test: 112; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_5_sw_address+4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_6_sw_address_gm4_str: .string "\"test: 113; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_6_sw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_7_sw_address_g_str: .string "\"test: 114; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_7_sw_address+g\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_8_lb_address_str: .string "\"test: 115; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_8_lb_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_9_lbu_address_str: .string "\"test: 116; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_9_lbu_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_10_lh_address_str: .string "\"test: 117; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_10_lh_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_11_lhu_address_str: .string "\"test: 118; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_11_lhu_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_12_lw_address_str: .string "\"test: 119; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_12_lw_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_13_lw_addressm4_str: .string "\"test: 120; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_13_lw_address-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_14_lw_address_4_str: .string "\"test: 121; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_14_lw_address+4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_15_lw_address_gm4_str: .string "\"test: 122; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_15_lw_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_16_lw_address_g_str: .string "\"test: 123; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_16_lw_address+g\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_17_jalr_address_str: .string "\"test: 124; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_17_jalr_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_18_jalr_addressm4_str: .string "\"test: 125; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_18_jalr_address-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_19_jalr_address_4_str: .string "\"test: 126; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_19_jalr_address+4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_20_jalr_address_gm4_str: .string "\"test: 127; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_20_jalr_address+g-4\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_21_jalr_address_g_str: .string "\"test: 128; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_21_jalr_address+g\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_22_sd_address_str: .string "\"test: 129; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_22_sd_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_23_ld_address_str: .string "\"test: 130; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_23_ld_address\""
+PMPSm_cp_cfg_A_napot_entry3_lxwr1011_24_lwu_address_str: .string "\"test: 131; cg: PMPSm; cp: cp_cfg_A_napot; bin: entry3_lxwr1011_24_lwu_address\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

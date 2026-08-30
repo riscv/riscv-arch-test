@@ -35,119 +35,557 @@ RVTEST_BEGIN
 //   Every AMO against a locked NAPOT region with each legal XWR.
 /////////////////////////////////
 
-    // Clear every pmpcfg and pmpaddr CSR
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-    .set pmpaddri, CSR_PMPADDR0
-    .rept UDB_NUM_PMP_ENTRIES
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
+// Clear every pmpcfg and pmpaddr CSR
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept UDB_NUM_PMP_ENTRIES / 8
+  csrw pmpcfgi, x0
+  .set pmpcfgi, pmpcfgi + 2
+  .endr
+  .set pmpaddri, CSR_PMPADDR0
+  .rept UDB_NUM_PMP_ENTRIES
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri + 1
+  .endr
 
-#define PMPREGION_LXWR_1000 (((PMP_L|PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT)
-#define PMPREGION_LXWR_1001 (((PMP_L|PMP_R|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT)
-#define PMPREGION_LXWR_1011 (((PMP_L|PMP_R|PMP_W|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
-#define PMPREGION_LXWR_1100 (((PMP_L|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT)
-#define PMPREGION_LXWR_1101 (((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT)
-#define PMPREGION_LXWR_1111 (((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT)
+#define PMPREGION_LXWR_1000 (((PMP_L | PMP_NAPOT) & 0xFF) << PMP5_CFG_SHIFT)
+#define PMPREGION_LXWR_1001 (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP4_CFG_SHIFT)
+#define PMPREGION_LXWR_1011 (((PMP_L | PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP3_CFG_SHIFT)
+#define PMPREGION_LXWR_1100 (((PMP_L | PMP_X | PMP_NAPOT) & 0xFF) << PMP2_CFG_SHIFT)
+#define PMPREGION_LXWR_1101 (((PMP_L | PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP1_CFG_SHIFT)
+#define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP0_CFG_SHIFT)
 
 #define REGIONSTART TEST_FOR_EXECUTION
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
+#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
 #else
-    #define PMP_MASK            ~0
-    #define PMP_REGION_SIZE     0
+#define PMP_MASK        ~0
+#define PMP_REGION_SIZE 0
 #endif
 
-    RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x4
 
-// ---------------------------- Verification Section ----------------------------
+// PMP configuration 1: L = 1, No permissions, entry 5
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr5, x5
+  LI(x4, PMPREGION_LXWR_1000)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 1 : L -> 1 and No Permissions given to PMP entry 5
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr5, x5
-    LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_1
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoand_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoand_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amoor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amoor_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amomax_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_10_amomax_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_13_amomin_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_14_amomin_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_15_amominu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_16_amominu_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_18_amoswap_d_str)
 
-// Test Case: 2 : L -> 1 and R Permissions given to PMP entry 4
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_2
+// PMP configuration 2: L = 1, R permissions, entry 4
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr4, x5
+  LI(x4, PMPREGION_LXWR_1001)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 3 : L -> 1 and WR Permissions given to PMP entry 3
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr3, x5
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_3
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoand_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoand_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amoor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amoor_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amomax_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_10_amomax_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_13_amomin_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_14_amomin_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_15_amominu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_16_amominu_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_18_amoswap_d_str)
 
-// Test Case: 4 : L -> 1 and X Permissions given to PMP entry 2
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_1100)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_4
+// PMP configuration 3: L = 1, WR permissions, entry 3
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr3, x5
+  LI(x4, PMPREGION_LXWR_1011)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-// Test Case: 5 : L -> 1 and XR Permissions given to PMP entry 1
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr1, x5
-    LI(x4, PMPREGION_LXWR_1101)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_5
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoand_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoand_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amoor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amoor_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amomax_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_10_amomax_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_13_amomin_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_14_amomin_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_15_amominu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_16_amominu_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_18_amoswap_d_str)
 
-// Test Case: 6 : L -> 1 and XWR Permissions given to PMP entry 0
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_MASK)
-    and x5, x5, x6
-    LI(x6, PMP_REGION_SIZE)
-    or x5, x5, x6
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_1111)
-    csrw pmpcfg0, x4
-    RVTEST_SFENCE_VMA_IF_SUPPORTED
-    PMP_VERIFICATION_AMO    TEST_FOR_EXECUTION, test_6
+// PMP configuration 4: L = 1, X permissions, entry 2
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr2, x5
+  LI(x4, PMPREGION_LXWR_1100)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
 
-    j exit
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoand_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoand_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amoor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amoor_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amomax_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_10_amomax_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_13_amomin_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_14_amomin_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_15_amominu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_16_amominu_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_18_amoswap_d_str)
 
-exit:
+// PMP configuration 5: L = 1, XR permissions, entry 1
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr1, x5
+  LI(x4, PMPREGION_LXWR_1101)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoand_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoand_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amoor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amoor_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amomax_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_10_amomax_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_13_amomin_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_14_amomin_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_15_amominu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_16_amominu_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_18_amoswap_d_str)
+
+// PMP configuration 6: L = 1, XWR permissions, entry 0
+  LA(x5, REGIONSTART)
+  srl x5, x5, PMP_SHIFT
+  LI(x6, PMP_MASK)
+  and x5, x5, x6
+  LI(x6, PMP_REGION_SIZE)
+  or x5, x5, x6
+  csrw pmpaddr0, x5
+  LI(x4, PMPREGION_LXWR_1111)
+  csrw pmpcfg0, x4
+  RVTEST_SFENCE_VMA_IF_SUPPORTED
+
+  LI(a6, 0x0000806700008067)
+  LA(a5, TEST_FOR_EXECUTION)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w:
+  amoadd.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoadd_d:
+  amoadd.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoadd_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoadd_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoand_w:
+  amoand.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoand_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoand_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoand_d:
+  amoand.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoand_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoand_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amoor_w:
+  amoor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amoor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amoor_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amoor_d:
+  amoor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amoor_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amoor_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amoxor_w:
+  amoxor.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amoxor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amoxor_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amoxor_d:
+  amoxor.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amoxor_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amoxor_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amomax_w:
+  amomax.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amomax_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amomax_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_10_amomax_d:
+  amomax.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_10_amomax_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_10_amomax_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_11_amomaxu_w:
+  amomaxu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_11_amomaxu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_11_amomaxu_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_12_amomaxu_d:
+  amomaxu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_12_amomaxu_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_12_amomaxu_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_13_amomin_w:
+  amomin.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_13_amomin_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_13_amomin_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_14_amomin_d:
+  amomin.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_14_amomin_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_14_amomin_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_15_amominu_w:
+  amominu.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_15_amominu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_15_amominu_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_16_amominu_d:
+  amominu.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_16_amominu_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_16_amominu_d_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_17_amoswap_w:
+  amoswap.w a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_17_amoswap_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_17_amoswap_w_str)
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_18_amoswap_d:
+  amoswap.d a4, a6, (a5)
+  nop
+  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_18_amoswap_d, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_18_amoswap_d_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -157,39 +595,129 @@ RVTEST_DATA_BEGIN
 
 // Test data
 
-.p2align 12
-.p2align (UDB_PMP_GRANULARITY)
+  .p2align 12
+  .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (PMP_TOR_REGION_BYTES / 4)
-    nop
-    .endr
-    .option push
-    .option norvc
+  .rept (PMP_TOR_REGION_BYTES / 4)
+  nop
+  .endr
+  .option push
+  .option norvc
 RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra
-    .option pop
+  nop
+  nop
+  jr ra
+  .option pop
 
 // Testcase strings
-test_1_str: .string "\"test: 1; cp: pmpzaamo_cfg_wr_amoadd_w\""
-test_2_str: .string "\"test: 2; cp: pmpzaamo_cfg_wr_amoadd_d\""
-test_3_str: .string "\"test: 3; cp: pmpzaamo_cfg_wr_amoand_w\""
-test_4_str: .string "\"test: 4; cp: pmpzaamo_cfg_wr_amoand_d\""
-test_5_str: .string "\"test: 5; cp: pmpzaamo_cfg_wr_amoor_w\""
-test_6_str: .string "\"test: 6; cp: pmpzaamo_cfg_wr_amoor_d\""
-test_7_str: .string "\"test: 7; cp: pmpzaamo_cfg_wr_amoxor_w\""
-test_8_str: .string "\"test: 8; cp: pmpzaamo_cfg_wr_amoxor_d\""
-test_9_str: .string "\"test: 9; cp: pmpzaamo_cfg_wr_amomax_w\""
-test_10_str: .string "\"test: 10; cp: pmpzaamo_cfg_wr_amomax_d\""
-test_11_str: .string "\"test: 11; cp: pmpzaamo_cfg_wr_amomaxu_w\""
-test_12_str: .string "\"test: 12; cp: pmpzaamo_cfg_wr_amomaxu_d\""
-test_13_str: .string "\"test: 13; cp: pmpzaamo_cfg_wr_amomin_w\""
-test_14_str: .string "\"test: 14; cp: pmpzaamo_cfg_wr_amomin_d\""
-test_15_str: .string "\"test: 15; cp: pmpzaamo_cfg_wr_amominu_w\""
-test_16_str: .string "\"test: 16; cp: pmpzaamo_cfg_wr_amominu_d\""
-test_17_str: .string "\"test: 17; cp: pmpzaamo_cfg_wr_amoswap_w\""
-test_18_str: .string "\"test: 18; cp: pmpzaamo_cfg_wr_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w_str: .string "\"test: 1; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoadd_d_str: .string "\"test: 2; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoand_w_str: .string "\"test: 3; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoand_d_str: .string "\"test: 4; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amoor_w_str: .string "\"test: 5; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amoor_d_str: .string "\"test: 6; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amoxor_w_str: .string "\"test: 7; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amoxor_d_str: .string "\"test: 8; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amomax_w_str: .string "\"test: 9; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_10_amomax_d_str: .string "\"test: 10; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_11_amomaxu_w_str: .string "\"test: 11; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_12_amomaxu_d_str: .string "\"test: 12; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_13_amomin_w_str: .string "\"test: 13; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_14_amomin_d_str: .string "\"test: 14; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_15_amominu_w_str: .string "\"test: 15; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_16_amominu_d_str: .string "\"test: 16; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_17_amoswap_w_str: .string "\"test: 17; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry5_lxwr1000_18_amoswap_d_str: .string "\"test: 18; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry5_lxwr1000_18_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w_str: .string "\"test: 19; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoadd_d_str: .string "\"test: 20; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoand_w_str: .string "\"test: 21; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoand_d_str: .string "\"test: 22; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amoor_w_str: .string "\"test: 23; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amoor_d_str: .string "\"test: 24; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amoxor_w_str: .string "\"test: 25; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amoxor_d_str: .string "\"test: 26; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amomax_w_str: .string "\"test: 27; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_10_amomax_d_str: .string "\"test: 28; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_11_amomaxu_w_str: .string "\"test: 29; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_12_amomaxu_d_str: .string "\"test: 30; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_13_amomin_w_str: .string "\"test: 31; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_14_amomin_d_str: .string "\"test: 32; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_15_amominu_w_str: .string "\"test: 33; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_16_amominu_d_str: .string "\"test: 34; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_17_amoswap_w_str: .string "\"test: 35; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry4_lxwr1001_18_amoswap_d_str: .string "\"test: 36; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry4_lxwr1001_18_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w_str: .string "\"test: 37; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoadd_d_str: .string "\"test: 38; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoand_w_str: .string "\"test: 39; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoand_d_str: .string "\"test: 40; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amoor_w_str: .string "\"test: 41; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amoor_d_str: .string "\"test: 42; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amoxor_w_str: .string "\"test: 43; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amoxor_d_str: .string "\"test: 44; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amomax_w_str: .string "\"test: 45; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_10_amomax_d_str: .string "\"test: 46; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_11_amomaxu_w_str: .string "\"test: 47; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_12_amomaxu_d_str: .string "\"test: 48; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_13_amomin_w_str: .string "\"test: 49; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_14_amomin_d_str: .string "\"test: 50; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_15_amominu_w_str: .string "\"test: 51; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_16_amominu_d_str: .string "\"test: 52; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_17_amoswap_w_str: .string "\"test: 53; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry3_lxwr1011_18_amoswap_d_str: .string "\"test: 54; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry3_lxwr1011_18_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w_str: .string "\"test: 55; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoadd_d_str: .string "\"test: 56; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoand_w_str: .string "\"test: 57; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoand_d_str: .string "\"test: 58; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amoor_w_str: .string "\"test: 59; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amoor_d_str: .string "\"test: 60; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amoxor_w_str: .string "\"test: 61; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amoxor_d_str: .string "\"test: 62; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amomax_w_str: .string "\"test: 63; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_10_amomax_d_str: .string "\"test: 64; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_11_amomaxu_w_str: .string "\"test: 65; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_12_amomaxu_d_str: .string "\"test: 66; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_13_amomin_w_str: .string "\"test: 67; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_14_amomin_d_str: .string "\"test: 68; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_15_amominu_w_str: .string "\"test: 69; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_16_amominu_d_str: .string "\"test: 70; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_17_amoswap_w_str: .string "\"test: 71; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry2_lxwr1100_18_amoswap_d_str: .string "\"test: 72; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry2_lxwr1100_18_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w_str: .string "\"test: 73; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoadd_d_str: .string "\"test: 74; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoand_w_str: .string "\"test: 75; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoand_d_str: .string "\"test: 76; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amoor_w_str: .string "\"test: 77; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amoor_d_str: .string "\"test: 78; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amoxor_w_str: .string "\"test: 79; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amoxor_d_str: .string "\"test: 80; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amomax_w_str: .string "\"test: 81; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_10_amomax_d_str: .string "\"test: 82; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_11_amomaxu_w_str: .string "\"test: 83; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_12_amomaxu_d_str: .string "\"test: 84; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_13_amomin_w_str: .string "\"test: 85; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_14_amomin_d_str: .string "\"test: 86; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_15_amominu_w_str: .string "\"test: 87; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_16_amominu_d_str: .string "\"test: 88; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_17_amoswap_w_str: .string "\"test: 89; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry1_lxwr1101_18_amoswap_d_str: .string "\"test: 90; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry1_lxwr1101_18_amoswap_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w_str: .string "\"test: 91; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_1_amoadd_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoadd_d_str: .string "\"test: 92; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_2_amoadd_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoand_w_str: .string "\"test: 93; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_3_amoand_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoand_d_str: .string "\"test: 94; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_4_amoand_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amoor_w_str: .string "\"test: 95; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_5_amoor_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amoor_d_str: .string "\"test: 96; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_6_amoor_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amoxor_w_str: .string "\"test: 97; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_7_amoxor_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amoxor_d_str: .string "\"test: 98; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_8_amoxor_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amomax_w_str: .string "\"test: 99; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_9_amomax_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_10_amomax_d_str: .string "\"test: 100; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_10_amomax_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_11_amomaxu_w_str: .string "\"test: 101; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_11_amomaxu_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_12_amomaxu_d_str: .string "\"test: 102; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_12_amomaxu_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_13_amomin_w_str: .string "\"test: 103; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_13_amomin_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_14_amomin_d_str: .string "\"test: 104; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_14_amomin_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_15_amominu_w_str: .string "\"test: 105; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_15_amominu_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_16_amominu_d_str: .string "\"test: 106; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_16_amominu_d\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_17_amoswap_w_str: .string "\"test: 107; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_17_amoswap_w\""
+PMPZaamo_cp_cfg_RW_entry0_lxwr1111_18_amoswap_d_str: .string "\"test: 108; cg: PMPZaamo; cp: cp_cfg_RW; bin: entry0_lxwr1111_18_amoswap_d\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -36,7 +36,7 @@ tests/rv64i/Zv*
 # priv tests
 tests/priv/headers
 tests/priv/**/*.S
-!tests/priv/pmp/**/*.S
+!tests/priv/PMP*/**/*.S
 !tests/priv/*Sv*/**/*.S
 
 # docs

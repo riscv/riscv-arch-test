@@ -54,6 +54,8 @@ def _generate_za64rs_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Za64rs",
     required_extensions=["Zalrsc", "Za64rs"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_za64rs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Za64rs reservation-set size extension."""

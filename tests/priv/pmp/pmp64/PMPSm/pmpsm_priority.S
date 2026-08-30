@@ -36,7 +36,7 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 200
-
+#define BOOT_TO_MMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"

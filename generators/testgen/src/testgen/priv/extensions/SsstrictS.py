@@ -55,9 +55,6 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
         "V",  # V included: sets vl/vtype for vector loads and stores in the encoding sweep
     ],
     extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define BOOT_TO_SMODE"],
-    # A test stops at its first signature mismatch, so keep files tiny: one
-    # chunk per file means a discrepancy hides at most one chunk of testcases.
-    testcases_per_file=2048,
 )
 def make_ssstrictss(test_data: TestData) -> list[TestChunk]:
     """SsstrictS — supervisor-mode strict compliance tests."""

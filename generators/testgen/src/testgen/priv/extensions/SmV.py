@@ -507,6 +507,8 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int, test_chunks: 
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
+        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+        "#define BOOT_TO_MMODE",
     ],
 )
 def make_smv(test_data: TestData) -> list[TestChunk]:

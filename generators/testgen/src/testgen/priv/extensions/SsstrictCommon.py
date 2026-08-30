@@ -24,8 +24,6 @@ base pointing at mapped memory; load/store/atomic templates use it as rs1 (the
 'B' field) so their accesses always land in the scratch region.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from random import randint, seed

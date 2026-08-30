@@ -25,6 +25,8 @@ from typing import Iterable
 
 import vector_testgen_common as common
 
+from . import _raw_encoding as raw
+
 
 _LMUL_FLAG = {1: "m1", 2: "m2", 4: "m4", 8: "m8",
               "mf2": "mf2", "mf4": "mf4", "mf8": "mf8"}
@@ -95,10 +97,53 @@ def init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
             common.writeLine(f"vle{sew}.v v{reg}, (x{scratch})", f"# init {r} (v{reg})")
 
 
+# Operand-name -> instruction-word field. Every V-extension operand lives in one
+# of three fixed slots, so a testcase's encoding is the instruction's base MATCH
+# value with these fields filled in.
+_DEST_ARGS = ("vd", "vs3", "rd", "fd")
+_SRC1_ARGS = ("vs1", "rs1", "fs1", "imm")
+_SRC2_ARGS = ("vs2", "rs2")
+
+
+def encode_testcase(instruction: str, instruction_data: list, maskval: str | None) -> int | None:
+    """Return the 32-bit encoding of the testcase, or None if unknown to encoding.h."""
+    word = raw.encode(instruction)
+    if word is None:
+        return None
+    vec_data, scalar_data, fp_data, imm_val = instruction_data
+    for arg in common.getInstructionArguments(instruction):
+        if arg == "v0":
+            continue
+        if arg == "vm":
+            word = raw.with_vm(word, 0 if maskval is not None else 1)
+            continue
+        if arg == "imm":
+            val = imm_val
+        elif arg[0] == "v":
+            val = vec_data[arg]["reg"]
+        elif arg[0] == "r":
+            val = scalar_data[arg]["reg"]
+        else:
+            val = fp_data[arg]["reg"]
+        if arg in _DEST_ARGS:
+            word = raw.set_field(word, 11, 7, val)
+        elif arg in _SRC1_ARGS:
+            word = raw.set_field(word, 19, 15, val)
+        elif arg in _SRC2_ARGS:
+            word = raw.set_field(word, 24, 20, val)
+        else:
+            return None
+    return word
+
+
 def build_testline(instruction: str, instruction_data: list, *,
                    maskval: str | None = None,
                    addr_label: str = "random_mask_0") -> tuple[str, int, int]:
-    """Build the assembly mnemonic line. Returns (testline, vd_reg, rd_reg)."""
+    """Build the assembly line for the testcase. Returns (testline, vd_reg, rd_reg).
+
+    SsstrictV testcases are emitted as a ``.insn`` word with the mnemonic as a
+    trailing comment, since a strict assembler refuses the reserved encodings.
+    """
     args = common.getInstructionArguments(instruction)
     vec_data, scalar_data, fp_data, imm_val = instruction_data
 
@@ -135,6 +180,9 @@ def build_testline(instruction: str, instruction_data: list, *,
         testline += ", "
 
     testline = testline[:-2]
+    word = encode_testcase(instruction, instruction_data, maskval)
+    if word is not None:
+        testline = f".insn 4, 0x{word:08x}  # {testline}"
     vd = vec_data["vd"]["reg"]
     rd = scalar_data["rd"]["reg"]
     return testline, vd, rd

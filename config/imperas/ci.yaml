@@ -8,10 +8,10 @@
 # - SsstrictSm/S/U: Sail does not yet implement hypervisor instructions/CSRs, #1880 (Sail 0.14)
 # - InterruptsSm/S/SSm/U: Imperas does not implement interrupts
 # - Smstateen: Sail does not implement all state yet to match
-# - Zawrs*: need to revisit now that CLINT is enabled
+# - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 # - ExceptionsSvZalrsc: misaligned LR under Sv39: Imperas raises load page fault (13, translation
 #   first); Sail rv64-max config checks misaligned LR/SC pre-translation and raises load access
 #   fault (5). No Imperas parameter changes this priority.
 #
 ci_enabled: false
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,ZawrsS,ZawrsSm,ZawrsU,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,SsstrictV,ExceptionsSvZalrsc,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

@@ -1,4 +1,4 @@
-"""Raw .4byte reserved-encoding generators for SsstrictV.
+"""Raw .insn reserved-encoding generators for SsstrictV.
 
 These generators emit instruction encodings the GAS assembler refuses (vd=v0,
 vm=1 on .vvm forms, vs2!=v0 on vmv.v.v, mew=1 on vector LS, mask-logical
@@ -10,7 +10,7 @@ Every generator:
   - Sets the standard trap-eligible state (``vill=0, vstart=0, vl!=0,
     mstatus.vs!=0``) via vsetivli.
   - Computes a reserved encoding from the base instruction word.
-  - Emits the instruction as ``.4byte 0x...`` (SsstrictV doesn't care what the
+  - Emits the instruction as ``.insn 4, 0x...`` (SsstrictV doesn't care what the
     processor does after — the coverpoint only requires the encoding bits).
 """
 

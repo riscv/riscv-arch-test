@@ -119,7 +119,6 @@ def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
     "ZicntrU",
     required_extensions=["U", "Zicntr"],
     march_extensions=["Zicntr", "Zihpm"],
-    extra_defines=["#define BOOT_TO_UMODE"],
 )
 def make_zicntru(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrU coverpoints"""

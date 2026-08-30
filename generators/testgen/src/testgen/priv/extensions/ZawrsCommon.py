@@ -173,6 +173,16 @@ def wrs_resume_helper(
                                 "RVTEST_GOTO_MMODE",
                             ]
                         )
+                    # Disarm timers so no pending interrupt carries into the next testcase
+                    lines.extend(clr_mtimer_int(r_temp, r_timecmp))
+                    if priv != "M":
+                        lines.extend(
+                            [
+                                "#ifdef SSTC_SUPPORTED",
+                                *clr_stimer_int(r_temp, r_timecmp, r_temp2, r_cause),
+                                "#endif",
+                            ]
+                        )
 
     test_data.int_regs.return_registers([r_time, r_temp3, r_cause, r_temp, r_temp2, r_timecmp])
     return lines
@@ -282,8 +292,8 @@ def wrs_no_mie_helper(
         lines.extend(
             [
                 "# Clear M mode interrupts",
-                "RVTEST_SET_MEXT_INT",
-                "RVTEST_SET_MSW_INT",
+                "RVTEST_CLR_MEXT_INT",
+                "RVTEST_CLR_MSW_INT",
                 *clr_mtimer_int(r_temp, r_temp2),
             ]
         )

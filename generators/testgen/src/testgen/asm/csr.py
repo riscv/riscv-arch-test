@@ -8,8 +8,6 @@
 
 """CSR test utilities for privileged test generation."""
 
-from __future__ import annotations
-
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -158,7 +156,7 @@ def _warl_reserved_check(
     bin_name: str,
     covergroup: str,
     coverpoint: str,
-    reserved_fields: list[tuple[str, int, int, int]],
+    reserved_fields: list[tuple],
     check_reg: int,
     warl_mask_reg: int,
     warl_mask: int,
@@ -177,13 +175,15 @@ def _warl_reserved_check(
         bin_name: Bin name of the walk readback this replaces (legality checks append the field name)
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
-        reserved_fields: (field_name, lsb, width, reserved_value) tuples of the fields that
-            were written with their reserved value this iteration
+        reserved_fields: (field_name, lsb, width, reserved_value[, gate_define]) tuples of the
+            fields that were written with a value that is reserved in this context (a gate_define,
+            if present, was handled by the caller: this check is only assembled when the define is
+            absent and the value therefore reserved)
         check_reg: Scratch register for the readback
         warl_mask_reg: Scratch register for the mask
         warl_mask: CSR mask with the reserved fields' bits excluded
     """
-    field_list = ", ".join(field_name.upper() for field_name, _, _, _ in reserved_fields)
+    field_list = ", ".join(f[0].upper() for f in reserved_fields)
     lines = [
         f"{INDENT}# {field_list} written with a reserved value; legalization is implementation-defined,",
         f"{INDENT}# so check the other bits exactly and only check {field_list} for a legal (non-reserved) value.",
@@ -191,7 +191,7 @@ def _warl_reserved_check(
         test_data.add_testcase(bin_name, coverpoint, covergroup),
         gen_csr_read_sigupd(check_reg, (csr_name, warl_mask), test_data, warl_mask_reg),
     ]
-    for field_name, lsb, width, reserved in reserved_fields:
+    for field_name, lsb, width, reserved in (f[:4] for f in reserved_fields):
         lines.extend(
             [
                 test_data.add_testcase(f"{bin_name}_{field_name}_legal", coverpoint, covergroup),
@@ -214,7 +214,7 @@ def csr_walk_test(
     *,
     start_bit: int = 0,
     walk_zeros: bool = True,
-    warl_fields: list[tuple[str, int, int, int]] | None = None,
+    warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
 ) -> list[str]:
     """
@@ -229,7 +229,13 @@ def csr_walk_test(
         start_bit: First bit position to walk; must be in 0..31 so the initial LI
             constant is representable on RV32 (bits 32..63 are guarded by #if __riscv_xlen == 64)
         walk_zeros: If True, follow the walking-1s pass with a walking-0s pass
-        warl_fields: Optional list of (field_name, lsb, width, reserved_value) for WARL fields
+        warl_fields: Optional list of WARL field entries. (field_name, lsb, width, reserved_value)
+            marks a value that is always reserved. (field_name, lsb, width, value, gate_define)
+            marks a value that is legal only when gate_define is #defined for the config and
+            reserved otherwise; the readback is emitted under #ifdef gate_define / #else so one
+            generated test serves both kinds of config. Example: ("mpp", 11, 2, 0b01, "S_SUPPORTED")
+            (MPP=S is legal only with S-mode); the same shape will gate menvcfg/mseccfg PMM
+            encodings on pointer-masking parameters. A field may appear in several entries
             whose legalization of the reserved value is implementation-defined. Iterations that
             write the reserved value to such a field skip the exact-match check for the field's
             bits and instead check that the field holds a legal (non-reserved) value; all
@@ -247,26 +253,72 @@ def csr_walk_test(
         mask_reg = None
     warl_mask_reg = test_data.int_regs.get_register() if warl_fields else None
 
-    def field_value_written(field: tuple[str, int, int, int], i: int, *, walking_ones: bool) -> int:
+    def field_value_written(field: tuple, i: int, *, walking_ones: bool) -> int:
         """Value the walk writes to the WARL field when setting/clearing bit i."""
-        _, lsb, width, _ = field
+        lsb, width = field[1], field[2]
         if lsb <= i < lsb + width:
             walked_bit = 1 << (i - lsb)
             return walked_bit if walking_ones else ((1 << width) - 1) & ~walked_bit
         return 0 if walking_ones else (1 << width) - 1
 
-    def reserved_fields_written(i: int, *, walking_ones: bool) -> list[tuple[str, int, int, int]]:
-        """WARL fields the walk writes their reserved value to when setting/clearing bit i."""
+    def reserved_fields_written(i: int, *, walking_ones: bool) -> list[tuple]:
+        """WARL entries whose (possibly gate-conditional) reserved value the walk writes at bit i."""
         if not warl_fields:
             return []
         return [f for f in warl_fields if field_value_written(f, i, walking_ones=walking_ones) == f[3]]
 
-    def warl_mask_for(reserved_fields: list[tuple[str, int, int, int]]) -> int:
+    def warl_mask_for(reserved_fields: list[tuple]) -> int:
         """CSR mask with the given fields' bits excluded."""
         warl_mask = (1 << 64) - 1 if mask is None else mask
-        for _, lsb, width, _ in reserved_fields:
+        for f in reserved_fields:
+            lsb, width = f[1], f[2]
             warl_mask &= ~(((1 << width) - 1) << lsb)
         return warl_mask
+
+    def readback_lines(bin_name: str, matched: list[tuple]) -> list[str]:
+        """
+        Readback + signature check for one walk iteration.  `matched` holds the WARL entries whose
+        value was written this iteration.  Unconditional entries always take the legality check;
+        gated entries branch on their gate define: exact check when it is defined (the value is
+        legal there), legality check otherwise.  With several distinct gates this nests, emitting
+        one branch per combination; only one branch is assembled for any given config.
+        """
+        uncond = [f for f in matched if len(f) == 4]
+        gates = list(dict.fromkeys(f[4] for f in matched if len(f) == 5))
+
+        def branch(name: str, reserved: list[tuple], remaining: list[str]) -> list[str]:
+            # Each branch needs a distinct testcase name: the debug-string symbols emitted by
+            # add_testcase are not confined to the preprocessor arm the testcase sits in.
+            if not remaining:
+                if not reserved:
+                    return [
+                        test_data.add_testcase(name, coverpoint, covergroup),
+                        gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
+                    ]
+                assert warl_mask_reg is not None
+                return _warl_reserved_check(
+                    test_data,
+                    csr_name,
+                    name,
+                    covergroup,
+                    coverpoint,
+                    reserved,
+                    check_reg,
+                    warl_mask_reg,
+                    warl_mask_for(reserved),
+                )
+            gate, rest = remaining[0], remaining[1:]
+            gated = [f for f in matched if len(f) == 5 and f[4] == gate]
+            gated_names = ", ".join(f[0].upper() for f in gated)
+            return [
+                f"#ifdef {gate}",
+                *branch(name, reserved, rest),
+                f"#else // no {gate}: the value written to {gated_names} is reserved",
+                *branch(f"{name}_no{gate.lower()}", reserved + gated, rest),
+                f"#endif // {gate}",
+            ]
+
+        return branch(bin_name, uncond, gates)
 
     lines = [
         "",
@@ -292,29 +344,7 @@ def csr_walk_test(
             lines.append(f"csrs {csr_name}, x{check_reg}     # set walking 1 in column {i}")
         else:
             lines.append(f"csrs {csr_name}, x{walk_reg}     # set walking 1 in column {i}")
-        reserved_fields = reserved_fields_written(i, walking_ones=True)
-        if reserved_fields:
-            assert warl_mask_reg is not None
-            lines.extend(
-                _warl_reserved_check(
-                    test_data,
-                    csr_name,
-                    f"{csr_name}_set_bit_{i}",
-                    covergroup,
-                    coverpoint,
-                    reserved_fields,
-                    check_reg,
-                    warl_mask_reg,
-                    warl_mask_for(reserved_fields),
-                )
-            )
-        else:
-            lines.extend(
-                [
-                    test_data.add_testcase(f"{csr_name}_set_bit_{i}", coverpoint, covergroup),
-                    gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
-                ]
-            )
+        lines.extend(readback_lines(f"{csr_name}_set_bit_{i}", reserved_fields_written(i, walking_ones=True)))
         lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
     if need_endif:
         lines.append("#endif\n")
@@ -335,29 +365,7 @@ def csr_walk_test(
                 lines.append(f"csrc {csr_name}, x{check_reg}     # clear walking 0 in column {i}")
             else:
                 lines.append(f"csrc {csr_name}, x{walk_reg}     # clear walking 0 in column {i}")
-            reserved_fields = reserved_fields_written(i, walking_ones=False)
-            if reserved_fields:
-                assert warl_mask_reg is not None
-                lines.extend(
-                    _warl_reserved_check(
-                        test_data,
-                        csr_name,
-                        f"{csr_name}_clr_bit_{i}",
-                        covergroup,
-                        coverpoint,
-                        reserved_fields,
-                        check_reg,
-                        warl_mask_reg,
-                        warl_mask_for(reserved_fields),
-                    )
-                )
-            else:
-                lines.extend(
-                    [
-                        test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
-                        gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
-                    ]
-                )
+            lines.extend(readback_lines(f"{csr_name}_clr_bit_{i}", reserved_fields_written(i, walking_ones=False)))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
         if need_endif:
             lines.append("#endif\n")

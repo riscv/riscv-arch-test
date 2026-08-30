@@ -226,9 +226,9 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
 
     # MPP selects the mode mret returns to; the S and U cases only exist when those modes do
     mpp_guard = {3: None, 1: "S_SUPPORTED", 0: "U_SUPPORTED"}
-    for mpp in (3, 1, 0):
-        if mpp_guard[mpp]:
-            lines.append(f"#ifdef {mpp_guard[mpp]}")
+    for mpp, guard in mpp_guard.items():
+        if guard:
+            lines.append(f"#ifdef {guard}")
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -256,8 +256,8 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                         ]
                     )
-        if mpp_guard[mpp]:
-            lines.append(f"#endif // {mpp_guard[mpp]}")
+        if guard:
+            lines.append(f"#endif // {guard}")
 
     lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -324,13 +324,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_sret_s_tests(test_data: TestData) -> list[str]:
-    """
-    Generate sret from S-mode with spp, spie, sie, tsr sweep (cp_sret_s).
-
-    Moved here from the S suite: it needs M-mode to set mstatus.TSR and to turn off medeleg
-    delegation of illegal instructions, so it runs in the Sm suite, gated on S_SUPPORTED.
-    Starts and ends in M-mode.
-    """
+    """Generate sret from S-mode with spp, spie, sie, tsr sweep (cp_sret_s)."""
     ######################################
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_sret_s"
@@ -348,8 +342,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"csrr x{save_reg}, sstatus        # read and save sstatus",
-        f"LI(x{reg1}, 1 << 2)",
-        f"csrc medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
+        "csrci medeleg, 1 << 2          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with sstatus except SPP, SPIE, SIE cleared",
         f"LI(x{reg2}, 0x122)          # x{reg2} has all SPP, SPIE, SIE bits set (bits [8], [5], [1] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but SPP, SPIE, SIE bits set",
@@ -394,7 +387,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
                             f"addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "RVTEST_TSBI_GOTO_SMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
+                            "RVTEST_TSBI_GOTO_SMODE      # We might be coming from U-mode",
                             # Test sstatus was updated properly, masked the same way as the S suite's cp_sret_s.
                             # x{reg3} is free again (sepc consumed it); split the load because the mask has bits above 31.
                             "#if __riscv_xlen == 64",
@@ -410,8 +403,7 @@ def _generate_sret_s_tests(test_data: TestData) -> list[str]:
         [
             f"\ncsrw sstatus, x{save_reg}    # restore CSR",
             "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to touch medeleg",
-            f"LI(x{reg1}, 1 << 2)",
-            f"csrs medeleg, x{reg1}           # restore delegating illegal instructions",
+            "csrsi medeleg, 1 << 2          # restore delegating illegal instructions",
         ]
     )
     lines.append("#endif // S_SUPPORTED")
@@ -638,7 +630,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc = test_data.new_test_chunk(test_chunks)
-    warl_fields = [("mpp", 11, 2, 0b10)]
+    # MPP: 0b10 is always reserved; 0b01 (S-mode) is only legal when the config has S-mode
+    warl_fields = [("mpp", 11, 2, 0b10), ("mpp", 11, 2, 0b01, "S_SUPPORTED")]
     tc.code.extend(
         csr_walk_test(
             test_data,
@@ -1340,7 +1333,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             "#endif",
             test_data.add_testcase("mtime_wrap", coverpoint, covergroup),
             f"SREG x{r_val}, 0(x{r_temp})          # write all-ones to the base word; arms the counter",
-            f"LI(x{r_counter}, 1000)                # Wait loop for counter ticks",
+            f"LI(x{r_counter}, RVMODEL_MAX_CYCLES_PER_TIMER_TICK * 2) # Wait loop for two timer ticks",
             "1:",
             "nop",
             f"addi x{r_counter}, x{r_counter}, -1",
@@ -1367,7 +1360,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Sm",
     required_extensions=["Sm"],
-    testcases_per_file=512,  # split tests for runtime
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""

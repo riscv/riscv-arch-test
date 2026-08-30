@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Helpers shared only by vector coverpoint generators."""
 
-from __future__ import annotations
-
 import re
 
 from testgen.constants import VLEN_MAX

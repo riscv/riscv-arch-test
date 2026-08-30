@@ -5,10 +5,9 @@
 
 # Remaining exclusions are CVW/Sail behavior mismatches under the current configs.
 # Sv: https://github.com/openhwgroup/cvw/issues/1766
-# Svpbmt: unknown
 # ExceptionsSvZalrsc: Wally should produce access fault rather than misaligned fault on misaligned LRSC. https://github.com/openhwgroup/cvw/issues/1809
 ci_enabled: true
-exclude_extensions: "ExceptionsSvZalrsc,Sv,Svpbmt"
+exclude_extensions: "ExceptionsSvZalrsc,Sv"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

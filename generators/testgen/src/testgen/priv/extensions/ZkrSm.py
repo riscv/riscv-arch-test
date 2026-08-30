@@ -23,6 +23,7 @@ _CG = "ZkrSm_cg"
 @add_priv_test_generator(
     "ZkrSm",
     required_extensions=["Zkr", "Sm"],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zkrsm(test_data: TestData) -> list[TestChunk]:
     """Generate the Zkr seed tests in M-mode."""

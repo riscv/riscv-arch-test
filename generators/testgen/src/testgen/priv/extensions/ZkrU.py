@@ -23,7 +23,6 @@ _CG = "ZkrU_cg"
 @add_priv_test_generator(
     "ZkrU",
     required_extensions=["Zkr", "U"],
-    extra_defines=["#define BOOT_TO_UMODE"],
 )
 def make_zkru(test_data: TestData) -> list[TestChunk]:
     """Generate the Zkr seed tests in U-mode."""

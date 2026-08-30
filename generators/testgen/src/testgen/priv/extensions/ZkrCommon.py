@@ -2,15 +2,10 @@
 # priv/extensions/ZkrCommon.py
 #
 # Shared generators for the ZkrSm / ZkrS / ZkrU seed CSR test suites.
-# Split from Zkr.py (jgong@hmc.edu Apr 2026) into per-mode suites.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Shared Zkr seed-CSR test generators, parameterized by the privilege mode the suite runs in.
-
-Each suite boots directly into its mode (T-SBI boot defines) and never changes mode; the M-mode
-mseccfg accesses are performed with tsbi_call from S/U-mode and directly from M-mode.
-"""
+"""Shared Zkr seed-CSR test generators, parameterized by the privilege mode the suite runs in."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call

@@ -1,5 +1,5 @@
 // rvtest_pmp_macros.h
-// PMP R/W/X verification macros for the PMP test suite (tests/priv/pmp/...).
+// PMP R/W/X verification macros for the PMP test suites.
 // SPDX-License-Identifier: Apache-2.0
 //
 // Shared, centralized versions of the per-test PMP_VERIFICATION_* macros. Each macro

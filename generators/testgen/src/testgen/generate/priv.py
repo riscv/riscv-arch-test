@@ -16,15 +16,8 @@ from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.data.test_chunk import group_test_chunks
 from testgen.io.writer import write_test_file
-from testgen.priv import (
-    get_priv_test_defines,
-    get_priv_test_generator,
-    get_priv_test_march_extensions,
-    get_priv_test_params,
-    get_priv_test_required_extensions,
-    get_priv_test_testcases_per_file,
-)
-from testgen.priv.pmp import is_pmp_suite, write_pmp_suite
+from testgen.priv import get_priv_test_generators
+from testgen.priv.registry import PrivTestRegistryEntry
 
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
@@ -37,25 +30,33 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
-    if is_pmp_suite(testsuite):
-        # Pure PMP suites render to tests/priv/pmp/pmp{32,64}/<suite>/.
-        write_pmp_suite(testsuite, output_test_dir)
-        return
+    next_file_indices: dict[tuple[int, str | None], int] = {}
+    for entry in get_priv_test_generators(testsuite):
+        for xlen in entry.xlens:
+            _generate_priv_test_entry(testsuite, output_test_dir, entry, xlen, next_file_indices)
 
-    output_path = output_test_dir / "priv" / testsuite
+
+def _generate_priv_test_entry(
+    testsuite: str,
+    output_test_dir: Path,
+    entry: PrivTestRegistryEntry,
+    xlen: int,
+    next_file_indices: dict[tuple[int, str | None], int],
+) -> None:
+    """Generate tests for one registry entry and XLEN."""
+    arch_dir = Path(f"rv{xlen}") if xlen else Path()
+    output_path = output_test_dir / "priv" / arch_dir / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 
     test_config = TestConfig(
-        xlen=0,
+        xlen=xlen,
         flen=64,
         testsuite=testsuite,
         E_ext=False,
-        required_extensions=get_priv_test_required_extensions(testsuite),
-        march_extensions=get_priv_test_march_extensions(testsuite),
-        extra_params=get_priv_test_params(testsuite),
+        required_extensions=entry.required_extensions,
+        march_extensions=entry.march_extensions,
+        extra_params=entry.params,
     )
-    extra_defines = [*get_priv_test_defines(testsuite)]
-
     test_data = TestData(test_config)
 
     # Reserve registers for priv tests:
@@ -64,19 +65,23 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     #   - x7 is clobbered in rtn_fm_mmode in rvtest_trap_handler.h  Might be freed up if this is redesigned.
     #   - x10, x11, x12 (a0/a1/a2): Used by T-SBI.
     #   - x16-x31: ensure the same test can be used for I or E bases
-
     priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
-    seed(reproducible_hash(testsuite))
+
+    seed_key = f"{testsuite}-{entry.generator.__name__}-{xlen}"
+    seed(reproducible_hash(seed_key))
 
     # Generate test chunks
-    priv_test_generator = get_priv_test_generator(testsuite)
-    chunks = priv_test_generator(test_data)
+    chunks = list(entry.generator(test_data))
 
     # Group by named split, split each group into test files, and write
-    for split_name, test_files in group_test_chunks(chunks, get_priv_test_testcases_per_file(testsuite)):
-        for file_idx, test_file_chunks in enumerate(test_files):
+    for split_name, test_files in group_test_chunks(chunks, entry.testcases_per_file):
+        file_key = (xlen, split_name)
+        first_file_idx = next_file_indices.get(file_key, 0)
+        for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
+            extra_defines = entry.extra_defines
             write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
+        next_file_indices[file_key] = first_file_idx + len(test_files)
 
     # Clean up (make sure all registers were returned)
     test_data.int_regs.return_registers(priv_exclude_regs)

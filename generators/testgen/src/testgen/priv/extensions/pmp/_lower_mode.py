@@ -56,10 +56,9 @@ U_MODE = Mode("U", "0")
 
 
 def _make_cfg_a_off_chunk(test_data: TestData, mode: Mode) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_A_off")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
         "",
@@ -136,14 +135,13 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
 
 
 def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"mprv_check-0{part}")
     xwr = "000" if part == 1 else "111"
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
-        f"#define PMPREGION_LXWR_0{xwr} {cfg_byte(f'0{xwr}', 'napot', cfg_shift(xlen, 0))}",
-        f"#define PMPREGION_LXWR_1{xwr} {cfg_byte(f'1{xwr}', 'napot', cfg_shift(xlen, 0))}",
+        f"#define PMPREGION_LXWR_0{xwr} {cfg_byte(f'0{xwr}', 'napot', cfg_shift(0))}",
+        f"#define PMPREGION_LXWR_1{xwr} {cfg_byte(f'1{xwr}', 'napot', cfg_shift(0))}",
         "#define MPRV       (1 << 17)",
         "#define MPP        (3 << 11)",
         f"#define MPP_LOWER  {mode.mpp}",
@@ -155,7 +153,7 @@ def _make_mprv_chunk(test_data: TestData, mode: Mode, part: int) -> TestChunk:
     ]
     n = 0
     for lock in (0, 1):
-        body.extend(["", *set_pmpaddr("napot", 0), *set_pmpcfg(xlen, 0, f"PMPREGION_LXWR_{lock}{xwr}")])
+        body.extend(["", *set_pmpaddr("napot", 0), *set_pmpcfg(0, f"PMPREGION_LXWR_{lock}{xwr}")])
         body.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         for mprv in (0, 1):
             n += 1

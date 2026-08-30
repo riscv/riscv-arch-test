@@ -16,7 +16,6 @@ from testgen.data.state import TestData
 
 _OFFSETS = ("address", "address-4", "address+4", "address+g-4", "address+g")
 _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "amominu", "amoswap")
-_RET_ENCODING = {32: "0x00008067", 64: "0x0000806700008067"}
 
 
 def gen_rwx(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
@@ -30,7 +29,7 @@ def gen_rwx(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
         "1:",
         write_sigupd(14, test_data),
         f"LA(a5, {region})",
-        f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
+        "LI(a4, RVTEST_PMP_RET_ENCODING)",
         test_data.add_testcase(f"{case}_2_sw", coverpoint, test_data.testsuite),
         "sw a4, 0(a5)",
         write_sigupd(14, test_data),
@@ -62,7 +61,7 @@ def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: str, bits: str) -> 
         "1:",
         write_sigupd(14, test_data),
         "LA(a5, TEST_FOR_EXECUTION)",
-        f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
+        "LI(a4, RVTEST_PMP_RET_ENCODING)",
         arm(bits),
         test_data.add_testcase(f"{case}_2_sw", coverpoint, test_data.testsuite),
         "sw a4, 0(a5)",
@@ -95,27 +94,26 @@ def gen_lw_bounds(test_data: TestData, case: str, coverpoint: str, region: str, 
 
 
 def gen_rwx_all(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    instructions = (
-        ("sb", "sh", "sw", "sd", "lb", "lbu", "lh", "lhu", "lw", "lwu", "ld")
-        if test_data.xlen == 64
-        else ("sb", "sh", "sw", "lb", "lbu", "lh", "lhu", "lw")
-    )
+    instructions = ("sb", "sh", "sw", "sd", "lb", "lbu", "lh", "lhu", "lw", "lwu", "ld")
     lines = [
         "",
         "// Execute probe",
         "RVTEST_FENCEI",
         f"LA(a4, {region})",
         "LA(ra, 1f)",
-        test_data.add_testcase(f"{case}_{len(instructions) + 1}_jalr", coverpoint, test_data.testsuite),
+        test_data.add_testcase(f"{case}_12_jalr", coverpoint, test_data.testsuite),
         "jalr x0, 0(a4)",
         "1:",
         write_sigupd(14, test_data),
         "",
         "// Load and store probes",
         f"LA(a5, {region})",
-        f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
+        "LI(a4, RVTEST_PMP_RET_ENCODING)",
     ]
     for number, instruction in enumerate(instructions, start=1):
+        rv64_only = instruction in ("sd", "lwu", "ld")
+        if rv64_only:
+            lines.append("#if __riscv_xlen == 64")
         lines.extend(
             [
                 test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
@@ -123,6 +121,8 @@ def gen_rwx_all(test_data: TestData, case: str, coverpoint: str, region: str = "
                 write_sigupd(14, test_data),
             ]
         )
+        if rv64_only:
+            lines.append("#endif")
     return lines
 
 
@@ -148,7 +148,7 @@ def gen_rwx_na4(test_data: TestData, case: str, coverpoint: str, region: str = "
                 write_sigupd(14, test_data),
             ]
         )
-    lines.extend([f"LA(a5, {region})", f"LI(a4, {_RET_ENCODING[test_data.xlen]})"])
+    lines.extend([f"LA(a5, {region})", "LI(a4, RVTEST_PMP_RET_ENCODING)"])
     probes = zip((0, 0, -4, 0, 8, 0), ("sw", "lw") * 3, (offset for offset in _OFFSETS[:3] for _ in range(2)))
     for number, (adjustment, instruction, offset) in enumerate(probes, start=4):
         if adjustment:
@@ -172,8 +172,8 @@ def gen_rwx_legal(test_data: TestData, case: str, coverpoint: str, region: str =
         "// Execute probes",
         f"LA(a4, {region})",
     ]
-    adjustments = (None, "addi a4, a4, -4", "addi a4, a4, 8", "add a4, a4, t0", "addi a4, a4, 4")
-    for number, (adjustment, offset) in enumerate(zip(adjustments, _OFFSETS, strict=True), start=1):
+    execute_adjustments = (None, "addi a4, a4, -4", "addi a4, a4, 8", "add a4, a4, t0", "addi a4, a4, 4")
+    for number, (adjustment, offset) in enumerate(zip(execute_adjustments, _OFFSETS, strict=True), start=1):
         if adjustment:
             lines.append(adjustment)
         lines.extend(
@@ -185,12 +185,13 @@ def gen_rwx_legal(test_data: TestData, case: str, coverpoint: str, region: str =
                 write_sigupd(14, test_data),
             ]
         )
+    data_adjustments = (None, "addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4")
     for instruction, first in (("sw", 6), ("lw", 11)):
         operation = "Store" if instruction == "sw" else "Load"
         lines.extend(["", f"// {operation} probes", f"LA(a5, {region})"])
         if instruction == "sw":
-            lines.append(f"LI(a4, {_RET_ENCODING[test_data.xlen]})")
-        for number, (adjustment, offset) in enumerate(zip(adjustments, _OFFSETS, strict=True), start=first):
+            lines.append("LI(a4, RVTEST_PMP_RET_ENCODING)")
+        for number, (adjustment, offset) in enumerate(zip(data_adjustments, _OFFSETS, strict=True), start=first):
             if adjustment:
                 lines.append(adjustment)
             lines.extend(
@@ -215,8 +216,7 @@ def gen_rwx_napot(test_data: TestData, case: str, coverpoint: str, region: str =
         *(f"lw_{offset}" for offset in _OFFSETS),
         *(f"jalr_{offset}" for offset in _OFFSETS),
     )
-    if test_data.xlen == 64:
-        names += ("sd_address", "ld_address", "lwu_address")
+    names += ("sd_address", "ld_address", "lwu_address")
     lines = [
         "",
         "RVTEST_FENCEI",
@@ -244,7 +244,7 @@ def gen_rwx_napot(test_data: TestData, case: str, coverpoint: str, region: str =
                 write_sigupd(14, test_data),
             ]
         )
-    lines.extend(["", "// Store probes", f"LA(a5, {region})", f"LI(a4, {_RET_ENCODING[test_data.xlen]})"])
+    lines.extend(["", "// Store probes", f"LA(a5, {region})", "LI(a4, RVTEST_PMP_RET_ENCODING)"])
     for number, (instruction, name) in enumerate(zip(("sb", "sh", "sw"), names[:3], strict=True), start=1):
         lines.extend(
             [
@@ -296,21 +296,22 @@ def gen_rwx_napot(test_data: TestData, case: str, coverpoint: str, region: str =
                 write_sigupd(14, test_data),
             ]
         )
-    if test_data.xlen == 64:
-        lines.extend(
-            [
-                f"LA(a5, {region})",
-                test_data.add_testcase(f"{case}_22_{names[21]}", coverpoint, test_data.testsuite),
-                "sd a4, 0(a5)",
-                write_sigupd(14, test_data),
-                test_data.add_testcase(f"{case}_23_{names[22]}", coverpoint, test_data.testsuite),
-                "ld a4, 0(a5)",
-                write_sigupd(14, test_data),
-                test_data.add_testcase(f"{case}_24_{names[23]}", coverpoint, test_data.testsuite),
-                "lwu a4, 0(a5)",
-                write_sigupd(14, test_data),
-            ]
-        )
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"LA(a5, {region})",
+            test_data.add_testcase(f"{case}_22_{names[21]}", coverpoint, test_data.testsuite),
+            "sd a4, 0(a5)",
+            write_sigupd(14, test_data),
+            test_data.add_testcase(f"{case}_23_{names[22]}", coverpoint, test_data.testsuite),
+            "ld a4, 0(a5)",
+            write_sigupd(14, test_data),
+            test_data.add_testcase(f"{case}_24_{names[23]}", coverpoint, test_data.testsuite),
+            "lwu a4, 0(a5)",
+            write_sigupd(14, test_data),
+            "#endif",
+        ]
+    )
     return lines
 
 
@@ -323,7 +324,7 @@ def gen_rwx_tor_bot(test_data: TestData, case: str, coverpoint: str, region: str
         "",
         "// Store probes",
         f"LA(a5, {region})",
-        f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
+        "LI(a4, RVTEST_PMP_RET_ENCODING)",
     ]
     adjustments = (
         "addi a5, a5, -4",
@@ -365,7 +366,7 @@ def gen_rwx_tor_zero(test_data: TestData, case: str, coverpoint: str, region: st
         "",
         "// Store probes",
         f"LA(a5, {region})",
-        f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
+        "LI(a4, RVTEST_PMP_RET_ENCODING)",
         test_data.add_testcase(f"{case}_1_sw_top", coverpoint, test_data.testsuite),
         "sw a4, 0(a5)",
         write_sigupd(14, test_data),
@@ -441,9 +442,11 @@ def gen_float(test_data: TestData, case: str, coverpoint: str, region: str = "TE
 
 
 def gen_amo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    operations = tuple((amo, width) for amo in _AMOS for width in (("w", "d") if test_data.xlen == 64 else ("w",)))
-    lines = ["", f"LI(a6, {_RET_ENCODING[test_data.xlen]})", f"LA(a5, {region})"]
+    operations = tuple((amo, width) for amo in _AMOS for width in ("w", "d"))
+    lines = ["", "LI(a6, RVTEST_PMP_RET_ENCODING)", f"LA(a5, {region})"]
     for number, (operation, width) in enumerate(operations, start=1):
+        if width == "d":
+            lines.append("#if __riscv_xlen == 64")
         lines.append(
             "\n".join(
                 [
@@ -453,17 +456,21 @@ def gen_amo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
                 ]
             )
         )
+        if width == "d":
+            lines.append("#endif")
     return lines
 
 
 def gen_lrsc(
     test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION", *, retry: bool = False
 ) -> list[str]:
-    widths = ("w", "d") if test_data.xlen == 64 else ("w",)
+    widths = ("w", "d")
     lines = ["", f"LA(a5, {region})"]
     for offset, width in enumerate(widths):
         lr_testcase = f"{case}_{2 * offset + 1}_lr_{width}"
         sc_testcase = f"{case}_{2 * offset + 2}_sc_{width}"
+        if width == "d":
+            lines.append("#if __riscv_xlen == 64")
         if retry:
             tag = f"{case}_{width}"
             lines.extend(
@@ -500,6 +507,8 @@ def gen_lrsc(
                     ]
                 )
             )
+        if width == "d":
+            lines.append("#endif")
     return lines
 
 
@@ -591,23 +600,18 @@ def gen_zca(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
         test_data.add_testcase(f"{case}_2_c.lw", coverpoint, test_data.testsuite),
         "c.lw x15, 0(x8)",
         write_sigupd(15, test_data),
-        _compressed_sp_probes(
-            test_data, case, coverpoint, 6 if test_data.xlen == 64 else 4, "c.swsp", "c.lwsp", "x15", 15
-        ),
+        _compressed_sp_probes(test_data, case, coverpoint, 6, "c.swsp", "c.lwsp", "x15", 15),
+        "#if __riscv_xlen == 64",
+        "LI(x15, 0x0001000100010001)",
+        test_data.add_testcase(f"{case}_4_c.sd", coverpoint, test_data.testsuite),
+        "c.sd x15, 0(x8)",
+        write_sigupd(15, test_data),
+        test_data.add_testcase(f"{case}_5_c.ld", coverpoint, test_data.testsuite),
+        "c.ld x15, 0(x8)",
+        write_sigupd(15, test_data),
+        _compressed_sp_probes(test_data, case, coverpoint, 8, "c.sdsp", "c.ldsp", "x15", 15),
+        "#endif",
     ]
-    if test_data.xlen == 64:
-        lines.extend(
-            [
-                "LI(x15, 0x0001000100010001)",
-                test_data.add_testcase(f"{case}_4_c.sd", coverpoint, test_data.testsuite),
-                "c.sd x15, 0(x8)",
-                write_sigupd(15, test_data),
-                test_data.add_testcase(f"{case}_5_c.ld", coverpoint, test_data.testsuite),
-                "c.ld x15, 0(x8)",
-                write_sigupd(15, test_data),
-                _compressed_sp_probes(test_data, case, coverpoint, 8, "c.sdsp", "c.ldsp", "x15", 15),
-            ]
-        )
     return lines
 
 

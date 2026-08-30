@@ -17,14 +17,14 @@ from testgen.priv.extensions.pmp.probes import ProbeGenerator
 #####################################################################
 
 
-def zero_pmp_regs(xlen: int) -> list[str]:
+def zero_pmp_regs() -> list[str]:
     """Clear every implemented pmpcfg and pmpaddr CSR."""
     return [
         "// Clear every pmpcfg and pmpaddr CSR",
         ".set pmpcfgi, CSR_PMPCFG0",
-        f".rept UDB_NUM_PMP_ENTRIES / {xlen // 8}",
+        ".rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)",
         "csrw pmpcfgi, x0",
-        f".set pmpcfgi, pmpcfgi + {xlen // 32}",
+        ".set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)",
         ".endr",
         ".set pmpaddri, CSR_PMPADDR0",
         ".rept UDB_NUM_PMP_ENTRIES",
@@ -34,14 +34,9 @@ def zero_pmp_regs(xlen: int) -> list[str]:
     ]
 
 
-def cfg_csr(xlen: int, entry: int) -> str:
-    """Name of the pmpcfg CSR holding ``entry``'s configuration byte."""
-    return f"pmpcfg{(entry // (xlen // 8)) * (xlen // 32)}"
-
-
-def cfg_shift(xlen: int, entry: int) -> str:
-    """Name of the shift constant placing ``entry``'s byte inside its pmpcfg CSR."""
-    return f"PMP{entry % (xlen // 8)}_CFG_SHIFT"
+def cfg_shift(entry: int) -> str:
+    """Name of the XLEN-aware shift for ``entry`` inside its pmpcfg CSR."""
+    return f"PMP{entry}_CFG_SHIFT"
 
 
 _AMODE_CONST = {"off": None, "na4": "PMP_NA4", "napot": "PMP_NAPOT", "tor": "PMP_TOR"}
@@ -100,9 +95,24 @@ def set_pmpaddr(amode: str, entry: int, region: str = "REGIONSTART") -> list[str
     return lines
 
 
-def set_pmpcfg(xlen: int, entry: int, value: str) -> list[str]:
-    """Write ``value`` (a full CSR value) to the pmpcfg CSR holding ``entry``."""
-    return [f"LI(x4, {value})", f"csrw {cfg_csr(xlen, entry)}, x4"]
+def set_pmpcfg(entry: int, value: str) -> list[str]:
+    """Write ``value`` in the pmpcfg CSR that contains ``entry``."""
+    rv32_csr = entry // 4
+    rv64_csr = (entry // 8) * 2
+    lines = [f"LI(x4, {value})"]
+    if rv32_csr == rv64_csr:
+        lines.append(f"csrw pmpcfg{rv32_csr}, x4")
+    else:
+        lines.extend(
+            [
+                "#if __riscv_xlen == 32",
+                f"csrw pmpcfg{rv32_csr}, x4",
+                "#else",
+                f"csrw pmpcfg{rv64_csr}, x4",
+                "#endif",
+            ]
+        )
+    return lines
 
 
 #: The six legal (L=1) LXWR encodings, each parked in its own PMP entry so that the
@@ -138,11 +148,8 @@ def lxwr_walk_body(
     """Walk LXWR encodings against one region: clear the PMPs, define one
     ``PMPREGION_LXWR_*`` per case, set the background, then configure and probe each
     case. ``probe_generator`` emits and registers the access probes."""
-    xlen = test_data.xlen
-    defines = [
-        f"#define PMPREGION_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(xlen, entry))}" for lxwr, entry in cases
-    ]
-    lines = [*zero_pmp_regs(xlen), "", *defines, "", "#define REGIONSTART TEST_FOR_EXECUTION"]
+    defines = [f"#define PMPREGION_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(entry))}" for lxwr, entry in cases]
+    lines = [*zero_pmp_regs(), "", *defines, "", "#define REGIONSTART TEST_FOR_EXECUTION"]
     if amode == "napot":
         lines.extend(napot_mask)
     lines.extend(["", "RVTEST_PMP_SET_BACKGROUND x4"])
@@ -152,7 +159,7 @@ def lxwr_walk_body(
         permission = _LXWR_PERM_NAMES[lxwr[1:]]
         lines.extend(["", f"// PMP configuration {n}: L = {lxwr[0]}, {permission} permissions, entry {entry}"])
         lines.extend(set_pmpaddr(amode, entry))
-        lines.extend(set_pmpcfg(xlen, entry, f"PMPREGION_LXWR_{lxwr}"))
+        lines.extend(set_pmpcfg(entry, f"PMPREGION_LXWR_{lxwr}"))
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         if lower_mode:
             lines.append(f"RVTEST_TSBI_GOTO_{lower_mode}MODE")
@@ -176,11 +183,10 @@ def entry_walk(
     case_prefix: str = "entry",
 ) -> list[str]:
     """Program ``entries`` one at a time with ``cfg(entry)`` at REGIONSTART and probe each."""
-    xlen = test_data.xlen
     lines = []
     for n, entry in enumerate(entries, start=first):
         lines.extend(["", f"// PMP configuration {n}: entry {entry}", *set_pmpaddr(amode, entry)])
-        lines.extend(set_pmpcfg(xlen, entry, cfg(entry)))
+        lines.extend(set_pmpcfg(entry, cfg(entry)))
         lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
         lines.extend(probe_generator(test_data, f"{case_prefix}{entry}", coverpoint, region))
     return lines

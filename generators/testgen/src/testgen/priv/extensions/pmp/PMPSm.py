@@ -19,7 +19,6 @@ from testgen.priv.extensions.pmp.helpers import (
     TOR_ENTRIES,
     TOR_REGION_WORDS,
     cfg_byte,
-    cfg_csr,
     cfg_shift,
     entry_walk,
     lxwr_walk_body,
@@ -46,36 +45,45 @@ from testgen.priv.registry import add_priv_test_generator
 _MAX_PMP_ENTRIES = 64
 
 
-def _csr_walk(xlen: int, value: str, label: str) -> list[str]:
+def _packed_pmpcfg_writes(values: list[str], xlen: int) -> list[str]:
+    """Pack entry values into the legal pmpcfg CSRs for one XLEN."""
+    entries_per_csr = xlen // 8
+    csr_step = xlen // 32
+    lines = []
+    for base in range(0, len(values), entries_per_csr):
+        packed = "|".join(values[base : base + entries_per_csr])
+        lines.extend([f"LI(x4, ({packed}))", f"csrw pmpcfg{(base // entries_per_csr) * csr_step}, x4"])
+    return lines
+
+
+def _csr_walk(value: str, label: str) -> list[str]:
     """Write ``value`` to every implemented pmpcfg CSR and check the readback."""
     return [
         ".set pmpcfgi, CSR_PMPCFG0",
-        f".rept UDB_NUM_PMP_ENTRIES/{xlen // 8}",
+        ".rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)",
         f"1:  LI(t2, {value})",
         f"RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, {label}_str)",
-        f".set pmpcfgi, pmpcfgi+{(xlen // 32)}",
+        ".set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)",
         ".endr",
     ]
 
 
 def _make_zero_walk_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("pmpcfg_walk_01")
     chunk.section_header = comment_banner("cp_pmpcfg_walk", "Write zero to every pmpcfg CSR and check the readback.")
     chunk.code.extend(
         [
             test_data.add_testcase("zero", "cp_pmpcfg_walk", "PMPSm"),
             "// Write zero to every pmpcfg CSR",
-            *_csr_walk(xlen, "0", test_data.current_testcase_label),
+            *_csr_walk("0", test_data.current_testcase_label),
         ]
     )
-    chunk.sigupd_count = _MAX_PMP_ENTRIES // (xlen // 8)
+    chunk.sigupd_count = _MAX_PMP_ENTRIES // 4
     return test_data.end_test_chunk()
 
 
 def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> TestChunk:
     """Walk a one through the legal bits of configuration byte ``byte`` of every pmpcfg CSR."""
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"pmpcfg_walk_{number:02d}")
     chunk.section_header = comment_banner(
         "cp_pmpcfg_walk",
@@ -92,11 +100,11 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
             [
                 test_data.add_testcase(f"bit{bit}", "cp_pmpcfg_walk", "PMPSm"),
                 f"// Write 1 << {bit} to every pmpcfg CSR",
-                *_csr_walk(xlen, f"1 << {bit}", test_data.current_testcase_label),
+                *_csr_walk(f"1 << {bit}", test_data.current_testcase_label),
             ]
         )
         cases += 1
-    chunk.sigupd_count = cases * (_MAX_PMP_ENTRIES // (xlen // 8))
+    chunk.sigupd_count = cases * (_MAX_PMP_ENTRIES // 4)
     return test_data.end_test_chunk()
 
 
@@ -114,29 +122,43 @@ _ENTRIES = tuple(range(14, -1, -1))
 
 
 def _make_a_all_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_A_all")
     chunk.section_header = comment_banner(
         "cp_cfg_A_all", "Write A = NA4, NAPOT, TOR and OFF into every byte of every pmpcfg CSR and read it back."
     )
-    csrs = [i * (xlen // 32) for i in range(16 // (xlen // 32))]
-    present = 16 // (xlen // 8)
-    chunk.code.extend([*zero_pmp_regs(xlen), "", "RVTEST_PMP_SET_BACKGROUND x4"])
-    for name, const in (("NA4", "PMP_NA4"), ("NAPOT", "PMP_NAPOT"), ("TOR", "PMP_TOR"), ("OFF", None)):
-        chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
-        if const:
-            bytes_ = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(xlen // 8))
-            chunk.code.append(f"LI(x4, {bytes_})")
-        for i, csr in enumerate(csrs):
-            if i == present:
-                chunk.code.append(".if UDB_NUM_PMP_ENTRIES == 64")
+    chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
+
+    def add_csr_checks(name: str, const: str | None, csrs: tuple[int, ...]) -> None:
+        for csr in csrs:
             chunk.code.extend(
                 [
-                    f"{test_data.add_testcase(f'{name}_pmpcfg{csr}', 'cp_cfg_A_all', 'PMPSm')}",
+                    test_data.add_testcase(f"{name}_pmpcfg{csr}", "cp_cfg_A_all", "PMPSm"),
                     gen_csr_write_sigupd(4 if const else 0, f"pmpcfg{csr}", test_data),
                 ]
             )
-        chunk.code.append(".endif")
+
+    for name, const in (("NA4", "PMP_NA4"), ("NAPOT", "PMP_NAPOT"), ("TOR", "PMP_TOR"), ("OFF", None)):
+        chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
+        if const:
+            rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
+            rv64_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(8))
+            chunk.code.extend(
+                [
+                    "#if __riscv_xlen == 64",
+                    f"LI(x4, {rv64_bytes})",
+                    "#else",
+                    f"LI(x4, {rv32_bytes})",
+                    "#endif",
+                ]
+            )
+        add_csr_checks(name, const, (0, 2))
+        chunk.code.append("#if __riscv_xlen == 32")
+        add_csr_checks(name, const, (1, 3))
+        chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64"])
+        add_csr_checks(name, const, (4, 6, 8, 10, 12, 14))
+        chunk.code.extend(["#endif", "#if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32"])
+        add_csr_checks(name, const, (5, 7, 9, 11, 13, 15))
+        chunk.code.append("#endif")
     return test_data.end_test_chunk()
 
 
@@ -146,10 +168,9 @@ def _make_a_all_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_a_off_all_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_A_off_all")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         "#define REGIONSTART TEST_FOR_EXECUTION",
         *NAPOT_MASK_DEFINES,
@@ -160,7 +181,7 @@ def _make_a_off_all_chunk(test_data: TestData) -> TestChunk:
             test_data,
             _ENTRIES,
             "napot",
-            lambda e: f"({cfg_byte('1000', 'off', '0')} << {cfg_shift(xlen, e)})",
+            lambda e: f"({cfg_byte('1000', 'off', '0')} << {cfg_shift(e)})",
             gen_rwx,
             "cp_cfg_A_off_all",
         ),
@@ -180,10 +201,9 @@ def _make_a_off_all_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_a_tor_bot_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_A_tor_bot")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         f"#define PMPREGION_UPPER_BOUND {cfg_byte('1101', 'tor', 'PMP1_CFG_SHIFT')}",
         f"#define PMPREGION_LOWER_BOUND {cfg_byte('1000', 'off', 'PMP0_CFG_SHIFT')}",
@@ -193,12 +213,12 @@ def _make_a_tor_bot_chunk(test_data: TestData) -> TestChunk:
         *set_pmpaddr("tor", 1, "TEST_FOR_EXECUTION"),
         "",
         "// PMP configuration 1: pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, unlocked",
-        *set_pmpcfg(xlen, 0, "PMPREGION_UPPER_BOUND"),
+        *set_pmpcfg(0, "PMPREGION_UPPER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_tor_bot(test_data, "unlocked", "cp_cfg_A_tor_bot"),
         "",
         "// PMP configuration 2: pmpcfg1 = L, TOR, XR; pmpcfg0 = OFF, locked",
-        *set_pmpcfg(xlen, 0, "PMPREGION_UPPER_BOUND|PMPREGION_LOWER_BOUND"),
+        *set_pmpcfg(0, "PMPREGION_UPPER_BOUND|PMPREGION_LOWER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_tor_bot(test_data, "locked", "cp_cfg_A_tor_bot"),
     ]
@@ -217,10 +237,9 @@ def _make_a_tor_bot_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_A_tor_zero")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         f"#define PMPREGION_TOR {cfg_byte('1111', 'tor', 'PMP0_CFG_SHIFT')}",
         "",
@@ -231,7 +250,7 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
         "csrw pmpaddr0, x5",
         "",
         "// PMP configuration 1: pmpcfg0 = L, TOR, XWR: region 0 spans [0, TEST_FOR_EXECUTION)",
-        *set_pmpcfg(xlen, 0, "PMPREGION_TOR"),
+        *set_pmpcfg(0, "PMPREGION_TOR"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_tor_zero(test_data, "region0", "cp_cfg_A_tor0"),
     ]
@@ -249,10 +268,9 @@ def _make_a_tor_zero_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_L_access_all")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         "#define REGIONSTART TEST_FOR_EXECUTION",
         *NAPOT_MASK_DEFINES,
@@ -266,7 +284,7 @@ def _make_l_access_all_chunk(test_data: TestData) -> TestChunk:
             test_data,
             _ENTRIES,
             "napot",
-            lambda e: f"({cfg_byte('0000', 'napot', '0')} << {cfg_shift(xlen, e)})",
+            lambda e: f"({cfg_byte('0000', 'napot', '0')} << {cfg_shift(e)})",
             gen_rwx,
             "cp_cfg_L_access_all",
         ),
@@ -297,14 +315,13 @@ _L_MODIFY_RESET = (("reset_pmpaddr0", "", "pmpaddr0", 0), ("reset_pmpcfg0", "", 
 
 
 def _make_l_modify_chunk(test_data: TestData, amode: str) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"cfg_L_modify_{amode}")
     chunk.section_header = comment_banner(
         "cp_cfg_L_modify",
         f"Write and read back pmpaddr1/pmpcfg0 with entry 1 = {amode.upper()}, L = {{0, 1}}: locked entries and, for TOR, "
         "the preceding pmpaddr reject writes.",
     )
-    chunk.code.extend([*zero_pmp_regs(xlen), "", "RVTEST_PMP_SET_BACKGROUND x4"])
+    chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
     for lock in (0, 1):
         chunk.code.extend(
             [
@@ -338,11 +355,10 @@ _XWR_ROLL = (
 
 
 def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"cfg_XWR_all-{part:02d}")
     codes = _XWR_ROLL[part - 1].split()
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         *(f"#define PMPREGION_XWR_{xwr} {cfg_byte(f'1{xwr}', 'napot', '0')}" for xwr in sorted(set(codes))),
         "#define REGIONSTART TEST_FOR_EXECUTION",
@@ -362,7 +378,7 @@ def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
     first = 15 * (part - 1) + 1
     for n, (entry, xwr) in enumerate(zip(_ENTRIES, codes, strict=True), start=first):
         body.extend(["", f"// PMP configuration {n}: L = 1 and XWR = {xwr} on PMP entry {entry}"])
-        body.extend(set_pmpcfg(xlen, entry, f"(PMPREGION_XWR_{xwr} << {cfg_shift(xlen, entry)})"))
+        body.extend(set_pmpcfg(entry, f"(PMPREGION_XWR_{xwr} << {cfg_shift(entry)})"))
         body.extend(["RVTEST_SFENCE_VMA_IF_SUPPORTED", *gen_rwx_all(test_data, f"entry{entry}_lxwr{xwr}", "cp_cfg_RW")])
     chunk.section_header = comment_banner(
         "cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all and cp_cfg_RW11_all",
@@ -379,11 +395,10 @@ def _make_xwr_all_chunk(test_data: TestData, part: int) -> TestChunk:
 
 
 def _make_amode_all_chunk(test_data: TestData, amode: str) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"cfg_{amode}_all")
     beyond = "4" if amode == "na4" else "PMP_NAPOT_REGION_BYTES"
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         "#define REGIONSTART TEST_FOR_EXECUTION",
         *(NAPOT_MASK_DEFINES if amode == "napot" else []),
@@ -396,7 +411,7 @@ def _make_amode_all_chunk(test_data: TestData, amode: str) -> TestChunk:
             test_data,
             _ENTRIES,
             amode,
-            lambda e: cfg_byte("1000", amode, cfg_shift(xlen, e)),
+            lambda e: cfg_byte("1000", amode, cfg_shift(e)),
             lambda data, case, coverpoint, region: gen_lw_bounds(data, case, coverpoint, region, beyond),
             f"cp_cfg_A_{amode}_all",
         )
@@ -416,16 +431,14 @@ def _make_amode_all_chunk(test_data: TestData, amode: str) -> TestChunk:
 
 
 def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("cfg_tor_all")
-    per = xlen // 8
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
-        f"#define DEFAULT_TOR_REGION {cfg_byte('1111', 'tor', 'PMP0_CFG_SHIFT')}",
         *(
-            f"#define PMPREGION{i}_XWR_{'001' if i % 2 else '000'} {cfg_byte('1001' if i % 2 else '1000', 'tor', f'PMP{i}_CFG_SHIFT')}"
-            for i in range(per)
+            f"#define PMPREGION{i}_XWR_{'111' if i == 0 else ('001' if i % 2 else '000')} "
+            f"{cfg_byte('1111' if i == 0 else ('1001' if i % 2 else '1000'), 'tor', cfg_shift(i))}"
+            for i in range(15)
         ),
         "",
         "RVTEST_PMP_SET_BACKGROUND x4",
@@ -440,11 +453,18 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
             "// PMP configuration 1: every region L = 1, A -> TOR, XWR = 00(i%2); lw at the start of each region",
         ]
     )
-    for csr_index in range(16 // per):
-        top = min(per, 15 - csr_index * per)
-        slots = [f"PMPREGION{i}_XWR_{'001' if i % 2 else '000'}" for i in range(top - 1, 0, -1)]
-        slots.append("DEFAULT_TOR_REGION" if csr_index == 0 else "PMPREGION0_XWR_000")
-        body.extend([f"LI(x4, ({'|'.join(slots)}))", f"csrw pmpcfg{csr_index * (xlen // 32)}, x4"])
+    cfg_values = [
+        f"PMPREGION{entry}_XWR_{'111' if entry == 0 else ('001' if entry % 2 else '000')}" for entry in range(15)
+    ]
+    body.extend(
+        [
+            "#if __riscv_xlen == 64",
+            *_packed_pmpcfg_writes(cfg_values, 64),
+            "#else",
+            *_packed_pmpcfg_writes(cfg_values, 32),
+            "#endif",
+        ]
+    )
     body.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
     for n in range(1, 16):
         body.extend(
@@ -491,11 +511,10 @@ _TOR_CHECK_CASES = (
 
 
 def _make_tor_check_chunk(test_data: TestData, part: int) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk(f"cfg_tor_check-{part:02d}")
     case, addr0 = _TOR_CHECK_CASES[part - 1]
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         f"#define PMPREGION_UPPER_BOUND {cfg_byte('1000', 'tor', 'PMP1_CFG_SHIFT')}",
         "",
@@ -507,7 +526,7 @@ def _make_tor_check_chunk(test_data: TestData, part: int) -> TestChunk:
         *addr0,
         "",
         f"// PMP configuration 1: pmpcfg1 = L, TOR, no permissions; {case}",
-        *set_pmpcfg(xlen, 0, "PMPREGION_UPPER_BOUND"),
+        *set_pmpcfg(0, "PMPREGION_UPPER_BOUND"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx_na4(test_data, f"non_overlap{part}", "cp_cfg_A_tor_non_overlap"),
     ]
@@ -526,7 +545,6 @@ def _make_tor_check_chunk(test_data: TestData, part: int) -> TestChunk:
 
 
 def _make_grain_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("grain")
     chunk.section_header = comment_banner(
         "cp_grain",
@@ -534,14 +552,18 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
     )
     chunk.code.extend(
         [
-            *zero_pmp_regs(xlen),
+            *zero_pmp_regs(),
             "",
             *(
                 f"#define PMPREGION_{mode} {cfg_byte('0111', mode.lower(), 'PMP0_CFG_SHIFT')}"
                 for mode in ("OFF", "NAPOT", "TOR")
             ),
             "#define PMP_GRAIN_MASK ((1 << (UDB_PMP_GRANULARITY - 2)) - 1)",
-            f"#define CHECKERBOARD 0x{'AA' * (xlen // 8)}",
+            "#if __riscv_xlen == 64",
+            "#define CHECKERBOARD 0xAAAAAAAAAAAAAAAA",
+            "#else",
+            "#define CHECKERBOARD 0xAAAAAAAA",
+            "#endif",
             "",
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
@@ -573,7 +595,6 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("grain_check")
     chunk.section_header = comment_banner(
         "cp_grain_check",
@@ -581,7 +602,7 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
     )
     chunk.code.extend(
         [
-            *zero_pmp_regs(xlen),
+            *zero_pmp_regs(),
             "",
             "#define PMP_GRAIN_CHECK_MASK ((1 << (UDB_PMP_GRANULARITY - 1)) - 1)",
             "",
@@ -665,13 +686,12 @@ _PRIORITY_CODES = ("1000", "1101", "1011", "1100", "1001", "1111", "1000")
 
 
 def _make_priority_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("priority")
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         *(
-            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, 'napot', cfg_shift(xlen, e))}"
+            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, 'napot', cfg_shift(e))}"
             for e, lxwr in enumerate(_PRIORITY_CODES)
         ),
         "",
@@ -691,9 +711,16 @@ def _make_priority_chunk(test_data: TestData) -> TestChunk:
         ".set pmpaddri, pmpaddri+1",
         ".endr",
     ]
-    for csr in sorted({cfg_csr(xlen, e) for e in range(7)}):
-        names = [f"PMPREGION{e}_LXWR_{lxwr}" for e, lxwr in enumerate(_PRIORITY_CODES) if cfg_csr(xlen, e) == csr]
-        body.extend([f"LI(x4, ({'|'.join(names)}))", f"csrw {csr}, x4"])
+    cfg_values = [f"PMPREGION{entry}_LXWR_{lxwr}" for entry, lxwr in enumerate(_PRIORITY_CODES)]
+    body.extend(
+        [
+            "#if __riscv_xlen == 64",
+            *_packed_pmpcfg_writes(cfg_values, 64),
+            "#else",
+            *_packed_pmpcfg_writes(cfg_values, 32),
+            "#endif",
+        ]
+    )
     body.extend(["RVTEST_SFENCE_VMA_IF_SUPPORTED"])
     for n, lxwr in enumerate(_PRIORITY_CODES, start=1):
         size = 1 << (n - 1)
@@ -731,14 +758,13 @@ def _make_priority_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_priority_off_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("priority_off")
     codes = (("1000", "off"), ("1101", "napot"), ("1000", "off"), ("1111", "napot"))
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         *(
-            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(xlen, e))}"
+            f"#define PMPREGION{e}_LXWR_{lxwr} {cfg_byte(lxwr, amode, cfg_shift(e))}"
             for e, (lxwr, amode) in enumerate(codes)
         ),
         "#define REGIONSTART TEST_FOR_EXECUTION",
@@ -753,7 +779,7 @@ def _make_priority_off_chunk(test_data: TestData) -> TestChunk:
         "csrw pmpaddr3, x5",
         "",
         "// PMP configuration 1: an OFF region does not match, and the first matching region takes priority",
-        *set_pmpcfg(xlen, 0, "|".join(f"PMPREGION{e}_LXWR_{lxwr}" for e, (lxwr, _) in enumerate(codes))),
+        *set_pmpcfg(0, "|".join(f"PMPREGION{e}_LXWR_{lxwr}" for e, (lxwr, _) in enumerate(codes))),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         *gen_rwx(test_data, "entry1", "cp_priority_off"),
     ]
@@ -772,14 +798,13 @@ def _make_priority_off_chunk(test_data: TestData) -> TestChunk:
 
 
 def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
-    xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("all_entries_check")
 
     def _all_entries_cfg(entry: int) -> str:
-        return f"(PMP_REGION_CFG << {cfg_shift(xlen, entry)})"
+        return f"(PMP_REGION_CFG << {cfg_shift(entry)})"
 
     body = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
         f"#define PMP_REGION_CFG {cfg_byte('1101', 'napot', '0')}",
         "#define REGIONSTART TEST_FOR_EXECUTION",
@@ -827,13 +852,11 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
-    xlen = test_data.xlen
-    chunks = [
+    return [
         _make_zero_walk_chunk(test_data),
-        *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(xlen // 8)),
+        *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4)),
         _make_a_all_chunk(test_data),
         _make_a_off_all_chunk(test_data),
         _make_l_access_all_chunk(test_data),
@@ -842,9 +865,19 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
         _make_grain_chunk(test_data),
         _make_grain_check_chunk(test_data),
     ]
-    if xlen == 64:
-        chunks.append(_make_pmpaddr_upper_chunk(test_data))
-    return chunks
+
+
+@add_priv_test_generator(
+    "PMPSm",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'"],
+)
+def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
+    return [
+        *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4, 8)),
+        _make_pmpaddr_upper_chunk(test_data),
+    ]
 
 
 @add_priv_test_generator(
@@ -852,7 +885,6 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
     return [_make_amode_all_chunk(test_data, "na4"), _make_legal_chunk(test_data, "na4")]
@@ -863,7 +895,6 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
     return [
@@ -881,7 +912,6 @@ def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
     return [

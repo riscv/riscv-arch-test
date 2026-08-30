@@ -30,26 +30,23 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
-    next_file_indices: dict[tuple[int, str | None], int] = {}
+    next_file_indices: dict[str | None, int] = {}
     for entry in get_priv_test_generators(testsuite):
-        for xlen in entry.xlens:
-            _generate_priv_test_entry(testsuite, output_test_dir, entry, xlen, next_file_indices)
+        _generate_priv_test_entry(testsuite, output_test_dir, entry, next_file_indices)
 
 
 def _generate_priv_test_entry(
     testsuite: str,
     output_test_dir: Path,
     entry: PrivTestRegistryEntry,
-    xlen: int,
-    next_file_indices: dict[tuple[int, str | None], int],
+    next_file_indices: dict[str | None, int],
 ) -> None:
-    """Generate tests for one registry entry and XLEN."""
-    arch_dir = Path(f"rv{xlen}") if xlen else Path()
-    output_path = output_test_dir / "priv" / arch_dir / testsuite
+    """Generate tests for one registry entry."""
+    output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 
     test_config = TestConfig(
-        xlen=xlen,
+        xlen=0,
         flen=64,
         testsuite=testsuite,
         E_ext=False,
@@ -68,7 +65,7 @@ def _generate_priv_test_entry(
     priv_exclude_regs = [0, 1, 7, 10, 11, 12, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
 
-    seed_key = f"{testsuite}-{entry.generator.__name__}-{xlen}"
+    seed_key = f"{testsuite}-{entry.generator.__name__}-0"
     seed(reproducible_hash(seed_key))
 
     # Generate test chunks
@@ -76,12 +73,11 @@ def _generate_priv_test_entry(
 
     # Group by named split, split each group into test files, and write
     for split_name, test_files in group_test_chunks(chunks, entry.testcases_per_file):
-        file_key = (xlen, split_name)
-        first_file_idx = next_file_indices.get(file_key, 0)
+        first_file_idx = next_file_indices.get(split_name, 0)
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
             extra_defines = entry.extra_defines
             write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
-        next_file_indices[file_key] = first_file_idx + len(test_files)
+        next_file_indices[split_name] = first_file_idx + len(test_files)
 
     # Clean up (make sure all registers were returned)
     test_data.int_regs.return_registers(priv_exclude_regs)

@@ -18,7 +18,6 @@ from testgen.priv.registry import add_priv_test_generator
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["U", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpu_base(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_base(test_data, U_MODE)
@@ -29,7 +28,6 @@ def make_pmpu_base(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["U", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpu_na4(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_amode(test_data, U_MODE, "na4")
@@ -40,7 +38,6 @@ def make_pmpu_na4(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["U", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpu_napot(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_amode(test_data, U_MODE, "napot")
@@ -51,7 +48,6 @@ def make_pmpu_napot(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["U", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpu_tor(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_amode(test_data, U_MODE, "tor")

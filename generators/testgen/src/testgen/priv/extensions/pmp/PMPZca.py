@@ -50,12 +50,11 @@ _REGION_BYTES = {
 
 
 def _cret_body(test_data: TestData, amode: str) -> list[str]:
-    xlen = test_data.xlen
     entry = 1 if amode == "tor" else 0
     lines = [
-        *zero_pmp_regs(xlen),
+        *zero_pmp_regs(),
         "",
-        f"#define PMPCFG {cfg_byte('1111', amode, cfg_shift(xlen, entry))}",
+        f"#define PMPCFG {cfg_byte('1111', amode, cfg_shift(entry))}",
         "#define REGIONSTART TEST_FOR_EXECUTION_1",
         *(NAPOT_MASK_DEFINES if amode == "napot" else []),
         "",
@@ -63,7 +62,7 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
         "",
         f"// PMP configuration: {amode.upper()} region with L = 1 and XWR = 111, c.ret just below, at the bottom, at the top and just above it",
         *set_pmpaddr(amode, entry),
-        *set_pmpcfg(xlen, entry, "PMPCFG"),
+        *set_pmpcfg(entry, "PMPCFG"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
     ]
     for n in range(4):
@@ -71,10 +70,14 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
     return lines
 
 
-def _cret_data(xlen: int, amode: str) -> list[str]:
+def _cret_data(amode: str) -> list[str]:
     """Four c.ret instructions: just below, at the start, at the top and just above the region."""
     lines = [
-        f".p2align {11 if xlen == 32 else 10}",
+        "#if __riscv_xlen == 32",
+        ".p2align 11",
+        "#else",
+        ".p2align 10",
+        "#endif",
         f".skip {'0x806' if amode == 'napot' else '0x802'}",
         "TEST_FOR_EXECUTION_0:",
         "ret",
@@ -97,7 +100,7 @@ Attempt jalr to each c.ret."""
     chunk = test_data.begin_test_chunk(f"cret_{amode}")
     chunk.section_header = comment_banner(f"cp_cret_{amode}", test_cases)
     chunk.code.extend(_cret_body(test_data, amode))
-    chunk.raw_data.extend(_cret_data(test_data.xlen, amode))
+    chunk.raw_data.extend(_cret_data(amode))
     return test_data.end_test_chunk()
 
 
@@ -109,12 +112,11 @@ Attempt jalr to each c.ret."""
 
 
 def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]:
-    xlen = test_data.xlen
     size = _REGION_BYTES[amode]
     entries = (1, 2, 3) if amode == "tor" else (0, 1, 2)
-    lines = [*zero_pmp_regs(xlen), ""]
+    lines = [*zero_pmp_regs(), ""]
     for entry, lxwr in zip(entries, ("1111", "1111", "1111" if amode == "off" else "1000"), strict=True):
-        lines.append(f"#define PMP{entry}CFG {cfg_byte(lxwr, amode, cfg_shift(xlen, entry))}")
+        lines.append(f"#define PMP{entry}CFG {cfg_byte(lxwr, amode, cfg_shift(entry))}")
     region = "TEST_FOR_EXECUTION_0" if (amode == "na4" and misaligned) else "TEST_FOR_EXECUTION_1"
     lines.extend(["", f"#define REGIONSTART {region}", f"#define REGION_SIZE {size}"])
     if amode == "napot":
@@ -135,7 +137,7 @@ def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]
         if amode == "napot":
             lines.extend(["LI(x6, PMP_MASK)", "and x5, x5, x6", "LI(x6, PMP_REGION_SIZE)", "or x5, x5, x6"])
         lines.append(f"csrw pmpaddr{entry}, x5")
-    lines.extend(set_pmpcfg(xlen, entries[0], "|".join(f"PMP{entry}CFG" for entry in entries)))
+    lines.extend(set_pmpcfg(entries[0], "|".join(f"PMP{entry}CFG" for entry in entries)))
     lines.append("RVTEST_SFENCE_VMA_IF_SUPPORTED")
     calls = (
         ["TEST_FOR_EXECUTION_2", "TEST_FOR_EXECUTION_4"]
@@ -273,7 +275,6 @@ def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzca_off(test_data: TestData) -> list[TestChunk]:
     return [_make_region_chunk(test_data, "off", misaligned) for misaligned in (False, True)]
@@ -284,7 +285,6 @@ def make_pmpzca_off(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpzca_na4(test_data: TestData) -> list[TestChunk]:
     return [
@@ -298,7 +298,6 @@ def make_pmpzca_na4(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpzca_napot(test_data: TestData) -> list[TestChunk]:
     return [
@@ -312,7 +311,6 @@ def make_pmpzca_napot(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzca_legal(test_data: TestData) -> list[TestChunk]:
     return [_make_legal_chunk(test_data)]
@@ -323,7 +321,6 @@ def make_pmpzca_legal(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
-    xlens=(32, 64),
 )
 def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
     return [
@@ -338,7 +335,6 @@ def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
     required_extensions=["Zcb", "Sm"],
     march_extensions=["Zca", "Zcb"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcb")]
@@ -350,7 +346,6 @@ def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
     required_extensions=["Zcd", "Sm"],
     march_extensions=["Zca", "Zcd"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcd")]
@@ -361,8 +356,7 @@ def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcf", "Sm"],
     march_extensions=["Zca", "Zcf"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=32,
+    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzca_zcf(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcf")]

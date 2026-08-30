@@ -11,7 +11,6 @@
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
 
 from testgen.constants import TESTCASES_PER_PRIV_FILE
 from testgen.data.state import TestData
@@ -19,9 +18,8 @@ from testgen.data.test_chunk import TestChunk
 from testgen.discovery import discover_and_import_modules
 from testgen.exceptions import MissingRegistryItemError
 
-# Type aliases for priv test generators and their supported XLENs
+# Type alias for privileged test generators
 PrivTestGenerator = Callable[[TestData], Sequence[TestChunk]]
-Xlen = Literal[0, 32, 64]
 
 
 class MissingPrivGeneratorError(MissingRegistryItemError):
@@ -48,7 +46,6 @@ class PrivTestRegistryEntry:
     march_extensions: list[str] | None = None
     params: list[str] | None = None
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE
-    xlens: tuple[Xlen, ...] = (0,)
 
 
 # Registry: dict mapping each testsuite name to one or more generator entries
@@ -63,7 +60,6 @@ def add_priv_test_generator(
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
-    xlens: Xlen | tuple[Literal[32], Literal[64]] = 0,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
@@ -84,15 +80,7 @@ def add_priv_test_generator(
         testcases_per_file: Optional max testcases per generated test file for this testsuite.
                             Defaults to TESTCASES_PER_PRIV_FILE. Individual test chunks are never
                             split, so a chunk larger than this still produces an oversized file.
-        xlens: XLEN values to generate. Valid values are 0, 32, 64, or (32, 64).
-               Zero generates one XLEN-independent suite.
     """
-    if xlens == (32, 64):
-        normalized_xlens = (32, 64)
-    elif xlens in (0, 32, 64):
-        normalized_xlens = (xlens,)
-    else:
-        raise ValueError(f"Invalid xlens {xlens!r}; expected 0, 32, 64, or (32, 64).")
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
         entry = PrivTestRegistryEntry(
@@ -102,7 +90,6 @@ def add_priv_test_generator(
             march_extensions=march_extensions,
             params=params,
             testcases_per_file=testcases_per_file,
-            xlens=normalized_xlens,
         )
         _PRIV_TEST_GENERATORS.setdefault(testsuite, []).append(entry)
         return func

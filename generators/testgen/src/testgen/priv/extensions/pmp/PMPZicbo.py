@@ -40,7 +40,6 @@ _PAGE_REGION = make_exec_region(("1024", "nop"), pad=None)
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm", "Zicbom", "Zicboz"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
     chunks = []
@@ -71,7 +70,6 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm", "Zicbop"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("prefetch")

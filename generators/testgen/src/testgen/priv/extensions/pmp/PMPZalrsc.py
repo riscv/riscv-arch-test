@@ -27,7 +27,6 @@ from testgen.priv.registry import add_priv_test_generator
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zalrsc", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
-    xlens=(32, 64),
 )
 def make_pmpzalrsc(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("cfg_wr")

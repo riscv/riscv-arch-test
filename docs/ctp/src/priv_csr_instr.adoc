@@ -85,7 +85,8 @@ include::norm/UF_norm_rules.adoc[]
 
 ==== Zkr Entropy CSR
 
-These test CSRs when the Zkr entropy extension is supported.
+These test CSRs when the Zkr entropy extension is supported.  The seed CSR tests run once per
+privilege mode: ZkrSm in M-mode, ZkrS in S-mode, and ZkrU in U-mode.
 
 [[t-Zkr-coverpoints]]
 .Zkr Coverpoints

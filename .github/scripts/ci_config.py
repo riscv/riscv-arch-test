@@ -28,8 +28,6 @@ Usage:
     .github/scripts/ci_config.py    # JSON matrix for GitHub Actions
 """
 
-from __future__ import annotations
-
 import hashlib
 import heapq
 import json

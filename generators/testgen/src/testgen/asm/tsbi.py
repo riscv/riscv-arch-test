@@ -8,8 +8,6 @@
 
 """Assembly generation helpers for test code."""
 
-from __future__ import annotations
-
 import re
 
 from testgen.constants import INDENT
@@ -113,6 +111,7 @@ _CSR_ALIASES = {
     "mcause": 0x342,
     "mip": 0x344,
     "menvcfg": 0x30A,
+    "mseccfg": 0x747,
     "menvcfgh": 0x31A,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,

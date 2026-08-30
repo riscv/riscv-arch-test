@@ -513,7 +513,7 @@ def gen_compressed_execute(test_data: TestData, case: str, coverpoint: str, regi
         f"LA(x15, {region})",
         test_data.add_testcase(f"{case}_1_c.jalr", coverpoint, test_data.testsuite),
         "c.jalr x15",
-        write_sigupd(14, test_data),
+        write_sigupd(1, test_data),
     ]
 
 
@@ -561,17 +561,15 @@ def _compressed_sp_probes(
         "addi sp, x8, 0",
         test_data.add_testcase(f"{case}_{first}_{store}", coverpoint, test_data.testsuite),
         f"{store} {data_reg}, 0(sp)",
+        "mv sp, t0",
+        write_sigupd(check_reg, test_data, sig_type),
+        "mv t0, sp",
+        "addi sp, x8, 0",
+        test_data.add_testcase(f"{case}_{first + 1}_{load}", coverpoint, test_data.testsuite),
+        f"{load} {data_reg}, 0(sp)",
+        "mv sp, t0",
+        write_sigupd(check_reg, test_data, sig_type),
     ]
-    store_sigupd = write_sigupd(check_reg, test_data, sig_type)
-    lines.extend(
-        [
-            test_data.add_testcase(f"{case}_{first + 1}_{load}", coverpoint, test_data.testsuite),
-            f"{load} {data_reg}, 0(sp)",
-            "mv sp, t0",
-            store_sigupd,
-            write_sigupd(check_reg, test_data, sig_type),
-        ]
-    )
     return "\n".join(lines)
 
 
@@ -584,7 +582,7 @@ def gen_zca(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
         test_data.add_testcase(f"{case}_3_c.jalr", coverpoint, test_data.testsuite),
         "c.jalr x15",
         "1:",
-        write_sigupd(14, test_data),
+        write_sigupd(1, test_data),
         "LI(x15, 0x00010001)",
         f"LA(x8, {region})",
         test_data.add_testcase(f"{case}_1_c.sw", coverpoint, test_data.testsuite),

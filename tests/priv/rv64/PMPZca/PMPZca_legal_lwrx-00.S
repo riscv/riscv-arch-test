@@ -83,8 +83,8 @@ RVTEST_BEGIN
 PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_jalr, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_jalr, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry5_lxwr1000_1_c_sw:
@@ -99,11 +99,14 @@ PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry5_lxwr1000_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_swsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry5_lxwr1000_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry5_lxwr1000_7_c_lwsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -119,11 +122,14 @@ PMPZca_cp_cfg_RW_entry5_lxwr1000_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry5_lxwr1000_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry5_lxwr1000_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry5_lxwr1000_8_c_sdsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry5_lxwr1000_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry5_lxwr1000_9_c_ldsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_9_c_ldsp_str)
 
@@ -145,8 +151,8 @@ PMPZca_cp_cfg_RW_entry5_lxwr1000_9_c_ldsp:
 PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_jalr, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_jalr, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry4_lxwr1001_1_c_sw:
@@ -161,11 +167,14 @@ PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry4_lxwr1001_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_swsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry4_lxwr1001_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry4_lxwr1001_7_c_lwsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -181,11 +190,14 @@ PMPZca_cp_cfg_RW_entry4_lxwr1001_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry4_lxwr1001_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry4_lxwr1001_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry4_lxwr1001_8_c_sdsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry4_lxwr1001_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry4_lxwr1001_9_c_ldsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_9_c_ldsp_str)
 
@@ -207,8 +219,8 @@ PMPZca_cp_cfg_RW_entry4_lxwr1001_9_c_ldsp:
 PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_jalr, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_jalr, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry3_lxwr1011_1_c_sw:
@@ -223,11 +235,14 @@ PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry3_lxwr1011_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_swsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry3_lxwr1011_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry3_lxwr1011_7_c_lwsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -243,11 +258,14 @@ PMPZca_cp_cfg_RW_entry3_lxwr1011_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry3_lxwr1011_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry3_lxwr1011_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry3_lxwr1011_8_c_sdsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry3_lxwr1011_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry3_lxwr1011_9_c_ldsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_9_c_ldsp_str)
 
@@ -269,8 +287,8 @@ PMPZca_cp_cfg_RW_entry3_lxwr1011_9_c_ldsp:
 PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_jalr, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_jalr, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry2_lxwr1100_1_c_sw:
@@ -285,11 +303,14 @@ PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry2_lxwr1100_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_swsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry2_lxwr1100_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry2_lxwr1100_7_c_lwsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -305,11 +326,14 @@ PMPZca_cp_cfg_RW_entry2_lxwr1100_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry2_lxwr1100_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry2_lxwr1100_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry2_lxwr1100_8_c_sdsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry2_lxwr1100_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry2_lxwr1100_9_c_ldsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_9_c_ldsp_str)
 
@@ -331,8 +355,8 @@ PMPZca_cp_cfg_RW_entry2_lxwr1100_9_c_ldsp:
 PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_jalr, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_jalr, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry1_lxwr1101_1_c_sw:
@@ -347,11 +371,14 @@ PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry1_lxwr1101_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_swsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry1_lxwr1101_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry1_lxwr1101_7_c_lwsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -367,11 +394,14 @@ PMPZca_cp_cfg_RW_entry1_lxwr1101_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry1_lxwr1101_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry1_lxwr1101_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry1_lxwr1101_8_c_sdsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry1_lxwr1101_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry1_lxwr1101_9_c_ldsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_9_c_ldsp_str)
 
@@ -393,8 +423,8 @@ PMPZca_cp_cfg_RW_entry1_lxwr1101_9_c_ldsp:
 PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_jalr:
   c.jalr x15
 1:
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_jalr, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_jalr, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_jalr_str)
   LI(x15, 0x00010001)
   LA(x8, TEST_FOR_EXECUTION)
 PMPZca_cp_cfg_RW_entry0_lxwr1111_1_c_sw:
@@ -409,11 +439,14 @@ PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_lw:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_swsp:
   c.swsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry0_lxwr1111_7_c_lwsp:
-  c.lwsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_swsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_6_c_swsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry0_lxwr1111_7_c_lwsp:
+  c.lwsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry0_lxwr1111_7_c_lwsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_7_c_lwsp_str)
   LI(x15, 0x0001000100010001)
@@ -429,11 +462,14 @@ PMPZca_cp_cfg_RW_entry0_lxwr1111_5_c_ld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry0_lxwr1111_8_c_sdsp:
   c.sdsp x15, 0(sp)
-PMPZca_cp_cfg_RW_entry0_lxwr1111_9_c_ldsp:
-  c.ldsp x15, 0(sp)
   mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry0_lxwr1111_8_c_sdsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_8_c_sdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry0_lxwr1111_9_c_ldsp:
+  c.ldsp x15, 0(sp)
+  mv sp, t0
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, PMPZca_cp_cfg_RW_entry0_lxwr1111_9_c_ldsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_9_c_ldsp_str)
 

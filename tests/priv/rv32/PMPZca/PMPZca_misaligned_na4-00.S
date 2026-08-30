@@ -79,14 +79,14 @@ RVTEST_BEGIN
   LA(x15, TEST_FOR_EXECUTION_1)
 PMPZca_cp_misaligned_na4_region1_1_c_jalr:
   c.jalr x15
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_misaligned_na4_region1_1_c_jalr, PMPZca_cp_misaligned_na4_region1_1_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_na4_region1_1_c_jalr, PMPZca_cp_misaligned_na4_region1_1_c_jalr_str)
 
   LA(x15, TEST_FOR_EXECUTION_2)
 PMPZca_cp_misaligned_na4_region2_1_c_jalr:
   c.jalr x15
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZca_cp_misaligned_na4_region2_1_c_jalr, PMPZca_cp_misaligned_na4_region2_1_c_jalr_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, PMPZca_cp_misaligned_na4_region2_1_c_jalr, PMPZca_cp_misaligned_na4_region2_1_c_jalr_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

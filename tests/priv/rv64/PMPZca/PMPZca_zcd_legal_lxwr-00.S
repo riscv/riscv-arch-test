@@ -92,11 +92,14 @@ PMPZca_cp_cfg_RW_entry5_lxwr1000_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp, PMPZca_cp_cfg_RW_entry5_lxwr1000_4_c_fldsp_str)
 
@@ -127,11 +130,14 @@ PMPZca_cp_cfg_RW_entry4_lxwr1001_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp, PMPZca_cp_cfg_RW_entry4_lxwr1001_4_c_fldsp_str)
 
@@ -162,11 +168,14 @@ PMPZca_cp_cfg_RW_entry3_lxwr1011_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp, PMPZca_cp_cfg_RW_entry3_lxwr1011_4_c_fldsp_str)
 
@@ -197,11 +206,14 @@ PMPZca_cp_cfg_RW_entry2_lxwr1100_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp, PMPZca_cp_cfg_RW_entry2_lxwr1100_4_c_fldsp_str)
 
@@ -232,11 +244,14 @@ PMPZca_cp_cfg_RW_entry1_lxwr1101_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp, PMPZca_cp_cfg_RW_entry1_lxwr1101_4_c_fldsp_str)
 
@@ -267,11 +282,14 @@ PMPZca_cp_cfg_RW_entry0_lxwr1111_2_c_fld:
   addi sp, x8, 0
 PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp:
   c.fsdsp f8, 0(sp)
-PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp:
-  c.fldsp f8, 0(sp)
   mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_3_c_fsdsp_str)
+  mv t0, sp
+  addi sp, x8, 0
+PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp:
+  c.fldsp f8, 0(sp)
+  mv sp, t0
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp, PMPZca_cp_cfg_RW_entry0_lxwr1111_4_c_fldsp_str)
 

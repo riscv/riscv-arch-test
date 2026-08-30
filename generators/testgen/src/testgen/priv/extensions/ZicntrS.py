@@ -409,6 +409,8 @@ def _generate_mcounter_inc_inaccessible_tests(test_data: TestData) -> list[str]:
     "ZicntrS",
     required_extensions=["S", "Zicntr"],
     march_extensions=["Zicntr", "Zihpm"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicntrs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrS coverpoints"""

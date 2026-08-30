@@ -33,6 +33,7 @@
 
 // Define the size of the signature region
 #define SIGUPD_COUNT 18
+#define BOOT_TO_MMODE
 
 
 // Include framework macros

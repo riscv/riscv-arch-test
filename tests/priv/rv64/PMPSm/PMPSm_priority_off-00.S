@@ -87,20 +87,19 @@ RVTEST_BEGIN
   LA(ra, 1f)
 PMPSm_cp_priority_off_entry1_1_jalr:
   jalr x0, 0(a4)
-  nop
 1:
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_priority_off_entry1_1_jalr, PMPSm_cp_priority_off_entry1_1_jalr_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_1_jalr, PMPSm_cp_priority_off_entry1_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, 0x0000806700008067)
 PMPSm_cp_priority_off_entry1_2_sw:
   sw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_priority_off_entry1_2_sw, PMPSm_cp_priority_off_entry1_2_sw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_2_sw, PMPSm_cp_priority_off_entry1_2_sw_str)
 PMPSm_cp_priority_off_entry1_3_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_priority_off_entry1_3_lw, PMPSm_cp_priority_off_entry1_3_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_priority_off_entry1_3_lw, PMPSm_cp_priority_off_entry1_3_lw_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -8,7 +8,7 @@
 """PMPSm suite: pmpcfg/pmpaddr WARL behaviour and M-mode PMP enforcement."""
 
 from testgen.asm.csr import gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import (
@@ -28,7 +28,6 @@ from testgen.priv.extensions.pmp.helpers import (
     zero_pmp_regs,
 )
 from testgen.priv.extensions.pmp.probes import (
-    gen_lw,
     gen_lw_bounds,
     gen_rwx,
     gen_rwx_all,
@@ -63,9 +62,12 @@ def _make_zero_walk_chunk(test_data: TestData) -> TestChunk:
     xlen = test_data.xlen
     chunk = test_data.begin_test_chunk("pmpcfg_walk_01")
     chunk.section_header = comment_banner("cp_pmpcfg_walk", "Write zero to every pmpcfg CSR and check the readback.")
-    label_line = test_data.add_testcase("zero", "cp_pmpcfg_walk", "PMPSm")
     chunk.code.extend(
-        [label_line, "// Write zero to every pmpcfg CSR", *_csr_walk(xlen, "0", test_data.current_testcase_label)]
+        [
+            test_data.add_testcase("zero", "cp_pmpcfg_walk", "PMPSm"),
+            "// Write zero to every pmpcfg CSR",
+            *_csr_walk(xlen, "0", test_data.current_testcase_label),
+        ]
     )
     chunk.sigupd_count = _MAX_PMP_ENTRIES // (xlen // 8)
     return test_data.end_test_chunk()
@@ -84,12 +86,11 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
     for bit in range(8 * byte, 8 * byte + 8):
         if bit % 8 in (1, 4):  # W without R is reserved; A=NA4 is optional.
             continue
-        label_line = test_data.add_testcase(f"bit{bit}", "cp_pmpcfg_walk", "PMPSm")
         if chunk.code:
             chunk.code.append("")
         chunk.code.extend(
             [
-                label_line,
+                test_data.add_testcase(f"bit{bit}", "cp_pmpcfg_walk", "PMPSm"),
                 f"// Write 1 << {bit} to every pmpcfg CSR",
                 *_csr_walk(xlen, f"1 << {bit}", test_data.current_testcase_label),
             ]
@@ -449,7 +450,11 @@ def _make_tor_all_chunk(test_data: TestData) -> TestChunk:
         body.extend(
             [
                 "RVTEST_SFENCE_VMA_IF_SUPPORTED",
-                *gen_lw(test_data, f"entry{n}", "cp_cfg_A_tor_all", f"TEST_FOR_EXECUTION_{n - 1}"),
+                "",
+                f"LA(a5, TEST_FOR_EXECUTION_{n - 1})",
+                test_data.add_testcase(f"entry{n}_1_lw", "cp_cfg_A_tor_all", "PMPSm"),
+                "lw a4, 0(a5)",
+                write_sigupd(14, test_data),
             ]
         )
     data = [
@@ -544,18 +549,12 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
             "",
         ]
     )
-    cases = 0
     for pattern, value in (("zeros", "0"), ("ones", "-1"), ("checkerboard", "CHECKERBOARD")):
         for write_mode in ("NAPOT", "OFF"):
             for read_mode in ("OFF", "NAPOT", "TOR"):
-                cases += 1
-                label_line = test_data.add_testcase(
-                    f"{pattern}_write_{write_mode}_read_{read_mode}", "cp_grain", "PMPSm"
-                )
-                label = test_data.current_testcase_label
                 block = [
                     "",
-                    label_line,
+                    test_data.add_testcase(f"{pattern}_write_{write_mode}_read_{read_mode}", "cp_grain", "PMPSm"),
                     f"// Write {pattern} to pmpaddr0 with A = {write_mode}, read back with A = {read_mode}",
                     f"LI(x6, PMPREGION_{write_mode})",
                     "csrw pmpcfg0, x6",
@@ -565,12 +564,11 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
                     "csrw pmpcfg0, x6",
                     "csrr x7, pmpaddr0",
                     "and x7, x7, t3",
-                    f"RVTEST_SIGUPD(x2, x5, x4, x7, {label}, {label}_str)",
+                    write_sigupd(7, test_data),
                 ]
                 if read_mode == "TOR":
                     block = ["#ifdef UDB_PMP_TOR_SUPPORTED", *block, "#endif"]
                 chunk.code.extend(block)
-    chunk.sigupd_count += cases
     return test_data.end_test_chunk()
 
 
@@ -581,8 +579,6 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
         "cp_grain_check",
         "Write all ones to pmpaddr0 with pmpcfg0 = 0 and read it back; the lowest set bit gives the grain.",
     )
-    label_line = test_data.add_testcase("readback", "cp_grain_check", "PMPSm")
-    label = test_data.current_testcase_label
     chunk.code.extend(
         [
             *zero_pmp_regs(xlen),
@@ -591,7 +587,7 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
             "",
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            label_line,
+            test_data.add_testcase("readback", "cp_grain_check", "PMPSm"),
             "// Write 0 to pmpcfg0 and all ones to pmpaddr0, then read back pmpaddr0",
             "csrw pmpcfg0, x0",
             "LI(x6, -1)",
@@ -599,10 +595,9 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
             "LI(t3, PMP_GRAIN_CHECK_MASK)",
             "csrr x7, pmpaddr0",
             "and x7, x7, t3",
-            f"RVTEST_SIGUPD(x2, x5, x4, x7, {label}, {label}_str)",
+            write_sigupd(7, test_data),
         ]
     )
-    chunk.sigupd_count += 1
     return test_data.end_test_chunk()
 
 
@@ -616,11 +611,9 @@ def _make_pmpaddr_upper_chunk(test_data: TestData) -> TestChunk:
     chunk.section_header = comment_banner(
         "cp_pmpaddr_upper_zero", "Write ones to pmpaddr CSRs and check bits 63:54 read back as zero."
     )
-    label_line = test_data.add_testcase("all_ones", "cp_pmpaddr_upper_zero", "PMPSm")
-    label = test_data.current_testcase_label
     chunk.code.extend(
         [
-            label_line,
+            test_data.add_testcase("all_ones", "cp_pmpaddr_upper_zero", "PMPSm"),
             "// Write ones to every pmpaddr CSR and check bits 63:54 read back as zero",
             "LI(t0, -1)",
             "LI(t1, 0xFFC0000000000000)",
@@ -629,7 +622,7 @@ def _make_pmpaddr_upper_chunk(test_data: TestData) -> TestChunk:
             "1:  csrw pmpaddri, t0",
             "csrr t2, pmpaddri",
             "and t2, t2, t1",
-            f"RVTEST_SIGUPD(x2, x5, x4, t2, 1b, {label}_str)",
+            f"RVTEST_SIGUPD(x2, x5, x4, x7, 1b, {test_data.current_testcase_label}_str)",
             ".set pmpaddri, pmpaddri+1",
             ".endr",
         ]

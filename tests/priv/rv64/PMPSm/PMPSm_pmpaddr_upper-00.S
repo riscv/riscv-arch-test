@@ -44,7 +44,7 @@ PMPSm_cp_pmpaddr_upper_zero_all_ones:
 1:  csrw pmpaddri, t0
   csrr t2, pmpaddri
   and t2, t2, t1
-  RVTEST_SIGUPD(x2, x5, x4, t2, 1b, PMPSm_cp_pmpaddr_upper_zero_all_ones_str)
+  RVTEST_SIGUPD(x2, x5, x4, x7, 1b, PMPSm_cp_pmpaddr_upper_zero_all_ones_str)
   .set pmpaddri, pmpaddri+1
   .endr
 

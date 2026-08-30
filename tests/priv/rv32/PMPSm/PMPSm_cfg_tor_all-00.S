@@ -118,106 +118,106 @@ RVTEST_BEGIN
   LA(a5, TEST_FOR_EXECUTION_0)
 PMPSm_cp_cfg_A_tor_all_entry1_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry1_1_lw, PMPSm_cp_cfg_A_tor_all_entry1_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry1_1_lw, PMPSm_cp_cfg_A_tor_all_entry1_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_1)
 PMPSm_cp_cfg_A_tor_all_entry2_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry2_1_lw, PMPSm_cp_cfg_A_tor_all_entry2_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry2_1_lw, PMPSm_cp_cfg_A_tor_all_entry2_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_2)
 PMPSm_cp_cfg_A_tor_all_entry3_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry3_1_lw, PMPSm_cp_cfg_A_tor_all_entry3_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry3_1_lw, PMPSm_cp_cfg_A_tor_all_entry3_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_3)
 PMPSm_cp_cfg_A_tor_all_entry4_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry4_1_lw, PMPSm_cp_cfg_A_tor_all_entry4_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry4_1_lw, PMPSm_cp_cfg_A_tor_all_entry4_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_4)
 PMPSm_cp_cfg_A_tor_all_entry5_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry5_1_lw, PMPSm_cp_cfg_A_tor_all_entry5_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry5_1_lw, PMPSm_cp_cfg_A_tor_all_entry5_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_5)
 PMPSm_cp_cfg_A_tor_all_entry6_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry6_1_lw, PMPSm_cp_cfg_A_tor_all_entry6_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry6_1_lw, PMPSm_cp_cfg_A_tor_all_entry6_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_6)
 PMPSm_cp_cfg_A_tor_all_entry7_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry7_1_lw, PMPSm_cp_cfg_A_tor_all_entry7_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry7_1_lw, PMPSm_cp_cfg_A_tor_all_entry7_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_7)
 PMPSm_cp_cfg_A_tor_all_entry8_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry8_1_lw, PMPSm_cp_cfg_A_tor_all_entry8_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry8_1_lw, PMPSm_cp_cfg_A_tor_all_entry8_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_8)
 PMPSm_cp_cfg_A_tor_all_entry9_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry9_1_lw, PMPSm_cp_cfg_A_tor_all_entry9_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry9_1_lw, PMPSm_cp_cfg_A_tor_all_entry9_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_9)
 PMPSm_cp_cfg_A_tor_all_entry10_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry10_1_lw, PMPSm_cp_cfg_A_tor_all_entry10_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry10_1_lw, PMPSm_cp_cfg_A_tor_all_entry10_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_10)
 PMPSm_cp_cfg_A_tor_all_entry11_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry11_1_lw, PMPSm_cp_cfg_A_tor_all_entry11_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry11_1_lw, PMPSm_cp_cfg_A_tor_all_entry11_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_11)
 PMPSm_cp_cfg_A_tor_all_entry12_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry12_1_lw, PMPSm_cp_cfg_A_tor_all_entry12_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry12_1_lw, PMPSm_cp_cfg_A_tor_all_entry12_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_12)
 PMPSm_cp_cfg_A_tor_all_entry13_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry13_1_lw, PMPSm_cp_cfg_A_tor_all_entry13_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry13_1_lw, PMPSm_cp_cfg_A_tor_all_entry13_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_13)
 PMPSm_cp_cfg_A_tor_all_entry14_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry14_1_lw, PMPSm_cp_cfg_A_tor_all_entry14_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry14_1_lw, PMPSm_cp_cfg_A_tor_all_entry14_1_lw_str)
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION_14)
 PMPSm_cp_cfg_A_tor_all_entry15_1_lw:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_all_entry15_1_lw, PMPSm_cp_cfg_A_tor_all_entry15_1_lw_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_all_entry15_1_lw, PMPSm_cp_cfg_A_tor_all_entry15_1_lw_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -302,21 +302,21 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_tor_all_entry1_1_lw_str: .string "\"test: 45; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry1_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry2_1_lw_str: .string "\"test: 46; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry2_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry3_1_lw_str: .string "\"test: 47; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry3_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry4_1_lw_str: .string "\"test: 48; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry4_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry5_1_lw_str: .string "\"test: 49; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry5_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry6_1_lw_str: .string "\"test: 50; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry6_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry7_1_lw_str: .string "\"test: 51; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry7_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry8_1_lw_str: .string "\"test: 52; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry8_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry9_1_lw_str: .string "\"test: 53; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry9_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry10_1_lw_str: .string "\"test: 54; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry10_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry11_1_lw_str: .string "\"test: 55; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry11_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry12_1_lw_str: .string "\"test: 56; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry12_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry13_1_lw_str: .string "\"test: 57; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry13_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry14_1_lw_str: .string "\"test: 58; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry14_1_lw\""
-PMPSm_cp_cfg_A_tor_all_entry15_1_lw_str: .string "\"test: 59; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry15_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry1_1_lw_str: .string "\"test: 48; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry1_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry2_1_lw_str: .string "\"test: 49; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry2_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry3_1_lw_str: .string "\"test: 50; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry3_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry4_1_lw_str: .string "\"test: 51; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry4_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry5_1_lw_str: .string "\"test: 52; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry5_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry6_1_lw_str: .string "\"test: 53; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry6_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry7_1_lw_str: .string "\"test: 54; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry7_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry8_1_lw_str: .string "\"test: 55; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry8_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry9_1_lw_str: .string "\"test: 56; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry9_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry10_1_lw_str: .string "\"test: 57; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry10_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry11_1_lw_str: .string "\"test: 58; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry11_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry12_1_lw_str: .string "\"test: 59; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry12_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry13_1_lw_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry13_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry14_1_lw_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry14_1_lw\""
+PMPSm_cp_cfg_A_tor_all_entry15_1_lw_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_tor_all; bin: entry15_1_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -81,40 +81,40 @@ RVTEST_BEGIN
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoand_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoand_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amomax_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amomax_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amomin_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amomin_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amominu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amominu_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w_str)
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -132,40 +132,40 @@ PMPZaamo_cp_cfg_RW_entry5_lxwr1000_9_amoswap_w:
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoand_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoand_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amomax_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amomax_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amomin_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amomin_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amominu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amominu_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w_str)
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -183,40 +183,40 @@ PMPZaamo_cp_cfg_RW_entry4_lxwr1001_9_amoswap_w:
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoand_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoand_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amomax_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amomax_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amomin_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amomin_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amominu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amominu_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w_str)
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -234,40 +234,40 @@ PMPZaamo_cp_cfg_RW_entry3_lxwr1011_9_amoswap_w:
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoand_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoand_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amomax_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amomax_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amomin_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amomin_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amominu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amominu_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w_str)
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -285,40 +285,40 @@ PMPZaamo_cp_cfg_RW_entry2_lxwr1100_9_amoswap_w:
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoand_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoand_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amomax_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amomax_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amomin_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amomin_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amominu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amominu_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w_str)
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -336,40 +336,40 @@ PMPZaamo_cp_cfg_RW_entry1_lxwr1101_9_amoswap_w:
   LA(a5, TEST_FOR_EXECUTION)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w:
   amoadd.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_1_amoadd_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoand_w:
   amoand.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoand_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoand_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoand_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_2_amoand_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoor_w:
   amoor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_3_amoor_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoxor_w:
   amoxor.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoxor_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoxor_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_4_amoxor_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amomax_w:
   amomax.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amomax_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amomax_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amomax_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_5_amomax_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amomaxu_w:
   amomaxu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amomaxu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amomaxu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_6_amomaxu_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amomin_w:
   amomin.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amomin_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amomin_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amomin_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_7_amomin_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amominu_w:
   amominu.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amominu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amominu_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amominu_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_8_amominu_w_str)
 PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amoswap_w:
   amoswap.w a4, a6, (a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amoswap_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amoswap_w, PMPZaamo_cp_cfg_RW_entry0_lxwr1111_9_amoswap_w_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

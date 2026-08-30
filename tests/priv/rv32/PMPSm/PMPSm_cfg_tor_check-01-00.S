@@ -67,54 +67,51 @@ RVTEST_BEGIN
   LA(ra, 1f)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address:
   jalr x0, 0(a4)
-  nop
 1:
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str)
   addi a4, a4, -4
   LA(ra, 2f)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4:
   jalr x0, 0(a4)
-  nop
 2:
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str)
   addi a4, a4, 8
   LA(ra, 3f)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4:
   jalr x0, 0(a4)
-  nop
 3:
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, 0x00008067)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address:
   sw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str)
   addi a5, a5, -4
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4:
   sw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str)
   addi a5, a5, 8
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4:
   sw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str)
 PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4:
   lw a4, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4, PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -146,15 +143,15 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_1_jalr_address\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_2_jalr_address-4\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_3_jalr_address+4\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_4_sw_address\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_5_lw_address\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_6_sw_address-4\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_7_lw_address-4\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_8_sw_address+4\""
-PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_9_lw_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_1_jalr_address_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_1_jalr_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_2_jalr_addressm4_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_2_jalr_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_3_jalr_address_4_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_3_jalr_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_4_sw_address_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_4_sw_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_5_lw_address_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_5_lw_address\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_6_sw_addressm4_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_6_sw_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_7_lw_addressm4_str: .string "\"test: 69; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_7_lw_address-4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_8_sw_address_4_str: .string "\"test: 70; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_8_sw_address+4\""
+PMPSm_cp_cfg_A_tor_non_overlap_non_overlap1_9_lw_address_4_str: .string "\"test: 71; cg: PMPSm; cp: cp_cfg_A_tor_non_overlap; bin: non_overlap1_9_lw_address+4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

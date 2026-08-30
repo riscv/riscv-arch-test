@@ -78,20 +78,20 @@ RVTEST_BEGIN
   LA(a4, TEST_FOR_EXECUTION)
 PMPZicbo_cp_cbo_entry0_lxwr1000_1_cbo_zero:
   cbo.zero (a4)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1000_1_cbo_zero, PMPZicbo_cp_cbo_entry0_lxwr1000_1_cbo_zero_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1000_1_cbo_zero, PMPZicbo_cp_cbo_entry0_lxwr1000_1_cbo_zero_str)
 PMPZicbo_cp_cbo_entry0_lxwr1000_2_cbo_clean:
   cbo.clean (a4)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1000_2_cbo_clean, PMPZicbo_cp_cbo_entry0_lxwr1000_2_cbo_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1000_2_cbo_clean, PMPZicbo_cp_cbo_entry0_lxwr1000_2_cbo_clean_str)
 PMPZicbo_cp_cbo_entry0_lxwr1000_3_cbo_flush:
   cbo.flush (a4)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1000_3_cbo_flush, PMPZicbo_cp_cbo_entry0_lxwr1000_3_cbo_flush_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1000_3_cbo_flush, PMPZicbo_cp_cbo_entry0_lxwr1000_3_cbo_flush_str)
 PMPZicbo_cp_cbo_entry0_lxwr1000_4_cbo_inval:
   cbo.inval (a4)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_cbo_entry0_lxwr1000_4_cbo_inval, PMPZicbo_cp_cbo_entry0_lxwr1000_4_cbo_inval_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_cbo_entry0_lxwr1000_4_cbo_inval, PMPZicbo_cp_cbo_entry0_lxwr1000_4_cbo_inval_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

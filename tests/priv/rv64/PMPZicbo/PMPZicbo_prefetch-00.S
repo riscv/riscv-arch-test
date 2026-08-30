@@ -83,16 +83,16 @@ RVTEST_BEGIN
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i, PMPZicbo_cp_prefetch_entry5_lxwr1000_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r, PMPZicbo_cp_prefetch_entry5_lxwr1000_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w, PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w_str)
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -109,16 +109,16 @@ PMPZicbo_cp_prefetch_entry5_lxwr1000_3_prefetch_w:
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i, PMPZicbo_cp_prefetch_entry4_lxwr1001_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r, PMPZicbo_cp_prefetch_entry4_lxwr1001_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w, PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w_str)
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -135,16 +135,16 @@ PMPZicbo_cp_prefetch_entry4_lxwr1001_3_prefetch_w:
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i, PMPZicbo_cp_prefetch_entry3_lxwr1011_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r, PMPZicbo_cp_prefetch_entry3_lxwr1011_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w, PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w_str)
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -161,16 +161,16 @@ PMPZicbo_cp_prefetch_entry3_lxwr1011_3_prefetch_w:
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i, PMPZicbo_cp_prefetch_entry2_lxwr1100_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r, PMPZicbo_cp_prefetch_entry2_lxwr1100_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w, PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w_str)
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -187,16 +187,16 @@ PMPZicbo_cp_prefetch_entry2_lxwr1100_3_prefetch_w:
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i, PMPZicbo_cp_prefetch_entry1_lxwr1101_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r, PMPZicbo_cp_prefetch_entry1_lxwr1101_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w, PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w_str)
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -213,16 +213,16 @@ PMPZicbo_cp_prefetch_entry1_lxwr1101_3_prefetch_w:
   LA(t0, TEST_FOR_EXECUTION)
 PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i:
   prefetch.i 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i, PMPZicbo_cp_prefetch_entry0_lxwr1111_1_prefetch_i_str)
 PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r:
   prefetch.r 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r, PMPZicbo_cp_prefetch_entry0_lxwr1111_2_prefetch_r_str)
 PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w:
   prefetch.w 0(t0)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w, PMPZicbo_cp_prefetch_entry0_lxwr1111_3_prefetch_w_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

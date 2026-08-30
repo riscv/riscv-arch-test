@@ -117,22 +117,18 @@ def _make_csr_access_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         f"{mode.suite} cp_pmpaddr_access_{low} and cp_pmpcfg_access_{low}",
         f"Write every pmpaddr and pmpcfg CSR from {mode.letter} mode; each traps with an illegal instruction.",
     )
-    pmpaddr_label_line = test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", mode.suite)
-    pmpaddr_label = test_data.current_testcase_label
-    pmpcfg_label_line = test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", mode.suite)
-    pmpcfg_label = test_data.current_testcase_label
     chunk.code.extend(
         [
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            pmpaddr_label_line,
+            test_data.add_testcase("write_all", f"cp_pmpaddr_access_{low}", mode.suite),
             f"// Write all ones to every pmpaddr CSR from {mode.letter} mode",
             "LI(x4, -1)",
-            *_csr_walk("pmpaddri", "CSR_PMPADDR0", 64, pmpaddr_label, mode),
+            *_csr_walk("pmpaddri", "CSR_PMPADDR0", 64, test_data.current_testcase_label, mode),
             "",
-            pmpcfg_label_line,
+            test_data.add_testcase("write_all", f"cp_pmpcfg_access_{low}", mode.suite),
             f"// Write all ones to every pmpcfg CSR from {mode.letter} mode",
-            *_csr_walk("pmpcfgi", "CSR_PMPCFG0", 16, pmpcfg_label, mode),
+            *_csr_walk("pmpcfgi", "CSR_PMPCFG0", 16, test_data.current_testcase_label, mode),
         ]
     )
     chunk.sigupd_count = 80

@@ -9,7 +9,9 @@
 """Generate PMP access probes and register their testcases."""
 
 from collections.abc import Callable
+from typing import Literal
 
+from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 
 _OFFSETS = ("address", "address-4", "address+4", "address+g-4", "address+g")
@@ -17,59 +19,28 @@ _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "
 _RET_ENCODING = {32: "0x00008067", 64: "0x0000806700008067"}
 
 
-def _probe_labels(test_data: TestData, case: str, coverpoint: str, names: tuple[str, ...]) -> list[str]:
-    """Register probe testcases and return their assembly labels."""
-    assert test_data.test_chunk is not None
-    labels = []
-    for number, name in enumerate(names, start=1):
-        test_data.add_testcase(f"{case}_{number}_{name}", coverpoint, test_data.testsuite)
-        labels.append(test_data.current_testcase_label)
-    test_data.test_chunk.sigupd_count += len(labels)
-    return labels
-
-
-def _memory_probe(instruction: str, data_reg: str, address_reg: str, label: str) -> str:
-    return "\n".join(
-        [
-            f"{label}:",
-            f"{instruction} {data_reg}, 0({address_reg})",
-            "nop",
-            f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
-        ]
-    )
-
-
-def _execute_probe(address_reg: str, resume: int, label: str) -> str:
-    return "\n".join(
-        [
-            f"LA(ra, {resume}f)",
-            f"{label}:",
-            f"jalr x0, 0({address_reg})",
-            "nop",
-            f"{resume}:",
-            "nop",
-            f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
-        ]
-    )
-
-
 def gen_rwx(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    labels = _probe_labels(test_data, case, coverpoint, ("jalr", "sw", "lw"))
     return [
         "",
         "RVTEST_FENCEI",
         f"LA(a4, {region})",
-        _execute_probe("a4", 1, labels[0]),
+        "LA(ra, 1f)",
+        test_data.add_testcase(f"{case}_1_jalr", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "1:",
+        write_sigupd(14, test_data),
         f"LA(a5, {region})",
         f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
-        _memory_probe("sw", "a4", "a5", labels[1]),
-        _memory_probe("lw", "a4", "a5", labels[2]),
+        test_data.add_testcase(f"{case}_2_sw", coverpoint, test_data.testsuite),
+        "sw a4, 0(a5)",
+        write_sigupd(14, test_data),
+        test_data.add_testcase(f"{case}_3_lw", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
     ]
 
 
 def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: str, bits: str) -> list[str]:
-    labels = _probe_labels(test_data, case, coverpoint, ("jalr", "sw", "lw"))
-
     def arm(value: str) -> str:
         return "\n".join(
             [
@@ -85,33 +56,41 @@ def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: str, bits: str) -> 
         "RVTEST_FENCEI",
         "LA(a4, TEST_FOR_EXECUTION)",
         arm(bits),
-        _execute_probe("a4", 1, labels[0]),
+        "LA(ra, 1f)",
+        test_data.add_testcase(f"{case}_1_jalr", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "1:",
+        write_sigupd(14, test_data),
         "LA(a5, TEST_FOR_EXECUTION)",
         f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
         arm(bits),
-        _memory_probe("sw", "a4", "a5", labels[1]),
+        test_data.add_testcase(f"{case}_2_sw", coverpoint, test_data.testsuite),
+        "sw a4, 0(a5)",
+        write_sigupd(14, test_data),
         arm(bits),
-        _memory_probe("lw", "a4", "a5", labels[2]),
+        test_data.add_testcase(f"{case}_3_lw", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
         arm("0"),
     ]
 
 
-def gen_lw(test_data: TestData, case: str, coverpoint: str, region: str) -> list[str]:
-    label = _probe_labels(test_data, case, coverpoint, ("lw",))[0]
-    return ["", f"LA(a5, {region})", _memory_probe("lw", "a4", "a5", label)]
-
-
 def gen_lw_bounds(test_data: TestData, case: str, coverpoint: str, region: str, beyond: str) -> list[str]:
-    labels = _probe_labels(test_data, case, coverpoint, ("lw_address", "lw_address-4", "lw_beyond"))
     return [
         "",
         f"LA(a5, {region})",
-        _memory_probe("lw", "a4", "a5", labels[0]),
+        test_data.add_testcase(f"{case}_1_lw_address", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
         "addi a5, a5, -4",
-        _memory_probe("lw", "a4", "a5", labels[1]),
+        test_data.add_testcase(f"{case}_2_lw_address-4", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
         f"LI(t0, ({beyond}) + 4)",
         "add a5, a5, t0",
-        _memory_probe("lw", "a4", "a5", labels[2]),
+        test_data.add_testcase(f"{case}_3_lw_beyond", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
     ]
 
 
@@ -121,42 +100,70 @@ def gen_rwx_all(test_data: TestData, case: str, coverpoint: str, region: str = "
         if test_data.xlen == 64
         else ("sb", "sh", "sw", "lb", "lbu", "lh", "lhu", "lw")
     )
-    names = (*instructions, "jalr")
-    labels = _probe_labels(test_data, case, coverpoint, names)
     lines = [
         "",
         "// Execute probe",
         "RVTEST_FENCEI",
         f"LA(a4, {region})",
-        _execute_probe("a4", 1, labels[-1]),
+        "LA(ra, 1f)",
+        test_data.add_testcase(f"{case}_{len(instructions) + 1}_jalr", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "1:",
+        write_sigupd(14, test_data),
         "",
         "// Load and store probes",
         f"LA(a5, {region})",
         f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
     ]
-    lines.extend(_memory_probe(instruction, "a4", "a5", label) for instruction, label in zip(instructions, labels))
+    for number, instruction in enumerate(instructions, start=1):
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
+                f"{instruction} a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
     return lines
 
 
 def gen_rwx_na4(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    names = tuple(f"jalr_{offset}" for offset in _OFFSETS[:3]) + tuple(
-        f"{op}_{offset}" for offset in _OFFSETS[:3] for op in ("sw", "lw")
-    )
-    labels = _probe_labels(test_data, case, coverpoint, names)
-    lines = ["", "RVTEST_FENCEI", f"LA(a4, {region})", _execute_probe("a4", 1, labels[0])]
-    for adjustment, resume, label in zip((-4, 8), (2, 3), labels[1:3], strict=True):
-        lines.extend([f"addi a4, a4, {adjustment}", _execute_probe("a4", resume, label)])
+    lines = [
+        "",
+        "RVTEST_FENCEI",
+        f"LA(a4, {region})",
+        "LA(ra, 1f)",
+        test_data.add_testcase(f"{case}_1_jalr_{_OFFSETS[0]}", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "1:",
+        write_sigupd(14, test_data),
+    ]
+    for number, (adjustment, offset) in enumerate(zip((-4, 8), _OFFSETS[1:3], strict=True), start=2):
+        lines.extend(
+            [
+                f"addi a4, a4, {adjustment}",
+                f"LA(ra, {number}f)",
+                test_data.add_testcase(f"{case}_{number}_jalr_{offset}", coverpoint, test_data.testsuite),
+                "jalr x0, 0(a4)",
+                f"{number}:",
+                write_sigupd(14, test_data),
+            ]
+        )
     lines.extend([f"LA(a5, {region})", f"LI(a4, {_RET_ENCODING[test_data.xlen]})"])
-    for adjustment, instruction, label in zip((0, 0, -4, 0, 8, 0), ("sw", "lw") * 3, labels[3:], strict=True):
+    probes = zip((0, 0, -4, 0, 8, 0), ("sw", "lw") * 3, (offset for offset in _OFFSETS[:3] for _ in range(2)))
+    for number, (adjustment, instruction, offset) in enumerate(probes, start=4):
         if adjustment:
             lines.append(f"addi a5, a5, {adjustment}")
-        lines.append(_memory_probe(instruction, "a4", "a5", label))
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{instruction}_{offset}", coverpoint, test_data.testsuite),
+                f"{instruction} a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
     return lines
 
 
 def gen_rwx_legal(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    names = tuple(f"{op}_{offset}" for op in ("jalr", "sw", "lw") for offset in _OFFSETS)
-    labels = _probe_labels(test_data, case, coverpoint, names)
     lines = [
         "",
         "RVTEST_FENCEI",
@@ -165,30 +172,34 @@ def gen_rwx_legal(test_data: TestData, case: str, coverpoint: str, region: str =
         "// Execute probes",
         f"LA(a4, {region})",
     ]
-    for resume, (adjustment, label) in enumerate(
-        zip(
-            (None, "addi a4, a4, -4", "addi a4, a4, 8", "add a4, a4, t0", "addi a4, a4, 4"),
-            labels[:5],
-            strict=True,
-        ),
-        1,
-    ):
+    adjustments = (None, "addi a4, a4, -4", "addi a4, a4, 8", "add a4, a4, t0", "addi a4, a4, 4")
+    for number, (adjustment, offset) in enumerate(zip(adjustments, _OFFSETS, strict=True), start=1):
         if adjustment:
             lines.append(adjustment)
-        lines.append(_execute_probe("a4", resume, label))
-    for instruction, group in (("sw", labels[5:10]), ("lw", labels[10:15])):
+        lines.extend(
+            [
+                f"LA(ra, {number}f)",
+                test_data.add_testcase(f"{case}_{number}_jalr_{offset}", coverpoint, test_data.testsuite),
+                "jalr x0, 0(a4)",
+                f"{number}:",
+                write_sigupd(14, test_data),
+            ]
+        )
+    for instruction, first in (("sw", 6), ("lw", 11)):
         operation = "Store" if instruction == "sw" else "Load"
         lines.extend(["", f"// {operation} probes", f"LA(a5, {region})"])
         if instruction == "sw":
             lines.append(f"LI(a4, {_RET_ENCODING[test_data.xlen]})")
-        for adjustment, label in zip(
-            (None, "addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4"),
-            group,
-            strict=True,
-        ):
+        for number, (adjustment, offset) in enumerate(zip(adjustments, _OFFSETS, strict=True), start=first):
             if adjustment:
                 lines.append(adjustment)
-            lines.append(_memory_probe(instruction, "a4", "a5", label))
+            lines.extend(
+                [
+                    test_data.add_testcase(f"{case}_{number}_{instruction}_{offset}", coverpoint, test_data.testsuite),
+                    f"{instruction} a4, 0(a5)",
+                    write_sigupd(14, test_data),
+                ]
+            )
     return lines
 
 
@@ -206,7 +217,6 @@ def gen_rwx_napot(test_data: TestData, case: str, coverpoint: str, region: str =
     )
     if test_data.xlen == 64:
         names += ("sd_address", "ld_address", "lwu_address")
-    labels = _probe_labels(test_data, case, coverpoint, names)
     lines = [
         "",
         "RVTEST_FENCEI",
@@ -215,50 +225,97 @@ def gen_rwx_napot(test_data: TestData, case: str, coverpoint: str, region: str =
         "// Execute probes",
         f"LA(a4, {region})",
     ]
-    for resume, (adjustment, label) in enumerate(
+    for resume, (adjustment, name) in enumerate(
         zip(
             (None, "addi a4, a4, -4", "addi a4, a4, 8", "add a4, a4, t0", "addi a4, a4, 4"),
-            labels[16:21],
+            names[16:21],
             strict=True,
         ),
         1,
     ):
         if adjustment:
             lines.append(adjustment)
-        lines.append(_execute_probe("a4", resume, label))
+        lines.extend(
+            [
+                f"LA(ra, {resume}f)",
+                test_data.add_testcase(f"{case}_{resume + 16}_{name}", coverpoint, test_data.testsuite),
+                "jalr x0, 0(a4)",
+                f"{resume}:",
+                write_sigupd(14, test_data),
+            ]
+        )
     lines.extend(["", "// Store probes", f"LA(a5, {region})", f"LI(a4, {_RET_ENCODING[test_data.xlen]})"])
-    for instruction, label in zip(("sb", "sh", "sw"), labels[:3], strict=True):
-        lines.append(_memory_probe(instruction, "a4", "a5", label))
-    for adjustment, label in zip(
-        ("addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4"),
-        labels[3:7],
-        strict=True,
+    for number, (instruction, name) in enumerate(zip(("sb", "sh", "sw"), names[:3], strict=True), start=1):
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{name}", coverpoint, test_data.testsuite),
+                f"{instruction} a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
+    for number, (adjustment, name) in enumerate(
+        zip(
+            ("addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4"),
+            names[3:7],
+            strict=True,
+        ),
+        start=4,
     ):
-        lines.extend([adjustment, _memory_probe("sw", "a4", "a5", label)])
+        lines.extend(
+            [
+                adjustment,
+                test_data.add_testcase(f"{case}_{number}_{name}", coverpoint, test_data.testsuite),
+                "sw a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
     lines.extend(["", "// Load probes", f"LA(a5, {region})"])
-    for instruction, label in zip(("lb", "lbu", "lh", "lhu", "lw"), labels[7:12], strict=True):
-        lines.append(_memory_probe(instruction, "a4", "a5", label))
-    for adjustment, label in zip(
-        ("addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4"),
-        labels[12:16],
-        strict=True,
+    for number, (instruction, name) in enumerate(
+        zip(("lb", "lbu", "lh", "lhu", "lw"), names[7:12], strict=True), start=8
     ):
-        lines.extend([adjustment, _memory_probe("lw", "a4", "a5", label)])
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{name}", coverpoint, test_data.testsuite),
+                f"{instruction} a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
+    for number, (adjustment, name) in enumerate(
+        zip(
+            ("addi a5, a5, -4", "addi a5, a5, 8", "add a5, a5, t0", "addi a5, a5, 4"),
+            names[12:16],
+            strict=True,
+        ),
+        start=13,
+    ):
+        lines.extend(
+            [
+                adjustment,
+                test_data.add_testcase(f"{case}_{number}_{name}", coverpoint, test_data.testsuite),
+                "lw a4, 0(a5)",
+                write_sigupd(14, test_data),
+            ]
+        )
     if test_data.xlen == 64:
         lines.extend(
             [
                 f"LA(a5, {region})",
-                _memory_probe("sd", "a4", "a5", labels[21]),
-                _memory_probe("ld", "a4", "a5", labels[22]),
-                _memory_probe("lwu", "a4", "a5", labels[23]),
+                test_data.add_testcase(f"{case}_22_{names[21]}", coverpoint, test_data.testsuite),
+                "sd a4, 0(a5)",
+                write_sigupd(14, test_data),
+                test_data.add_testcase(f"{case}_23_{names[22]}", coverpoint, test_data.testsuite),
+                "ld a4, 0(a5)",
+                write_sigupd(14, test_data),
+                test_data.add_testcase(f"{case}_24_{names[23]}", coverpoint, test_data.testsuite),
+                "lwu a4, 0(a5)",
+                write_sigupd(14, test_data),
             ]
         )
     return lines
 
 
 def gen_rwx_tor_bot(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    names = tuple(f"{op}_{where}" for op in ("sw", "lw", "jalr") for where in ("bot-4", "bot", "top-4", "top"))
-    labels = _probe_labels(test_data, case, coverpoint, names)
+    locations = ("bot-4", "bot", "top-4", "top")
     lines = [
         "",
         "RVTEST_FENCEI",
@@ -274,85 +331,125 @@ def gen_rwx_tor_bot(test_data: TestData, case: str, coverpoint: str, region: str
         "add a5, a5, t0\naddi a5, a5, 4",
         "addi a5, a5, 4",
     )
-    for instruction, group in (("sw", labels[:4]), ("lw", labels[4:8])):
+    for instruction, first in (("sw", 1), ("lw", 5)):
         if instruction == "lw":
             lines.extend(["", "// Load probes", f"LA(a5, {region})"])
-        for adjustment, label in zip(adjustments, group, strict=True):
-            lines.extend([adjustment, _memory_probe(instruction, "a4", "a5", label)])
+        for number, (adjustment, location) in enumerate(zip(adjustments, locations, strict=True), start=first):
+            lines.extend(
+                [
+                    adjustment,
+                    test_data.add_testcase(
+                        f"{case}_{number}_{instruction}_{location}", coverpoint, test_data.testsuite
+                    ),
+                    f"{instruction} a4, 0(a5)",
+                    write_sigupd(14, test_data),
+                ]
+            )
     lines.extend(["", "// Execute probes", f"LA(a4, {region})"])
-    for resume, (adjustment, label) in enumerate(zip(adjustments, labels[8:], strict=True), 1):
-        lines.extend([adjustment.replace("a5", "a4"), _execute_probe("a4", resume, label)])
+    for resume, (adjustment, location) in enumerate(zip(adjustments, locations, strict=True), 1):
+        lines.extend(
+            [
+                adjustment.replace("a5", "a4"),
+                f"LA(ra, {resume}f)",
+                test_data.add_testcase(f"{case}_{resume + 8}_jalr_{location}", coverpoint, test_data.testsuite),
+                "jalr x0, 0(a4)",
+                f"{resume}:",
+                write_sigupd(14, test_data),
+            ]
+        )
     return lines
 
 
 def gen_rwx_tor_zero(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    names = tuple(f"{op}_{where}" for op in ("sw", "lw", "jalr") for where in ("top", "top-4"))
-    labels = _probe_labels(test_data, case, coverpoint, names)
     return [
         "",
         "// Store probes",
         f"LA(a5, {region})",
         f"LI(a4, {_RET_ENCODING[test_data.xlen]})",
-        _memory_probe("sw", "a4", "a5", labels[0]),
-        "addi a5, a5, -4",
-        _memory_probe("sw", "a4", "a5", labels[1]),
-        "LI(a4, 0x00008067)",
-        "LI(a5, 0)",
-        "LA(ra, 7f)",
+        test_data.add_testcase(f"{case}_1_sw_top", coverpoint, test_data.testsuite),
         "sw a4, 0(a5)",
-        "nop",
-        "7:",
-        "nop",
+        write_sigupd(14, test_data),
+        "addi a5, a5, -4",
+        test_data.add_testcase(f"{case}_2_sw_top-4", coverpoint, test_data.testsuite),
+        "sw a4, 0(a5)",
+        write_sigupd(14, test_data),
+        "LI(a5, 0)",
+        test_data.add_testcase(f"{case}_3_sw_zero", coverpoint, test_data.testsuite),
+        "sw a4, 0(a5)",
+        write_sigupd(14, test_data),
         "",
         "// Load probes",
         f"LA(a5, {region})",
-        _memory_probe("lw", "a4", "a5", labels[2]),
-        "addi a5, a5, -4",
-        _memory_probe("lw", "a4", "a5", labels[3]),
-        "LI(a5, 0)",
-        "LA(ra, 8f)",
+        test_data.add_testcase(f"{case}_4_lw_top", coverpoint, test_data.testsuite),
         "lw a4, 0(a5)",
-        "nop",
-        "8:",
-        "nop",
+        write_sigupd(14, test_data),
+        "addi a5, a5, -4",
+        test_data.add_testcase(f"{case}_5_lw_top-4", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
+        "LI(a5, 0)",
+        test_data.add_testcase(f"{case}_6_lw_zero", coverpoint, test_data.testsuite),
+        "lw a4, 0(a5)",
+        write_sigupd(14, test_data),
         "",
         "// Execute probes",
         "RVTEST_FENCEI",
         f"LA(a4, {region})",
-        _execute_probe("a4", 1, labels[4]),
+        "LA(ra, 1f)",
+        test_data.add_testcase(f"{case}_7_jalr_top", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "1:",
+        write_sigupd(14, test_data),
         "addi a4, a4, -4",
-        _execute_probe("a4", 2, labels[5]),
+        "LA(ra, 2f)",
+        test_data.add_testcase(f"{case}_8_jalr_top-4", coverpoint, test_data.testsuite),
+        "jalr x0, 0(a4)",
+        "2:",
+        write_sigupd(14, test_data),
         "LI(a5, 0)",
-        "LA(ra, 9f)",
+        "LA(ra, 3f)",
+        test_data.add_testcase(f"{case}_9_jalr_zero", coverpoint, test_data.testsuite),
         "jalr x0, 0(a5)",
-        "nop",
-        "9:",
-        "nop",
+        "3:",
+        write_sigupd(14, test_data),
     ]
 
 
 def gen_float(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    instructions = ("fsh", "fsw", "fsd", "flh", "flw", "fld")
-    labels = _probe_labels(test_data, case, coverpoint, instructions)
-    return [
-        "",
-        f"LA(a5, {region})",
-        *(_memory_probe(op, "f14", "a5", label) for op, label in zip(instructions, labels, strict=True)),
-    ]
+    instructions = (
+        ("fsh", "#ifdef ZFHMIN_SUPPORTED"),
+        ("fsw", None),
+        ("fsd", "#ifdef D_SUPPORTED"),
+        ("flh", "#ifdef ZFHMIN_SUPPORTED"),
+        ("flw", None),
+        ("fld", "#ifdef D_SUPPORTED"),
+    )
+    lines = ["", f"LA(a5, {region})"]
+    for number, (instruction, guard) in enumerate(instructions, start=1):
+        if guard:
+            lines.append(guard)
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
+                f"{instruction} f14, 0(a5)",
+                write_sigupd(14, test_data, "float"),
+            ]
+        )
+        if guard:
+            lines.append("#endif")
+    return lines
 
 
 def gen_amo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
     operations = tuple((amo, width) for amo in _AMOS for width in (("w", "d") if test_data.xlen == 64 else ("w",)))
-    labels = _probe_labels(test_data, case, coverpoint, tuple(f"{amo}_{width}" for amo, width in operations))
     lines = ["", f"LI(a6, {_RET_ENCODING[test_data.xlen]})", f"LA(a5, {region})"]
-    for (operation, width), label in zip(operations, labels, strict=True):
+    for number, (operation, width) in enumerate(operations, start=1):
         lines.append(
             "\n".join(
                 [
-                    f"{label}:",
+                    test_data.add_testcase(f"{case}_{number}_{operation}_{width}", coverpoint, test_data.testsuite),
                     f"{operation}.{width} a4, a6, (a5)",
-                    "nop",
-                    f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
+                    write_sigupd(14, test_data),
                 ]
             )
         )
@@ -363,44 +460,43 @@ def gen_lrsc(
     test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION", *, retry: bool = False
 ) -> list[str]:
     widths = ("w", "d") if test_data.xlen == 64 else ("w",)
-    labels = _probe_labels(
-        test_data, case, coverpoint, tuple(f"{op}_{width}" for width in widths for op in ("lr", "sc"))
-    )
     lines = ["", f"LA(a5, {region})"]
     for offset, width in enumerate(widths):
-        lr_label, sc_label = labels[2 * offset : 2 * offset + 2]
+        lr_testcase = f"{case}_{2 * offset + 1}_lr_{width}"
+        sc_testcase = f"{case}_{2 * offset + 2}_sc_{width}"
         if retry:
             tag = f"{case}_{width}"
-            lines.append(
-                "\n".join(
-                    [
-                        "LI(t2, 100)",
-                        f"{tag}_retry:",
-                        f"{lr_label}:",
-                        f"lr.{width} a3, (a5)",
-                        f"{sc_label}:",
-                        f"sc.{width} a2, a3, (a5)",
-                        f"beqz a2, {tag}_success",
-                        "addi t2, t2, -1",
-                        f"bnez t2, {tag}_retry",
-                        f"{tag}_success:",
-                        f"RVTEST_SIGUPD(x2, x5, x4, a3, {lr_label}, {lr_label}_str)",
-                        f"RVTEST_SIGUPD(x2, x5, x4, a2, {sc_label}, {sc_label}_str)",
-                    ]
-                )
+            lines.extend(
+                [
+                    "LI(t2, 100)",
+                    f"{tag}_retry:",
+                    test_data.add_testcase(lr_testcase, coverpoint, test_data.testsuite),
+                    f"lr.{width} a3, (a5)",
+                ]
+            )
+            lr_sigupd = write_sigupd(13, test_data)
+            lines.extend(
+                [
+                    test_data.add_testcase(sc_testcase, coverpoint, test_data.testsuite),
+                    f"sc.{width} a2, a3, (a5)",
+                    f"beqz a2, {tag}_success",
+                    "addi t2, t2, -1",
+                    f"bnez t2, {tag}_retry",
+                    f"{tag}_success:",
+                    lr_sigupd,
+                    write_sigupd(12, test_data),
+                ]
             )
         else:
             lines.append(
                 "\n".join(
                     [
-                        f"{lr_label}:",
+                        test_data.add_testcase(lr_testcase, coverpoint, test_data.testsuite),
                         f"lr.{width} a2, (a5)",
-                        "nop",
-                        f"RVTEST_SIGUPD(x2, x5, x4, a2, {lr_label}, {lr_label}_str)",
-                        f"{sc_label}:",
+                        write_sigupd(12, test_data),
+                        test_data.add_testcase(sc_testcase, coverpoint, test_data.testsuite),
                         f"sc.{width} a2, a2, (a5)",
-                        "nop",
-                        f"RVTEST_SIGUPD(x2, x5, x4, a2, {sc_label}, {sc_label}_str)",
+                        write_sigupd(12, test_data),
                     ]
                 )
             )
@@ -412,28 +508,24 @@ def gen_lrsc_success(test_data: TestData, case: str, coverpoint: str, region: st
 
 
 def gen_compressed_execute(test_data: TestData, case: str, coverpoint: str, region: str) -> list[str]:
-    label = _probe_labels(test_data, case, coverpoint, ("c.jalr",))[0]
     return [
         "",
         f"LA(x15, {region})",
-        f"{label}:",
+        test_data.add_testcase(f"{case}_1_c.jalr", coverpoint, test_data.testsuite),
         "c.jalr x15",
-        "nop",
-        f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
+        write_sigupd(14, test_data),
     ]
 
 
 def gen_cbo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
     instructions = ("cbo.zero", "cbo.clean", "cbo.flush", "cbo.inval")
-    labels = _probe_labels(test_data, case, coverpoint, instructions)
     lines = ["", f"LA(a4, {region})"]
-    for instruction, label in zip(instructions, labels, strict=True):
+    for number, instruction in enumerate(instructions, start=1):
         lines.extend(
             [
-                f"{label}:",
+                test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
                 f"{instruction} (a4)",
-                "nop",
-                f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
+                write_sigupd(14, test_data),
             ]
         )
     return lines
@@ -441,78 +533,81 @@ def gen_cbo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
 
 def gen_prefetch(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
     instructions = ("prefetch.i", "prefetch.r", "prefetch.w")
-    labels = _probe_labels(test_data, case, coverpoint, instructions)
     lines = ["", f"LA(t0, {region})"]
-    for instruction, label in zip(instructions, labels, strict=True):
+    for number, instruction in enumerate(instructions, start=1):
         lines.extend(
             [
-                f"{label}:",
+                test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
                 f"{instruction} 0(t0)",
-                "nop",
-                f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
+                write_sigupd(14, test_data),
             ]
         )
     return lines
 
 
-def _compressed_memory_probe(instruction: str, data_reg: str, label: str) -> str:
-    return "\n".join(
+def _compressed_sp_probes(
+    test_data: TestData,
+    case: str,
+    coverpoint: str,
+    first: int,
+    store: str,
+    load: str,
+    data_reg: str,
+    check_reg: int,
+    sig_type: Literal["int", "float"] = "int",
+) -> str:
+    lines = [
+        "mv t0, sp",
+        "addi sp, x8, 0",
+        test_data.add_testcase(f"{case}_{first}_{store}", coverpoint, test_data.testsuite),
+        f"{store} {data_reg}, 0(sp)",
+    ]
+    store_sigupd = write_sigupd(check_reg, test_data, sig_type)
+    lines.extend(
         [
-            f"{label}:",
-            f"{instruction} {data_reg}, 0(x8)",
-            "c.nop",
-            "c.nop",
-            f"RVTEST_SIGUPD(x2, x5, x4, a4, {label}, {label}_str)",
-        ]
-    )
-
-
-def _compressed_sp_probes(store: str, load: str, data_reg: str) -> str:
-    return "\n".join(
-        [
-            "mv t0, sp",
-            "addi sp, x8, 0",
-            f"{store} {data_reg}, 0(sp)",
-            "c.nop",
-            "c.nop",
+            test_data.add_testcase(f"{case}_{first + 1}_{load}", coverpoint, test_data.testsuite),
             f"{load} {data_reg}, 0(sp)",
-            "c.nop",
-            "c.nop",
             "mv sp, t0",
+            store_sigupd,
+            write_sigupd(check_reg, test_data, sig_type),
         ]
     )
+    return "\n".join(lines)
 
 
 def gen_zca(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    instructions = ("c.sw", "c.lw", "c.jalr") + (("c.sd", "c.ld") if test_data.xlen == 64 else ())
-    labels = _probe_labels(test_data, case, coverpoint, instructions)
-    execute_label = labels[2]
     lines = [
         "",
         "RVTEST_FENCEI",
         f"LA(x15, {region})",
         "LA(ra, 1f)",
-        f"{execute_label}:",
+        test_data.add_testcase(f"{case}_3_c.jalr", coverpoint, test_data.testsuite),
         "c.jalr x15",
-        "c.nop",
-        "c.nop",
         "1:",
-        "c.nop",
-        "c.nop",
-        f"RVTEST_SIGUPD(x2, x5, x4, a4, {execute_label}, {execute_label}_str)",
+        write_sigupd(14, test_data),
         "LI(x15, 0x00010001)",
         f"LA(x8, {region})",
-        _compressed_memory_probe("c.sw", "x15", labels[0]),
-        _compressed_memory_probe("c.lw", "x15", labels[1]),
-        _compressed_sp_probes("c.swsp", "c.lwsp", "x15"),
+        test_data.add_testcase(f"{case}_1_c.sw", coverpoint, test_data.testsuite),
+        "c.sw x15, 0(x8)",
+        write_sigupd(15, test_data),
+        test_data.add_testcase(f"{case}_2_c.lw", coverpoint, test_data.testsuite),
+        "c.lw x15, 0(x8)",
+        write_sigupd(15, test_data),
+        _compressed_sp_probes(
+            test_data, case, coverpoint, 6 if test_data.xlen == 64 else 4, "c.swsp", "c.lwsp", "x15", 15
+        ),
     ]
     if test_data.xlen == 64:
         lines.extend(
             [
                 "LI(x15, 0x0001000100010001)",
-                _compressed_memory_probe("c.sd", "x15", labels[3]),
-                _compressed_memory_probe("c.ld", "x15", labels[4]),
-                _compressed_sp_probes("c.sdsp", "c.ldsp", "x15"),
+                test_data.add_testcase(f"{case}_4_c.sd", coverpoint, test_data.testsuite),
+                "c.sd x15, 0(x8)",
+                write_sigupd(15, test_data),
+                test_data.add_testcase(f"{case}_5_c.ld", coverpoint, test_data.testsuite),
+                "c.ld x15, 0(x8)",
+                write_sigupd(15, test_data),
+                _compressed_sp_probes(test_data, case, coverpoint, 8, "c.sdsp", "c.ldsp", "x15", 15),
             ]
         )
     return lines
@@ -520,36 +615,42 @@ def gen_zca(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
 
 def gen_zcb(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
     instructions = ("c.sb", "c.lbu", "c.sh", "c.lhu", "c.sh", "c.lh")
-    labels = _probe_labels(test_data, case, coverpoint, instructions)
     lines = ["", "LI(x15, NOP)", f"LA(x8, {region})"]
-    lines.extend(_compressed_memory_probe(op, "x15", label) for op, label in zip(instructions, labels, strict=True))
+    for number, instruction in enumerate(instructions, start=1):
+        lines.extend(
+            [
+                test_data.add_testcase(f"{case}_{number}_{instruction}", coverpoint, test_data.testsuite),
+                f"{instruction} x15, 0(x8)",
+                write_sigupd(15, test_data),
+            ]
+        )
     return lines
 
 
-def gen_zcd(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    labels = _probe_labels(test_data, case, coverpoint, ("c.fsd", "c.fld"))
+def _gen_compressed_float(test_data: TestData, case: str, coverpoint: str, region: str, width: str) -> list[str]:
+    store = f"c.fs{width}"
+    load = f"c.fl{width}"
     return [
         "",
         "li x15, 0x3f800000",
         "fmv.w.x f8, x15",
         f"LA(x8, {region})",
-        _compressed_memory_probe("c.fsd", "f8", labels[0]),
-        _compressed_memory_probe("c.fld", "f8", labels[1]),
-        _compressed_sp_probes("c.fsdsp", "c.fldsp", "f8"),
+        test_data.add_testcase(f"{case}_1_{store}", coverpoint, test_data.testsuite),
+        f"{store} f8, 0(x8)",
+        write_sigupd(8, test_data, "float"),
+        test_data.add_testcase(f"{case}_2_{load}", coverpoint, test_data.testsuite),
+        f"{load} f8, 0(x8)",
+        write_sigupd(8, test_data, "float"),
+        _compressed_sp_probes(test_data, case, coverpoint, 3, f"{store}sp", f"{load}sp", "f8", 8, "float"),
     ]
+
+
+def gen_zcd(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
+    return _gen_compressed_float(test_data, case, coverpoint, region, "d")
 
 
 def gen_zcf(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
-    labels = _probe_labels(test_data, case, coverpoint, ("c.fsw", "c.flw"))
-    return [
-        "",
-        "li x15, 0x3f800000",
-        "fmv.w.x f8, x15",
-        f"LA(x8, {region})",
-        _compressed_memory_probe("c.fsw", "f8", labels[0]),
-        _compressed_memory_probe("c.flw", "f8", labels[1]),
-        _compressed_sp_probes("c.fswsp", "c.flwsp", "f8"),
-    ]
+    return _gen_compressed_float(test_data, case, coverpoint, region, "w")
 
 
 ProbeGenerator = Callable[[TestData, str, str, str], list[str]]

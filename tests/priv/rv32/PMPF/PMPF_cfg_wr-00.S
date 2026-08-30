@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 46
+#define SIGUPD_COUNT 118
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -78,30 +78,38 @@ RVTEST_BEGIN
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh, PMPF_cp_cfg_RW_entry5_lxwr1000_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw, PMPF_cp_cfg_RW_entry5_lxwr1000_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd, PMPF_cp_cfg_RW_entry5_lxwr1000_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh, PMPF_cp_cfg_RW_entry5_lxwr1000_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw, PMPF_cp_cfg_RW_entry5_lxwr1000_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld, PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld_str)
+#endif
 
 // PMP configuration 2: L = 1, R permissions, entry 4
   LA(x5, REGIONSTART)
@@ -116,30 +124,38 @@ PMPF_cp_cfg_RW_entry5_lxwr1000_6_fld:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh, PMPF_cp_cfg_RW_entry4_lxwr1001_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw, PMPF_cp_cfg_RW_entry4_lxwr1001_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd, PMPF_cp_cfg_RW_entry4_lxwr1001_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh, PMPF_cp_cfg_RW_entry4_lxwr1001_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw, PMPF_cp_cfg_RW_entry4_lxwr1001_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld, PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld_str)
+#endif
 
 // PMP configuration 3: L = 1, WR permissions, entry 3
   LA(x5, REGIONSTART)
@@ -154,30 +170,38 @@ PMPF_cp_cfg_RW_entry4_lxwr1001_6_fld:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh, PMPF_cp_cfg_RW_entry3_lxwr1011_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw, PMPF_cp_cfg_RW_entry3_lxwr1011_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd, PMPF_cp_cfg_RW_entry3_lxwr1011_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh, PMPF_cp_cfg_RW_entry3_lxwr1011_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw, PMPF_cp_cfg_RW_entry3_lxwr1011_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld, PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld_str)
+#endif
 
 // PMP configuration 4: L = 1, X permissions, entry 2
   LA(x5, REGIONSTART)
@@ -192,30 +216,38 @@ PMPF_cp_cfg_RW_entry3_lxwr1011_6_fld:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh, PMPF_cp_cfg_RW_entry2_lxwr1100_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw, PMPF_cp_cfg_RW_entry2_lxwr1100_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd, PMPF_cp_cfg_RW_entry2_lxwr1100_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh, PMPF_cp_cfg_RW_entry2_lxwr1100_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw, PMPF_cp_cfg_RW_entry2_lxwr1100_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld, PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld_str)
+#endif
 
 // PMP configuration 5: L = 1, XR permissions, entry 1
   LA(x5, REGIONSTART)
@@ -230,30 +262,38 @@ PMPF_cp_cfg_RW_entry2_lxwr1100_6_fld:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh, PMPF_cp_cfg_RW_entry1_lxwr1101_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw, PMPF_cp_cfg_RW_entry1_lxwr1101_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd, PMPF_cp_cfg_RW_entry1_lxwr1101_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh, PMPF_cp_cfg_RW_entry1_lxwr1101_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw, PMPF_cp_cfg_RW_entry1_lxwr1101_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld, PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld_str)
+#endif
 
 // PMP configuration 6: L = 1, XWR permissions, entry 0
   LA(x5, REGIONSTART)
@@ -268,30 +308,38 @@ PMPF_cp_cfg_RW_entry1_lxwr1101_6_fld:
   RVTEST_SFENCE_VMA_IF_SUPPORTED
 
   LA(a5, TEST_FOR_EXECUTION)
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh:
   fsh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh, PMPF_cp_cfg_RW_entry0_lxwr1111_1_fsh_str)
+#endif
 PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw:
   fsw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw, PMPF_cp_cfg_RW_entry0_lxwr1111_2_fsw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd:
   fsd f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd, PMPF_cp_cfg_RW_entry0_lxwr1111_3_fsd_str)
+#endif
+#ifdef ZFHMIN_SUPPORTED
 PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh:
   flh f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh, PMPF_cp_cfg_RW_entry0_lxwr1111_4_flh_str)
+#endif
 PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw:
   flw f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw, PMPF_cp_cfg_RW_entry0_lxwr1111_5_flw_str)
+#ifdef D_SUPPORTED
 PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld:
   fld f14, 0(a5)
-  nop
-  RVTEST_SIGUPD(x2, x5, x4, a4, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld_str)
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld, PMPF_cp_cfg_RW_entry0_lxwr1111_6_fld_str)
+#endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

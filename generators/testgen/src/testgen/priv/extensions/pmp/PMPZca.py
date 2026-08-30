@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""PMPZca suite: PMP region boundaries versus 16-bit and misaligned 32-bit fetches."""
+"""PMP tests for compressed instructions and misaligned 32-bit instruction fetches."""
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
@@ -67,11 +67,7 @@ def _cret_body(test_data: TestData, amode: str) -> list[str]:
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
     ]
     for n in range(4):
-        lines.extend(
-            [
-                *gen_compressed_execute(test_data, f"boundary{n}", f"cp_cret_{amode}", f"TEST_FOR_EXECUTION_{n}"),
-            ]
-        )
+        lines.extend(gen_compressed_execute(test_data, f"boundary{n}", f"cp_cret_{amode}", f"TEST_FOR_EXECUTION_{n}"))
     return lines
 
 
@@ -150,7 +146,7 @@ def _region_body(test_data: TestData, amode: str, misaligned: bool) -> list[str]
         calls += ["REGIONSTART", "REGIONSTART + REGION_SIZE"]
     prefix = "misaligned" if misaligned else "aligned"
     for n, target in enumerate(calls, start=1):
-        lines.extend([*gen_compressed_execute(test_data, f"region{n}", f"cp_{prefix}_{amode}", target)])
+        lines.extend(gen_compressed_execute(test_data, f"region{n}", f"cp_{prefix}_{amode}", target))
     return lines
 
 
@@ -161,7 +157,7 @@ _STRADDLE_NOTE = (
 
 
 def _filler(count: str, insn: str = "nop") -> list[str]:
-    return [f".rept {count}", f"{insn}", ".endr"]
+    return [f".rept {count}", insn, ".endr"]
 
 
 def _aligned_data(amode: str) -> list[str]:
@@ -244,12 +240,20 @@ def _make_region_chunk(test_data: TestData, amode: str, misaligned: bool) -> Tes
 # compressed loads, stores and jumps
 #####################################################################
 
-_LEGAL_TEST_CASES = "Compressed loads, stores and a c.jalr against a locked NAPOT region with each legal XWR."
+_ZCA_LEGAL_TEST_CASES = (
+    "Compressed integer loads, stores, stack-pointer accesses, and c.jalr against a locked NAPOT region "
+    "with each legal XWR."
+)
+_ZC_TEST_CASES = {
+    "zcb": "Compressed byte and halfword loads and stores against a locked NAPOT region with each legal XWR.",
+    "zcd": "Compressed double-precision floating-point loads and stores against a locked NAPOT region with each legal XWR.",
+    "zcf": "Compressed single-precision floating-point loads and stores against a locked NAPOT region with each legal XWR.",
+}
 
 
 def _make_legal_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("legal_lwrx")
-    chunk.section_header = comment_banner("cp_cfg_RW", _LEGAL_TEST_CASES)
+    chunk.section_header = comment_banner("cp_cfg_RW", _ZCA_LEGAL_TEST_CASES)
     chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, "cp_cfg_RW"))
     chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop")))
     return test_data.end_test_chunk()
@@ -257,7 +261,7 @@ def _make_legal_chunk(test_data: TestData) -> TestChunk:
 
 def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
     chunk = test_data.begin_test_chunk(f"{subset}_legal_lxwr")
-    chunk.section_header = comment_banner("cp_cfg_RW", _LEGAL_TEST_CASES)
+    chunk.section_header = comment_banner("cp_cfg_RW", _ZC_TEST_CASES[subset])
     generator = {"zcb": gen_zcb, "zcd": gen_zcd, "zcf": gen_zcf}[subset]
     chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, "cp_cfg_RW"))
     chunk.raw_data.extend(make_exec_region())

@@ -59,6 +59,7 @@ PMPSm_cp_grain_check_readback:
   LI(t3, PMP_GRAIN_CHECK_MASK)
   csrr x7, pmpaddr0
   and x7, x7, t3
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_check_readback, PMPSm_cp_grain_check_readback_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test

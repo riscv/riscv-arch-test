@@ -8,8 +8,6 @@
 
 """Privileged test generator registry with automatic discovery."""
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,7 +42,7 @@ class PrivTestRegistryEntry:
 
     generator: PrivTestGenerator
     extra_defines: list[str] = field(default_factory=list)
-    required_extensions: list[str] | None = None
+    required_extensions: list[str | list[str]] | None = None
     march_extensions: list[str] | None = None
     params: list[str] | None = None
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE
@@ -58,7 +56,7 @@ def add_priv_test_generator(
     testsuite: str,
     *,
     extra_defines: list[str] | None = None,
-    required_extensions: list[str] | None = None,
+    required_extensions: list[str | list[str]] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
@@ -117,7 +115,7 @@ def get_priv_test_defines(testsuite: str) -> list[str]:
     return _get_entry(testsuite).extra_defines
 
 
-def get_priv_test_required_extensions(testsuite: str) -> list[str] | None:
+def get_priv_test_required_extensions(testsuite: str) -> list[str | list[str]] | None:
     """Get the required RISC-V extensions for a priv testsuite."""
     return _get_entry(testsuite).required_extensions
 

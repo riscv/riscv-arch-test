@@ -3,6 +3,20 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Absolute .option arch strings used to bracket the FP/vector register init below.
+// An absolute arch string resets the arch for the block (rather than adding to the
+// test's -march), so it drops any mutually-exclusive extension the test declared
+// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
+// restores the test's real march. Supersets are harmless: only the init instructions
+// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
+#if __riscv_xlen == 64
+  #define RVTEST_FP_INIT_ARCH  rv64if
+  #define RVTEST_VEC_INIT_ARCH rv64imfv
+#else
+  #define RVTEST_FP_INIT_ARCH  rv32if
+  #define RVTEST_VEC_INIT_ARCH rv32imfv
+#endif
+
 /*************************************** RVTEST_BEGIN **************************************/
 /**** RVTEST_BEGIN sets up the test environment and is run before the actual test code. ****/
 /**** - sets up main entry point labels                                                 ****/
@@ -199,31 +213,21 @@
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
 
-    // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
-    // always boot to at least M-mode
-    // TODO: RVTEST_BOOT_TO_S/UMODE are temporarily gated, so we remain in M-mode unless BOOT_TO_S/UMODE parameters are set.  Remove this once all tests are ported to T-SBI.
+    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
     RVTEST_BOOT_TO_MMODE
+    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
+    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
     #ifndef BOOT_TO_MMODE
-      // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
-      // otherwise continue to a lower privilege mode (if one exists) depending on the type of test
       #ifdef S_SUPPORTED
         RVTEST_BOOT_TO_SMODE
       #endif
+      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
+      // Otherwise continue to U-mode if U-mode supported
       #ifndef BOOT_TO_SMODE
-        // the BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
-        // otherwise continue to U-mode if U-mode supported
         #ifdef U_SUPPORTED
           RVTEST_BOOT_TO_UMODE
         #endif
       #endif
-    #endif
-
-    // Temporary workaround to boot to correct mode in Ssstrict tests until
-    // full boot flow with mode selection is working. TODO: Remove this
-    #ifdef RVTEST_TEMP_BOOT_TO_S
-      RVTEST_GOTO_LOWER_MODE Smode
-    #elif defined(RVTEST_TEMP_BOOT_TO_U)
-      RVTEST_GOTO_LOWER_MODE Umode
     #endif
 
     #ifdef S_SUPPORTED
@@ -867,12 +871,7 @@
     #endif
 
     // Boot into S-mode
-    // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
-    // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
-    // Also this avoids going to S-mode when the goal is to get to U-mode
-    #ifdef BOOT_TO_SMODE
-      RVTEST_GOTO_LOWER_MODE Smode
-    #endif
+    RVTEST_TSBI_GOTO_SMODE
   #endif
 .endm
 
@@ -881,7 +880,6 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
-  // dh 7/1/26 temporarily arriving here in M-mode if the goal is to go to U-mode
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_UMODE
@@ -889,22 +887,7 @@
   #else
     rvtest_boot_to_umode:
     // Boot into U-mode
-    #ifdef BOOT_TO_UMODE
-      RVTEST_GOTO_LOWER_MODE Umode
-    #endif
-
-    // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
-    // #ifdef S_SUPPORTED
-    //   // RVTEST_GOTO_LOWER_MODE Umode // *** need a version that works from S-mode
-    // #else
-    //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
-
-    //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
-    //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
-    //   #ifdef BOOT_TO_UMODE
-    //     RVTEST_GOTO_LOWER_MODE Umode
-    //   #endif
-    // #endif
+    RVTEST_TSBI_GOTO_UMODE
   #endif
   nop
 .endm
@@ -928,7 +911,14 @@
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
-    #endif
+      csrw vstart, x0  // vstart = 0
+      #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
+        .option push
+        .option arch, RVTEST_VEC_INIT_ARCH
+        vsetivli t0, 1, e32, m1, tu, mu // predictable initial state with 1 element, 32-bit EEW, LMUL=1, tail and masked elements undistrubed
+        .option pop
+      #endif // ZVE32X_SUPPORTED
+    #endif // ZVL32B_SUPPORTED
 .endm
 
 /*****************************************************************/
@@ -944,20 +934,6 @@
 /************************************ RVTEST_INIT_REGS ********************************/
 /**** Initialize registers and signature/data pointers                             ****/
 /**************************************************************************************/
-
-// Absolute .option arch strings used to bracket the FP/vector register init below.
-// An absolute arch string resets the arch for the block (rather than adding to the
-// test's -march), so it drops any mutually-exclusive extension the test declared
-// (e.g. Zfinx in the Sm/Ssstateen suites, which conflicts with F). .option pop then
-// restores the test's real march. Supersets are harmless: only the init instructions
-// are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
-#if __riscv_xlen == 64
-  #define RVTEST_FP_INIT_ARCH  rv64if
-  #define RVTEST_VEC_INIT_ARCH rv64imfv
-#else
-  #define RVTEST_FP_INIT_ARCH  rv32if
-  #define RVTEST_VEC_INIT_ARCH rv32imfv
-#endif
 
 .macro RVTEST_INIT_REGS
   /* init regs, to ensure you catch any errors */

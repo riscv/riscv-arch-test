@@ -24,8 +24,10 @@
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
+
 // Define the size of the signature region
 #define SIGUPD_COUNT 32
+#define BOOT_TO_MMODE
 
 // Enable trap handler
 #define RVTEST_PRIV_TEST

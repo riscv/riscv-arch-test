@@ -124,7 +124,11 @@ def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ZawrsSm", required_extensions=["Sm", "Zawrs", "Zalrsc"])
+@add_priv_test_generator(
+    "ZawrsSm",
+    required_extensions=["Sm", "Zawrs", "Zalrsc"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_zawrssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrsSm WRS instructions at machine-mode."""
 

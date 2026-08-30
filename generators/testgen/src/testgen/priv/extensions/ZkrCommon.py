@@ -120,7 +120,10 @@ def gen_seed_illegal_csr_op_tests(test_data: TestData, covergroup: str, mode: st
 
 
 def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, mode: str) -> list[str]:
-    """Read seed twice in a row using csrrw; check entropy = 0 if OPST is not ES16."""
+    """Read seed twice in a row using csrrw.
+    If OPST is not ES16, fail when entropy bits are nonzero.
+    Always SIGUPD 0xB0BA on success so the scorecard does not depend on OPST.
+    """
     coverpoint = "cp_zkr_seed_entropy_zero_non_es16"
 
     read_reg, opst_reg, entropy_reg, cmp_reg = test_data.int_regs.get_registers(4)
@@ -144,16 +147,19 @@ def gen_seed_entropy_zero_non_es16_tests(test_data: TestData, covergroup: str, m
         f"srli x{opst_reg}, x{read_reg}, 0x1E",
         "# entropy bits",
         f"LI(x{entropy_reg}, 0xFFFF)",
-        "# Check OPST value",
+        f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+        "# ES16 (OPST == 2): skip the empty-source leak check",
         f"LI(x{cmp_reg}, 0x2)",
-        f"bne x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_non_es16",
-        "# SIGUPD 0xB0BA if OPST is ES16",
+        f"beq x{opst_reg}, x{cmp_reg}, .Lzkr_seed_entropy_ok",
+        "# Not ES16: entropy must be 0 (spec seed_entropy_zero_non_es16)",
+        f"bnez x{entropy_reg}, .Lzkr_seed_entropy_leak",
+        ".Lzkr_seed_entropy_ok:",
+        "# Same success token for ES16 and for WAIT/BIST/DEAD with entropy 0",
         f"LI(x{cmp_reg}, 0xB0BA)",
         write_sigupd(cmp_reg, test_data),
         "j .Lzkr_seed_entropy_done",
-        ".Lzkr_seed_entropy_non_es16:",
-        "# If OPST is not ES16",
-        f"and x{entropy_reg}, x{entropy_reg}, x{read_reg}",
+        ".Lzkr_seed_entropy_leak:",
+        "# Nonzero entropy while not ES16: SIGUPD leaked bits vs Sail 0xB0BA",
         write_sigupd(entropy_reg, test_data),
         ".Lzkr_seed_entropy_done:",
         *_gate(mode, [_mseccfg(mode, f"csrw mseccfg, x{save_reg}")]),

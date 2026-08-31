@@ -67,8 +67,7 @@ def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
                 _CG,
                 "cbze",
                 description=(
-                    f"Execute cbo.zero in {mode} mode with menvcfg x senvcfg.cbze crossed over "
-                    "{0/1 x 0/1}, via T-SBI"
+                    f"Execute cbo.zero in {mode} mode with menvcfg x senvcfg.cbze crossed over {{0/1 x 0/1}}, via T-SBI"
                 ),
                 mode=mode,
                 cross_senvcfg=True,

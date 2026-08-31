@@ -9,6 +9,8 @@
 """Shared helpers for generating Zicbo (cache-block operation) exception tests
 across different privilege-modes."""
 
+from typing import NamedTuple
+
 from testgen.asm.helpers import comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
@@ -16,16 +18,36 @@ from testgen.data.state import TestData
 CBO_INSTRS = ["inval", "clean", "flush", "zero"]
 PREFETCH_INSTRS = ["i", "r", "w"]
 
-_CBO_FIELDS = {
-    "cbie": dict(shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"),
-    "cbcfe": dict(shift=6, bins=["0", "1"], instrs=["cbo.clean", "cbo.flush"], guard="ZICBOM_SUPPORTED"),
-    "cbze": dict(shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"),
+class _CboField(NamedTuple):
+    """One cbie/cbcfe/cbze binned config test: bit position, values walked, the
+    instruction(s) executed, and the feature #ifdef guarding the block."""
+
+    shift: int
+    bins: list[str]
+    instrs: list[str]
+    guard: str
+
+_CBO_FIELDS: dict[str, _CboField] = {
+    "cbie": _CboField(
+        shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"
+    ),
+    "cbcfe": _CboField(
+        shift=6,
+        bins=["0", "1"],
+        instrs=["cbo.clean", "cbo.flush"],
+        guard="ZICBOM_SUPPORTED",
+    ),
+    "cbze": _CboField(
+        shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"
+    ),
 }
+
 
 def _csrw(csr: str, reg: int, mode: str) -> str:
     """Return a csrw instruction: direct in M-mode, routed through T-SBI otherwise."""
     instr = f"csrw  {csr}, x{reg}"
     return instr if mode == "Sm" else tsbi_call(instr)
+
 
 def goto_mode(mode: str) -> str:
     """Return the T-SBI hop into ``mode`` ("S" or "U")."""
@@ -34,6 +56,7 @@ def goto_mode(mode: str) -> str:
     if mode == "U":
         return "RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode"
     raise ValueError(f"no T-SBI hop for mode {mode!r}")
+
 
 def _mode_tag(mode: str, cross_senvcfg: bool) -> str:
     """Test-name mode suffix."""

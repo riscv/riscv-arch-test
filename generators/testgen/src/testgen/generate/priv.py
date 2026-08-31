@@ -8,7 +8,6 @@
 
 """Privileged test generation orchestration."""
 
-import shutil
 from pathlib import Path
 from random import seed
 
@@ -31,13 +30,14 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
-    entries = get_priv_test_generators(testsuite)
     output_path = output_test_dir / "priv" / testsuite
-    shutil.rmtree(output_path, ignore_errors=True)
-
+    generated_files: set[Path] = set()
     next_file_indices: dict[str | None, int] = {}
-    for entry in entries:
-        _generate_priv_test_entry(testsuite, output_test_dir, entry, next_file_indices)
+    for entry in get_priv_test_generators(testsuite):
+        generated_files.update(_generate_priv_test_entry(testsuite, output_test_dir, entry, next_file_indices))
+
+    for stale_file in set(output_path.glob("*.S")) - generated_files:
+        stale_file.unlink()
 
 
 def _generate_priv_test_entry(
@@ -45,10 +45,11 @@ def _generate_priv_test_entry(
     output_test_dir: Path,
     entry: PrivTestRegistryEntry,
     next_file_indices: dict[str | None, int],
-) -> None:
+) -> set[Path]:
     """Generate tests for one registry entry."""
     output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
+    generated_files: set[Path] = set()
 
     test_config = TestConfig(
         xlen=0,
@@ -81,9 +82,12 @@ def _generate_priv_test_entry(
         first_file_idx = next_file_indices.get(split_name, 0)
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
             extra_defines = entry.extra_defines
-            write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
+            generated_files.add(
+                write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)
+            )
         next_file_indices[split_name] = first_file_idx + len(test_files)
 
     # Clean up (make sure all registers were returned)
     test_data.int_regs.return_registers(priv_exclude_regs)
     test_data.destroy()
+    return generated_files

@@ -53,9 +53,9 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
-) -> None:
+) -> Path:
     """
-    Write a single test file.
+    Write a single test file and return its path.
 
     Args:
         test_config: Test configuration
@@ -127,3 +127,5 @@ def write_test_file(
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
     if not test_file.exists() or test_file.read_text() != test_string:
         test_file.write_text(test_string)
+
+    return test_file

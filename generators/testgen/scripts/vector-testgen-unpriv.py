@@ -16,7 +16,6 @@ import filecmp
 import math
 import os
 import re
-import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from random import randint, seed
@@ -1621,7 +1620,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   setXlen(xlen)
 
   pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
-  shutil.rmtree(pathname, ignore_errors=True)
 
   redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
   if (xlen == 32):
@@ -1654,6 +1652,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
       applicable_instructions.remove(test)
 
   written = 0
+  generated_files: set[Path] = set()
   for test in applicable_instructions:
     newInstruction()
 
@@ -1727,7 +1726,11 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
         tempfname_p.replace(fname_p)
     else:
       tempfname_p.replace(fname_p)
+    generated_files.add(fname_p)
     written += 1
+
+  for stale_file in set(Path(pathname).glob("*.S")) - generated_files:
+    stale_file.unlink()
 
   return f"rv{xlen}/{extension}: {written} test(s)"
 

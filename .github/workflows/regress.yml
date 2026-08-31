@@ -290,11 +290,11 @@ jobs:
         uses: ./.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
-        run: make clean-tests tests
+        run: make tests
 
       - name: Check for differences
         run: |
-          dirs=(tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage)
+          dirs=(tests coverpoints)
           changed=$(git diff --name-only -- "${dirs[@]}")
           untracked=$(git ls-files --others --exclude-standard -- "${dirs[@]}")
           if [ -n "$changed" ] || [ -n "$untracked" ]; then

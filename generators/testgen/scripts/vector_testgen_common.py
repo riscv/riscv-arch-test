@@ -1612,6 +1612,7 @@ def getPrivExtraDefines(sew):
     sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
+        "#define BOOT_TO_MMODE",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
         f"#define SEWMINSIZE e{minSEW_MIN}",
@@ -1712,11 +1713,13 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
-        if ext in ["Zvbb", "Zvbc", "Zvkb"]:
+        # Vector Bit Manipulation, Carryless Multiplication, and Crypto
+        if ext in ["Zvbb", "Zvbc", "Zvkb", "Zvkg", "Zvkned", "Zvknha", "Zvknhb", "Zvksed", "Zvksh"]:
           # Assemblers require an explicit Zve base when only Zv* sub-extensions
-          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW.
-          zve_extension = f"Zve{max(32, sew, vdsew)}x"
+          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW;
+          # Zvknhb requires Zve64x regardless of the test SEW.
+          zve_sew = 64 if ext == "Zvknhb" else max(32, sew, vdsew)
+          zve_extension = f"Zve{zve_sew}x"
           ext_parts_no_I.append(zve_extension)
           ext_str_no_I += "_" + zve_extension.lower()
         ext_parts_no_I.append(ext)
@@ -3241,6 +3244,11 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
       segments  =     register_data['segments']
       if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul < 1:
         emul = 1
+      nreg = getWholeRegisterCount(instruction)
+      if nreg is not None:
+        # Whole-register ops touch NREG registers regardless of the vtype LMUL,
+        # so the operand must be NREG-aligned and must not run past v31.
+        emul = nreg
       # Align to lmul even for scalar/mask registers so that scaffolding
       # loads/stores (which execute at the current vtype LMUL) don't trap
       # on misaligned register numbers.
@@ -3258,6 +3266,9 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
     emul_check = int(register_data['size_multiplier'] * lmul)
     if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
       emul_check = 1
+    nreg = getWholeRegisterCount(instruction)
+    if nreg is not None:
+      emul_check = nreg
     if register + emul_check * register_data['segments'] > reg_count:
       raise ValueError(
         f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
@@ -3663,6 +3674,13 @@ def getBaseLmul(instruction, sew):
 def getLengthLmul(instruction):
   if instruction in whole_register_move       : return int(instruction[3])
   else                                        : return None
+
+def getWholeRegisterCount(instruction):
+  # Whole-register moves and loads/stores operate on NREG registers fixed by the
+  # mnemonic regardless of vtype LMUL: vmv<nr>r.v, vl<nr>re<eew>.v, vs<nr>r.v.
+  if   instruction in whole_register_move : return int(instruction[3])
+  elif instruction in whole_register_ls   : return int(instruction[2])
+  else                                    : return None
 
 ##################################
 # length suite

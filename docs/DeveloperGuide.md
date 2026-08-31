@@ -110,28 +110,45 @@ assembly code in the file.
 The following top-level keys are recognized. No other keys are permitted
 (the parser uses strict validation and will reject unknown keys).
 
-| Key                   | Type            | Required | Description                                                                                                                                          |
-| --------------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `REQUIRED_EXTENSIONS` | list of strings | **Yes**  | RISC-V extensions required by this test. The test is only selected for a DUT whose implemented extensions list contains **all** of these extensions. |
-| `MARCH`               | string          | **Yes**  | The `-march` string passed to the compiler. Must match the pattern `rv(32\|64\|${XLEN})(i\|e\|g)...` (e.g., `rv32i_zba`, `rv64ifd_zfh`).             |
-| `params`              | mapping         | No       | A dictionary of parameter constraints that must match the DUT's UDB configuration for the test to be selected.                                       |
+| Key                    | Type                                | Required | Description                                                                                                              |
+| ---------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `REQUIRED_EXTENSIONS`  | list of strings or lists of strings | **Yes**  | Extensions required by this test. A nested list indicates at least one of the extensions in the sublist must be present. |
+| `FORBIDDEN_EXTENSIONS` | list of strings                     | No       | Extensions that the DUT must NOT implement for the test to be selected.                                                  |
+| `MARCH`                | string                              | **Yes**  | The `-march` string passed to the compiler, such as `rv32i_zba` or `rv64ifd_zfh`.                                        |
+| `params`               | mapping                             | No       | Parameter constraints that must match the DUT's UDB configuration for the test to be selected.                           |
 
 #### `REQUIRED_EXTENSIONS`
 
-A YAML list of extension name strings. Both quoted and unquoted styles are
-accepted:
+A YAML list of extension name strings or nested lists.
+Both quoted and unquoted strings are accepted:
 
 ```yaml
-# Quoted style (common in generated tests)
-REQUIRED_EXTENSIONS: ["I", "Zba"]
-
-# Unquoted style (common in hand-written tests)
-REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+# All listed extensions are required.
+REQUIRED_EXTENSIONS: [I, Zba]
 ```
 
-During test selection, the framework checks that every extension in this list
-is present in the DUT's implemented extensions (derived from the UDB
-configuration). A test is skipped if any required extension is missing.
+```yaml
+# I and at least one of Sm or U are required.
+REQUIRED_EXTENSIONS:
+  - I
+  - [Sm, U]
+```
+
+Each top-level item is required. A string requires that extension. A nested
+list requires at least one extension in that list. More than one nested list
+can be used. For example, `[I, [Zicboz, Zicbom, Zicbop], [Sm, U]]` means `I AND
+(Zicboz OR Zicbom OR Zicbop) AND (Sm OR U)`.
+
+#### `FORBIDDEN_EXTENSIONS`
+
+An optional YAML list of extensions that the DUT must not implement:
+
+```yaml
+FORBIDDEN_EXTENSIONS: [S]
+```
+
+The framework skips the test if the DUT implements one or more extensions in
+this list.
 
 #### `MARCH`
 

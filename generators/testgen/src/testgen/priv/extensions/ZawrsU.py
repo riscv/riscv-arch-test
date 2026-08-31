@@ -164,7 +164,12 @@ def _generate_wrs_nto_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ZawrsU", required_extensions=["U", "Zawrs", "Zalrsc"])
+@add_priv_test_generator(
+    "ZawrsU",
+    required_extensions=["U", "Zawrs", "Zalrsc"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
 def make_zawrsu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zawrs WRS instructions at user-mode."""
 

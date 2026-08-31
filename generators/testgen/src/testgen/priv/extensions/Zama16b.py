@@ -12,8 +12,6 @@ Verifies that misaligned loads, stores, and AMOs that do not cross a
 naturally aligned 16-byte boundary do NOT raise a misaligned fault.
 """
 
-from __future__ import annotations
-
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -289,13 +287,13 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "Zama16b_cg"
 
-    addr_reg, base_reg = test_data.int_regs.get_registers(2)
     # amocas.q operates on register pairs: its rd and rs2 must be EVEN-numbered
     # registers (each names the pair reg, reg+1), otherwise the assembler
-    # rejects the operands. Allocate even pairs for src/dest so the same
-    # registers are legal for every AMO mnemonic in the sweep, incl. amocas.q.
+    # rejects the operands. Allocate pairs before scalar registers so both pairs
+    # remain available in the limited privileged register set.
     src_reg = test_data.int_regs.get_register_pair()
     dest_reg = test_data.int_regs.get_register_pair()
+    addr_reg, base_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -355,6 +353,8 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     "Zama16b",
     required_extensions=["Zama16b"],
     march_extensions=["Zaamo", "Zabha", "Zacas", "F", "D", "Zfh"],
+    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zama16b(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""

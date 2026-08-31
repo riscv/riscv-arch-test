@@ -17,7 +17,6 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "U",
     required_extensions=["U"],
-    extra_defines=["#define BOOT_TO_UMODE"],
 )
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""
@@ -29,9 +28,9 @@ def make_u(test_data: TestData) -> list[TestChunk]:
             test_data,
             "U_uprivinst_cg",
             "cp_uprivinst",
-            "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
+            "Execute privileged instructions",
             [
-                ("ebreak", "ebreak                # test ebreak instruction"),
+                ("ebreak", "ebreak              # test ebreak instruction"),
                 ("mret", "mret                  # test mret instruction"),
                 ("sret", "sret                  # test sret instruction"),
             ],

@@ -13,6 +13,12 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.PrivCommon import (
+    addr_csr_tests,
+    csr_insufficient_priv_tests,
+    csr_ro_write_tests,
+    priv_inst_trap_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 # Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
@@ -45,14 +51,20 @@ S_CSRS = [
     ("stvec", 0b10),
     ("scounteren", None),
     ("sscratch", None),
+    ("sepc", None),
+    ("stval", None),
     ("sip", 0xFFFF),  # only test standard non-reserved portion
     ("sie", 0xFFFF),  # only test standard non-reserved portion
 ]
-# skip walking 1s on this because valid virtual addresses is not described adequately
-S_CSRS_NOWALK = [
-    ("sepc", None),  # only has to be able to hold all valid virtual addresses
-    ("stval", None),  # only has to be able to hold all valid virtual addresses and 0
-]
+# Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
+# stvec carries the address in BASE with MODE = Direct, so its two low bits are held at 0;
+# sepc holds bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
+# stval holds any byte address.
+S_VADDR_CSRS = {
+    "stvec": (0b11, {}),
+    "sepc": (0b01, {1: "ZCA_SUPPORTED"}),
+    "stval": (0b00, {}),
+}
 # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
 S_CSR_SENVCFG = ("senvcfg", None)
 
@@ -221,45 +233,6 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
-    """Generate ecall and ebreak and mret and sfence.vma tests."""
-    ######################################
-    covergroup = "S_sprivinst_cg"
-    coverpoint = "cp_sprivinst"
-    ######################################
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Executing ecall and ebreak and mret should cause an exception",
-        ),
-        "",
-        # ecall test
-        "# Testcase: ecall instruction",
-        test_data.add_testcase("ecall", coverpoint, covergroup),
-        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-        write_sigupd(10, test_data),
-        "",
-        # ebreak test
-        "# Testcase: ebreak instruction",
-        test_data.add_testcase("ebreak", coverpoint, covergroup),
-        "ebreak              # test ebreak instruction",
-        "",
-        # mret test
-        "# Testcase: mret instruction",
-        test_data.add_testcase("mret", coverpoint, covergroup),
-        "mret                # test mret instruction",
-        "",
-        # sfence.vma test
-        "# Testcase: sfence.vma instruction",
-        test_data.add_testcase("sfence_vma", coverpoint, covergroup),
-        "sfence.vma          # test sfence.vma instruction",
-    ]
-
-    return lines
-
-
 def _generate_srets_tests(test_data: TestData) -> list[str]:
     """Generate sret from S-mode with spp, spie, sie sweep (no TSR: that needs M-mode and lives in Sm)."""
     ######################################
@@ -348,7 +321,7 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
     )
 
-    for csr in S_CSRS + S_CSRS_NOWALK:
+    for csr in S_CSRS:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
@@ -389,6 +362,8 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     )
 
     for csr in S_CSRS:
+        if csr[0] in S_VADDR_CSRS:
+            continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -401,6 +376,8 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
     tc.code.extend(["", "#endif"])
+
+    addr_csr_tests(test_data, test_chunks, S_VADDR_CSRS, "S_scsr_cg", "scsr_addr")
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -444,56 +421,21 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
 
     # test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
 
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
-    tc.section_header = comment_banner(
-        coverpoint,
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        [
+            range(0x300, 0x400),
+            range(0x700, 0x7AA),  # exclude 0x7AA mscontext, which is accessible from S-mode
+            range(0x7AB, 0x800),
+            range(0xB00, 0xC00),
+            range(0xF00, 0x1000),
+        ],
+        "scsr_insufficient_priv",
         "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
     )
-
-    for csr in (
-        list(range(0x300, 0x400))
-        + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
-        + list(range(0x7AB, 0x800))
-        + list(range(0xB00, 0xC00))
-        + list(range(0xF00, 0x1000))
-    ):
-        tc = test_data.new_test_chunk(test_chunks, "scsr_insufficient_priv")
-        tc.code.extend(
-            [
-                "",
-                f"# Testcase: attempt to access CSR 0x{csr:03x}",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr t0, 0x{csr:03x}    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "scsr_ro")
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0xF00):
-        tc = test_data.new_test_chunk(test_chunks)
-        r1 = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                "",
-                f"# Testcase: attempt to access CSR 0x{csr:03x}",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"LI(x{r1}, -1)          # x{r1} = all 1s",
-                f"csrw 0x{csr:03x}, x{r1}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(r1)
+    csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0xF00)], "scsr_ro")
 
 
 @add_priv_test_generator(
@@ -509,7 +451,19 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_srets_tests(test_data))
     tc.code.extend(_generate_scause_tests(test_data))
     tc.code.extend(_generate_sstatus_sd_tests(test_data))
-    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(
+        priv_inst_trap_tests(
+            test_data,
+            "S_sprivinst_cg",
+            "cp_sprivinst",
+            "Executing ecall and ebreak and mret should cause an exception",
+            [
+                ("ebreak", "ebreak              # test ebreak instruction"),
+                ("mret", "mret                # test mret instruction"),
+                ("sfence_vma", "sfence.vma          # test sfence.vma instruction"),
+            ],
+        )
+    )
 
     _generate_scsr_tests(test_data, test_chunks)
     test_chunks.append(test_data.end_test_chunk())

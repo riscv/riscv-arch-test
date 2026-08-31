@@ -458,6 +458,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     mtval_zero: coverpoint ins.current.rs1_val {
         bins zero = {0};
     }
+    // Real addresses are valid even when address translation is off, so these are not gated on
+    // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
+    // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
+    // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
+    mepc_addr: coverpoint ins.current.insn[31:20] {
+        bins mepc = {CSR_MEPC};
+    }
+    xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch: coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
     `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
         mtval_ilen_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
             bins b_1[] = { [0:31] };
@@ -467,24 +480,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
     `endif
 
-    // Valid virtual address walks: mepc, mtval, and mnepc must hold every canonical virtual address.
+    // Valid virtual address walks: mepc and mtval must hold every canonical virtual address.
     // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
     // (31 for Sv32, where VALEN = XLEN).
-    `ifdef SV39_SUPPORTED
-        `define SM_VADDR_WALK
+    `ifdef SV57_SUPPORTED
+        `define SM_VADDR_WALK_MSB 55
+    `elsif SV48_SUPPORTED
+        `define SM_VADDR_WALK_MSB 46
+    `elsif SV39_SUPPORTED
+        `define SM_VADDR_WALK_MSB 37
     `elsif SV32_SUPPORTED
-        `define SM_VADDR_WALK
+        `define SM_VADDR_WALK_MSB 31
     `endif
-    `ifdef SM_VADDR_WALK
-        `ifdef SV57_SUPPORTED
-            `define SM_VADDR_WALK_MSB 55
-        `elsif SV48_SUPPORTED
-            `define SM_VADDR_WALK_MSB 46
-        `elsif SV39_SUPPORTED
-            `define SM_VADDR_WALK_MSB 37
-        `else
-            `define SM_VADDR_WALK_MSB 31
-        `endif
+    `ifdef SM_VADDR_WALK_MSB
         mepc: coverpoint ins.current.insn[31:20] {
             bins mepc = {CSR_MEPC};
         }
@@ -514,6 +522,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         mtval_vaddr_walk0: coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
             bins b_0[] = { [0:`SM_VADDR_WALK_MSB] };
         }
+
+        cp_mepc_vaddr_walk1:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk1;
+        cp_mepc_vaddr_walk0:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk0;
+        cp_mtval_vaddr_walk1:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk1;
+        cp_mtval_vaddr_walk0:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk0;
     `endif
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
@@ -551,19 +564,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     }
     cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
+    cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc_addr, xaddr_pc;
+    cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc_addr, xaddr_scratch;
+    cp_mtval_vaddr_pc:          cross priv_mode_m, csrrw, mtval, xaddr_pc;
+    cp_mtval_vaddr_scratch:     cross priv_mode_m, csrrw, mtval, xaddr_scratch;
     `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
         cp_mtval_ilen_walk1:    cross priv_mode_m, csrrw, mtval, mtval_ilen_walk1;
         cp_mtval_ilen_ones:     cross priv_mode_m, csrrw, mtval, mtval_ilen_ones;
-    `endif
-    `ifdef SM_VADDR_WALK
-        cp_mepc_vaddr_walk1:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk1;
-        cp_mepc_vaddr_walk0:    cross priv_mode_m, csrrw, mepc, xepc_vaddr_walk0;
-        cp_mtval_vaddr_walk1:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk1;
-        cp_mtval_vaddr_walk0:   cross priv_mode_m, csrrw, mtval, mtval_vaddr_walk0;
-        // `ifdef SMRNMI_SUPPORTED
-        //     cp_mnepc_vaddr_walk1: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk1;
-        //     cp_mnepc_vaddr_walk0: cross priv_mode_m, csrrw, mnepc, xepc_vaddr_walk0;
-        // `endif
     `endif
     cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
     cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;

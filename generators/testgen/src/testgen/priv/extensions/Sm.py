@@ -13,23 +13,19 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_CSRS_NOWALK, S_SSTATUS_MASK
+from testgen.priv.extensions.PrivCommon import (
+    addr_csr_tests,
+    csr_insufficient_priv_tests,
+    csr_ro_write_tests,
+)
+from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_SSTATUS_MASK
 from testgen.priv.registry import add_priv_test_generator
 
-# Address CSRs that must hold every valid virtual address.
-SM_VADDR_CSRS = [
-    ("mepc", 0b01, {1: "ZCA_SUPPORTED"}, None),
-    ("mtval", 0b00, {}, None),
-]
-
-# Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal.
-SM_VADDR_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
-SM_VADDR_TIERS = [
-    (31, None),
-    (37, "#ifdef SV39_SUPPORTED"),
-    (46, "#ifdef SV48_SUPPORTED"),
-    (55, "#ifdef SV57_SUPPORTED"),
-]
+# Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
+SM_VADDR_CSRS = {
+    "mepc": (0b01, {1: "ZCA_SUPPORTED"}),
+    "mtval": (0b00, {}),
+}
 
 
 def _gen_misa_dependencies(
@@ -503,141 +499,6 @@ def _mtval_value_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _vaddr_walk_test(
-    test_data: TestData, csr_name: str, held_low: int, gated_bits: dict[int, str], gate: str | None
-) -> list[str]:
-    """Write every canonical virtual address with one bit walked to csr_name and check it reads back exactly."""
-    covergroup = "Sm_mcsr_cg"
-    csr = (csr_name, None)
-    save_reg, ones_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
-    low_bit = held_low.bit_length()
-    ones = -1 & ~held_low
-    for bit in gated_bits:
-        ones &= ~(1 << bit)
-
-    def iteration(i: int, walking_ones: bool) -> list[str]:
-        if walking_ones:
-            coverpoint = f"cp_{csr_name}_vaddr_walk1"
-            lines = [
-                "",
-                f"# Testcase: {csr_name} = bit {i} set, 0s elsewhere",
-                f"LI(x{walk_reg}, {1 << i:#x})",
-                test_data.add_testcase(f"walking1_{i}", coverpoint, covergroup),
-                f"csrw {csr_name}, x{walk_reg}",
-                gen_csr_read_sigupd(check_reg, csr, test_data),
-            ]
-        else:
-            coverpoint = f"cp_{csr_name}_vaddr_walk0"
-            lines = [
-                "",
-                f"# Testcase: {csr_name} = bit {i} clear, 1s elsewhere",
-                f"LI(x{walk_reg}, {1 << i:#x})",
-                f"xor x{check_reg}, x{ones_reg}, x{walk_reg}    # clear bit {i}",
-                test_data.add_testcase(f"walking0_{i}", coverpoint, covergroup),
-                f"csrw {csr_name}, x{check_reg}",
-                gen_csr_read_sigupd(check_reg, csr, test_data),
-            ]
-        if i in gated_bits:
-            lines = [f"#ifdef {gated_bits[i]}", *lines, f"#endif // {gated_bits[i]}"]
-        return lines
-
-    def walk_pass(walking_ones: bool) -> list[str]:
-        lines = []
-        endifs = []
-        start = low_bit
-        for msb, guard in SM_VADDR_TIERS:
-            if guard is not None:
-                lines.append(guard)
-                endifs.append(f"#endif // {guard.split(' ', 1)[1]}")
-            for i in range(start, msb + 1):
-                lines.extend(iteration(i, walking_ones))
-            start = msb + 1
-        lines.extend(reversed(endifs))
-        return lines
-
-    lines = ["", f"# Valid virtual address walk tests for {csr_name}"]
-    if gate is not None:
-        lines.append(f"#ifdef {gate}")
-    lines.extend(
-        [
-            SM_VADDR_GATE,
-            f"csrr x{save_reg}, {csr_name}      # Save CSR",
-            f"LI(x{ones_reg}, {ones})    # all 1s with bits {(~ones) & 0xFF:#b} held low",
-        ]
-    )
-    for bit, bit_gate in gated_bits.items():
-        lines.extend(
-            [
-                f"#ifdef {bit_gate}",
-                f"ori x{ones_reg}, x{ones_reg}, {1 << bit}    # bit {bit} is walkable with {bit_gate}",
-                f"#endif // {bit_gate}",
-            ]
-        )
-    lines.append(f"\n# Walking 1s through {csr_name} with 0s in the msbs")
-    lines.extend(walk_pass(True))
-    lines.append(f"\n# Walking 0s through {csr_name} with 1s in the msbs")
-    lines.extend(walk_pass(False))
-    lines.extend(
-        [f"csrw {csr_name}, x{save_reg}            # restore CSR", f"#endif // {SM_VADDR_GATE.split(' ', 1)[1]}"]
-    )
-    if gate is not None:
-        lines.append(f"#endif // {gate}")
-    test_data.int_regs.return_registers([save_reg, ones_reg, walk_reg, check_reg])
-    return lines
-
-
-def _vaddr_value_tests(test_data: TestData, csr_name: str, gate: str | None) -> list[str]:
-    """Write program addresses (the current pc and scratch) to csr_name and check they read back exactly.
-
-    These are valid addresses even when address translation is off, so unlike the
-    canonical-address walk they are not gated on Sv* support.
-    """
-    covergroup = "Sm_mcsr_cg"
-    csr = (csr_name, None)
-    save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
-    lines = [
-        "",
-        f"# {csr_name} must hold program addresses even when address translation is off",
-        f"csrr x{save_reg}, {csr_name}      # Save CSR",
-        "",
-        f"# Testcase: {csr_name} = current pc",
-        f"auipc x{walk_reg}, 0",
-        test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
-        f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
-        gen_csr_read_sigupd(check_reg, csr, test_data),
-        "",
-        f"# Testcase: {csr_name} = address of scratch",
-        f"la x{walk_reg}, scratch",
-        test_data.add_testcase("scratch", f"cp_{csr_name}_vaddr_scratch", covergroup),
-        f"csrw {csr_name}, x{walk_reg}",
-        gen_csr_read_sigupd(check_reg, csr, test_data),
-        f"csrw {csr_name}, x{save_reg}            # restore CSR",
-    ]
-    if gate is not None:
-        lines = [f"#ifdef {gate}", *lines, f"#endif // {gate}"]
-    test_data.int_regs.return_registers([save_reg, walk_reg, check_reg])
-    return lines
-
-
-def _generate_vaddr_walk_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Walk valid virtual addresses"""
-    tc = test_data.new_test_chunk(test_chunks, "mcsr_vaddr")
-    tc.section_header = comment_banner(
-        "cp_mtval_{zero,ilen_walk1,ilen_ones}, cp_{mepc,mtval,mnepc}_vaddr_walk{1,0}, cp_{mepc,mtval}_vaddr_{pc,scratch}",
-        "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal instruction\n"
-        "encoding is reported in mtval. Write every valid virtual address as a walking 1 (0s in the msbs) and a\n"
-        "walking 0 (1s in the msbs) to mepc, mtval, and mnepc (Smrnmi). Canonical addresses have bits\n"
-        "XLEN-1:VALEN-1 equal, so bits low..VALEN-2 are walked; requires Sv32 or Sv39 and extends the walk to\n"
-        "Sv48/Sv57 when supported. Also write two program addresses — the current pc and the scratch area —\n"
-        "which are valid even when address translation is off, so those tests are not gated on Sv* support",
-    )
-    tc.code.extend(_mtval_value_tests(test_data))
-    for csr_name, held_low, gated_bits, gate in SM_VADDR_CSRS:
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(_vaddr_value_tests(test_data, csr_name, gate))
-        tc.code.extend(_vaddr_walk_test(test_data, csr_name, held_low, gated_bits, gate))
-
-
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -705,7 +566,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
-        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0.
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),  # only accessed here; walked as a valid virtual address in cp_mepc_vaddr_walk*
@@ -839,10 +700,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         )
     )
 
-    vaddr_csr_names = {name for name, _held_low, _gated_bits, _gate in SM_VADDR_CSRS}
     for csr in csrm:
-        if csr[0] in vaddr_csr_names:
-            continue  # skip the virtual-address CSRs; they are walked in _generate_vaddr_walk_tests
+        if csr[0] in SM_VADDR_CSRS:
+            continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
@@ -880,53 +740,24 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
 
-    _generate_vaddr_walk_tests(test_data, test_chunks)
-
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_insufficient_priv")
-
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_mtval_{zero,ilen_walk1,ilen_ones}",
+        "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
+        "instruction encoding is reported in mtval",
+    )
+    tc.code.extend(_mtval_value_tests(test_data))
+    addr_csr_tests(test_data, test_chunks, SM_VADDR_CSRS, "Sm_mcsr_cg", "mcsr_addr")
+
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        [range(0x7B0, 0x7C0)],
+        "csr_insufficient_priv",
         "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
-    temp_reg = test_data.int_regs.get_register()
-    for csr in range(0x7B0, 0x7C0):
-        tc.code.extend(
-            [
-                "",
-                # Test the write value
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-    test_data.int_regs.return_register(temp_reg)
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0x1000):
-        tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                "",
-                f"\nLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
+    csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0x1000)], "csr_ro")
 
     ######################################
     coverpoint = "cp_scsr_from_m"
@@ -938,7 +769,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc.code.append("#ifdef S_SUPPORTED")
-    for csr in S_CSRS + S_CSRS_NOWALK:
+    for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))

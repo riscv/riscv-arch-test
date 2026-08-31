@@ -16,6 +16,7 @@ import filecmp
 import math
 import os
 import re
+import shutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from random import randint, seed
@@ -1620,6 +1621,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   setXlen(xlen)
 
   pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
+  shutil.rmtree(pathname, ignore_errors=True)
 
   redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
   if (xlen == 32):

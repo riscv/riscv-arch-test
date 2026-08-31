@@ -8,6 +8,7 @@
 
 """Privileged test generation orchestration."""
 
+import shutil
 from pathlib import Path
 from random import seed
 
@@ -30,8 +31,12 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         testsuite: Testsuite name (e.g., "ExceptionsSm", "SsstrictSm")
         output_test_dir: Base directory to output generated tests
     """
+    entries = get_priv_test_generators(testsuite)
+    output_path = output_test_dir / "priv" / testsuite
+    shutil.rmtree(output_path, ignore_errors=True)
+
     next_file_indices: dict[str | None, int] = {}
-    for entry in get_priv_test_generators(testsuite):
+    for entry in entries:
         _generate_priv_test_entry(testsuite, output_test_dir, entry, next_file_indices)
 
 

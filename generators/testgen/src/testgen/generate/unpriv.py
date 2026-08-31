@@ -9,6 +9,7 @@
 """Unprivileged test generation from CSV testplans."""
 
 import re
+import shutil
 from pathlib import Path
 
 from testgen.constants import (
@@ -77,6 +78,7 @@ def generate_unpriv_extension_tests(
 
     # Create testsuite-wide test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
+    shutil.rmtree(output_dir, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)

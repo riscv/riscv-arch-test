@@ -16,6 +16,7 @@ import math
 import os
 import pathlib
 import re
+import shutil
 from random import randint, seed
 
 import priv  # priv coverpoint generator scripts
@@ -556,6 +557,8 @@ if __name__ == '__main__':
 
     testplans = readTestplans(priv=True)
     extensions = list(testplans.keys())
+    for extension in extensions:
+      shutil.rmtree(pathlib.Path(ARCH_VERIF) / "tests" / "priv" / extension, ignore_errors=True)
 
     for xlen in xlens:
       for extension in extensions:

@@ -8,8 +8,6 @@
 
 """Sm privileged extension test generator."""
 
-from __future__ import annotations
-
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
@@ -18,22 +16,13 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_CSRS_NOWALK, S_SSTATUS_MASK
 from testgen.priv.registry import add_priv_test_generator
 
-# Address CSRs not walked with csr_walk_test: they only have to hold valid virtual addresses,
-# which the canonical-address walks in _generate_vaddr_walk_tests cover.
-SM_CSRS_NOWALK = ["mepc", "mtval"]
-
-# Address CSRs that must hold every valid virtual address. The value written is the address
-# itself: mepc and mnepc hold bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
-# mtval holds any byte address. Each entry is (csr, held-low mask, {bit: gate define}, gate define).
+# Address CSRs that must hold every valid virtual address.
 SM_VADDR_CSRS = [
     ("mepc", 0b01, {1: "ZCA_SUPPORTED"}, None),
     ("mtval", 0b00, {}, None),
-    # ("mnepc", 0b01, {1: "ZCA_SUPPORTED"}, "SMRNMI_SUPPORTED"),  # until the Sail reference model supports Smrnmi
 ]
 
-# Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal, so the msb that can be walked
-# independently is VALEN-2 (31 for Sv32, where VALEN = XLEN). Each tier is (msb, guard) and extends
-# the walk to the wider scheme when it is supported.
+# Canonical virtual addresses have bits XLEN-1:VALEN-1 all equal.
 SM_VADDR_GATE = "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)"
 SM_VADDR_TIERS = [
     (31, None),
@@ -597,20 +586,55 @@ def _vaddr_walk_test(
     return lines
 
 
+def _vaddr_value_tests(test_data: TestData, csr_name: str, gate: str | None) -> list[str]:
+    """Write program addresses (the current pc and scratch) to csr_name and check they read back exactly.
+
+    These are valid addresses even when address translation is off, so unlike the
+    canonical-address walk they are not gated on Sv* support.
+    """
+    covergroup = "Sm_mcsr_cg"
+    csr = (csr_name, None)
+    save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "",
+        f"# {csr_name} must hold program addresses even when address translation is off",
+        f"csrr x{save_reg}, {csr_name}      # Save CSR",
+        "",
+        f"# Testcase: {csr_name} = current pc",
+        f"auipc x{walk_reg}, 0",
+        test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
+        f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
+        gen_csr_read_sigupd(check_reg, csr, test_data),
+        "",
+        f"# Testcase: {csr_name} = address of scratch",
+        f"la x{walk_reg}, scratch",
+        test_data.add_testcase("scratch", f"cp_{csr_name}_vaddr_scratch", covergroup),
+        f"csrw {csr_name}, x{walk_reg}",
+        gen_csr_read_sigupd(check_reg, csr, test_data),
+        f"csrw {csr_name}, x{save_reg}            # restore CSR",
+    ]
+    if gate is not None:
+        lines = [f"#ifdef {gate}", *lines, f"#endif // {gate}"]
+    test_data.int_regs.return_registers([save_reg, walk_reg, check_reg])
+    return lines
+
+
 def _generate_vaddr_walk_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
-    """Generate the mtval value tests and the valid virtual address walks for mepc, mtval, and mnepc."""
+    """Walk valid virtual addresses"""
     tc = test_data.new_test_chunk(test_chunks, "mcsr_vaddr")
     tc.section_header = comment_banner(
-        "cp_mtval_{zero,ilen_walk1,ilen_ones}, cp_{mepc,mtval,mnepc}_vaddr_walk{1,0}",
+        "cp_mtval_{zero,ilen_walk1,ilen_ones}, cp_{mepc,mtval,mnepc}_vaddr_walk{1,0}, cp_{mepc,mtval}_vaddr_{pc,scratch}",
         "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal instruction\n"
         "encoding is reported in mtval. Write every valid virtual address as a walking 1 (0s in the msbs) and a\n"
         "walking 0 (1s in the msbs) to mepc, mtval, and mnepc (Smrnmi). Canonical addresses have bits\n"
         "XLEN-1:VALEN-1 equal, so bits low..VALEN-2 are walked; requires Sv32 or Sv39 and extends the walk to\n"
-        "Sv48/Sv57 when supported",
+        "Sv48/Sv57 when supported. Also write two program addresses — the current pc and the scratch area —\n"
+        "which are valid even when address translation is off, so those tests are not gated on Sv* support",
     )
     tc.code.extend(_mtval_value_tests(test_data))
     for csr_name, held_low, gated_bits, gate in SM_VADDR_CSRS:
         tc = test_data.new_test_chunk(test_chunks)
+        tc.code.extend(_vaddr_value_tests(test_data, csr_name, gate))
         tc.code.extend(_vaddr_walk_test(test_data, csr_name, held_low, gated_bits, gate))
 
 
@@ -815,9 +839,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         )
     )
 
+    vaddr_csr_names = {name for name, _held_low, _gated_bits, _gate in SM_VADDR_CSRS}
     for csr in csrm:
-        if csr[0] in SM_CSRS_NOWALK:
-            continue
+        if csr[0] in vaddr_csr_names:
+            continue  # skip the virtual-address CSRs; they are walked in _generate_vaddr_walk_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 

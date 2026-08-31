@@ -42,7 +42,7 @@ CSRS_PER_CHUNK = 100
 # compressed quadrants = 16384 encodings) are split into several chunks so no
 # single block becomes an oversized, unsplittable file. Kept below
 # TESTCASES_PER_PRIV_FILE so the splitter can still pack a few chunks per file.
-MAX_WORDS_PER_CHUNK = 3000
+MAX_WORDS_PER_CHUNK = 1000
 
 
 @dataclass(frozen=True)
@@ -480,7 +480,7 @@ def _generate_illegal_instr(
 # ── Vector illegal instruction sweep ─────────────────────────────────────
 
 
-def _vector_setup(sew: str = "8", avl: int = 0) -> SetupFn:
+def _vector_setup(sew: str = "8", avl: int = 0, lmul: int = 1) -> SetupFn:
     """Per-chunk setup factory for vector blocks: reload scratch base + set vl/vtype.
 
     mstatus.VS is already enabled by RVTEST_BEGIN; only vl/vtype must be set so
@@ -490,7 +490,7 @@ def _vector_setup(sew: str = "8", avl: int = 0) -> SetupFn:
 
     def setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
         _scratch_setup(lines, test_data, scratch_base)
-        lines.append(f"\tvsetivli x0, {avl}, e{sew}, m1, ta, ma")
+        lines.append(f"\tvsetivli x0, {avl}, e{sew}, m{lmul}, ta, ma")
         lines.append("")
 
     return setup
@@ -595,15 +595,18 @@ def _generate_vector_illegal_instr(
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:
-        for vl in [1, 4, 8]:
-            sew_header: str | None = comment_banner(f"Vector crypto SEW={sew} VL={vl}", f"funct6 sweeps with e{sew}")
+        for vl in [4, 8]:
+            sew_header: str | None = comment_banner(
+                f"Vector crypto SEW={sew} VL={vl}",
+                f"funct6 sweeps with e{sew}, lmul = 4 to fit short VLEN per ISA manual recommendation",
+            )
             _emit_raw_sweeps(
                 test_data,
                 test_chunks,
                 [
-                    RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111"),
+                    RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRR00RRR00EEERRR001110111"),
                 ],
-                setup=_vector_setup(sew, avl=vl),
+                setup=_vector_setup(sew, avl=vl, lmul=4),
                 section_header=sew_header,
             )
 

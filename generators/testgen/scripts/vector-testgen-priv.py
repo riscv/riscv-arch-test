@@ -556,6 +556,7 @@ if __name__ == '__main__':
 
     testplans = readTestplans(priv=True)
     extensions = list(testplans.keys())
+    generated_files: dict[str, set[pathlib.Path]] = {extension: set() for extension in extensions}
 
     for xlen in xlens:
       for extension in extensions:
@@ -618,11 +619,6 @@ if __name__ == '__main__':
             CHUNK_SIZE = max(len(instructions), 1)
 
         chunks = [instructions[i:i + CHUNK_SIZE] for i in range(0, len(instructions), CHUNK_SIZE)]
-        # Discover existing chunk files so stale outputs from a larger split
-        # don't leak into the build (e.g. switching from 6 chunks to 4).
-        for stale in pathlib.Path(pathname).glob(f"{basename}_rv{xlen}*.S"):
-            os.system(f"rm -f {stale}")
-
         for chunk_idx, chunk_instructions in enumerate(chunks):
             # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
             # so each chunk starts clean and signature counts / label numbering
@@ -704,3 +700,9 @@ if __name__ == '__main__':
                     print("Updated " + fname)
             else:
                 os.system(f"mv {tempfname} {fname}")
+            generated_files[extension].add(pathlib.Path(fname))
+
+    for extension, extension_files in generated_files.items():
+        output_dir = pathlib.Path(ARCH_VERIF) / "tests" / "priv" / extension
+        for stale_file in set(output_dir.glob("*.S")) - extension_files:
+            stale_file.unlink()

@@ -80,7 +80,7 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)
-    required_extensions = ["Zibi"] if testsuite == "Zibi" else None
+    required_extensions: list[str | list[str]] | None = ["Zibi"] if testsuite == "Zibi" else None
     march_extensions = [] if testsuite == "Zibi" else None
     test_config = TestConfig(
         xlen=xlen,

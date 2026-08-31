@@ -488,13 +488,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         mepc: coverpoint ins.current.insn[31:20] {
             bins mepc = {CSR_MEPC};
         }
-        // mnepc walks are disabled until the Sail reference model supports Smrnmi
-        // `ifdef SMRNMI_SUPPORTED
-        //     mnepc: coverpoint ins.current.insn[31:20] {
-        //         bins mnepc = {CSR_MNEPC};
-        //     }
-        // `endif
-        // mepc, mnepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
+        // mepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
         xepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
             `ifdef ZCA_SUPPORTED
                 bins b_1[] = { [1:`SM_VADDR_WALK_MSB] };

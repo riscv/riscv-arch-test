@@ -19,6 +19,7 @@ from testgen.priv.extensions.ExceptionsZicboCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "ExceptionsZicboU_cg"
+_MODE = "U"
 
 
 @add_priv_test_generator(
@@ -47,42 +48,27 @@ def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
         cbo_config_helper(
             test_data,
             _CG,
-            coverpoint="cp_cbie",
-            tag="cbie",
-            shift=4,
-            bins=["00", "01", "11"],
-            instrs=["cbo.inval"],
-            guard="ZICBOM_SUPPORTED",
+            "cbie",
             description="Execute cbo.inval in user mode with menvcfg.cbie = {00/01/11}, via T-SBI",
-            use_tsbi=True,
+            mode=_MODE,
         )
     )
     tc.code.extend(
         cbo_config_helper(
             test_data,
             _CG,
-            coverpoint="cp_cbcfe",
-            tag="cbcfe",
-            shift=6,
-            bins=["0", "1"],
-            instrs=["cbo.clean", "cbo.flush"],
-            guard="ZICBOM_SUPPORTED",
+            "cbcfe",
             description="Execute cbo.{clean, flush} in user mode with menvcfg.cbcfe = {0/1}, via T-SBI",
-            use_tsbi=True,
+            mode=_MODE,
         )
     )
     tc.code.extend(
         cbo_config_helper(
             test_data,
             _CG,
-            coverpoint="cp_cbze",
-            tag="cbze",
-            shift=7,
-            bins=["0", "1"],
-            instrs=["cbo.zero"],
-            guard="ZICBOZ_SUPPORTED",
+            "cbze",
             description="Execute cbo.zero in user mode with menvcfg.cbze = {0/1}, via T-SBI",
-            use_tsbi=True,
+            mode=_MODE,
         )
     )
     tc.code.extend(
@@ -93,7 +79,7 @@ def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
                 "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} "
                 "Execute op to ACCESS_FAULT_ADDR with menvcfg enabled"
             ),
-            use_tsbi=True,
+            mode=_MODE,
         )
     )
     tc.code.extend(
@@ -104,7 +90,7 @@ def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
                 "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} "
                 "Execute op to valid address + 1 with menvcfg enabled"
             ),
-            use_tsbi=True,
+            mode=_MODE,
         )
     )
 

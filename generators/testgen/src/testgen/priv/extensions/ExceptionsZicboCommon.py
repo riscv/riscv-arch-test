@@ -18,6 +18,7 @@ from testgen.data.state import TestData
 CBO_INSTRS = ["inval", "clean", "flush", "zero"]
 PREFETCH_INSTRS = ["i", "r", "w"]
 
+
 class _CboField(NamedTuple):
     """One cbie/cbcfe/cbze binned config test: bit position, values walked, the
     instruction(s) executed, and the feature #ifdef guarding the block."""
@@ -27,19 +28,16 @@ class _CboField(NamedTuple):
     instrs: list[str]
     guard: str
 
+
 _CBO_FIELDS: dict[str, _CboField] = {
-    "cbie": _CboField(
-        shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"
-    ),
+    "cbie": _CboField(shift=4, bins=["00", "01", "11"], instrs=["cbo.inval"], guard="ZICBOM_SUPPORTED"),
     "cbcfe": _CboField(
         shift=6,
         bins=["0", "1"],
         instrs=["cbo.clean", "cbo.flush"],
         guard="ZICBOM_SUPPORTED",
     ),
-    "cbze": _CboField(
-        shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"
-    ),
+    "cbze": _CboField(shift=7, bins=["0", "1"], instrs=["cbo.zero"], guard="ZICBOZ_SUPPORTED"),
 }
 
 
@@ -81,15 +79,16 @@ def cbo_config_helper(
     assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode"
     cfg = _CBO_FIELDS[field]
     coverpoint = f"cp_{field}"
-    shift, bins, instrs, guard = cfg["shift"], cfg["bins"], cfg["instrs"], cfg["guard"]
+    shift, bins, instrs, guard = cfg.shift, cfg.bins, cfg.instrs, cfg.guard
 
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
     lines = [comment_banner(coverpoint, description), "", f"#ifdef {guard}"]
 
+    senvcfg_bins: list[str] = bins if cross_senvcfg else [""]
     for m_val in bins:
-        for s_val in bins if cross_senvcfg else [None]:
+        for s_val in senvcfg_bins:
             senvcfg_tag = f"_senvcfg.{field}{s_val}" if cross_senvcfg else ""
 
             lines.extend(

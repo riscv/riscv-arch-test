@@ -22,9 +22,5 @@ _CG = "ExceptionsZicboU_cg"
     march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for ExceptionsZicboU coverpoints"""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
-    tc.code.extend(emit_suite(test_data, _CG, mode="U"))
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    """Generate tests for ExceptionsZicboU coverpoints."""
+    return emit_suite(test_data, _CG, mode="U")

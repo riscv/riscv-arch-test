@@ -24,13 +24,19 @@ _MODES = ["S", "U"]  # supervisor, then user
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for ExceptionsZicboS coverpoints"""
+    """Generate tests for ExceptionsZicboS coverpoints."""
+
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
 
     for mode in _MODES:
-        tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
-        tc.code.extend(emit_suite(test_data, _CG, mode, cross_senvcfg=True))
+        test_chunks.extend(
+            emit_suite(
+                test_data,
+                _CG,
+                mode=mode,
+                cross_senvcfg=True,
+                mode_entry=True,
+            )
+        )
 
-    test_chunks.append(test_data.end_test_chunk())
     return test_chunks

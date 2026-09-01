@@ -23,11 +23,5 @@ _CG = "ExceptionsZicboSm_cg"
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_exceptionszicbosm(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for ExceptionsZicboSm coverpoints"""
-    test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
-
-    tc.code.extend(emit_suite(test_data, _CG, mode="Sm"))
-
-    test_chunks.append(test_data.end_test_chunk())
-    return test_chunks
+    """Generate tests for ExceptionsZicboSm coverpoints."""
+    return emit_suite(test_data, _CG, mode="Sm")

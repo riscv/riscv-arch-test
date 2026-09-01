@@ -14,6 +14,7 @@ from typing import NamedTuple
 from testgen.asm.helpers import comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 
 CBO_INSTRS = ["inval", "clean", "flush", "zero"]
 PREFETCH_INSTRS = ["i", "r", "w"]
@@ -269,10 +270,16 @@ def emit_suite(
     covergroup: str,
     mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
-) -> list[str]:
-    """Generate the cbie/cbcfe/cbze + access-fault + misaligned test lines for
-    a single mode."""
-    lines: list[str] = []
+    mode_entry: bool = False,
+) -> list[TestChunk]:
+    """Generate the cbie/cbcfe/cbze + access-fault + misaligned tests."""
+
+    tc = test_data.begin_test_chunk()
+    lines = tc.code
+
+    if mode_entry:
+        lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
+
     for field in ("cbie", "cbcfe", "cbze"):
         lines.extend(
             cbo_config_helper(
@@ -292,6 +299,7 @@ def emit_suite(
             cross_senvcfg=cross_senvcfg,
         )
     )
+
     lines.extend(
         cbo_misaligned_helper(
             test_data,
@@ -300,4 +308,5 @@ def emit_suite(
             cross_senvcfg=cross_senvcfg,
         )
     )
-    return lines
+
+    return [test_data.end_test_chunk()]

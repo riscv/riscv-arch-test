@@ -9,7 +9,6 @@
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
 # Sdtrig* not yet implemented in Sail
 ci_enabled: true
-# TODO: Remove SsstrictV when sail SsstrictV is implemented
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
 exclude_configs:
   - whisper-rv32-max-spike-ref

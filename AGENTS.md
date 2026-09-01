@@ -4,8 +4,8 @@
 
 - This repo implements the ACT4 framework: generated RISC-V architectural certification tests are compiled into self-checking ELFs whose expected signatures come from Sail.
 - Python is a `uv` workspace with three packages: `framework/` exposes `act`, `generators/testgen/` exposes `testgen`, and `generators/coverage/` exposes `covergroupgen`.
-- `tests/rv32i`, `tests/rv32e`, `tests/rv64i`, `tests/rv64e`, `coverpoints/unpriv`, and `coverpoints/coverage` are generated but checked in. Do not hand-edit them; edit `testplans/`, `generators/`, or templates, then run `make clean-tests tests` and commit the regenerated output.
-- `work/` is build output. `make clean` removes most artifacts but preserves `extensions.txt` and `.validated`; `make clean-tests` removes generated rv32/rv64 test source dirs, generated unpriv coverpoints, generated coverage helpers, and stamps.
+- `tests/rv32i`, `tests/rv32e`, `tests/rv64i`, `tests/rv64e`, `coverpoints/unpriv`, and `coverpoints/coverage` are generated but checked in. Do not hand-edit them; edit `testplans/`, `generators/`, or templates, then run `make tests` and commit the regenerated output.
+- `work/` is build output. `make clean` removes most artifacts but preserves `extensions.txt` and `.validated`.
 - Configs live under `config/`. Any config directory with `run_cmd.txt` gets Make run targets for every ancestor directory name, such as `make spike-rv64-max`, `make spike`, or `make cores`.
 
 ## Tooling
@@ -23,7 +23,7 @@
 
 - `make help`: list current targets and knobs.
 - `make tests`: generate assembly tests and generated coverpoints only; no compiler or Sail run.
-- `make tests` already regenerates when anything under `generators/testgen/src/` or `testplans/` changes (the stamp depends on them). To force it, `rm work/stamps/testgen.stamp`. **Never run `make clean-tests` with `EXTENSIONS` restricted** (including via a local Makefile default): it deletes the checked-in `tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv` outputs and a filtered `make tests` does not regenerate them. Use `make clean-tests tests` only with `EXTENSIONS=` (everything).
+- `make tests` regenerates when anything under `generators/testgen/src/` or `testplans/` changes (the stamp depends on them). To force it, `rm work/stamps/testgen.stamp`.
 - `make`: generate tests and build ELFs for default `CONFIG_FILES` (`config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml`).
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build one DUT config.
 - `EXTENSIONS=I,M,Zifencei make tests` or `EXTENSIONS=I make`: restrict generation/build to suites. `EXCLUDE_EXTENSIONS=Sm make tests` applies a negative filter after `EXTENSIONS`.
@@ -68,7 +68,7 @@
 - Linker scripts must keep `.text.rvmodel` after `.data`; otherwise DUT and reference-model ELFs can disagree on data addresses. If the ELF base address changes, update the Sail memory map in `sail.json`.
 - `run_cmd.txt` contains one shell command; `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only simulator flags, `__TRACEFILE__` for separate trace logs, and `__SUMMARYFILE__` when console summaries must be redirected away from trace output.
 - CI matrix discovery uses `config/*/ci.yaml` plus each `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py`; generated tests are used to weight shards.
-- CI checks generated files with `make clean-tests tests` and diffs `tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage`.
+- CI checks that generated files (`tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage`) have not changed.
 - PRs branch from and target `act4`; docs release workflow also triggers from `act4`.
 
 ## Debugging

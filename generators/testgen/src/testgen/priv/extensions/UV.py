@@ -54,7 +54,6 @@ def _gen_uvcsrwalk(test_data: TestData, temp_reg: int, test_chunks: list[TestChu
     required_extensions=["Sm", "U", "M", "V", "Zicsr"],
     march_extensions=["M", "V"],
     extra_defines=[
-        "#define BOOT_TO_UMODE",
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",

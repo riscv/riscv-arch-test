@@ -586,13 +586,26 @@ def _generate_vector_illegal_instr(
                 RawSweep(f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111"),
                 RawSweep(f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111"),
                 RawSweep(f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111"),
-                RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111"),
                 RawSweep(f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111"),
                 RawSweep(f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111"),
             ],
             setup=_vector_setup(sew, avl=1),
             section_header=sew_header,
         )
+
+    # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
+    for sew in ["8", "16", "32", "64"]:
+        for vl in [1, 4, 8]:
+            sew_header: str | None = comment_banner(f"Vector crypto SEW={sew} VL={vl}", f"funct6 sweeps with e{sew}")
+            _emit_raw_sweeps(
+                test_data,
+                test_chunks,
+                [
+                    RawSweep(f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111"),
+                ],
+                setup=_vector_setup(sew, avl=vl),
+                section_header=sew_header,
+            )
 
     return test_chunks
 

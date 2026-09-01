@@ -8,7 +8,7 @@
 
 """Privileged test generator registry with automatic discovery."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -18,8 +18,8 @@ from testgen.data.test_chunk import TestChunk
 from testgen.discovery import discover_and_import_modules
 from testgen.exceptions import MissingRegistryItemError
 
-# Type alias for priv test generator functions
-PrivTestGenerator = Callable[[TestData], list[TestChunk]]
+# Type alias for privileged test generators
+PrivTestGenerator = Callable[[TestData], Sequence[TestChunk]]
 
 
 class MissingPrivGeneratorError(MissingRegistryItemError):
@@ -42,27 +42,30 @@ class PrivTestRegistryEntry:
 
     generator: PrivTestGenerator
     extra_defines: list[str] = field(default_factory=list)
-    required_extensions: list[str] | None = None
+    required_extensions: list[str | list[str]] | None = None
     march_extensions: list[str] | None = None
     params: list[str] | None = None
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE
 
 
-# Registry: dict mapping testsuite name to its registry entry
-_PRIV_TEST_GENERATORS: dict[str, PrivTestRegistryEntry] = {}
+# Registry: dict mapping each testsuite name to one or more generator entries
+_PRIV_TEST_GENERATORS: dict[str, list[PrivTestRegistryEntry]] = {}
 
 
 def add_priv_test_generator(
     testsuite: str,
     *,
     extra_defines: list[str] | None = None,
-    required_extensions: list[str] | None = None,
+    required_extensions: list[str | list[str]] | None = None,
     march_extensions: list[str] | None = None,
     params: list[str] | None = None,
     testcases_per_file: int = TESTCASES_PER_PRIV_FILE,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
+
+    Multiple generators can register the same testsuite. Their files use the
+    same output directory but retain each generator's metadata (required_extensions, march_extensions, etc.).
 
     Args:
         testsuite: Testsuite name (e.g., "ExceptionsSm")
@@ -80,7 +83,7 @@ def add_priv_test_generator(
     """
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
-        _PRIV_TEST_GENERATORS[testsuite] = PrivTestRegistryEntry(
+        entry = PrivTestRegistryEntry(
             generator=func,
             extra_defines=extra_defines or [],
             required_extensions=required_extensions,
@@ -88,51 +91,22 @@ def add_priv_test_generator(
             params=params,
             testcases_per_file=testcases_per_file,
         )
+        _PRIV_TEST_GENERATORS.setdefault(testsuite, []).append(entry)
         return func
 
     return decorator
 
 
-def _get_entry(testsuite: str) -> PrivTestRegistryEntry:
-    """Get the registry entry for a testsuite, raising a helpful error if not found."""
+def get_priv_test_suites() -> list[str]:
+    """Get the names of all registered privileged test suites."""
+    return list(_PRIV_TEST_GENERATORS)
+
+
+def get_priv_test_generators(testsuite: str) -> list[PrivTestRegistryEntry]:
+    """Get all generator entries for a privileged testsuite."""
     if testsuite not in _PRIV_TEST_GENERATORS:
-        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
+        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS))
     return _PRIV_TEST_GENERATORS[testsuite]
-
-
-def get_priv_test_extensions() -> list[str]:
-    """Get list of all registered privileged test extensions."""
-    return list(_PRIV_TEST_GENERATORS.keys())
-
-
-def get_priv_test_generator(testsuite: str) -> PrivTestGenerator:
-    """Get the priv test generator function for a testsuite."""
-    return _get_entry(testsuite).generator
-
-
-def get_priv_test_defines(testsuite: str) -> list[str]:
-    """Get the extra_defines for a priv testsuite."""
-    return _get_entry(testsuite).extra_defines
-
-
-def get_priv_test_required_extensions(testsuite: str) -> list[str] | None:
-    """Get the required RISC-V extensions for a priv testsuite."""
-    return _get_entry(testsuite).required_extensions
-
-
-def get_priv_test_march_extensions(testsuite: str) -> list[str] | None:
-    """Get the march extensions for a priv testsuite, if explicitly set."""
-    return _get_entry(testsuite).march_extensions
-
-
-def get_priv_test_params(testsuite: str) -> list[str] | None:
-    """Get the parameter constraints for a priv testsuite."""
-    return _get_entry(testsuite).params
-
-
-def get_priv_test_testcases_per_file(testsuite: str) -> int:
-    """Get the max testcases per generated test file for a priv testsuite."""
-    return _get_entry(testsuite).testcases_per_file
 
 
 # Discover and import priv test generators at module load

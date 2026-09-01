@@ -638,9 +638,17 @@
         `cover_info("//      Zknh - Enabled");
         `include "Zknh_coverage_init.svh"
     `endif
-    `ifdef COVER_ZKR
-        `cover_info("//      Zkr - Enabled");
-        `include "Zkr_coverage_init.svh"
+    `ifdef COVER_ZKRS
+        `cover_info("//      ZkrS - Enabled");
+        `include "ZkrS_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKRSM
+        `cover_info("//      ZkrSm - Enabled");
+        `include "ZkrSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKRU
+        `cover_info("//      ZkrU - Enabled");
+        `include "ZkrU_coverage_init.svh"
     `endif
     `ifdef COVER_ZKSED
         `cover_info("//      Zksed - Enabled");

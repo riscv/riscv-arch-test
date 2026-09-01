@@ -481,8 +481,14 @@
     `ifdef COVER_ZKNH
         zknh_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZKR
-        zkr_sample(hart, issue, ins);
+    `ifdef COVER_ZKRS
+        zkrs_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZKRSM
+        zkrsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZKRU
+        zkru_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZKSED
         zksed_sample(hart, issue, ins);

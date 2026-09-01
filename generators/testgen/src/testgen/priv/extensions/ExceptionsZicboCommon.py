@@ -18,6 +18,8 @@ from testgen.data.state import TestData
 CBO_INSTRS = ["inval", "clean", "flush", "zero"]
 PREFETCH_INSTRS = ["i", "r", "w"]
 
+_ENVCFG_ALL_ENABLE = 0b11110000  # [7:4] = cbze,cbcfe,cbie: enable all cbo ops
+
 
 class _CboField(NamedTuple):
     """One cbie/cbcfe/cbze binned config test: bit position, values walked, the
@@ -41,19 +43,13 @@ _CBO_FIELDS: dict[str, _CboField] = {
 }
 
 
-def _csrw(csr: str, reg: int, mode: str) -> str:
-    """Return a csrw instruction: direct in M-mode, routed through T-SBI otherwise."""
-    instr = f"csrw  {csr}, x{reg}"
-    return instr if mode == "Sm" else tsbi_call(instr)
-
-
-def goto_mode(mode: str) -> str:
-    """Return the T-SBI hop into ``mode`` ("S" or "U")."""
-    if mode == "S":
-        return "RVTEST_TSBI_GOTO_SMODE  # Run tests in supervisor mode"
-    if mode == "U":
-        return "RVTEST_TSBI_GOTO_UMODE  # Run tests in user mode"
-    raise ValueError(f"no T-SBI hop for mode {mode!r}")
+def _csr_op(op: str, csr: str, reg: int, mode: str) -> str:
+    """Return a CSR instruction (csrs/csrc/csrw on ``csr`` using ``reg``),
+    issued directly when ``mode`` has direct access to ``csr``, and routed
+    through T-SBI otherwise."""
+    instr = f"{op}  {csr}, x{reg}"
+    needs_tsbi = (mode == "U") if csr == "senvcfg" else (mode != "Sm")
+    return tsbi_call(instr) if needs_tsbi else instr
 
 
 def _mode_tag(mode: str, cross_senvcfg: bool) -> str:
@@ -75,38 +71,56 @@ def cbo_config_helper(
     """Generate the cbie/cbcfe/cbze-style tests: execute ``field``'s instructions
     with menvcfg (optionally crossed with senvcfg) walked over ``field``'s bins,
     for a single ``mode``."""
-
     assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode"
     cfg = _CBO_FIELDS[field]
     coverpoint = f"cp_{field}"
     shift, bins, instrs, guard = cfg.shift, cfg.bins, cfg.instrs, cfg.guard
-
-    addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
+    width = len(bins[0])
+    field_mask = ((1 << width) - 1) << shift
+    mask_bits = shift + width
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
-    lines = [comment_banner(coverpoint, description), "", f"#ifdef {guard}"]
+    addr_reg, cfg_reg, mask_reg = test_data.int_regs.get_registers(3)
+
+    lines = [
+        comment_banner(coverpoint, description),
+        "",
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+        f"#ifdef {guard}",
+        f"LA(x{addr_reg}, scratch)",
+        f"LI(x{mask_reg}, 0b{field_mask:0{mask_bits}b})  # {field} field mask",
+    ]
 
     senvcfg_bins: list[str] = bins if cross_senvcfg else [""]
     for m_val in bins:
-        for s_val in senvcfg_bins:
-            senvcfg_tag = f"_senvcfg.{field}{s_val}" if cross_senvcfg else ""
-
+        lines.extend(
+            [
+                "",
+                f"# menvcfg.{field} = {m_val}",
+                _csr_op("csrc", "menvcfg", mask_reg, mode),
+            ]
+        )
+        if int(m_val, 2):
             lines.extend(
                 [
-                    f"LA(x{addr_reg}, scratch)",
-                    f"LI(x{cfg_reg}, {int(m_val, 2) << shift})",
-                    _csrw("menvcfg", cfg_reg, mode),
+                    f"LI(x{cfg_reg}, 0b{int(m_val, 2) << shift:0{mask_bits}b})",
+                    _csr_op("csrs", "menvcfg", cfg_reg, mode),
                 ]
             )
+        for s_val in senvcfg_bins:
+            senvcfg_tag = f"_senvcfg.{field}{s_val}" if cross_senvcfg else ""
             if cross_senvcfg:
-                lines.extend(
-                    [
-                        f"LI(x{cfg_reg}, {int(s_val, 2) << shift})",
-                        _csrw("senvcfg", cfg_reg, mode),
-                    ]
-                )
+                lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
+                lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
+                if int(s_val, 2):
+                    lines.extend(
+                        [
+                            f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
+                            _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                        ]
+                    )
+                lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
             lines.append("nop")
-
             for instr in instrs:
                 name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
                 lines.extend(
@@ -115,9 +129,10 @@ def cbo_config_helper(
                         f"{instr}    0(x{addr_reg})",
                     ]
                 )
-    lines.append("#endif")
 
-    test_data.int_regs.return_registers([addr_reg, cfg_reg])
+    lines.extend(["#endif", "#endif // SM1P12P0_OR_LATER_SUPPORTED"])
+
+    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg])
     return lines
 
 
@@ -135,22 +150,30 @@ def cbo_access_fault_helper(
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
-    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, description), ""]
+    lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+        comment_banner(coverpoint, description),
+        "",
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+        f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+        _csr_op("csrs", "menvcfg", cfg_reg, mode),
+        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
+    ]
+    if cross_senvcfg:
+        lines.extend(
+            [
+                "#ifdef S1P12P0_OR_LATER_SUPPORTED",
+                f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+                _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                "#endif // S1P12P0_OR_LATER_SUPPORTED",
+            ]
+        )
 
     for cbo in CBO_INSTRS:
         lines.append("#ifdef ZICBOZ_SUPPORTED" if cbo == "zero" else "#ifdef ZICBOM_SUPPORTED")
         lines.extend(
             [
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"LI(x{cfg_reg}, 240)",  # setting all relevant bits in menvcfg to 1
-                _csrw("menvcfg", cfg_reg, mode),
-            ]
-        )
-        if cross_senvcfg:
-            lines.append(_csrw("senvcfg", cfg_reg, mode))
-        lines.extend(
-            [
-                "nop",
                 test_data.add_testcase(f"cbo.{cbo}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"cbo.{cbo}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
@@ -164,15 +187,6 @@ def cbo_access_fault_helper(
         lines.extend(
             [
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"LI(x{cfg_reg}, 240)",  # setting all relevant bits in menvcfg to 1
-                _csrw("menvcfg", cfg_reg, mode),
-            ]
-        )
-        if cross_senvcfg:
-            lines.append(_csrw("senvcfg", cfg_reg, mode))
-        lines.extend(
-            [
-                "nop",
                 test_data.add_testcase(f"prefetch.{prefetch}{mode_tag}_access_fault_0", coverpoint, covergroup),
                 f"prefetch.{prefetch}    0(x{addr_reg})",
                 f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
@@ -181,7 +195,7 @@ def cbo_access_fault_helper(
             ]
         )
 
-    lines.append("#endif")
+    lines.append("#endif // RVMODEL_ACCESS_FAULT_ADDRESS")
 
     test_data.int_regs.return_registers([addr_reg, cfg_reg])
     return lines
@@ -201,7 +215,23 @@ def cbo_misaligned_helper(
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
-    lines = [comment_banner(coverpoint, description), ""]
+    lines = [
+        comment_banner(coverpoint, description),
+        "",
+        "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
+        f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+        _csr_op("csrs", "menvcfg", cfg_reg, mode),
+        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
+    ]
+    if cross_senvcfg:
+        lines.extend(
+            [
+                "#ifdef S1P12P0_OR_LATER_SUPPORTED",
+                f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+                _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                "#endif // S1P12P0_OR_LATER_SUPPORTED",
+            ]
+        )
 
     for cbo in CBO_INSTRS:
         lines.append("#ifdef ZICBOZ_SUPPORTED" if cbo == "zero" else "#ifdef ZICBOM_SUPPORTED")
@@ -209,15 +239,6 @@ def cbo_misaligned_helper(
             [
                 f"LA(x{addr_reg}, scratch)",
                 f"addi x{addr_reg}, x{addr_reg}, 1",
-                f"LI(x{cfg_reg}, 240)",  # setting all relevant bits in menvcfg to 1
-                _csrw("menvcfg", cfg_reg, mode),
-            ]
-        )
-        if cross_senvcfg:
-            lines.append(_csrw("senvcfg", cfg_reg, mode))
-        lines.extend(
-            [
-                "nop",
                 test_data.add_testcase(f"cbo.{cbo}{mode_tag}_misaligned", coverpoint, covergroup),
                 f"cbo.{cbo}    0(x{addr_reg})",
                 "#endif",
@@ -229,15 +250,6 @@ def cbo_misaligned_helper(
             [
                 f"LA(x{addr_reg}, scratch)",
                 f"addi x{addr_reg}, x{addr_reg}, 1",
-                f"LI(x{cfg_reg}, 240)",  # setting all relevant bits in menvcfg to 1
-                _csrw("menvcfg", cfg_reg, mode),
-            ]
-        )
-        if cross_senvcfg:
-            lines.append(_csrw("senvcfg", cfg_reg, mode))
-        lines.extend(
-            [
-                "nop",
                 "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
                 test_data.add_testcase(f"prefetch.{prefetch}{mode_tag}_misaligned", coverpoint, covergroup),
                 f"prefetch.{prefetch}    0(x{addr_reg})",

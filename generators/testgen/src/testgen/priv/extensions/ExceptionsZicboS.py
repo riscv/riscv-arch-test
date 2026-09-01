@@ -14,7 +14,6 @@ from testgen.priv.extensions.ExceptionsZicboCommon import (
     cbo_access_fault_helper,
     cbo_config_helper,
     cbo_misaligned_helper,
-    goto_mode,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -34,7 +33,7 @@ def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
     tc = test_data.begin_test_chunk()
 
     for mode in _MODES:
-        tc.code.append(goto_mode(mode))
+        tc.code.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
         tc.code.extend(
             cbo_config_helper(
                 test_data,

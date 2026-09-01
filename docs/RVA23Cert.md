@@ -13,7 +13,7 @@ extensions, custom extensions, or even non-conforming extensions as
 long as they don't interfere with the proper functioning of the RVA23 mandatory
 and implemented optional extensions. However, these other base ISAs and extensions are not part of RVA23 testing.
 
-Remember that certification testing is not verification. Certification tests check that you read and understood the specification, and are intended to promote software interoperability. They do not probe for microarchitectural or logic bugs and are not a substitute for your own comprehensive verification suite.
+Remember that certification testing is not verification. Certification tests are intended to help check that you read and understood the specification, and to promote software interoperability. They do not probe for microarchitectural or logic bugs and are not a substitute for your own comprehensive verification suite.
 
 The RVA23 profile does not specify machine-mode requirements for an RVA23 profile. The ACTs use a Test Supervisor Binary Interface (T-SBI) to abstract access to machine mode, facilitating testing of systems with non-standard machine mode. The ACTs come with a default T-SBI implementation that works for standard M-mode. If your system does not implement standard machine mode, consult the [Certification Requirements Document](https://github.com/riscv/riscv-arch-test/blob/act4/docs/crd/src/rva23_crd.adoc) for information about what your T-SBI must provide.
 
@@ -21,7 +21,7 @@ To run the RVA23 tests, follow the [Getting Started Guide](https://github.com/ri
 
 `CONFIG_FILES=<your_config_directory>/test_config.yaml make CERTIFICATE=RVA23`
 
-The `CERTIFICATE` argument limits the generated tests to those applicable to the certificate. In particular, it excludes machine-mode tests and extensions that are not required or optional in the profile. Your UDB configuration must contain at least all of the required extensions for the certificate.
+The `CERTIFICATE` argument limits the generated tests to those applicable to the certificate. In particular, it excludes machine-mode tests and extensions that are neither mandatory nor optional in the profile. Your UDB configuration must contain at least all of the mandatory extensions for the certificate.
 You are highly encouraged to run without the `CERTIFICATE` argument as well, to more comprehensively test RISC-V features outside the certificate requirements.
 
 Run all of the generated ELFs on your DUT. If all is well, each should display

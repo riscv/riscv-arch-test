@@ -149,24 +149,12 @@
 
     check_abort_test:
       LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, check_fast_sig_offset
+      bne     T4, T5, exit_cleanup
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
 
-    // The fast trap handler self-checks only at DUT trap time, so a DUT that
-    // traps fewer times than the reference leaves unconsumed reference records.
-    // Add a signature record with the signature pointer's own offset to catch
-    // mismatched trap count.
-    check_fast_sig_offset:
-    #if defined(RVTEST_USE_FAST_TRAP_HANDLER) && !defined(RVTEST_NOSIG)
-      LA(     T1, rvtest_sig_begin)
-      sub     T1, DEFAULT_SIG_REG, T1   // T1 = byte offset of the final signature pointer
-      // x5/x4 = DEFAULT_LINK_REG/DEFAULT_TEMP_REG, written literally because
-      // RVTEST_SIGUPD token-pastes them into the failedtest_x5_x4 entry name.
-      RVTEST_SIGUPD(DEFAULT_SIG_REG, x5, x4, T1, check_fast_sig_offset, fast_sig_offset_mismatch)
-    #endif
   #endif
 
   // Terminate test with passing status

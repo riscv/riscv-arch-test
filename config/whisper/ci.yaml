@@ -4,7 +4,6 @@
 
 # SsstrictSm, SsstrictS, SsstrictU excluded because of sail-riscv#1882, sail-riscv#1880
 #   Should be fixed in Sail 0.14
-#   Also https://github.com/tenstorrent/whisper/issues/52
 # Smstateen Sail does not yet support 1P13 bit
 # ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
 # Sdtrig* not yet implemented in Sail

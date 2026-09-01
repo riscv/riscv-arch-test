@@ -64,7 +64,6 @@ def cbo_config_helper(
     covergroup: str,
     field: str,  # "cbie" | "cbcfe" | "cbze" -- looked up in _CBO_FIELDS
     *,
-    description: str,
     mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
 ) -> list[str]:
@@ -79,6 +78,8 @@ def cbo_config_helper(
     field_mask = ((1 << width) - 1) << shift
     mask_bits = shift + width
     mode_tag = _mode_tag(mode, cross_senvcfg)
+
+    description = f"Exercise {', '.join(instrs)} across menvcfg.{field}"
 
     addr_reg, cfg_reg, mask_reg = test_data.int_regs.get_registers(3)
 
@@ -120,7 +121,6 @@ def cbo_config_helper(
                         ]
                     )
                 lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
-            lines.append("nop")
             for instr in instrs:
                 name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
                 lines.extend(
@@ -140,7 +140,6 @@ def cbo_access_fault_helper(
     test_data: TestData,
     covergroup: str,
     *,
-    description: str,
     mode: str,
     cross_senvcfg: bool = False,
 ) -> list[str]:
@@ -152,7 +151,10 @@ def cbo_access_fault_helper(
 
     lines = [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        comment_banner(coverpoint, description),
+        comment_banner(
+            coverpoint,
+            "cbo.{inval,clean,flush,zero} and prefetch.{i,r,w} to\nRVMODEL_ACCESS_FAULT_ADDRESS raise an access fault",
+        ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
@@ -205,7 +207,6 @@ def cbo_misaligned_helper(
     test_data: TestData,
     covergroup: str,
     *,
-    description: str,
     mode: str,
     cross_senvcfg: bool = False,
 ) -> list[str]:
@@ -216,7 +217,10 @@ def cbo_misaligned_helper(
     mode_tag = _mode_tag(mode, cross_senvcfg)
 
     lines = [
-        comment_banner(coverpoint, description),
+        comment_banner(
+            coverpoint,
+            "cbo.{inval,clean,flush,zero} and prefetch.{i,r,w}\nto a misaligned address do not trap",
+        ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
         f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
@@ -257,4 +261,43 @@ def cbo_misaligned_helper(
         )
 
     test_data.int_regs.return_registers([addr_reg, cfg_reg])
+    return lines
+
+
+def emit_suite(
+    test_data: TestData,
+    covergroup: str,
+    mode: str,  # "Sm" | "S" | "U"
+    cross_senvcfg: bool = False,
+) -> list[str]:
+    """Generate the cbie/cbcfe/cbze + access-fault + misaligned test lines for
+    a single mode."""
+    lines: list[str] = []
+    for field in ("cbie", "cbcfe", "cbze"):
+        lines.extend(
+            cbo_config_helper(
+                test_data,
+                covergroup,
+                field,
+                mode=mode,
+                cross_senvcfg=cross_senvcfg,
+            )
+        )
+
+    lines.extend(
+        cbo_access_fault_helper(
+            test_data,
+            covergroup,
+            mode=mode,
+            cross_senvcfg=cross_senvcfg,
+        )
+    )
+    lines.extend(
+        cbo_misaligned_helper(
+            test_data,
+            covergroup,
+            mode=mode,
+            cross_senvcfg=cross_senvcfg,
+        )
+    )
     return lines

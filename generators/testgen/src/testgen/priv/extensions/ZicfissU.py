@@ -11,23 +11,28 @@ Covers the ZicfissU sheet of the simplified Zicfiss testplan: shadow stack
 instruction behaviour, the ssp CSR, page/PMA behaviour, and the U-mode half of
 the SSE enable chain.
 
-Every block sets up translation and the SS page in M-mode, drops to U-mode to run
-the testcases, then returns to M-mode and tears translation down. See
-ZicfissCommon for the x1/x5 and encoding-width constraints.
+The suite boots to U-mode. Each block makes a short T-SBI excursion to M-mode to set
+up translation and the SS page, runs the testcases in U-mode, then makes a second
+excursion to tear translation down and returns to U-mode. Privileged CSR accesses made
+from inside the U-mode body go through T-SBI instead. See ZicfissCommon for the x1/x5
+and encoding-width constraints.
 """
 
 from __future__ import annotations
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
+    GOTO_MMODE,
     GOTO_UMODE,
     PTE_SS,
     both_xlens,
     guard_ss_page,
     map_zicfiss_pages,
     page_table_data_section,
+    priv_csr,
     restore_link_regs,
     satp_setup,
     save_link_regs,
@@ -57,7 +62,7 @@ _POP_FORMS = [
 def _umode_prologue(
     test_data: TestData, xlen: int, *, menvcfg: int = 1, senvcfg: int = 1, ss_perms: str = PTE_SS
 ) -> list[str]:
-    """M-mode setup: translation, page mappings, SSE chain, then drop to U-mode.
+    """M-mode excursion: translation, page mappings, SSE chain, then back to U-mode.
 
     Traps are routed to M-mode (``medeleg = 0``) rather than delegated to S-mode.
     The identity superpage that keeps code reachable under translation must carry
@@ -65,12 +70,18 @@ def _umode_prologue(
     (SUM covers loads and stores, never instruction fetch). A delegated trap would
     therefore fetch-page-fault inside the S-mode handler and loop. M-mode does not
     translate, so its handler runs regardless of PTE_U.
+
+    That is also why this setup keeps an M-mode excursion after the T-SBI conversion
+    rather than running from U-mode through ``tsbi_call``: medeleg is deliberately
+    absent from ``tsbi_instr_table``, and the page-table stores and ``sfence.vma`` are
+    not reachable from U-mode either once the mappings carry PTE_U.
     """
     return [
+        GOTO_MMODE,
         *satp_setup(xlen),
         *map_zicfiss_pages(xlen, ss_perms=ss_perms),
-        *set_envcfg_sse("menvcfg", menvcfg, test_data),
-        *set_envcfg_sse("senvcfg", senvcfg, test_data),
+        *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="M"),
+        *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="M"),
         "csrw medeleg, x0   # take traps in M-mode; see docstring",
         GOTO_UMODE,
     ]
@@ -139,7 +150,7 @@ def _generate_ssp_access(test_data: TestData) -> list[str]:
                     ]
                 )
 
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([val_reg, rd_reg])
         return lines
 
@@ -224,7 +235,7 @@ def _generate_push_pop(test_data: TestData) -> list[str]:
                 )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
         return lines
 
@@ -270,7 +281,7 @@ def _generate_fault_priority(test_data: TestData) -> list[str]:
             )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
         return lines
 
@@ -333,7 +344,7 @@ def _generate_call_return(test_data: TestData) -> list[str]:
         )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
         return lines
 
@@ -372,7 +383,7 @@ def _generate_ssrdp(test_data: TestData) -> list[str]:
         )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
         return lines
 
@@ -452,7 +463,7 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
                 ]
             )
 
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, seed_reg])
         return lines
 
@@ -520,7 +531,7 @@ def _generate_alignment(test_data: TestData) -> list[str]:
                 )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
@@ -578,7 +589,7 @@ def _generate_target_page(test_data: TestData) -> list[str]:
                 )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
@@ -605,10 +616,11 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
             # user=False keeps the identity map supervisor-only; the SS page's own U bit
             # is what is being swept here.
             block = [
+                GOTO_MMODE,
                 *satp_setup(xlen),
                 *map_zicfiss_pages(xlen, ss_perms=perms, user=True),
-                *set_envcfg_sse("menvcfg", 1, test_data),
-                *set_envcfg_sse("senvcfg", 1, test_data),
+                *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+                *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
                 "csrw medeleg, x0",
                 GOTO_UMODE,
             ]
@@ -618,7 +630,7 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
                 block.extend(
                     [
                         f"LI(x{mask_reg}, {hex(1 << 19)})   # sstatus.MXR",
-                        f"{'csrs' if mxr else 'csrc'} sstatus, x{mask_reg}",
+                        priv_csr(f"{'csrs' if mxr else 'csrc'} sstatus, x{mask_reg}", "U"),
                     ]
                 )
                 for mnemonic, compressed, name in _PUSH_FORMS + _POP_FORMS:
@@ -633,7 +645,7 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
                         ]
                     )
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("U"))
             test_data.int_regs.return_registers([addr_reg, mask_reg, save_x1, save_x5])
             return block
 
@@ -674,7 +686,7 @@ def _generate_page_crossing(test_data: TestData) -> list[str]:
                 )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
         return lines
 
@@ -713,7 +725,7 @@ def _generate_page_ad_bits(test_data: TestData) -> list[str]:
                     ]
                 )
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("U"))
             test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
             return block
 
@@ -760,7 +772,7 @@ def _generate_non_idempotent(test_data: TestData) -> list[str]:
                     ]
                 )
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("U"))
             test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
             return block
 
@@ -798,7 +810,7 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{mxr_reg}, {hex(1 << 19)})   # sstatus.MXR",
-                    f"{'csrs' if mxr else 'csrc'} sstatus, x{mxr_reg}",
+                    priv_csr(f"{'csrs' if mxr else 'csrc'} sstatus, x{mxr_reg}", "U"),
                 ]
             )
             for mnemonic in loads:
@@ -831,11 +843,9 @@ def _generate_page_access(test_data: TestData) -> list[str]:
         cbo_reg = test_data.int_regs.get_register()
         lines.extend(
             [
-                "RVTEST_GOTO_MMODE",
                 f"LI(x{cbo_reg}, 0xD0)   # CBIE=01, CBCFE=1, CBZE=1",
-                f"csrs menvcfg, x{cbo_reg}",
-                f"csrs senvcfg, x{cbo_reg}",
-                GOTO_UMODE,
+                tsbi_call(f"csrs menvcfg, x{cbo_reg}"),
+                tsbi_call(f"csrs senvcfg, x{cbo_reg}"),
             ]
         )
         test_data.int_regs.return_registers([cbo_reg])
@@ -891,7 +901,7 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             )
         lines.extend([".option pop", "#endif  // ZACAS_SUPPORTED"])
 
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, data_reg])
         return lines
 
@@ -955,7 +965,7 @@ def _generate_sse_gating(test_data: TestData) -> list[str]:
                     )
 
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("U"))
             test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
             return block
 
@@ -973,8 +983,6 @@ def _generate_sse_gating(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZicfissU",
     required_extensions=["S", "U", "Zicfiss", "Zimop", "Zaamo", "Zcmop", "Zca", "Zicsr"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicfissu(test_data: TestData) -> list[TestChunk]:
     """Generate the ZicfissU test suite."""

@@ -73,7 +73,7 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
         for sse in (0, 1):
             for satp_mode in ("bare", "translating"):
                 tag = f"sse{sse}_{satp_mode}"
-                lines.extend(set_envcfg_sse("menvcfg", sse, test_data))
+                lines.extend(set_envcfg_sse("menvcfg", sse, test_data, mode="M"))
                 if satp_mode == "translating":
                     # M-mode never translates, so this only moves satp.MODE off Bare
                     # for the coverage bin. Deliberately no SS page is created.
@@ -120,7 +120,7 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
     lines: list[str] = [comment_banner(coverpoint, "menvcfg.SSE gates ssp CSR access below M-mode")]
 
     for sse in (0, 1):
-        lines.extend(set_envcfg_sse("menvcfg", sse, test_data))
+        lines.extend(set_envcfg_sse("menvcfg", sse, test_data, mode="M"))
         # M-mode: ssp is reachable regardless of menvcfg.SSE (the rule is scoped to
         # "privilege mode less than M"), so this leg is the positive control.
         ops = (
@@ -168,7 +168,7 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
     ]
 
     for menvcfg_sse in (0, 1):
-        lines.extend(set_envcfg_sse("menvcfg", menvcfg_sse, test_data))
+        lines.extend(set_envcfg_sse("menvcfg", menvcfg_sse, test_data, mode="M"))
         for written in (0, 1):
             tag = f"men{menvcfg_sse}_wrote{written}"
             # csrrw writes the whole register; csrrs sets just the SSE bit.
@@ -222,7 +222,7 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
             block = [
                 *satp_setup(xlen),
                 *map_zicfiss_pages(xlen, user=False),
-                *set_envcfg_sse("menvcfg", 1, test_data),
+                *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
                 f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
                 f"srli x{addr_reg}, x{addr_reg}, 2",
                 f"LI(x{cfg_reg}, 0x1FF)",
@@ -257,7 +257,7 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                 ]
             )
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("M"))
             block.extend(
                 [
                     f"LI(x{addr_reg}, -1)",
@@ -299,8 +299,8 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
             block = [
                 *satp_setup(xlen),
                 *map_zicfiss_pages(xlen, user=False),
-                *set_envcfg_sse("menvcfg", menvcfg, test_data),
-                *set_envcfg_sse("senvcfg", senvcfg, test_data),
+                *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="M"),
+                *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="M"),
             ]
             if leg == "s_gated":
                 block.append(GOTO_SMODE)
@@ -332,7 +332,7 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
 
             block.extend(restore_link_regs(save_x1, save_x5))
             if leg == "s_gated":
-                block.extend(teardown_vm())
+                block.extend(teardown_vm("M"))
             else:
                 block.extend(["csrwi satp, 0", "sfence.vma"])
             test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
@@ -351,7 +351,8 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZicfissSm",
     required_extensions=["S", "U", "Zicfiss", "Zimop", "Zaamo", "Zicsr"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
+    # M-mode control-plane suite: it boots to M-mode and drops to S-mode through T-SBI
+    # for the legs that need a lower privilege level.
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicfisssm(test_data: TestData) -> list[TestChunk]:

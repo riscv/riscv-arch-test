@@ -36,6 +36,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 
 # ---------------------------------------------------------------------------
@@ -87,9 +88,40 @@ def guard_ss_page(lines: list[str], *, reason: str) -> list[str]:
     ]
 
 
-GOTO_UMODE = "RVTEST_GOTO_LOWER_MODE Umode  # enter U-mode"
-GOTO_SMODE = "RVTEST_GOTO_LOWER_MODE Smode  # enter S-mode"
-GOTO_MMODE = "RVTEST_GOTO_MMODE  # return to M-mode"
+GOTO_UMODE = "RVTEST_TSBI_GOTO_UMODE  # enter U-mode"
+GOTO_SMODE = "RVTEST_TSBI_GOTO_SMODE  # enter S-mode"
+GOTO_MMODE = "RVTEST_TSBI_GOTO_MMODE  # return to M-mode"
+
+# ---------------------------------------------------------------------------
+# Privileged CSR access
+# ---------------------------------------------------------------------------
+
+# Lowest privilege mode that may execute a CSR access directly. Anything below it goes
+# through the T-SBI handler instead, so every CSR listed here must also appear in
+# tsbi_instr_table (tests/env/rvtest_trap_handler.h). medeleg is deliberately absent
+# from both: it is M-mode-only and a lower mode cannot reach it at all.
+_CSR_MIN_MODE = {
+    "menvcfg": "M",
+    "satp": "S",
+    "senvcfg": "S",
+    "sstatus": "S",
+}
+
+_MODE_RANK = {"U": 0, "S": 1, "M": 2}
+
+
+def priv_csr(instr: str, mode: str) -> str:
+    """Emit a privileged CSR access, directly or through T-SBI.
+
+    ``mode`` is the privilege mode the instruction executes in. When that mode owns the
+    CSR the instruction is emitted verbatim; otherwise it is marshalled through
+    ``tsbi_call``, which hands the encoding to the M-mode handler. Only the CSRs in
+    ``_CSR_MIN_MODE`` are recognized — anything else raises here rather than emitting an
+    access the mode cannot perform, or a T-SBI call the handler cannot service.
+    """
+    mnemonic, first, second = (token.strip(" ,") for token in instr.split("#", 1)[0].split(None, 2))
+    csr = second.split(",")[0].strip() if mnemonic.lower() == "csrr" else first
+    return instr if _MODE_RANK[mode] >= _MODE_RANK[_CSR_MIN_MODE[csr]] else tsbi_call(instr)
 
 
 # ---------------------------------------------------------------------------
@@ -135,20 +167,21 @@ def restore_link_regs(save_x1: int, save_x5: int) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# SSE enable-chain control (M-mode)
+# SSE enable-chain control
 # ---------------------------------------------------------------------------
 
 
-def set_envcfg_sse(csr: str, value: int, test_data: TestData) -> list[str]:
-    """Set or clear the SSE field of menvcfg/senvcfg/henvcfg.
+def set_envcfg_sse(csr: str, value: int, test_data: TestData, *, mode: str) -> list[str]:
+    """Set or clear the SSE field of menvcfg/senvcfg.
 
-    Must be executed at a privilege level that can write ``csr``.
+    ``mode`` is the privilege mode this runs in; an access the mode cannot perform is
+    routed through T-SBI.
     """
     reg = test_data.int_regs.get_register()
     op = "csrs" if value else "csrc"
     lines = [
         f"LI(x{reg}, {hex(1 << SSE_BIT)})   # {csr}.SSE",
-        f"{op} {csr}, x{reg}   # {'set' if value else 'clear'} {csr}.SSE",
+        priv_csr(f"{op} {csr}, x{reg}   # {'set' if value else 'clear'} {csr}.SSE", mode),
     ]
     test_data.int_regs.return_registers([reg])
     return lines
@@ -269,9 +302,19 @@ def satp_setup(xlen: int) -> list[str]:
     return ["SATP_SETUP_RV64(sv39)"] if xlen == 64 else ["SATP_SETUP_SV32"]
 
 
-def teardown_vm() -> list[str]:
-    """Return to M-mode and disable translation."""
-    return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", ""]
+def teardown_vm(mode: str) -> list[str]:
+    """Disable translation and leave the hart back in the suite's boot mode.
+
+    ``mode`` is the boot mode of the suite, and every section is expected to both start
+    and end there. ``sfence.vma`` is not available below S-mode and cannot be marshalled
+    through T-SBI, so a U-mode suite makes an M-mode excursion to tear translation down
+    and returns to U-mode afterwards.
+    """
+    if mode == "S":
+        return ["csrwi satp, 0", "sfence.vma", ""]
+    if mode == "M":
+        return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", ""]
+    return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", GOTO_UMODE, ""]
 
 
 def both_xlens(build: Callable[[int], list[str]]) -> list[str]:

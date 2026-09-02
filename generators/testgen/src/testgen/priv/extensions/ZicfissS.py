@@ -16,6 +16,10 @@ Covers the ZicfissS sheet of the simplified Zicfiss testplan:
 
 Unlike ZicfissU, the identity map here does not carry PTE_U (S-mode executes from
 supervisor pages), so traps can be delegated to the S-mode handler as normal.
+
+The suite boots straight to S-mode and never leaves it. Translation, the page
+mappings and senvcfg are all set up from S-mode; menvcfg is the one M-mode CSR the
+prologue needs, and it goes through a T-SBI call.
 """
 
 from __future__ import annotations
@@ -24,7 +28,6 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
-    GOTO_SMODE,
     PTE_SS,
     SSE_BIT,
     both_xlens,
@@ -59,13 +62,17 @@ _POP_FORMS = [
 def _smode_prologue(
     test_data: TestData, xlen: int, *, menvcfg: int = 1, senvcfg: int = 1, ss_perms: str = PTE_SS
 ) -> list[str]:
-    """M-mode setup then drop to S-mode. No PTE_U: these testcases run in S-mode."""
+    """S-mode setup, run entirely in S-mode. No PTE_U: these testcases run in S-mode.
+
+    satp, the page-table stores and senvcfg are all reachable from S-mode. Enabling
+    translation before the mappings are written is safe because the boot code already
+    identity-maps the superpage holding the code and data as supervisor read/write/execute.
+    """
     return [
         *satp_setup(xlen),
         *map_zicfiss_pages(xlen, ss_perms=ss_perms, user=False),
-        *set_envcfg_sse("menvcfg", menvcfg, test_data),
-        *set_envcfg_sse("senvcfg", senvcfg, test_data),
-        GOTO_SMODE,
+        *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"),
+        *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="S"),
     ]
 
 
@@ -102,7 +109,7 @@ def _generate_ssp_gating_s(test_data: TestData) -> list[str]:
                             form,
                         ]
                     )
-                block.extend(teardown_vm())
+                block.extend(teardown_vm("S"))
                 test_data.int_regs.return_registers([rd_reg, val_reg])
                 return block
 
@@ -161,7 +168,7 @@ def _generate_page_enc_s(test_data: TestData) -> list[str]:
                 )
 
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("S"))
             test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
             return block
 
@@ -259,7 +266,7 @@ def _generate_instr_s(test_data: TestData) -> list[str]:
             )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("S"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
@@ -317,7 +324,7 @@ def _generate_alignment_s(test_data: TestData) -> list[str]:
                 )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("S"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
@@ -387,7 +394,7 @@ def _generate_target_page_s(test_data: TestData) -> list[str]:
             )
 
         lines.extend(restore_link_regs(save_x1, save_x5))
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("S"))
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
         return lines
 
@@ -450,7 +457,7 @@ def _generate_perm_priority_s(test_data: TestData) -> list[str]:
                     )
 
             block.extend(restore_link_regs(save_x1, save_x5))
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("S"))
             test_data.int_regs.return_registers([addr_reg, mask_reg, data_reg, save_x1, save_x5])
             return block
 
@@ -476,8 +483,7 @@ def _generate_senvcfg_rdonly0_s(test_data: TestData) -> list[str]:
             block = [
                 *satp_setup(xlen),
                 *map_zicfiss_pages(xlen, user=False),
-                *set_envcfg_sse("menvcfg", menvcfg, test_data),
-                GOTO_SMODE,
+                *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"),
             ]
             for written in (0, 1):
                 for op in ("csrrw", "csrrs"):
@@ -492,7 +498,7 @@ def _generate_senvcfg_rdonly0_s(test_data: TestData) -> list[str]:
                             write_sigupd(rd_reg, test_data),
                         ]
                     )
-            block.extend(teardown_vm())
+            block.extend(teardown_vm("S"))
             test_data.int_regs.return_registers([rd_reg, val_reg])
             return block
 
@@ -509,8 +515,7 @@ def _generate_senvcfg_rdonly0_s(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZicfissS",
     required_extensions=["S", "U", "Zicfiss", "Zimop", "Zaamo", "Zcmop", "Zca", "Zicsr"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_zicfisss(test_data: TestData) -> list[TestChunk]:
     """Generate the ZicfissS test suite."""

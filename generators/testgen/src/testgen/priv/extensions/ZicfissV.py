@@ -9,6 +9,9 @@
 
 Vector accesses to a shadow stack page. Split from ZicfissU because it needs V in the
 march string and vector state configured before any access.
+
+Boots to U-mode and uses the same T-SBI M-mode excursion as ZicfissU to set up
+translation; see ``ZicfissU._umode_prologue`` for why that excursion stays.
 """
 
 from __future__ import annotations
@@ -17,10 +20,12 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
+    GOTO_MMODE,
     GOTO_UMODE,
     both_xlens,
     guard_ss_page,
     map_zicfiss_pages,
+    priv_csr,
     satp_setup,
     set_envcfg_sse,
     teardown_vm,
@@ -33,10 +38,11 @@ _CG = "ZicfissV_cg"
 
 def _umode_prologue(test_data: TestData, xlen: int) -> list[str]:
     return [
+        GOTO_MMODE,
         *satp_setup(xlen),
         *map_zicfiss_pages(xlen),
-        *set_envcfg_sse("menvcfg", 1, test_data),
-        *set_envcfg_sse("senvcfg", 1, test_data),
+        *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+        *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
         "csrw medeleg, x0",
         GOTO_UMODE,
     ]
@@ -54,7 +60,7 @@ def _generate_vector_load(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{mask_reg}, {hex(1 << 19)})   # sstatus.MXR",
-                    f"{'csrs' if mxr else 'csrc'} sstatus, x{mask_reg}",
+                    priv_csr(f"{'csrs' if mxr else 'csrc'} sstatus, x{mask_reg}", "U"),
                 ]
             )
             for sew, mnemonic in ((8, "vle8.v"), (16, "vle16.v"), (32, "vle32.v")):
@@ -69,7 +75,7 @@ def _generate_vector_load(test_data: TestData) -> list[str]:
                         write_sigupd(tmp_reg, test_data),
                     ]
                 )
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, tmp_reg, mask_reg])
         return lines
 
@@ -93,7 +99,7 @@ def _generate_vector_store(test_data: TestData) -> list[str]:
                     f"{mnemonic} v1, (x{addr_reg})",
                 ]
             )
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, tmp_reg])
         return lines
 
@@ -133,7 +139,7 @@ def _generate_vector_scattered(test_data: TestData) -> list[str]:
                     ]
                 )
 
-        lines.extend(teardown_vm())
+        lines.extend(teardown_vm("U"))
         test_data.int_regs.return_registers([addr_reg, stride_reg, tmp_reg])
         return lines
 
@@ -151,8 +157,6 @@ def _generate_vector_scattered(test_data: TestData) -> list[str]:
         "#define RVTEST_VECTOR",
         "#define RVTEST_SEW 0",
         "#define VDSEW 0",
-        # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-        "#define BOOT_TO_MMODE",
     ],
 )
 def make_zicfissv(test_data: TestData) -> list[TestChunk]:

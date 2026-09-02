@@ -22,6 +22,7 @@ include::norm/PMPSm_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
 ,===
 
+include::norm/PMPS_norm_rules.adoc[]
 
 ==== PMPU
 
@@ -43,6 +44,7 @@ include::norm/PMPU_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
 ,===
 
+include::norm/PMPF_norm_rules.adoc[]
 
 ==== PMPZca
 
@@ -53,7 +55,7 @@ https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZO
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
 ,===
 
-
+include::norm/PMPZca_norm_rules.adoc[]
 
 ==== PMPZicbo
 
@@ -74,6 +76,7 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
 ,===
 
+include::norm/PMPZaamo_norm_rules.adoc[]
 
 ==== PMPZalrsc
 
@@ -83,3 +86,5 @@ https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZO
 ,===
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
 ,===
+
+include::norm/PMPZalrsc_norm_rules.adoc[]

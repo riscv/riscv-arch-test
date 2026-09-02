@@ -357,7 +357,7 @@ normative_rule_definitions:
 
   # This section describes a simple paged virtual-memory system for SXLEN=64.
   - name: Sv48_sxlen
-    coverpoint: [""]
+    coverpoint: ["checked by UDB"]
 
   # Sv48 supports 48-bit virtual address spaces.
   - name: Sv48_va_sz
@@ -365,7 +365,7 @@ normative_rule_definitions:
 
   # Implementations that support Sv48 must also support Sv39.
   - name: Sv48_requires_Sv39
-    coverpoint: [""]
+    coverpoint: ["checked by UDB"]
 
   # Instruction fetch addresses and load and store effective addresses, which are 64
   # bits, must have bits 63-48 all equal to bit 47, or else a page-fault exception

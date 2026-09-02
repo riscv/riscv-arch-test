@@ -37,6 +37,8 @@ include::norm/Svbare_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=726223656#gid=726223656[Google Sheet Testplan]
 ,===
 
+include::norm/SvPMP_norm_rules.adoc[]
+
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
 [[t-SvZicbo-coverpoints]]
@@ -69,6 +71,8 @@ The Svinval extension defines instructions to update memory management tables fo
 https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lXH5g/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 ,===
 
+include::norm/Svinval_norm_rules.adoc[]
+
 ==== Svade A/D Bit Page Fault Exception
 
 [[t-Svade-coverpoints]]
@@ -76,6 +80,8 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1346750896#gid=1346750896[Google Sheet Testplan]
 ,===
+
+include::norm/Svade_norm_rules.adoc[]
 
 ==== Svadu A/D Bit Hardware Update
 
@@ -85,6 +91,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1484908158#gid=1484908158[Google Sheet Testplan]
 ,===
 
+include::norm/Svadu_norm_rules.adoc[]
+
 ==== Svadu A/D Bit Hardware Update + PMP
 
 [[t-SvaduPMP-coverpoints]]
@@ -92,6 +100,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1568813008#gid=1568813008[Google Sheet Testplan]
 ,===
+
+include::norm/SvaduPMP_norm_rules.adoc[]
 
 ==== Svpbmt Page-Based Memory Types
 
@@ -101,6 +111,8 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
 
+include::norm/Svpbmt_norm_rules.adoc[]
+
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
 
 [[t-Svnapot-coverpoints]]
@@ -108,3 +120,5 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
+
+include::norm/Svnapot_norm_rules.adoc[]

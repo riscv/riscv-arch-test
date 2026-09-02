@@ -159,7 +159,7 @@ def vaddr_walk_test(
 
 
 def vaddr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> list[str]:
-    """Write real addresses (the current pc and scratch) to csr_name and check they read back exactly.
+    """Write physical addresses (the current pc and scratch) to csr_name and check they read back exactly.
 
     These are valid addresses even when address translation is off, so unlike the
     canonical-address walk they are not gated on Sv* support.
@@ -168,7 +168,7 @@ def vaddr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
     save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
     lines = [
         "",
-        f"# {csr_name} must hold real addresses even when address translation is off",
+        f"# {csr_name} must hold physical addresses even when address translation is off",
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
@@ -196,15 +196,15 @@ def addr_csr_tests(
     covergroup: str,
     chunk_name: str,
 ) -> None:
-    """Real-address and canonical-address walk tests for each address CSR, one chunk per CSR."""
+    """Physical-address and canonical-address walk tests for each address CSR, one chunk per CSR."""
     names = ",".join(vaddr_csrs)
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(
         f"cp_{{{names}}}_vaddr_walk{{1,0}}, cp_{{{names}}}_vaddr_{{pc,scratch}}",
         "Write every valid virtual address as a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs)\n"
-        "registers that hold addresses. Canonical addresses have bits XLEN-1:VALEN-1 equal, so bits\n"
+        "to registers that hold addresses. Canonical addresses have bits XLEN-1:VALEN-1 equal, so bits\n"
         "low..VALEN-2 are walked; requires Sv32 or Sv39 and extends the walk to Sv48/Sv57 when supported.\n"
-        "Also write two real addresses — the current pc and the scratch area — which are valid even when\n"
+        "Also write two physical addresses — the current pc and the scratch area — which are valid even when\n"
         "address translation is off, so those tests are not gated on Sv* support",
     )
     for csr_name, (held_low, gated_bits) in vaddr_csrs.items():
@@ -232,7 +232,9 @@ def csr_insufficient_priv_tests(
             tc.code.extend(
                 [
                     test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
+                    f"LI(x{temp_reg}, 42)           # known value; the trapping csrr must leave it unchanged",
                     f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                    write_sigupd(temp_reg, test_data),
                     "",
                 ]
             )

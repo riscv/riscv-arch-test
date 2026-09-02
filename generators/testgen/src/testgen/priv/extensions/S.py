@@ -27,7 +27,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
 # stvec carries the address in BASE with MODE = Direct, so its two low bits are held at 0;
-# sepc holds bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
+# sepc attempt to write all bits, but bit 0 is always 0, and bit 1 is always zero unless ZCA_SUPPORTED
 # stval holds any byte address.
 S_VADDR_CSRS = {
     "stvec": (0b11, {}),

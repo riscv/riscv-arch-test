@@ -2316,8 +2316,6 @@
         .string "RVCP: XSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Trap count mismatch.\"";
-    fast_sig_offset_mismatch:
-        .string "\"Final signature pointer differs from reference: trap counts diverged.\"";
     sv_Mvect_str:
         .string "\"Mismatch in trap signature! Trap was being handled in M-Mode.\"";
     sv_Svect_str:

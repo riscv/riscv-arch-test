@@ -154,7 +154,6 @@
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
-
   #endif
 
   // Terminate test with passing status

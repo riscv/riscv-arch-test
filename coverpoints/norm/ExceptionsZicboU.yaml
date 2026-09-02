@@ -37,7 +37,7 @@ normative_rule_definitions:
 
   # CMO instructions do not generate address-misaligned exceptions.
   - name: no_addr_misaligned_excep
-    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_misaligned"]
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_address_misaligned"]
 
   # A cache-block management instruction is permitted to access the specified cache
   # block whenever a load instruction or store instruction is permitted to access
@@ -50,7 +50,7 @@ normative_rule_definitions:
   # address translation does not permit any access or raises a store access-fault
   # exception otherwise.
   - name: cbm_unperm_fault
-    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access"]
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access_fault"]
 
   # A cache-block zero instruction is permitted to access the specified cache block
   # whenever a store instruction is permitted to access the corresponding physical

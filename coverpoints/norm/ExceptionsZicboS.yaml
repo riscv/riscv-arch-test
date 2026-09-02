@@ -73,7 +73,7 @@ normative_rule_definitions:
 
   # CMO instructions do not generate address-misaligned exceptions.
   - name: no_addr_misaligned_excep
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_misaligned"]
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbo_address_misaligned"]
 
   # A cache-block management instruction is permitted to access the specified cache
   # block whenever a load instruction or store instruction is permitted to access

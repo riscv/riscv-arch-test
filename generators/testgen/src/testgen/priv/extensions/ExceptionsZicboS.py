@@ -25,18 +25,7 @@ _MODES = ["S", "U"]  # supervisor, then user
 )
 def make_exceptionszicbos(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboS coverpoints."""
-
     test_chunks: list[TestChunk] = []
-
     for mode in _MODES:
-        test_chunks.extend(
-            emit_suite(
-                test_data,
-                _CG,
-                mode=mode,
-                cross_senvcfg=True,
-                mode_entry=True,
-            )
-        )
-
+        test_chunks.extend(emit_suite(test_data, _CG, mode, cross_senvcfg=True, mode_entry=True))
     return test_chunks

@@ -271,11 +271,16 @@ def emit_suite(
     mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
     mode_entry: bool = False,
+    guard_u_mode: bool = True,
 ) -> list[TestChunk]:
     """Generate the cbie/cbcfe/cbze + access-fault + misaligned tests."""
 
     tc = test_data.begin_test_chunk()
     lines = tc.code
+
+    u_guarded = mode == "U" and guard_u_mode
+    if u_guarded:
+        lines.append("#ifdef U_SUPPORTED")
 
     if mode_entry:
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
@@ -308,5 +313,8 @@ def emit_suite(
             cross_senvcfg=cross_senvcfg,
         )
     )
+
+    if u_guarded:
+        lines.append("#endif // U_SUPPORTED")
 
     return [test_data.end_test_chunk()]

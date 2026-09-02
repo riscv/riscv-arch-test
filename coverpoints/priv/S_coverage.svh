@@ -273,12 +273,24 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     stval: coverpoint ins.current.insn[31:20] {
         bins stval = {CSR_STVAL};
     }
+    // stval must hold 0 and, when the illegal instruction encoding is reported in it, every ILEN-bit value
+    stval_zero: coverpoint ins.current.rs1_val {
+        bins zero = {0};
+    }
     xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
         bins pc = {1};
     }
     xaddr_scratch: coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
         bins scratch = {1};
     }
+    `ifdef UDB_REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+        stval_ilen_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:31] };
+        }
+        stval_ilen_ones: coverpoint ins.current.rs1_val {
+            bins ones = {32'hFFFFFFFF};
+        }
+    `endif
 
     // Valid virtual address walks: stvec, sepc, and stval must hold every canonical virtual address.
     // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
@@ -347,6 +359,11 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     cp_sepc_vaddr_scratch:    cross priv_mode_s, csrw, sepc, xaddr_scratch;
     cp_stval_vaddr_pc:        cross priv_mode_s, csrw, stval, xaddr_pc;
     cp_stval_vaddr_scratch:   cross priv_mode_s, csrw, stval, xaddr_scratch;
+    cp_stval_zero:            cross priv_mode_s, csrw, stval, stval_zero;
+    `ifdef UDB_REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+        cp_stval_ilen_walk1:  cross priv_mode_s, csrw, stval, stval_ilen_walk1;
+        cp_stval_ilen_ones:   cross priv_mode_s, csrw, stval, stval_ilen_ones;
+    `endif
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

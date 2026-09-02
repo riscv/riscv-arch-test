@@ -213,6 +213,57 @@ def addr_csr_tests(
         tc.code.extend(vaddr_walk_test(test_data, csr_name, covergroup, held_low=held_low, gated_bits=gated_bits))
 
 
+def xtval_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> list[str]:
+    """Write 0 and, when illegal-instruction encodings are reported in it, every ILEN-bit value to xtval.
+
+    mtval and stval are both WARL and must hold 0; when the implementation reports the faulting
+    instruction bits (UDB_REPORT_ENCODING_IN_<XTVAL>_ON_ILLEGAL_INSTRUCTION), they must also hold
+    every ILEN-bit value. csr_name is "mtval" or "stval".
+    """
+    csr = (csr_name, None)
+    ilen_guard = f"UDB_REPORT_ENCODING_IN_{csr_name.upper()}_ON_ILLEGAL_INSTRUCTION"
+    save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        "",
+        f"# {csr_name} must hold 0",
+        f"csrr x{save_reg}, {csr_name}      # Save CSR",
+        "",
+        f"# Testcase: {csr_name} = 0",
+        f"LI(x{walk_reg}, 0)",
+        test_data.add_testcase("zero", f"cp_{csr_name}_zero", covergroup),
+        f"csrw {csr_name}, x{walk_reg}",
+        gen_csr_read_sigupd(check_reg, csr, test_data),
+        "",
+        f"# {csr_name} must hold every ILEN-bit value when the illegal instruction encoding is reported in it",
+        f"#ifdef {ilen_guard}",
+    ]
+    for i in range(32):
+        lines.extend(
+            [
+                "",
+                f"# Testcase: {csr_name} = bit {i} set, 0s elsewhere",
+                f"LI(x{walk_reg}, {1 << i:#x})",
+                test_data.add_testcase(f"walking1_{i}", f"cp_{csr_name}_ilen_walk1", covergroup),
+                f"csrw {csr_name}, x{walk_reg}",
+                gen_csr_read_sigupd(check_reg, csr, test_data),
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            f"# Testcase: {csr_name} = all 32 encoding bits set",
+            f"LI(x{walk_reg}, 0xFFFFFFFF)",
+            test_data.add_testcase("ones", f"cp_{csr_name}_ilen_ones", covergroup),
+            f"csrw {csr_name}, x{walk_reg}",
+            gen_csr_read_sigupd(check_reg, csr, test_data),
+            f"#endif // {ilen_guard}",
+            f"csrw {csr_name}, x{save_reg}            # restore CSR",
+        ]
+    )
+    test_data.int_regs.return_registers([save_reg, walk_reg, check_reg])
+    return lines
+
+
 def csr_insufficient_priv_tests(
     test_data: TestData,
     test_chunks: list[TestChunk],

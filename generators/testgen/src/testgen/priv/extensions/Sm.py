@@ -20,6 +20,7 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    xtval_value_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -457,52 +458,6 @@ def _add_shadow(
     )
 
 
-def _mtval_value_tests(test_data: TestData) -> list[str]:
-    """Write 0 and, when illegal-instruction encodings are reported, every ILEN-bit value to mtval."""
-    covergroup = "Sm_mcsr_cg"
-    csr = ("mtval", None)
-    save_reg, walk_reg, check_reg = test_data.int_regs.get_registers(3)
-    lines = [
-        "",
-        "# mtval must hold 0",
-        f"csrr x{save_reg}, mtval      # Save CSR",
-        "",
-        "# Testcase: mtval = 0",
-        f"LI(x{walk_reg}, 0)",
-        test_data.add_testcase("zero", "cp_mtval_zero", covergroup),
-        f"csrw mtval, x{walk_reg}",
-        gen_csr_read_sigupd(check_reg, csr, test_data),
-        "",
-        "# mtval must hold every ILEN-bit value when the illegal instruction encoding is reported in it",
-        "#ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
-    ]
-    for i in range(32):
-        lines.extend(
-            [
-                "",
-                f"# Testcase: mtval = bit {i} set, 0s elsewhere",
-                f"LI(x{walk_reg}, {1 << i:#x})",
-                test_data.add_testcase(f"walking1_{i}", "cp_mtval_ilen_walk1", covergroup),
-                f"csrw mtval, x{walk_reg}",
-                gen_csr_read_sigupd(check_reg, csr, test_data),
-            ]
-        )
-    lines.extend(
-        [
-            "",
-            "# Testcase: mtval = all 32 encoding bits set",
-            f"LI(x{walk_reg}, 0xFFFFFFFF)",
-            test_data.add_testcase("ones", "cp_mtval_ilen_ones", covergroup),
-            f"csrw mtval, x{walk_reg}",
-            gen_csr_read_sigupd(check_reg, csr, test_data),
-            "#endif // UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
-            f"csrw mtval, x{save_reg}            # restore CSR",
-        ]
-    )
-    test_data.int_regs.return_registers([save_reg, walk_reg, check_reg])
-    return lines
-
-
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -750,7 +705,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
         "instruction encoding is reported in mtval",
     )
-    tc.code.extend(_mtval_value_tests(test_data))
+    tc.code.extend(xtval_value_tests(test_data, "mtval", "Sm_mcsr_cg"))
     addr_csr_tests(test_data, test_chunks, SM_VADDR_CSRS, "Sm_mcsr_cg", "mcsr_addr")
 
     csr_insufficient_priv_tests(

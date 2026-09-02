@@ -21,6 +21,7 @@ from testgen.priv.extensions.PrivCommon import (
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
     priv_inst_trap_tests,
+    xtval_value_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -344,6 +345,13 @@ def _generate_scsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
     tc.code.extend(csr_walk_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint, warl_fields=warl_fields))
     tc.code.extend(["", "#endif"])
 
+    tc = test_data.new_test_chunk(test_chunks, "scsr_addr")
+    tc.section_header = comment_banner(
+        "cp_stval_{zero,ilen_walk1,ilen_ones}",
+        "Write 0 to stval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
+        "instruction encoding is reported in stval",
+    )
+    tc.code.extend(xtval_value_tests(test_data, "stval", "S_scsr_cg"))
     addr_csr_tests(test_data, test_chunks, S_VADDR_CSRS, "S_scsr_cg", "scsr_addr")
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare

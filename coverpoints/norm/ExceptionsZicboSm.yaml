@@ -1,6 +1,18 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  - name: menvcfg_cbze_op
+    coverpoint: ["ExceptionsZicboSm_cg/cp_cbze"]
+
+  - name: menvcfg_cbcfe_op
+    coverpoint: ["ExceptionsZicboSm_cg/cp_cbcfe"]
+
+  - name: menvcfg_cbie_op
+    coverpoint: ["ExceptionsZicboSm_cg/cp_cbie"]
+
+  - name: menvcfg_cbie_cbo-inval_op
+    coverpoint: ["ExceptionsZicboSm_cg/cp_cbie"]
+
   # The CBIE/CBCFE/CBZE fields in each xenvcfg register do not affect the read and
   # write behavior of the same fields in the other xenvcfg registers.
   - name: cbxe_unaffected

@@ -93,7 +93,6 @@ def cbo_config_helper(
         f"LI(x{mask_reg}, 0b{field_mask:0{mask_bits}b})  # {field} field mask",
     ]
 
-    senvcfg_bins: list[str] = bins if cross_senvcfg else [""]
     for m_val in bins:
         lines.extend(
             [
@@ -109,19 +108,29 @@ def cbo_config_helper(
                     _csr_op("csrs", "menvcfg", cfg_reg, mode),
                 ]
             )
-        for s_val in senvcfg_bins:
-            senvcfg_tag = f"_senvcfg.{field}{s_val}" if cross_senvcfg else ""
-            if cross_senvcfg:
-                lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
-                lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
-                if int(s_val, 2):
-                    lines.extend(
-                        [
-                            f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
-                            _csr_op("csrs", "senvcfg", cfg_reg, mode),
-                        ]
-                    )
-                lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
+
+        if not cross_senvcfg:
+            for instr in instrs:
+                name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
+                lines.extend(
+                    [
+                        test_data.add_testcase(name, coverpoint, covergroup),
+                        f"{instr}    0(x{addr_reg})",
+                    ]
+                )
+            continue
+
+        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
+        for s_val in bins:
+            senvcfg_tag = f"_senvcfg.{field}{s_val}"
+            lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
+            if int(s_val, 2):
+                lines.extend(
+                    [
+                        f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
+                        _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                    ]
+                )
             for instr in instrs:
                 name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
                 lines.extend(
@@ -130,6 +139,16 @@ def cbo_config_helper(
                         f"{instr}    0(x{addr_reg})",
                     ]
                 )
+        lines.append("#else")
+        for instr in instrs:
+            name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
+            lines.extend(
+                [
+                    test_data.add_testcase(name, coverpoint, covergroup),
+                    f"{instr}    0(x{addr_reg})",
+                ]
+            )
+        lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
 
     lines.extend(["#endif", "#endif // SM1P12P0_OR_LATER_SUPPORTED"])
 
@@ -145,7 +164,7 @@ def cbo_access_fault_helper(
     cross_senvcfg: bool = False,
 ) -> list[str]:
     """Generate cbo/prefetch access-fault tests against RVMODEL_ACCESS_FAULT_ADDRESS."""
-    assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode"
+    assert not (mode == "Sm" and cross_senvcfg), "senvcfg is not applicable in M-mode."
     coverpoint = "cp_cbo_access_fault"
     addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
     mode_tag = _mode_tag(mode, cross_senvcfg)

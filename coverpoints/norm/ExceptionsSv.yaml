@@ -20,3 +20,44 @@ normative_rule_definitions:
   # instruction, not on the jump or branch instruction.
   - name: ia_fault_exc_on_target
     coverpoint: ["ExceptionsSv_cg/cp_instr_page_fault_m"]
+
+  #Attempting to fetch an instruction from a page that does not have
+  #execute permissions raises a fetch page-fault exception
+  - name: fetch_page_fault_no_x
+    coverpoint:
+      [
+        "ExceptionsSv_cg/{cp_instr_page_fault_m,cp_instr_page_fault_s,cp_instr_page_fault_u}",
+      ]
+
+  #Attempting to execute a load, load-reserved, or cache-block management
+  #instruction whose effective address lies
+  #within a page without read permissions raises a load page-fault exception.
+  - name: load_page_fault_no_r
+    coverpoint:
+      [
+        "ExceptionsSv_cg/{cp_load_page_fault_m,cp_load_page_fault_s,cp_load_page_fault_u}",
+      ]
+
+  #Attempting to execute a store, store-conditional, AMO, or cache-block zero instruction
+  #instruction whose effective address lies within a page without write
+  #permissions raises a store page-fault exception
+  - name: store_page_fault_no_w
+    coverpoint:
+      [
+        "ExceptionsSv_cg/{cp_store_page_fault_m,cp_store_page_fault_s,cp_store_page_fault_u}",
+      ]
+
+  #Load/store/AMO address-misaligned exceptions may have either higher or
+  #lower priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_pri2
+    coverpoint:
+      [
+        "ExceptionsSv_cg/{cp_misaligned_priority_m,cp_misaligned_priority_s,cp_misaligned_priority_u}",
+      ]
+
+  #csr:medeleg[] has a bit position allocated for every synchronous exception
+  - name: medeleg_enc_txt
+    coverpoint:
+      [
+        "ExceptionsSv_cg/{cp_medeleg_m,cp_medeleg_s,cp_medeleg_u,cp_medeleg_fetch_m,cp_medeleg_fetch_s,cp_medeleg_fetch_u}",
+      ]

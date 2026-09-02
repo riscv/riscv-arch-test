@@ -2,10 +2,13 @@
 
 normative_rule_definitions:
   - name: Svadu_hw_update_a_d_bits
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Svadu_cg/{PTE_Abit_unset_s_i,PTE_Abit_unset_u_i,PTE_Abit_unset_s_d,PTE_Abit_unset_u_d,PTE_Dbit_unset_s_d,PTE_Dbit_unset_u_d}",
+      ]
 
   - name: Svadu_hypervisor_adue_writable
     coverpoint: [""]
 
   - name: Svadu_disabled_hw_update_falls_back_to_svade
-    coverpoint: [""]
+    coverpoint: ["Svadu_cg/Svadu_enabled"]

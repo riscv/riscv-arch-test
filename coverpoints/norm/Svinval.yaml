@@ -5,10 +5,10 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cp_instr"]
 
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cp_instr"]
 
   - name: Svinval_sequence_rs1_rs2
     coverpoint: [""]

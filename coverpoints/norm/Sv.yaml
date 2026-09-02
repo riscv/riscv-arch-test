@@ -6,8 +6,11 @@ normative_rule_definitions:
   # ) will succeed. When MXR=1, loads from pages marked either readable or
   # executable (R=1 or X=1) will succeed. MXR has no effect when page-based virtual
   # memory is not in effect.
-  - names: [sstatus_mxr_sz, sstatus_mxr_acc, sstatus_mxr_op]
-    coverpoint: [""]
+  - name: sstatus_mxr
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_xpage_mxrunset_read_s,cp_xpage_mxrunset_read_u,cp_xpage_mxrset_read_s,cp_xpage_mxrset_read_u}",
+      ]
 
   # The SUM (permit Supervisor User Memory access) bit modifies the privilege with
   # which S-mode loads and stores access virtual memory. When SUM=0, S-mode memory
@@ -15,7 +18,15 @@ normative_rule_definitions:
   # SUM=1, these accesses are permitted. SUM has no effect when page-based virtual
   # memory is not in effect, nor when executing in U-mode. Note that S-mode can
   # never execute instructions from user pages, regardless of the state of SUM.
-  - names: [sstatus_sum_sz, sstatus_sum_acc, sstatus_sum_op]
+  - name: sstatus_sum
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noexec_s,cp_upage_smode_sumunset_noread_s,cp_upage_smode_sumunset_nowrite_s,cp_upage_smode_sumset_noexec_s,cp_upage_smode_sumset_read_s,cp_upage_smode_sumset_write_s,cp_spage_exec_s_i,cp_spage_noexec_s_i,cp_spage_read_s_d,cp_spage_noread_s_d,cp_spage_write_s_d,cp_spage_nowrite_s_d}",
+        "Sv_mstatus_mprv_cg/{cp_mprv_upage_smode_sumunset_noread,cp_mprv_upage_smode_sumunset_nowrite,cp_mprv_upage_smode_sumunset_noexec,cp_mprv_upage_smode_sumset_exec,cp_mprv_upage_smode_sumset_read,cp_mprv_upage_smode_sumset_write}",
+      ]
+
+  # SUM is read-only 0 if satp.MODE is read-only 0.
+  - name: sstatus_sum_satp_mode
     coverpoint: [""]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for
@@ -26,25 +37,29 @@ normative_rule_definitions:
   # per-address-space basis; and the MODE field, which selects the current
   # address-translation scheme. Further details on the access to this register are
   # described in .
-  - names: [satp_sz, satp_acc, satp_op, satp_mode]
-    coverpoint: ["Sv_satp_cg/access_m_s, TODO rest of the bits"]
+  - name: satp
+    coverpoint:
+      [
+        "Sv_satp_cg/{cp_access_m_s,cp_access_u}",
+        "Sv_mstatus_mprv_cg/cp_tvm_exception_s",
+      ]
 
   # shows the encodings of the MODE field when SXLEN=32 and SXLEN=64. When
   # MODE=Bare, supervisor virtual addresses are equal to supervisor physical
   # addresses, and there is no additional memory protection beyond the physical
   # memory protection scheme described in . To select MODE=Bare, software must write
-  # zero to the remaining fields of satp (bits 30–0 when SXLEN=32, or bits 59–0 when
+  # zero to the remaining fields of satp (bits 30-0 when SXLEN=32, or bits 59-0 when
   # SXLEN=64). Attempting to select MODE=Bare with a nonzero pattern in the
   # remaining fields has an UNSPECIFIED effect on the value that the remaining
   # fields assume and an UNSPECIFIED effect on address translation and protection
   # behavior.
-  - names: [satp_mode_sz, satp_mode_acc, satp_mode_op]
-    coverpoint: [""]
+  - name: satp_mode
+    coverpoint: ["Sv_satp_cg/satp_asid_PPN"]
 
   # When SXLEN=32, the only other valid setting for MODE is Sv32, a paged
   # virtual-memory scheme described in .
   - name: satp_mode_sxlen32
-    coverpoint: ["Sv_VA_cg/VA_d_mode"]
+    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
 
   # When SXLEN=64, three paged virtual-memory schemes are defined: Sv39, Sv48, and
   # Sv57, described in , , and , respectively. One additional scheme, Sv64, will be
@@ -52,7 +67,7 @@ normative_rule_definitions:
   # are reserved for future use and may define different interpretations of the
   # other fields in satp.
   - name: satp_mode_sxlen64
-    coverpoint: ["Sv_satp_cg/satp_bare, Sv_VA_cg/VA_d_mode"]
+    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
 
   # Implementations are not required to support all MODE settings, and if satp is
   # written with an unsupported MODE, the entire write has no effect; no fields in
@@ -67,8 +82,8 @@ normative_rule_definitions:
   # are implemented first: that is, if ASIDLEN &gt; 0, ASID[ASIDLEN-1:0] is
   # writable. The maximal value of ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for
   # Sv39, Sv48, and Sv57.
-  - name: satp-asidlen
-    coverpoint: [""]
+  - name: asidlen
+    coverpoint: ["Sv_satp_cg/asid_length"]
 
   # The satp CSR is considered active when the effective privilege mode is S-mode or
   # U-mode. Executions of the address-translation algorithm may only begin using a
@@ -89,16 +104,9 @@ normative_rule_definitions:
   # synchronize updates to in-memory memory-management data structures with current
   # execution. Instruction execution causes implicit reads and writes to these data
   # structures; however, these implicit references are ordinarily not ordered with
-  # respect to explicit loads and stores. Executing an SFENCE.VMA instruction
-  # guarantees that any previous stores already visible to the current RISC-V hart
-  # are ordered before certain implicit references by subsequent instructions in
-  # that hart to the memory-management data structures. The specific set of
-  # operations ordered by SFENCE.VMA is determined by rs1 and rs2, as described
-  # below. SFENCE.VMA is also used to invalidate entries in the address-translation
-  # cache associated with a hart (see ). Further details on the behavior of this
-  # instruction are described in and .
+  # respect to explicit loads and stores.
   - name: sfence_vma_op
-    coverpoint: [""]
+    coverpoint: ["Sv_sfence_cg/cp_ins"]
 
   # Executing an SFENCE.VMA instruction guarantees that any previous stores already
   # visible to the current RISC-V hart are ordered before certain implicit
@@ -111,13 +119,13 @@ normative_rule_definitions:
   # SFENCE.VMA is also used to invalidate entries in the address-translation cache
   # associated with a hart (see &lt;&lt;sv32algorithm&gt;&gt;).
   - name: sfence_vma_invalidation
-    coverpoint: [""]
+    coverpoint: ["Sv_sfence_cg/cp_ins"]
 
   # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of
   # the page tables, for all address spaces. The fence also invalidates all
   # address-translation cache entries, for all address spaces.
   - name: sfence_vma_all_asid_va
-    coverpoint: [""]
+    coverpoint: ["Sv_sfence_cg/cp_ins"]
 
   # If rs1=x0 and rs2{ne}x0, the fence orders all reads and writes made to any level
   # of the page tables, but only for the address space identified by integer
@@ -151,7 +159,7 @@ normative_rule_definitions:
   - name: sfence_vma_invalid_va
     coverpoint: [""]
 
-  # When rs2≠x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for
+  # When rs2!=x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for
   # future standard use. Until their use is defined by a standard extension, they
   # should be zeroed by software and ignored by current implementations.
   # Furthermore, if ASIDLEN&lt;ASIDMAX, the implementation shall ignore bits
@@ -206,167 +214,277 @@ normative_rule_definitions:
   # For implementations that make satp.MODE read-only zero (always Bare), attempts
   # to execute an SFENCE.VMA instruction might raise an illegal-instruction
   # exception.
-  - name: satp-mode_roz_sfence_illegal
+  - name: satp_mode_roz_sfence_illegal
     coverpoint: [""]
+
+  # The 20-bit VPN is translated into a 22-bit physical page number (PPN) for Sv32.
+  - name: satp_ppn_sv32_sz
+    coverpoint: ["Sv_satp_cg/satp_PPN"]
 
   # Attempting to fetch an instruction from a page that does not have execute
   # permissions raises a fetch page-fault exception.
   - name: fetch_page_fault_no_x
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_noexec_s_i,cp_upage_umode_noexec_u,cp_spage_rwx_s_i_noexec,cp_upage_smode_sumunset_noexec_s,cp_upage_smode_sumset_noexec_s,cp_PTE_nonleaf_lvl0_s_i_exec,cp_PTE_nonleaf_lvl0_u_i_exec}",
+        "Sv_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_noexec",
+      ]
 
   # Attempting to execute a load, load-reserved, or cache-block management
   # instruction whose effective address lies within a page without read permissions
   # raises a load page-fault exception.
   - name: load_page_fault_no_r
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_noread_s_d,cp_upage_umode_noread_u,cp_spage_rwx_s_d_noread,cp_upage_smode_sumunset_noread_s,cp_xpage_mxrunset_read_s,cp_xpage_mxrunset_read_u,cp_PTE_nonleaf_lvl0_s_d_read,cp_PTE_nonleaf_lvl0_u_d_read}",
+        "Sv_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_noread",
+      ]
 
   # Attempting to execute a store, store-conditional, AMO, or cache-block zero
   # instruction instruction whose effective address lies within a page without write
   # permissions raises a store page-fault exception.
   - name: store_page_fault_no_w
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_spage_nowrite_s_d,cp_upage_umode_nowrite_u,cp_spage_rwx_s_d_nowrite,cp_upage_smode_sumunset_nowrite_s,cp_PTE_nonleaf_lvl0_s_d_write,cp_PTE_nonleaf_lvl0_u_d_write}",
+        "Sv_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_nowrite",
+      ]
 
+  # This section describes a simple paged virtual-memory system for SXLEN=64.
   - name: Sv39_sxlen
     coverpoint: [""]
 
+  # Sv39 supports 39-bit virtual address spaces.
   - name: Sv39_va_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
 
+  # Instruction fetch addresses and load and store effective addresses, which are 64
+  # bits, must have bits 63-39 all equal to bit 38, or else a page-fault exception
+  # will occur.
   - name: Sv39_va_signext
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_canonical_exec_s,cp_canonical_exec_u,cp_canonical_read_s,cp_canonical_read_u,cp_canonical_write_s,cp_canonical_write_u}",
+      ]
 
+  # The 27-bit VPN is translated via a three-level page table.
   - name: Sv39_vpn_sz
     coverpoint: [""]
 
+  # The VPN is translated into a 44-bit PPN.
   - name: satp_ppn_sv39_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_satp_cg/satp_PPN"]
 
+  # The 27-bit VPN is translated into a 44-bit PPN via a three-level page table.
   - name: Sv39_levels
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # The 12-bit page offset is untranslated.
   - name: Sv39_page_offset_sz
     coverpoint: [""]
 
+  # Sv39 page tables contain 2^9 page table entries (PTEs).
   - name: Sv39_pte_count
     coverpoint: [""]
 
+  # Sv39 PTEs are eight bytes each.
   - name: Sv39_pte_sz
     coverpoint: [""]
 
+  # A page table is exactly the size of a page.
   - name: Sv39_pt_sz
     coverpoint: [""]
 
+  # A page table must always be aligned to a page boundary.
   - name: Sv39_pt_align
     coverpoint: [""]
 
+  # If Svnapot is not implemented, bit 63 remains reserved and must be zeroed by
+  # software for forward compatibility, or else a page-fault exception is raised.
   - name: Sv39_pte_svnapot_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_add_feature_cg/{cp_svnapot_read_fault,cp_svnapot_write_fault,cp_svnapot_exec_fault,cp_read_nofault,cp_write_nofault,cp_exec_nofault}",
+      ]
 
+  # If Svpbmt is not implemented, bits 62-61 remain reserved and must be zeroed by
+  # software for forward compatibility, or else a page-fault exception is raised.
   - name: Sv39_pte_svpbmt_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_add_feature_cg/{cp_svpbmt_read_fault,cp_svpbmt_write_fault,cp_svpbmt_exec_fault,cp_read_nofault,cp_write_nofault,cp_exec_nofault}",
+      ]
 
+  # Bits 60-54 are reserved for future standard use and must be zeroed by software
+  # for forward compatibility. If any of these bits are set, a page-fault exception
+  # is raised.
   - name: Sv39_pte_future_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_add_feature_cg/{cp_reserved_read_fault,cp_reserved_write_fault,cp_reserved_exec_fault,cp_read_nofault,cp_write_nofault,cp_exec_nofault}",
+      ]
 
+  # Any level of PTE may be a leaf PTE.
   - name: Sv39_leaf_any_level
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # In addition to 4 KiB pages, Sv39 supports 2 MiB megapages and 1 GiB gigapages.
   - name: Sv39_page_sizes
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # Each superpage must be virtually and physically aligned to a boundary equal to
+  # its size.
   - name: Sv39_superpage_align
     coverpoint: [""]
 
+  # A page-fault exception is raised if the physical address is insufficiently
+  # aligned.
   - name: Sv39_superpage_align_fault
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_misaligned_exec_s,cp_misaligned_exec_u,cp_misaligned_read_s,cp_misaligned_read_u,cp_misaligned_write_s,cp_misaligned_write_u}",
+      ]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except LEVELS equals 3.
   - name: Sv39_LEVELS
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except PTESIZE equals 8.
   - name: Sv39_PTESIZE
     coverpoint: [""]
 
+  # This section describes a simple paged virtual-memory system for SXLEN=64.
   - name: Sv48_sxlen
     coverpoint: [""]
 
+  # Sv48 supports 48-bit virtual address spaces.
   - name: Sv48_va_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
 
+  # Implementations that support Sv48 must also support Sv39.
   - name: Sv48_requires_Sv39
     coverpoint: [""]
 
+  # Instruction fetch addresses and load and store effective addresses, which are 64
+  # bits, must have bits 63-48 all equal to bit 47, or else a page-fault exception
+  # will occur.
   - name: Sv48_va_signext
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_canonical_exec_s,cp_canonical_exec_u,cp_canonical_read_s,cp_canonical_read_u,cp_canonical_write_s,cp_canonical_write_u}",
+      ]
 
+  # The 36-bit VPN is translated via a four-level page table.
   - name: Sv48_vpn_sz
     coverpoint: [""]
 
+  # The VPN is translated into a 44-bit PPN.
   - name: satp_ppn_sv48_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_satp_cg/satp_PPN"]
 
+  # The 36-bit VPN is translated into a 44-bit PPN via a four-level page table.
   - name: Sv48_levels
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # The 12-bit page offset is untranslated.
   - name: Sv48_page_offset_sz
     coverpoint: [""]
 
+  # Any level of PTE may be a leaf PTE.
   - name: Sv48_leaf_any_level
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # In addition to 4 KiB pages, Sv48 supports 2 MiB megapages, 1 GiB gigapages, and
+  # 512 GiB terapages.
   - name: Sv48_page_sizes
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # Each superpage must be virtually and physically aligned to a boundary equal to
+  # its size.
   - name: Sv48_superpage_align
     coverpoint: [""]
 
+  # A page-fault exception is raised if the physical address is insufficiently
+  # aligned.
   - name: Sv48_superpage_align_fault
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/{cp_misaligned_exec_s,cp_misaligned_exec_u,cp_misaligned_read_s,cp_misaligned_read_u,cp_misaligned_write_s,cp_misaligned_write_u}",
+      ]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except LEVELS equals 4.
   - name: Sv48_LEVELS
-    coverpoint: [""]
+    coverpoint: ["Sv_vm_permissions_cg/{PageType_i,PageType_d}"]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except PTESIZE equals 8.
   - name: Sv48_PTESIZE
     coverpoint: [""]
 
+  # This section describes a simple paged virtual-memory system designed for RV64
+  # systems.
   - name: Sv57_sxlen
     coverpoint: [""]
 
+  # Sv57 supports 57-bit virtual address spaces.
   - name: Sv57_va_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_VA_cg/{cp_VA_i_mode,cp_VA_d_mode}"]
 
+  # Implementations that support Sv57 must also support Sv48.
   - name: Sv57_requires_Sv48
     coverpoint: [""]
 
+  # Instruction fetch addresses and load and store effective addresses, which are 64
+  # bits, must have bits 63-57 all equal to bit 56, or else a page-fault exception
+  # will occur.
   - name: Sv57_va_signext
     coverpoint: [""]
 
+  # The 45-bit VPN is translated via a five-level page table.
   - name: Sv57_vpn_sz
     coverpoint: [""]
 
+  # The VPN is translated into a 44-bit PPN.
   - name: satp_ppn_sv57_sz
-    coverpoint: [""]
+    coverpoint: ["Sv_satp_cg/satp_PPN"]
 
+  # The 45-bit VPN is translated into a 44-bit PPN via a five-level page table.
   - name: Sv57_levels
     coverpoint: [""]
 
+  # The 12-bit page offset is untranslated.
   - name: Sv57_page_offset_sz
     coverpoint: [""]
 
+  # Any level of PTE may be a leaf PTE.
   - name: Sv57_leaf_any_level
     coverpoint: [""]
 
+  # In addition to 4 KiB pages, Sv57 supports 2 MiB megapages, 1 GiB gigapages,
+  # 512 GiB terapages, and 256 TiB petapages.
   - name: Sv57_page_sizes
     coverpoint: [""]
 
+  # Each superpage must be virtually and physically aligned to a boundary equal to
+  # its size.
   - name: Sv57_superpage_align
     coverpoint: [""]
 
+  # A page-fault exception is raised if the physical address is insufficiently
+  # aligned.
   - name: Sv57_superpage_align_fault
     coverpoint: [""]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except LEVELS equals 5.
   - name: Sv57_LEVELS
     coverpoint: [""]
 
+  # The algorithm for virtual-to-physical address translation is the same as for
+  # Sv32, except PTESIZE equals 8.
   - name: Sv57_PTESIZE
     coverpoint: [""]
 
@@ -374,4 +492,4 @@ normative_rule_definitions:
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then stval will contain the faulting virtual address.
   - name: stval_op_faulting_addr
-    coverpoint: ["TODO: page faults"]
+    coverpoint: [""]

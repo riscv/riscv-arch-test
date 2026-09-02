@@ -8,7 +8,7 @@
 
 """Shared test generation for the privileged mode suites (Sm, S, U)."""
 
-from testgen.asm.csr import gen_csr_read_sigupd
+from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -23,6 +23,43 @@ VADDR_TIERS = [
     (46, "SV48_SUPPORTED"),
     (55, "SV57_SUPPORTED"),
 ]
+
+# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
+# Format: (CSR Name, Mask).  Mask specifies a set of bits to check
+
+# Create bit masks.  WPRI fields should be 0 to ignore reads.
+
+# sstatus bit mask
+S_SSTATUS_MASK = (
+    (1 << 1)  # SIE:  Supervisor Interrupt Enable
+    | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
+    | (0 << 6)  # UBE not yet supported by Sail; test in Endian
+    | (1 << 8)  # SPP:  Supervisor Previous Privilege
+    | (3 << 9)  # VS:   Vector Status
+    | (3 << 13)  # FS:   Floating-Point Status
+    | (3 << 15)  # XS:   Custom Extension Status
+    | (1 << 18)  # SUM:  Supervisor User Memory Access
+    | (1 << 19)  # MXR:  Make eXecutable Readable
+    | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
+    | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
+    | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
+    | (0 << 32)  # UXL:  User-Mode XLEN not changeable in Sail yet; should be tested in Xlen suite
+    | (1 << 63)  # SD for RV64
+)
+
+S_CSRS = [
+    ("sstatus", S_SSTATUS_MASK),
+    # cp_scause is tested separately. WLRL fields can't be managed with masks.
+    # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+    ("stvec", 0b10),
+    ("scounteren", None),
+    ("sscratch", None),
+    ("sepc", None),
+    ("stval", None),
+    ("sip", 0xFFFF),  # only test standard non-reserved portion
+    ("sie", 0xFFFF),  # only test standard non-reserved portion
+]
+S_CSR_SENVCFG = ("senvcfg", None)
 
 
 def _vaddr_walk_step(
@@ -54,8 +91,7 @@ def _vaddr_walk_step(
             f"LI(x{walk_reg}, {1 << bit:#x})",
             f"xor x{check_reg}, x{ones_reg}, x{walk_reg}    # clear bit {bit}",
             test_data.add_testcase(f"walking0_{bit}", f"cp_{csr_name}_vaddr_walk0", covergroup),
-            f"csrw {csr_name}, x{check_reg}",
-            gen_csr_read_sigupd(check_reg, csr, test_data),
+            gen_csr_write_sigupd(check_reg, csr_name, test_data),
         ]
     if bit in gated_bits:
         lines = [f"#ifdef {gated_bits[bit]}", *lines, f"#endif // {gated_bits[bit]}"]
@@ -142,7 +178,7 @@ def vaddr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
         gen_csr_read_sigupd(check_reg, csr, test_data),
         "",
         f"# Testcase: {csr_name} = address within scratch",
-        f"la x{walk_reg}, scratch",
+        f"LA(x{walk_reg}, scratch)",
         f"addi x{walk_reg}, x{walk_reg}, 0xA8    # low byte 0xA8 lets coverage recognize this value",
         test_data.add_testcase("scratch", f"cp_{csr_name}_vaddr_scratch", covergroup),
         f"csrw {csr_name}, x{walk_reg}",
@@ -189,17 +225,18 @@ def csr_insufficient_priv_tests(
     coverpoint = "cp_csr_insufficient_priv"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, description)
-    for csr in (csr for csr_range in csr_ranges for csr in csr_range):
-        tc = test_data.new_test_chunk(test_chunks, chunk_name)
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
-                "",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
+    for csr_range in csr_ranges:
+        for csr in csr_range:
+            tc = test_data.new_test_chunk(test_chunks, chunk_name)
+            temp_reg = test_data.int_regs.get_register()
+            tc.code.extend(
+                [
+                    test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
+                    f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                    "",
+                ]
+            )
+            test_data.int_regs.return_register(temp_reg)
 
 
 def csr_ro_write_tests(
@@ -213,18 +250,21 @@ def csr_ro_write_tests(
     coverpoint = "cp_csr_ro"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, "Attempt to write read-only CSRs.  Should throw illegal instruction")
-    for csr in (csr for csr_range in csr_ranges for csr in csr_range):
-        tc = test_data.new_test_chunk(test_chunks, chunk_name)
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
-                f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
-                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-                "",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
+    for csr_range in csr_ranges:
+        for csr in csr_range:
+            tc = test_data.new_test_chunk(test_chunks, chunk_name)
+            temp_reg, read_reg = test_data.int_regs.get_registers(2)
+            tc.code.extend(
+                [
+                    test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
+                    f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
+                    f"LI(x{read_reg}, 42)           # known value; the trapping csrrw must leave it unchanged",
+                    f"csrrw x{read_reg}, 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                    write_sigupd(read_reg, test_data),
+                    "",
+                ]
+            )
+            test_data.int_regs.return_registers([temp_reg, read_reg])
 
 
 def priv_inst_trap_tests(
@@ -232,9 +272,9 @@ def priv_inst_trap_tests(
     covergroup: str,
     coverpoint: str,
     description: str,
-    instrs: list[tuple[str, str]],
+    instrs: list[str],
 ) -> list[str]:
-    """An ecall answered by the T-SBI environment, then privileged instructions that must trap."""
+    """Test privileged instructions"""
     lines = [
         comment_banner(coverpoint, description),
         test_data.add_testcase("ecall", coverpoint, covergroup),
@@ -242,6 +282,7 @@ def priv_inst_trap_tests(
         "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
         write_sigupd(10, test_data),
     ]
-    for name, instr in instrs:
+    for name in instrs:
+        instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines

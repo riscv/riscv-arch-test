@@ -29,11 +29,7 @@ def make_u(test_data: TestData) -> list[TestChunk]:
             "U_uprivinst_cg",
             "cp_uprivinst",
             "Execute privileged instructions",
-            [
-                ("ebreak", "ebreak              # test ebreak instruction"),
-                ("mret", "mret                  # test mret instruction"),
-                ("sret", "sret                  # test sret instruction"),
-            ],
+            ["ebreak", "mret", "sret"],
         )
     )
     csr_insufficient_priv_tests(

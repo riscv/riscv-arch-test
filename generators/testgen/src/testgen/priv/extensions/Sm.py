@@ -14,11 +14,13 @@ from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
+    S_CSR_SENVCFG,
+    S_CSRS,
+    S_SSTATUS_MASK,
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
 )
-from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_SSTATUS_MASK
 from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
@@ -315,7 +317,9 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"LI(x{check_reg}, 0x{fields:08x})",
                                 f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"LA(x{reg3}, 1f)             # return address after sret",
+                                "#ifdef S_SUPPORTED",
                                 f"csrw sepc, x{reg3}         # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                "#endif // S_SUPPORTED",
                                 f"csrw mstatus, x{check_reg}       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "sret                    # test sret instruction",

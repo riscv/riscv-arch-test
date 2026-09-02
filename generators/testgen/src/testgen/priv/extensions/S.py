@@ -14,6 +14,9 @@ from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.PrivCommon import (
+    S_CSR_SENVCFG,
+    S_CSRS,
+    S_SSTATUS_MASK,
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
@@ -21,52 +24,16 @@ from testgen.priv.extensions.PrivCommon import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-# Standard S-mode CSRs, shared with the Sm suite (cp_scsr_from_m)
-# Format: (CSR Name, Mask).  Mask specifies a set of bits to check
-
-# Create bit masks.  WPRI fields should be 0 to ignore reads.
-
-# sstatus bit mask
-S_SSTATUS_MASK = (
-    (1 << 1)  # SIE:  Supervisor Interrupt Enable
-    | (1 << 5)  # SPIE: Supervisor Previous Interrupt Enable
-    | (0 << 6)  # UBE not yet supported by Sail; test in Endian
-    | (1 << 8)  # SPP:  Supervisor Previous Privilege
-    | (3 << 9)  # VS:   Vector Status
-    | (3 << 13)  # FS:   Floating-Point Status
-    | (3 << 15)  # XS:   Custom Extension Status
-    | (1 << 18)  # SUM:  Supervisor User Memory Access
-    | (1 << 19)  # MXR:  Make eXecutable Readable
-    | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-    | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
-    | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
-    | (0 << 32)  # UXL:  User-Mode XLEN not changeable in Sail yet; should be tested in Xlen suite
-    | (1 << 63)  # SD for RV64
-)
-
-S_CSRS = [
-    ("sstatus", S_SSTATUS_MASK),
-    # cp_scause is tested separately. WLRL fields can't be managed with masks.
-    # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-    ("stvec", 0b10),
-    ("scounteren", None),
-    ("sscratch", None),
-    ("sepc", None),
-    ("stval", None),
-    ("sip", 0xFFFF),  # only test standard non-reserved portion
-    ("sie", 0xFFFF),  # only test standard non-reserved portion
-]
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
 # stvec carries the address in BASE with MODE = Direct, so its two low bits are held at 0;
 # sepc holds bit 0 at 0 and bit 1 at 0 unless Zca makes 2-byte alignment legal;
 # stval holds any byte address.
 S_VADDR_CSRS = {
     "stvec": (0b11, {}),
-    "sepc": (0b01, {1: "ZCA_SUPPORTED"}),
+    "sepc": (0b00, {}),
     "stval": (0b00, {}),
 }
 # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
-S_CSR_SENVCFG = ("senvcfg", None)
 
 
 def _generate_scause_tests(test_data: TestData) -> list[str]:
@@ -457,11 +424,7 @@ def make_s(test_data: TestData) -> list[TestChunk]:
             "S_sprivinst_cg",
             "cp_sprivinst",
             "Executing ecall and ebreak and mret should cause an exception",
-            [
-                ("ebreak", "ebreak              # test ebreak instruction"),
-                ("mret", "mret                # test mret instruction"),
-                ("sfence_vma", "sfence.vma          # test sfence.vma instruction"),
-            ],
+            ["ebreak", "mret", "sfence.vma"],
         )
     )
 

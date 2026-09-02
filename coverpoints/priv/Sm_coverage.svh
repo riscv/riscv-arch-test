@@ -462,7 +462,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
     // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
     // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
-    mepc_addr: coverpoint ins.current.insn[31:20] {
+    mepc: coverpoint ins.current.insn[31:20] {
         bins mepc = {CSR_MEPC};
     }
     xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
@@ -493,9 +493,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `define SM_VADDR_WALK_MSB 31
     `endif
     `ifdef SM_VADDR_WALK_MSB
-        mepc: coverpoint ins.current.insn[31:20] {
-            bins mepc = {CSR_MEPC};
-        }
         // mepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
         xepc_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
             `ifdef ZCA_SUPPORTED
@@ -564,8 +561,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     }
     cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
-    cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc_addr, xaddr_pc;
-    cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc_addr, xaddr_scratch;
+    cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
+    cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;
     cp_mtval_vaddr_pc:          cross priv_mode_m, csrrw, mtval, xaddr_pc;
     cp_mtval_vaddr_scratch:     cross priv_mode_m, csrrw, mtval, xaddr_scratch;
     `ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION

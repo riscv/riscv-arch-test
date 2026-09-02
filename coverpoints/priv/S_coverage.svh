@@ -264,13 +264,13 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     // Sv* support (the walk coverpoints below are). The generator emits the csrw immediately
     // after `auipc xN, 0`, so the pc value written equals the csrw's pc - 4; the scratch value
     // is scratch + 0xA8, an offset chosen so no walk, zero, or all-ones pattern shares its low byte.
-    stvec_addr: coverpoint ins.current.insn[31:20] {
+    stvec: coverpoint ins.current.insn[31:20] {
         bins stvec = {CSR_STVEC};
     }
-    sepc_addr: coverpoint ins.current.insn[31:20] {
+    sepc: coverpoint ins.current.insn[31:20] {
         bins sepc = {CSR_SEPC};
     }
-    stval_addr: coverpoint ins.current.insn[31:20] {
+    stval: coverpoint ins.current.insn[31:20] {
         bins stval = {CSR_STVAL};
     }
     xaddr_pc: coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
@@ -293,15 +293,6 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         `define S_VADDR_WALK_MSB 31
     `endif
     `ifdef S_VADDR_WALK_MSB
-        stvec: coverpoint ins.current.insn[31:20] {
-            bins stvec = {CSR_STVEC};
-        }
-        sepc: coverpoint ins.current.insn[31:20] {
-            bins sepc = {CSR_SEPC};
-        }
-        stval: coverpoint ins.current.insn[31:20] {
-            bins stval = {CSR_STVAL};
-        }
         // stvec: BASE holds the address with MODE = Direct, so bits 1:0 stay 0
         stvec_vaddr_walk1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
             bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
@@ -350,12 +341,12 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
-    cp_stvec_vaddr_pc:        cross priv_mode_s, csrw, stvec_addr, xaddr_pc;
-    cp_stvec_vaddr_scratch:   cross priv_mode_s, csrw, stvec_addr, xaddr_scratch;
-    cp_sepc_vaddr_pc:         cross priv_mode_s, csrw, sepc_addr, xaddr_pc;
-    cp_sepc_vaddr_scratch:    cross priv_mode_s, csrw, sepc_addr, xaddr_scratch;
-    cp_stval_vaddr_pc:        cross priv_mode_s, csrw, stval_addr, xaddr_pc;
-    cp_stval_vaddr_scratch:   cross priv_mode_s, csrw, stval_addr, xaddr_scratch;
+    cp_stvec_vaddr_pc:        cross priv_mode_s, csrw, stvec, xaddr_pc;
+    cp_stvec_vaddr_scratch:   cross priv_mode_s, csrw, stvec, xaddr_scratch;
+    cp_sepc_vaddr_pc:         cross priv_mode_s, csrw, sepc, xaddr_pc;
+    cp_sepc_vaddr_scratch:    cross priv_mode_s, csrw, sepc, xaddr_scratch;
+    cp_stval_vaddr_pc:        cross priv_mode_s, csrw, stval, xaddr_pc;
+    cp_stval_vaddr_scratch:   cross priv_mode_s, csrw, stval, xaddr_scratch;
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

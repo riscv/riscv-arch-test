@@ -88,10 +88,16 @@ def cbo_config_helper(
         comment_banner(coverpoint, description),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
-        f"#ifdef {guard}",
-        f"LA(x{addr_reg}, scratch)",
-        f"LI(x{mask_reg}, 0b{field_mask:0{mask_bits}b})  # {field} field mask",
     ]
+    if mode == "Sm":
+        lines.append("#ifdef U_SUPPORTED")
+    lines.extend(
+        [
+            f"#ifdef {guard}",
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{mask_reg}, 0b{field_mask:0{mask_bits}b})  # {field} field mask",
+        ]
+    )
 
     for m_val in bins:
         lines.extend(
@@ -118,39 +124,41 @@ def cbo_config_helper(
                         f"{instr}    0(x{addr_reg})",
                     ]
                 )
-            continue
-
-        lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
-        for s_val in bins:
-            senvcfg_tag = f"_senvcfg.{field}{s_val}"
-            lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
-            if int(s_val, 2):
-                lines.extend(
-                    [
-                        f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
-                        _csr_op("csrs", "senvcfg", cfg_reg, mode),
-                    ]
-                )
+        else:
+            lines.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
+            for s_val in bins:
+                senvcfg_tag = f"_senvcfg.{field}{s_val}"
+                lines.append(_csr_op("csrc", "senvcfg", mask_reg, mode))
+                if int(s_val, 2):
+                    lines.extend(
+                        [
+                            f"LI(x{cfg_reg}, 0b{int(s_val, 2) << shift:0{mask_bits}b})",
+                            _csr_op("csrs", "senvcfg", cfg_reg, mode),
+                        ]
+                    )
+                for instr in instrs:
+                    name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
+                    lines.extend(
+                        [
+                            test_data.add_testcase(name, coverpoint, covergroup),
+                            f"{instr}    0(x{addr_reg})",
+                        ]
+                    )
+            lines.append("#else")
             for instr in instrs:
-                name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}{senvcfg_tag}"
+                name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
                 lines.extend(
                     [
                         test_data.add_testcase(name, coverpoint, covergroup),
                         f"{instr}    0(x{addr_reg})",
                     ]
                 )
-        lines.append("#else")
-        for instr in instrs:
-            name = f"{instr}{mode_tag}_menvcfg.{field}{m_val}"
-            lines.extend(
-                [
-                    test_data.add_testcase(name, coverpoint, covergroup),
-                    f"{instr}    0(x{addr_reg})",
-                ]
-            )
-        lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
+            lines.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
 
-    lines.extend(["#endif", "#endif // SM1P12P0_OR_LATER_SUPPORTED"])
+    lines.append("#endif")
+    if mode == "Sm":
+        lines.append("#endif // U_SUPPORTED")
+    lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
 
     test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg])
     return lines
@@ -177,10 +185,19 @@ def cbo_access_fault_helper(
         ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
-        f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-        _csr_op("csrs", "menvcfg", cfg_reg, mode),
-        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
     ]
+    if mode == "Sm":
+        lines.append("#ifdef U_SUPPORTED")
+    lines.extend(
+        [
+            f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+            _csr_op("csrs", "menvcfg", cfg_reg, mode),
+        ]
+    )
+    if mode == "Sm":
+        lines.append("#endif // U_SUPPORTED")
+    lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
+
     if cross_senvcfg:
         lines.extend(
             [
@@ -243,10 +260,19 @@ def cbo_misaligned_helper(
         ),
         "",
         "#ifdef SM1P12P0_OR_LATER_SUPPORTED",
-        f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
-        _csr_op("csrs", "menvcfg", cfg_reg, mode),
-        "#endif // SM1P12P0_OR_LATER_SUPPORTED",
     ]
+    if mode == "Sm":
+        lines.append("#ifdef U_SUPPORTED")
+    lines.extend(
+        [
+            f"LI(x{cfg_reg}, 0b{_ENVCFG_ALL_ENABLE:08b})  # enable cbie/cbcfe/cbze",
+            _csr_op("csrs", "menvcfg", cfg_reg, mode),
+        ]
+    )
+    if mode == "Sm":
+        lines.append("#endif // U_SUPPORTED")
+    lines.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
+
     if cross_senvcfg:
         lines.extend(
             [
@@ -290,16 +316,11 @@ def emit_suite(
     mode: str,  # "Sm" | "S" | "U"
     cross_senvcfg: bool = False,
     mode_entry: bool = False,
-    guard_u_mode: bool = True,
 ) -> list[TestChunk]:
     """Generate the cbie/cbcfe/cbze + access-fault + misaligned tests."""
 
     tc = test_data.begin_test_chunk()
     lines = tc.code
-
-    u_guarded = mode == "U" and guard_u_mode
-    if u_guarded:
-        lines.append("#ifdef U_SUPPORTED")
 
     if mode_entry:
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE  # enter {mode}-mode")
@@ -332,8 +353,5 @@ def emit_suite(
             cross_senvcfg=cross_senvcfg,
         )
     )
-
-    if u_guarded:
-        lines.append("#endif // U_SUPPORTED")
 
     return [test_data.end_test_chunk()]

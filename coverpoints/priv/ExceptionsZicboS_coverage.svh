@@ -91,13 +91,6 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
             `endif
             cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_s_u, menvcfg_all_enable, senvcfg_all_enable;
         `else
-            `ifdef ZICBOM_SUPPORTED
-                cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_s_u;
-                cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_s_u;
-            `endif
-            `ifdef ZICBOZ_SUPPORTED
-                cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_s_u;
-            `endif
             cp_cbo_address_misaligned:  cross cbo_instrs, adr_misaligned, priv_mode_s_u;
         `endif
     `else

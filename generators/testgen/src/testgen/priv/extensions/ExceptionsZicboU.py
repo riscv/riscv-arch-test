@@ -23,4 +23,4 @@ _CG = "ExceptionsZicboU_cg"
 )
 def make_exceptionszicbou(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZicboU coverpoints."""
-    return emit_suite(test_data, _CG, "U", guard_u_mode=False)
+    return emit_suite(test_data, _CG, "U")

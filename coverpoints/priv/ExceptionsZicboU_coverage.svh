@@ -65,9 +65,6 @@ covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    // menvcfg.cbie/cbcfe/cbze don't exist before Sm1.12.0, so these crosses
-    // are gated entirely; access-fault/misaligned still run pre-1.12, just
-    // without the menvcfg dimension (see below).
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef ZICBOM_SUPPORTED
             cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_u;

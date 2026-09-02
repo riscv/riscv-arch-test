@@ -205,16 +205,25 @@
 #endif
 
 // PMP macros
-#define PMP0_CFG_SHIFT  0
-#define PMP1_CFG_SHIFT  8
-#define PMP2_CFG_SHIFT  16
-#define PMP3_CFG_SHIFT  24
-#define PMP4_CFG_SHIFT  32
-#define PMP5_CFG_SHIFT  40
-#define PMP6_CFG_SHIFT  48
-#define PMP7_CFG_SHIFT  56
-#define NOP              0x13
-#define DOUBLE_NOP       (0x13<<32)+0x13
+#define PMP_CFG_SHIFT(_ENTRY) (((_ENTRY) % (UDB_MXLEN / 8)) * 8)
+#define PMP0_CFG_SHIFT         PMP_CFG_SHIFT(0)
+#define PMP1_CFG_SHIFT         PMP_CFG_SHIFT(1)
+#define PMP2_CFG_SHIFT         PMP_CFG_SHIFT(2)
+#define PMP3_CFG_SHIFT         PMP_CFG_SHIFT(3)
+#define PMP4_CFG_SHIFT         PMP_CFG_SHIFT(4)
+#define PMP5_CFG_SHIFT         PMP_CFG_SHIFT(5)
+#define PMP6_CFG_SHIFT         PMP_CFG_SHIFT(6)
+#define PMP7_CFG_SHIFT         PMP_CFG_SHIFT(7)
+#define PMP8_CFG_SHIFT         PMP_CFG_SHIFT(8)
+#define PMP9_CFG_SHIFT         PMP_CFG_SHIFT(9)
+#define PMP10_CFG_SHIFT        PMP_CFG_SHIFT(10)
+#define PMP11_CFG_SHIFT        PMP_CFG_SHIFT(11)
+#define PMP12_CFG_SHIFT        PMP_CFG_SHIFT(12)
+#define PMP13_CFG_SHIFT        PMP_CFG_SHIFT(13)
+#define PMP14_CFG_SHIFT        PMP_CFG_SHIFT(14)
+#define PMP15_CFG_SHIFT        PMP_CFG_SHIFT(15)
+#define NOP                    0x13
+#define DOUBLE_NOP             (0x13<<32)+0x13
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.

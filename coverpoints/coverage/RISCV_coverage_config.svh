@@ -482,8 +482,14 @@
 `ifdef ZKNH_COVERAGE
   `include "Zknh_coverage.svh"
 `endif
-`ifdef ZKR_COVERAGE
-  `include "Zkr_coverage.svh"
+`ifdef ZKRS_COVERAGE
+  `include "ZkrS_coverage.svh"
+`endif
+`ifdef ZKRSM_COVERAGE
+  `include "ZkrSm_coverage.svh"
+`endif
+`ifdef ZKRU_COVERAGE
+  `include "ZkrU_coverage.svh"
 `endif
 `ifdef ZKSED_COVERAGE
   `include "Zksed_coverage.svh"

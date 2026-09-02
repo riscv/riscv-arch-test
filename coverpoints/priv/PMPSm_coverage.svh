@@ -786,6 +786,7 @@ covergroup PMPSm_cg with function sample(
     `endif
   }
 
+  `ifdef UDB_MXLEN_32
   legal_pmpcfg_entries_odd: coverpoint ins.current.insn[31:20] {   // For writing zero in odd PMPCFGs
     bins pmpcfg1   = {CSR_PMPCFG1};
     bins pmpcfg3   = {CSR_PMPCFG3};
@@ -798,6 +799,7 @@ covergroup PMPSm_cg with function sample(
       bins pmpcfg15  = {CSR_PMPCFG15};
     `endif
   }
+  `endif
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
@@ -1023,6 +1025,9 @@ covergroup PMPSm_cg with function sample(
     cp_pmpaddr_upper_zero: cross priv_mode_m, cp_pmpaddr_upper_zero_rs1, csrrw, legal_pmpaddr_entries ;
   `endif
   cp_pmpcfg_walk: cross priv_mode_m, cp_walk_pmpcfg_rs1, csrrw, legal_pmpcfg_entries_even ;
+  `ifdef UDB_MXLEN_32
+    cp_pmpcfg_walk_odd: cross priv_mode_m, cp_walk_pmpcfg_rs1, csrrw, legal_pmpcfg_entries_odd ;
+  `endif
   `ifdef UDB_MXLEN_32
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;

@@ -242,9 +242,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZalrsc",
-    required_extensions=["Zalrsc", "Sm"],
-    # TODO: Remove BOOT_TO_MMODE when converting this test to T-SBI.
-    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zalrsc", ["Sm", "U"]],
 )
 def make_exceptionszalrsc(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ExceptionsZalrsc coverpoints"""

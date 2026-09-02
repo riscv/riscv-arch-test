@@ -10,7 +10,7 @@ Covers the high-impact load/store reserved-encoding families:
 - ``cp_ssstrictv_ls_eew_lt_sewmin`` - EEW in the width field is less than min supported eew
 
 Encoding-bit families (``ls_mew_reserved``, ``ls_wr_nf_reserved``) require
-``.4byte`` raw encoding because the assembler does not accept the relevant
+``.insn`` raw encoding because the assembler does not accept the relevant
 field overrides. Those are not implemented here.
 """
 

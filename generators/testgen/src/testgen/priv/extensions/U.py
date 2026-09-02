@@ -93,11 +93,7 @@ def _generate_ucsr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> N
         test_data.int_regs.return_register(temp_reg)
 
 
-@add_priv_test_generator(
-    "U",
-    required_extensions=["U"],
-    extra_defines=["#define BOOT_TO_UMODE"],
-)
+@add_priv_test_generator("U", required_extensions=["U"])
 def make_u(test_data: TestData) -> list[TestChunk]:
     """Generate tests for U user-mode testsuite."""
     test_chunks: list[TestChunk] = []

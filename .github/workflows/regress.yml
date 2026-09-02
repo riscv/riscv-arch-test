@@ -14,8 +14,8 @@ concurrency:
 
 env:
   SAIL_VERSION: "0.13.1"
-  RISCV_TOOLCHAIN_VERSION: "2026.08.24"
-  LLVM_VERSION: "22"
+  RISCV_TOOLCHAIN_VERSION: "2026.08.25"
+  LLVM_VERSION: "23"
 
 permissions:
   contents: read
@@ -290,11 +290,11 @@ jobs:
         uses: ./.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
-        run: make clean-tests tests
+        run: make tests
 
       - name: Check for differences
         run: |
-          dirs=(tests/rv32i tests/rv32e tests/rv64i tests/rv64e coverpoints/unpriv coverpoints/coverage)
+          dirs=(tests coverpoints)
           changed=$(git diff --name-only -- "${dirs[@]}")
           untracked=$(git ls-files --others --exclude-standard -- "${dirs[@]}")
           if [ -n "$changed" ] || [ -n "$untracked" ]; then

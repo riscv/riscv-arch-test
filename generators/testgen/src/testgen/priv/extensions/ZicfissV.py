@@ -20,14 +20,16 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
-    GOTO_MMODE,
+    GOTO_SMODE,
     GOTO_UMODE,
     both_xlens,
+    code_end_page_align,
     guard_ss_page,
     map_zicfiss_pages,
     priv_csr,
-    satp_setup,
+    satp_on_from_umode,
     set_envcfg_sse,
+    set_sum,
     teardown_vm,
     va_for,
 )
@@ -37,14 +39,15 @@ _CG = "ZicfissV_cg"
 
 
 def _umode_prologue(test_data: TestData, xlen: int) -> list[str]:
+    """S-mode setup then down to U-mode; see ZicfissU._umode_prologue for the rationale."""
     return [
-        GOTO_MMODE,
-        *satp_setup(xlen),
+        GOTO_SMODE,
         *map_zicfiss_pages(xlen),
-        *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
-        *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
-        "csrw medeleg, x0",
+        *set_sum(),
+        *set_envcfg_sse("menvcfg", 1, test_data, mode="S"),
+        *set_envcfg_sse("senvcfg", 1, test_data, mode="S"),
         GOTO_UMODE,
+        *satp_on_from_umode(xlen),
     ]
 
 
@@ -165,6 +168,7 @@ def make_zicfissv(test_data: TestData) -> list[TestChunk]:
     for section in (_generate_vector_load, _generate_vector_store, _generate_vector_scattered):
         tc = test_data.begin_test_chunk()
         tc.code.extend(guard_ss_page(section(test_data), reason="the vector access targets the shadow stack page"))
+        tc.code.extend(code_end_page_align())
         test_chunks.append(test_data.end_test_chunk())
 
     return test_chunks

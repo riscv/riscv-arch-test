@@ -207,10 +207,16 @@ def page_table_data_section() -> list[str]:
         "#ifdef SV39_SUPPORTED",
         ".p2align 12",
         "rvtest_slvl1_pg_tbl: .zero 4096",
+        ".p2align 12",
+        "rvtest_uimg_lvl1_pg_tbl:    .zero 4096   # Sv39 level-1 table for the test image",
         "#endif  // SV39_SUPPORTED",
         "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
         ".p2align 12",
         "rvtest_slvl0_pg_tbl: .zero 4096",
+        ".p2align 12",
+        "rvtest_uimg_lvl0_pg_tbl:    .zero 4096   # 4 KiB leaves for the test image itself",
+        ".p2align 3",
+        "rvtest_uimg_mapped:         .zero 8      # set once the image map has been built",
         ".p2align 12",
         "rvtest_zicfiss_ss_page:     .zero 4096   # mapped as an SS page (xwr=010)",
         ".p2align 12",
@@ -259,6 +265,147 @@ def _identity_map(xlen: int, *, user: bool = True) -> list[str]:
     ]
 
 
+# Perms carried by every page of the identity map: D|A|R|W|X|V, matching the superpage the
+# boot code installs. PTE_U (0x10) is added per page by _umode_image_map.
+_IMAGE_PERMS = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V"
+
+
+def code_end_page_align() -> list[str]:
+    """Pad to a page boundary so ``rvtest_code_end`` lands page-aligned.
+
+    Appended to every test chunk, so whichever chunk ends up last in a file leaves the
+    framework's trap handlers -- which the linker places immediately after
+    ``rvtest_code_end``, inside .text.rvtest -- starting on a fresh page.
+    ``_umode_image_map`` relies on that to keep the handlers off user pages.
+    """
+    return ["", "# Page-align rvtest_code_end so the trap handlers start on their own page.", ".p2align 12", ""]
+
+
+def _umode_image_map(xlen: int) -> list[str]:
+    """Identity-map the test image at 4 KiB granularity, splitting user from supervisor.
+
+    U-mode has to fetch the test body and write the signature area, while the trap handler
+    that boot-time delegation sends S-mode traps to has to fetch its own code -- and S-mode
+    cannot execute from a user page (SUM covers loads and stores, never instruction fetch).
+    The framework's own layout already separates the two: the handlers follow
+    ``rvtest_code_end`` inside .text.rvtest, and the signature area follows
+    ``rvtest_data_begin``. So
+
+      [image start, rvtest_code_end)   PTE_U -- the test body, fetched from U-mode
+      [rvtest_code_end, data page)     supervisor only -- trap handlers and save areas
+      [data page, _end)                PTE_U -- test data and the signature region
+
+    where ``data page`` is ``rvtest_data_begin`` rounded down. The handler still writes trap
+    signatures into the user-mapped signature region, which is why the caller also sets
+    ``sstatus.SUM``.
+
+    Emitted with translation disabled; the root entry is written last either way. One leaf
+    table covers 2 MiB (Sv39) or 4 MiB (Sv32), which is far more than a priv test image needs
+    -- anything past it is simply left unmapped rather than silently mismapped.
+    """
+    if xlen == 64:
+        store, ent_shift, idx_mask, lvl_shift = "sd", 3, "0x1FF", 30
+    else:
+        store, ent_shift, idx_mask, lvl_shift = "sw", 2, "0x3FF", 22
+
+    lines = [
+        f"# Sv{'39' if xlen == 64 else '32'}: 4 KiB identity map, user pages only where U-mode needs them",
+        "# Built once per test file: the tables persist across sections, and satp being",
+        "# cleared between sections does not disturb them.",
+        "LA(t0, rvtest_uimg_mapped)",
+        "LREG t1, 0(t0)",
+        "bnez t1, 9f",
+        "LA(t0, rvtest_code_begin)",
+        "srli t0, t0, 12",
+        "slli t0, t0, 12",
+        "# t2 = &leaf[index of the first page]",
+        "LA(t2, rvtest_uimg_lvl0_pg_tbl)",
+        "srli t1, t0, 12",
+        f"andi t1, t1, {idx_mask}",
+        f"slli t1, t1, {ent_shift}",
+        "add t2, t2, t1",
+        "LA(t1, _end)",
+        "LA(t3, rvtest_code_end)   # first page that must not be user-executable",
+        "LA(t4, rvtest_data_begin)",
+        "srli t4, t4, 12",
+        "slli t4, t4, 12          # first page of the user-writable data region",
+        "li t6, 4096",
+        "1:",
+        "bgeu t0, t1, 2f",
+        "srli t5, t0, 12",
+        "slli t5, t5, 10",
+        f"ori t5, t5, ({_IMAGE_PERMS})",
+        "bltu t0, t3, 3f          # in the test body -> user",
+        "bltu t0, t4, 4f          # handlers and save areas -> supervisor only",
+        "3:",
+        "ori t5, t5, PTE_U",
+        "4:",
+        f"{store} t5, 0(t2)",
+        f"addi t2, t2, {1 << ent_shift}",
+        "add t0, t0, t6",
+        "j 1b",
+        "2:",
+    ]
+
+    if xlen == 64:
+        lines.extend(
+            [
+                "# Link the leaf table into the level-1 table",
+                "LA(t5, rvtest_uimg_lvl0_pg_tbl)",
+                "srli t5, t5, 12",
+                "slli t5, t5, 10",
+                "ori t5, t5, PTE_V",
+                "LA(t2, rvtest_uimg_lvl1_pg_tbl)",
+                "LA(t1, rvtest_code_begin)",
+                "srli t1, t1, 21",
+                "andi t1, t1, 0x1FF",
+                "slli t1, t1, 3",
+                "add t2, t2, t1",
+                "sd t5, 0(t2)",
+                "# Link the level-1 table into the root",
+                "LA(t5, rvtest_uimg_lvl1_pg_tbl)",
+            ]
+        )
+    else:
+        lines.append("LA(t5, rvtest_uimg_lvl0_pg_tbl)")
+
+    lines.extend(
+        [
+            "srli t5, t5, 12",
+            "slli t5, t5, 10",
+            "ori t5, t5, PTE_V",
+            "LA(t2, rvtest_Sroot_pg_tbl)",
+            "LA(t1, rvtest_code_begin)",
+            f"srli t1, t1, {lvl_shift}",
+            f"andi t1, t1, {idx_mask}",
+            f"slli t1, t1, {ent_shift}",
+            "add t2, t2, t1",
+            f"{store} t5, 0(t2)",
+            "LA(t0, rvtest_uimg_mapped)",
+            "li t1, 1",
+            "SREG t1, 0(t0)",
+            "9:",
+        ]
+    )
+    return lines
+
+
+def set_sum() -> list[str]:
+    """Set sstatus.SUM so the delegated S-mode trap handler can reach user pages.
+
+    The handler records trap signatures in the signature region, which _umode_image_map maps
+    user-accessible for RVTEST_SIGUPD. sstatus is an S-mode CSR, so this needs no help from
+    M-mode. None of the U/V covergroups sample SUM, so pinning it costs no coverage.
+
+    Uses t0 rather than an allocated register, like the page-table setup around it, so the
+    register numbering of the testcases themselves is unaffected.
+    """
+    return [
+        f"LI(t0, {hex(1 << 18)})   # sstatus.SUM",
+        "csrs sstatus, t0   # let the S-mode handler reach the user-mapped signature area",
+    ]
+
+
 def identity_map_only(xlen: int, *, user: bool = False) -> list[str]:
     """Identity-map code+data without creating any shadow stack page.
 
@@ -274,7 +421,8 @@ def map_zicfiss_pages(xlen: int, *, ss_perms: str = PTE_SS, user: bool = True) -
 
     ``ss_perms`` lets a caller remap the shadow stack page with a different
     encoding (e.g. PTE_RO) to exercise the wrong-page-type coverpoints.
-    ``user`` adds PTE_U to every leaf, required when the testcases run in U-mode.
+    ``user`` adds PTE_U to every leaf, required when the testcases run in U-mode, and
+    selects the split 4 KiB image map over the plain supervisor superpage.
     """
     u = " | PTE_U" if user else ""
     if xlen == 64:
@@ -288,7 +436,7 @@ def map_zicfiss_pages(xlen: int, *, ss_perms: str = PTE_SS, user: bool = True) -
         chain = [f"{setup}(rvtest_slvl0_pg_tbl, (PTE_V), {hex(va_ss)}, LEVEL1)"]
 
     return [
-        *_identity_map(xlen, user=user),
+        *(_umode_image_map(xlen) if user else _identity_map(xlen, user=False)),
         *chain,
         f"{setup}(rvtest_zicfiss_ss_page, ({ss_perms}{u}), {hex(va_ss)}, LEVEL0)",
         f"{setup}(rvtest_zicfiss_rw_page, ({PTE_RW}{u}), {hex(va_rw)}, LEVEL0)",
@@ -302,19 +450,51 @@ def satp_setup(xlen: int) -> list[str]:
     return ["SATP_SETUP_RV64(sv39)"] if xlen == 64 else ["SATP_SETUP_SV32"]
 
 
+def satp_on_from_umode(xlen: int) -> list[str]:
+    """Turn translation on from U-mode, through T-SBI.
+
+    satp cannot be written by the S-mode setup code itself: that code lives in the test
+    body, which _umode_image_map marks user-executable so U-mode can fetch it, and S-mode
+    cannot fetch from a user page. Writing satp in S-mode therefore faults on the very next
+    instruction. Handing the write to the T-SBI handler -- which runs in M-mode, untranslated
+    -- and returning into U-mode means the first translated fetch is a U-mode one, on a user
+    page, which is exactly what the map provides.
+
+    The value is computed in U-mode with plain arithmetic; only the CSR write needs help.
+    Uses t0/t1 rather than allocated registers so the testcases keep their own numbering.
+    """
+    mode_bits = "(SATP64_MODE) & (SATP_MODE_SV39 << 60)" if xlen == 64 else "SATP32_MODE"
+    return [
+        "# Enable translation from U-mode via T-SBI; see satp_on_from_umode",
+        "LA(t0, rvtest_Sroot_pg_tbl)",
+        "srli t0, t0, 12",
+        f"LI(t1, {mode_bits})",
+        "or t0, t0, t1",
+        tsbi_call("csrw satp, t0"),
+    ]
+
+
+def satp_off_from_umode() -> list[str]:
+    """Turn translation back off from U-mode, through T-SBI."""
+    return [
+        "# Disable translation from U-mode via T-SBI",
+        tsbi_call("csrw satp, x0"),
+    ]
+
+
 def teardown_vm(mode: str) -> list[str]:
     """Disable translation and leave the hart back in the suite's boot mode.
 
     ``mode`` is the boot mode of the suite, and every section is expected to both start
-    and end there. ``sfence.vma`` is not available below S-mode and cannot be marshalled
-    through T-SBI, so a U-mode suite makes an M-mode excursion to tear translation down
-    and returns to U-mode afterwards.
+    and end there. A U-mode suite never leaves U-mode here: it drops translation through a
+    T-SBI satp write, and the next section's prologue does the sfence.vma while translation
+    is already off.
     """
     if mode == "S":
         return ["csrwi satp, 0", "sfence.vma", ""]
     if mode == "M":
         return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", ""]
-    return [GOTO_MMODE, "csrwi satp, 0", "sfence.vma", GOTO_UMODE, ""]
+    return [*satp_off_from_umode(), ""]
 
 
 def both_xlens(build: Callable[[int], list[str]]) -> list[str]:

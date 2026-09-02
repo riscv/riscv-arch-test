@@ -25,18 +25,20 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
-    GOTO_MMODE,
+    GOTO_SMODE,
     GOTO_UMODE,
     PTE_SS,
     both_xlens,
+    code_end_page_align,
     guard_ss_page,
     map_zicfiss_pages,
     page_table_data_section,
     priv_csr,
     restore_link_regs,
-    satp_setup,
+    satp_on_from_umode,
     save_link_regs,
     set_envcfg_sse,
+    set_sum,
     ss_insn,
     teardown_vm,
     va_for,
@@ -62,28 +64,26 @@ _POP_FORMS = [
 def _umode_prologue(
     test_data: TestData, xlen: int, *, menvcfg: int = 1, senvcfg: int = 1, ss_perms: str = PTE_SS
 ) -> list[str]:
-    """M-mode excursion: translation, page mappings, SSE chain, then back to U-mode.
+    """S-mode setup: translation, page mappings, SSE chain, then down to U-mode.
 
-    Traps are routed to M-mode (``medeleg = 0``) rather than delegated to S-mode.
-    The identity superpage that keeps code reachable under translation must carry
-    PTE_U so U-mode can fetch from it, but S-mode cannot execute from a user page
-    (SUM covers loads and stores, never instruction fetch). A delegated trap would
-    therefore fetch-page-fault inside the S-mode handler and loop. M-mode does not
-    translate, so its handler runs regardless of PTE_U.
+    Nothing here touches M-mode. The test steps up to S-mode through T-SBI, and the one
+    M-mode CSR it needs -- menvcfg -- goes through a T-SBI call, which the handler services
+    on the test's behalf. medeleg is deliberately left at its boot value, so exceptions stay
+    delegated to the S-mode handler.
 
-    That is also why this setup keeps an M-mode excursion after the T-SBI conversion
-    rather than running from U-mode through ``tsbi_call``: medeleg is deliberately
-    absent from ``tsbi_instr_table``, and the page-table stores and ``sfence.vma`` are
-    not reachable from U-mode either once the mappings carry PTE_U.
+    The page tables are built with translation still off and satp is written last, so the
+    hart never runs against a half-built chain. The image map splits user from supervisor
+    pages at rvtest_code_end and rvtest_data_begin, which is what keeps the S-mode handler
+    fetchable while the test body is user-executable; see ZicfissCommon._umode_image_map.
     """
     return [
-        GOTO_MMODE,
-        *satp_setup(xlen),
+        GOTO_SMODE,
         *map_zicfiss_pages(xlen, ss_perms=ss_perms),
-        *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="M"),
-        *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="M"),
-        "csrw medeleg, x0   # take traps in M-mode; see docstring",
+        *set_sum(),
+        *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"),
+        *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="S"),
         GOTO_UMODE,
+        *satp_on_from_umode(xlen),
     ]
 
 
@@ -616,13 +616,13 @@ def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
             # user=False keeps the identity map supervisor-only; the SS page's own U bit
             # is what is being swept here.
             block = [
-                GOTO_MMODE,
-                *satp_setup(xlen),
+                GOTO_SMODE,
                 *map_zicfiss_pages(xlen, ss_perms=perms, user=True),
-                *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
-                *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
-                "csrw medeleg, x0",
+                *set_sum(),
+                *set_envcfg_sse("menvcfg", 1, test_data, mode="S"),
+                *set_envcfg_sse("senvcfg", 1, test_data, mode="S"),
                 GOTO_UMODE,
+                *satp_on_from_umode(xlen),
             ]
             save_x1, save_x5, save_lines = save_link_regs(test_data)
             block.extend(save_lines)
@@ -1012,6 +1012,7 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
         body = section(test_data)  # pyright: ignore[reportCallIssue]
         tc.code.extend(page_table_data_section())
         tc.code.extend(guard_ss_page(body, reason=reason) if reason else body)
+        tc.code.extend(code_end_page_align())
         test_chunks.append(test_data.end_test_chunk())
 
     # Page-table and backing-page declarations, emitted once.

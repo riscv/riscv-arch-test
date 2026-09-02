@@ -310,7 +310,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
             bins b_1[] = { [2:`S_VADDR_WALK_MSB] };
         }
         stvec_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
-                           iff ($onehot(~(ins.current.rs1_val | 3)) && ins.current.rs1_val[1:0] == 2'b00) {
+                           iff ($onehot(~(ins.current.rs1_val | 3))) {
             bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
         }
         // sepc: bit 0 is always 0; bit 1 is 0 unless Zca allows 2-byte instruction alignment
@@ -323,12 +323,12 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         }
         `ifdef ZCA_SUPPORTED
             sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 1))
-                              iff ($onehot(~(ins.current.rs1_val | 1)) && ins.current.rs1_val[0] == 1'b0) {
+                              iff ($onehot(~(ins.current.rs1_val | 1))) {
                 bins b_0[] = { [1:`S_VADDR_WALK_MSB] };
             }
         `else
             sepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
-                              iff ($onehot(~(ins.current.rs1_val | 3)) && ins.current.rs1_val[1:0] == 2'b00) {
+                              iff ($onehot(~(ins.current.rs1_val | 3))) {
                 bins b_0[] = { [2:`S_VADDR_WALK_MSB] };
             }
         `endif

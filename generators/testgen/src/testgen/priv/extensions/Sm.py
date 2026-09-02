@@ -26,7 +26,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
 SM_VADDR_CSRS = {
-    "mepc": (0b01, {1: "ZCA_SUPPORTED"}),
+    "mepc": (0b00, {}),
     "mtval": (0b00, {}),
 }
 

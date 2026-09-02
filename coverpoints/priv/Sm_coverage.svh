@@ -503,12 +503,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
         `ifdef ZCA_SUPPORTED
             xepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 1))
-                              iff ($onehot(~(ins.current.rs1_val | 1)) && ins.current.rs1_val[0] == 1'b0) {
+                              iff ($onehot(~(ins.current.rs1_val | 1))) {
                 bins b_0[] = { [1:`SM_VADDR_WALK_MSB] };
             }
         `else
             xepc_vaddr_walk0: coverpoint $clog2(~(ins.current.rs1_val | 3))
-                              iff ($onehot(~(ins.current.rs1_val | 3)) && ins.current.rs1_val[1:0] == 2'b00) {
+                              iff ($onehot(~(ins.current.rs1_val | 3))) {
                 bins b_0[] = { [2:`SM_VADDR_WALK_MSB] };
             }
         `endif

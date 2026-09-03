@@ -33,8 +33,15 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     }
     `endif
 
+    sip_other_pending_m: coverpoint {ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][3]} {
+            bins none = {3'b000};
+            bins meip = {3'b100};
+            bins mtip = {3'b010};
+            bins msip = {3'b001};
+    }
+
     cp_minh_inhibits_mmode:    cross priv_mode_m, mhpmevent_minh, mhpmevent_xinh_combos, hpmcounter_nonzero, mhpmevent_of_zero;
-    cp_of_set_on_overflow:     cross priv_mode_m, mip_clear, mie_clear, mhpmevent_of, mhpmevent_inhibits_all_set;
+    cp_of_set_on_overflow:     cross priv_mode_m, mip_clear, mie_clear, mhpmevent_of, mhpmevent_inhibits_pattern;
     `ifdef UDB_MXLEN_64
         cp_overflow_hw_only:   cross priv_mode_m, mip_clear, mie_clear, mhpmcounter_write_extremes, mhpmevent_all_zero;
     `else
@@ -45,7 +52,7 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     cp_scountovf_shadow:       cross priv_mode_m, mcounteren_write_all_ones, of_pattern_class, of_walking_one;
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target ;
     cp_lcofi_m:                cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
-    cp_lcofip_priority_m:      cross priv_mode_m, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
+    cp_lcofip_priority_m:      cross priv_mode_m, mhpmevent_inhibits_all_zeros, mstatus_mie_set, sstatus_sie_set, mie_clear, lcofi_ip_one, mip_other_pending;
 endgroup
 
 function void sscofpmfsm_sample(int hart, int issue, ins_t ins);

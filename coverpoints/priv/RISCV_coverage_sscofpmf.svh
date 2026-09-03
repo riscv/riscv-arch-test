@@ -57,13 +57,31 @@
     `endif
 
     `ifdef UDB_MXLEN_64
-        mhpmevent_inhibits_all_set: coverpoint ins.current.insn {
-                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b11100);
+        mhpmevent_inhibits_pattern: coverpoint ins.current.insn {
+                wildcard bins none_set  = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b00000);
+                wildcard bins msu_set   = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b11100);
+                wildcard bins minh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b10000);
+                wildcard bins sinh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b01000);
+                wildcard bins uinh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b00100);
+        }
+        `else
+        // On RV32, MINH/SINH/UINH/VSINH/VUINH live in mhpmevent*h[30:26] (address + 0x400)
+        mhpmevent_inhibits_pattern: coverpoint ins.current.insn {
+                wildcard bins none_set  = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b00000);
+                wildcard bins msu_set   = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b11100);
+                wildcard bins minh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b10000);
+                wildcard bins sinh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b01000);
+                wildcard bins uinh_only = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b00100);
+        }
+    `endif
+    `ifdef UDB_MXLEN_64
+        mhpmevent_inhibits_all_zeros: coverpoint ins.current.insn {
+                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 && ins.current.rs1_val[62:58] == 5'b00000);
         }
     `else
         // On RV32, MINH/SINH/UINH/VSINH/VUINH live in mhpmevent*h[30:26] (address + 0x400)
-        mhpmevent_inhibits_all_set: coverpoint ins.current.insn {
-                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b11100);
+        mhpmevent_inhibits_all_zeros: coverpoint ins.current.insn {
+                wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == CSR_MHPMEVENT3 + 12'h400 && ins.current.rs1_val[30:26] == 5'b00000);
         }
     `endif
 

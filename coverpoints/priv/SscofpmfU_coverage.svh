@@ -25,7 +25,7 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     }
 
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_uinh, hpmcounter_nonzero, mhpmevent_of_zero ;
-    cp_of_set_on_overflow:     cross priv_mode_u, mip_clear, mie_clear, mhpmevent_of, mhpmevent_inhibits_all_set;
+    cp_of_set_on_overflow:     cross priv_mode_u, mip_clear, mie_clear, mhpmevent_of, mhpmevent_inhibits_pattern;
     `ifdef UDB_MXLEN_64
         cp_overflow_hw_only:   cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_write_extremes, mhpmevent_all_zero;
     `else

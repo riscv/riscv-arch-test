@@ -31,8 +31,8 @@ def make_zawrsu(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
     tc.code.extend(wrs_no_res_helper(test_data, "U", covergroup))
-    tc.code.extend(wrs_timeout_helper(test_data, "U", "cp_wrs_sto_timeout", covergroup))
-    tc.code.extend(wrs_timeout_helper(test_data, "U", "cp_wrs_nto_timeout", covergroup))
+    tc.code.extend(wrs_timeout_helper(test_data, "U", covergroup, timeout="short"))
+    tc.code.extend(wrs_timeout_helper(test_data, "U", covergroup, timeout="no"))
     tc.code.extend(wrs_no_mie_helper(test_data, "U", covergroup))
     tc.code.extend(wrs_resume_helper(test_data, "U", covergroup))
 

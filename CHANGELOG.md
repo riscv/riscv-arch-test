@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [4.1.0] - 2026-09-03
+
+### Overview
+
+ACT 4.1 expands architectural coverage and test generation and improves privileged and vector test support.
+
+### Details
+
+- Many privileged tests added or improved, including Zawrs, Sstvala, Ssccptr, Zama16b, Zkr, Exceptions, Interrupts, PMP, and others
+- Vx and Vls test generation is now enabled by default on supported DUTs
+- All unprivileged and many privileged tests have been ported to run in lower privilege modes and use T-SBI
+
 ## [4.0.0] - 2026-04-16
 
 ### Overview

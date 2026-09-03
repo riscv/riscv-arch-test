@@ -224,7 +224,7 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
     "SscofpmfSm",
     required_extensions=["Sm", "Sscofpmf"],
     march_extensions=[],
-    extra_defines=[],
+    extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_sscofpmfsm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfSm performance-counter-overflow testsuite."""

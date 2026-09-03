@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import clr_stimer_mmode, set_stimer_mmode
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -16,24 +16,21 @@ from testgen.priv.registry import add_priv_test_generator
 def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofi_sip_s"
+    coverpoint = "cp_lcofi_s"
     ######################################
 
-    LCOFI_BIT = 1 << 13  # mip/mie/sip/sie bit 13
-    SIE_BIT = 0x2  # mstatus/sstatus bit 1
+    LCOFI_BIT = 1 << 13
+    SIE_BIT = 0x2
 
-    r_val, r_temp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[0, 31])
+    r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
     lines = [
         comment_banner(
             coverpoint,
-            (
-                "mip.LCOFIP (and its delegated sip.LCOFIP view) is a read-only\n"
-                "shadow of the OR of mhpmeventN.OF bits (WARL on direct writes), so\n"
-                "LCOFIP=1 is driven via a real counter overflow rather than\n"
-                "csrs mip, LCOFI_BIT -- a direct write is a silent no-op and never\n"
-                "actually latches the pending bit."
-            ),
+            "Interrupt pending and enable, mode = S.\n"
+            "mideleg.LCOFI=1 held fixed (required to reach S-mode with LCOFI\n"
+            "visible), sstatus.SIE=1 held fixed per testplan; sweep is\n"
+            "sip.LCOFIP x sie.LCOFIE.\n",
         ),
         "",
         "# === M-MODE SETUP ===",
@@ -41,30 +38,26 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
         "csrw mie, zero      # disable all interrupts",
         "csrw RVMODEL_MHPMEVENT, zero",
         f"LI(x{r_val}, {hex(LCOFI_BIT)})",
-        f"csrs mideleg, x{r_val}   # delegate LCOFI to S-mode",
-        f"csrsi mstatus, {hex(SIE_BIT)}   # mstatus.SIE = 1 (== sstatus.SIE)",
+        f"csrs mideleg, x{r_val}   # mideleg.LCOFI = 1 (fixed)",
+        f"LI(x{r_val}, {hex(SIE_BIT)})",
+        f"csrs mstatus, x{r_val}   # sstatus.SIE = 1 (fixed, via mstatus)",
     ]
 
-    for lcofie in [0, 1]:
-        for lcofip in [0, 1]:
-            binname = f"lcofi_sip_s_lcofie_{lcofie}_lcofip_{lcofip}"
+    for lcofip in [0, 1]:
+        for lcofie in [0, 1]:
+            binname = f"lcofi_s_lcofip_{lcofip}_lcofie_{lcofie}"
             lines.extend(
                 [
                     "",
-                    f"# Testcase: sie.LCOFIE={lcofie}, sip.LCOFIP={lcofip}",
+                    f"# Testcase: sip.LCOFIP={lcofip}, sie.LCOFIE={lcofie}, mode=S",
                 ]
             )
 
             if lcofip:
                 lines.extend(
                     [
-                        f"LI(x{r_scratch}, -1)",
-                        f"csrw RVMODEL_MHPMCOUNTER, x{r_scratch}   # all 1s -> next count overflows",
-                        f"LA(x{r_temp}, scratch)",
-                        "# Incrementing RVMODEL_MHPMCOUNTER in DUT specific way",
-                        f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_scratch})",
-                        f"RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_scratch})   # run at least twice per spec",
-                        f"csrr x{r_scratch}, mip   # readback -- confirm LCOFIP actually latched from OF",
+                        f"LI(x{r_val}, {hex(LCOFI_BIT)})",
+                        f"csrs sip, x{r_val}   # set sip.LCOFIP directly",
                     ]
                 )
             else:
@@ -73,16 +66,17 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
-                    f"{'csrs' if lcofie else 'csrc'} mie, x{r_temp}   # sie.LCOFIE = {lcofie}",
+                    f"{'csrs' if lcofie else 'csrc'} sie, x{r_temp}   # sie.LCOFIE = {lcofie}",
                     "",
                     test_data.add_testcase(binname, coverpoint, covergroup),
+                    "    # sstatus.SIE=1 and mideleg.LCOFI=1 held fixed; only sie.LCOFIE",
+                    "    # gates the trap given sip.LCOFIP. Fires during the idle window",
                     "RVTEST_TSBI_GOTO_SMODE",
                     f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "RVTEST_GOTO_MMODE",
                     "",
-                    "csrw RVMODEL_MHPMCOUNTER, zero   # reset counter before next iteration",
-                    "csrw RVMODEL_MHPMEVENT, zero",
-                    f"csrc mie, x{r_val}   # clear LCOFIE for next iteration",
+                    f"csrc sip, x{r_temp}   # clear LCOFIP for next iteration (if it latched)" if lcofip else "",
+                    "csrw sie, zero        # disable LCOFIE before next iteration",
                 ]
             )
 
@@ -90,33 +84,26 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
         [
             "",
             "# === M-MODE CLEANUP ===",
-            f"csrc mideleg, x{r_val}   # remove delegation",
-            f"csrci mstatus, {hex(SIE_BIT)}   # mstatus.SIE = 0",
+            f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
+            f"csrc sip, x{r_temp}      # clear LCOFIP",
+            f"csrc sie, x{r_temp}      # clear LCOFIE",
+            f"csrc mideleg, x{r_temp}  # clear mideleg.LCOFI",
+            f"LI(x{r_val}, {hex(SIE_BIT)})",
+            f"csrc mstatus, x{r_val}   # clear sstatus.SIE (via mstatus)",
+            "csrw RVMODEL_MHPMCOUNTER, zero",
+            "csrw RVMODEL_MHPMEVENT, zero",
         ]
     )
 
-    test_data.int_regs.return_registers([r_val, r_temp, r_scratch])
+    test_data.int_regs.return_registers([r_val, r_temp])
     return lines
 
 
 def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
-    """cp_lcofip_priority: priority of LCOFI interrupt, executed in S-mode.
 
-    Per testplan:
-        sstatus.SIE = 1
-        sie = 0s
-        sip = 1 in LCOFIP and one of {SEIP, STIP, SSIP, none}
-        sie = all 1s
-
-    LCOFIP is a read-only shadow of mhpmeventN.OF (see
-    _generate_lcofi_sip_s_tests) -- driven via a real counter overflow,
-    not a direct CSR write. Mode transitions follow this file's existing
-    per-iteration RVTEST_TSBI_GOTO_SMODE / RVTEST_GOTO_MMODE convention,
-    not a one-time whole-suite boot.
-    """
     ######################################
     covergroup = "Sscofpmf_cg"
-    coverpoint = "cp_lcofip_priority"
+    coverpoint = "cp_lcofip_priority_s"
     ######################################
 
     SSI_BIT = 1 << 1
@@ -164,6 +151,8 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"# Testcase: competing interrupt = {other_int}",
+                f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)   # select a real event",
+                f"csrw RVMODEL_MHPMEVENT, x{r_val}",
                 f"LI(x{r_scratch}, -1)",
                 f"csrw RVMODEL_MHPMCOUNTER, x{r_scratch}   # all 1s -> next count overflows",
                 f"LA(x{r_temp}, scratch)",
@@ -195,8 +184,22 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
                 f"csrs mie, x{r_temp}   # sie = all 1s (LCOFIE + SSIE/STIE/SEIE)",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                "RVTEST_TSBI_GOTO_SMODE",
-                f"    RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                # -------------------------------------------------
+                # Sample MHPMEVENT and dump it to the signature.
+                # r_val is free again here -- overwrites the event
+                # value we set above, which is fine since we're
+                # done using it for the counter-priming block.
+                # -------------------------------------------------
+                f"csrr x{r_val}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of",
+                write_sigupd(r_val, test_data),
+                f"csrr x{r_scratch}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s",
+                write_sigupd(r_scratch, test_data),
+                "",
+                "# Enter S-mode (interrupt fires immediately or on timer maturity)",
+                "RVTEST_GOTO_LOWER_MODE Smode",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                f"csrr x{r_temp2}, sip   # sample point for lcofip priority outcome",
+                write_sigupd(r_temp2, test_data),
                 "RVTEST_GOTO_MMODE",
                 "",
             ]
@@ -242,9 +245,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
     "SscofpmfS",
     required_extensions=["S", "Sscofpmf"],
     march_extensions=[],
-    extra_defines=[
-        "#define RVTEST_TEMP_BOOT_TO_S",
-    ],
+    extra_defines=[],
 )
 def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfS performance-counter-overflow testsuite."""

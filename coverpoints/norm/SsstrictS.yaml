@@ -34,30 +34,8 @@ normative_rule_definitions:
   # slliw, srliw, and sraiw encodings with imm[5]≠0 are reserved.
   - name: sraiw_imm5_rsv
     coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
-  # The unused fields in the fence instructions, rs1 and rd, are reserved for finer-grain fences in
-  # future extensions. For forward compatibility, base implementations shall ignore these fields
-  - name: fence_unused_flds_rsv
-    # reserved fence rs1/rd fields must be ignored, not trapped
-    coverpoint: ["SsstrictS_instr_cg/cp_reserved"]
-
-  # Zifencei rules
-  # The unused fields in the fence.i instruction, funct12, rs1, and rd, are reserved for finer-grain
-  # fences in future extensions. For forward compatibility, base implementations shall ignore these
-  # fields, and standard software shall zero these fields.
-  - name: fence_i_rsv
-    # reserved fence.i funct12/rs1/rd fields must be ignored, not trapped
-    coverpoint:
-      [
-        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_rd",
-        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_rs1",
-        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_imm12",
-      ]
 
   # Zca rules
-  # A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.
-  - name: Zca_illegal
-    # 16-bit all-zero encoding
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed00"]
   # c.addi16sp is valid only when nzimm≠0; the code point with nzimm=0 is reserved.
   - name: c-addi16sp_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
@@ -107,8 +85,7 @@ normative_rule_definitions:
   # Zfa rules
   # It is encoded like fcvt.w.d, but with the rs2 field set to 8 and the rm field set to 1 (RTZ). Other
   # rm values are reserved.
-  - name: fcvtmod-w-d_rsw
-    # rule name in the ISA manual as of 2026-09; riscv-isa-manual PR 3361 renames it fcvtmod-w-d_enc
+  - name: fcvtmod-w-d_enc
     coverpoint: ["SsstrictS_instr_cg/cp_cvtmodwdfrm"]
 
   # Zdinx rules

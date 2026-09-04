@@ -455,16 +455,25 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], td: TestData) ->
         "1:",
         # Default leaf perms with no PTE_U.
         f"li   x{s0}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        # Reload the data-range bounds fresh each iteration (instead of
-        # keeping them in dedicated registers) to stay within the 6-register
-        # budget; s1/s2 are scratch and don't need to survive past this block.
+        # pm_lo_page
+        f"LA(x{s1}, pm_lo_page)",
+        f"sub  x{s1}, x{r0}, x{s1}",
+        f"li   x{s2}, 4096",
+        f"bltu x{s1}, x{s2}, 2f",
+        # mprv_page
+        f"LA(x{s1}, mprv_page)",
+        f"sub  x{s1}, x{r0}, x{s1}",
+        f"li   x{s2}, 4096",
+        f"bltu x{s1}, x{s2}, 2f",
+        # framework data range
         f"LA(x{s1}, rvtest_data_begin)",
         f"LA(x{s2}, end_signature)",
-        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-accessible data",
-        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from data begin",
-        f"bgeu x{s1}, x{s2}, 2f                  # outside the data segment -> keep U clear",
-        f"ori  x{s0}, x{s0}, PTE_U",
+        f"LA(x{s2}, end_signature)",
+        f"sub  x{s2}, x{s2}, x{s1}",
+        f"sub  x{s1}, x{r0}, x{s1}",
         "2:",
+        f"ori  x{s0}, x{s0}, PTE_U",
+        "3:",
         # Pack the PPN + perms into the PTE and store it, then advance to the
         # next leaf slot and the next 4 KiB page.
         f"srli x{s1}, x{r0}, 12",

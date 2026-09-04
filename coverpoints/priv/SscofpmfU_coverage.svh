@@ -19,10 +19,17 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     sstatus_sie_clear: coverpoint ins.current.csr[CSR_SSTATUS][1] {
             bins zero = {0};
     }
-    mhpmevent_uinh: coverpoint ins.current.csr[CSR_MHPMEVENT3][60] {
-            bins zero = {0};
-            bins one  = {1};
-    }
+    `ifdef UDB_MXLEN_64
+        mhpmevent_uinh: coverpoint ins.current.csr[CSR_MHPMEVENT3][60] {
+                bins zero = {0};  // not inhibited -> should count in U-mode
+                bins one  = {1};  // inhibited     -> should NOT count in U-mode
+        }
+    `else
+        mhpmevent_uinh: coverpoint ins.current.csr[CSR_MHPMEVENT3 + 12'h400][28] {
+                bins zero = {0};
+                bins one  = {1};
+        }
+    `endif
 
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_uinh, hpmcounter_nonzero, mhpmevent_of_zero ;
     cp_of_set_on_overflow:     cross priv_mode_u, mip_clear, mie_clear, mhpmevent_of, mhpmevent_inhibits_pattern;

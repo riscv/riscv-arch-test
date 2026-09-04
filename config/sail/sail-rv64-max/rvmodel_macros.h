@@ -153,9 +153,9 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_MHPMEVENT   mhpmevent3
-#define RVMODEL_MHPMCOUNTER mhpmcounter3
-#define RVMODEL_MHPMEVENT_VAL 0x0000000              // Values will be assigned once there is a way to increment counters Issue: https://github.com/riscv/sail-riscv/issues/1733
+#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
+#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_MHPMEVENT_VAL 0x0                     // Values will be assigned once there is a way to increment counters Issue: https://github.com/riscv/sail-riscv/issues/1733
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \           // Values will be assigned once there is a way to increment counters
   nop
 

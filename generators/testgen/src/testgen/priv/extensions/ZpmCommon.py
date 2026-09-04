@@ -1165,6 +1165,92 @@ def pass_clear_on_xlen_change(
 # ── MPRV Nested Loop Pass (Smmpm-specific) ────────────────────────────────
 
 
+def _mprv_lw_sw_probe(
+    mpp: int,
+    cp: str,
+    prefix: str,
+    td: TestData,
+    regs: Regs,
+    cg: str,
+) -> list[str]:
+    """lw/sw through a pointer with MPRV=1/MPP=mpp, swept over
+    _MPRV_UPPER_PATTERNS.
+    MPRV is left set on return -- callers park each iteration's cursor at
+    pm_lo_page and MPRV=0 is restored here once the sweep is done.
+    """
+    lines = []
+    for upper in _MPRV_UPPER_PATTERNS:
+        lines += [
+            f"LI(x{regs.tmp}, {hex(upper << 48)})",
+            f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
+        ]
+        tid_load = _tid(prefix, upper, "lw")
+        lines += [
+            *_seed(regs),
+            *_sentinel(regs),
+            *set_mprv(True, mpp, regs.tmp),
+            td.add_testcase(tid_load, cp, cg),
+            *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
+            write_sigupd(regs.chk, td),
+        ]
+        tid_store = _tid(prefix, upper, "sw")
+        lines += [
+            *_seed(regs),
+            f"LI(x{regs.data}, {hex(VALUE_NEW)})",
+            *set_mprv(True, mpp, regs.tmp),
+            td.add_testcase(tid_store, cp, cg),
+            *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
+            *set_mprv(True, mpp, regs.tmp),
+            *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
+            write_sigupd(regs.chk, td),
+        ]
+    lines += set_mprv(False, 0, regs.tmp)
+    return lines
+
+
+def _mprv_satp_loop(
+    mpp: int,
+    mpp_name: str,
+    cp: str,
+    mxr_val: int,
+    mseccfg_pmm: int,
+    menvcfg_pmm: int,
+    pmm_shift: int,
+    td: TestData,
+    regs: Regs,
+    cg: str,
+) -> list[str]:
+    """Shared between MPP=U (S_SUPPORTED) and MPP=S,
+    which loop identically and share the same coverpoint
+    (cp_pm_mprv_mpp_u_s). The U-accessible data map is built once by the
+    caller before entering the mxr/pmm loops.
+    """
+    lines = []
+    for senvcfg_pmm, senvcfg_pmlen, _ in PMM_CONFIGS:
+        lines += set_pmm_field("senvcfg", pmm_shift, senvcfg_pmm, senvcfg_pmlen, regs.tmp)
+
+        for satp_mode in ["bare", "sv39"]:
+            if satp_mode != "bare":
+                lines += [
+                    "SATP_SETUP_RV64(sv39)",
+                    "sfence.vma",
+                ]
+            lines += [f"LA(x{regs.base}, pm_lo_page)"]
+            prefix = (
+                f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_"
+                f"menvcfg{menvcfg_pmm:02b}_senvcfg{senvcfg_pmm:02b}_"
+                f"{satp_mode}_{mpp_name}"
+            )
+            lines += _mprv_lw_sw_probe(mpp, cp, prefix, td, regs, cg)
+            if satp_mode != "bare":
+                lines += [
+                    "RVTEST_GOTO_MMODE",
+                    "csrwi satp, 0",
+                    "sfence.vma",
+                ]
+    return lines
+
+
 def pass_i_mprv_mxr_pmm_loop(
     td: TestData,
     regs: Regs,
@@ -1185,6 +1271,9 @@ def pass_i_mprv_mxr_pmm_loop(
     MPP=S: guarded by S_SUPPORTED; loops satp.MODE in {Bare, Sv39}. No remap
     needed here -- S-mode can access pm_lo_page under the framework's
     default identity map without PTE_U, same as SmnpmS.
+
+    mstatus.MPRV, .MXR and .SUM are all explicitly cleared at the end rather
+    than snapshotted/restored
     """
     lines = [
         comment_banner(
@@ -1196,7 +1285,12 @@ def pass_i_mprv_mxr_pmm_loop(
         "",
     ]
 
-    lines += [f"csrr x{regs.tmp2}, mstatus # snapshot"]
+    # ---- Build the U-accessible data map ONCE (tables never change) ----
+    lines += [
+        "# Build the U-accessible data map once; the page tables never change",
+        *sv39_data_map,
+        "sfence.vma",
+    ]
 
     # Enable SUM so we can access user-space pages from S-mode (only when S exists)
     lines.append("#ifdef S_SUPPORTED")
@@ -1222,92 +1316,17 @@ def pass_i_mprv_mxr_pmm_loop(
                 # ============================================================
                 lines += [f"LA(x{regs.base}, pm_lo_page)"]
                 prefix_m = f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppm"
-                for upper in _MPRV_UPPER_PATTERNS:
-                    lines += [
-                        f"LI(x{regs.tmp}, {hex(upper << 48)})",
-                        f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                    ]
-                    tid_load = _tid(prefix_m, upper, "lw")
-                    lines += [
-                        *_seed(regs),
-                        *_sentinel(regs),
-                        *set_mprv(True, _MPP_M, regs.tmp),
-                        td.add_testcase(tid_load, "cp_pm_mprv_mpp_m", cg),
-                        *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
-                        write_sigupd(regs.chk, td),
-                    ]
-                    tid_store = _tid(prefix_m, upper, "sw")
-                    lines += [
-                        *_seed(regs),
-                        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                        *set_mprv(True, _MPP_M, regs.tmp),
-                        td.add_testcase(tid_store, "cp_pm_mprv_mpp_m", cg),
-                        *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
-                        *set_mprv(True, _MPP_M, regs.tmp),
-                        *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
-                        write_sigupd(regs.chk, td),
-                    ]
-                lines += set_mprv(False, 0, regs.tmp)
+                lines += _mprv_lw_sw_probe(_MPP_M, "cp_pm_mprv_mpp_m", prefix_m, td, regs, cg)
 
                 # ============================================================
                 # MPP=U: no S_SUPPORTED guard on the MPP itself.
                 # senvcfg only exists / is programmed when S_SUPPORTED.
-                # SATP only when S_SUPPORTED. sv39 requires pm_lo_page to be
-                # remapped with PTE_U before SATP is enabled.
+                # SATP only when S_SUPPORTED. Map was already built once above.
                 # ============================================================
                 lines.append("#ifdef S_SUPPORTED")
-                for senvcfg_pmm, senvcfg_pmlen, _ in PMM_CONFIGS:
-                    lines += set_pmm_field("senvcfg", pmm_shift, senvcfg_pmm, senvcfg_pmlen, regs.tmp)
-
-                    for satp_mode in ["bare", "sv39"]:
-                        if satp_mode != "bare":
-                            # Precomputed once in make_smmpm() before regs claimed the
-                            # register pool -- identical output every iteration since
-                            # it depends only on satp_mode, which is always "sv39" here.
-                            lines += [
-                                *sv39_data_map,
-                                "sfence.vma",
-                                "SATP_SETUP_RV64(sv39)",
-                                "sfence.vma",
-                            ]
-                        lines += [f"LA(x{regs.base}, pm_lo_page)"]
-                        prefix_u = (
-                            f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_"
-                            f"menvcfg{menvcfg_pmm:02b}_senvcfg{senvcfg_pmm:02b}_"
-                            f"{satp_mode}_mppu"
-                        )
-                        for upper in _MPRV_UPPER_PATTERNS:
-                            lines += [
-                                f"LI(x{regs.tmp}, {hex(upper << 48)})",
-                                f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                            ]
-                            tid_load = _tid(prefix_u, upper, "lw")
-                            lines += [
-                                *_seed(regs),
-                                *_sentinel(regs),
-                                *set_mprv(True, _MPP_U, regs.tmp),
-                                td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_s", cg),
-                                *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
-                                write_sigupd(regs.chk, td),
-                            ]
-                            tid_store = _tid(prefix_u, upper, "sw")
-                            lines += [
-                                *_seed(regs),
-                                f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                                *set_mprv(True, _MPP_U, regs.tmp),
-                                td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_s", cg),
-                                *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
-                                *set_mprv(True, _MPP_U, regs.tmp),
-                                *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
-                                write_sigupd(regs.chk, td),
-                            ]
-                        lines += set_mprv(False, 0, regs.tmp)
-                        if satp_mode != "bare":
-                            lines += [
-                                "RVTEST_GOTO_MMODE",
-                                "csrwi satp, 0",
-                                "sfence.vma",
-                            ]
+                lines += _mprv_satp_loop(
+                    _MPP_U, "mppu", "cp_pm_mprv_mpp_u_s", mxr_val, mseccfg_pmm, menvcfg_pmm, pmm_shift, td, regs, cg
+                )
                 lines.append("#endif // S_SUPPORTED")
 
                 # MPP=U when S is NOT supported: no senvcfg, no SATP
@@ -1316,96 +1335,30 @@ def pass_i_mprv_mxr_pmm_loop(
                 prefix_u_nos = (
                     f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_menvcfg{menvcfg_pmm:02b}_senvcfg00_nosatp_mppu"
                 )
-                for upper in _MPRV_UPPER_PATTERNS:
-                    lines += [
-                        f"LI(x{regs.tmp}, {hex(upper << 48)})",
-                        f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                    ]
-                    tid_load = _tid(prefix_u_nos, upper, "lw")
-                    lines += [
-                        *_seed(regs),
-                        *_sentinel(regs),
-                        *set_mprv(True, _MPP_U, regs.tmp),
-                        td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_no_s", cg),
-                        *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
-                        write_sigupd(regs.chk, td),
-                    ]
-                    tid_store = _tid(prefix_u_nos, upper, "sw")
-                    lines += [
-                        *_seed(regs),
-                        f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                        *set_mprv(True, _MPP_U, regs.tmp),
-                        td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_no_s", cg),
-                        *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
-                        *set_mprv(True, _MPP_U, regs.tmp),
-                        *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
-                        write_sigupd(regs.chk, td),
-                    ]
-                lines += set_mprv(False, 0, regs.tmp)
+                lines += _mprv_lw_sw_probe(_MPP_U, "cp_pm_mprv_mpp_u_no_s", prefix_u_nos, td, regs, cg)
                 lines.append("#endif // !S_SUPPORTED")
 
                 # ============================================================
                 # MPP=S: only when S_SUPPORTED; SATP in {Bare, Sv39}
                 # ============================================================
                 lines.append("#ifdef S_SUPPORTED")
-                for senvcfg_pmm, senvcfg_pmlen, _ in PMM_CONFIGS:
-                    lines += set_pmm_field("senvcfg", pmm_shift, senvcfg_pmm, senvcfg_pmlen, regs.tmp)
-
-                    for satp_mode in ["bare", "sv39"]:
-                        if satp_mode != "bare":
-                            lines += [
-                                "SATP_SETUP_RV64(sv39)",
-                                "sfence.vma",
-                            ]
-                        lines += [f"LA(x{regs.base}, pm_lo_page)"]
-                        prefix_s = (
-                            f"mprv_mxr{mxr_val}_mseccfg{mseccfg_pmm:02b}_"
-                            f"menvcfg{menvcfg_pmm:02b}_senvcfg{senvcfg_pmm:02b}_"
-                            f"{satp_mode}_mpps"
-                        )
-                        for upper in _MPRV_UPPER_PATTERNS:
-                            lines += [
-                                f"LI(x{regs.tmp}, {hex(upper << 48)})",
-                                f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
-                            ]
-                            tid_load = _tid(prefix_s, upper, "lw")
-                            lines += [
-                                *_seed(regs),
-                                *_sentinel(regs),
-                                *set_mprv(True, _MPP_S, regs.tmp),
-                                td.add_testcase(tid_load, "cp_pm_mprv_mpp_u_s", cg),
-                                *_fixed(f"lw x{regs.chk}, 0(x{regs.a})"),
-                                write_sigupd(regs.chk, td),
-                            ]
-                            tid_store = _tid(prefix_s, upper, "sw")
-                            lines += [
-                                *_seed(regs),
-                                f"LI(x{regs.data}, {hex(VALUE_NEW)})",
-                                *set_mprv(True, _MPP_S, regs.tmp),
-                                td.add_testcase(tid_store, "cp_pm_mprv_mpp_u_s", cg),
-                                *_fixed(f"sw x{regs.data}, 0(x{regs.a})"),
-                                *set_mprv(True, _MPP_S, regs.tmp),
-                                *_fixed(f"lw x{regs.chk}, 0(x{regs.base})"),
-                                write_sigupd(regs.chk, td),
-                            ]
-                        lines += set_mprv(False, 0, regs.tmp)
-                        if satp_mode != "bare":
-                            lines += [
-                                "RVTEST_GOTO_MMODE",
-                                "csrwi satp, 0",
-                                "sfence.vma",
-                            ]
+                lines += _mprv_satp_loop(
+                    _MPP_S, "mpps", "cp_pm_mprv_mpp_u_s", mxr_val, mseccfg_pmm, menvcfg_pmm, pmm_shift, td, regs, cg
+                )
                 lines.append("#endif // S_SUPPORTED")
 
-    # Restore mstatus
-    lines += [f"csrw mstatus, x{regs.tmp2} # restore"]
-
-    # Clear PMM fields at the end
     lines += set_pmm_field("mseccfg", pmm_shift, 0b00, 0, regs.tmp)
     lines += set_pmm_field("menvcfg", pmm_shift, 0b00, 0, regs.tmp)
     lines.append("#ifdef S_SUPPORTED")
     lines += set_pmm_field("senvcfg", pmm_shift, 0b00, 0, regs.tmp)
     lines += set_mxr(False, regs.tmp, "mstatus")
+    lines += set_sum(False, regs.tmp)
     lines.append("#endif // S_SUPPORTED")
+    lines += set_mprv(False, 0, regs.tmp)
+    lines += [
+        "# restore mstatus.MPP = M; set_mprv(False, ...) only clears MPRV",
+        f"LI(x{regs.tmp}, {hex(0b11 << _MSTATUS_MPP_SHIFT)})",
+        f"csrs mstatus, x{regs.tmp}",
+    ]
 
     return lines

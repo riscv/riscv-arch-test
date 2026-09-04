@@ -228,6 +228,8 @@ Some vector tests are currently skipped pending fixes to the Sail RISC-V referen
 * `vstart` coverpoint tests — skipped pending link:https://github.com/riscv/sail-riscv/pull/1703[sail-riscv PR #1703].
 * `vmv<nr>r.v` tests — skipped because Sail behavior is incorrect; tracked in link:https://github.com/riscv/sail-riscv/issues/1709[sail-riscv issue #1709].
 
+TODO: RW Restore now that PRs are closed.
+
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 
 Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions, not the base V extension.  Nevertheless, Zvfh tests are in the same directory structure as V, under Vf16. Zvfh uses Vf16 <<t-Vf-coverpoints>> to exercise all floating-point instructions with SEW=16.

@@ -913,10 +913,14 @@ def _load_base(mode: str, region: str, regs: Regs) -> list[str]:
 
 
 def _tag_address(upper: int, regs: Regs, byte_offset: int = 0) -> list[str]:
+    """Inject tag into bits 63:48.
+    Use XOR so a high-half base (already 0xFFFF in 63:48) becomes
+    non-canonical; only correct sign-extension recovers the original address.
+    """
     lines = [
         f"# tagged pointer: bits 63:48 = 0x{upper:04X}",
         f"LI(x{regs.tmp}, {hex(upper << 48)})",
-        f"or x{regs.a}, x{regs.base}, x{regs.tmp}",
+        f"xor x{regs.a}, x{regs.base}, x{regs.tmp}",
     ]
     if byte_offset:
         lines.append(f"addi x{regs.a}, x{regs.a}, {byte_offset}   # force a misaligned effective address")

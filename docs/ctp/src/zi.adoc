@@ -200,14 +200,18 @@ include::norm/Zicbop_norm_rules.adoc[]
 
 [[t-Za64rs-coverpoints]]
 .Za64rs Coverpoints
-//,===
-//include::{testplansdir}/Za64rs.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819[Google Sheet Testplan]
+,===
+
+include::norm/Za64rs_norm_rules.adoc[]
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
 [[t-Zic64bZicboz-coverpoints]]
-.Zic64bZicboz Instruction Coverpoints
-//,===
-//include::{testplansdir}/Zic64bZicboz.adoc[]
-//,===
+.Zic64bZicboz Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180[Google Sheet Testplan]
+,===
+
+include::norm/Zic64b_norm_rules.adoc[]

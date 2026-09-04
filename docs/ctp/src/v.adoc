@@ -338,13 +338,3 @@ include::norm/Zvksh_norm_rules.adoc[]
 ==== Zvkt Constant-Time Vector Instructions
 
 Not tested yet.
-
-==== MisalignV
-
-[[t-MisalignV-coverpoints]]
-.MisalignV Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=319983819#gid=319983819[Google Sheet Testplan]
-,===
-
-include::norm/MisalignV_norm_rules.adoc[]

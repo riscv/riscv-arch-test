@@ -296,7 +296,7 @@ include::norm/Zvkb_norm_rules.adoc[]
 
 Only SEW=32 is defined.
 
-//include::{testplansdir}/Zvkg.adoc[]
+include::{testplansdir}/Zvkg.adoc[]
 
 include::norm/Zvkg_norm_rules.adoc[]
 
@@ -304,7 +304,7 @@ include::norm/Zvkg_norm_rules.adoc[]
 
 Only SEW=32 is defined.
 
-//include::{testplansdir}/Zvkned.adoc[]
+include::{testplansdir}/Zvkned.adoc[]
 
 include::norm/Zvkned_norm_rules.adoc[]
 
@@ -314,7 +314,8 @@ Both Zvknha32 and Zvknhb64 are defined.
 
 <<t-Zvknh-coverpoints>> lists the vector hashing instructions.  These apply to both Zknha and Zknhb.
 
-//include::{testplansdir}/Zvknh.adoc[]
+include::{testplansdir}/Zvknha.adoc[]
+include::{testplansdir}/Zvknhb.adoc[]
 
 include::norm/Zvknh_norm_rules.adoc[]
 
@@ -322,7 +323,7 @@ include::norm/Zvknh_norm_rules.adoc[]
 
 Only Zvksed32 is defined.
 
-//include::{testplansdir}/Zvksed.adoc[]
+include::{testplansdir}/Zvksed.adoc[]
 
 include::norm/Zvksed_norm_rules.adoc[]
 
@@ -330,7 +331,7 @@ include::norm/Zvksed_norm_rules.adoc[]
 
 Only Zvksh32 is defined.
 
-//include::{testplansdir}/Zvksh.adoc[]
+include::{testplansdir}/Zvksh.adoc[]
 
 include::norm/Zvksh_norm_rules.adoc[]
 
@@ -340,4 +341,10 @@ Not tested yet.
 
 ==== MisalignV
 
-TBD, Kaden moving over from SsstrictV
+[[t-MisalignV-coverpoints]]
+.MisalignV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=319983819#gid=319983819[Google Sheet Testplan]
+,===
+
+include::norm/MisalignV_norm_rules.adoc[]

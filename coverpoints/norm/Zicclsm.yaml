@@ -1,23 +1,31 @@
 # Mapping of normative rules to coverpoints for a test suite
 #
-# MisalignV exercises every vector load and store (unit-stride, strided,
-# indexed, fault-only-first, mask, segment, and whole-register) with a base
-# address that is not naturally aligned to the element size. The manual leaves
-# the outcome implementation-defined (complete the access, or raise an
-# address-misaligned exception on the offending element), so the coverpoints
-# sample only that the misaligned access was issued with a valid vtype; the
-# self-checking signature captures whichever outcome the reference model
-# produced. The two *_EXCEPTION entries are impl-def-behavior rules of the V
-# extension; the remaining entries are ordinary rules that the same accesses
-# bear on.
+# Zicclsm (Main Memory Misaligned Accesses) has a single normative rule. It is
+# exercised by every suite that performs misaligned loads and stores to main
+# memory and expects them to complete: the Misalign* suites (scalar integer,
+# compressed, F/D floating point, and vector loads/stores at misaligned
+# addresses), and the misaligned-load/store coverpoints of the exception suites,
+# which check that no address-misaligned exception is raised. In UDB, Zicclsm
+# requires MISALIGNED_LDST=true, which is the parameter those suites key on.
+# The rule excludes AMOs, LR/SC and other Za* accesses, so ExceptionsZaamo,
+# ExceptionsZalrsc and Zama16b are deliberately not listed.
 
 normative_rule_definitions:
-  # If an element accessed by a vector memory instruction is not naturally aligned to the size of the
-  # element, either the element is transferred successfully or an address-misaligned exception is
-  # raised on that element.
-  - name: VECTOR_LS_MISALIGNED_EXCEPTION
-    coverpoint:
-      [
+  # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory
+  # regions with both the coherence and cacheability PMAs must be supported.
+  - name: zicclsm_misaligned_support
+    coverpoint: [
+        # Misalign: scalar integer loads and stores (lb/sb need no alignment and are not tested)
+        "{Misalign_lh_cg,Misalign_lhu_cg,Misalign_lw_cg,Misalign_lwu_cg,Misalign_ld_cg,Misalign_sh_cg,Misalign_sw_cg,Misalign_sd_cg}/{cp_misalign}",
+        # MisalignZca: compressed loads and stores
+        "{MisalignZca_c_lw_cg,MisalignZca_c_lwsp_cg,MisalignZca_c_ld_cg,MisalignZca_c_ldsp_cg,MisalignZca_c_sw_cg,MisalignZca_c_swsp_cg,MisalignZca_c_sd_cg,MisalignZca_c_sdsp_cg}/{cp_misalign}",
+        # MisalignF / MisalignD: floating-point loads and stores (no MisalignQ coverage exists yet)
+        "{MisalignF_flw_cg,MisalignF_fsw_cg}/{cp_misalign}",
+        "{MisalignD_fld_cg,MisalignD_fsd_cg}/{cp_misalign}",
+        # MisalignV: whole-register vector loads and stores with a misaligned base
+        "{MisalignV_vl1re16_v_cg,MisalignV_vl1re32_v_cg,MisalignV_vl1re64_v_cg,MisalignV_vl1re8_v_cg,MisalignV_vl2re16_v_cg,MisalignV_vl2re32_v_cg,MisalignV_vl2re64_v_cg,MisalignV_vl2re8_v_cg,MisalignV_vl4re16_v_cg,MisalignV_vl4re32_v_cg,MisalignV_vl4re64_v_cg,MisalignV_vl4re8_v_cg,MisalignV_vl8re16_v_cg,MisalignV_vl8re32_v_cg,MisalignV_vl8re64_v_cg,MisalignV_vl8re8_v_cg,MisalignV_vs1r_v_cg,MisalignV_vs2r_v_cg,MisalignV_vs4r_v_cg,MisalignV_vs8r_v_cg}/{cp_misalignv_ls_wholereg_misaligned}",
+        # MisalignV: unit-stride, strided, indexed, fault-only-first, mask and segment
+        # vector loads and stores with element-misaligned addresses
         "{MisalignV_vle16_v_cg,MisalignV_vle32_v_cg,MisalignV_vle64_v_cg,MisalignV_vle8_v_cg}/{cp_misalignv_ls_element_misaligned}",
         "{MisalignV_vse16_v_cg,MisalignV_vse32_v_cg,MisalignV_vse64_v_cg,MisalignV_vse8_v_cg}/{cp_misalignv_ls_element_misaligned}",
         "{MisalignV_vlm_v_cg}/{cp_misalignv_ls_element_misaligned}",
@@ -92,34 +100,7 @@ normative_rule_definitions:
         "{MisalignV_vsuxseg6ei16_v_cg,MisalignV_vsuxseg6ei32_v_cg,MisalignV_vsuxseg6ei64_v_cg,MisalignV_vsuxseg6ei8_v_cg}/{cp_misalignv_ls_element_misaligned}",
         "{MisalignV_vsuxseg7ei16_v_cg,MisalignV_vsuxseg7ei32_v_cg,MisalignV_vsuxseg7ei64_v_cg,MisalignV_vsuxseg7ei8_v_cg}/{cp_misalignv_ls_element_misaligned}",
         "{MisalignV_vsuxseg8ei16_v_cg,MisalignV_vsuxseg8ei32_v_cg,MisalignV_vsuxseg8ei64_v_cg,MisalignV_vsuxseg8ei8_v_cg}/{cp_misalignv_ls_element_misaligned}",
+        # Exception suites: with MISALIGNED_LDST=true these misaligned scalar loads and stores
+        # must complete without an address-misaligned exception (M, S, U modes, FP, compressed)
+        "{ExceptionsSm_cg,ExceptionsS_cg,ExceptionsU_cg,ExceptionsF_cg,ExceptionsZc_cg}/{cp_load_address_misaligned,cp_store_address_misaligned}",
       ]
-
-  # Implementations are allowed to raise a misaligned address exception on whole register loads and
-  # stores if the base address is not naturally aligned to the larger of the size of the encoded EEW in
-  # bytes (EEW/8) or the implementation's smallest supported SEW size in bytes (SEWMIN/8).
-  - name: VECTOR_LS_WHOLEREG_MISALIGNED_EXCEPTION
-    coverpoint:
-      [
-        "{MisalignV_vl1re16_v_cg,MisalignV_vl1re32_v_cg,MisalignV_vl1re64_v_cg,MisalignV_vl1re8_v_cg,MisalignV_vl2re16_v_cg,MisalignV_vl2re32_v_cg,MisalignV_vl2re64_v_cg,MisalignV_vl2re8_v_cg,MisalignV_vl4re16_v_cg,MisalignV_vl4re32_v_cg,MisalignV_vl4re64_v_cg,MisalignV_vl4re8_v_cg,MisalignV_vl8re16_v_cg,MisalignV_vl8re32_v_cg,MisalignV_vl8re64_v_cg,MisalignV_vl8re8_v_cg,MisalignV_vs1r_v_cg,MisalignV_vs2r_v_cg,MisalignV_vs4r_v_cg,MisalignV_vs8r_v_cg}/{cp_misalignv_ls_wholereg_misaligned}",
-      ]
-
-  # Support for misaligned vector memory accesses is independent of an implementation's support for
-  # misaligned scalar memory accesses.
-  - name: vector_ls_scalar_misaligned_independence
-    # The suite requires only V, not MISALIGNED_LDST, so vector misalignment is exercised on
-    # configurations with and without scalar misaligned support; the whole suite is the evidence.
-    coverpoint: ["See VECTOR_LS_MISALIGNED_EXCEPTION"]
-
-  # Vector misaligned memory accesses follow the same rules for atomicity as scalar misaligned memory
-  # accesses.
-  - name: vector_ls_scalar_misaligned_dependence
-    # Atomicity of a misaligned access is not observable from a single-hart self-checking test.
-    coverpoint: ["TODO"]
-
-  # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory regions
-  # with both the coherence and cacheability PMAs must be supported.
-  - name: zicclsm_misaligned_support
-    # The Zicclsm chapter notes that this definition includes vector memory accesses. On a Zicclsm
-    # configuration every access in this suite must therefore complete without an exception. The
-    # full mapping for this rule, including the scalar suites, is in Zicclsm.yaml.
-    coverpoint: ["See VECTOR_LS_MISALIGNED_EXCEPTION"]

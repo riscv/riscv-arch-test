@@ -35,9 +35,9 @@ The Zifencei tests must write an instruction to an address, execute `fence.i`, a
 
 ==== Misalign: Misaligned Loads/Stores
 
-Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
+Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, saved_x scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define saved_x behavior on each memory region.
 
-The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
+The saved_x family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_saved_x}. Misaligned vector load/stores are exercised in <<MisalignV>>.
 
 include::{testplansdir}/Misalign.adoc[]
 
@@ -69,23 +69,9 @@ include::norm/MisalignZca_norm_rules.adoc[]
 
 ==== Zicclsm Misaligned Loads/Stores
 
-The Zicclsm extension, defined in the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22] and
-https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] profiles, provides the following normative rule.  The extension applies to privilege modes below M-mode (because the profiles apply to supervisor-mode execution environment), and requires that misaligned scalar and vector loads and stores to main memory either are handled in hardware or raise a misaligned exception that is handled by the execution environment.  This is tested by Exceptions coverpoints that either return the expected value or throw a misaligned trap. Misaligned atomics are not part of Zicclsm, but are checked in {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
+The Zicclsm extension requires that the UDB MISALIGNED_LDST parameter be true.  It is tested with the misaligned scalar load/store tests above and with misaligned vector load/store tests (see <<MisalignV>>).  It does not apply to Za* atomic extensions.
 
-[[t-Zicclsm-normative-rules]]
-.Zicclsm Normative Rules
-[cols="1,4,3", options="header"]
-|===
-|Normative Rule |Rule Text |Coverpoints
-
-|zicclsm_op |Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported. |{ExceptionsS, ExceptionsU, ExceptionsZc, ExceptionsF, ExceptionsVls}/{cp_load_address_misaligned, cp_store_address_misaligned}
-|===
-
-
-
-*** ExceptionsVls coverpoints need to be written.
-*** update normative rule when tagged in profile and hyperlink is available
-
+include::norm/Zicclsm_norm_rules.adoc[]
 
 ==== Zicond Conditional Instructions
 

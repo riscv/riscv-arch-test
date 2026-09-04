@@ -441,9 +441,9 @@ def build_data_only_u_map_asm(mode: str, img_tables: list[str], td: TestData) ->
         # framework data range
         f"LA(x{s1}, rvtest_data_begin)",
         f"LA(x{s2}, end_signature)",
-        f"LA(x{s2}, end_signature)",
-        f"sub  x{s2}, x{s2}, x{s1}",
-        f"sub  x{s1}, x{r0}, x{s1}",
+        f"sub  x{s2}, x{s2}, x{s1}",  # x{s2} = size of framework data range
+        f"sub  x{s1}, x{r0}, x{s1}",  # x{s1} = offset from data_begin
+        f"bgeu x{s1}, x{s2}, 3f",  # ← ADD THIS: if offset >= size, skip PTE_U (go to 3)
         "2:",
         f"ori  x{s0}, x{s0}, PTE_U",
         "3:",
@@ -601,10 +601,12 @@ def build_finegrained_text_map_asm(mode: str, img_tables: list[str], td: TestDat
     # Not in text or PM range -- check the U-accessible framework data range.
     lines += [
         f"LA(x{s1}, rvtest_data_begin)",
+        f"srli x{s1}, x{s1}, 12",
+        f"slli x{s1}, x{s1}, 12                     # page-align down to include the scratch page",
         f"LA(x{s2}, end_signature)",
-        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size of the U-accessible data",
-        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from data begin",
-        f"bgeu x{s1}, x{s2}, 3f                  # outside the data segment -> keep U clear",
+        f"sub  x{s2}, x{s2}, x{s1}                  # x{s2} = size from page base",
+        f"sub  x{s1}, x{r0}, x{s1}                  # x{s1} = offset from (page-aligned) start",
+        f"bgeu x{s1}, x{s2}, 3f                     # outside the data segment -> keep U clear",
         "2:",
         f"ori  x{s0}, x{s0}, PTE_U",
         "3:",
@@ -1278,15 +1280,16 @@ def pass_i_mprv_mxr_pmm_loop(
         "",
     ]
 
+    lines.append("#ifdef S_SUPPORTED")
+    lines.append("#ifdef SV39_SUPPORTED")
     # ---- Build the U-accessible data map ONCE (tables never change) ----
     lines += [
         "# Build the U-accessible data map once; the page tables never change",
         *sv39_data_map,
         "sfence.vma",
     ]
-
+    lines.append("#endif // SV39_SUPPORTED")
     # Enable SUM so we can access user-space pages from S-mode (only when S exists)
-    lines.append("#ifdef S_SUPPORTED")
     lines += set_sum(True, regs.tmp)
     lines.append("#endif // S_SUPPORTED")
 

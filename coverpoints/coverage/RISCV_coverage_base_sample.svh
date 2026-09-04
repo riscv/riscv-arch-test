@@ -436,6 +436,21 @@
     `ifdef COVER_ZICFILPU
         zicfilpu_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZICFISSH
+        zicfissh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISSS
+        zicfisss_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISSSM
+        zicfisssm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISSU
+        zicfissu_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISSV
+        zicfissv_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);
     `endif

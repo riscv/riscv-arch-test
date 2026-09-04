@@ -1,0 +1,34 @@
+# Parameter mappings
+#
+# Implementation-defined behaviours that affect the Zicfiss coverpoints.
+
+parameter_definitions:
+  - name: REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["cp_sspopchk_mismatch, cp_sspopchk_mismatch_s"]
+    effect: [
+        "When true, a shadow stack software-check exception taken to M-mode reports the
+        shadow stack fault code (3) in `mtval`. When false, `mtval` is 0 and the test
+        cannot distinguish the cause from the tval alone.",
+      ]
+  - name: REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["cp_sspopchk_mismatch, cp_sspopchk_mismatch_s"]
+    effect:
+      [
+        "Same as the mtval parameter, for a software-check exception delegated to S-mode.",
+      ]
+  - name: REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["cp_sspopchk_mismatch"]
+    effect: [
+        "Same as the mtval parameter, for a software-check exception taken in VS-mode. No
+        current coverpoint drives this: the VS/VU coverpoints exercise ssp CSR gating,
+        which raises virtual-instruction, not software-check. Listed for when the
+        ZicfissH generator lands.",
+      ]
+  - name: MISALIGNED_AMO
+    coverpoint: ["cp_ss_address_alignment_swap, cp_ss_address_alignment_swap_s"]
+    effect: [
+        "SSAMOSWAP takes the same exception options as A-extension AMOs for a
+        non-naturally-aligned address, so the expected result of the addr[2:0] sweep is
+        implementation-defined and must be compared against the reference model rather
+        than asserted outright.",
+      ]

@@ -142,15 +142,21 @@ different privilege modes, so a suite is defined for each.
 
 [[t-ZawrsSm-coverpoints]]
 .ZawrsSm Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527[Google Sheet Testplan]
+,===
 
 [[t-ZawrsS-coverpoints]]
 .ZawrsS Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
 
 [[t-ZawrsU-coverpoints]]
 .ZawrsU Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1437737576#gid=1437737576[Google Sheet Testplan]
+,===
 
 include::norm/ZawrsSm_norm_rules.adoc[]
 
@@ -168,7 +174,9 @@ Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They 
 
 [[t-Zama16b-coverpoints]]
 .Zama16b Coverpoints
+,===
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=907997467#gid=907997467[Google Sheet Testplan]
+,===
 
 include::norm/Zama16b_norm_rules.adoc[]
 

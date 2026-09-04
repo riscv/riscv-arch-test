@@ -228,7 +228,7 @@ Some vector tests are currently skipped pending fixes to the Sail RISC-V referen
 * `vstart` coverpoint tests — skipped pending link:https://github.com/riscv/sail-riscv/pull/1703[sail-riscv PR #1703].
 * `vmv<nr>r.v` tests — skipped because Sail behavior is incorrect; tracked in link:https://github.com/riscv/sail-riscv/issues/1709[sail-riscv issue #1709].
 
-TODO: RW Restore now that PRs are closed.
+TODO: Re-evaluate whether the hardcoded skips / commented generation lines for these tests can be removed now that the referenced sail-riscv PR/issue are closed.
 
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 

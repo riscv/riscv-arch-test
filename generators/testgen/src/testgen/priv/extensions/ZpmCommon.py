@@ -178,13 +178,13 @@ class Regs:
 
 
 def alloc_pm_regs_paired(td: TestData) -> Regs:
-    """chk/data are reserved as aligned pairs (get_register_pair) for amocas.q,
-    which implicitly reads/writes rd+1/rs2+1; those halves double as tmp/tmp2,
-    always reloaded before use. `a` is pinned to x8-x15 since it's rs1 in
-    forced c.lw/c.ld/c.sw/c.sd, whose 3-bit field can't encode x6.
+    """chk/data are aligned pairs for amocas.q and also serve as
+    the compressed-legal registers (x8-x15) required by c.lw/c.sw/…
+    a is likewise pinned to that range; base may be any free register.
     """
-    chk = td.int_regs.get_register_pair()
-    data = td.int_regs.get_register_pair()
+    # Both halves of each pair must be usable by the 3-bit compressed field
+    chk = td.int_regs.get_register_pair(reg_range=list(range(8, 16)))
+    data = td.int_regs.get_register_pair(reg_range=list(range(8, 16)))
     tmp = chk + 1
     tmp2 = data + 1
     a = td.int_regs.get_registers(1, reg_range=list(range(8, 16)))[0]

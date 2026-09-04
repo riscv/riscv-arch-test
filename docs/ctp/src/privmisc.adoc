@@ -5,9 +5,11 @@
 
 [[t-Sm1p13-coverpoints]]
 .Sm1p13 Coverpoints
-//,===
-//include::{testplansdir}/Sm1p13.adoc[]
-//,===
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=294808438#gid=294808438[Google Sheet Testplan]
+,===
+
+include::norm/Sm1p13_norm_rules.adoc[]
 
 ==== Smstateen Machine State Enable
 

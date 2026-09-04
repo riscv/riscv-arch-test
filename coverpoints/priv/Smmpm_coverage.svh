@@ -32,6 +32,19 @@
         bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
         bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
     }
+    // PMM fields that govern effective privilege under MPRV
+    menvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
+        bins pmm_00 = {2'b00};
+        bins pmm_10 = {2'b10};
+        bins pmm_11 = {2'b11};
+    }
+    `ifdef S_SUPPORTED
+        senvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+            bins pmm_00 = {2'b00};
+            bins pmm_10 = {2'b10};
+            bins pmm_11 = {2'b11};
+        }
+    `endif
 
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
@@ -82,13 +95,13 @@
     // MPRV with MPP=U or MPP=S: includes MXR and SATP (both S-mode features)
     // Effective privilege = U or S, so menvcfg.PMM or senvcfg.PMM applies
     `ifdef S_SUPPORTED
-        cp_pm_mprv_mpp_u_s: cross priv_mode_m, pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_u_s;
+        cp_pm_mprv_mpp_u_s: cross priv_mode_m, pmm, menvcfg_pmm, senvcfg_pmm, mprv_bit, mxr_bit, satp_mode_mprv, a_upper_bits_mprv, sw_lw_insn, mpp_field_u_s;
     `endif
 
     // MPRV with MPP=U when S is NOT supported: no MXR, no SATP
     `ifdef U_SUPPORTED
         `ifndef S_SUPPORTED
-            cp_pm_mprv_mpp_u_no_s: cross priv_mode_m, pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_u;
+            cp_pm_mprv_mpp_u_no_s: cross priv_mode_m, pmm, menvcfg_pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_u;
         `endif
     `endif
 

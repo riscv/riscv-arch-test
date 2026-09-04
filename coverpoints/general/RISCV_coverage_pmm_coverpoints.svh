@@ -135,7 +135,7 @@
             wildcard bins sspopchk       = {SSPOPCHK_X1, SSPOPCHK_X5};
             wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
         `endif // ZICFISS_SUPPORTED
-                // RVV 1.0 vector stores and loads
+        // RVV 1.0 vector stores and loads
         `ifdef ZVL32B_SUPPORTED
             // EEW ≤ 32 (legal on Zve32x / Zvl32b)
             wildcard bins vse8_v      = {VSE8_V};

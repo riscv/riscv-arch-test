@@ -431,6 +431,11 @@ def _generate_illegal_instr(
                 exclusion=("XXXXXXXXXXXXXXXXXXXX00010XXXXXXX", "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX"),
             ),
             RawSweep("cp_reserved_fence_rd", "000011111111RRRRE000000010001111"),
+            RawSweep("cp_reserved_fencei_rd", "00000000000000000001EEEEE0001111"),
+            RawSweep("cp_reserved_fencei_rs1", "000000000000EEEEE001000000001111"),
+            RawSweep(
+                "cp_reserved_fencei_imm12", "RRRRRRRRRRRR00000001000000001111"
+            ),  # random imm12: too many to enumerate
         ],
     ]
     for sweep_group in scalar_sweeps:

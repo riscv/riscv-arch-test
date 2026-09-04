@@ -1,45 +1,159 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# Only rules about reserved instruction encodings are listed here (plus the
+# rules defining Ssstrict). Reserved encodings whose legality depends on
+# system state (mstatus.TW/TSR/FS/VS, envcfg, stateen, misa, vtype, vstart,
+# CSR-address permissions, ...) are deliberately excluded, as are the vector
+# reserved encodings, which are mapped in SsstrictV.yaml.
 
 normative_rule_definitions:
+  # Ssstrict rules
+  # If the Ssstrict extension is implemented, then no non-conforming extensions are present.
+  - name: ssstrict_no_nonconforming_extensions
+    coverpoint: ["Exercised by testing all instruction families"]
+  # Furthermore, attempts to execute unimplemented opcodes or access unimplemented CSRs in the standard
+  # or reserved encoding spaces raises an illegal instruction exception that results in a contained trap
+  # to the supervisor-mode trap handler.
+  - name: ssstrict_unimplemented_opcodes_csr_exception
+    # CSR sweep; the reserved/unimplemented opcode sweeps in SsstrictS_instr_cg also exercise this rule
+    coverpoint:
+      [
+        "SsstrictS_scsr_cg/cp_csrr",
+        "SsstrictS_scsr_cg/cp_csrw_edges",
+        "SsstrictS_scsr_cg/cp_csrcs",
+        "SsstrictS_instr_cg/cp_illegal",
+      ]
+
   # I rules
+  # slliw, srliw, and sraiw encodings with imm[5]≠0 are reserved.
   - name: slliw_imm5_rsv
     coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
+  # slliw, srliw, and sraiw encodings with imm[5]≠0 are reserved.
+  - name: srliw_imm5_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
+  # slliw, srliw, and sraiw encodings with imm[5]≠0 are reserved.
+  - name: sraiw_imm5_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
+  # The unused fields in the fence instructions, rs1 and rd, are reserved for finer-grain fences in
+  # future extensions. For forward compatibility, base implementations shall ignore these fields
+  - name: fence_unused_flds_rsv
+    # reserved fence rs1/rd fields must be ignored, not trapped
+    coverpoint: ["SsstrictS_instr_cg/cp_reserved"]
+
+  # Zifencei rules
+  # The unused fields in the fence.i instruction, funct12, rs1, and rd, are reserved for finer-grain
+  # fences in future extensions. For forward compatibility, base implementations shall ignore these
+  # fields, and standard software shall zero these fields.
+  - name: fence_i_rsv
+    # reserved fence.i funct12/rs1/rd fields must be ignored, not trapped
+    coverpoint:
+      [
+        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_rd",
+        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_rs1",
+        "SsstrictS_instr_cg/cp_reserved/reserved_fencei_imm12",
+      ]
 
   # Zca rules
+  # A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.
+  - name: Zca_illegal
+    # 16-bit all-zero encoding
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed00"]
+  # c.addi16sp is valid only when nzimm≠0; the code point with nzimm=0 is reserved.
   - name: c-addi16sp_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  # c.addi4spn is valid only when nzuimm≠0; the code points with nzuimm=0 are reserved.
   - name: c-addi4spn_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed00"]
+  # c.addiw is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-addiw_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  # c.jr is valid only when rs1≠x0; the code point with rs1=x0 is reserved.
   - name: c-jr_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+  # c.ldsp is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-ldsp_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+  # c.lui is valid only when rd≠x2, and when the immediate is not equal to zero. The code points with
+  # imm=0 are reserved. The code points with rd=x2 and imm≠0 correspond to the c.addi16sp instruction.
   - name: c-lui_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  # c.lwsp is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-lwsp_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
 
+  # Zilsd/Zclsd rules
+  # For c.ldsp, usage of x0 as the destination is reserved.
+  - name: Zilsd_c-ldsp_x0
+    # RV32 c.ldsp with rd = x0
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+
   # Zcmt rules
+  # For the encoding to be legal r1s' != r2s'.
   - name: cm-mvsa01_res
-    coverpoint:
-      ["SsstrictS_comp_instr_cg/cp_compressed10"]
-      # For the encoding to be legal r1s' != r2s'.
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
 
   # F rules
+  # The behavior of floating-point instructions that depend on rounding mode when executed with a
+  # reserved rounding mode is reserved, including both static reserved rounding modes (101–110) and
+  # dynamic reserved rounding modes (101–111). Some instructions, including widening conversions, have
+  # the rm field but are nevertheless mathematically unaffected by the rounding mode; software should
+  # set their rm field to RNE (000) but implementations must treat the rm field as usual (in particular,
+  # with regard to decoding legal vs. reserved encodings).
   - name: roundingmode_rsv
-    # static rounding mode check
-    coverpoint: ["SsstrictS_instr_cg/cp_Ftype"]
+    # static rounding mode check; cp_reserved covers the fused multiply-add opcodes
+    coverpoint:
+      ["SsstrictS_instr_cg/cp_Ftype", "SsstrictS_instr_cg/cp_reserved"]
 
   # Zfa rules
-  - name: fcvtmod-w-d_rsv
+  # It is encoded like fcvt.w.d, but with the rs2 field set to 8 and the rm field set to 1 (RTZ). Other
+  # rm values are reserved.
+  - name: fcvtmod-w-d_rsw
+    # rule name in the ISA manual as of 2026-09; riscv-isa-manual PR 3361 renames it fcvtmod-w-d_enc
     coverpoint: ["SsstrictS_instr_cg/cp_cvtmodwdfrm"]
 
+  # Zdinx rules
+  # For RV32, double-precision operands in zdinx are held in aligned x-register pairs. In other words,
+  # register numbers must be even. Use of misaligned (odd-numbered) registers for double-width floating-
+  # point operands is reserved.
+  - name: Zdinx_x_reg_pair
+    # RV32 odd-numbered register pairs are reserved
+    coverpoint: ["TODO"]
+
   # Zbs rules
+  # For RV32, the encodings corresponding to shamt[5]=1 are reserved.
   - name: Zb_shamt_rsv_rv32
     coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
 
+  # Zacas rules
+  # The instruction requires the first register in the pair to be even numbered; encodings with odd
+  # numbered registers specified in rs2 and rd are reserved.
+  - name: Zacas_rv32_amocas-d_frst_pair_entry_reg_even
+    coverpoint: ["SsstrictS_instr_cg/cp_amocas_odd"]
+  # The instruction requires the first register in the pair to be even numbered; encodings with odd
+  # numbered registers specified in rs2 and rd are reserved.
+  - name: Zacas_rv64_amocas-q_frst_pair_entry_reg_even
+    coverpoint: ["SsstrictS_instr_cg/cp_amocas_odd"]
+
+  # Zalasr rules
+  # The versions without the aq bit set are RESERVED.
+  - name: ldaq_no_aq_reserved
+    coverpoint: ["TODO"]
+  # The versions without the rl bit set are RESERVED.
+  - name: sdrl_no_rl_reserved
+    coverpoint: ["TODO"]
+
   # E rules
+  # RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that
+  # only registers x0–x15 are provided. All encodings specifying the other registers x16–x31 are
+  # reserved.
   - name: diff_rv32e_rv32i
-    coverpoint: ["{SsstrictS_cg,SsstricM_cg}/{cp_upperreg}"]
+    coverpoint:
+      [
+        "SsstrictS_instr_cg/cp_upperreg_rs1",
+        "SsstrictS_instr_cg/cp_upperreg_rs2",
+        "SsstrictS_instr_cg/cp_upperreg_rd",
+        "SsstrictS_instr_cg/cp_upperreg_imm_rd",
+        "SsstrictS_instr_cg/cp_upperreg_imm_rs1",
+        "SsstrictS_instr_cg/cp_upperreg_fmv_rs1",
+        "SsstrictS_instr_cg/cp_upperreg_fmv_rd",
+      ]
